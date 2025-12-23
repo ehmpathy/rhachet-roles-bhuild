@@ -46,6 +46,10 @@ while [[ $# -gt 0 ]]; do
       TARGET_DIR="$2"
       shift 2
       ;;
+    --skill|--repo|--role|-s)
+      # ignore rhachet passthrough args
+      shift 2
+      ;;
     *)
       echo "error: unknown argument '$1'"
       echo "usage: init.bhuild.sh --name <behaviorname> [--dir <directory>]"
