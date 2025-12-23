@@ -12,6 +12,10 @@ on:
         required: false
         type: string
         default: "us-east-1"
+    secrets:
+      ANTHROPIC_API_KEY:
+        description: "api key for claude code cli, used in integration tests"
+        required: false
 
 permissions:
   id-token: write # required for oidc
@@ -158,6 +162,9 @@ jobs:
           role-to-assume: ${{ inputs.creds-aws-role-arn }}
           aws-region: ${{ inputs.creds-aws-region }}
 
+      - name: install claude code
+        run: npm install -g @anthropic-ai/claude-code
+
       - name: start:testdb
         run: npm run start:testdb --if-present
 
@@ -166,6 +173,8 @@ jobs:
 
       - name: test:integration
         run: THOROUGH=true npm run test:integration
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
   test-acceptance-locally:
     runs-on: ubuntu-24.04
