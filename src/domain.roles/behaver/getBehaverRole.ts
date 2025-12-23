@@ -1,7 +1,7 @@
 import { Role } from 'rhachet';
 
 export const ROLE_BEHAVER: Role = Role.build({
-  slug: 'bhuild',
+  slug: 'behaver',
   name: 'Behaver',
   purpose: 'declare clear, buildable, and testable behaviors',
   readme: `
