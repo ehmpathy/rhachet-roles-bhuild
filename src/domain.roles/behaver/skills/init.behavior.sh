@@ -33,6 +33,9 @@ set -euo pipefail
 # fail loud: print what failed
 trap 'echo "❌ init.bhuild.sh failed at line $LINENO" >&2' ERR
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
+
 # parse arguments
 BEHAVIOR_NAME=""
 TARGET_DIR="$PWD"
@@ -64,6 +67,37 @@ if [[ -z "$BEHAVIOR_NAME" ]]; then
   echo "usage: init.bhuild.sh --name <behaviorname> [--dir <directory>]"
   exit 1
 fi
+
+# ────────────────────────────────────────────────────────────────────
+# binding check: fail fast if branch already bound to a behavior
+# ────────────────────────────────────────────────────────────────────
+
+get_bound_behavior() {
+  npx tsx "$REPO_ROOT/src/domain.operations/behavior/bind/getBoundBehaviorByBranch.cli.ts" "$1" 2>/dev/null || echo '{"behaviorDir":null,"bindings":[]}'
+}
+
+flatten_branch_name() {
+  local branch="$1"
+  npx tsx "$REPO_ROOT/src/domain.operations/behavior/bind/flattenBranchName.cli.ts" "$branch"
+}
+
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+BINDING_RESULT=$(get_bound_behavior "$CURRENT_BRANCH")
+EXISTING_BEHAVIOR=$(echo "$BINDING_RESULT" | jq -r '.behaviorDir // empty')
+
+if [[ -n "$EXISTING_BEHAVIOR" && "$EXISTING_BEHAVIOR" != "null" ]]; then
+  echo "error: branch '$CURRENT_BRANCH' is already bound to: $(basename "$EXISTING_BEHAVIOR")"
+  echo ""
+  echo "to create a new behavior, use a new worktree:"
+  echo "  git worktree add ../<new-dir> -b <new-branch>"
+  echo "  cd ../<new-dir>"
+  echo "  init.behavior.sh --name <new-behavior>"
+  exit 1
+fi
+
+# ────────────────────────────────────────────────────────────────────
+# behavior directory setup
+# ────────────────────────────────────────────────────────────────────
 
 # generate isodate in format YYYY_MM_DD
 ISO_DATE=$(date +%Y_%m_%d)
@@ -310,6 +344,23 @@ npx rhachet roles boot --repo ehmpathy --role mechanic
 # blocker.3
 EOF
 
+# ────────────────────────────────────────────────────────────────────
+# auto-bind: bind current branch to newly created behavior
+# ────────────────────────────────────────────────────────────────────
+
+FLAT_BRANCH=$(flatten_branch_name "$CURRENT_BRANCH")
+BIND_DIR="$BEHAVIOR_DIR/.bind"
+mkdir -p "$BIND_DIR"
+
+FLAG_PATH="$BIND_DIR/${FLAT_BRANCH}.flag"
+cat > "$FLAG_PATH" <<BIND_EOF
+branch: $CURRENT_BRANCH
+bound_at: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+bound_by: init.behavior skill
+BIND_EOF
+
 echo ""
 echo "behavior thoughtroute initialized!"
 echo "   $BEHAVIOR_DIR"
+echo ""
+echo "branch '$CURRENT_BRANCH' bound to: v${ISO_DATE}.${BEHAVIOR_NAME}"
