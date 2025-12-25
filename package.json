@@ -27,7 +27,7 @@
     "fix": "npm run fix:format && npm run fix:lint",
     "build:clean": "chmod -R u+w dist 2>/dev/null; rm -rf dist/",
     "build:compile": "tsc -p ./tsconfig.build.json && tsc-alias -p ./tsconfig.build.json",
-    "build:complete": "rsync -a --prune-empty-dirs --include='*/' --exclude='**/.route/**' --exclude='**/.scratch/**' --exclude='**/.behavior/**' --exclude='**/*.test.sh' --include='**/*.template.md' --include='**/briefs/**/*.md' --include='**/briefs/*.md' --include='**/skills/**/*.sh' --include='**/skills/*.sh' --include='**/skills/**/*.jsonc' --include='**/skills/*.jsonc' --exclude='*' src/ dist/",
+    "build:complete": "rsync -a --prune-empty-dirs --include='*/' --exclude='**/.route/**' --exclude='**/.scratch/**' --exclude='**/.behavior/**' --exclude='**/*.test.sh' --include='**/*.template.md' --include='**/briefs/**/*.md' --include='**/briefs/*.md' --include='**/skills/**/*.sh' --include='**/skills/*.sh' --include='**/skills/**/*.jsonc' --include='**/skills/*.jsonc' --include='**/inits/**/*.sh' --include='**/inits/*.sh' --exclude='*' src/ dist/",
     "build": "npm run build:clean && npm run build:compile && npm run build:complete --if-present",
     "test:commits": "LAST_TAG=$(git describe --tags --abbrev=0 @^ 2> /dev/null || git rev-list --max-parents=0 HEAD) && npx commitlint --from $LAST_TAG --to HEAD --verbose",
     "test:types": "tsc -p ./tsconfig.json --noEmit",
@@ -48,7 +48,7 @@
     "prepare:husky": "husky install && chmod ug+x .husky/*",
     "prepare": "if [ -e .git ] && [ -z $CI ]; then npm run prepare:husky && npm run prepare:rhachet; fi",
     "test:format:biome": "biome format",
-    "prepare:rhachet": "rhachet init && rhachet roles link --role mechanic && .agent/repo=ehmpathy/role=mechanic/skills/.skills/init.claude.sh"
+    "prepare:rhachet": "rhachet init && rhachet roles link --role mechanic && rhachet roles init --role mechanic"
   },
   "dependencies": {
     "domain-objects": "0.31.7",
@@ -76,8 +76,8 @@
     "husky": "8.0.3",
     "jest": "30.2.0",
     "rhachet": "1.13.11",
-    "rhachet-roles-bhuild": "0.1.1",
-    "rhachet-roles-ehmpathy": "1.15.12",
+    "rhachet-roles-bhuild": "0.1.3",
+    "rhachet-roles-ehmpathy": "1.15.18",
     "tsc-alias": "1.8.10",
     "tsx": "4.20.6",
     "typescript": "5.4.5",
