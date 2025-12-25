@@ -19,3 +19,4 @@ ignores:
   - "@src/.*"
   - yalc
   - rhachet-roles-bhuild
+  - "@anthropic-ai/claude-code"

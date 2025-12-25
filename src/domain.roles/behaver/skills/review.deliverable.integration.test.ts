@@ -73,7 +73,7 @@ describe('review.deliverable', () => {
             '--dir',
             scene.gitRepo,
           ],
-          { timeout: 120000 },
+          { timeout: 180000 },
         ); // 2 min timeout for claude
 
         expect(result.status).toBe(0);
@@ -125,7 +125,7 @@ describe('review.deliverable', () => {
             '--dir',
             scene.gitRepo,
           ],
-          { timeout: 120000 },
+          { timeout: 180000 },
         );
 
         expect(result.status).toBe(0);
@@ -155,7 +155,7 @@ describe('review.deliverable', () => {
             '--dir',
             scene.gitRepo,
           ],
-          { timeout: 120000 },
+          { timeout: 180000 },
         );
 
         expect(result.status).toBe(0);
@@ -346,7 +346,7 @@ describe('review.deliverable', () => {
             '--dir',
             scene.gitRepo,
           ],
-          { timeout: 120000 },
+          { timeout: 180000 },
         );
 
         expect(result.status).toBe(0);

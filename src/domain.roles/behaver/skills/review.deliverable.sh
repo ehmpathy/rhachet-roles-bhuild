@@ -32,6 +32,26 @@ set -euo pipefail
 trap 'echo "review.deliverable.sh failed at line $LINENO"' ERR
 
 # ────────────────────────────────────────────────────────────────────
+# script location resolution
+# ────────────────────────────────────────────────────────────────────
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# resolve claude binary (prefer global, fallback to local node_modules)
+CLAUDE_BIN=""
+if command -v claude >/dev/null 2>&1; then
+  CLAUDE_BIN="claude"
+else
+  NPM_BIN_DIR="$(cd "$SCRIPT_DIR" && npm bin 2>/dev/null || echo "")"
+  if [[ -n "$NPM_BIN_DIR" && -x "$NPM_BIN_DIR/claude" ]]; then
+    CLAUDE_BIN="$NPM_BIN_DIR/claude"
+  else
+    echo "error: claude binary not found (install @anthropic-ai/claude-code or ensure claude is in PATH)"
+    exit 1
+  fi
+fi
+
+# ────────────────────────────────────────────────────────────────────
 # argument parsing
 # ────────────────────────────────────────────────────────────────────
 
@@ -273,7 +293,7 @@ if [[ "$INTERACTIVE" == "true" ]]; then
   echo ""
 
   # interactive mode: open claude code shell in target dir
-  (cd "$TARGET_DIR" && claude --print "$PROMPT")
+  (cd "$TARGET_DIR" && "$CLAUDE_BIN" --print "$PROMPT")
 else
   # show tree-structured status
   echo ""
@@ -286,7 +306,7 @@ else
 
   # show spinner while claude runs
   echo -n "⏳ reviewing "
-  (cd "$TARGET_DIR" && echo "$PROMPT" | claude --print 2>&1) > "$LOG_DIR/output.response.md" &
+  (cd "$TARGET_DIR" && echo "$PROMPT" | "$CLAUDE_BIN" --print 2>&1) > "$LOG_DIR/output.response.md" &
   CLAUDE_PID=$!
 
   # spinner animation

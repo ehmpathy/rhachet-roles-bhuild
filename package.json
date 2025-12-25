@@ -54,9 +54,11 @@
     "domain-objects": "0.31.7",
     "helpful-errors": "1.5.3",
     "rhachet": "1.15.2",
+    "rhachet-roles-bhrain": "0.3.0",
     "test-fns": "1.7.2"
   },
   "devDependencies": {
+    "@anthropic-ai/claude-code": "2.0.76",
     "@biomejs/biome": "2.3.8",
     "@commitlint/cli": "19.5.0",
     "@commitlint/config-conventional": "19.5.0",
