@@ -17,4 +17,8 @@ Used to declare clear and testable behaviors that can be reliably built and veri
   briefs: {
     dirs: [{ uri: __dirname + '/briefs' }],
   },
+  inits: {
+    dirs: { uri: __dirname + '/inits' },
+    exec: [{ cmd: __dirname + '/inits/init.claude.hooks.sh' }],
+  },
 });
