@@ -97,8 +97,14 @@ output_behavior_file "wish" "$BEHAVIOR_DIR/0.wish.md" "true"
 # output vision (optional)
 output_behavior_file "vision" "$BEHAVIOR_DIR/1.vision.md" "false"
 
-# output criteria (optional)
-output_behavior_file "criteria" "$BEHAVIOR_DIR/2.criteria.md" "false"
+# output criteria (optional - check for both new and legacy formats)
+if [[ -f "$BEHAVIOR_DIR/2.criteria.blackbox.md" ]]; then
+  output_behavior_file "criteria-blackbox" "$BEHAVIOR_DIR/2.criteria.blackbox.md" "false"
+  output_behavior_file "criteria-blueprint" "$BEHAVIOR_DIR/2.criteria.blueprint.md" "false"
+else
+  # fallback to legacy single criteria file
+  output_behavior_file "criteria" "$BEHAVIOR_DIR/2.criteria.md" "false"
+fi
 
 # output latest blueprint (optional)
 LATEST_BLUEPRINT=$(get_latest_blueprint "$BEHAVIOR_DIR")

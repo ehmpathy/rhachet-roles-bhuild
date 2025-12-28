@@ -99,9 +99,12 @@ describe('init.behavior.sh', () => {
         // verify scaffold files
         expect(fs.existsSync(path.join(behaviorDir, '0.wish.md'))).toBe(true);
         expect(fs.existsSync(path.join(behaviorDir, '1.vision.md'))).toBe(true);
-        expect(fs.existsSync(path.join(behaviorDir, '2.criteria.md'))).toBe(
-          true,
-        );
+        expect(
+          fs.existsSync(path.join(behaviorDir, '2.criteria.blackbox.md')),
+        ).toBe(true);
+        expect(
+          fs.existsSync(path.join(behaviorDir, '2.criteria.blueprint.md')),
+        ).toBe(true);
       });
 
       then('auto-binds current branch to created behavior', () => {
