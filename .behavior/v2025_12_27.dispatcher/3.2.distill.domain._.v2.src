@@ -1,0 +1,19 @@
+distill the declastruct domain.objects and domain.operations that would
+- enable fulfillment of
+  - this wish .behavior/v2025_12_27.dispatcher/0.wish.md
+  - this vision .behavior/v2025_12_27.dispatcher/1.vision.md
+  - this criteria.of.blackbox .behavior/v2025_12_27.dispatcher/2.criteria.blackbox.md
+  - this criteria.of.blueprint .behavior/v2025_12_27.dispatcher/2.criteria.md
+- given the research declared here
+  - .behavior/v2025_12_27.dispatcher/3.1.research.domain._.v1.i1.md (if declared)
+
+procedure
+1. declare the usecases and envision the contract that would be used to fulfill the usecases
+2. declare the domain.objects, domain.operations, and access.daos that would fulfill this, via the declastruct pattern in this repo
+
+note
+- leverage the feedback that was emitted for the v1 version of the doc
+- but start from scratch to ensure its a full thorough and coherent domain distillation, with the latest info
+
+emit into
+- .behavior/v2025_12_27.dispatcher/3.2.distill.domain._.v2.i1.md
