@@ -1,0 +1,28 @@
+> lets create a 2.criteria.blackbox.md doc now where we
+zoomout and blackbox the experience from the users
+perspective; what inputs and outputs will they interface
+with; what usecases will they solve with these skills; when
+will they use what; and how will they fulfill the core
+desires from the wish in
+.behavior/v2025_12_27.dispatcher/0.wish.md ?
+
+---
+
+why?
+
+2.criteria.md seems too prescriptive of internals now
+
+seems like its blueprint criteria vs behavior criteria actually
+
+blackbox criteria being behavior criteria for acceptance testing the produced behavior
+
+---
+
+note: longterm, we should better standardize on the differences, because there's def blueprint level criteria we also want to be able to review
+
+but it is much less important than the blackbox criteria
+
+e.g.,
+
+- blackbox criteria = behavioral experience (experience chioces)
+- blueprint criteria = behavioral implementation (arch choices, mech choices)
