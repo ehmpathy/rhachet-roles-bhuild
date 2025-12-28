@@ -6,7 +6,8 @@
 #         by scaffolding a structured directory with:
 #           - wish definition
 #           - vision statement
-#           - acceptance criteria
+#           - blackbox criteria (user-facing behavioral requirements)
+#           - blueprint criteria (implementation requirements)
 #           - research prompts
 #           - distillation prompts
 #           - blueprint prompts
@@ -139,8 +140,8 @@ findsert "$BEHAVIOR_DIR/1.vision.md" << 'EOF'
 
 EOF
 
-# findsert 2.criteria.md
-findsert "$BEHAVIOR_DIR/2.criteria.md" << 'EOF'
+# findsert 2.criteria.blackbox.md
+findsert "$BEHAVIOR_DIR/2.criteria.blackbox.md" << 'EOF'
 # usecase.1 = ...
 given()
   when()
@@ -159,29 +160,107 @@ given()
 ...
 EOF
 
-# findsert 2.criteria.src
-findsert "$BEHAVIOR_DIR/2.criteria.src" << EOF
-declare the behavioral criteria required in order to fulfill
+# findsert 2.criteria.blackbox.src
+findsert "$BEHAVIOR_DIR/2.criteria.blackbox.src" << EOF
+declare the blackbox criteria (experience bounds) required to fulfill
 - this wish $BEHAVIOR_DIR_REL/0.wish.md
 - this vision $BEHAVIOR_DIR_REL/1.vision.md (if declared)
 
 via bdd declarations, per your briefs
 
-via the template in $BEHAVIOR_DIR_REL/2.criteria.md
+via the template in $BEHAVIOR_DIR_REL/2.criteria.blackbox.md
 
-emit into $BEHAVIOR_DIR_REL/2.criteria.md
+emit into $BEHAVIOR_DIR_REL/2.criteria.blackbox.md
 
 ---
 
-focus on the behavioral requirements
-- critical paths
-- boundary paths
+blackbox criteria = EXPERIENCE BOUNDS
+- constraints on what users must experience
+- if it's not needed for blackbox, it's not needed at all
 
-ignore infra or technical details
+declare ONLY:
+- what inputs do users provide?
+- what outputs do users receive?
+- what usecases do users fulfill?
+- what are the critical paths?
+- what are the boundary/edge cases?
 
-focus on behaviors
+DO NOT include:
+- mechanism details (what contracts/components exist)
+- implementation details (how things are built)
 
-ensure to cover all of the criteria required to fulfill the full set of behaviors declared in the wish and vision
+note: blackbox is NOT "why to build" — that's the wish
+      blackbox is "what experience must be delivered" to fulfill the wish
+
+ensure to cover all experience bounds required to fulfill the wish and vision
+EOF
+
+# findsert 2.criteria.blueprint.md
+findsert "$BEHAVIOR_DIR/2.criteria.blueprint.md" << 'EOF'
+## blackbox criteria satisfied
+
+- usecase.1 = ... ✓
+- usecase.2 = ... ✓
+
+## subcomponent contracts
+
+given('componentName contract')
+  then('exposes: methodName(input: Type) => ReturnType')
+  then('throws ErrorType for invalid inputs')
+
+given('anotherComponent contract')
+  then('exposes: ...')
+
+## composition boundaries
+
+given('feature implementation')
+  then('composes componentA and componentB')
+  then('componentA provides X, componentB transforms to Y')
+
+## test coverage criteria
+
+given('feature')
+  then('has unit tests for ...')
+  then('has integration tests for ...')
+  then('has acceptance test for full usecase')
+EOF
+
+# findsert 2.criteria.blueprint.src
+findsert "$BEHAVIOR_DIR/2.criteria.blueprint.src" << EOF
+declare the blueprint criteria (mechanism bounds) that satisfies the blackbox criteria
+
+ref:
+- blackbox criteria $BEHAVIOR_DIR_REL/2.criteria.blackbox.md
+- wish $BEHAVIOR_DIR_REL/0.wish.md
+- vision $BEHAVIOR_DIR_REL/1.vision.md (if declared)
+
+via the template in $BEHAVIOR_DIR_REL/2.criteria.blueprint.md
+
+emit into $BEHAVIOR_DIR_REL/2.criteria.blueprint.md
+
+---
+
+blueprint criteria = MECHANISM BOUNDS
+- constraints on what contracts/composition must exist to deliver the experience
+- this is OPTIONAL — not all behaviors need prescribed mechanism bounds
+
+first, confirm which blackbox experience bounds will be satisfied
+
+then, declare ONLY:
+- what subcomponents are needed with what contracts/interfaces?
+- how do subcomponents compose together?
+- what integration boundaries exist?
+- what test coverage is required?
+
+DO NOT prescribe:
+- internal implementation details of subcomponents
+- specific algorithms or data structures
+- how subcomponents achieve their contracts internally
+
+note: blueprint criteria is NOT "how to build" — that's decided in blueprint.md (3.3)
+      blueprint criteria is "what mechanisms must exist" to deliver the experience
+
+the HOW is discovered during research (3.1) and decided during blueprint (3.3)
 EOF
 
 # findsert 3.1.research.domain._.v1.src
@@ -189,7 +268,7 @@ findsert "$BEHAVIOR_DIR/3.1.research.domain._.v1.src" << EOF
 research the domain available in order to fulfill
 - this wish $BEHAVIOR_DIR_REL/0.wish.md
 - this vision $BEHAVIOR_DIR_REL/1.vision.md (if declared)
-- this criteria $BEHAVIOR_DIR_REL/2.criteria.md (if declared)
+- this criteria $BEHAVIOR_DIR_REL/2.criteria.blackbox.md (if declared)
 
 specifically
 - what are the domain objects that are involved with this wish
@@ -229,7 +308,7 @@ distill the declastruct domain.objects and domain.operations that would
 - enable fulfillment of
   - this wish $BEHAVIOR_DIR_REL/0.wish.md
   - this vision $BEHAVIOR_DIR_REL/1.vision.md (if declared)
-  - this criteria $BEHAVIOR_DIR_REL/2.criteria.md (if declared)
+  - this criteria $BEHAVIOR_DIR_REL/2.criteria.blackbox.md (if declared)
 - given the research declared here
   - $BEHAVIOR_DIR_REL/3.1.research.domain._.v1.i1.md (if declared)
 
@@ -256,7 +335,8 @@ follow the patterns already present in this repo
 reference the below for full context
 - $BEHAVIOR_DIR_REL/0.wish.md
 - $BEHAVIOR_DIR_REL/1.vision.md (if declared)
-- $BEHAVIOR_DIR_REL/2.criteria.md (if declared)
+- $BEHAVIOR_DIR_REL/2.criteria.blackbox.md (if declared)
+- $BEHAVIOR_DIR_REL/2.criteria.blueprint.md (if declared)
 - $BEHAVIOR_DIR_REL/3.1.research.domain._.v1.i1.md (if declared)
 - $BEHAVIOR_DIR_REL/3.2.distill.domain._.v1.i1.md (if declared)
 
@@ -279,7 +359,8 @@ for how to execute the blueprint specified in $BEHAVIOR_DIR_REL/3.3.blueprint.v1
 ref:
 - $BEHAVIOR_DIR_REL/0.wish.md
 - $BEHAVIOR_DIR_REL/1.vision.md (if declared)
-- $BEHAVIOR_DIR_REL/2.criteria.md (if declared)
+- $BEHAVIOR_DIR_REL/2.criteria.blackbox.md (if declared)
+- $BEHAVIOR_DIR_REL/2.criteria.blueprint.md (if declared)
 - $BEHAVIOR_DIR_REL/3.2.distill.domain._.v1.i1.md (if declared)
 - $BEHAVIOR_DIR_REL/3.3.blueprint.v1.i1.md
 
@@ -300,7 +381,8 @@ of roadmap
 ref:
 - $BEHAVIOR_DIR_REL/0.wish.md
 - $BEHAVIOR_DIR_REL/1.vision.md (if declared)
-- $BEHAVIOR_DIR_REL/2.criteria.md (if declared)
+- $BEHAVIOR_DIR_REL/2.criteria.blackbox.md (if declared)
+- $BEHAVIOR_DIR_REL/2.criteria.blueprint.md (if declared)
 - $BEHAVIOR_DIR_REL/3.2.distill.domain._.v1.i1.md (if declared)
 - $BEHAVIOR_DIR_REL/3.3.blueprint.v1.i1.md
 
