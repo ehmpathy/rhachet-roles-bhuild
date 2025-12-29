@@ -1,0 +1,201 @@
+given the catalog in .behavior/v2025_12_27.dispatcher/3.1.research.domain.leverage.v4.i1.md
+
+lets apply this feedback below
+
+and emit into
+
+.behavior/v2025_12_27.dispatcher/3.1.research.domain.leverage.v5.i1.md
+
+---
+
+
+1. want to see a catalog of termFound vs termCluster
+2. want to see discussion of the canddiates for the termCluster.choice out of the termCluster.option[]
+  - which seems to be the best choice
+  - why; pros and cons, for the top candidates
+
+e.g.,
+- modular, reusable, composable, decomposition, decouplage, generalized, portable -> they're all part of the same cluster
+
+
+- resilient, safer -> same cluster
+
+- discoverable, predictable, readable -> same cluster; (maybe better scoped as intuitive?) (could argue for something to be readable it must be discoerable and predictable and intuitive though; readable is a simpler more intuitive term... but maybe intuitive captures a correct broader set?)
+
+- traceable, visible, observable
+
+- faster, speed, velocity, throughput
+  - maybe leverage.efficiency or throughput is a better candidate, as it decouples "development speed" vs "production speed"
+  - maybe leverage.devspeed
+
+etc
+
+gather the terms per cluster; we'll use this to declare our ubiqlang dictionary, where we cannonize which term to use ubiquitously per cluster
+
+
+---
+
+also, lets be sure to distinguish
+- maintainable = ease of maintenance (retain behavior set)
+- evolvable = ease of evolution (update behavior set)
+
+both of those are related, but different in purpose
+
+you can make something super easy to maintain - but that is super difficult to evolve and extend and build upon
+
+and you can make something super easy to evolve, but super hard to maintain in production
+
+
+---
+
+testable seems like a great dimension to keep independent; maximizes the feedback loop. its critical
+
+is testable the only dimension that controls feedback loop?
+
+alternatively, maybe leverage.feedback better composes leverage.testable + whatever else contributes to feedback speed + quality.
+
+lets declare a treestruct of the subdimensions for this and others
+
+seems like there's a hierarchy of leverage dimensions (ie. some dimensions have distinct subdimensions, rather than just synonyms)
+
+and is "autonomous" part of leverage.feedback?
+
+---
+
+for evolvability
+
+**adaptability**, **flexibility**, **robustness**
+ **extensibility**, **scalability**, **composability**
+
+
+---
+
+resilience vs safety? vs maintainability?
+
+-----
+
+also, sounds like there's a need for
+
+leverage.documented (findable, discoverable, etc); maybe leverage.adoptable -> the documentation is baked into the tool or somewhere; also, its composable and reusable ?
+
+
+----
+
+
+**determinism**, **idempotency**, **predictability**
+
+ **purity**, **side-effect freedom**, **parallelizability**
+
+these are all things we consider as prereqs for pit-of-success,leverage.pitofsuccess
+
+also, pitofsuccess > failsafe? seems like pitofsuccess goes a step beyond failsafe, in that it doesn't just fail safely, it also makes it hard to fail (you fall into success)
+
+
+
+----
+
+
+maybe, at the core, it boils down to
+
+leverage.productive
+leverage.adoptable - how easy it is to use the system that was built
+leverage.maintainable - how easy it is to maintain the system that was built
+  - observable
+  - consistent
+leverage.evolvable - how easy it is to evolve the system that was built
+
+
+----
+
+its like....
+
+different usecases
+
+1. = author time
+
+- authorable
+
+concerns =
+- decrease cognative load
+  - load to integrate with old code
+  - load to establish with new code
+- decrease failure risk
+  - risk to make mistakes
+  - risk for mistakes to be severe (e.g., sweater vs haircut vs tatoo)
+- decrease consumed cost
+  - cost of time taken to produce (e.g., hours of thought vs hours of background)
+  - cost of cash taken to produce (e.g., tokens, tools, etc)
+
+i.e., how easy is it to write products
+
+considers
+- what arch can be leveraged
+  - what tools can be leveraged
+  - what flows and patters can be leveraged
+  - what infra can be leveraged
+  - what domains can be leveraged
+- what feedback loops exist
+  - how fast can they check their work
+  - how fast do we get acceptance of their work against production
+  - how frequent are defects detected and subsequent rework required
+
+
+---
+
+2. = upkeep time
+
+- supportable
+  - how easy to fix bugs (ghlitches) (fast to fix)
+    - testable
+    - observable
+    - intuitive (readable, predictable, findable)
+  - how easy it is to detect issues (first to know)
+    - observable
+    - monitored
+  - how often issues occur (resilience)
+    - how often will callers experience a bad time? (=> support issues => escalations => ops burden)
+    - how often will authors experience a bad time? (=> alarms raised => escalations => dev burden)
+
+supportable seems a little better than
+maintainable
+
+given that it composes the broader "support" role that humans who interact with this system must adopt
+- ops support (customer service -(x% fixed, x% escalated)-> eng escalation)
+- dev support (eng escalation -> fix bugs)
+
+
+---
+
+3. adoption time
+
+how easy is it to adopt and reuse prior investments?
+
+- adoptable
+  - how reusable is this?
+    - is it scoped to narrow domains? to broad domains?
+    - at what cognative depth is it reusable? (specific domain? infra? all softare?)
+  - how composable is this?
+    - is there a low trust contract, that is hard to misuse?
+    - are the inputs required accessible to many usecases?
+    - are there any implicit assumptions that make it hard to compose into other flows? (e.g., side effects, lack of idempotency, etc)
+    - is it decomposed into atomic subcomponents that can be easy to recompose into different usecases?
+  - how simple is this?
+    - is it easy to trust?
+    - is it easy to observe?
+    - will this cause 4am oncall investigations and make it hard to fix things?
+  - how documented is this?
+    - will folks know how to use this?
+    - will they need to waste hours learning how or is it descriptive via comments & docs?
+    - will any robot agent brain.repl be able to figure it out?
+
+
+note that `adoptable` directly impacts `authorable`
+
+since the more adoptable software you have (e.g., reusable microservice contracts; e.g., dao generators, etc) -> the more authorable your infra will be
+
+
+----
+
+lets use examples to fleshout how these terms would actually be used as well.
+
+e.g., lets example measure positive and negative examples along a variatey of combination of resultant grades to distill the most discriminative and useful terms for leverage via practice.

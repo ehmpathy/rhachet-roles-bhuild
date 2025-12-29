@@ -1,0 +1,36 @@
+the evals produced by .behavior/v2025_12_27.dispatcher/3.1.research.domain.leverage.v6.src
+
+are too relative.
+
+what are absolute units that we can measure the different leverage gains that are descrbied in those example evaluations?
+
+---
+
+specifically, we want to be able to have absolute measurements that we can measure with
+
+e.g.,
+
+- how much time does it save, in authorable?
+- how much thought does it save, in authorable? (e.g., considerations that are abstracted away)
+- how many codepaths does it eliminate, in authorable?
+
+e.g.,
+
+- how many edgecases does it abstract away, in supportable?
+- how much codepaths does it abstract away, in supportable?
+
+e.g.,
+
+- what depth of domains does it apply to, in adoptable?
+
+etc
+
+think of many more dimensions. lets propose the dimensions to measure on first and demonstrate how they'd be applied to compare the leverage of these 3 libs
+- github.com/ehmpathy/with-simple-cache
+- github.com/ehmpathy/dynamodb-dao-generator
+- github.com/ehmpathy/declapract-typescript-ehmpathy
+
+
+---
+
+emit into .behavior/v2025_12_27.dispatcher/3.1.research.domain.leverage.v7.i1.md
