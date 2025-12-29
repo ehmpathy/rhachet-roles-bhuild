@@ -1,0 +1,30 @@
+the evals produced by .behavior/v2025_12_27.dispatcher/3.1.research.domain.leverage.v7.src
+
+are on the right track
+
+but we refine how we compute the composite metric that we can use to compare the leverage of different behaviors, in absolute terms
+
+we must consider each of the dimensions when we produce the composite score
+
+we must answer
+1. what are the different ways we can compose them?
+2. what are the consequences, in relative prioritization, from these composition choices?
+
+how can we balance the leverage.author vs leverage.support?
+
+how can we normalize our estimate of leverage.author by averaging the time save estimate from
+- leverage.author.time estimate
+vs
+- leverage.author.code.blocks * timeRate + code.paths * timeRate + khues * timeRate
+
+to get both a toplevel time estimate + a granular time estimate considered?
+- e.g., (time("gut feeling") + time("decomposed"))/2
+
+---
+
+emit the different options and how they'd apply to the dimensional metrics chosen in  .behavior/v2025_12_27.dispatcher/3.1.research.domain.leverage.v7.i1.md for composite scores + relative rank against the tools in .behavior/v2025_12_27.dispatcher/3.1.research.domain.leverage.v7.i1.md
+
+
+---
+
+emit into .behavior/v2025_12_27.dispatcher/3.1.research.domain.leverage.v8.i1.md
