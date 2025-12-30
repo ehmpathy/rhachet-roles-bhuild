@@ -1,5 +1,6 @@
-import * as fs from 'fs/promises';
 import * as path from 'path';
+
+import { genArtifactGitFile } from 'rhachet-artifact-git';
 
 import { fetchRemoteRepoBehaviorsViaClone } from '../../../../access/sdks/github/fetchRemoteRepoBehaviorsViaClone';
 import { fetchRemoteRepoBehaviorsViaIssues } from '../../../../access/sdks/github/fetchRemoteRepoBehaviorsViaIssues';
@@ -124,13 +125,11 @@ const writeGatheredOutput = async (
       behavior.behavior.name,
     );
 
-    await fs.mkdir(behaviorOutputDir, { recursive: true });
-
     // write gathered.json
     const gatheredJsonPath = path.join(behaviorOutputDir, '.gathered.json');
-    await fs.writeFile(
-      gatheredJsonPath,
-      JSON.stringify(
+    const gatheredJsonArtifact = genArtifactGitFile({ uri: gatheredJsonPath });
+    await gatheredJsonArtifact.set({
+      content: JSON.stringify(
         {
           source: behavior.source,
           org: behavior.behavior.org,
@@ -142,18 +141,27 @@ const writeGatheredOutput = async (
         null,
         2,
       ),
-    );
+    });
 
-    // write behavior files
+    // write behavior files (copy from source to output)
     for (const file of behavior.files) {
-      const filePath = path.join(behaviorOutputDir, file.path);
-      await fs.writeFile(filePath, file.content);
+      const sourceArtifact = genArtifactGitFile({ uri: file.uri });
+      const sourceFile = await sourceArtifact.get();
+      if (!sourceFile) continue;
+
+      const fileName = path.basename(file.uri);
+      const destPath = path.join(behaviorOutputDir, fileName);
+      const destArtifact = genArtifactGitFile({ uri: destPath });
+      await destArtifact.set({ content: sourceFile.content });
     }
   }
 
   // write gathered.md summary
   const gatheredMd = renderGatheredSummary({ gathered: input.gathered });
-  await fs.writeFile(path.join(outputDir, 'gathered.md'), gatheredMd);
+  const gatheredMdArtifact = genArtifactGitFile({
+    uri: path.join(outputDir, 'gathered.md'),
+  });
+  await gatheredMdArtifact.set({ content: gatheredMd });
 
   // write gathered.json
   const gatheredJson = input.gathered.map((g) => ({
@@ -162,10 +170,12 @@ const writeGatheredOutput = async (
     status: g.status,
     gatheredAt: g.gatheredAt,
   }));
-  await fs.writeFile(
-    path.join(outputDir, 'gathered.json'),
-    JSON.stringify(gatheredJson, null, 2),
-  );
+  const gatheredJsonArtifact = genArtifactGitFile({
+    uri: path.join(outputDir, 'gathered.json'),
+  });
+  await gatheredJsonArtifact.set({
+    content: JSON.stringify(gatheredJson, null, 2),
+  });
 };
 
 /**

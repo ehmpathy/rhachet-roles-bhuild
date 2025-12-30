@@ -1,5 +1,6 @@
 import { given, then, useBeforeAll, when } from 'test-fns';
 
+import { cloneBehaviorAsset } from '../../../../.test/assets/cloneBehaviorAsset';
 import { REPEATABILITY_CONFIG } from '../../../../.test/assets/repeatability';
 import { Behavior } from '../../../../domain.objects/Behavior';
 import { BehaviorDeptraced } from '../../../../domain.objects/BehaviorDeptraced';
@@ -9,8 +10,8 @@ import { invokeBrainRepl } from '../../../../infra/brain/invokeBrainRepl';
 import { imagineBehaviorMeasuredGainLeverage } from './imagineBehaviorMeasuredGainLeverage';
 
 /**
- * .what = integration tests for imagineBehaviorMeasuredGainLeverage
- * .why = verifies brain.repl.imagine produces sensible leverage estimates
+ * .what = integration test for imagineBehaviorMeasuredGainLeverage with documentation task
+ * .why = verifies brain.repl.imagine produces valid leverage structure for minimal-leverage tasks
  */
 describe('imagineBehaviorMeasuredGainLeverage', () => {
   const context: BehaviorDispatchContext = useBeforeAll(async () => ({
@@ -33,64 +34,19 @@ describe('imagineBehaviorMeasuredGainLeverage', () => {
     log: console,
   }));
 
-  given('[case1] automation behavior with time savings', () => {
-    const scene = useBeforeAll(async () => {
-      const behavior = new Behavior({ org: 'test', repo: 'repo', name: 'automate-deploys' });
-      const gathered = new BehaviorGathered({
-        gatheredAt: new Date().toISOString(),
-        behavior,
-        contentHash: 'hash-auto',
-        status: 'criteria',
-        files: [],
-        wish: 'automate deployment pipeline',
-        vision: null,
-        criteria: 'replace manual 30-minute deploy process with automated ci/cd. runs 10 times per week.',
-        source: { type: 'repo.local' },
-      });
-      const deptraced = new BehaviorDeptraced({
-        deptracedAt: new Date().toISOString(),
-        gathered: { behavior, contentHash: 'hash-auto' },
-        dependsOnDirect: [],
-        dependsOnTransitive: [],
-      });
-      return { gathered, deptraced, basket: [gathered] };
-    });
-
-    when('[t0] estimating leverage for automation task', () => {
-      then.repeatably(REPEATABILITY_CONFIG)(
-        'should estimate positive time savings',
-        async () => {
-          const result = await imagineBehaviorMeasuredGainLeverage(
-            {
-              gathered: scene.gathered,
-              deptraced: scene.deptraced,
-              basket: scene.basket,
-              config: { weights: { author: 0.5, support: 0.5 } },
-            },
-            context,
-          );
-
-          // automation should save time
-          expect(result.direct).toBeGreaterThan(0);
-          expect(typeof result.direct).toBe('number');
-          expect(typeof result.transitive).toBe('number');
-        },
-      );
-    });
-  });
-
   given('[case2] documentation behavior with minimal leverage', () => {
     const scene = useBeforeAll(async () => {
       const behavior = new Behavior({ org: 'test', repo: 'repo', name: 'add-readme' });
+
+      // clone behavior asset to temp dir
+      const { files } = await cloneBehaviorAsset({ behaviorName: 'add-readme' });
+
       const gathered = new BehaviorGathered({
         gatheredAt: new Date().toISOString(),
         behavior,
         contentHash: 'hash-docs',
-        status: 'criteria',
-        files: [],
-        wish: 'add readme documentation',
-        vision: null,
-        criteria: 'document the project setup and usage',
+        status: 'constrained',
+        files,
         source: { type: 'repo.local' },
       });
       const deptraced = new BehaviorDeptraced({

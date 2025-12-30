@@ -1,4 +1,5 @@
 import { DomainEntity, type RefByUnique } from 'domain-objects';
+import type { GitFile } from 'rhachet-artifact-git';
 
 import type { Behavior } from './Behavior';
 
@@ -8,17 +9,12 @@ import type { Behavior } from './Behavior';
  */
 
 export type BehaviorGatheredStatus =
-  | 'wish'
-  | 'vision'
-  | 'criteria'
-  | 'active'
-  | 'review'
+  | 'wished'
+  | 'envisioned'
+  | 'constrained'
+  | 'blueprinted'
+  | 'inflight'
   | 'delivered';
-
-export interface BehaviorGatheredFile {
-  path: string;
-  content: string;
-}
 
 /**
  * .what = source from a local repository
@@ -77,10 +73,13 @@ export interface BehaviorGathered {
   behavior: RefByUnique<typeof Behavior>;
   contentHash: string;
   status: BehaviorGatheredStatus;
-  files: BehaviorGatheredFile[];
-  wish: string | null;
-  vision: string | null;
-  criteria: string | null;
+  /**
+   * .what = lightweight refs to behavior files (no content persisted)
+   * .why = enables many BehaviorGathered objects in memory without bloat
+   *
+   * @note operations needing content should use fs.readFile(file.uri)
+   */
+  files: RefByUnique<typeof GitFile>[];
   /**
    * .what = where this behavior was gathered from
    * .why = enables tracing behavior origin with full metadata

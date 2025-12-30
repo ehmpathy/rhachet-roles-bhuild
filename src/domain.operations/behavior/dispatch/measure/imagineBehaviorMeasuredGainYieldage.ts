@@ -6,6 +6,11 @@ import type { BehaviorGathered } from '../../../../domain.objects/BehaviorGather
 import { BehaviorMeasuredGainYieldage } from '../../../../domain.objects/BehaviorMeasuredGainYieldage';
 import { BehaviorMeasuredGainYieldageChance } from '../../../../domain.objects/BehaviorMeasuredGainYieldageChance';
 import { getBrief } from '../../../../infra/rhachet/getBrief';
+import {
+  getBehaviorGatheredCriteria,
+  getBehaviorGatheredVision,
+  getBehaviorGatheredWish,
+} from '../gather/getBehaviorGatheredFileContent';
 
 /**
  * schema for brain.repl.imagine yieldage estimation response
@@ -50,10 +55,18 @@ export const imagineBehaviorMeasuredGainYieldage = async (
   },
   context: BehaviorDispatchContext,
 ): Promise<BehaviorMeasuredGainYieldage> => {
+  // read behavior content from files
+  const [wish, vision, criteria] = await Promise.all([
+    getBehaviorGatheredWish({ gathered: input.gathered }),
+    getBehaviorGatheredVision({ gathered: input.gathered }),
+    getBehaviorGatheredCriteria({ gathered: input.gathered }),
+  ]);
+
   // build prompt for brain.repl.imagine
   const prompt = buildYieldagePrompt({
     gathered: input.gathered,
     defaults: input.config.defaults,
+    content: { wish, vision, criteria },
   });
 
   // invoke brain.repl.imagine to estimate direct yieldage chances
@@ -70,7 +83,7 @@ export const imagineBehaviorMeasuredGainYieldage = async (
   const expected = computeExpectedValue(estimation.chances);
 
   // compute transitive yieldage from reverse dependencies (deterministic)
-  const transitive = computeTransitiveYieldage({
+  const transitive = await computeTransitiveYieldage({
     deptraced: input.deptraced,
     basket: input.basket,
     directExpected: expected,
@@ -99,11 +112,12 @@ export const imagineBehaviorMeasuredGainYieldage = async (
 const buildYieldagePrompt = (input: {
   gathered: BehaviorGathered;
   defaults: { baseYieldage: number };
+  content: { wish: string | null; vision: string | null; criteria: string | null };
 }): string => {
   const behaviorContent = [
-    input.gathered.wish ? `## wish\n${input.gathered.wish}` : '',
-    input.gathered.vision ? `## vision\n${input.gathered.vision}` : '',
-    input.gathered.criteria ? `## criteria\n${input.gathered.criteria}` : '',
+    input.content.wish ? `## wish\n${input.content.wish}` : '',
+    input.content.vision ? `## vision\n${input.content.vision}` : '',
+    input.content.criteria ? `## criteria\n${input.content.criteria}` : '',
   ]
     .filter(Boolean)
     .join('\n\n');
@@ -162,14 +176,14 @@ const computeExpectedValue = (
  * .what = computes transitive yieldage from reverse dependencies
  * .why = behaviors that unblock many others provide multiplicative value
  */
-const computeTransitiveYieldage = (input: {
+const computeTransitiveYieldage = async (input: {
   deptraced: BehaviorDeptraced;
   basket: BehaviorGathered[];
   directExpected: number;
   multiplier: number;
-}): number => {
+}): Promise<number> => {
   // count behaviors that depend on this one (reverse deps)
-  const reverseDepsCount = countReverseDependencies({
+  const reverseDepsCount = await countReverseDependencies({
     behaviorName: input.deptraced.gathered.behavior.name,
     basket: input.basket,
   });
@@ -182,19 +196,20 @@ const computeTransitiveYieldage = (input: {
  * .what = counts how many behaviors depend on a given behavior
  * .why = enables multiplicative yieldage calculation
  */
-const countReverseDependencies = (input: {
+const countReverseDependencies = async (input: {
   behaviorName: string;
   basket: BehaviorGathered[];
-}): number => {
+}): Promise<number> => {
   let count = 0;
 
   for (const gathered of input.basket) {
-    if (!gathered.criteria) continue;
+    const criteria = await getBehaviorGatheredCriteria({ gathered });
+    if (!criteria) continue;
 
     if (
-      gathered.criteria.includes(input.behaviorName) ||
-      gathered.criteria.includes(`depends_on: ${input.behaviorName}`) ||
-      gathered.criteria.includes(`requires: ${input.behaviorName}`)
+      criteria.includes(input.behaviorName) ||
+      criteria.includes(`depends_on: ${input.behaviorName}`) ||
+      criteria.includes(`requires: ${input.behaviorName}`)
     ) {
       count++;
     }

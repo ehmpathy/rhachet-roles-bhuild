@@ -3,6 +3,11 @@ import { z } from 'zod';
 
 import type { BehaviorDispatchContext } from '../../../../domain.objects/BehaviorDispatchContext';
 import type { BehaviorGathered } from '../../../../domain.objects/BehaviorGathered';
+import {
+  getBehaviorGatheredCriteria,
+  getBehaviorGatheredVision,
+  getBehaviorGatheredWish,
+} from '../gather/getBehaviorGatheredFileContent';
 
 /**
  * schema for brain.repl dependency inference response
@@ -31,11 +36,19 @@ export const parseBehaviorDeptracedDependencies = async (
 ): Promise<RefByUnique<typeof BehaviorGathered>[]> => {
   const dependencies: RefByUnique<typeof BehaviorGathered>[] = [];
 
+  // read behavior content from files
+  const [wish, vision, criteria] = await Promise.all([
+    getBehaviorGatheredWish({ gathered: input.gathered }),
+    getBehaviorGatheredVision({ gathered: input.gathered }),
+    getBehaviorGatheredCriteria({ gathered: input.gathered }),
+  ]);
+
   // build prompt for brain.repl
   const basketNames = input.basket.map((b) => b.behavior.name);
   const prompt = buildDependencyInferencePrompt({
     gathered: input.gathered,
     basketNames,
+    content: { wish, vision, criteria },
   });
 
   // invoke brain.repl.imagine to infer dependencies
@@ -71,11 +84,12 @@ export const parseBehaviorDeptracedDependencies = async (
 const buildDependencyInferencePrompt = (input: {
   gathered: BehaviorGathered;
   basketNames: string[];
+  content: { wish: string | null; vision: string | null; criteria: string | null };
 }): string => {
   const behaviorContent = [
-    input.gathered.wish ? `## wish\n${input.gathered.wish}` : '',
-    input.gathered.vision ? `## vision\n${input.gathered.vision}` : '',
-    input.gathered.criteria ? `## criteria\n${input.gathered.criteria}` : '',
+    input.content.wish ? `## wish\n${input.content.wish}` : '',
+    input.content.vision ? `## vision\n${input.content.vision}` : '',
+    input.content.criteria ? `## criteria\n${input.content.criteria}` : '',
   ]
     .filter(Boolean)
     .join('\n\n');

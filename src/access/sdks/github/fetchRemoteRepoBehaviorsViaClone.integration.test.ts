@@ -42,11 +42,11 @@ describe('fetchRemoteRepoBehaviorsViaClone', () => {
             expect(behavior.gatheredAt).toMatch(/^\d{4}-\d{2}-\d{2}/);
             expect(typeof behavior.contentHash).toBe('string');
             expect([
-              'wish',
-              'vision',
-              'criteria',
-              'active',
-              'review',
+              'wished',
+              'envisioned',
+              'constrained',
+              'blueprinted',
+              'inflight',
               'delivered',
             ]).toContain(behavior.status);
             expect(Array.isArray(behavior.files)).toBe(true);
