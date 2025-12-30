@@ -3,14 +3,14 @@ import * as path from 'path';
 
 const SCRIPT_PATH = path.join(
   __dirname,
-  '../../domain.roles/decomposer/skills/review.decomposition.sh',
+  '../../domain.roles/decomposer/skills/review.behavior.sh',
 );
 
 /**
- * .what = invokes review.decomposition.sh via subshell
+ * .what = invokes review.behavior.sh via subshell
  * .why = reusable test utility for skill invocation
  */
-export const invokeReviewDecompositionSkill = (input: {
+export const invokeReviewBehaviorSkill = (input: {
   behaviorName: string;
   dir: string;
 }): { stdout: string; exitCode: number } => {

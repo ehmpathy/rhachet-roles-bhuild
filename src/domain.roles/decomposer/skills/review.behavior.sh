@@ -12,11 +12,11 @@
 #         4. emit structured feedback with hazards and recommendations
 #
 # usage:
-#   review.decomposition.sh --of <behavior-name> [--dir <path>]
+#   review.behavior.sh --of <behavior-name> [--dir <path>]
 #
 # examples:
-#   review.decomposition.sh --of my-large-behavior
-#   review.decomposition.sh --of say-hello --dir /path/to/repo
+#   review.behavior.sh --of my-large-behavior
+#   review.behavior.sh --of say-hello --dir /path/to/repo
 #
 # guarantee:
 #   - fail-fast if behavior not found or ambiguous
@@ -26,7 +26,7 @@
 
 set -euo pipefail
 
-trap 'echo "review.decomposition.sh failed at line $LINENO"' ERR
+trap 'echo "review.behavior.sh failed at line $LINENO"' ERR
 
 # ────────────────────────────────────────────────────────────────────
 # script location resolution
@@ -56,7 +56,7 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     --help|-h)
-      echo "usage: review.decomposition.sh --of <behavior-name> [--dir <path>]"
+      echo "usage: review.behavior.sh --of <behavior-name> [--dir <path>]"
       echo ""
       echo "options:"
       echo "  --of <name>    behavior name to review (required)"
@@ -65,7 +65,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     *)
       echo "error: unknown argument '$1'"
-      echo "usage: review.decomposition.sh --of <behavior-name> [--dir <path>]"
+      echo "usage: review.behavior.sh --of <behavior-name> [--dir <path>]"
       exit 1
       ;;
   esac
@@ -145,21 +145,25 @@ RECOMMENDATION=$(echo "$ANALYSIS_JSON" | jq -r '.recommendation')
 # ────────────────────────────────────────────────────────────────────
 
 echo ""
-echo "🔭 review.decomposition"
-echo "├── behavior: $BEHAVIOR_DIR_REL"
-echo "├── characters: $CHARS"
-echo "├── tokens: $TOKENS"
-echo "├── window: ${WINDOW_PCT}%"
-echo "└── recommendation: $RECOMMENDATION"
+echo "🦫 let's review!"
+echo ""
+echo "🍄 review.behavior"
+echo "├── behavior = $BEHAVIOR_DIR_REL"
+echo "├── characters = $CHARS"
+echo "├── tokens = $TOKENS"
+echo "├── window = ${WINDOW_PCT}%"
+echo "└── recommendation = $RECOMMENDATION"
 
 # emit hazard if decomposition required
 if [[ "$RECOMMENDATION" == "DECOMPOSE_REQUIRED" ]]; then
   echo ""
-  echo "⛈️  HAZARD: behavior artifacts consume >${WINDOW_PCT}% of context window"
-  echo "   threshold: 30%"
+  echo "⛈️  HAZARD"
+  echo "├── behavior artifacts consume >${WINDOW_PCT}% of context window"
+  echo "└── threshold = 30%"
   echo ""
-  echo "💧 recommendation: decompose this behavior into focused sub-behaviors"
-  echo "   run: decompose.behavior --of $BEHAVIOR_NAME --mode plan"
+  echo "🌲 recommendation"
+  echo "├── decompose this behavior into focused sub-behaviors"
+  echo "└── run decompose.behavior --of $BEHAVIOR_NAME --mode plan"
 fi
 
 echo ""

@@ -193,10 +193,12 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
 
 if [[ "$MODE" == "plan" ]]; then
   echo ""
-  echo "🔭 decompose.behavior --mode plan"
-  echo "├── behavior: $BEHAVIOR_DIR_REL"
-  echo "├── criteria: found"
-  echo "└── status: generating plan..."
+  echo "🦫 let's decompose!"
+  echo ""
+  echo "🍄 decompose.behavior --mode plan"
+  echo "├── behavior = $BEHAVIOR_DIR_REL"
+  echo "├── criteria = found"
+  echo "└── status = generating plan..."
   echo ""
 
   # invoke imaginePlan via CLI
@@ -214,20 +216,30 @@ if [[ "$MODE" == "plan" ]]; then
   WINDOW_PCT=$(echo "$PLAN_JSON" | jq '.contextAnalysis.usage.window.percentage')
   RECOMMENDATION=$(echo "$PLAN_JSON" | jq -r '.contextAnalysis.recommendation')
 
-  echo "✨ plan generated"
-  echo "├── file: $PLAN_OUTPUT_REL"
-  echo "├── behaviors proposed: $BEHAVIORS_COUNT"
-  echo "├── context window: ${WINDOW_PCT}%"
-  echo "└── recommendation: $RECOMMENDATION"
-  echo ""
+  echo "🌲 plan generated"
+  echo "├── file = $PLAN_OUTPUT_REL"
+  echo "├── behaviors proposed = $BEHAVIORS_COUNT"
+  echo "├── context window = ${WINDOW_PCT}%"
+  echo "└── recommendation = $RECOMMENDATION"
 
-  # show proposed behaviors
-  echo "📋 proposed behaviors:"
-  echo "$PLAN_JSON" | jq -r '.behaviorsProposed[] | "  - \(.name) (depends on: \(.dependsOn | if length == 0 then "none" else join(", ") end))"'
   echo ""
+  echo "🌲 proposed behaviors"
+  BEHAVIOR_LINES=$(echo "$PLAN_JSON" | jq -r '.behaviorsProposed[] | "\(.name) (depends on: \(.dependsOn | if length == 0 then "none" else join(", ") end))"')
+  BEHAVIOR_COUNT=$(echo "$BEHAVIOR_LINES" | wc -l)
+  CURRENT=0
+  echo "$BEHAVIOR_LINES" | while read -r line; do
+    CURRENT=$((CURRENT + 1))
+    if [[ $CURRENT -eq $BEHAVIOR_COUNT ]]; then
+      echo "└── $line"
+    else
+      echo "├── $line"
+    fi
+  done
 
-  echo "next step: review the plan, then run:"
-  echo "  decompose.behavior --of $BEHAVIOR_NAME --mode apply --plan $PLAN_OUTPUT_REL"
+  echo ""
+  echo "🌲 next step"
+  echo "├── review the plan"
+  echo "└── decompose.behavior --of $BEHAVIOR_NAME --mode apply --plan $PLAN_OUTPUT_REL"
   echo ""
 fi
 
@@ -237,10 +249,12 @@ fi
 
 if [[ "$MODE" == "apply" ]]; then
   echo ""
-  echo "🔭 decompose.behavior --mode apply"
-  echo "├── behavior: $BEHAVIOR_DIR_REL"
-  echo "├── plan: $PLAN_FILE"
-  echo "└── status: applying..."
+  echo "🦫 let's decompose!"
+  echo ""
+  echo "🍄 decompose.behavior --mode apply"
+  echo "├── behavior = $BEHAVIOR_DIR_REL"
+  echo "├── plan = $PLAN_FILE"
+  echo "└── status = applying..."
   echo ""
 
   # invoke applyPlan via CLI
@@ -251,20 +265,27 @@ if [[ "$MODE" == "apply" ]]; then
   BEHAVIORS_COUNT=$(echo "$APPLY_JSON" | jq '.behaviorsCreated | length')
   DECOMPOSED_MARKER=$(echo "$APPLY_JSON" | jq -r '.decomposedMarkerPath')
 
-  echo "✨ plan applied"
-  echo "├── behaviors created: $BEHAVIORS_COUNT"
-  echo "└── marker: $DECOMPOSED_MARKER"
-  echo ""
+  echo "🌲 plan applied"
+  echo "├── behaviors created = $BEHAVIORS_COUNT"
+  echo "└── marker = $DECOMPOSED_MARKER"
 
-  # list created behaviors
-  echo "📋 created behaviors:"
-  echo "$APPLY_JSON" | jq -r '.behaviorsCreated[]' | while read -r behavior_path; do
-    echo "  - $(basename "$behavior_path")"
+  echo ""
+  echo "🌲 created behaviors"
+  CREATED_LINES=$(echo "$APPLY_JSON" | jq -r '.behaviorsCreated[]')
+  CREATED_COUNT=$(echo "$CREATED_LINES" | wc -l)
+  CURRENT=0
+  echo "$CREATED_LINES" | while read -r behavior_path; do
+    CURRENT=$((CURRENT + 1))
+    if [[ $CURRENT -eq $CREATED_COUNT ]]; then
+      echo "└── $(basename "$behavior_path")"
+    else
+      echo "├── $(basename "$behavior_path")"
+    fi
   done
-  echo ""
 
-  echo "next steps:"
-  echo "  1. define criteria for each sub-behavior"
-  echo "  2. execute each sub-behavior independently"
+  echo ""
+  echo "🌲 next steps"
+  echo "├── define criteria for each sub-behavior"
+  echo "└── execute each sub-behavior independently"
   echo ""
 fi

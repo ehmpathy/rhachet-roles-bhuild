@@ -29,15 +29,15 @@ describe('decompose.behavior.brain.case1.integration', () => {
       });
 
       then('output reports behaviors proposed count', () => {
-        expect(result.stdout).toMatch(/behaviors proposed: \d+/);
+        expect(result.stdout).toMatch(/behaviors proposed = \d+/);
       });
 
       then('output reports context window percentage', () => {
-        expect(result.stdout).toMatch(/context window: [\d.]+%/);
+        expect(result.stdout).toMatch(/context window = [\d.]+%/);
       });
 
       then('output lists proposed behavior names', () => {
-        expect(result.stdout).toContain('proposed behaviors:');
+        expect(result.stdout).toContain('proposed behaviors');
       });
 
       then('output shows next step command', () => {
