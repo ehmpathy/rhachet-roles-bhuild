@@ -15,4 +15,10 @@ Used to declare clear and testable behaviors that can be reliably built and veri
 ## 📣 Dispatcher
 
 Used to maximize prioritized throughput within a resource bandwidth.
+
+---
+
+## 🍄 Decomposer
+
+Used to decompose large behaviors into focused, independent sub-behaviors.
   `.trim();
