@@ -5,6 +5,11 @@ import type { BehaviorDispatchContext } from '../../../../domain.objects/Behavio
 import type { BehaviorGathered } from '../../../../domain.objects/BehaviorGathered';
 import { BehaviorMeasuredGainLeverage } from '../../../../domain.objects/BehaviorMeasuredGainLeverage';
 import { getBrief } from '../../../../infra/rhachet/getBrief';
+import {
+  getBehaviorGatheredCriteria,
+  getBehaviorGatheredVision,
+  getBehaviorGatheredWish,
+} from '../gather/getBehaviorGatheredFileContent';
 
 /**
  * schema for brain.repl leverage estimation response
@@ -45,12 +50,20 @@ export const imagineBehaviorMeasuredGainLeverage = async (
   },
   context: BehaviorDispatchContext,
 ): Promise<BehaviorMeasuredGainLeverage> => {
+  // read behavior content from files
+  const [wish, vision, criteria] = await Promise.all([
+    getBehaviorGatheredWish({ gathered: input.gathered }),
+    getBehaviorGatheredVision({ gathered: input.gathered }),
+    getBehaviorGatheredCriteria({ gathered: input.gathered }),
+  ]);
+
   // build prompt for brain.repl
   const prompt = buildLeveragePrompt({
     gathered: input.gathered,
     deptraced: input.deptraced,
     basket: input.basket,
     weights: input.config.weights,
+    content: { wish, vision, criteria },
   });
 
   // invoke brain.repl.imagine to estimate leverage
@@ -78,11 +91,12 @@ const buildLeveragePrompt = (input: {
   deptraced: BehaviorDeptraced;
   basket: BehaviorGathered[];
   weights: { author: number; support: number };
+  content: { wish: string | null; vision: string | null; criteria: string | null };
 }): string => {
   const behaviorContent = [
-    input.gathered.wish ? `## wish\n${input.gathered.wish}` : '',
-    input.gathered.vision ? `## vision\n${input.gathered.vision}` : '',
-    input.gathered.criteria ? `## criteria\n${input.gathered.criteria}` : '',
+    input.content.wish ? `## wish\n${input.content.wish}` : '',
+    input.content.vision ? `## vision\n${input.content.vision}` : '',
+    input.content.criteria ? `## criteria\n${input.content.criteria}` : '',
   ]
     .filter(Boolean)
     .join('\n\n');

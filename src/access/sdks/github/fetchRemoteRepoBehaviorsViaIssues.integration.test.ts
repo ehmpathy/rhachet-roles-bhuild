@@ -29,9 +29,8 @@ describe('fetchRemoteRepoBehaviorsViaIssues', () => {
             if (first.source.type === 'repo.remote.via.issue') {
               expect(first.source.issueNumber).toBeDefined();
             }
-            expect(first.wish).toBeDefined();
             expect(first.files).toHaveLength(1);
-            expect(first.files[0]!.path).toEqual('0.wish.md');
+            expect(first.files[0]!.uri).toContain('0.wish.md');
           }
         },
       );

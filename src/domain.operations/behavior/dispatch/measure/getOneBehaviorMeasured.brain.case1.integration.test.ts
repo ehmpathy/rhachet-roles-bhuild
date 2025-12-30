@@ -1,5 +1,6 @@
 import { given, then, useBeforeAll, when } from 'test-fns';
 
+import { cloneBehaviorAsset } from '../../../../.test/assets/cloneBehaviorAsset';
 import { REPEATABILITY_CONFIG } from '../../../../.test/assets/repeatability';
 import { Behavior } from '../../../../domain.objects/Behavior';
 import { BehaviorDeptraced } from '../../../../domain.objects/BehaviorDeptraced';
@@ -39,15 +40,16 @@ describe('getOneBehaviorMeasured', () => {
   given('[case1] behavior requiring all 4 imagine operations', () => {
     const scene = useBeforeAll(async () => {
       const behavior = new Behavior({ org: 'test', repo: 'repo', name: 'test-feature' });
+
+      // clone behavior asset to temp dir
+      const { files } = await cloneBehaviorAsset({ behaviorName: 'test-feature' });
+
       const gathered = new BehaviorGathered({
         gatheredAt: new Date().toISOString(),
         behavior,
         contentHash: 'hash-test',
-        status: 'criteria',
-        files: [],
-        wish: 'add a new feature',
-        vision: null,
-        criteria: 'implement feature with cloud infrastructure requirements',
+        status: 'constrained',
+        files,
         source: { type: 'repo.local' },
       });
       const deptraced = new BehaviorDeptraced({
