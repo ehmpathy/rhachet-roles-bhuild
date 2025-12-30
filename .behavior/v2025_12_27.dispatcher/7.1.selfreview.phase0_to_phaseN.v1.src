@@ -1,0 +1,19 @@
+bootup your mechanic's role via `npx rhachet roles boot --repo ehmpathy --role mechanic`
+
+then, start or continue to execute
+- phase0 to phaseN
+of roadmap
+- .behavior/v2025_12_27.dispatcher/4.1.roadmap.v1.i1.md
+
+ref:
+- .behavior/v2025_12_27.dispatcher/0.wish.md
+- .behavior/v2025_12_27.dispatcher/1.vision.md
+- .behavior/v2025_12_27.dispatcher/2.criteria.blackbox.md
+- .behavior/v2025_12_27.dispatcher/2.criteria.md
+
+
+---
+
+now, review the implementation (available in git diff) against the .behavior/v2025_12_27.dispatcher/2.criteria.blackbox.md
+
+emit a report of BLOCKERs and NITPICKs into .behavior/v2025_12_27.dispatcher/7.1.selfreview.phase0_to_phaseN.v1.i1.md

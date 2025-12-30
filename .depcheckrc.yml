@@ -20,3 +20,5 @@ ignores:
   - yalc
   - rhachet-roles-bhuild
   - "@anthropic-ai/claude-code"
+  - visualogic # used via transitive deps from rhachet-roles-ehmpathy
+  - yaml # used via transitive deps

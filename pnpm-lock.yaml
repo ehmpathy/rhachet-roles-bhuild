@@ -10,19 +10,22 @@ importers:
     dependencies:
       domain-objects:
         specifier: 0.31.7
-        version: 0.31.7(@types/node@22.15.21)
+        version: 0.31.7(@types/node@22.15.21)(zod@4.2.1)
       helpful-errors:
         specifier: 1.5.3
         version: 1.5.3
       rhachet:
         specifier: 1.15.2
-        version: 1.15.2(@types/node@22.15.21)
+        version: 1.15.2(@types/node@22.15.21)(zod@4.2.1)
       rhachet-roles-bhrain:
         specifier: 0.3.0
-        version: 0.3.0(@types/node@22.15.21)
+        version: 0.3.0(@types/node@22.15.21)(zod@4.2.1)
       test-fns:
         specifier: 1.7.2
         version: 1.7.2
+      zod:
+        specifier: 4.2.1
+        version: 4.2.1
     devDependencies:
       '@anthropic-ai/claude-code':
         specifier: 2.0.76
@@ -59,16 +62,16 @@ importers:
         version: 3.3.0(@types/node@22.15.21)(typescript@5.4.5)
       declapract:
         specifier: 0.13.4
-        version: 0.13.4(@types/node@22.15.21)
+        version: 0.13.4(@types/node@22.15.21)(zod@4.2.1)
       declapract-typescript-ehmpathy:
         specifier: 0.47.2
-        version: 0.47.2(declapract@0.13.4(@types/node@22.15.21))(esbuild@0.25.12)
+        version: 0.47.2(declapract@0.13.4(@types/node@22.15.21)(zod@4.2.1))(esbuild@0.25.12)(zod@4.2.1)
       declastruct:
         specifier: 1.7.3
-        version: 1.7.3(domain-objects@0.31.7)
+        version: 1.7.3(domain-objects@0.31.7(zod@4.2.1))
       declastruct-github:
         specifier: 1.3.0
-        version: 1.3.0
+        version: 1.3.0(zod@4.2.1)
       depcheck:
         specifier: 1.4.3
         version: 1.4.3
@@ -83,10 +86,10 @@ importers:
         version: 30.2.0(@types/node@22.15.21)(esbuild-register@3.6.0(esbuild@0.25.12))(ts-node@10.9.2(@swc/core@1.15.3)(@types/node@22.15.21)(typescript@5.4.5))
       rhachet-roles-bhuild:
         specifier: 0.1.3
-        version: 0.1.3
+        version: 0.1.3(zod@4.2.1)
       rhachet-roles-ehmpathy:
         specifier: 1.15.18
-        version: 1.15.18(@types/node@22.15.21)
+        version: 1.15.18(@types/node@22.15.21)(zod@4.2.1)
       tsc-alias:
         specifier: 1.8.10
         version: 1.8.10
@@ -3888,6 +3891,9 @@ packages:
     resolution: {integrity: sha512-U/PBtDf35ff0D8X8D0jfdzHYEPFxAI7jJlxZXwCSez5M3190m+QobIfh+sWDWSHMCWWJN2AWamkegn6vr6YBTw==}
     engines: {node: '>=18'}
 
+  zod@4.2.1:
+    resolution: {integrity: sha512-0wZ1IRqGGhMP76gLqz8EyfBXKk0J2qo2+H3fi4mcUP/KtTocoX08nmIAHl1Z2kJIZbZee8KOpBCSNPRgauucjw==}
+
 snapshots:
 
   '@anthropic-ai/claude-code@2.0.76':
@@ -6534,10 +6540,10 @@ snapshots:
     dependencies:
       ms: 2.1.3
 
-  declapract-typescript-ehmpathy@0.47.2(declapract@0.13.4(@types/node@22.15.21))(esbuild@0.25.12):
+  declapract-typescript-ehmpathy@0.47.2(declapract@0.13.4(@types/node@22.15.21)(zod@4.2.1))(esbuild@0.25.12)(zod@4.2.1):
     dependencies:
-      declapract: 0.13.4(@types/node@22.15.21)
-      domain-objects: 0.31.7(@types/node@22.15.21)
+      declapract: 0.13.4(@types/node@22.15.21)(zod@4.2.1)
+      domain-objects: 0.31.7(@types/node@22.15.21)(zod@4.2.1)
       esbuild-register: 3.6.0(esbuild@0.25.12)
       expect: 29.4.2
       flat: 5.0.2
@@ -6549,12 +6555,12 @@ snapshots:
       - ws
       - zod
 
-  declapract@0.13.4(@types/node@22.15.21):
+  declapract@0.13.4(@types/node@22.15.21)(zod@4.2.1):
     dependencies:
       chalk: 2.4.2
       commander: 12.1.0
       cross-path-sort: 1.0.0
-      domain-objects: 0.31.7(@types/node@22.15.21)
+      domain-objects: 0.31.7(@types/node@22.15.21)(zod@4.2.1)
       expect: 29.4.3
       fast-glob: 3.2.2
       find-nearest-package-json: 2.0.1
@@ -6577,12 +6583,12 @@ snapshots:
       - ws
       - zod
 
-  declastruct-github@1.3.0:
+  declastruct-github@1.3.0(zod@4.2.1):
     dependencies:
       '@ehmpathy/uni-time': 1.7.4
       '@octokit/rest': 21.1.1
       as-procedure: 1.1.1
-      domain-objects: 0.31.7(@types/node@22.15.21)
+      domain-objects: 0.31.7(@types/node@22.15.21)(zod@4.2.1)
       helpful-errors: 1.5.3
       libsodium-wrappers: 0.7.15
       simple-in-memory-cache: 0.4.0
@@ -6594,12 +6600,12 @@ snapshots:
       - ws
       - zod
 
-  declastruct@1.7.3(domain-objects@0.31.7):
+  declastruct@1.7.3(domain-objects@0.31.7(zod@4.2.1)):
     dependencies:
       bottleneck: 2.19.5
       chalk: 5.4.1
       commander: 14.0.2
-      domain-objects: 0.31.7(@types/node@22.15.21)
+      domain-objects: 0.31.7(@types/node@22.15.21)(zod@4.2.1)
       helpful-errors: 1.5.3
       jest-diff: 30.0.2
       rhachet-artifact-git: 1.1.3
@@ -6697,14 +6703,14 @@ snapshots:
       type-fns: 1.21.0
       uuid-fns: 1.1.3
 
-  domain-objects@0.31.7(@types/node@22.15.21):
+  domain-objects@0.31.7(@types/node@22.15.21)(zod@4.2.1):
     dependencies:
       change-case: 4.1.2
       domain-objects: 0.31.3
       helpful-errors: 1.5.3
       joi: 17.4.0
-      rhachet: 1.15.2(@types/node@22.15.21)
-      rhachet-roles-ehmpathy: 1.15.18(@types/node@22.15.21)
+      rhachet: 1.15.2(@types/node@22.15.21)(zod@4.2.1)
+      rhachet-roles-ehmpathy: 1.15.18(@types/node@22.15.21)(zod@4.2.1)
       type-fns: 1.21.0
       uuid-fns: 1.1.3
     transitivePeerDependencies:
@@ -7785,7 +7791,9 @@ snapshots:
     dependencies:
       mimic-fn: 2.1.0
 
-  openai@5.8.2: {}
+  openai@5.8.2(zod@4.2.1):
+    optionalDependencies:
+      zod: 4.2.1
 
   ora@5.4.1:
     dependencies:
@@ -8023,19 +8031,19 @@ snapshots:
       domain-objects: 0.31.3
       helpful-errors: 1.5.3
 
-  rhachet-roles-bhrain@0.3.0(@types/node@22.15.21):
+  rhachet-roles-bhrain@0.3.0(@types/node@22.15.21)(zod@4.2.1):
     dependencies:
       '@ehmpathy/as-command': 1.0.3
       '@ehmpathy/uni-time': 1.8.1
       as-procedure: 1.1.7
-      domain-objects: 0.31.7(@types/node@22.15.21)
+      domain-objects: 0.31.7(@types/node@22.15.21)(zod@4.2.1)
       fast-glob: 3.3.3
       helpful-errors: 1.5.3
       inquirer: 12.7.0(@types/node@22.15.21)
-      openai: 5.8.2
+      openai: 5.8.2(zod@4.2.1)
       rhachet-artifact: 1.0.0
       rhachet-artifact-git: 1.1.0
-      rhachet-roles-bhuild: 0.1.3
+      rhachet-roles-bhuild: 0.1.3(zod@4.2.1)
       serde-fns: 1.2.0
       simple-in-memory-cache: 0.4.0
       type-fns: 1.21.0
@@ -8047,26 +8055,26 @@ snapshots:
       - ws
       - zod
 
-  rhachet-roles-bhuild@0.1.3:
+  rhachet-roles-bhuild@0.1.3(zod@4.2.1):
     dependencies:
-      domain-objects: 0.31.7(@types/node@22.15.21)
+      domain-objects: 0.31.7(@types/node@22.15.21)(zod@4.2.1)
       helpful-errors: 1.5.3
-      rhachet: 1.15.2(@types/node@22.15.21)
+      rhachet: 1.15.2(@types/node@22.15.21)(zod@4.2.1)
     transitivePeerDependencies:
       - ws
       - zod
 
-  rhachet-roles-ehmpathy@1.15.18(@types/node@22.15.21):
+  rhachet-roles-ehmpathy@1.15.18(@types/node@22.15.21)(zod@4.2.1):
     dependencies:
       '@ehmpathy/as-command': 1.0.3
       '@ehmpathy/uni-time': 1.8.1
       as-procedure: 1.1.7
-      domain-objects: 0.31.7(@types/node@22.15.21)
+      domain-objects: 0.31.7(@types/node@22.15.21)(zod@4.2.1)
       fast-glob: 3.3.3
       helpful-errors: 1.5.3
       inquirer: 12.7.0(@types/node@22.15.21)
-      openai: 5.8.2
-      rhachet: 1.14.1
+      openai: 5.8.2(zod@4.2.1)
+      rhachet: 1.14.1(zod@4.2.1)
       rhachet-artifact: 1.0.0
       rhachet-artifact-git: 1.1.0
       serde-fns: 1.2.0
@@ -8080,18 +8088,18 @@ snapshots:
       - ws
       - zod
 
-  rhachet@1.14.1:
+  rhachet@1.14.1(zod@4.2.1):
     dependencies:
       '@ehmpathy/uni-time': 1.9.0
       as-procedure: 1.1.6
       bottleneck: 2.19.5
       chalk: 4.1.2
       commander: 14.0.0
-      domain-objects: 0.31.7(@types/node@22.15.21)
+      domain-objects: 0.31.7(@types/node@22.15.21)(zod@4.2.1)
       fast-glob: 3.3.3
       flattie: 1.1.1
       helpful-errors: 1.5.3
-      openai: 5.8.2
+      openai: 5.8.2(zod@4.2.1)
       rhachet-artifact: 1.0.1
       rhachet-artifact-git: 1.1.3
       serde-fns: 1.3.1
@@ -8101,18 +8109,18 @@ snapshots:
       - ws
       - zod
 
-  rhachet@1.15.2(@types/node@22.15.21):
+  rhachet@1.15.2(@types/node@22.15.21)(zod@4.2.1):
     dependencies:
       '@ehmpathy/uni-time': 1.9.0
       as-procedure: 1.1.6
       bottleneck: 2.19.5
       chalk: 4.1.2
       commander: 14.0.0
-      domain-objects: 0.31.7(@types/node@22.15.21)
+      domain-objects: 0.31.7(@types/node@22.15.21)(zod@4.2.1)
       fast-glob: 3.3.3
       flattie: 1.1.1
       helpful-errors: 1.5.3
-      openai: 5.8.2
+      openai: 5.8.2(zod@4.2.1)
       rhachet-artifact: 1.0.1
       rhachet-artifact-git: 1.1.3
       serde-fns: 1.3.1
@@ -8643,3 +8651,5 @@ snapshots:
   yocto-queue@1.2.2: {}
 
   yoctocolors-cjs@2.1.3: {}
+
+  zod@4.2.1: {}
