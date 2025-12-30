@@ -88,7 +88,7 @@ describe('getOneBehaviorMeasured', () => {
           expect(result.cost.dimensions.attend).toBeDefined();
           expect(result.cost.dimensions.expend).toBeDefined();
           expect(typeof result.effect).toBe('number');
-          expect(['P0', 'P1', 'P2', 'P3', 'P4']).toContain(result.priority);
+          expect(['p0', 'p1', 'p3', 'p5']).toContain(result.priority);
         },
       );
 

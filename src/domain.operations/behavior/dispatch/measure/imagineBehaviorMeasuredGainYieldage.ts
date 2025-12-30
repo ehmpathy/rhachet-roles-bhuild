@@ -5,6 +5,7 @@ import type { BehaviorDispatchContext } from '../../../../domain.objects/Behavio
 import type { BehaviorGathered } from '../../../../domain.objects/BehaviorGathered';
 import { BehaviorMeasuredGainYieldage } from '../../../../domain.objects/BehaviorMeasuredGainYieldage';
 import { BehaviorMeasuredGainYieldageChance } from '../../../../domain.objects/BehaviorMeasuredGainYieldageChance';
+import { getBrief } from '../../../../infra/rhachet/getBrief';
 
 /**
  * schema for brain.repl.imagine yieldage estimation response
@@ -22,7 +23,7 @@ const yieldageEstimationSchema = z.object({
       }),
     )
     .describe('probabilistic outcomes for yieldage'),
-  reasoning: z.string().describe('explanation of how yieldage was estimated'),
+  rationale: z.string().describe('explanation of how yieldage was estimated'),
 });
 
 /**
@@ -58,6 +59,10 @@ export const imagineBehaviorMeasuredGainYieldage = async (
   // invoke brain.repl.imagine to estimate direct yieldage chances
   const estimation = await context.brain.repl.imagine({
     prompt,
+    briefs: [
+      getBrief({ role: { name: 'dispatcher' }, brief: { name: 'define.measure101.1.gain.[article].md' } }),
+      getBrief({ role: { name: 'dispatcher' }, brief: { name: 'define.measure101.1.gain.yieldage.[article].md' } }),
+    ],
     schema: { ofOutput: yieldageEstimationSchema },
   });
 
@@ -127,7 +132,7 @@ ${behaviorContent}
 
 CRITICAL: respond ONLY with a json code block containing exactly these two fields at the TOP LEVEL:
 - "chances": array of objects, each with "yieldage" (number) and "probability" (number 0-1)
-- "reasoning": string (brief explanation)
+- "rationale": string (brief explanation)
 
 \`\`\`json
 {
@@ -135,7 +140,7 @@ CRITICAL: respond ONLY with a json code block containing exactly these two field
     { "yieldage": 100, "probability": 0.7 },
     { "yieldage": 0, "probability": 0.3 }
   ],
-  "reasoning": "70% chance of $100/wk revenue, 30% chance of no revenue"
+  "rationale": "70% chance of $100/wk revenue, 30% chance of no revenue"
 }
 \`\`\``;
 };
