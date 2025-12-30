@@ -18,20 +18,20 @@ export const archiveBehaviorIfChanged = async (
   archivePath: string | null;
 }> => {
   // check if file exists
-  let existingContent: string | null = null;
+  let contentBefore: string | null = null;
   try {
-    existingContent = await fs.readFile(input.filePath, 'utf-8');
+    contentBefore = await fs.readFile(input.filePath, 'utf-8');
   } catch {
     // file doesn't exist, will be created
   }
 
   // if content is same, no archive needed
-  if (existingContent === input.newContent) {
+  if (contentBefore === input.newContent) {
     return { archived: false, archivePath: null };
   }
 
   // if file existed, archive it
-  if (existingContent !== null) {
+  if (contentBefore !== null) {
     const archiveDir = path.join(path.dirname(input.filePath), '.archive');
     await fs.mkdir(archiveDir, { recursive: true });
 
@@ -39,7 +39,7 @@ export const archiveBehaviorIfChanged = async (
     const baseName = path.basename(input.filePath);
     const archivePath = path.join(archiveDir, `${timestamp}.${baseName}`);
 
-    await fs.writeFile(archivePath, existingContent, 'utf-8');
+    await fs.writeFile(archivePath, contentBefore, 'utf-8');
 
     context.log.debug('archived prior output', { archivePath });
 

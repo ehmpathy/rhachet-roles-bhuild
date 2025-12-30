@@ -4,6 +4,7 @@ import type { BehaviorDeptraced } from '../../../../domain.objects/BehaviorDeptr
 import type { BehaviorDispatchContext } from '../../../../domain.objects/BehaviorDispatchContext';
 import type { BehaviorGathered } from '../../../../domain.objects/BehaviorGathered';
 import { BehaviorMeasuredGainLeverage } from '../../../../domain.objects/BehaviorMeasuredGainLeverage';
+import { getBrief } from '../../../../infra/rhachet/getBrief';
 
 /**
  * schema for brain.repl leverage estimation response
@@ -17,7 +18,7 @@ const leverageEstimationSchema = z.object({
     .describe(
       'additional mins/wk saved through unblocking dependent behaviors',
     ),
-  reasoning: z.string().describe('explanation of how leverage was estimated'),
+  rationale: z.string().describe('explanation of how leverage was estimated'),
 });
 
 /**
@@ -55,6 +56,10 @@ export const imagineBehaviorMeasuredGainLeverage = async (
   // invoke brain.repl.imagine to estimate leverage
   const estimation = await context.brain.repl.imagine({
     prompt,
+    briefs: [
+      getBrief({ role: { name: 'dispatcher' }, brief: { name: 'define.measure101.1.gain.[article].md' } }),
+      getBrief({ role: { name: 'dispatcher' }, brief: { name: 'define.measure101.1.gain.leverage.[article].compressed.md' } }),
+    ],
     schema: { ofOutput: leverageEstimationSchema },
   });
 
@@ -116,13 +121,13 @@ ${reverseDeps.length > 0 ? reverseDeps.map((b) => `- ${b.behavior.name}`).join('
 CRITICAL: respond ONLY with a json code block containing exactly these three fields at the TOP LEVEL:
 - "direct": number (mins/wk saved directly)
 - "transitive": number (additional mins/wk from unblocking)
-- "reasoning": string (brief explanation)
+- "rationale": string (brief explanation)
 
 \`\`\`json
 {
   "direct": 30,
   "transitive": 0,
-  "reasoning": "saves 30 mins/wk in reduced manual work"
+  "rationale": "saves 30 mins/wk in reduced manual work"
 }
 \`\`\``;
 };

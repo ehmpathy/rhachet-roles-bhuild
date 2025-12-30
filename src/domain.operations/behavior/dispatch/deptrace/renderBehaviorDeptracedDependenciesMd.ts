@@ -146,9 +146,9 @@ const buildReverseDependencyIndex = (
   for (const d of deptraced) {
     for (const dep of d.dependsOnDirect) {
       const depName = dep.behavior.name;
-      const existing = index.get(depName) ?? [];
-      existing.push(d.gathered.behavior.name);
-      index.set(depName, existing);
+      const entriesBefore = index.get(depName) ?? [];
+      entriesBefore.push(d.gathered.behavior.name);
+      index.set(depName, entriesBefore);
     }
   }
 

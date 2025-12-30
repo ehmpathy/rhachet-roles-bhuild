@@ -1,3 +1,5 @@
+import type { RefByUnique } from 'domain-objects';
+import type { GitFile } from 'rhachet-artifact-git';
 import type { VisualogicContext } from 'visualogic';
 import type { ZodSchema } from 'zod';
 
@@ -22,6 +24,7 @@ export interface BehaviorDispatchContext extends VisualogicContext {
     repl: {
       imagine: <TOutput>(input: {
         prompt: string;
+        briefs?: RefByUnique<typeof GitFile>[];
         schema: {
           ofOutput: ZodSchema<TOutput>;
         };

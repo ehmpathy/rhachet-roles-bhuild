@@ -181,9 +181,9 @@ const renderGatheredSummary = (input: {
   const byOrgRepo = new Map<string, BehaviorGathered[]>();
   for (const behavior of input.gathered) {
     const key = `${behavior.behavior.org}/${behavior.behavior.repo}`;
-    const existing = byOrgRepo.get(key) ?? [];
-    existing.push(behavior);
-    byOrgRepo.set(key, existing);
+    const entriesBefore = byOrgRepo.get(key) ?? [];
+    entriesBefore.push(behavior);
+    byOrgRepo.set(key, entriesBefore);
   }
 
   for (const [orgRepo, behaviors] of byOrgRepo) {

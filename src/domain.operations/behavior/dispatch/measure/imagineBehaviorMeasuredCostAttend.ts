@@ -3,6 +3,7 @@ import { z } from 'zod';
 import type { BehaviorDispatchContext } from '../../../../domain.objects/BehaviorDispatchContext';
 import type { BehaviorGathered } from '../../../../domain.objects/BehaviorGathered';
 import { BehaviorMeasuredCostAttend } from '../../../../domain.objects/BehaviorMeasuredCostAttend';
+import { getBrief } from '../../../../infra/rhachet/getBrief';
 
 /**
  * schema for brain.repl.imagine attend estimation response
@@ -14,7 +15,7 @@ const attendEstimationSchema = z.object({
   recurrent: z
     .number()
     .describe('ongoing time cost in mins/wk to maintain/operate this behavior'),
-  reasoning: z.string().describe('explanation of how attend was estimated'),
+  rationale: z.string().describe('explanation of how attend was estimated'),
 });
 
 /**
@@ -49,6 +50,10 @@ export const imagineBehaviorMeasuredCostAttend = async (
   // invoke brain.repl.imagine to estimate upfront/recurrent
   const estimation = await context.brain.repl.imagine({
     prompt,
+    briefs: [
+      getBrief({ role: { name: 'dispatcher' }, brief: { name: 'define.measure101.2.cost.[article].md' } }),
+      getBrief({ role: { name: 'dispatcher' }, brief: { name: 'define.measure101.2.cost.attend.[article].md' } }),
+    ],
     schema: { ofOutput: attendEstimationSchema },
   });
 
@@ -105,13 +110,13 @@ ${behaviorContent}
 CRITICAL: respond ONLY with a json code block containing exactly these three fields at the TOP LEVEL:
 - "upfront": number (minutes total to complete)
 - "recurrent": number (mins/wk to maintain)
-- "reasoning": string (brief explanation)
+- "rationale": string (brief explanation)
 
 \`\`\`json
 {
   "upfront": 480,
   "recurrent": 10,
-  "reasoning": "8 hours to implement, 10 mins/wk ongoing maintenance"
+  "rationale": "8 hours to implement, 10 mins/wk ongoing maintenance"
 }
 \`\`\``;
 };
