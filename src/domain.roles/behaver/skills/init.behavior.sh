@@ -241,21 +241,21 @@ emit into $BEHAVIOR_DIR_REL/2.criteria.blueprint.md
 ---
 
 blueprint criteria = MECHANISM BOUNDS
-- constraints on what contracts/composition must exist to deliver the experience
+- constraints on what contracts & composition must exist to deliver the experience
 - this is OPTIONAL — not all behaviors need prescribed mechanism bounds
 
 first, confirm which blackbox experience bounds will be satisfied
 
 then, declare ONLY:
-- what subcomponents are needed with what contracts/interfaces?
+- what subcomponents are demanded by the wish, vision, or criteria.blackbox? and with what contracts and boundaries?
 - how do subcomponents compose together?
 - what integration boundaries exist?
 - what test coverage is required?
 
 DO NOT prescribe:
 - internal implementation details of subcomponents
-- specific algorithms or data structures
 - how subcomponents achieve their contracts internally
+- any subcomponents not explicitly demanded in the wish, vision, or criteria.blackbox
 
 note: blueprint criteria is NOT "how to build" — that's decided in blueprint.md (3.3)
       blueprint criteria is "what mechanisms must exist" to deliver the experience
@@ -329,6 +329,14 @@ with the domain distillation declared
 - in $BEHAVIOR_DIR_REL/3.2.distill.domain._.v1.i1.md (if declared)
 
 follow the patterns already present in this repo
+
+---
+
+enforce thorough test coverage for proof of behavior satisfaction
+- unit tests for all domain logic
+- integration tests for all repo <-> access boundaries (os, apis, sdks, daos, etc)
+- integration tests for all end <-> end flows
+- acceptance tests for core blackbox behaviors
 
 ---
 
