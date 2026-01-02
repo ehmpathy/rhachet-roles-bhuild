@@ -10,16 +10,9 @@ import { rankBehaviorWorkstreams } from './rankBehaviorWorkstreams';
 import { renderBehaviorWorkstreamCoordinationMd } from './renderBehaviorWorkstreamCoordinationMd';
 
 /**
- * .what = coordinates behaviors into ranked workstreams with outputs
- * .why = enables parallel execution and review ordering
+ * .what = result type for getAllBehaviorCoordinated
  */
-export const getAllBehaviorCoordinated = async (
-  input: {
-    triagedBasket: BehaviorTriaged[];
-    deptracedBasket: BehaviorDeptraced[];
-  },
-  context: BehaviorDispatchContext,
-): Promise<{
+export interface BehaviorCoordinatedResult {
   workstreams: BehaviorWorkstream[];
   outputs: {
     coordinationMd: string;
@@ -29,7 +22,19 @@ export const getAllBehaviorCoordinated = async (
     workstreams: number;
     deliverables: number;
   };
-}> => {
+}
+
+/**
+ * .what = coordinates behaviors into ranked workstreams with outputs
+ * .why = enables parallel execution and review ordering
+ */
+export const getAllBehaviorCoordinated = async (
+  input: {
+    triagedBasket: BehaviorTriaged[];
+    deptracedBasket: BehaviorDeptraced[];
+  },
+  context: BehaviorDispatchContext,
+): Promise<BehaviorCoordinatedResult> => {
   // group behaviors into workstreams
   context.log.debug('coordinate: grouping into workstreams');
   const grouped = groupBehaviorWorkstreams({

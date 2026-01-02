@@ -1,5 +1,5 @@
 import * as path from 'path';
-import type { VisualogicContext } from 'visualogic';
+import type { ContextLogTrail } from 'simple-log-methods';
 
 import type { BehaviorDispatchContext } from '../../../domain.objects/BehaviorDispatchContext';
 import { invokeBrainRepl } from '../../../infra/brain/invokeBrainRepl';
@@ -15,7 +15,7 @@ export const genBehaviorDispatchContext = async (
     configPath: string;
     repoDir: string;
   },
-  context: VisualogicContext,
+  context: ContextLogTrail,
 ): Promise<BehaviorDispatchContext> => {
   // load config
   const config = await loadBehaviorDispatchConfig({
