@@ -31,7 +31,8 @@ describe('getOneBehaviorMeasured', () => {
     cacheDir: { mounted: { path: '/tmp/test-dispatch' } },
     brain: {
       repl: {
-        imagine: (input) => invokeBrainRepl({ ...input, options: { model: 'haiku' } }),
+        imagine: (input) =>
+          invokeBrainRepl({ ...input, options: { model: 'haiku' } }),
       },
     },
     log: console,
@@ -39,10 +40,16 @@ describe('getOneBehaviorMeasured', () => {
 
   given('[case1] behavior requiring all 4 imagine operations', () => {
     const scene = useBeforeAll(async () => {
-      const behavior = new Behavior({ org: 'test', repo: 'repo', name: 'test-feature' });
+      const behavior = new Behavior({
+        org: 'test',
+        repo: 'repo',
+        name: 'test-feature',
+      });
 
       // clone behavior asset to temp dir
-      const { files } = await cloneBehaviorAsset({ behaviorName: 'test-feature' });
+      const { files } = await cloneBehaviorAsset({
+        behaviorName: 'test-feature',
+      });
 
       const gathered = new BehaviorGathered({
         gatheredAt: new Date().toISOString(),

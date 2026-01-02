@@ -27,7 +27,8 @@ describe('imagineBehaviorMeasuredCostExpend', () => {
     cacheDir: { mounted: { path: '/tmp/test-dispatch' } },
     brain: {
       repl: {
-        imagine: (input) => invokeBrainRepl({ ...input, options: { model: 'haiku' } }),
+        imagine: (input) =>
+          invokeBrainRepl({ ...input, options: { model: 'haiku' } }),
       },
     },
     log: console,
@@ -35,7 +36,11 @@ describe('imagineBehaviorMeasuredCostExpend', () => {
 
   given('[case1] cloud infrastructure feature', () => {
     const scene = useBeforeAll(async () => {
-      const behavior = new Behavior({ org: 'test', repo: 'repo', name: 'add-cdn' });
+      const behavior = new Behavior({
+        org: 'test',
+        repo: 'repo',
+        name: 'add-cdn',
+      });
 
       // clone behavior asset to temp dir
       const { files } = await cloneBehaviorAsset({ behaviorName: 'add-cdn' });

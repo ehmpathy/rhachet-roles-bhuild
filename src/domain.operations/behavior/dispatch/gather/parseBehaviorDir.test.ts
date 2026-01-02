@@ -1,7 +1,6 @@
 import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
-
 import { given, then, when } from 'test-fns';
 
 import { parseBehaviorDir } from './parseBehaviorDir';
@@ -51,7 +50,10 @@ describe('parseBehaviorDir', () => {
         await fs.mkdir(tempDir, { recursive: true });
         await fs.writeFile(path.join(tempDir, '0.wish.md'), 'test wish');
         await fs.writeFile(path.join(tempDir, '1.vision.md'), 'test vision');
-        await fs.writeFile(path.join(tempDir, '2.criteria.md'), 'test criteria');
+        await fs.writeFile(
+          path.join(tempDir, '2.criteria.md'),
+          'test criteria',
+        );
 
         const result = await parseBehaviorDir({
           behaviorDir: tempDir,
@@ -70,7 +72,10 @@ describe('parseBehaviorDir', () => {
         const tempDir = path.join(os.tmpdir(), `test-parse-${Date.now()}-4`);
         await fs.mkdir(tempDir, { recursive: true });
         await fs.writeFile(path.join(tempDir, '0.wish.md'), 'test wish');
-        await fs.writeFile(path.join(tempDir, '2.criteria.md'), 'test criteria');
+        await fs.writeFile(
+          path.join(tempDir, '2.criteria.md'),
+          'test criteria',
+        );
         await fs.writeFile(
           path.join(tempDir, '3.3.blueprint.v1.i1.md'),
           'test blueprint',

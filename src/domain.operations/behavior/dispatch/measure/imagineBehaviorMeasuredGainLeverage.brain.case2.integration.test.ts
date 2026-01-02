@@ -28,7 +28,8 @@ describe('imagineBehaviorMeasuredGainLeverage', () => {
     cacheDir: { mounted: { path: '/tmp/test-dispatch' } },
     brain: {
       repl: {
-        imagine: (input) => invokeBrainRepl({ ...input, options: { model: 'haiku' } }),
+        imagine: (input) =>
+          invokeBrainRepl({ ...input, options: { model: 'haiku' } }),
       },
     },
     log: console,
@@ -36,10 +37,16 @@ describe('imagineBehaviorMeasuredGainLeverage', () => {
 
   given('[case2] documentation behavior with minimal leverage', () => {
     const scene = useBeforeAll(async () => {
-      const behavior = new Behavior({ org: 'test', repo: 'repo', name: 'add-readme' });
+      const behavior = new Behavior({
+        org: 'test',
+        repo: 'repo',
+        name: 'add-readme',
+      });
 
       // clone behavior asset to temp dir
-      const { files } = await cloneBehaviorAsset({ behaviorName: 'add-readme' });
+      const { files } = await cloneBehaviorAsset({
+        behaviorName: 'add-readme',
+      });
 
       const gathered = new BehaviorGathered({
         gatheredAt: new Date().toISOString(),

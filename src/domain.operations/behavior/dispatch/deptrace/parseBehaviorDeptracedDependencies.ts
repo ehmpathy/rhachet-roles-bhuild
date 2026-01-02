@@ -84,7 +84,11 @@ export const parseBehaviorDeptracedDependencies = async (
 const buildDependencyInferencePrompt = (input: {
   gathered: BehaviorGathered;
   basketNames: string[];
-  content: { wish: string | null; vision: string | null; criteria: string | null };
+  content: {
+    wish: string | null;
+    vision: string | null;
+    criteria: string | null;
+  };
 }): string => {
   const behaviorContent = [
     input.content.wish ? `## wish\n${input.content.wish}` : '',

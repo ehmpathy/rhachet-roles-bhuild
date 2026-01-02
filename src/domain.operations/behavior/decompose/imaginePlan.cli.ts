@@ -54,16 +54,7 @@ const main = async (): Promise<void> => {
   const context = {
     brain: {
       repl: {
-        imagine: (input: {
-          prompt: string;
-          role: { briefs: Array<{ name: string; content: string }> };
-          outputFormat: 'json' | 'text';
-        }) =>
-          invokeBrainRepl({
-            prompt: input.prompt,
-            role: input.role,
-            outputFormat: input.outputFormat,
-          }),
+        imagine: invokeBrainRepl,
       },
     },
   };

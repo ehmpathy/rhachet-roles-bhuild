@@ -2,9 +2,8 @@ import { exec } from 'child_process';
 import { createHash } from 'crypto';
 import * as os from 'os';
 import * as path from 'path';
-import { promisify } from 'util';
-
 import { genArtifactGitFile } from 'rhachet-artifact-git';
+import { promisify } from 'util';
 
 import { BehaviorGathered } from '../../../domain.objects/BehaviorGathered';
 import type { BehaviorSourceRepoRemote } from '../../../domain.objects/BehaviorSourceRepoRemote';
@@ -38,7 +37,10 @@ export const fetchRemoteRepoBehaviorsViaIssues = async (input: {
   const behaviors = await Promise.all(
     issues.map(async (issue) => {
       // generate behavior name from issue
-      const datePrefix = new Date().toISOString().slice(0, 10).replace(/-/g, '_');
+      const datePrefix = new Date()
+        .toISOString()
+        .slice(0, 10)
+        .replace(/-/g, '_');
       const slugifiedTitle = issue.title
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')

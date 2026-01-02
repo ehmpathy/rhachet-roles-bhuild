@@ -1,5 +1,6 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { z } from 'zod';
 
 import { BehaviorDecompositionPlan } from '../../../domain.objects/BehaviorDecompositionPlan';
 import { BehaviorDecompositionProposed } from '../../../domain.objects/BehaviorDecompositionProposed';
@@ -9,6 +10,25 @@ import type {
   BrainReplRole,
 } from '../../../infra/brain/BrainReplContext';
 import { computeContextConsumption } from './computeContextConsumption';
+
+/**
+ * .what = zod schema for brain.repl decomposition output
+ * .why = enables type-safe structured output from LLM
+ */
+const decompositionOutputSchema = z.object({
+  behaviorsProposed: z.array(
+    z.object({
+      name: z.string(),
+      dependsOn: z.array(z.string()),
+      decomposed: z.object({
+        wish: z.string(),
+        vision: z.string().nullable(),
+      }),
+    }),
+  ),
+});
+
+type DecompositionOutput = z.infer<typeof decompositionOutputSchema>;
 
 /**
  * .what = imagines a decomposition plan via brain.repl
@@ -50,19 +70,16 @@ export const imaginePlan = async (
   });
 
   // invoke brain.repl for creative analysis (probabilistic)
-  const brainOutput = await context.brain.repl.imagine({
+  const brainOutput = await context.brain.repl.imagine<DecompositionOutput>({
     prompt,
     role: input.role,
-    outputFormat: 'json',
+    schema: { ofOutput: decompositionOutputSchema },
   });
-
-  // parse brain output into structured plan
-  const planParsed = parseBrainOutput({ output: brainOutput });
 
   // construct domain object
   const plan = new BehaviorDecompositionPlan({
     behaviorSource: input.behavior,
-    behaviorsProposed: planParsed.behaviorsProposed.map(
+    behaviorsProposed: brainOutput.behaviorsProposed.map(
       (p) => new BehaviorDecompositionProposed(p),
     ),
     contextAnalysis,
@@ -103,41 +120,5 @@ ${input.criteriaContent}
 3. identify dependencies between behaviors
 4. decompose the wish into scoped wishes for each behavior
 5. decompose the vision into scoped visions (or null if original was empty)
-
-## output format (JSON)
-
-{
-  "behaviorsProposed": [
-    {
-      "name": "behavior-name",
-      "dependsOn": [],
-      "decomposed": {
-        "wish": "decomposed wish...",
-        "vision": "decomposed vision..." | null
-      }
-    }
-  ]
-}
 `.trim();
-};
-
-/**
- * .what = parses brain output JSON into typed structure
- * .why = bridges probabilistic output to deterministic domain objects
- */
-const parseBrainOutput = (input: {
-  output: string;
-}): {
-  behaviorsProposed: Array<{
-    name: string;
-    dependsOn: string[];
-    decomposed: { wish: string; vision: string | null };
-  }>;
-} => {
-  // extract JSON from brain output
-  const jsonMatch = input.output.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) {
-    throw new Error('brain output did not contain valid JSON');
-  }
-  return JSON.parse(jsonMatch[0]);
 };

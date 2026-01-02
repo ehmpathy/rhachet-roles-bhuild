@@ -1,7 +1,6 @@
+import type { RefByUnique } from 'domain-objects';
 import * as fs from 'fs/promises';
 import * as path from 'path';
-
-import type { RefByUnique } from 'domain-objects';
 import type { GitFile } from 'rhachet-artifact-git';
 
 import {

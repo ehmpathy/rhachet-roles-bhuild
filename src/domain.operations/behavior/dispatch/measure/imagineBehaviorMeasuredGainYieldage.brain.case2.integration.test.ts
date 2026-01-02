@@ -28,7 +28,8 @@ describe('imagineBehaviorMeasuredGainYieldage', () => {
     cacheDir: { mounted: { path: '/tmp/test-dispatch' } },
     brain: {
       repl: {
-        imagine: (input) => invokeBrainRepl({ ...input, options: { model: 'haiku' } }),
+        imagine: (input) =>
+          invokeBrainRepl({ ...input, options: { model: 'haiku' } }),
       },
     },
     log: console,
@@ -36,10 +37,16 @@ describe('imagineBehaviorMeasuredGainYieldage', () => {
 
   given('[case2] internal tooling behavior', () => {
     const scene = useBeforeAll(async () => {
-      const behavior = new Behavior({ org: 'test', repo: 'repo', name: 'dev-tooling' });
+      const behavior = new Behavior({
+        org: 'test',
+        repo: 'repo',
+        name: 'dev-tooling',
+      });
 
       // clone behavior asset to temp dir
-      const { files } = await cloneBehaviorAsset({ behaviorName: 'dev-tooling' });
+      const { files } = await cloneBehaviorAsset({
+        behaviorName: 'dev-tooling',
+      });
 
       const gathered = new BehaviorGathered({
         gatheredAt: new Date().toISOString(),
@@ -67,7 +74,9 @@ describe('imagineBehaviorMeasuredGainYieldage', () => {
               gathered: scene.gathered,
               deptraced: scene.deptraced,
               basket: scene.basket,
-              config: { defaults: { baseYieldage: 500, transitiveMultiplier: 0.3 } },
+              config: {
+                defaults: { baseYieldage: 500, transitiveMultiplier: 0.3 },
+              },
             },
             context,
           );
