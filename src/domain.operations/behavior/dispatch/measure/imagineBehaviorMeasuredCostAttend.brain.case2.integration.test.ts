@@ -27,7 +27,8 @@ describe('imagineBehaviorMeasuredCostAttend', () => {
     cacheDir: { mounted: { path: '/tmp/test-dispatch' } },
     brain: {
       repl: {
-        imagine: (input) => invokeBrainRepl({ ...input, options: { model: 'haiku' } }),
+        imagine: (input) =>
+          invokeBrainRepl({ ...input, options: { model: 'haiku' } }),
       },
     },
     log: console,
@@ -35,10 +36,16 @@ describe('imagineBehaviorMeasuredCostAttend', () => {
 
   given('[case2] complex infrastructure migration', () => {
     const scene = useBeforeAll(async () => {
-      const behavior = new Behavior({ org: 'test', repo: 'repo', name: 'db-migration' });
+      const behavior = new Behavior({
+        org: 'test',
+        repo: 'repo',
+        name: 'db-migration',
+      });
 
       // clone behavior asset to temp dir
-      const { files } = await cloneBehaviorAsset({ behaviorName: 'db-migration' });
+      const { files } = await cloneBehaviorAsset({
+        behaviorName: 'db-migration',
+      });
 
       const gathered = new BehaviorGathered({
         gatheredAt: new Date().toISOString(),

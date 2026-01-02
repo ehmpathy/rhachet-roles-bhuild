@@ -27,7 +27,8 @@ describe('getOneBehaviorDeptraced', () => {
     cacheDir: { mounted: { path: '/tmp/test-dispatch' } },
     brain: {
       repl: {
-        imagine: (input) => invokeBrainRepl({ ...input, options: { model: 'haiku' } }),
+        imagine: (input) =>
+          invokeBrainRepl({ ...input, options: { model: 'haiku' } }),
       },
     },
     log: console,
@@ -50,7 +51,11 @@ describe('getOneBehaviorDeptraced', () => {
       const basket: BehaviorGathered[] = [
         new BehaviorGathered({
           gatheredAt: new Date().toISOString(),
-          behavior: new Behavior({ org: 'test', repo: 'repo', name: 'feature-auth' }),
+          behavior: new Behavior({
+            org: 'test',
+            repo: 'repo',
+            name: 'feature-auth',
+          }),
           contentHash: 'hash1',
           status: 'constrained',
           files: authFiles,
@@ -58,7 +63,11 @@ describe('getOneBehaviorDeptraced', () => {
         }),
         new BehaviorGathered({
           gatheredAt: new Date().toISOString(),
-          behavior: new Behavior({ org: 'test', repo: 'repo', name: 'feature-dashboard' }),
+          behavior: new Behavior({
+            org: 'test',
+            repo: 'repo',
+            name: 'feature-dashboard',
+          }),
           contentHash: 'hash2',
           status: 'constrained',
           files: dashboardFiles,

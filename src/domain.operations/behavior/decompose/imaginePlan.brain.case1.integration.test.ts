@@ -23,16 +23,7 @@ const ROLE_DIR = path.join(__dirname, '../../../domain.roles/decomposer');
 const createBrainContext = () => ({
   brain: {
     repl: {
-      imagine: (input: {
-        prompt: string;
-        role: { briefs: Array<{ name: string; content: string }> };
-        outputFormat: 'json' | 'text';
-      }) =>
-        invokeBrainRepl({
-          prompt: input.prompt,
-          role: input.role,
-          outputFormat: input.outputFormat,
-        }),
+      imagine: invokeBrainRepl,
     },
   },
 });

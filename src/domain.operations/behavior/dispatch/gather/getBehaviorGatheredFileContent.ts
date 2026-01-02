@@ -1,7 +1,6 @@
-import * as path from 'path';
-
 import type { RefByUnique } from 'domain-objects';
-import { genArtifactGitFile, type GitFile } from 'rhachet-artifact-git';
+import * as path from 'path';
+import { type GitFile, genArtifactGitFile } from 'rhachet-artifact-git';
 
 import type { BehaviorGathered } from '../../../../domain.objects/BehaviorGathered';
 

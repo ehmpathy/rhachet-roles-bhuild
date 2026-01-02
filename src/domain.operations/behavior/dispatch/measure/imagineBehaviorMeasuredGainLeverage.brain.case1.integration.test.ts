@@ -28,7 +28,8 @@ describe('imagineBehaviorMeasuredGainLeverage', () => {
     cacheDir: { mounted: { path: '/tmp/test-dispatch' } },
     brain: {
       repl: {
-        imagine: (input) => invokeBrainRepl({ ...input, options: { model: 'haiku' } }),
+        imagine: (input) =>
+          invokeBrainRepl({ ...input, options: { model: 'haiku' } }),
       },
     },
     log: console,
@@ -36,10 +37,16 @@ describe('imagineBehaviorMeasuredGainLeverage', () => {
 
   given('[case1] automation behavior with time savings', () => {
     const scene = useBeforeAll(async () => {
-      const behavior = new Behavior({ org: 'test', repo: 'repo', name: 'automate-deploys' });
+      const behavior = new Behavior({
+        org: 'test',
+        repo: 'repo',
+        name: 'automate-deploys',
+      });
 
       // clone behavior asset to temp dir
-      const { files } = await cloneBehaviorAsset({ behaviorName: 'automate-deploys' });
+      const { files } = await cloneBehaviorAsset({
+        behaviorName: 'automate-deploys',
+      });
 
       const gathered = new BehaviorGathered({
         gatheredAt: new Date().toISOString(),

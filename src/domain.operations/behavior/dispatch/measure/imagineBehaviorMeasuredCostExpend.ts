@@ -63,10 +63,18 @@ export const imagineBehaviorMeasuredCostExpend = async (
   // invoke brain.repl.imagine to estimate upfront/recurrent
   const estimation = await context.brain.repl.imagine({
     prompt,
-    briefs: [
-      getBrief({ role: { name: 'dispatcher' }, brief: { name: 'define.measure101.2.cost.[article].md' } }),
-      getBrief({ role: { name: 'dispatcher' }, brief: { name: 'define.measure101.2.cost.expend.[article].md' } }),
-    ],
+    role: {
+      briefs: [
+        getBrief({
+          role: { name: 'dispatcher' },
+          brief: { name: 'define.measure101.2.cost.[article].md' },
+        }),
+        getBrief({
+          role: { name: 'dispatcher' },
+          brief: { name: 'define.measure101.2.cost.expend.[article].md' },
+        }),
+      ],
+    },
     schema: { ofOutput: expendEstimationSchema },
   });
 
@@ -88,7 +96,11 @@ export const imagineBehaviorMeasuredCostExpend = async (
 const buildExpendPrompt = (input: {
   gathered: BehaviorGathered;
   horizon: number;
-  content: { wish: string | null; vision: string | null; criteria: string | null };
+  content: {
+    wish: string | null;
+    vision: string | null;
+    criteria: string | null;
+  };
 }): string => {
   const behaviorContent = [
     input.content.wish ? `## wish\n${input.content.wish}` : '',

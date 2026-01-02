@@ -15,11 +15,12 @@ describe('invokeBrainRepl', () => {
       rationale: z.string(),
     });
 
-    when('[t0] invoking with briefs', () => {
+    when('[t0] invoking with role', () => {
       then('should return valid structured output', async () => {
         const result = await invokeBrainRepl({
-          prompt: 'Estimate time: upfront=100 mins, recurrent=5 mins/wk. Explain.',
-          briefs: [], // empty briefs for now
+          prompt:
+            'Estimate time: upfront=100 mins, recurrent=5 mins/wk. Explain.',
+          role: { briefs: [] }, // empty briefs for now
           schema: { ofOutput: schema },
           options: { model: 'haiku' },
         });

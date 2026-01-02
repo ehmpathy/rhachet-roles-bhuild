@@ -31,28 +31,28 @@ describe('imaginePlan', () => {
       await fs.rm(testDir, { recursive: true, force: true });
     });
 
-    when('[t0] brain.repl returns valid JSON', () => {
+    when('[t0] brain.repl returns valid decomposition', () => {
       const mockBrainRepl: BrainReplContext = {
-        imagine: jest.fn().mockResolvedValue(`{
-          "behaviorsProposed": [
+        imagine: jest.fn().mockResolvedValue({
+          behaviorsProposed: [
             {
-              "name": "auth-service",
-              "dependsOn": [],
-              "decomposed": {
-                "wish": "implement authentication and session management",
-                "vision": null
-              }
+              name: 'auth-service',
+              dependsOn: [],
+              decomposed: {
+                wish: 'implement authentication and session management',
+                vision: null,
+              },
             },
             {
-              "name": "data-layer",
-              "dependsOn": [],
-              "decomposed": {
-                "wish": "implement data persistence",
-                "vision": null
-              }
-            }
-          ]
-        }`),
+              name: 'data-layer',
+              dependsOn: [],
+              decomposed: {
+                wish: 'implement data persistence',
+                vision: null,
+              },
+            },
+          ],
+        }),
       };
 
       then('returns BehaviorDecompositionPlan', async () => {
@@ -112,62 +112,6 @@ describe('imaginePlan', () => {
         expect(plan.generatedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
       });
     });
-
-    when('[t1] brain.repl returns JSON embedded in text', () => {
-      const mockBrainRepl: BrainReplContext = {
-        imagine: jest.fn().mockResolvedValue(`
-Here is my analysis:
-
-{
-  "behaviorsProposed": [
-    {
-      "name": "single-behavior",
-      "dependsOn": [],
-      "decomposed": {
-        "wish": "single focus",
-        "vision": "clean"
-      }
-    }
-  ]
-}
-
-Hope that helps!
-        `),
-      };
-
-      then('extracts JSON from surrounding text', async () => {
-        const behavior = new BehaviorPersisted({
-          name: 'parent',
-          path: behaviorPath,
-        });
-        const role = { briefs: [] };
-        const context = { brain: { repl: mockBrainRepl } };
-
-        const plan = await imaginePlan({ behavior, role }, context);
-
-        expect(plan.behaviorsProposed).toHaveLength(1);
-        expect(plan.behaviorsProposed[0]?.name).toEqual('single-behavior');
-      });
-    });
-
-    when('[t2] brain.repl returns invalid output', () => {
-      const mockBrainRepl: BrainReplContext = {
-        imagine: jest.fn().mockResolvedValue('no json here'),
-      };
-
-      then('throws error about invalid JSON', async () => {
-        const behavior = new BehaviorPersisted({
-          name: 'parent',
-          path: behaviorPath,
-        });
-        const role = { briefs: [] };
-        const context = { brain: { repl: mockBrainRepl } };
-
-        await expect(imaginePlan({ behavior, role }, context)).rejects.toThrow(
-          'brain output did not contain valid JSON',
-        );
-      });
-    });
   });
 
   given('[case2] behavior with vision content', () => {
@@ -201,18 +145,18 @@ Hope that helps!
 
     when('[t0] imaginePlan invoked', () => {
       const mockBrainRepl: BrainReplContext = {
-        imagine: jest.fn().mockResolvedValue(`{
-          "behaviorsProposed": [
+        imagine: jest.fn().mockResolvedValue({
+          behaviorsProposed: [
             {
-              "name": "sub-a",
-              "dependsOn": [],
-              "decomposed": {
-                "wish": "sub wish",
-                "vision": "sub vision"
-              }
-            }
-          ]
-        }`),
+              name: 'sub-a',
+              dependsOn: [],
+              decomposed: {
+                wish: 'sub wish',
+                vision: 'sub vision',
+              },
+            },
+          ],
+        }),
       };
 
       then('prompt includes vision content', async () => {
@@ -232,16 +176,27 @@ Hope that helps!
     });
   });
 
-  given('[case3] brain.repl receives briefs', () => {
+  given('[case3] brain.repl receives role with briefs', () => {
     const testDir = path.join(os.tmpdir(), 'imaginePlan-test-3');
     const behaviorPath = path.join(testDir, '.behavior', 'v2025_01_01.briefed');
+    const briefsDir = path.join(testDir, 'briefs');
 
     beforeAll(async () => {
       await fs.rm(testDir, { recursive: true, force: true });
       await fs.mkdir(behaviorPath, { recursive: true });
+      await fs.mkdir(briefsDir, { recursive: true });
       await fs.writeFile(path.join(behaviorPath, '0.wish.md'), 'wish');
       await fs.writeFile(path.join(behaviorPath, '1.vision.md'), '');
       await fs.writeFile(path.join(behaviorPath, '2.criteria.md'), 'criteria');
+      // create brief files
+      await fs.writeFile(
+        path.join(briefsDir, 'rule.require.bounded.md'),
+        'keep contexts bounded',
+      );
+      await fs.writeFile(
+        path.join(briefsDir, 'rule.require.naming.md'),
+        'use ubiquitous language',
+      );
     });
 
     afterAll(async () => {
@@ -250,20 +205,20 @@ Hope that helps!
 
     when('[t0] role has briefs', () => {
       const mockBrainRepl: BrainReplContext = {
-        imagine: jest.fn().mockResolvedValue(`{
-          "behaviorsProposed": []
-        }`),
+        imagine: jest.fn().mockResolvedValue({
+          behaviorsProposed: [],
+        }),
       };
 
-      then('briefs are passed to brain.repl', async () => {
+      then('role with briefs is passed to brain.repl', async () => {
         const behavior = new BehaviorPersisted({
           name: 'briefed',
           path: behaviorPath,
         });
         const role = {
           briefs: [
-            { name: 'rule.require.bounded', content: 'keep contexts bounded' },
-            { name: 'rule.require.naming', content: 'use ubiquitous language' },
+            { uri: path.join(briefsDir, 'rule.require.bounded.md') },
+            { uri: path.join(briefsDir, 'rule.require.naming.md') },
           ],
         };
         const context = { brain: { repl: mockBrainRepl } };

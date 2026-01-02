@@ -1,5 +1,4 @@
 import * as path from 'path';
-
 import { genArtifactGitFile } from 'rhachet-artifact-git';
 
 import { fetchRemoteRepoBehaviorsViaClone } from '../../../../access/sdks/github/fetchRemoteRepoBehaviorsViaClone';

@@ -27,7 +27,8 @@ describe('getOneBehaviorDeptraced', () => {
     cacheDir: { mounted: { path: '/tmp/test-dispatch' } },
     brain: {
       repl: {
-        imagine: (input) => invokeBrainRepl({ ...input, options: { model: 'haiku' } }),
+        imagine: (input) =>
+          invokeBrainRepl({ ...input, options: { model: 'haiku' } }),
       },
     },
     log: console,
@@ -36,12 +37,18 @@ describe('getOneBehaviorDeptraced', () => {
   given('[case2] behavior with no dependencies', () => {
     const scene = useBeforeAll(async () => {
       // clone standalone behavior asset
-      const { files } = await cloneBehaviorAsset({ behaviorName: 'standalone-feature' });
+      const { files } = await cloneBehaviorAsset({
+        behaviorName: 'standalone-feature',
+      });
 
       const basket: BehaviorGathered[] = [
         new BehaviorGathered({
           gatheredAt: new Date().toISOString(),
-          behavior: new Behavior({ org: 'test', repo: 'repo', name: 'standalone-feature' }),
+          behavior: new Behavior({
+            org: 'test',
+            repo: 'repo',
+            name: 'standalone-feature',
+          }),
           contentHash: 'hash3',
           status: 'constrained',
           files,

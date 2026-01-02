@@ -1,6 +1,5 @@
-import path from 'path';
-
 import type { RefByUnique } from 'domain-objects';
+import path from 'path';
 import type { GitFile } from 'rhachet-artifact-git';
 
 /**
