@@ -1,14 +1,14 @@
 {
   "behaviorSource": {
     "name": "large-feature",
-    "path": "/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.decomposer/src/domain.roles/decomposer/skills/.test/assets/example.repo/needs-decomposition/.behavior/v2025_01_01.large-feature"
+    "path": "/home/vlad/git/ehmpathy/rhachet-roles-bhuild/src/domain.roles/decomposer/skills/.test/assets/example.repo/needs-decomposition/.behavior/v2025_01_01.large-feature"
   },
   "behaviorsProposed": [
     {
-      "name": "user-auth",
+      "name": "user-authentication",
       "dependsOn": [],
       "decomposed": {
-        "wish": "build user authentication and session management that enables secure credential validation against identity providers, configurable session token management, and protective measures against brute force attacks including failed attempt tracking and account lockout policies.",
+        "wish": "enable secure user authentication and session management that validates credentials against identity providers, creates session tokens with configurable expiry, and protects accounts through failed attempt tracking and account locking. this capability is foundational for all authenticated operations in the platform.",
         "vision": null
       }
     },
@@ -16,49 +16,43 @@
       "name": "data-persistence",
       "dependsOn": [],
       "decomposed": {
-        "wish": "build data persistence layer with integrated cache invalidation that ensures writes propagate to primary datastore, relevant cache entries are invalidated atomically, domain events are emitted for downstream subscribers, and cache invalidation propagates correctly across replicas.",
+        "wish": "provide reliable data persistence with automatic cache invalidation that writes entities to primary datastore, invalidates relevant cache entries, propagates changes to replicas, and emits domain events for subscribers. this capability ensures data consistency across the platform.",
         "vision": null
       }
     },
     {
-      "name": "realtime-notifications",
+      "name": "real-time-notifications",
       "dependsOn": [
         "data-persistence"
       ],
       "decomposed": {
-        "wish": "build real-time notification system via websockets that pushes events to subscribed clients, tracks delivery status, retries failed deliveries, queues notifications for disconnected clients, and delivers queued notifications on reconnection.",
+        "wish": "deliver real-time notifications to clients via websockets with delivery tracking, retry mechanisms, and queue management for disconnected clients. this capability depends on domain events from the persistence layer to trigger notifications when relevant events occur.",
         "vision": null
       }
     },
     {
       "name": "analytics-dashboard",
       "dependsOn": [
-        "data-persistence",
-        "user-auth"
+        "data-persistence"
       ],
       "decomposed": {
-        "wish": "build analytics dashboard with custom report capabilities that aggregates data from event store, applies configurable filters, renders visualization components, supports custom report generation from data warehouse, and caches reports for repeated access.",
+        "wish": "provide analytics and custom reporting capabilities that aggregate data from event store, apply configured filters, render visualizations, and cache results for repeated access. this capability enables administrators to gain insights from platform data stored in the persistence layer.",
         "vision": null
       }
     },
     {
       "name": "multi-tenant-isolation",
-      "dependsOn": [
-        "user-auth"
-      ],
+      "dependsOn": [],
       "decomposed": {
-        "wish": "build multi-tenant architecture with strict isolation that enforces tenant boundaries on all requests, applies tenant-specific configuration, maintains tenant context in logging, prevents cross-tenant data access, and logs security events for unauthorized access attempts.",
+        "wish": "enforce tenant boundaries and isolation that applies tenant-specific configuration, prevents cross-tenant data access, logs with tenant context, and raises security events on unauthorized access attempts. this capability is essential for enterprise-scale deployments requiring data segregation.",
         "vision": null
       }
     },
     {
-      "name": "rate-limit-quota",
-      "dependsOn": [
-        "user-auth",
-        "multi-tenant-isolation"
-      ],
+      "name": "api-rate-limiting",
+      "dependsOn": [],
       "decomposed": {
-        "wish": "build api rate limiting and quota management that tracks request rates per client, returns appropriate 429 responses with retry-after headers when limits are exceeded, tracks quota consumption per operation, and notifies when quota thresholds are breached.",
+        "wish": "manage api rate limits and quota tracking that returns appropriate 429 responses when limits are exceeded, tracks rate limit state per client, decrements available quota on consumption, and notifies on threshold breaches. this capability protects platform resources from overuse and ensures fair access.",
         "vision": null
       }
     }
@@ -77,5 +71,5 @@
     },
     "recommendation": "DECOMPOSE_UNNEEDED"
   },
-  "generatedAt": "2025-12-30T23:18:42.390Z"
+  "generatedAt": "2026-01-02T04:37:04.309Z"
 }

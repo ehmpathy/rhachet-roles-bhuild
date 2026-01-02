@@ -21,7 +21,7 @@ describe('parseBehaviorDeptracedDependencies.brain.case1', () => {
         gain: { leverage: { weights: { author: 0.5, support: 0.5 } } },
         convert: { equate: { cash: { dollars: 150 }, time: { hours: 1 } } },
       },
-      cost: { horizon: 24 },
+      cost: { horizon: { weeks: 24 } },
       constraints: { maxConcurrency: 3 },
     },
     cacheDir: { mounted: { path: '/tmp/test-dispatch' } },
