@@ -1,31 +1,31 @@
-/**
- * .what = brief content for brain.repl context
- * .why = provides domain knowledge to guide LLM judgment
- * .todo = liftout generalized into rhachet repo
- */
-export interface BrainReplBrief {
-  name: string;
-  content: string;
-}
+import type { RefByUnique } from 'domain-objects';
+import type { GitFile } from 'rhachet-artifact-git';
+import type { ZodSchema } from 'zod';
 
 /**
  * .what = role with briefs for brain.repl
  * .why = bundles domain knowledge for a specific skill invocation
- * .todo = liftout generalized into rhachet repo
  */
 export interface BrainReplRole {
-  briefs: BrainReplBrief[];
+  briefs: RefByUnique<typeof GitFile>[];
 }
 
 /**
  * .what = context interface for brain.repl dependency injection
  * .why = enables probabilistic operations to receive LLM access via context
- * .todo = liftout generalized into rhachet repo
+ *
+ * @note uses zod schema for type-safe structured output
+ * @note briefs are loaded from disk via role.briefs file refs
  */
 export interface BrainReplContext {
-  imagine: (input: {
+  imagine: <TOutput>(input: {
     prompt: string;
-    role: BrainReplRole;
-    outputFormat: 'json' | 'text';
-  }) => Promise<string>;
+    role?: BrainReplRole;
+    schema: {
+      ofOutput: ZodSchema<TOutput>;
+    };
+    options?: {
+      model?: 'haiku' | 'sonnet' | 'opus';
+    };
+  }) => Promise<TOutput>;
 }

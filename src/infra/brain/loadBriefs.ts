@@ -1,17 +1,18 @@
+import type { RefByUnique } from 'domain-objects';
 import * as fs from 'fs/promises';
 import * as path from 'path';
-
-import type { BrainReplBrief } from './BrainReplContext';
+import type { GitFile } from 'rhachet-artifact-git';
 
 /**
- * .what = loads brief files from a role's skill directory
+ * .what = enumerates brief file refs from a role's skill directory
  * .why = enables CLI to construct brain.repl context with domain knowledge
- * .todo = liftout generalized into rhachet repo
+ *
+ * @note returns file refs, content is loaded lazily by invokeBrainRepl
  */
 export const loadBriefs = async (input: {
   roleDir: string;
   skillName: string;
-}): Promise<BrainReplBrief[]> => {
+}): Promise<RefByUnique<typeof GitFile>[]> => {
   const briefsDir = path.join(input.roleDir, 'briefs', input.skillName);
 
   // check if directory exists
@@ -25,15 +26,8 @@ export const loadBriefs = async (input: {
   const files = await fs.readdir(briefsDir);
   const briefFiles = files.filter((f) => f.endsWith('.md'));
 
-  // load each brief
-  const briefs: BrainReplBrief[] = [];
-  for (const file of briefFiles) {
-    const content = await fs.readFile(path.join(briefsDir, file), 'utf-8');
-    briefs.push({
-      name: file.replace('.md', ''),
-      content,
-    });
-  }
-
-  return briefs;
+  // return file refs (content loaded lazily by invokeBrainRepl)
+  return briefFiles.map((file) => ({
+    uri: path.join(briefsDir, file),
+  }));
 };

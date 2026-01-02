@@ -1,0 +1,57 @@
+lets extend .behavior/v2025_12_27.dispatcher/3.1.research.domain.leverage.v1.i1.md
+
+---
+
+specifically, narrow your focus down to
+
+
+  specify how leverage is measured in industry
+
+  declare atleast 11 citations
+
+  specifically research how leverage is defined and measured by researchers, builders, and industry
+
+narrowed further down, in this extension
+
+  to how physics, mechanics, ecology, biology, and other non-software industries speak about leverage and measure leverage
+
+
+---
+
+our goal is that by going deeper than just software we can generalize more accurately about what leverage is
+
+as the terms and frames currently found in software domains seem artificial and unuseful; they seem detached from reality. (e.g., loc? are ya kidding? lines of code? heard of a minifier? what about comments? total bs)
+
+---
+
+specifically
+- what are the domain objects that are involved with this wish
+  - entities
+  - events
+  - literals
+- what are the domain operations
+  - getOne
+  - getAll
+  - setCreate
+  - setUpdate
+  - setDelete
+- what are the relationships between the domain objects?
+  - is there a treestruct of decoration?
+  - is there a treestruct of common subdomains?
+  - are there dependencies?
+- how do the domain objects and operations compose to support wish?
+
+---
+
+use web search to discover and research
+- cite every claim
+- number each citation
+- clone exact quotes from each citation
+
+---
+
+cite atleast 21 sources
+
+---
+
+emit into .behavior/v2025_12_27.dispatcher/3.1.research.domain.leverage.v2.i1.md
