@@ -2,8 +2,10 @@ import { given, then, when } from 'test-fns';
 
 import { fetchRemoteRepoBehaviorsViaPrs } from './fetchRemoteRepoBehaviorsViaPrs';
 
+const hasGithubToken = !!process.env.GITHUB_TOKEN;
+
 describe('fetchRemoteRepoBehaviorsViaPrs', () => {
-  given('[case1] a repo with PRs', () => {
+  given.skipIf(!hasGithubToken)('[case1] a repo with PRs', () => {
     when('[t0] fetching PR behaviors', () => {
       then('returns behaviors from PRs with behavior label', async () => {
         const behaviors = await fetchRemoteRepoBehaviorsViaPrs({
@@ -32,21 +34,24 @@ describe('fetchRemoteRepoBehaviorsViaPrs', () => {
     });
   });
 
-  given('[case2] a repo without behavior-labeled PRs', () => {
-    when('[t0] fetching PR behaviors', () => {
-      then('returns empty array', async () => {
-        const behaviors = await fetchRemoteRepoBehaviorsViaPrs({
-          source: {
-            org: 'ehmpathy',
-            repo: 'domain-objects',
-            branch: 'main',
-          },
-        });
+  given.skipIf(!hasGithubToken)(
+    '[case2] a repo without behavior-labeled PRs',
+    () => {
+      when('[t0] fetching PR behaviors', () => {
+        then('returns empty array', async () => {
+          const behaviors = await fetchRemoteRepoBehaviorsViaPrs({
+            source: {
+              org: 'ehmpathy',
+              repo: 'domain-objects',
+              branch: 'main',
+            },
+          });
 
-        // should return empty array (no PRs with behavior label)
-        expect(Array.isArray(behaviors)).toBe(true);
-        expect(behaviors).toEqual([]);
+          // should return empty array (no PRs with behavior label)
+          expect(Array.isArray(behaviors)).toBe(true);
+          expect(behaviors).toEqual([]);
+        });
       });
-    });
-  });
+    },
+  );
 });
