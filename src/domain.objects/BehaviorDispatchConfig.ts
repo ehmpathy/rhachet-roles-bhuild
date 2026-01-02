@@ -52,10 +52,10 @@ export interface BehaviorDispatchConfig {
    */
   cost: {
     /**
-     * amortization horizon in weeks for upfront costs
-     * @default 24 (1 half year)
+     * amortization horizon for upfront costs
+     * @default { weeks: 24 } (1 half year)
      */
-    horizon: number;
+    horizon: { weeks: number };
   };
   constraints: {
     maxConcurrency: number;

@@ -40,7 +40,7 @@ export const imagineBehaviorMeasuredCostExpend = async (
     gathered: BehaviorGathered;
     config: {
       cost: {
-        horizon: number;
+        horizon: { weeks: number };
       };
     };
   },
@@ -56,7 +56,7 @@ export const imagineBehaviorMeasuredCostExpend = async (
   // build prompt for brain.repl.imagine
   const prompt = buildExpendPrompt({
     gathered: input.gathered,
-    horizon: input.config.cost.horizon,
+    horizon: input.config.cost.horizon.weeks,
     content: { wish, vision, criteria },
   });
 
@@ -80,7 +80,7 @@ export const imagineBehaviorMeasuredCostExpend = async (
 
   // compute composite deterministically
   const composite =
-    estimation.upfront / input.config.cost.horizon + estimation.recurrent;
+    estimation.upfront / input.config.cost.horizon.weeks + estimation.recurrent;
 
   return new BehaviorMeasuredCostExpend({
     upfront: estimation.upfront,

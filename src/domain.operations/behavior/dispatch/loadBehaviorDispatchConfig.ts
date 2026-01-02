@@ -84,7 +84,7 @@ export const loadBehaviorDispatchConfig = async (input: {
       },
     },
     cost: {
-      horizon: parsed.cost?.horizon ?? 24,
+      horizon: { weeks: parsed.cost?.horizon ?? 24 },
     },
     constraints: {
       maxConcurrency: parsed.constraints?.maxConcurrency ?? 3,

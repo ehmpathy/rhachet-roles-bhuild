@@ -72,7 +72,7 @@ const mockContext = (input: { outputDir: string }) => ({
     sources: { local: { enabled: true }, remote: [] },
     output: input.outputDir,
     constraints: { maxConcurrency: 3 },
-    cost: { horizon: 52 },
+    cost: { horizon: { weeks: 52 } },
     gain: {
       hourlyRate: 100,
       defaults: { baseYieldage: 100, transitiveMultiplier: 0.5 },
