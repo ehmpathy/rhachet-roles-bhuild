@@ -11,15 +11,9 @@ import { renderBehaviorTriagedPrioritizationMd } from '../triage/renderBehaviorT
 import { archiveBehaviorIfChanged } from './archiveBehaviorIfChanged';
 
 /**
- * .what = composite skill: gather → deptrace → measure → triage with outputs
- * .why = provides full prioritization pipeline with file outputs
+ * .what = result type for getAllBehaviorPrioritized
  */
-export const getAllBehaviorPrioritized = async (
-  input: {
-    gatheredBasket: BehaviorGathered[];
-  },
-  context: BehaviorDispatchContext,
-): Promise<{
+export interface BehaviorPrioritizedResult {
   behaviors: BehaviorTriaged[];
   outputs: {
     prioritizationMd: string;
@@ -32,7 +26,18 @@ export const getAllBehaviorPrioritized = async (
     soon: number;
     later: number;
   };
-}> => {
+}
+
+/**
+ * .what = composite skill: gather → deptrace → measure → triage with outputs
+ * .why = provides full prioritization pipeline with file outputs
+ */
+export const getAllBehaviorPrioritized = async (
+  input: {
+    gatheredBasket: BehaviorGathered[];
+  },
+  context: BehaviorDispatchContext,
+): Promise<BehaviorPrioritizedResult> => {
   // deptrace all gathered behaviors
   context.log.debug('deptrace: computing dependencies');
   const deptracedBasket = await getAllBehaviorDeptraced(
