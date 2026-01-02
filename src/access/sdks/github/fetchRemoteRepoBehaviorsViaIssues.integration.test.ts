@@ -2,8 +2,10 @@ import { given, then, when } from 'test-fns';
 
 import { fetchRemoteRepoBehaviorsViaIssues } from './fetchRemoteRepoBehaviorsViaIssues';
 
+const hasGithubToken = !!process.env.GITHUB_TOKEN;
+
 describe('fetchRemoteRepoBehaviorsViaIssues', () => {
-  given('[case1] a repo with issues', () => {
+  given.skipIf(!hasGithubToken)('[case1] a repo with issues', () => {
     when('[t0] fetching issue behaviors', () => {
       then(
         'returns synthetic behaviors from issues with behavior.wish label',
@@ -37,21 +39,24 @@ describe('fetchRemoteRepoBehaviorsViaIssues', () => {
     });
   });
 
-  given('[case2] a repo without behavior.wish issues', () => {
-    when('[t0] fetching issue behaviors', () => {
-      then('returns empty array', async () => {
-        const behaviors = await fetchRemoteRepoBehaviorsViaIssues({
-          source: {
-            org: 'ehmpathy',
-            repo: 'domain-objects',
-            branch: 'main',
-          },
-        });
+  given.skipIf(!hasGithubToken)(
+    '[case2] a repo without behavior.wish issues',
+    () => {
+      when('[t0] fetching issue behaviors', () => {
+        then('returns empty array', async () => {
+          const behaviors = await fetchRemoteRepoBehaviorsViaIssues({
+            source: {
+              org: 'ehmpathy',
+              repo: 'domain-objects',
+              branch: 'main',
+            },
+          });
 
-        // should return empty array (no issues with behavior.wish label)
-        expect(Array.isArray(behaviors)).toBe(true);
-        expect(behaviors).toEqual([]);
+          // should return empty array (no issues with behavior.wish label)
+          expect(Array.isArray(behaviors)).toBe(true);
+          expect(behaviors).toEqual([]);
+        });
       });
-    });
-  });
+    },
+  );
 });
