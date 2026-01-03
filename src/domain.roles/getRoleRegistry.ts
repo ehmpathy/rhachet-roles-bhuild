@@ -2,6 +2,7 @@ import { RoleRegistry } from 'rhachet';
 
 import { ROLE_BEHAVER } from './behaver/getBehaverRole';
 import { ROLE_DECOMPOSER } from './decomposer/getDecomposerRole';
+import { ROLE_DISPATCHER } from './dispatcher/getDispatcherRole';
 import { BHUILD_REGISTRY_README } from './getRoleRegistry.readme';
 
 /**
@@ -14,5 +15,5 @@ export const getRoleRegistry = (): RoleRegistry =>
   new RoleRegistry({
     slug: 'bhuild',
     readme: BHUILD_REGISTRY_README,
-    roles: [ROLE_BEHAVER, ROLE_DECOMPOSER],
+    roles: [ROLE_BEHAVER, ROLE_DECOMPOSER, ROLE_DISPATCHER],
   });

@@ -1,0 +1,78 @@
+if we take the frame of
+
+leverage.supportable = ease to support
+  - simple to grasp
+  - first to know
+  - fast to fix
+  - last to fail (strive for our work to be the last to cause an issue, due to robustness & resilience)
+
+leverage.authorable = ease to author
+  - simple
+  - fast
+  - safe to write & extend & evolve the behavior set
+
+leverage.adoptable = ease to adopt
+  - how easy it is to adopt the new tool that was written
+
+---
+
+e.g.,
+
+leverage.adoptable describes
+1. adoption cost (authorship cost, support cost)
+3. adoption range (range of usecases that this tool is available for adoption in)
+
+also,
+- cost of time upfront to learn
+  - that it should be adopted
+  - that it can be adopted
+  - how to adopt it...
+- maybe this is architect cost?
+
+---
+
+and it seems like there's a subtle relationship between
+
+- leverage.adoption
+- vs
+- leverage.authorship
+
+---
+
+we should try and practice usage of these terms across a few of the devtools we use often
+
+for example
+
+- github.com/ehmpathy/dynamodb-dao-generator
+- github.com/ehmpathy/with-simple-cache
+- github.com/ehmpathy/simple-in-memory-cache
+- github.com/ehmpathy/type-fns
+- github.com/ehmpathy/declapract
+- github.com/ehmpathy/declapract-typescript-ehmpathy
+- github.com/ehmpathy/declastruct-aws
+
+
+---
+
+research each of these tools
+
+then propose leverage measurements for each of these tools. execute for one tool at a time.
+
+for each lib,
+- emit .behavior/v2025_12_27.dispatcher/3.1.research.domain.leverage.v6.i1.$toolname.eval.md
+- in each eval, include
+  - description of the tool
+  - narrative of the leverage that it produces
+  - measurement proposal against the dimensions
+
+
+specifically, also consider
+- absolute gain per use
+- vs
+- relative percent of behaviors that need it (i.e., how often we'll gain from that leverage)
+
+
+---
+
+then, emit a summary of the results into
+- .behavior/v2025_12_27.dispatcher/3.1.research.domain.leverage.v6.src.i1.md

@@ -1,0 +1,89 @@
+import { given, then, useBeforeAll, when } from 'test-fns';
+
+import { cloneBehaviorAsset } from '../../../../.test/assets/cloneBehaviorAsset';
+import { REPEATABILITY_CONFIG } from '../../../../.test/assets/repeatability';
+import { Behavior } from '../../../../domain.objects/Behavior';
+import { BehaviorDeptraced } from '../../../../domain.objects/BehaviorDeptraced';
+import type { BehaviorDispatchContext } from '../../../../domain.objects/BehaviorDispatchContext';
+import { BehaviorGathered } from '../../../../domain.objects/BehaviorGathered';
+import { invokeBrainRepl } from '../../../../infra/brain/invokeBrainRepl';
+import { imagineBehaviorMeasuredGainLeverage } from './imagineBehaviorMeasuredGainLeverage';
+
+/**
+ * .what = integration test for imagineBehaviorMeasuredGainLeverage with documentation task
+ * .why = verifies brain.repl.imagine produces valid leverage structure for minimal-leverage tasks
+ */
+describe('imagineBehaviorMeasuredGainLeverage', () => {
+  const context: BehaviorDispatchContext = useBeforeAll(async () => ({
+    config: {
+      output: '.dispatch',
+      sources: { local: { enabled: true }, remote: [] },
+      criteria: {
+        gain: { leverage: { weights: { author: 0.5, support: 0.5 } } },
+        convert: { equate: { cash: { dollars: 150 }, time: { hours: 1 } } },
+      },
+      cost: { horizon: { weeks: 24 } },
+      constraints: { maxConcurrency: 3 },
+    },
+    cacheDir: { mounted: { path: '/tmp/test-dispatch' } },
+    brain: {
+      repl: {
+        imagine: (input) =>
+          invokeBrainRepl({ ...input, options: { model: 'haiku' } }),
+      },
+    },
+    log: console,
+  }));
+
+  given('[case2] documentation behavior with minimal leverage', () => {
+    const scene = useBeforeAll(async () => {
+      const behavior = new Behavior({
+        org: 'test',
+        repo: 'repo',
+        name: 'add-readme',
+      });
+
+      // clone behavior asset to temp dir
+      const { files } = await cloneBehaviorAsset({
+        behaviorName: 'add-readme',
+      });
+
+      const gathered = new BehaviorGathered({
+        gatheredAt: new Date().toISOString(),
+        behavior,
+        contentHash: 'hash-docs',
+        status: 'constrained',
+        files,
+        source: { type: 'repo.local' },
+      });
+      const deptraced = new BehaviorDeptraced({
+        deptracedAt: new Date().toISOString(),
+        gathered: { behavior, contentHash: 'hash-docs' },
+        dependsOnDirect: [],
+        dependsOnTransitive: [],
+      });
+      return { gathered, deptraced, basket: [gathered] };
+    });
+
+    when('[t0] estimating leverage for documentation task', () => {
+      then.repeatably(REPEATABILITY_CONFIG)(
+        'should return valid leverage structure',
+        async () => {
+          const result = await imagineBehaviorMeasuredGainLeverage(
+            {
+              gathered: scene.gathered,
+              deptraced: scene.deptraced,
+              basket: scene.basket,
+              config: { weights: { author: 0.5, support: 0.5 } },
+            },
+            context,
+          );
+
+          expect(typeof result.direct).toBe('number');
+          expect(typeof result.transitive).toBe('number');
+          expect(result.direct).toBeGreaterThanOrEqual(0);
+        },
+      );
+    });
+  });
+});
