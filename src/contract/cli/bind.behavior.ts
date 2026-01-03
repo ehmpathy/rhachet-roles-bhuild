@@ -19,10 +19,10 @@ import { z } from 'zod';
 
 import { getBehaviorDir } from '@src/domain.operations/behavior';
 import {
-  delBranchBehaviorBound,
-  getBoundBehaviorByBranch,
+  delBranchBehaviorBind,
+  getBranchBehaviorBind,
   getCurrentBranch,
-  setBranchBehaviorBound,
+  setBranchBehaviorBind,
 } from '@src/domain.operations/behavior/bind';
 import { getCliArgs } from '@src/infra/cli';
 
@@ -34,6 +34,7 @@ const schemaOfArgs = z.object({
   named: z.object({
     // skill-specific args
     behavior: z.string().optional(),
+    dir: z.string().optional(),
     // rhachet passthrough args (optional, ignored)
     repo: z.string().optional(),
     role: z.string().optional(),
@@ -52,24 +53,30 @@ export const bindBehavior = (): void => {
 
   // action is first ordered arg
   const action = ordered[0];
+  const cwd = named.dir ?? process.cwd();
 
   if (!action) {
     console.error('error: no action specified');
-    console.error('usage: bind.behavior.sh <set|get|del> [--behavior <name>]');
+    console.error(
+      'usage: bind.behavior.sh <set|get|del> [--behavior <name>] [--dir <path>]',
+    );
     process.exit(1);
   }
 
   if (!['set', 'get', 'del'].includes(action)) {
     console.error(`error: unknown action '${action}'`);
-    console.error('usage: bind.behavior.sh <set|get|del> [--behavior <name>]');
+    console.error(
+      'usage: bind.behavior.sh <set|get|del> [--behavior <name>] [--dir <path>]',
+    );
     process.exit(1);
   }
 
-  const branchName = getCurrentBranch();
+  const context = { cwd };
+  const branchName = getCurrentBranch({}, context);
 
   // dispatch
   if (action === 'get') {
-    const result = getBoundBehaviorByBranch({ branchName });
+    const result = getBranchBehaviorBind({ branchName }, context);
     if (!result.behaviorDir) {
       console.log('not bound');
     } else {
@@ -82,12 +89,12 @@ export const bindBehavior = (): void => {
       process.exit(1);
     }
 
-    const behaviorDir = getBehaviorDir({ name: behaviorName });
+    const behaviorDir = getBehaviorDir({ name: behaviorName, targetDir: cwd });
 
-    const result = setBranchBehaviorBound({
-      branchName,
-      behaviorDir,
-    });
+    const result = setBranchBehaviorBind(
+      { branchName, behaviorDir },
+      context,
+    );
 
     if (!result.success) {
       console.error(`error: ${result.message}`);
@@ -102,7 +109,7 @@ export const bindBehavior = (): void => {
 
     console.log(`✓ ${result.message}`);
   } else if (action === 'del') {
-    const result = delBranchBehaviorBound({ branchName });
+    const result = delBranchBehaviorBind({ branchName }, context);
     console.log(`✓ ${result.message}`);
   }
 };

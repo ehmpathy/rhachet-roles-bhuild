@@ -2,7 +2,7 @@ import { existsSync, rmSync } from 'fs';
 import { basename, join } from 'path';
 
 import { flattenBranchName } from './flattenBranchName';
-import { getBoundBehaviorByBranch } from './getBoundBehaviorByBranch';
+import { getBranchBehaviorBind } from './getBranchBehaviorBind';
 
 /**
  * .what = unbind a branch from its behavior
@@ -11,13 +11,17 @@ import { getBoundBehaviorByBranch } from './getBoundBehaviorByBranch';
  *
  * @returns success status and message
  */
-export const delBranchBehaviorBound = (input: {
-  branchName: string;
-}): { success: boolean; message: string; wasUnbound?: boolean } => {
+export const delBranchBehaviorBind = (
+  input: { branchName: string },
+  context?: { cwd?: string },
+): { success: boolean; message: string; wasUnbound?: boolean } => {
   const flatBranch = flattenBranchName({ branchName: input.branchName });
 
   // check if bound
-  const bound = getBoundBehaviorByBranch({ branchName: input.branchName });
+  const bound = getBranchBehaviorBind(
+    { branchName: input.branchName },
+    context,
+  );
 
   if (!bound.behaviorDir) {
     return {

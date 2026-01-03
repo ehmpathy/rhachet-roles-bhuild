@@ -12,7 +12,7 @@ import { existsSync, readFileSync } from 'fs';
 import { basename, relative } from 'path';
 
 import {
-  getBoundBehaviorByBranch,
+  getBranchBehaviorBind,
   getCurrentBranch,
   getLatestBlueprintByBehavior,
 } from '@src/domain.operations/behavior/bind';
@@ -45,7 +45,7 @@ export const bootBehavior = (): void => {
   // get current branch (exit silently if not in git repo)
   let currentBranch: string;
   try {
-    currentBranch = getCurrentBranch();
+    currentBranch = getCurrentBranch({});
   } catch {
     process.exit(0);
   }
@@ -55,7 +55,7 @@ export const bootBehavior = (): void => {
   }
 
   // check if bound
-  const bindResult = getBoundBehaviorByBranch({ branchName: currentBranch });
+  const bindResult = getBranchBehaviorBind({ branchName: currentBranch });
   const behaviorDir = bindResult.behaviorDir;
   const bindsCount = bindResult.binds.length;
 

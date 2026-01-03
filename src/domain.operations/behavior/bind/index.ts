@@ -1,6 +1,6 @@
-export { delBranchBehaviorBound } from './delBranchBehaviorBound';
+export { delBranchBehaviorBind } from './delBranchBehaviorBind';
 export { flattenBranchName } from './flattenBranchName';
-export { getBoundBehaviorByBranch } from './getBoundBehaviorByBranch';
+export { getBranchBehaviorBind } from './getBranchBehaviorBind';
 export { getCurrentBranch } from './getCurrentBranch';
 export { getLatestBlueprintByBehavior } from './getLatestBlueprintByBehavior';
-export { setBranchBehaviorBound } from './setBranchBehaviorBound';
+export { setBranchBehaviorBind } from './setBranchBehaviorBind';

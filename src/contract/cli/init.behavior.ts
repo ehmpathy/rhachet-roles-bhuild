@@ -29,9 +29,9 @@ import { basename, join, relative } from 'path';
 import { z } from 'zod';
 
 import {
-  getBoundBehaviorByBranch,
+  getBranchBehaviorBind,
   getCurrentBranch,
-  setBranchBehaviorBound,
+  setBranchBehaviorBind,
 } from '@src/domain.operations/behavior/bind';
 import { initBehaviorDir } from '@src/domain.operations/behavior/init';
 import { getCliArgs } from '@src/infra/cli';
@@ -62,21 +62,23 @@ export const initBehavior = (): void => {
   const { named } = getCliArgs({ schema: schemaOfArgs });
   const behaviorName = named.name;
   const rawTargetDir = named.dir ?? process.cwd();
+  const context = { cwd: rawTargetDir };
 
   // get current branch
-  const currentBranch = getCurrentBranch();
+  const currentBranch = getCurrentBranch({}, context);
 
   // check if branch already bound
-  const bindResult = getBoundBehaviorByBranch({ branchName: currentBranch });
+  const bindResult = getBranchBehaviorBind(
+    { branchName: currentBranch },
+    context,
+  );
   if (bindResult.behaviorDir) {
     console.error(
-      `error: branch '${currentBranch}' is already bound to: ${basename(bindResult.behaviorDir)}`,
+      `⛈️  error: branch '${currentBranch}' is already bound to: ${basename(bindResult.behaviorDir)}`,
     );
     console.error('');
-    console.error('to create a new behavior, use a new worktree:');
-    console.error('  git worktree add ../<new-dir> -b <new-branch>');
-    console.error('  cd ../<new-dir>');
-    console.error('  init.behavior.sh --name <new-behavior>');
+    console.error('to create a new behavior, use a new tree:');
+    console.error('  git tree set --from main --open <branch-name-new>');
     process.exit(1);
   }
 
@@ -115,11 +117,10 @@ export const initBehavior = (): void => {
   }
 
   // auto-bind: bind current branch to newly created behavior
-  setBranchBehaviorBound({
-    branchName: currentBranch,
-    behaviorDir,
-    boundBy: 'init.behavior skill',
-  });
+  setBranchBehaviorBind(
+    { branchName: currentBranch, behaviorDir, boundBy: 'init.behavior skill' },
+    context,
+  );
 
   console.log('');
   console.log('behavior thoughtroute initialized!');

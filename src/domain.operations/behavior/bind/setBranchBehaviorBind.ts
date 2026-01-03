@@ -2,7 +2,7 @@ import { mkdirSync, writeFileSync } from 'fs';
 import { basename, join } from 'path';
 
 import { flattenBranchName } from './flattenBranchName';
-import { getBoundBehaviorByBranch } from './getBoundBehaviorByBranch';
+import { getBranchBehaviorBind } from './getBranchBehaviorBind';
 
 /**
  * .what = bind a branch to a behavior
@@ -11,15 +11,21 @@ import { getBoundBehaviorByBranch } from './getBoundBehaviorByBranch';
  *
  * @returns success status and message
  */
-export const setBranchBehaviorBound = (input: {
-  branchName: string;
-  behaviorDir: string;
-  boundBy?: string;
-}): { success: boolean; message: string; alreadyBound?: boolean } => {
+export const setBranchBehaviorBind = (
+  input: {
+    branchName: string;
+    behaviorDir: string;
+    boundBy?: string;
+  },
+  context?: { cwd?: string },
+): { success: boolean; message: string; alreadyBound?: boolean } => {
   const flatBranch = flattenBranchName({ branchName: input.branchName });
 
   // check if already bound
-  const bound = getBoundBehaviorByBranch({ branchName: input.branchName });
+  const bound = getBranchBehaviorBind(
+    { branchName: input.branchName },
+    context,
+  );
 
   if (bound.behaviorDir) {
     if (bound.behaviorDir === input.behaviorDir) {

@@ -1,8 +1,9 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
-import os from 'os';
 import path from 'path';
 import { given, then, when } from 'test-fns';
+
+import { genTestGitRepo } from '../../../../accept.blackbox/.test/infra';
 
 const SCRIPT_PATH = path.join(__dirname, 'init.behavior.sh');
 
@@ -10,53 +11,47 @@ const SCRIPT_PATH = path.join(__dirname, 'init.behavior.sh');
  * .what = creates a temporary git repo for testing init.behavior
  * .why  = init.behavior.sh requires a git repo context
  */
-const createTestRepo = (input: {
-  branchName: string;
-}): { repoDir: string; cleanup: () => void } => {
-  // create temp directory
-  const repoDir = fs.mkdtempSync(path.join(os.tmpdir(), 'init-behavior-test-'));
-
-  // init git repo
-  execSync('git init', { cwd: repoDir });
-  execSync('git config user.email "test@test.com"', { cwd: repoDir });
-  execSync('git config user.name "Test"', { cwd: repoDir });
-
-  // create initial commit (required for branch operations)
-  fs.writeFileSync(path.join(repoDir, 'README.md'), '# Test');
-  execSync('git add .', { cwd: repoDir });
-  execSync('git commit -m "initial"', { cwd: repoDir });
-
-  // create and checkout the test branch
-  execSync(`git checkout -b "${input.branchName}"`, { cwd: repoDir });
-
-  return {
-    repoDir,
-    cleanup: () => fs.rmSync(repoDir, { recursive: true, force: true }),
-  };
-};
+const createTestRepo = (input: { branchName: string }) =>
+  genTestGitRepo({
+    prefix: 'init-behavior-test-',
+    branchName: input.branchName,
+  });
 
 /**
- * .what = runs init.behavior.sh with given args in given directory
- * .why  = centralizes script execution for tests
+ * .what = runs init.behavior.sh with given args targeting a specific directory
+ * .why  = runs from source dir (where package is resolvable) with --dir flag
  */
 const runInitBehavior = (input: {
   args: string;
-  cwd: string;
+  targetDir: string;
 }): { stdout: string; exitCode: number } => {
   try {
-    const stdout = execSync(`bash "${SCRIPT_PATH}" ${input.args}`, {
-      cwd: input.cwd,
-      encoding: 'utf-8',
-      env: {
-        ...process.env,
-        PATH: process.env.PATH,
+    const stdout = execSync(
+      `bash "${SCRIPT_PATH}" ${input.args} --dir "${input.targetDir}"`,
+      {
+        encoding: 'utf-8',
+        env: {
+          ...process.env,
+          PATH: process.env.PATH,
+        },
       },
-    });
+    );
     return { stdout: stdout.trim(), exitCode: 0 };
   } catch (error: unknown) {
-    const execError = error as { stdout?: string; status?: number };
+    const execError = error as {
+      stdout?: string;
+      stderr?: string;
+      status?: number;
+    };
+    // combine stdout and stderr for error checking
+    const output = [
+      (execError.stdout ?? '').toString().trim(),
+      (execError.stderr ?? '').toString().trim(),
+    ]
+      .filter(Boolean)
+      .join('\n');
     return {
-      stdout: (execError.stdout ?? '').toString().trim(),
+      stdout: output,
       exitCode: execError.status ?? 1,
     };
   }
@@ -79,7 +74,7 @@ describe('init.behavior.sh', () => {
       then('creates behavior directory with all scaffold files', () => {
         const result = runInitBehavior({
           args: '--name test-behavior',
-          cwd: testRepo.repoDir,
+          targetDir: testRepo.repoDir,
         });
 
         expect(result.exitCode).toBe(0);
@@ -115,7 +110,7 @@ describe('init.behavior.sh', () => {
         try {
           const result = runInitBehavior({
             args: '--name auto-bind-test',
-            cwd: freshRepo.repoDir,
+            targetDir: freshRepo.repoDir,
           });
 
           expect(result.exitCode).toBe(0);
@@ -158,7 +153,7 @@ describe('init.behavior.sh', () => {
         // first, create a behavior and bind the branch
         runInitBehavior({
           args: '--name first-behavior',
-          cwd: testRepo.repoDir,
+          targetDir: testRepo.repoDir,
         });
       });
 
@@ -169,7 +164,7 @@ describe('init.behavior.sh', () => {
       then('fails fast with helpful error', () => {
         const result = runInitBehavior({
           args: '--name second-behavior',
-          cwd: testRepo.repoDir,
+          targetDir: testRepo.repoDir,
         });
 
         expect(result.exitCode).toBe(1);
@@ -196,14 +191,14 @@ describe('init.behavior.sh', () => {
         // first run creates the behavior
         const firstResult = runInitBehavior({
           args: '--name same-behavior',
-          cwd: testRepo.repoDir,
+          targetDir: testRepo.repoDir,
         });
         expect(firstResult.exitCode).toBe(0);
 
         // second run should fail because branch is now bound
         const secondResult = runInitBehavior({
           args: '--name same-behavior',
-          cwd: testRepo.repoDir,
+          targetDir: testRepo.repoDir,
         });
         expect(secondResult.exitCode).toBe(1);
         expect(secondResult.stdout).toContain('already bound to');

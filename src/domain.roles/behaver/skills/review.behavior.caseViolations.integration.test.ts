@@ -8,13 +8,13 @@ import {
   findFeedbackFile,
   prepareFixtureWithGit,
   SKILL_PATH,
-} from './review.behavior.test.utils';
+} from './.test/utils';
 
 describe('review.behavior', () => {
   given('[case8] behavior with intentional rule violations', () => {
     const scene = useBeforeAll(async () => {
       const fixture = path.join(FIXTURES_PATH, 'behavior-with-violations');
-      const gitRepo = prepareFixtureWithGit(fixture);
+      const gitRepo = prepareFixtureWithGit({ fixturePath: fixture });
       return { gitRepo };
     });
 
@@ -44,7 +44,7 @@ describe('review.behavior', () => {
           scene.gitRepo,
           '.behavior/v2025_01_01.bad-behavior',
         );
-        const feedbackFile = findFeedbackFile(behaviorDir, 'wish');
+        const feedbackFile = findFeedbackFile({ dir: behaviorDir, pattern: 'wish' });
         expect(feedbackFile).toBeDefined();
 
         const content = fs.readFileSync(
@@ -77,7 +77,7 @@ describe('review.behavior', () => {
           scene.gitRepo,
           '.behavior/v2025_01_01.bad-behavior',
         );
-        const feedbackFile = findFeedbackFile(behaviorDir, 'criteria');
+        const feedbackFile = findFeedbackFile({ dir: behaviorDir, pattern: 'criteria' });
         expect(feedbackFile).toBeDefined();
 
         const content = fs.readFileSync(
