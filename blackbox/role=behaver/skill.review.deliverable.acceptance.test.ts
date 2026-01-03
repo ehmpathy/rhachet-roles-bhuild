@@ -4,9 +4,12 @@ import * as os from 'os';
 import * as path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
-import { genTestGitRepo } from '../../../../accept.blackbox/.test/infra';
+import { genTestGitRepo } from '../.test/infra';
 
-const SKILL_PATH = path.join(__dirname, 'review.deliverable.sh');
+const SKILL_PATH = path.join(
+  __dirname,
+  '../../src/domain.roles/behaver/skills/review.deliverable.sh',
+);
 const FIXTURES_PATH = path.join(__dirname, '.test/assets/example.repo');
 
 /**

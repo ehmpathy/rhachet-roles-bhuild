@@ -47,6 +47,6 @@ export const genTestGitRepo = (input?: {
 
   return {
     repoDir,
-    cleanup: () => fs.rmSync(repoDir, { recursive: true, force: true }),
+    cleanup: () => {}, // no-op: OS handles tmp cleanup
   };
 };

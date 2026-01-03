@@ -44,7 +44,10 @@ describe('review.behavior', () => {
           scene.gitRepo,
           '.behavior/v2025_01_01.good-behavior',
         );
-        const feedbackFile = findFeedbackFile({ dir: behaviorDir, pattern: 'wish' });
+        const feedbackFile = findFeedbackFile({
+          dir: behaviorDir,
+          pattern: 'wish',
+        });
         expect(feedbackFile).toBeDefined();
 
         const content = fs.readFileSync(
@@ -80,7 +83,10 @@ describe('review.behavior', () => {
           scene.gitRepo,
           '.behavior/v2025_01_01.good-behavior',
         );
-        const feedbackFile = findFeedbackFile({ dir: behaviorDir, pattern: 'criteria' });
+        const feedbackFile = findFeedbackFile({
+          dir: behaviorDir,
+          pattern: 'criteria',
+        });
         expect(feedbackFile).toBeDefined();
 
         const content = fs.readFileSync(

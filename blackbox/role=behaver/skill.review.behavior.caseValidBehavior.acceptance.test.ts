@@ -44,7 +44,10 @@ describe('review.behavior', () => {
           scene.gitRepo,
           '.behavior/v2025_01_01.get-weather-emoji',
         );
-        const feedbackFile = findFeedbackFile({ dir: behaviorDir, pattern: 'wish' });
+        const feedbackFile = findFeedbackFile({
+          dir: behaviorDir,
+          pattern: 'wish',
+        });
         expect(feedbackFile).toBeDefined();
       });
     });
@@ -71,7 +74,10 @@ describe('review.behavior', () => {
           scene.gitRepo,
           '.behavior/v2025_01_01.get-weather-emoji',
         );
-        const feedbackFile = findFeedbackFile({ dir: behaviorDir, pattern: 'criteria' });
+        const feedbackFile = findFeedbackFile({
+          dir: behaviorDir,
+          pattern: 'criteria',
+        });
         expect(feedbackFile).toBeDefined();
       });
     });
@@ -98,7 +104,10 @@ describe('review.behavior', () => {
           scene.gitRepo,
           '.behavior/v2025_01_01.get-weather-emoji',
         );
-        const feedbackFile = findFeedbackFile({ dir: behaviorDir, pattern: 'blueprint' });
+        const feedbackFile = findFeedbackFile({
+          dir: behaviorDir,
+          pattern: 'blueprint',
+        });
         expect(feedbackFile).toBeDefined();
       });
     });
@@ -125,7 +134,10 @@ describe('review.behavior', () => {
           scene.gitRepo,
           '.behavior/v2025_01_01.get-weather-emoji',
         );
-        const feedbackFile = findFeedbackFile({ dir: behaviorDir, pattern: 'roadmap' });
+        const feedbackFile = findFeedbackFile({
+          dir: behaviorDir,
+          pattern: 'roadmap',
+        });
         expect(feedbackFile).toBeDefined();
       });
     });
