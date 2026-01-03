@@ -1,4 +1,4 @@
-import { given, then, when } from 'test-fns';
+import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
   genConsumerRepo,
@@ -45,23 +45,19 @@ describe('decomposer.decompose acceptance (as consumer)', () => {
     });
 
     when('[t0] --mode plan is invoked', () => {
-      then('exits with code 0 (warns only)', () => {
-        const result = runDecomposeSkill({
+      const result = useBeforeAll(async () =>
+        runDecomposeSkill({
           behaviorName: 'decomposed-feature',
           mode: 'plan',
           repoDir: consumer.repoDir,
-        });
+        }),
+      );
 
+      then('exits with code 0 (warns only)', () => {
         expect(result.exitCode).toBe(0);
       });
 
       then('output warns about prior decomposition', () => {
-        const result = runDecomposeSkill({
-          behaviorName: 'decomposed-feature',
-          mode: 'plan',
-          repoDir: consumer.repoDir,
-        });
-
         expect(result.output).toContain('already decomposed');
       });
     });
@@ -84,23 +80,19 @@ describe('decomposer.decompose acceptance (as consumer)', () => {
     });
 
     when('[t0] --mode plan is invoked', () => {
-      then('exits with non-zero code', () => {
-        const result = runDecomposeSkill({
+      const result = useBeforeAll(async () =>
+        runDecomposeSkill({
           behaviorName: 'no-criteria-feature',
           mode: 'plan',
           repoDir: consumer.repoDir,
-        });
+        }),
+      );
 
+      then('exits with non-zero code', () => {
         expect(result.exitCode).not.toBe(0);
       });
 
       then('output mentions criteria requirement', () => {
-        const result = runDecomposeSkill({
-          behaviorName: 'no-criteria-feature',
-          mode: 'plan',
-          repoDir: consumer.repoDir,
-        });
-
         expect(result.output).toContain('criteria');
       });
     });
@@ -123,23 +115,19 @@ describe('decomposer.decompose acceptance (as consumer)', () => {
     });
 
     when('[t0] invoked without plan file', () => {
-      then('exits with non-zero code', () => {
-        const result = runDecomposeSkill({
+      const result = useBeforeAll(async () =>
+        runDecomposeSkill({
           behaviorName: 'apply-test-feature',
           mode: 'apply',
           repoDir: consumer.repoDir,
-        });
+        }),
+      );
 
+      then('exits with non-zero code', () => {
         expect(result.exitCode).not.toBe(0);
       });
 
       then('output mentions --plan requirement', () => {
-        const result = runDecomposeSkill({
-          behaviorName: 'apply-test-feature',
-          mode: 'apply',
-          repoDir: consumer.repoDir,
-        });
-
         expect(result.output).toContain('--plan');
       });
     });
