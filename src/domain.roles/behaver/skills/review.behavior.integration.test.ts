@@ -8,13 +8,13 @@ import {
   FIXTURES_PATH,
   prepareFixtureWithGit,
   SKILL_PATH,
-} from './review.behavior.test.utils';
+} from './.test/utils';
 
 describe('review.behavior', () => {
   given('ambiguous behavior name', () => {
     const scene = useBeforeAll(async () => {
       const fixture = path.join(FIXTURES_PATH, 'ambiguous-behavior');
-      const gitRepo = prepareFixtureWithGit(fixture);
+      const gitRepo = prepareFixtureWithGit({ fixturePath: fixture });
       return { gitRepo };
     });
 
@@ -79,7 +79,7 @@ describe('review.behavior', () => {
   given('behavior not found', () => {
     const scene = useBeforeAll(async () => {
       const fixture = path.join(FIXTURES_PATH, 'valid-behavior');
-      const gitRepo = prepareFixtureWithGit(fixture);
+      const gitRepo = prepareFixtureWithGit({ fixturePath: fixture });
       return { gitRepo };
     });
 
@@ -124,7 +124,7 @@ describe('review.behavior', () => {
   given('artifact file not found', () => {
     const scene = useBeforeAll(async () => {
       const fixture = path.join(FIXTURES_PATH, 'missing-criteria');
-      const gitRepo = prepareFixtureWithGit(fixture);
+      const gitRepo = prepareFixtureWithGit({ fixturePath: fixture });
       return { gitRepo };
     });
 

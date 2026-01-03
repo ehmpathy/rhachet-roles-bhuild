@@ -4,6 +4,8 @@ import * as os from 'os';
 import * as path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
+import { genTestGitRepo } from '../../../../accept.blackbox/.test/infra';
+
 const SKILL_PATH = path.join(__dirname, 'review.deliverable.sh');
 const FIXTURES_PATH = path.join(__dirname, '.test/assets/example.repo');
 
@@ -11,48 +13,48 @@ const FIXTURES_PATH = path.join(__dirname, '.test/assets/example.repo');
  * .what = finds feedback file matching pattern with timestamp
  * .why = feedback files now have dynamic timestamps in filename
  */
-const findFeedbackFile = (dir: string, pattern: string): string | undefined => {
-  const files = fs.readdirSync(dir);
-  return files.find((f) => f.startsWith(pattern) && f.endsWith('.md'));
+const findFeedbackFile = (input: {
+  dir: string;
+  pattern: string;
+}): string | undefined => {
+  const files = fs.readdirSync(input.dir);
+  return files.find((f) => f.startsWith(input.pattern) && f.endsWith('.md'));
 };
 
 /**
  * .what = creates a temp copy of fixture with real git history
  * .why = avoids git-within-git issues by isolating in /tmp
  */
-const prepareFixtureWithGit = (fixturePath: string): string => {
-  // create temp directory
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'review-test-'));
+const prepareFixtureWithGit = (input: { fixturePath: string }): string => {
+  // fail fast if fixture doesn't exist
+  if (!fs.existsSync(input.fixturePath)) {
+    throw new Error(
+      `prepareFixtureWithGit: fixture not found at ${input.fixturePath}`,
+    );
+  }
 
-  // copy fixture contents (including hidden directories like .behavior/)
-  execSync(`cp -a ${fixturePath}/. ${tempDir}/`);
-
-  // init git repo
-  execSync('git init', { cwd: tempDir });
-  execSync('git config user.email "test@test.com"', { cwd: tempDir });
-  execSync('git config user.name "Test"', { cwd: tempDir });
-
-  // commit behavior declarations on main
-  execSync('git add .behavior/', { cwd: tempDir });
-  execSync('git commit -m "initial: add behavior declarations"', {
-    cwd: tempDir,
+  // create base git repo from fixture
+  const { repoDir } = genTestGitRepo({
+    prefix: 'review-test-',
+    copyFrom: input.fixturePath,
+    commitGlob: '.behavior/',
   });
 
   // if src/ exists, create feature branch with deliverable
-  if (fs.existsSync(path.join(tempDir, 'src'))) {
-    execSync('git checkout -b feat/implementation', { cwd: tempDir });
-    execSync('git add src/', { cwd: tempDir });
-    execSync('git commit -m "feat: add implementation"', { cwd: tempDir });
+  if (fs.existsSync(path.join(repoDir, 'src'))) {
+    execSync('git checkout -b feat/implementation', { cwd: repoDir });
+    execSync('git add src/', { cwd: repoDir });
+    execSync('git commit -m "feat: add implementation"', { cwd: repoDir });
   }
 
-  return tempDir;
+  return repoDir;
 };
 
 describe('review.deliverable', () => {
   given('[case1] valid behavior with complete deliverable', () => {
     const scene = useBeforeAll(async () => {
       const fixture = path.join(FIXTURES_PATH, 'valid-behavior');
-      const gitRepo = prepareFixtureWithGit(fixture);
+      const gitRepo = prepareFixtureWithGit({ fixturePath: fixture });
       return { gitRepo };
     });
 
@@ -82,10 +84,11 @@ describe('review.deliverable', () => {
           scene.gitRepo,
           '.behavior/v2025_01_01.get-weather-emoji',
         );
-        const feedbackFile = findFeedbackFile(
-          behaviorDir,
-          '7.1.review.behavior.per_blueprint.[feedback].[given].by_robot.v',
-        );
+        const feedbackFile = findFeedbackFile({
+          dir: behaviorDir,
+          pattern:
+            '7.1.review.behavior.per_blueprint.[feedback].[given].by_robot.v',
+        });
         expect(feedbackFile).toBeDefined();
 
         const content = fs.readFileSync(
@@ -134,10 +137,11 @@ describe('review.deliverable', () => {
           scene.gitRepo,
           '.behavior/v2025_01_01.get-weather-emoji',
         );
-        const feedbackFile = findFeedbackFile(
-          behaviorDir,
-          '7.1.review.behavior.per_wish_vision_criteria.[feedback].[given].by_robot.v',
-        );
+        const feedbackFile = findFeedbackFile({
+          dir: behaviorDir,
+          pattern:
+            '7.1.review.behavior.per_wish_vision_criteria.[feedback].[given].by_robot.v',
+        });
         expect(feedbackFile).toBeDefined();
       });
     });
@@ -164,10 +168,11 @@ describe('review.deliverable', () => {
           scene.gitRepo,
           '.behavior/v2025_01_01.get-weather-emoji',
         );
-        const feedbackFile = findFeedbackFile(
-          behaviorDir,
-          '7.1.review.behavior.per_roadmap.[feedback].[given].by_robot.v',
-        );
+        const feedbackFile = findFeedbackFile({
+          dir: behaviorDir,
+          pattern:
+            '7.1.review.behavior.per_roadmap.[feedback].[given].by_robot.v',
+        });
         expect(feedbackFile).toBeDefined();
       });
     });
@@ -176,7 +181,7 @@ describe('review.deliverable', () => {
   given('[case2] behavior with declaration file not found', () => {
     const scene = useBeforeAll(async () => {
       const fixture = path.join(FIXTURES_PATH, 'missing-criteria');
-      const gitRepo = prepareFixtureWithGit(fixture);
+      const gitRepo = prepareFixtureWithGit({ fixturePath: fixture });
       return { gitRepo };
     });
 
@@ -245,7 +250,7 @@ describe('review.deliverable', () => {
   given('[case3] ambiguous behavior name', () => {
     const scene = useBeforeAll(async () => {
       const fixture = path.join(FIXTURES_PATH, 'ambiguous-behavior');
-      const gitRepo = prepareFixtureWithGit(fixture);
+      const gitRepo = prepareFixtureWithGit({ fixturePath: fixture });
       return { gitRepo };
     });
 
@@ -325,7 +330,7 @@ describe('review.deliverable', () => {
   given('[case6] deliverable with intentional blocker', () => {
     const scene = useBeforeAll(async () => {
       const fixture = path.join(FIXTURES_PATH, 'valid-behavior-with-blocker');
-      const gitRepo = prepareFixtureWithGit(fixture);
+      const gitRepo = prepareFixtureWithGit({ fixturePath: fixture });
       return { gitRepo };
     });
 
@@ -355,10 +360,11 @@ describe('review.deliverable', () => {
           scene.gitRepo,
           '.behavior/v2025_01_01.get-weather-emoji',
         );
-        const feedbackFile = findFeedbackFile(
-          behaviorDir,
-          '7.1.review.behavior.per_criteria.[feedback].[given].by_robot.v',
-        );
+        const feedbackFile = findFeedbackFile({
+          dir: behaviorDir,
+          pattern:
+            '7.1.review.behavior.per_criteria.[feedback].[given].by_robot.v',
+        });
         expect(feedbackFile).toBeDefined();
 
         const content = fs.readFileSync(

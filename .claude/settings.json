@@ -44,22 +44,28 @@
         ]
       },
       {
-        "matcher": "Write",
+        "matcher": "Edit",
         "hooks": [
           {
             "type": "command",
-            "command": "./node_modules/.bin/rhachet roles init --repo ehmpathy --role mechanic --command claude.hooks/pretooluse.forbid-gerunds",
+            "command": "./node_modules/.bin/rhachet roles init --repo ehmpathy --role mechanic --command claude.hooks/pretooluse.prefer-morph-edit",
+            "timeout": 5,
+            "author": "repo=ehmpathy/role=mechanic"
+          },
+          {
+            "type": "command",
+            "command": ".agent/repo=ehmpathy/role=mechanic/inits/claude.hooks/pretooluse.forbid-gerunds.sh",
             "timeout": 5,
             "author": "repo=ehmpathy/role=mechanic"
           }
         ]
       },
       {
-        "matcher": "Edit",
+        "matcher": "Write",
         "hooks": [
           {
             "type": "command",
-            "command": "./node_modules/.bin/rhachet roles init --repo ehmpathy --role mechanic --command claude.hooks/pretooluse.forbid-gerunds",
+            "command": ".agent/repo=ehmpathy/role=mechanic/inits/claude.hooks/pretooluse.forbid-gerunds.sh",
             "timeout": 5,
             "author": "repo=ehmpathy/role=mechanic"
           }
@@ -76,6 +82,9 @@
       "WebFetch(domain:hub.docker.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:biomejs.dev)",
+      "WebFetch(domain:docs.morphllm.com)",
+      "WebFetch(domain:www.eesel.ai)",
+      "WebFetch(domain:www.morphllm.com)",
       "Bash(ls:*)",
       "Bash(tree:*)",
       "Bash(cat:*)",
@@ -89,8 +98,6 @@
       "Bash(mkdir:*)",
       "Bash(pwd)",
       "Bash(jq)",
-      "Bash(echo:*)",
-      "Bash(printf:*)",
       "Bash(git mv:*)",
       "Bash(git rm:*)",
       "Bash(git log:*)",
@@ -102,19 +109,16 @@
       "Bash(git ls-files:*)",
       "Bash(git ls-tree:*)",
       "Bash(git cat-file:*)",
-      "Bash(npx rhachet run --skill sedreplace:*)",
-      "Bash(npx rhachet run --skill cpsafe:*)",
-      "Bash(npx rhachet run --skill mvsafe:*)",
-      "Bash(npx rhachet run --skill rmsafe:*)",
-      "Bash(npx rhachet run --skill show.gh.action.logs:*)",
-      "Bash(npx rhachet run --skill show.gh.test.errors:*)",
-      "Bash(npx rhachet run --skill show.gh.test.errors --scope test-integration)",
+      "Bash(.agent/repo=ehmpathy/role=mechanic/skills/claude.tools/sedreplace.sh:*)",
+      "Bash(.agent/repo=ehmpathy/role=mechanic/skills/claude.tools/cpsafe.sh:*)",
+      "Bash(.agent/repo=ehmpathy/role=mechanic/skills/claude.tools/mvsafe.sh:*)",
+      "Bash(.agent/repo=ehmpathy/role=mechanic/skills/claude.tools/rmsafe.sh:*)",
       "Bash(npm view:*)",
       "Bash(npm list:*)",
       "Bash(npm remove:*)",
       "Bash(npm help:*)",
       "Bash(pnpm help:*)",
-      "Bash(npx rhachet:*)",
+      "Bash(npx rhachet roles boot --repo ehmpathy --role mechanic)",
       "Bash(npx tsx ./bin/run:*)",
       "Bash(npm run build:*)",
       "Bash(npm run build:compile)",
@@ -178,6 +182,7 @@
       "Bash(source .agent/repo=.this/role=any/skills/use.apikeys.sh)"
     ],
     "deny": [
+      "Bash(echo:*)",
       "Bash(find:*)",
       "Bash(gh api --method DELETE:*)",
       "Bash(gh api --method PATCH:*)",

@@ -1,11 +1,11 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
-import os from 'os';
 import path from 'path';
 import { given, then, when } from 'test-fns';
 
+import { genTestGitRepo } from '../../../../accept.blackbox/.test/infra';
+
 const SCRIPT_PATH = path.join(__dirname, 'bind.behavior.sh');
-const REPO_ROOT = path.join(__dirname, '../../..');
 
 /**
  * .what = creates a temporary git repo with a behavior directory for testing
@@ -15,21 +15,11 @@ const createTestRepo = (input: {
   branchName: string;
   behaviorName: string;
 }): { repoDir: string; cleanup: () => void } => {
-  // create temp directory
-  const repoDir = fs.mkdtempSync(path.join(os.tmpdir(), 'bind-behavior-test-'));
-
-  // init git repo
-  execSync('git init', { cwd: repoDir });
-  execSync('git config user.email "test@test.com"', { cwd: repoDir });
-  execSync('git config user.name "Test"', { cwd: repoDir });
-
-  // create initial commit (required for branch operations)
-  fs.writeFileSync(path.join(repoDir, 'README.md'), '# Test');
-  execSync('git add .', { cwd: repoDir });
-  execSync('git commit -m "initial"', { cwd: repoDir });
-
-  // create and checkout the test branch
-  execSync(`git checkout -b "${input.branchName}"`, { cwd: repoDir });
+  // create base git repo and checkout the test branch
+  const { repoDir, cleanup } = genTestGitRepo({
+    prefix: 'bind-behavior-test-',
+    branchName: input.branchName,
+  });
 
   // create behavior directory structure
   const behaviorDir = path.join(repoDir, '.behavior', input.behaviorName);
@@ -39,34 +29,44 @@ const createTestRepo = (input: {
     '# wish\n\ntest wish content',
   );
 
-  return {
-    repoDir,
-    cleanup: () => fs.rmSync(repoDir, { recursive: true, force: true }),
-  };
+  return { repoDir, cleanup };
 };
 
 /**
- * .what = runs bind.behavior.sh with given args in given directory
- * .why  = centralizes script execution for tests
+ * .what = runs bind.behavior.sh with given args targeting a specific directory
+ * .why  = runs from source dir (where package is resolvable) with --dir flag
  */
 const runBindBehavior = (input: {
   args: string;
-  cwd: string;
+  targetDir: string;
 }): { stdout: string; exitCode: number } => {
   try {
-    const stdout = execSync(`bash "${SCRIPT_PATH}" ${input.args}`, {
-      cwd: input.cwd,
-      encoding: 'utf-8',
-      env: {
-        ...process.env,
-        PATH: process.env.PATH,
+    const stdout = execSync(
+      `bash "${SCRIPT_PATH}" ${input.args} --dir "${input.targetDir}"`,
+      {
+        encoding: 'utf-8',
+        env: {
+          ...process.env,
+          PATH: process.env.PATH,
+        },
       },
-    });
+    );
     return { stdout: stdout.trim(), exitCode: 0 };
   } catch (error: unknown) {
-    const execError = error as { stdout?: string; status?: number };
+    const execError = error as {
+      stdout?: string;
+      stderr?: string;
+      status?: number;
+    };
+    // combine stdout and stderr for error checking
+    const output = [
+      (execError.stdout ?? '').toString().trim(),
+      (execError.stderr ?? '').toString().trim(),
+    ]
+      .filter(Boolean)
+      .join('\n');
     return {
-      stdout: (execError.stdout ?? '').toString().trim(),
+      stdout: output,
       exitCode: execError.status ?? 1,
     };
   }
@@ -89,8 +89,8 @@ describe('bind.behavior.sh', () => {
 
       then('creates .bind directory with flag file', () => {
         const result = runBindBehavior({
-          args: '--set --behavior test-behavior',
-          cwd: testRepo.repoDir,
+          args: 'set --behavior test-behavior',
+          targetDir: testRepo.repoDir,
         });
 
         expect(result.exitCode).toBe(0);
@@ -124,8 +124,8 @@ describe('bind.behavior.sh', () => {
         testRepo = createTestRepo({ branchName, behaviorName });
         // first bind
         runBindBehavior({
-          args: '--set --behavior same-behavior',
-          cwd: testRepo.repoDir,
+          args: 'set --behavior same-behavior',
+          targetDir: testRepo.repoDir,
         });
       });
 
@@ -135,8 +135,8 @@ describe('bind.behavior.sh', () => {
 
       then('succeeds idempotently', () => {
         const result = runBindBehavior({
-          args: '--set --behavior same-behavior',
-          cwd: testRepo.repoDir,
+          args: 'set --behavior same-behavior',
+          targetDir: testRepo.repoDir,
         });
 
         expect(result.exitCode).toBe(0);
@@ -168,8 +168,8 @@ describe('bind.behavior.sh', () => {
 
         // bind to first behavior
         runBindBehavior({
-          args: '--set --behavior first-behavior',
-          cwd: testRepo.repoDir,
+          args: 'set --behavior first-behavior',
+          targetDir: testRepo.repoDir,
         });
       });
 
@@ -179,13 +179,13 @@ describe('bind.behavior.sh', () => {
 
       then('fails fast with helpful error', () => {
         const result = runBindBehavior({
-          args: '--set --behavior second-behavior',
-          cwd: testRepo.repoDir,
+          args: 'set --behavior second-behavior',
+          targetDir: testRepo.repoDir,
         });
 
         expect(result.exitCode).toBe(1);
         expect(result.stdout).toContain('already bound to different behavior');
-        expect(result.stdout).toContain('--del');
+        expect(result.stdout).toContain('bind.behavior.sh del');
       });
     });
   });
@@ -209,8 +209,8 @@ describe('bind.behavior.sh', () => {
 
         // bind first
         runBindBehavior({
-          args: '--set --behavior delete-behavior',
-          cwd: testRepo.repoDir,
+          args: 'set --behavior delete-behavior',
+          targetDir: testRepo.repoDir,
         });
       });
 
@@ -223,8 +223,8 @@ describe('bind.behavior.sh', () => {
         expect(fs.existsSync(flagPath)).toBe(true);
 
         const result = runBindBehavior({
-          args: '--del',
-          cwd: testRepo.repoDir,
+          args: 'del',
+          targetDir: testRepo.repoDir,
         });
 
         expect(result.exitCode).toBe(0);
@@ -250,12 +250,12 @@ describe('bind.behavior.sh', () => {
 
       then('succeeds idempotently', () => {
         const result = runBindBehavior({
-          args: '--del',
-          cwd: testRepo.repoDir,
+          args: 'del',
+          targetDir: testRepo.repoDir,
         });
 
         expect(result.exitCode).toBe(0);
-        expect(result.stdout).toContain('no binding existed');
+        expect(result.stdout).toContain('no bind found');
       });
     });
   });
@@ -269,8 +269,8 @@ describe('bind.behavior.sh', () => {
       beforeAll(() => {
         testRepo = createTestRepo({ branchName, behaviorName });
         runBindBehavior({
-          args: '--set --behavior get-behavior',
-          cwd: testRepo.repoDir,
+          args: 'set --behavior get-behavior',
+          targetDir: testRepo.repoDir,
         });
       });
 
@@ -280,8 +280,8 @@ describe('bind.behavior.sh', () => {
 
       then('returns behavior name', () => {
         const result = runBindBehavior({
-          args: '--get',
-          cwd: testRepo.repoDir,
+          args: 'get',
+          targetDir: testRepo.repoDir,
         });
 
         expect(result.exitCode).toBe(0);
@@ -307,8 +307,8 @@ describe('bind.behavior.sh', () => {
 
       then('returns "not bound"', () => {
         const result = runBindBehavior({
-          args: '--get',
-          cwd: testRepo.repoDir,
+          args: 'get',
+          targetDir: testRepo.repoDir,
         });
 
         expect(result.exitCode).toBe(0);
@@ -334,7 +334,7 @@ describe('bind.behavior.sh', () => {
       then('fails fast with usage guidance', () => {
         const result = runBindBehavior({
           args: '',
-          cwd: testRepo.repoDir,
+          targetDir: testRepo.repoDir,
         });
 
         expect(result.exitCode).toBe(1);

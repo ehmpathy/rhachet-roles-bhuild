@@ -8,11 +8,11 @@ import { flattenBranchName } from './flattenBranchName';
  * .what = find which behavior (if any) a branch is bound to
  * .why  = both hooks and skills need to discover binds
  */
-export const getBoundBehaviorByBranch = (input: {
-  branchName?: string;
-  cwd?: string;
-}): { behaviorDir: string | null; binds: string[] } => {
-  const cwd = input.cwd ?? process.cwd();
+export const getBranchBehaviorBind = (
+  input: { branchName?: string },
+  context?: { cwd?: string },
+): { behaviorDir: string | null; binds: string[] } => {
+  const cwd = context?.cwd ?? process.cwd();
 
   // get the current branch name if not provided
   const branchName =

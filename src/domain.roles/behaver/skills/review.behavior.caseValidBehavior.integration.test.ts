@@ -8,13 +8,13 @@ import {
   findFeedbackFile,
   prepareFixtureWithGit,
   SKILL_PATH,
-} from './review.behavior.test.utils';
+} from './.test/utils';
 
 describe('review.behavior', () => {
   given('[case1] valid behavior with all artifacts', () => {
     const scene = useBeforeAll(async () => {
       const fixture = path.join(FIXTURES_PATH, 'valid-behavior');
-      const gitRepo = prepareFixtureWithGit(fixture);
+      const gitRepo = prepareFixtureWithGit({ fixturePath: fixture });
       return { gitRepo };
     });
 
@@ -44,7 +44,7 @@ describe('review.behavior', () => {
           scene.gitRepo,
           '.behavior/v2025_01_01.get-weather-emoji',
         );
-        const feedbackFile = findFeedbackFile(behaviorDir, 'wish');
+        const feedbackFile = findFeedbackFile({ dir: behaviorDir, pattern: 'wish' });
         expect(feedbackFile).toBeDefined();
       });
     });
@@ -71,7 +71,7 @@ describe('review.behavior', () => {
           scene.gitRepo,
           '.behavior/v2025_01_01.get-weather-emoji',
         );
-        const feedbackFile = findFeedbackFile(behaviorDir, 'criteria');
+        const feedbackFile = findFeedbackFile({ dir: behaviorDir, pattern: 'criteria' });
         expect(feedbackFile).toBeDefined();
       });
     });
@@ -98,7 +98,7 @@ describe('review.behavior', () => {
           scene.gitRepo,
           '.behavior/v2025_01_01.get-weather-emoji',
         );
-        const feedbackFile = findFeedbackFile(behaviorDir, 'blueprint');
+        const feedbackFile = findFeedbackFile({ dir: behaviorDir, pattern: 'blueprint' });
         expect(feedbackFile).toBeDefined();
       });
     });
@@ -125,7 +125,7 @@ describe('review.behavior', () => {
           scene.gitRepo,
           '.behavior/v2025_01_01.get-weather-emoji',
         );
-        const feedbackFile = findFeedbackFile(behaviorDir, 'roadmap');
+        const feedbackFile = findFeedbackFile({ dir: behaviorDir, pattern: 'roadmap' });
         expect(feedbackFile).toBeDefined();
       });
     });

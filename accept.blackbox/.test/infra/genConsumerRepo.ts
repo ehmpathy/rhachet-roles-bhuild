@@ -1,7 +1,8 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
-import os from 'os';
 import path from 'path';
+
+import { genTestGitRepo } from './genTestGitRepo';
 
 export interface ConsumerRepo {
   repoDir: string;
@@ -22,18 +23,10 @@ export const genConsumerRepo = (input?: {
   prefix?: string;
   withClaudeDir?: boolean;
 }): ConsumerRepo => {
-  const prefix = input?.prefix ?? 'consumer-test-';
-  const repoDir = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
-
-  // init git repo
-  execSync('git init', { cwd: repoDir });
-  execSync('git config user.email "test@test.com"', { cwd: repoDir });
-  execSync('git config user.name "Test"', { cwd: repoDir });
-
-  // create initial commit
-  fs.writeFileSync(path.join(repoDir, 'README.md'), '# Test Consumer Repo');
-  execSync('git add .', { cwd: repoDir });
-  execSync('git commit -m "initial"', { cwd: repoDir });
+  // create base git repo
+  const { repoDir, cleanup } = genTestGitRepo({
+    prefix: input?.prefix ?? 'consumer-test-',
+  });
 
   // create .claude directory if requested
   if (input?.withClaudeDir) {
@@ -94,10 +87,5 @@ export const getInvokeHooks = (): InvokeHooks[] => [getInvokeHooksBhuild()];
     stdio: 'pipe',
   });
 
-  return {
-    repoDir,
-    cleanup: () => {
-      // no-op: OS auto-prunes /tmp
-    },
-  };
+  return { repoDir, cleanup };
 };

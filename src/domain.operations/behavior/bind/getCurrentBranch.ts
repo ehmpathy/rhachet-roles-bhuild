@@ -5,8 +5,12 @@ import { execSync } from 'child_process';
  *
  * .why  = needed for bind operations to determine which branch to bind
  */
-export const getCurrentBranch = (): string => {
+export const getCurrentBranch = (
+  _input: Record<string, never>,
+  context?: { cwd?: string },
+): string => {
   return execSync('git rev-parse --abbrev-ref HEAD', {
     encoding: 'utf-8',
+    cwd: context?.cwd,
   }).trim();
 };
