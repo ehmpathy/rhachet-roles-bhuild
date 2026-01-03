@@ -26,19 +26,19 @@ export const computePlanFromFile = async (input: {
   // validate required fields are present
   const data = planData as Record<string, unknown>;
   if (!data.behaviorSource)
-    throw new BadRequestError('plan file missing behaviorSource', {
+    throw new BadRequestError('plan file lacks behaviorSource', {
       planPath: input.planPath,
     });
   if (!data.behaviorsProposed)
-    throw new BadRequestError('plan file missing behaviorsProposed', {
+    throw new BadRequestError('plan file lacks behaviorsProposed', {
       planPath: input.planPath,
     });
   if (!data.contextAnalysis)
-    throw new BadRequestError('plan file missing contextAnalysis', {
+    throw new BadRequestError('plan file lacks contextAnalysis', {
       planPath: input.planPath,
     });
   if (!data.generatedAt)
-    throw new BadRequestError('plan file missing generatedAt', {
+    throw new BadRequestError('plan file lacks generatedAt', {
       planPath: input.planPath,
     });
 
