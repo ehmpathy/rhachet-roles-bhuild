@@ -101,7 +101,7 @@ describe('decompose.behavior.sh', () => {
   });
 
   given('[case5] --mode apply with nonexistent plan file', () => {
-    when('[t0] invoked with missing plan file', () => {
+    when('[t0] invoked with plan file not found', () => {
       then('exit code is non-zero', () => {
         const result = invokeDecomposeSkill({
           behaviorName: 'large-feature',

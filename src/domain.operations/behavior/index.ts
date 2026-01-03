@@ -1,0 +1,1 @@
+export { getBehaviorDir } from './getBehaviorDir';

@@ -7,7 +7,7 @@ import type { BehaviorDecompositionProposed } from '../../../domain.objects/Beha
 
 /**
  * .what = applies a decomposition plan by creating sub-behavior directories
- * .why = enables --mode apply to scaffold approved sub-behaviors
+ * .why = enables --mode apply to create approved sub-behaviors from templates
  */
 export const applyPlan = async (input: {
   plan: BehaviorDecompositionPlan;
@@ -38,7 +38,7 @@ export const applyPlan = async (input: {
       parentBehaviorPath,
     });
 
-  // check for existing z.decomposed.md (fail if already decomposed)
+  // check for z.decomposed.md marker (fail if already decomposed)
   const decomposedMarkerPath = path.join(parentBehaviorPath, 'z.decomposed.md');
   const alreadyDecomposed = await fs
     .access(decomposedMarkerPath)
