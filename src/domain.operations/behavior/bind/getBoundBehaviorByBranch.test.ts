@@ -16,7 +16,7 @@ describe('getBoundBehaviorByBranch', () => {
       });
 
       expect(result.behaviorDir).toContain('v2025_01_01.get-weather-emoji');
-      expect(result.bindings).toHaveLength(1);
+      expect(result.binds).toHaveLength(1);
     });
 
     test('returns null for an unbound branch', () => {
@@ -26,7 +26,7 @@ describe('getBoundBehaviorByBranch', () => {
       });
 
       expect(result.behaviorDir).toBeNull();
-      expect(result.bindings).toHaveLength(0);
+      expect(result.binds).toHaveLength(0);
     });
   });
 
@@ -38,7 +38,7 @@ describe('getBoundBehaviorByBranch', () => {
       });
 
       expect(result.behaviorDir).toBeNull();
-      expect(result.bindings).toHaveLength(0);
+      expect(result.binds).toHaveLength(0);
     });
   });
 });

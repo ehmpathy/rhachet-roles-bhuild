@@ -29,7 +29,7 @@ const mapConditionToEmoji = ({ condition }: { condition: string }): string => {
     sunny: '☀️',
     cloudy: '☁️',
     rainy: '🌧️',
-    // snowy: '❄️',  // INTENTIONAL DEFECT: missing snowy condition per criteria
+    // snowy: '❄️',  // INTENTIONAL DEFECT: snowy condition omitted per criteria
     stormy: '⛈️',
   };
   return map[condition] ?? '🌡️';

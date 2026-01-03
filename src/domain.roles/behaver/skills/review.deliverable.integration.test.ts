@@ -173,7 +173,7 @@ describe('review.deliverable', () => {
     });
   });
 
-  given('[case2] behavior with missing declaration file', () => {
+  given('[case2] behavior with declaration file not found', () => {
     const scene = useBeforeAll(async () => {
       const fixture = path.join(FIXTURES_PATH, 'missing-criteria');
       const gitRepo = prepareFixtureWithGit(fixture);
@@ -222,8 +222,8 @@ describe('review.deliverable', () => {
       });
     });
 
-    when('[t2] --against wish,vision,criteria (partial missing)', () => {
-      then('fails fast identifying the missing target', () => {
+    when('[t2] --against wish,vision,criteria (one not found)', () => {
+      then('fails fast on the target not found', () => {
         const result = spawnSync('bash', [
           SKILL_PATH,
           '--for.behavior',
@@ -271,8 +271,8 @@ describe('review.deliverable', () => {
     });
   });
 
-  given('[case4] missing required arguments', () => {
-    when('[t0] missing --for.behavior', () => {
+  given('[case4] required arguments not provided', () => {
+    when('[t0] --for.behavior not provided', () => {
       then('fails fast with usage guidance', () => {
         const result = spawnSync('bash', [
           SKILL_PATH,
@@ -287,7 +287,7 @@ describe('review.deliverable', () => {
       });
     });
 
-    when('[t1] missing --against', () => {
+    when('[t1] --against not provided', () => {
       then('fails fast with usage guidance', () => {
         const result = spawnSync('bash', [SKILL_PATH, '--for.behavior', 'foo']);
 

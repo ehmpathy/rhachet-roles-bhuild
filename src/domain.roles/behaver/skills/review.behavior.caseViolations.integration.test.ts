@@ -56,7 +56,7 @@ describe('review.behavior', () => {
     });
 
     when('[t1] review criteria (no BDD format)', () => {
-      then('feedback contains blocker for missing BDD format', () => {
+      then('feedback contains blocker for BDD format not found', () => {
         const result = spawnSync(
           'bash',
           [

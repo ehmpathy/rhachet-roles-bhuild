@@ -1,6 +1,6 @@
 /**
  * .what = does foo things
- * .why = for testing missing criteria scenario
+ * .why = for test of criteria not found scenario
  */
 export const foo = () => {
   return 'foo';

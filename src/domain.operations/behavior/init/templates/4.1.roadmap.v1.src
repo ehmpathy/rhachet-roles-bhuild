@@ -1,0 +1,20 @@
+declare a roadmap,
+
+- checklist style
+- with ordered dependencies
+- with behavioral acceptance criteria
+- with behavioral acceptance verification at each step
+
+for how to execute the blueprint specified in $BEHAVIOR_DIR_REL/3.3.blueprint.v1.i1.md
+
+ref:
+- $BEHAVIOR_DIR_REL/0.wish.md
+- $BEHAVIOR_DIR_REL/1.vision.md (if declared)
+- $BEHAVIOR_DIR_REL/2.criteria.blackbox.md (if declared)
+- $BEHAVIOR_DIR_REL/2.criteria.blueprint.md (if declared)
+- $BEHAVIOR_DIR_REL/3.2.distill.domain._.v1.i1.md (if declared)
+- $BEHAVIOR_DIR_REL/3.3.blueprint.v1.i1.md
+
+---
+
+emit into $BEHAVIOR_DIR_REL/4.1.roadmap.v1.i1.md

@@ -40,8 +40,8 @@ describe('review.behavior', () => {
     });
   });
 
-  given('missing required arguments', () => {
-    when('[t0] missing --of', () => {
+  given('required arguments not provided', () => {
+    when('[t0] --of not provided', () => {
       then('fails fast with usage guidance', () => {
         const result = spawnSync('bash', [SKILL_PATH, '--against', 'wish']);
 
@@ -121,7 +121,7 @@ describe('review.behavior', () => {
     });
   });
 
-  given('missing artifact file', () => {
+  given('artifact file not found', () => {
     const scene = useBeforeAll(async () => {
       const fixture = path.join(FIXTURES_PATH, 'missing-criteria');
       const gitRepo = prepareFixtureWithGit(fixture);
@@ -132,7 +132,7 @@ describe('review.behavior', () => {
       fs.rmSync(scene.gitRepo, { recursive: true, force: true });
     });
 
-    when('[t0] --against criteria (file missing)', () => {
+    when('[t0] --against criteria (file not found)', () => {
       then('fails fast with clear error', () => {
         const result = spawnSync('bash', [
           SKILL_PATH,
@@ -149,7 +149,7 @@ describe('review.behavior', () => {
       });
     });
 
-    when('[t1] --against wish,criteria (one missing)', () => {
+    when('[t1] --against wish,criteria (one not found)', () => {
       then('fails fast with clear error', () => {
         const result = spawnSync('bash', [
           SKILL_PATH,
