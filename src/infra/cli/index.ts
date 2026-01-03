@@ -1,2 +1,1 @@
-export { getCliArgs } from './getCliArgs';
-export { stripRhachetArgs } from './stripRhachetArgs';
+export { getCliArgs, schemaOfRhachetArgs } from './getCliArgs';

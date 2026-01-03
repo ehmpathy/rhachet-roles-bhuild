@@ -36,10 +36,16 @@ import { getCliArgs } from '@src/infra/cli';
 
 const schemaOfArgs = z.object({
   named: z.object({
+    // skill-specific args
     of: z.string(),
     mode: z.enum(['plan', 'apply']),
     plan: z.string().optional(),
     dir: z.string().optional(),
+    // rhachet passthrough args (optional, ignored)
+    repo: z.string().optional(),
+    role: z.string().optional(),
+    skill: z.string().optional(),
+    s: z.string().optional(),
   }),
   ordered: z.array(z.string()).default([]),
 });

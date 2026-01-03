@@ -1,7 +1,7 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { given, then, when } from 'test-fns';
+import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
   genConsumerRepo,
@@ -44,21 +44,18 @@ describe('behaver.bind.behavior acceptance (as consumer)', () => {
     });
 
     when('[t0] get is invoked', () => {
-      then('exits with code 0', () => {
-        const result = runBindBehaviorSkill({
+      const result = useBeforeAll(async () =>
+        runBindBehaviorSkill({
           action: 'get',
           repoDir: consumer.repoDir,
-        });
+        }),
+      );
 
+      then('exits with code 0', () => {
         expect(result.exitCode).toBe(0);
       });
 
       then('outputs "not bound"', () => {
-        const result = runBindBehaviorSkill({
-          action: 'get',
-          repoDir: consumer.repoDir,
-        });
-
         expect(result.output).toContain('not bound');
       });
     });
@@ -134,37 +131,35 @@ describe('behaver.bind.behavior acceptance (as consumer)', () => {
     });
 
     when('[t0] get is invoked', () => {
-      then('outputs the bound behavior name', () => {
-        const result = runBindBehaviorSkill({
+      const result = useBeforeAll(async () =>
+        runBindBehaviorSkill({
           action: 'get',
           repoDir: consumer.repoDir,
-        });
+        }),
+      );
 
+      then('outputs the bound behavior name', () => {
         expect(result.output).toContain('bound-feature');
       });
     });
 
     when('[t1] del is invoked', () => {
-      then('exits with code 0', () => {
-        const result = runBindBehaviorSkill({
-          action: 'del',
-          repoDir: consumer.repoDir,
-        });
-
-        expect(result.exitCode).toBe(0);
-      });
-
-      then('removes the binding', () => {
+      const delResult = useBeforeAll(async () =>
         runBindBehaviorSkill({
           action: 'del',
           repoDir: consumer.repoDir,
-        });
+        }),
+      );
 
+      then('exits with code 0', () => {
+        expect(delResult.exitCode).toBe(0);
+      });
+
+      then('removes the binding', () => {
         const getResult = runBindBehaviorSkill({
           action: 'get',
           repoDir: consumer.repoDir,
         });
-
         expect(getResult.output).toContain('not bound');
       });
     });
@@ -186,23 +181,19 @@ describe('behaver.bind.behavior acceptance (as consumer)', () => {
     });
 
     when('[t0] skill is invoked with unknown behavior name', () => {
-      then('exits with non-zero code', () => {
-        const result = runBindBehaviorSkill({
+      const result = useBeforeAll(async () =>
+        runBindBehaviorSkill({
           action: 'set',
           behaviorName: 'nonexistent',
           repoDir: consumer.repoDir,
-        });
+        }),
+      );
 
+      then('exits with non-zero code', () => {
         expect(result.exitCode).not.toBe(0);
       });
 
       then('output mentions behavior not found', () => {
-        const result = runBindBehaviorSkill({
-          action: 'set',
-          behaviorName: 'nonexistent',
-          repoDir: consumer.repoDir,
-        });
-
         expect(result.output).toContain('no behavior found');
       });
     });

@@ -1,7 +1,7 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { given, then, when } from 'test-fns';
+import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
   genConsumerRepo,
@@ -131,21 +131,18 @@ describe('behaver.init.behavior acceptance (as consumer)', () => {
     });
 
     when('[t0] init.behavior --name second-behavior is invoked', () => {
-      then('exits with non-zero code', () => {
-        const result = runInitBehaviorSkill({
+      const result = useBeforeAll(async () =>
+        runInitBehaviorSkill({
           behaviorName: 'second-behavior',
           repoDir: consumer.repoDir,
-        });
+        }),
+      );
 
+      then('exits with non-zero code', () => {
         expect(result.exitCode).not.toBe(0);
       });
 
       then('output mentions branch is already bound', () => {
-        const result = runInitBehaviorSkill({
-          behaviorName: 'second-behavior',
-          repoDir: consumer.repoDir,
-        });
-
         expect(result.output).toContain('already bound');
       });
     });

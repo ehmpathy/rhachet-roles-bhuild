@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { given, then, when } from 'test-fns';
+import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
   genConsumerRepo,
@@ -11,36 +11,30 @@ import {
 describe('behaver role.init acceptance (as consumer)', () => {
   given('[case1] fresh consumer repo without behaver initialization', () => {
     when('[t0] roles init --role behaver is executed', () => {
-      let consumer: ConsumerRepo;
-
-      beforeAll(() => {
-        consumer = genConsumerRepo({
+      const consumer = useBeforeAll(async () =>
+        genConsumerRepo({
           prefix: 'roles-init-behaver-test-',
           withClaudeDir: true,
-        });
-      });
+        }),
+      );
 
       afterAll(() => {
         consumer.cleanup();
       });
 
-      then('exits with code 0', () => {
-        const result = runRolesInit({
-          repo: 'bhuild',
-          role: 'behaver',
-          repoDir: consumer.repoDir,
-        });
-
-        expect(result.exitCode).toBe(0);
-      });
-
-      then('initializes claude hooks for behaver', () => {
+      const result = useBeforeAll(async () =>
         runRolesInit({
           repo: 'bhuild',
           role: 'behaver',
           repoDir: consumer.repoDir,
-        });
+        }),
+      );
 
+      then('exits with code 0', () => {
+        expect(result.exitCode).toBe(0);
+      });
+
+      then('initializes claude hooks for behaver', () => {
         // verify the hooks were installed to settings.local.json
         const settingsPath = path.join(
           consumer.repoDir,
