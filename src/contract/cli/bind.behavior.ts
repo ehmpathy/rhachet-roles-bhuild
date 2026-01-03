@@ -91,10 +91,7 @@ export const bindBehavior = (): void => {
 
     const behaviorDir = getBehaviorDir({ name: behaviorName, targetDir: cwd });
 
-    const result = setBranchBehaviorBind(
-      { branchName, behaviorDir },
-      context,
-    );
+    const result = setBranchBehaviorBind({ branchName, behaviorDir }, context);
 
     if (!result.success) {
       console.error(`error: ${result.message}`);

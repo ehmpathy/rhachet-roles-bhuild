@@ -171,6 +171,9 @@ jobs:
       - name: start:livedb:dev
         run: npm run start:livedb:dev --if-present
 
+      - name: build
+        run: npm run build
+
       - name: test:integration
         run: THOROUGH=true npm run test:integration
         env:

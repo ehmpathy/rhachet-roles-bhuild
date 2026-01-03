@@ -1,9 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { genTestGitRepo } from '../../../../../accept.blackbox/.test/infra';
+import { genTestGitRepo } from '../../.test/infra';
 
-export const SKILL_PATH: string = path.join(__dirname, '../review.behavior.sh');
+export const SKILL_PATH: string = path.join(
+  __dirname,
+  '../../../src/domain.roles/behaver/skills/review.behavior.sh',
+);
 export const FIXTURES_PATH: string = path.join(
   __dirname,
   'assets/example.repo',
