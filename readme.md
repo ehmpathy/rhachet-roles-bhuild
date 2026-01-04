@@ -3,9 +3,11 @@
 ![test](https://github.com/ehmpathy/rhachet-roles-bhuild/workflows/test/badge.svg)
 ![publish](https://github.com/ehmpathy/rhachet-roles-bhuild/workflows/publish/badge.svg)
 
-reliable thought concept navigation roles, briefs, and skills, via [rhachet](https://github.com/ehmpathy/rhachet)
+roles for building resilient systems, via [rhachet](https://github.com/ehmpathy/rhachet)
 
 # purpose
+
+declare, decompose, and dispatch behaviors that shape your ecosystem.
 
 # install
 
@@ -46,43 +48,91 @@ used to maximize prioritized throughput within a resource bandwidth.
 used to decompose large behaviors into focused, independent sub-behaviors.
 ```
 
-## skills
+## 🌲 behaver skills
 
-### behaver: review.deliverable
+### init.behavior
 
-reviews an implementation deliverable against behavior declarations (wish, vision, criteria, blueprint, roadmap).
+initialize a `.behavior/` directory with structured scaffold for behavior-driven development.
 
 ```sh
-# review against a single declaration
-npx rhachet run --repo bhuild --skill review.deliverable \
-  --for.behavior get-weather-emoji \
-  --against blueprint
-
-# review against multiple declarations
-npx rhachet run --repo bhuild --skill review.deliverable \
-  --for.behavior get-weather-emoji \
-  --against wish,vision,criteria
-
-# interactive mode (opens claude code session)
-npx rhachet run --repo bhuild --skill review.deliverable \
-  --for.behavior get-weather-emoji \
-  --against blueprint \
-  --interactive
-
-# specify a different directory
-npx rhachet run --repo bhuild --skill review.deliverable \
-  --for.behavior get-weather-emoji \
-  --against blueprint \
-  --dir /path/to/project
+npx rhachet run --repo bhuild --role behaver --skill init.behavior \
+  --name say-hello
 ```
 
-output:
-- creates `.behavior/<behavior>/7.1.review.behavior.per_<targets>.[feedback].v1.[given].by_robot.v1.md`
-- logs to `.log/bhuild/review.deliverable/<timestamp>/`
+### bind.behavior
+
+bind, unbind, or query branch-to-behavior binds.
+
+```sh
+# bind current branch to a behavior
+npx rhachet run --repo bhuild --role behaver --skill bind.behavior \
+  --set --behavior say-hello
+
+# query current binding
+npx rhachet run --repo bhuild --role behaver --skill bind.behavior \
+  --get
+
+# unbind current branch
+npx rhachet run --repo bhuild --role behaver --skill bind.behavior \
+  --del
+```
+
+### review.behavior
+
+review behavior artifacts (wish, criteria, blueprint, roadmap) against best practice rules.
+
+```sh
+npx rhachet run --repo bhuild --role behaver --skill review.behavior \
+  --of say-hello
+
+npx rhachet run --repo bhuild --role behaver --skill review.behavior \
+  --of say-hello --against criteria,blueprint
+```
+
+### review.deliverable
+
+review an implementation deliverable against behavior declarations (wish, vision, criteria, blueprint, roadmap).
+
+```sh
+npx rhachet run --repo bhuild --role behaver --skill review.deliverable \
+  --for.behavior say-hello \
+  --against blueprint
+
+npx rhachet run --repo bhuild --role behaver --skill review.deliverable \
+  --for.behavior say-hello \
+  --against wish,vision,criteria \
+  --interactive
+```
+
+## 🍄 decomposer skills
+
+### review.behavior
+
+review behavior for decomposition need, by measurement of context pressure and domain breadth.
+
+```sh
+npx rhachet run --repo bhuild --role decomposer --skill review.behavior \
+  --of my-large-behavior
+```
+
+### decompose.behavior
+
+decompose a behavior into focused sub-behaviors that fit within context window limits.
+
+```sh
+# plan mode: analyze and propose sub-behaviors
+npx rhachet run --repo bhuild --role decomposer --skill decompose.behavior \
+  --of my-large-behavior --mode plan
+
+# apply mode: create sub-behaviors from approved plan
+npx rhachet run --repo bhuild --role decomposer --skill decompose.behavior \
+  --of my-large-behavior --mode apply \
+  --plan .behavior/my-large-behavior/z.decomposition.plan.json
+```
 
 # mascots
 
-this repo houses roles for beavers 🦫 — industrious builders of resilient ecosystems, who carefully construct the behaviors that shape their communities.
+this repo houses roles for beavers 🦫 — industrious builders of resilient system, who carefully construct the behaviors that shape their ecosystems.
 
 they wield:
 
