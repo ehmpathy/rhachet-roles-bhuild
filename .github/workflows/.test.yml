@@ -212,3 +212,5 @@ jobs:
 
       - name: test:acceptance:locally
         run: THOROUGH=true npm run test:acceptance --if-present
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
