@@ -60,7 +60,7 @@ describe('decompose.behavior.sh', () => {
           mode: 'plan',
           dir: path.join(ASSETS_DIR, 'no-criteria'),
         });
-        expect(result.stdout).toContain('criteria');
+        expect(result.stderr).toContain('criteria');
       });
     });
   });
@@ -95,7 +95,7 @@ describe('decompose.behavior.sh', () => {
           mode: 'apply',
           dir: path.join(ASSETS_DIR, 'needs-decomposition'),
         });
-        expect(result.stdout).toContain('--plan');
+        expect(result.stderr).toContain('--plan');
       });
     });
   });
@@ -119,7 +119,7 @@ describe('decompose.behavior.sh', () => {
           dir: path.join(ASSETS_DIR, 'needs-decomposition'),
           planFile: '/tmp/nonexistent-plan-file.json',
         });
-        expect(result.stdout).toContain('not found');
+        expect(result.stderr).toContain('not found');
       });
     });
   });

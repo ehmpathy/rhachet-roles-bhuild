@@ -4,7 +4,7 @@ import { getBranchBehaviorBind } from './getBranchBehaviorBind';
 
 const ASSETS_DIR = path.join(
   __dirname,
-  '../../../domain.roles/behaver/skills/.test/assets/example.repo/valid-behavior',
+  '../../../../blackbox/role=behaver/.test/assets/example.repo/valid-behavior',
 );
 
 describe('getBranchBehaviorBind', () => {

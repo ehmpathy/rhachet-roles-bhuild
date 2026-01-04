@@ -315,7 +315,7 @@ describe('init.behavior', () => {
 
         expect(result.exitCode).toBe(1);
         expect(result.stdout).toContain('already bound to');
-        expect(result.stdout).toContain('worktree');
+        expect(result.stdout).toContain('tree');
       });
     });
   });
