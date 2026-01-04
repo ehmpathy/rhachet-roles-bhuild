@@ -4,11 +4,7 @@ export const ROLE_BEHAVER: Role = Role.build({
   slug: 'behaver',
   name: 'Behaver',
   purpose: 'declare clear, buildable, and testable behaviors',
-  readme: `
-## 📐 Behaver
-
-Used to declare clear and testable behaviors that can be reliably built and verified.
-  `.trim(),
+  readme: { uri: __dirname + '/readme.md' },
   traits: [],
   skills: {
     dirs: [{ uri: __dirname + '/skills' }],
