@@ -178,7 +178,6 @@
       "Bash(source .agent/repo=.this/role=any/skills/use.apikeys.sh)"
     ],
     "deny": [
-      "Bash(echo:*)",
       "Bash(find:*)",
       "Bash(gh api --method DELETE:*)",
       "Bash(gh api --method PATCH:*)",
@@ -200,7 +199,7 @@
       "Bash(gh label delete:*)",
       "Bash(gh label edit:*)",
       "Bash(gh pr close:*)",
-      "Bash(gh pr comment:*)",
+      "Bash(gh pr commeot:*)",
       "Bash(gh pr create:*)",
       "Bash(gh pr edit:*)",
       "Bash(gh pr merge:*)",
