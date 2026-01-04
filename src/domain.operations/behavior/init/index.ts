@@ -1,0 +1,1 @@
+export { initBehaviorDir } from './initBehaviorDir';

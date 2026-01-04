@@ -60,7 +60,7 @@ describe('decompose.behavior.sh', () => {
           mode: 'plan',
           dir: path.join(ASSETS_DIR, 'no-criteria'),
         });
-        expect(result.stdout).toContain('criteria');
+        expect(result.stderr).toContain('criteria');
       });
     });
   });
@@ -95,13 +95,13 @@ describe('decompose.behavior.sh', () => {
           mode: 'apply',
           dir: path.join(ASSETS_DIR, 'needs-decomposition'),
         });
-        expect(result.stdout).toContain('--plan');
+        expect(result.stderr).toContain('--plan');
       });
     });
   });
 
   given('[case5] --mode apply with nonexistent plan file', () => {
-    when('[t0] invoked with missing plan file', () => {
+    when('[t0] invoked with plan file not found', () => {
       then('exit code is non-zero', () => {
         const result = invokeDecomposeSkill({
           behaviorName: 'large-feature',
@@ -119,7 +119,7 @@ describe('decompose.behavior.sh', () => {
           dir: path.join(ASSETS_DIR, 'needs-decomposition'),
           planFile: '/tmp/nonexistent-plan-file.json',
         });
-        expect(result.stdout).toContain('not found');
+        expect(result.stderr).toContain('not found');
       });
     });
   });

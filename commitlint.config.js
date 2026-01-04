@@ -12,7 +12,7 @@ module.exports = {
         'docs',
         'chore',
         'revert',
-        'prog',
+        'cont',
       ],
     ],
     // forbid ! prefix (use break: instead)

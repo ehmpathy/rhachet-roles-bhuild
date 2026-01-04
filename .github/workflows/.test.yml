@@ -171,6 +171,9 @@ jobs:
       - name: start:livedb:dev
         run: npm run start:livedb:dev --if-present
 
+      - name: build
+        run: npm run build
+
       - name: test:integration
         run: THOROUGH=true npm run test:integration
         env:
@@ -209,3 +212,5 @@ jobs:
 
       - name: test:acceptance:locally
         run: THOROUGH=true npm run test:acceptance --if-present
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}

@@ -97,8 +97,8 @@ describe('computePlanFromFile', () => {
     });
   });
 
-  given('[case3] plan file missing behaviorSource', () => {
-    const planPath = path.join(os.tmpdir(), 'missing-source-plan.json');
+  given('[case3] plan file lacks behaviorSource', () => {
+    const planPath = path.join(os.tmpdir(), 'lacks-source-plan.json');
 
     beforeAll(async () => {
       const plan = {
@@ -114,15 +114,15 @@ describe('computePlanFromFile', () => {
     });
 
     when('[t0] computePlanFromFile invoked', () => {
-      then('throws BadRequestError about missing behaviorSource', async () => {
+      then('throws BadRequestError about lacks behaviorSource', async () => {
         const error = await getError(computePlanFromFile({ planPath }));
-        expect(error.message).toContain('missing behaviorSource');
+        expect(error.message).toContain('lacks behaviorSource');
       });
     });
   });
 
-  given('[case4] plan file missing behaviorsProposed', () => {
-    const planPath = path.join(os.tmpdir(), 'missing-proposed-plan.json');
+  given('[case4] plan file lacks behaviorsProposed', () => {
+    const planPath = path.join(os.tmpdir(), 'lacks-proposed-plan.json');
 
     beforeAll(async () => {
       const plan = {
@@ -138,13 +138,10 @@ describe('computePlanFromFile', () => {
     });
 
     when('[t0] computePlanFromFile invoked', () => {
-      then(
-        'throws BadRequestError about missing behaviorsProposed',
-        async () => {
-          const error = await getError(computePlanFromFile({ planPath }));
-          expect(error.message).toContain('missing behaviorsProposed');
-        },
-      );
+      then('throws BadRequestError about lacks behaviorsProposed', async () => {
+        const error = await getError(computePlanFromFile({ planPath }));
+        expect(error.message).toContain('lacks behaviorsProposed');
+      });
     });
   });
 
