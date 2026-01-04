@@ -23,21 +23,27 @@ npx rhachet readme --registry bhuild
 produces
 
 ```md
-# 🏗️ bhuild role registry
+# 🦫 bhuild role registry
 
-This registry defines roles used to build systems and solutions.
-
----
-
-## 📐 Behaver
-
-Used to declare clear and testable behaviors that can be reliably built and verified.
+this registry defines roles used to build systems and solutions.
 
 ---
 
-## 📣 Dispatcher
+## 🌲 behaver
 
-Used to maximize prioritized throughput within a resource bandwidth.
+used to declare clear and testable behaviors that can be reliably built and verified.
+
+---
+
+## 💧 dispatcher
+
+used to maximize prioritized throughput within a resource bandwidth.
+
+---
+
+## 🍄 decomposer
+
+used to decompose large behaviors into focused, independent sub-behaviors.
 ```
 
 ## skills
@@ -73,3 +79,13 @@ npx rhachet run --repo bhuild --skill review.deliverable \
 output:
 - creates `.behavior/<behavior>/7.1.review.behavior.per_<targets>.[feedback].v1.[given].by_robot.v1.md`
 - logs to `.log/bhuild/review.deliverable/<timestamp>/`
+
+# mascots
+
+this repo houses roles for beavers 🦫 — industrious builders of resilient ecosystems, who carefully construct the behaviors that shape their communities.
+
+they wield:
+
+- 🌲 evergreen — for behavers — to grow the behaviors which define the system, dependably
+- 💧 water — for dispatchers — to channel work through constrained resources, optimally
+- 🍄 mushroom — for decomposers — to break down complexity into parts that nourish, reusably
