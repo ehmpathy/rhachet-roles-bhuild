@@ -1,0 +1,10 @@
+{
+  // explicit shards — each entry becomes one dedicated shard
+  // use for slow tests that would bottleneck dynamic distribution
+  "explicit": [],
+
+  // dynamic shards — rest of tests distributed via Jest --shard
+  "dynamic": {
+    "shards": 2
+  }
+}
