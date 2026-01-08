@@ -21,7 +21,9 @@ reference the below for full context
 - $BEHAVIOR_DIR_REL/1.vision.md (if declared)
 - $BEHAVIOR_DIR_REL/2.criteria.blackbox.md (if declared)
 - $BEHAVIOR_DIR_REL/2.criteria.blueprint.md (if declared)
+- $BEHAVIOR_DIR_REL/3.1.research.claims._.v1.i1.md (if declared)
 - $BEHAVIOR_DIR_REL/3.1.research.domain._.v1.i1.md (if declared)
+- $BEHAVIOR_DIR_REL/3.1.research.templates._.v1.i1.md (if declared)
 - $BEHAVIOR_DIR_REL/3.2.distill.domain._.v1.i1.md (if declared)
 
 ---
