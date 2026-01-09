@@ -56,7 +56,7 @@
   "dependencies": {
     "domain-objects": "0.31.9",
     "helpful-errors": "1.5.3",
-    "rhachet-roles-bhrain": "0.5.7",
+    "rhachet-roles-bhrain": "0.5.9",
     "test-fns": "1.7.2",
     "zod": "4.3.4"
   },
