@@ -1,4 +1,5 @@
 import { mkdirSync, writeFileSync } from 'fs';
+import { BadRequestError } from 'helpful-errors';
 import { basename, join } from 'path';
 
 import { flattenBranchName } from './flattenBranchName';
@@ -19,7 +20,15 @@ export const setBranchBehaviorBind = (
   },
   context?: { cwd?: string },
 ): { success: boolean; message: string; alreadyBound?: boolean } => {
-  const flatBranch = flattenBranchName({ branchName: input.branchName });
+  // reject bind to main or master branch
+  const branchesProtected = ['main', 'master'];
+  if (branchesProtected.includes(input.branchName))
+    throw new BadRequestError(
+      `can not bind '${input.branchName}' branch to a behavior. please switch to a scoped branch first, then run bind again`,
+      { branchName: input.branchName, branchesProtected },
+    );
+
+  const branchFlat = flattenBranchName({ branchName: input.branchName });
 
   // check if already bound
   const bound = getBranchBehaviorBind(
@@ -47,7 +56,7 @@ export const setBranchBehaviorBind = (
   mkdirSync(bindDir, { recursive: true });
 
   // create bind flag with metadata
-  const flagPath = join(bindDir, `${flatBranch}.flag`);
+  const flagPath = join(bindDir, `${branchFlat}.flag`);
   writeFileSync(
     flagPath,
     `branch: ${input.branchName}
