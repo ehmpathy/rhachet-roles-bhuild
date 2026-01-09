@@ -1,17 +1,8 @@
 /**
  * .what = review behavior for decomposition need
+ * .how  = TypeScript implementation for decomposer/review.behavior.sh skill
  *
- * .why  = enables detection of behaviors that have grown too large
- *         for reliable execution, by measurement of context pressure
- *         and domain breadth, with recommendation to decompose
- *
- * usage:
- *   npx tsx src/contract/cli/review.behavior.ts --of <behavior-name> [--dir <path>]
- *
- * guarantee:
- *   - fail-fast if behavior not found or ambiguous
- *   - fail-fast if behavior has no criteria (required for analysis)
- *   - idempotent: safe to rerun
+ * see src/domain.roles/decomposer/skills/review.behavior.sh for full documentation
  */
 
 import { readdirSync } from 'fs';

@@ -80,7 +80,7 @@
     "esbuild-register": "3.6.0",
     "husky": "8.0.3",
     "jest": "30.2.0",
-    "rhachet": "1.20.5",
+    "rhachet": "1.20.7",
     "rhachet-roles-bhuild": "link:.",
     "rhachet-roles-ehmpathy": "1.17.9",
     "tsc-alias": "1.8.10",

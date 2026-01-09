@@ -1,0 +1,13 @@
+{
+  "hooks": {
+    "SessionStart": [{
+      "matcher": "*",
+      "hooks": [{
+        "command": "some/path/role=behaver/boot.sh",
+        "name": "behaver-boot",
+        "timeout": 30000,
+        "author": "repo=bhuild/role=behaver"
+      }]
+    }]
+  }
+}

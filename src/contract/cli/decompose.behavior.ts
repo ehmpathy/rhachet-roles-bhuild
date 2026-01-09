@@ -1,20 +1,8 @@
 /**
  * .what = decompose a behavior into focused sub-behaviors
+ * .how  = TypeScript implementation for decompose.behavior.sh skill
  *
- * .why  = enables large behaviors to be split into independent,
- *         focused sub-behaviors that fit within context window limits
- *         and respect bounded context boundaries
- *
- * usage:
- *   npx tsx decompose.behavior.ts --of <behavior-name> --mode plan [--dir <path>]
- *   npx tsx decompose.behavior.ts --of <behavior-name> --mode apply --plan <plan-file> [--dir <path>]
- *
- * guarantee:
- *   - fail-fast if behavior not found or ambiguous
- *   - fail-fast if behavior has no criteria
- *   - fail-fast if --mode apply without --plan
- *   - fail-fast if behavior already decomposed (z.decomposed.md present)
- *   - idempotent: safe to rerun
+ * see src/domain.roles/decomposer/skills/decompose.behavior.sh for full documentation
  */
 
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';

@@ -1,17 +1,8 @@
 /**
  * .what = bind, unbind, or query branch-to-behavior bound
+ * .how  = TypeScript implementation for bind.behavior.sh skill
  *
- * .why  = explicit user control over which behavior applies to current branch
- *
- * usage:
- *   bind.behavior.sh set --behavior <name>   bind current branch
- *   bind.behavior.sh del                     unbind current branch
- *   bind.behavior.sh get                     query current bound
- *
- * guarantee:
- *   - fail-fast if behavior not found or ambiguous
- *   - fail-fast if set to different behavior (suggest del or worktree)
- *   - idempotent: set to same behavior succeeds, del when unbound succeeds
+ * see src/domain.roles/behaver/skills/bind.behavior.sh for full documentation
  */
 
 import { basename } from 'path';

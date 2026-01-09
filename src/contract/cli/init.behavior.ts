@@ -1,28 +1,8 @@
 /**
  * .what = initialize a .behavior directory for bhuild thoughtroute
+ * .how  = TypeScript implementation for init.behavior.sh skill
  *
- * .why  = standardize the behavior-driven development thoughtroute
- *         by creating a structured directory with:
- *           - wish definition
- *           - vision statement
- *           - blackbox criteria (user-facing behavioral requirements)
- *           - blueprint criteria (implementation requirements)
- *           - research prompts
- *           - distillation prompts
- *           - blueprint prompts
- *           - roadmap prompts
- *           - execution prompts
- *           - feedback template
- *
- * usage:
- *   npx tsx src/contract/cli/init.behavior.ts --name <behaviorname> [--dir <directory>]
- *
- * guarantee:
- *   - creates .behavior/ if not found
- *   - creates versioned behavior directory
- *   - findserts all thoughtroute files (creates if not found, skips if exists)
- *   - idempotent: safe to rerun
- *   - fail-fast on errors
+ * see src/domain.roles/behaver/skills/init.behavior.sh for full documentation
  */
 
 import { basename, join, relative } from 'path';

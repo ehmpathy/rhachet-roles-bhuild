@@ -1,0 +1,22 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "src/**",
+        "hooks": [{
+          "command": "echo src-hook",
+          "name": "src-hook",
+          "author": "repo=other/role=other"
+        }]
+      },
+      {
+        "matcher": "*",
+        "hooks": [{
+          "command": "echo global-hook",
+          "name": "global-hook",
+          "author": "repo=other/role=other"
+        }]
+      }
+    ]
+  }
+}

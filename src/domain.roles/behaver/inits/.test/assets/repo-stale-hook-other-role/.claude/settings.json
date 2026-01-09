@@ -1,0 +1,13 @@
+{
+  "hooks": {
+    "SessionStart": [{
+      "matcher": "*",
+      "hooks": [{
+        "command": "/nonexistent/path/to/other-script.sh",
+        "name": "other-role-hook",
+        "timeout": 30000,
+        "author": "repo=other/role=other"
+      }]
+    }]
+  }
+}
