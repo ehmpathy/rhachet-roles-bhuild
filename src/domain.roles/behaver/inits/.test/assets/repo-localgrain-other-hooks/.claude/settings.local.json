@@ -1,0 +1,13 @@
+{
+  "hooks": {
+    "SessionStart": [{
+      "matcher": "*",
+      "hooks": [{
+        "command": "some/path/role=other/boot.sh",
+        "name": "other-boot",
+        "timeout": 30000,
+        "author": "repo=other/role=other"
+      }]
+    }]
+  }
+}

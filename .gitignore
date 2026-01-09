@@ -1,5 +1,10 @@
 *.local.json
+!**/.test/assets/**/*.local.json
 *.log
+
+# claude settings: local overrides ignored, repo-level tracked
+.claude/settings.local.json
+!.claude/settings.json
 *.tsbuildinfo
 .artifact
 .env

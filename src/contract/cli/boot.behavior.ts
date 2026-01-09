@@ -1,11 +1,8 @@
 /**
  * .what = output bound behavior context for session start
- * .why  = agent starts with full awareness of current behavior
+ * .how  = TypeScript implementation for sessionstart.boot-behavior hook
  *
- * guarantee:
- *   ✔ exits 0 silently if branch not bound (unbound = normal work)
- *   ✔ exits 0 with warning if multiple binds (don't block session)
- *   ✔ never blocks session start (exit 0 always)
+ * see src/domain.roles/behaver/inits/claude.hooks/sessionstart.boot-behavior.sh for full documentation
  */
 
 import { existsSync, readFileSync } from 'fs';

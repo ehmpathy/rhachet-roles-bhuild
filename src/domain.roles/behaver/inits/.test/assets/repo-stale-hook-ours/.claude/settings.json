@@ -1,0 +1,13 @@
+{
+  "hooks": {
+    "SessionStart": [{
+      "matcher": "*",
+      "hooks": [{
+        "command": ".agent/repo=bhuild/role=behaver/inits/claude.hooks/old-boot-behavior.sh",
+        "name": "stale-boot-behavior",
+        "timeout": 30000,
+        "author": "repo=bhuild/role=behaver"
+      }]
+    }]
+  }
+}
