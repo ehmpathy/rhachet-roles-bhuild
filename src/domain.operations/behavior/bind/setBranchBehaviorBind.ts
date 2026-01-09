@@ -48,11 +48,9 @@ export const setBranchBehaviorBind = (
 
   // create bind flag with metadata
   const flagPath = join(bindDir, `${flatBranch}.flag`);
-  const boundAt = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
   writeFileSync(
     flagPath,
     `branch: ${input.branchName}
-bound_at: ${boundAt}
 bound_by: ${input.boundBy ?? 'bind.behavior skill'}
 `,
   );
