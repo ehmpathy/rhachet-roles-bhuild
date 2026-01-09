@@ -1,4 +1,4 @@
-research the templatest available in order to fulfill
+research the templates available in order to fulfill
 - this wish $BEHAVIOR_DIR_REL/0.wish.md
 - this vision $BEHAVIOR_DIR_REL/1.vision.md (if declared)
 - this criteria $BEHAVIOR_DIR_REL/2.criteria.md (if declared)
@@ -9,7 +9,7 @@ specifically
 
 ---
 
-use web search or the gh api to enumerate the contents of the templatest
+use web search or the gh api to enumerate the contents of the templates
 - cite every claim
 - number each citation
 - clone exact quotes from each citation
