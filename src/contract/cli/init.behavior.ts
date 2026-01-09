@@ -33,8 +33,14 @@ import {
   getCurrentBranch,
   setBranchBehaviorBind,
 } from '@src/domain.operations/behavior/bind';
-import { initBehaviorDir } from '@src/domain.operations/behavior/init';
+import {
+  computeOutputTree,
+  initBehaviorDir,
+} from '@src/domain.operations/behavior/init';
+import { computeFooterOutput } from '@src/domain.operations/behavior/render/computeFooterOutput';
 import { getCliArgs } from '@src/infra/cli';
+import { OpenerUnavailableError } from '@src/infra/shell/OpenerUnavailableError';
+import { openFileWithOpener } from '@src/infra/shell/openFileWithOpener';
 
 // ────────────────────────────────────────────────────────────────────
 // schema
@@ -45,6 +51,7 @@ const schemaOfArgs = z.object({
     // skill-specific args
     name: z.string(),
     dir: z.string().optional(),
+    open: z.string().optional(),
     // rhachet passthrough args (optional, ignored)
     repo: z.string().optional(),
     role: z.string().optional(),
@@ -64,23 +71,20 @@ export const initBehavior = (): void => {
   const rawTargetDir = named.dir ?? process.cwd();
   const context = { cwd: rawTargetDir };
 
-  // get current branch
-  const currentBranch = getCurrentBranch({}, context);
-
-  // check if branch already bound
-  const bindResult = getBranchBehaviorBind(
-    { branchName: currentBranch },
-    context,
-  );
-  if (bindResult.behaviorDir) {
-    console.error(
-      `⛈️  error: branch '${currentBranch}' is already bound to: ${basename(bindResult.behaviorDir)}`,
-    );
+  // validate --open has a value if provided
+  if (named.open !== undefined && named.open.trim() === '') {
+    console.error('⛈️  error: --open requires an editor name');
     console.error('');
-    console.error('to create a new behavior, use a new tree:');
-    console.error('  git tree set --from main --open <branch-name-new>');
+    console.error('please specify what editor to open with. for example:');
+    console.error('  --open codium');
+    console.error('  --open vim');
+    console.error('  --open zed');
+    console.error('  --open code');
     process.exit(1);
   }
+
+  // get current branch
+  const currentBranch = getCurrentBranch({}, context);
 
   // normalize target dir (trim trailing .behavior)
   const targetDir = rawTargetDir.replace(/\/?\.behavior\/?$/, '');
@@ -96,6 +100,21 @@ export const initBehavior = (): void => {
     `v${isoDate}.${behaviorName}`,
   );
 
+  // check if branch already bound (must be after behaviorDir is computed)
+  const bindResult = getBranchBehaviorBind(
+    { branchName: currentBranch },
+    context,
+  );
+  if (bindResult.behaviorDir && bindResult.behaviorDir !== behaviorDir) {
+    console.error(
+      `⛈️  error: branch '${currentBranch}' is already bound to: ${basename(bindResult.behaviorDir)}`,
+    );
+    console.error('');
+    console.error('to create a new behavior, use a new tree:');
+    console.error('  git tree set --from main --open <branch-name-new>');
+    process.exit(1);
+  }
+
   // compute relative path from caller's PWD for file contents
   let behaviorDirRel = join(
     relative(process.cwd(), targetDir),
@@ -108,13 +127,37 @@ export const initBehavior = (): void => {
   // initialize behavior directory with template files
   const result = initBehaviorDir({ behaviorDir, behaviorDirRel });
 
-  // log results
-  for (const file of result.kept) {
-    console.log(`   [KEEP] ${file}`);
+  // render tree-style output
+  const treeOutput = computeOutputTree({
+    created: result.created,
+    kept: result.kept,
+    updated: [],
+  });
+  console.log(treeOutput);
+
+  // compute relative path to wish file
+  const wishPathRel = `${behaviorDirRel}/0.wish.md`;
+
+  // try opener if --open is provided (before footer render)
+  let openerUsed: string | undefined;
+  if (named.open) {
+    try {
+      openFileWithOpener({ opener: named.open, filePath: wishPathRel });
+      openerUsed = named.open;
+    } catch (error) {
+      if (error instanceof OpenerUnavailableError) {
+        console.log('');
+        console.log(`⚠️  ${error.message}`);
+      } else {
+        throw error;
+      }
+    }
   }
-  for (const file of result.created) {
-    console.log(`   [CREATE] ${file}`);
-  }
+
+  // render footer with wish path (and opener if successful)
+  console.log('');
+  const footerOutput = computeFooterOutput({ wishPathRel, opener: openerUsed });
+  console.log(footerOutput);
 
   // auto-bind: bind current branch to newly created behavior
   setBranchBehaviorBind(
@@ -122,11 +165,15 @@ export const initBehavior = (): void => {
     context,
   );
 
+  // log branch bind confirmation
+  const dim = '\x1b[2m';
+  const reset = '\x1b[0m';
   console.log('');
-  console.log('behavior thoughtroute initialized!');
-  console.log(`   ${behaviorDir}`);
-  console.log('');
+  console.log(`🍄 we'll remember,`);
   console.log(
-    `branch '${currentBranch}' bound to: v${isoDate}.${behaviorName}`,
+    `   ├─ branch ${currentBranch} <-> behavior v${isoDate}.${behaviorName}`,
+  );
+  console.log(
+    `   └─ ${dim}branch bound to behavior, to boot via hooks${reset}`,
   );
 };
