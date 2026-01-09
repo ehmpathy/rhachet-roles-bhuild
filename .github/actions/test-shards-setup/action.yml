@@ -10,15 +10,12 @@ inputs:
     required: true
 
 outputs:
-  enabled:
-    description: "'true' if config exists and shards are enabled"
-    value: ${{ steps.generate.outputs.enabled }}
   matrix:
     description: "JSON array of shard configs for matrix strategy"
     value: ${{ steps.generate.outputs.matrix }}
-  explicit-patterns:
+  patterns:
     description: "pipe-delimited patterns for --testPathIgnorePatterns"
-    value: ${{ steps.generate.outputs.explicit-patterns }}
+    value: ${{ steps.generate.outputs.patterns }}
 
 runs:
   using: composite
@@ -30,14 +27,13 @@ runs:
         config_file="${{ inputs.config-file }}"
         test_type="${{ inputs.test-type }}"
 
-        # check if config exists
+        # no config = single dynamic shard (backwards compat)
         if [[ ! -f "$config_file" ]]; then
-          echo "::notice::$config_file not found, $test_type shard mode disabled"
-          echo 'enabled=false' >> $GITHUB_OUTPUT
+          echo "$test_type: no config, default to single shard"
+          echo 'matrix=[{"type":"dynamic","shard":1,"total":1}]' >> $GITHUB_OUTPUT
+          echo 'patterns=' >> $GITHUB_OUTPUT
           exit 0
         fi
-
-        echo 'enabled=true' >> $GITHUB_OUTPUT
 
         # read config (strip comments for jq)
         config=$(grep -v '^\s*//' "$config_file" | jq -c '.')
@@ -67,6 +63,6 @@ runs:
         explicit_patterns=$(echo "$explicit" | jq -r '.[].patterns[]' 2>/dev/null | paste -sd '|' || echo '')
 
         echo "matrix=$matrix" >> $GITHUB_OUTPUT
-        echo "explicit-patterns=$explicit_patterns" >> $GITHUB_OUTPUT
+        echo "patterns=$explicit_patterns" >> $GITHUB_OUTPUT
 
-        echo "::notice::$test_type shard mode enabled with $(echo "$matrix" | jq 'length') shards"
+        echo "$test_type: $(echo "$matrix" | jq 'length') shards"

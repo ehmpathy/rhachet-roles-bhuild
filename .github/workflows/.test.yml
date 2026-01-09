@@ -142,12 +142,10 @@ jobs:
     name: enshard
     runs-on: ubuntu-24.04
     outputs:
-      integration-enabled: ${{ steps.integration.outputs.enabled }}
       integration-matrix: ${{ steps.integration.outputs.matrix }}
-      integration-patterns: ${{ steps.integration.outputs.explicit-patterns }}
-      acceptance-enabled: ${{ steps.acceptance.outputs.enabled }}
+      integration-patterns: ${{ steps.integration.outputs.patterns }}
       acceptance-matrix: ${{ steps.acceptance.outputs.matrix }}
-      acceptance-patterns: ${{ steps.acceptance.outputs.explicit-patterns }}
+      acceptance-patterns: ${{ steps.acceptance.outputs.patterns }}
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -185,7 +183,6 @@ jobs:
   test-shards-integration:
     runs-on: ubuntu-24.04
     needs: [install, enshard]
-    if: needs.enshard.outputs.integration-enabled == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -225,7 +222,7 @@ jobs:
         if: matrix.shard.type == 'explicit'
         run: |
           patterns='${{ join(matrix.shard.patterns, '|') }}'
-          THOROUGH=true npm run test:integration -- --testPathPattern="$patterns"
+          THOROUGH=true npm run test:integration -- --testPathPattern="$patterns" --json --outputFile=jest-results.json
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
@@ -234,17 +231,28 @@ jobs:
         run: |
           exclude='${{ needs.enshard.outputs.integration-patterns }}'
           if [[ -n "$exclude" ]]; then
-            THOROUGH=true npm run test:integration -- --testPathIgnorePatterns="$exclude" --shard=${{ matrix.shard.shard }}/${{ matrix.shard.total }}
+            THOROUGH=true npm run test:integration -- --testPathIgnorePatterns="$exclude" --shard=${{ matrix.shard.shard }}/${{ matrix.shard.total }} --json --outputFile=jest-results.json
           else
-            THOROUGH=true npm run test:integration -- --shard=${{ matrix.shard.shard }}/${{ matrix.shard.total }}
+            THOROUGH=true npm run test:integration -- --shard=${{ matrix.shard.shard }}/${{ matrix.shard.total }} --json --outputFile=jest-results.json
           fi
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
+      - name: report slow tests
+        if: always() && hashFiles('jest-results.json') != ''
+        run: |
+          jq -r '.testResults[] | "\(.name):\(.perfStats.runtime)"' jest-results.json | while IFS=: read -r name runtime; do
+            seconds=$((runtime / 1000))
+            if [[ $seconds -ge 30 ]]; then
+              echo "::warning file=${name}::slow test: ${seconds}s"
+            elif [[ $seconds -ge 10 ]]; then
+              echo "::notice file=${name}::test duration: ${seconds}s"
+            fi
+          done
+
   test-shards-acceptance:
     runs-on: ubuntu-24.04
     needs: [install, enshard]
-    if: needs.enshard.outputs.acceptance-enabled == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -284,7 +292,7 @@ jobs:
         if: matrix.shard.type == 'explicit'
         run: |
           patterns='${{ join(matrix.shard.patterns, '|') }}'
-          THOROUGH=true npm run test:acceptance -- --testPathPattern="$patterns"
+          THOROUGH=true npm run test:acceptance -- --testPathPattern="$patterns" --json --outputFile=jest-results.json
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
@@ -293,123 +301,51 @@ jobs:
         run: |
           exclude='${{ needs.enshard.outputs.acceptance-patterns }}'
           if [[ -n "$exclude" ]]; then
-            THOROUGH=true npm run test:acceptance -- --testPathIgnorePatterns="$exclude" --shard=${{ matrix.shard.shard }}/${{ matrix.shard.total }}
+            THOROUGH=true npm run test:acceptance -- --testPathIgnorePatterns="$exclude" --shard=${{ matrix.shard.shard }}/${{ matrix.shard.total }} --json --outputFile=jest-results.json
           else
-            THOROUGH=true npm run test:acceptance -- --shard=${{ matrix.shard.shard }}/${{ matrix.shard.total }}
+            THOROUGH=true npm run test:acceptance -- --shard=${{ matrix.shard.shard }}/${{ matrix.shard.total }} --json --outputFile=jest-results.json
           fi
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
+      - name: report slow tests
+        if: always() && hashFiles('jest-results.json') != ''
+        run: |
+          jq -r '.testResults[] | "\(.name):\(.perfStats.runtime)"' jest-results.json | while IFS=: read -r name runtime; do
+            seconds=$((runtime / 1000))
+            if [[ $seconds -ge 30 ]]; then
+              echo "::warning file=${name}::slow test: ${seconds}s"
+            elif [[ $seconds -ge 10 ]]; then
+              echo "::notice file=${name}::test duration: ${seconds}s"
+            fi
+          done
+
+  # union job: aggregates shard results into single status for pr merge constraints
   test-integration:
     runs-on: ubuntu-24.04
     needs: [install, enshard, test-shards-integration]
     if: always() && needs.install.result == 'success' && needs.enshard.result == 'success'
     steps:
-      # early return: if shard mode enabled, just report results
       - name: report shard results
-        if: needs.enshard.outputs.integration-enabled == 'true'
         run: |
           if [[ "${{ needs.test-shards-integration.result }}" == "success" ]]; then
             echo "👌 all integration test shards passed"
           else
-            echo "::error::integration test shards failed"
+            echo "::error::some integration test shards failed"
             exit 1
           fi
 
-      # otherwise: full test flow (no shards, backwards compatible)
-      - name: checkout
-        if: needs.enshard.outputs.integration-enabled != 'true'
-        uses: actions/checkout@v4
-
-      - name: set node-version
-        if: needs.enshard.outputs.integration-enabled != 'true'
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: ".nvmrc"
-
-      - name: get node-modules from cache
-        if: needs.enshard.outputs.integration-enabled != 'true'
-        uses: actions/cache/restore@v4
-        with:
-          path: ./node_modules
-          key: ${{ needs.install.outputs.node-modules-cache-key }}
-
-      - name: get aws auth, if creds supplied
-        if: needs.enshard.outputs.integration-enabled != 'true' && inputs.creds-aws-role-arn
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ inputs.creds-aws-role-arn }}
-          aws-region: ${{ inputs.creds-aws-region }}
-
-      - name: start:testdb
-        if: needs.enshard.outputs.integration-enabled != 'true'
-        run: npm run start:testdb --if-present
-
-      - name: start:livedb:dev
-        if: needs.enshard.outputs.integration-enabled != 'true'
-        run: npm run start:livedb:dev --if-present
-
-      - name: build
-        if: needs.enshard.outputs.integration-enabled != 'true'
-        run: npm run build
-
-      - name: test:integration
-        if: needs.enshard.outputs.integration-enabled != 'true'
-        run: THOROUGH=true npm run test:integration
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-
+  # union job: aggregates shard results into single status for pr merge constraints
   test-acceptance-locally:
     runs-on: ubuntu-24.04
     needs: [install, enshard, test-shards-acceptance]
     if: always() && needs.install.result == 'success' && needs.enshard.result == 'success'
     steps:
-      # early return: if shard mode enabled, just report results
       - name: report shard results
-        if: needs.enshard.outputs.acceptance-enabled == 'true'
         run: |
           if [[ "${{ needs.test-shards-acceptance.result }}" == "success" ]]; then
             echo "👌 all acceptance test shards passed"
           else
-            echo "::error::acceptance test shards failed"
+            echo "::error::some acceptance test shards failed"
             exit 1
           fi
-
-      # otherwise: full test flow (no shards, backwards compatible)
-      - name: checkout
-        if: needs.enshard.outputs.acceptance-enabled != 'true'
-        uses: actions/checkout@v4
-
-      - name: set node-version
-        if: needs.enshard.outputs.acceptance-enabled != 'true'
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: ".nvmrc"
-
-      - name: get node-modules from cache
-        if: needs.enshard.outputs.acceptance-enabled != 'true'
-        uses: actions/cache/restore@v4
-        with:
-          path: ./node_modules
-          key: ${{ needs.install.outputs.node-modules-cache-key }}
-
-      - name: get aws auth, if creds supplied
-        if: needs.enshard.outputs.acceptance-enabled != 'true' && inputs.creds-aws-role-arn
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ inputs.creds-aws-role-arn }}
-          aws-region: ${{ inputs.creds-aws-region }}
-
-      - name: start:testdb
-        if: needs.enshard.outputs.acceptance-enabled != 'true'
-        run: npm run start:testdb --if-present
-
-      - name: start:livedb:dev
-        if: needs.enshard.outputs.acceptance-enabled != 'true'
-        run: npm run start:livedb:dev --if-present
-
-      - name: test:acceptance:locally
-        if: needs.enshard.outputs.acceptance-enabled != 'true'
-        run: THOROUGH=true npm run test:acceptance --if-present
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
