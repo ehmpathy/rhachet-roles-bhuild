@@ -169,7 +169,7 @@ describe('init.behavior', () => {
           repoDir: consumer.repoDir,
         });
 
-        expect(result.output).toContain('behavior thoughtroute initialized');
+        expect(result.output).toContain('🦫 oh, behave!');
       });
     });
   });
@@ -234,7 +234,7 @@ describe('init.behavior', () => {
         });
 
         expect(result.exitCode).toBe(0);
-        expect(result.stdout).toContain('behavior thoughtroute initialized');
+        expect(result.stdout).toContain('🦫 oh, behave!');
 
         const behaviorRoot = path.join(testRepo.repoDir, '.behavior');
         expect(fs.existsSync(behaviorRoot)).toBe(true);
@@ -265,7 +265,9 @@ describe('init.behavior', () => {
           });
 
           expect(result.exitCode).toBe(0);
-          expect(result.stdout).toContain('bound to:');
+          expect(result.stdout).toContain(`🍄 we'll remember,`);
+          expect(result.stdout).toContain('feature/auto-bind <-> behavior');
+          expect(result.stdout).toContain('to boot via hooks');
 
           const behaviorRoot = path.join(freshRepo.repoDir, '.behavior');
           const behaviorDirs = fs.readdirSync(behaviorRoot);
@@ -335,19 +337,131 @@ describe('init.behavior', () => {
         testRepo.cleanup();
       });
 
-      then('second run fails fast due to binding', () => {
+      then('second run succeeds (idempotent)', () => {
         const firstResult = runInitBehaviorSkillDirect({
           args: '--name same-behavior',
           targetDir: testRepo.repoDir,
         });
         expect(firstResult.exitCode).toBe(0);
+        expect(firstResult.stdout).toContain('+ 0.wish.md');
 
         const secondResult = runInitBehaviorSkillDirect({
           args: '--name same-behavior',
           targetDir: testRepo.repoDir,
         });
-        expect(secondResult.exitCode).toBe(1);
-        expect(secondResult.stdout).toContain('already bound to');
+        expect(secondResult.exitCode).toBe(0);
+        expect(secondResult.stdout).toContain('✓ 0.wish.md');
+      });
+    });
+  });
+
+  given('[case6] direct: --open flag with cat command', () => {
+    when('[t0] init.behavior executed with --open cat', () => {
+      const branchName = 'feature/open-cat-test';
+      let testRepo: { repoDir: string; cleanup: () => void };
+
+      beforeAll(() => {
+        testRepo = createTestRepo({ branchName });
+      });
+
+      afterAll(() => {
+        testRepo.cleanup();
+      });
+
+      then('cat command outputs wish file content', () => {
+        const result = runInitBehaviorSkillDirect({
+          args: '--name open-test --open cat',
+          targetDir: testRepo.repoDir,
+        });
+
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain('wish =');
+      });
+
+      then('footer shows "opened in cat"', () => {
+        const freshRepo = createTestRepo({ branchName: 'feature/opened-in-test' });
+
+        try {
+          const result = runInitBehaviorSkillDirect({
+            args: '--name opened-in-test --open cat',
+            targetDir: freshRepo.repoDir,
+          });
+
+          expect(result.exitCode).toBe(0);
+          expect(result.stdout).toContain('opened in cat');
+        } finally {
+          freshRepo.cleanup();
+        }
+      });
+
+      then('output contains footer with relative wish path', () => {
+        const freshRepo = createTestRepo({ branchName: 'feature/footer-test' });
+
+        try {
+          const result = runInitBehaviorSkillDirect({
+            args: '--name footer-test',
+            targetDir: freshRepo.repoDir,
+          });
+
+          expect(result.exitCode).toBe(0);
+          expect(result.stdout).toContain('🌲 go on then,');
+          expect(result.stdout).toContain('0.wish.md');
+        } finally {
+          freshRepo.cleanup();
+        }
+      });
+    });
+  });
+
+  given('[case7] direct: --open flag with unavailable command', () => {
+    when('[t0] init.behavior executed with --open nonexistent-xyz', () => {
+      const branchName = 'feature/open-fail-test';
+      let testRepo: { repoDir: string; cleanup: () => void };
+
+      beforeAll(() => {
+        testRepo = createTestRepo({ branchName });
+      });
+
+      afterAll(() => {
+        testRepo.cleanup();
+      });
+
+      then('behavior files are still created', () => {
+        const result = runInitBehaviorSkillDirect({
+          args: '--name open-fail-test --open nonexistent-xyz-12345',
+          targetDir: testRepo.repoDir,
+        });
+
+        // init should still succeed even if opener fails
+        const behaviorRoot = path.join(testRepo.repoDir, '.behavior');
+        expect(fs.existsSync(behaviorRoot)).toBe(true);
+
+        const behaviorDirs = fs.readdirSync(behaviorRoot);
+        const openFailDir = behaviorDirs.find((d) =>
+          d.includes('open-fail-test'),
+        );
+        expect(openFailDir).toBeDefined();
+
+        expect(
+          fs.existsSync(
+            path.join(behaviorRoot, openFailDir!, '0.wish.md'),
+          ),
+        ).toBe(true);
+      });
+
+      then('warn is shown about opener unavailable', () => {
+        const freshRepo = createTestRepo({ branchName: 'feature/warn-test' });
+
+        try {
+          const result = runInitBehaviorSkillDirect({
+            args: '--name warn-test --open nonexistent-xyz-12345',
+            targetDir: freshRepo.repoDir,
+          });
+
+          expect(result.stdout).toContain('unavailable');
+        } finally {
+          freshRepo.cleanup();
+        }
       });
     });
   });
