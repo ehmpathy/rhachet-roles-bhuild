@@ -1,0 +1,15 @@
+{
+  // explicit shards — each entry becomes one dedicated shard
+  // candidates based on test size (lines of code as proxy):
+  //   - skill.bind.behavior.acceptance.test.ts (545 lines)
+  //   - skill.review.deliverable.acceptance.test.ts (381 lines)
+  //   - skill.init.behavior.acceptance.test.ts (352 lines)
+  // NOTE: actual runtime data should drive explicit shard curation
+  "explicit": [],
+
+  // dynamic shards — rest of tests distributed via Jest --shard
+  // per wish: at least 3 dynamic shards
+  "dynamic": {
+    "shards": 3
+  }
+}

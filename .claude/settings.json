@@ -199,6 +199,7 @@
       "Bash(gh label delete:*)",
       "Bash(gh label edit:*)",
       "Bash(gh pr close:*)",
+      "Bash(gh pr comment:*)",
       "Bash(gh pr commeot:*)",
       "Bash(gh pr create:*)",
       "Bash(gh pr edit:*)",
