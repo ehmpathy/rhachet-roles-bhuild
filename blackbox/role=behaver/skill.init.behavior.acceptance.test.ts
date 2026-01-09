@@ -96,13 +96,15 @@ describe('init.behavior', () => {
     });
 
     when('[t0] init.behavior --name test-feature is invoked', () => {
-      then('exits with code 0', () => {
+      then('rejects bind to main branch', () => {
         const result = runInitBehaviorSkillViaRhachet({
           behaviorName: 'test-feature',
           repoDir: consumer.repoDir,
         });
 
-        expect(result.exitCode).toBe(0);
+        expect(result.exitCode).toBe(1);
+        expect(result.output).toContain('can not bind');
+        expect(result.output).toContain('main');
       });
 
       then('creates behavior directory with scaffold files', () => {
