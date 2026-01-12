@@ -1,0 +1,21 @@
+slug: bhuild
+readme: dist/domain.roles/readme.md
+roles:
+  - slug: behaver
+    readme: dist/domain.roles/behaver/readme.md
+    briefs:
+      dirs: dist/domain.roles/behaver/briefs
+    skills:
+      dirs: dist/domain.roles/behaver/skills
+    inits:
+      dirs: dist/domain.roles/behaver/inits
+      exec:
+        - dist/domain.roles/behaver/inits/init.claude.hooks.sh
+  - slug: decomposer
+    readme: dist/domain.roles/decomposer/readme.md
+    briefs:
+      dirs: dist/domain.roles/decomposer/briefs
+    skills:
+      dirs: dist/domain.roles/decomposer/skills
+    inits:
+      dirs: dist/domain.roles/decomposer/inits
