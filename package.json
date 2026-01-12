@@ -19,7 +19,8 @@
     "node": ">=8.0.0"
   },
   "files": [
-    "/dist"
+    "/dist",
+    "rhachet.repo.yml"
   ],
   "scripts": {
     "build:ts": "tsc -p ./tsconfig.build.json",
