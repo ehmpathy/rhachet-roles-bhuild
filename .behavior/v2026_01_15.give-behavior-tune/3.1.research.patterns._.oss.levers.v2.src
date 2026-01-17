@@ -1,0 +1,7 @@
+lets create a v2 that trims the oss levers doc down to only the recommended options
+
+from .behavior/v2026_01_15.give-behavior-tune/3.1.research.patterns._.oss.levers.v1.i1.md
+
+---
+
+drop 'open editor', we can just invoke commands like we do for give.behavior; drop figures, we dont care about windows
