@@ -29,4 +29,4 @@
 
 set -euo pipefail
 
-exec npx tsx -e "import('rhachet-roles-bhuild').then(m => m.cli.initBehavior())" -- "$@"
+exec node -e "import('rhachet-roles-bhuild').then(m => m.cli.initBehavior())" -- "$@"

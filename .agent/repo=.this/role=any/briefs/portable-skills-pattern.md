@@ -18,19 +18,22 @@ use this pattern when:
 
 ### 1. isomorphic dispatch
 
-shell scripts dispatch directly against the package export:
+shell skills dispatch directly via native node `import()`:
 
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
-exec npx tsx -e "import('rhachet-roles-bhuild').then(m => m.cli.mySkill())" -- "$@"
+exec node -e "import('rhachet-roles-bhuild').then(m => m.cli.mySkill())" -- "$@"
 ```
 
-this works in both contexts via standard node module resolution:
+this pattern is package-manager agnostic (npm, pnpm, yarn, bun) and works via:
+- dynamic `import()` in node's CommonJS context (available since node v12.17)
+- package.json `exports` field for self-reference resolution
+- no runtime compilation — uses pre-compiled dist/
 
 | context | how resolution works |
 |---------|---------------------|
-| **local development** | `devDependencies` self-reference (`"rhachet-roles-bhuild": "file:."`) makes the package resolvable to repo root |
+| **local development** | `devDependencies` self-reference (`"rhachet-roles-bhuild": "file:."`) + `exports` field makes the package resolvable to repo root |
 | **published / consumed** | standard node_modules resolution finds the installed package |
 
 the self-reference belongs in `devDependencies` because:
@@ -40,6 +43,12 @@ the self-reference belongs in `devDependencies` because:
 
 ```json
 {
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "devDependencies": {
     "rhachet-roles-bhuild": "file:."
   }
@@ -48,15 +57,21 @@ the self-reference belongs in `devDependencies` because:
 
 ### 2. shell skill as thin dispatcher
 
-create a shell script that imports and invokes the CLI export:
+create a shell skill that imports and invokes the CLI export:
 
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
-exec npx tsx -e "import('rhachet-roles-bhuild').then(m => m.cli.mySkill())" -- "$@"
+exec node -e "import('rhachet-roles-bhuild').then(m => m.cli.mySkill())" -- "$@"
 ```
 
-the shell script is just a one-liner that delegates to the package export.
+the shell skill is a one-liner that delegates to the pre-compiled package export.
+
+**key benefits over `npx tsx`:**
+- works with pnpm (which has strict node_modules isolation)
+- no tsx runtime compilation overhead (~20ms savings)
+- no npx package resolution overhead
+- no npx cache or lockfile dependencies
 
 ### 3. CLI entry point exports
 
@@ -132,4 +147,17 @@ when rhachet symlinks skills to `.agent/repo=.../skills/`, the shell script loca
 
 - CLI entry points MUST be exported from `src/index.ts` under `cli.*`
 - CLI entry points MUST handle rhachet passthrough args (`--repo`, `--skill`, `--role`, `--`)
+- package.json MUST have `exports` field that points to `./dist/index.js`
+- package.json MUST have `engines` field that requires `node >= 18` (for stable dynamic import)
 - package.json MUST have the self-reference in devDependencies for development to work
+- shell skills MUST use `node -e` (not `npx tsx`) for package-manager portability
+
+## verify
+
+```bash
+# ensure no npx tsx in dispatch path
+grep -r "npx tsx" src/domain.roles/**/*.sh
+
+# run acceptance tests
+npm run test:acceptance
+```

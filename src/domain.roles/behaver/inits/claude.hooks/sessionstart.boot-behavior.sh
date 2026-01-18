@@ -18,4 +18,4 @@
 set -uo pipefail
 
 # delegate to TypeScript implementation via package export
-npx tsx -e "import('rhachet-roles-bhuild').then(m => m.cli.bootBehavior())" -- "$@" || exit 0
+node -e "import('rhachet-roles-bhuild').then(m => m.cli.bootBehavior())" -- "$@" || exit 0

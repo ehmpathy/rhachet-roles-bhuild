@@ -15,8 +15,11 @@
   "bugs": "https://github.com/ehmpathy/rhachet-roles-bhuild/issues",
   "license": "MIT",
   "main": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=18.0.0"
   },
   "files": [
     "/dist",
