@@ -1,4 +1,8 @@
 import { execSync } from 'child_process';
+import {
+  detectTerminalChoice,
+  transformMessageForTerminal,
+} from 'emoji-space-shim';
 import fs from 'fs';
 import path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
@@ -9,6 +13,13 @@ import {
   runRhachetSkill,
   type ConsumerRepo,
 } from '../.test/infra';
+
+/**
+ * .what = shim a string with emoji space adjustments
+ * .why = ensures test assertions match output regardless of terminal env
+ */
+const shim = (message: string) =>
+  transformMessageForTerminal({ message, terminal: detectTerminalChoice() });
 
 const SCRIPT_PATH = path.join(
   __dirname,
@@ -169,7 +180,7 @@ describe('init.behavior', () => {
           repoDir: consumer.repoDir,
         });
 
-        expect(result.output).toContain('🦫 oh, behave!');
+        expect(result.output).toContain(shim('🦫 oh, behave!'));
       });
     });
   });
@@ -234,7 +245,7 @@ describe('init.behavior', () => {
         });
 
         expect(result.exitCode).toBe(0);
-        expect(result.stdout).toContain('🦫 oh, behave!');
+        expect(result.stdout).toContain(shim('🦫 oh, behave!'));
 
         const behaviorRoot = path.join(testRepo.repoDir, '.behavior');
         expect(fs.existsSync(behaviorRoot)).toBe(true);
