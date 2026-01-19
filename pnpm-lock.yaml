@@ -85,8 +85,8 @@ importers:
         specifier: 30.2.0
         version: 30.2.0(@types/node@22.15.21)(esbuild-register@3.6.0(esbuild@0.25.12))(ts-node@10.9.2(@swc/core@1.15.3)(@types/node@22.15.21)(typescript@5.4.5))
       rhachet:
-        specifier: 1.22.0
-        version: 1.22.0(zod@4.3.4)
+        specifier: 1.25.3
+        version: 1.25.3(zod@4.3.4)
       rhachet-roles-bhuild:
         specifier: 0.6.4
         version: 0.6.4(@types/node@22.15.21)(hono@4.11.3)
@@ -3116,6 +3116,10 @@ packages:
     resolution: {integrity: sha512-3BQe0H4ZPM7O1w3TIxwoRSCf9gQ/h+dzcbOEn8Dos3OByQ0mLRV1tqnk0hwzjnXYNgXjWHxF2dHZVq2rdfpnWg==}
     engines: {node: '>=8.0.0'}
 
+  iso-time@1.11.1:
+    resolution: {integrity: sha512-HQB4BQJyqOpP3c0lxdsXTu36/61c/eTr3pu7kBJfnUEQFLc8+lveNgsTEAA5Pk50WF0tVfEF5WF2xGRPX13mcQ==}
+    engines: {node: '>=8.0.0'}
+
   isomorphic-git@1.36.1:
     resolution: {integrity: sha512-fC8SRT8MwoaXDK8G4z5biPEbqf2WyEJUb2MJ2ftSd39/UIlsnoZxLGux+lae0poLZO4AEcx6aUVOh5bV+P8zFA==}
     engines: {node: '>=14.17'}
@@ -3939,8 +3943,8 @@ packages:
     engines: {node: '>=22.0.0'}
     hasBin: true
 
-  rhachet@1.22.0:
-    resolution: {integrity: sha512-r7VFn7YWnRF0F3SZn+pi7XuDS/2T3rBzvfS544GdUdE0mzpLxy2WbRLa+Sjfmklb8QvvEdcaIItfztpTymfMtw==}
+  rhachet@1.25.3:
+    resolution: {integrity: sha512-LOdXZKLRRtVwdYqpvgU3uTp/CL4ZNtyCabIhAGwrQHYTPtxa1z/8pwusgGaHKhlAyfUar5gbESnFvMMCyVA62Q==}
     engines: {node: '>=22.0.0'}
     hasBin: true
     peerDependencies:
@@ -7651,7 +7655,7 @@ snapshots:
       domain-objects: 0.31.3
       helpful-errors: 1.5.3
       joi: 17.4.0
-      rhachet: 1.22.0(zod@3.25.76)
+      rhachet: 1.25.3(zod@3.25.76)
       rhachet-roles-ehmpathy: 1.17.20(@anthropic-ai/sdk@0.51.0)(@types/node@22.15.21)(hono@4.11.3)(zod@3.25.76)
       type-fns: 1.21.0
       uuid-fns: 1.1.3
@@ -7672,7 +7676,7 @@ snapshots:
       domain-objects: 0.31.3
       helpful-errors: 1.5.3
       joi: 17.4.0
-      rhachet: 1.22.0(zod@4.3.4)
+      rhachet: 1.25.3(zod@4.3.4)
       rhachet-roles-ehmpathy: 1.17.20(@anthropic-ai/sdk@0.71.2(zod@4.3.4))(@types/node@22.15.21)(hono@4.11.3)(zod@4.3.4)
       type-fns: 1.21.0
       uuid-fns: 1.1.3
@@ -8340,6 +8344,14 @@ snapshots:
       date-fns: 3.6.0
       domain-glossaries: 1.0.0
       helpful-errors: 1.5.3
+      type-fns: 1.21.0
+
+  iso-time@1.11.1:
+    dependencies:
+      date-fns: 3.6.0
+      domain-glossaries: 1.0.0
+      helpful-errors: 1.5.3
+      simple-log-methods: 0.6.9
       type-fns: 1.21.0
 
   isomorphic-git@1.36.1:
@@ -9481,7 +9493,7 @@ snapshots:
       - ws
       - zod
 
-  rhachet@1.22.0(zod@3.25.76):
+  rhachet@1.25.3(zod@3.25.76):
     dependencies:
       as-procedure: 1.1.11
       bottleneck: 2.19.5
@@ -9492,11 +9504,12 @@ snapshots:
       fast-glob: 3.3.3
       flattie: 1.1.1
       helpful-errors: 1.5.3
-      iso-time: 1.10.1
+      iso-time: 1.11.1
       openai: 5.8.2(zod@3.25.76)
       rhachet-artifact: 1.0.3
       rhachet-artifact-git: 1.1.5
       serde-fns: 1.3.1
+      simple-log-methods: 0.6.9
       type-fns: 1.21.0
       uuid-fns: 1.0.1
       yaml: 2.8.2
@@ -9504,7 +9517,7 @@ snapshots:
     transitivePeerDependencies:
       - ws
 
-  rhachet@1.22.0(zod@4.3.4):
+  rhachet@1.25.3(zod@4.3.4):
     dependencies:
       as-procedure: 1.1.11
       bottleneck: 2.19.5
@@ -9515,11 +9528,12 @@ snapshots:
       fast-glob: 3.3.3
       flattie: 1.1.1
       helpful-errors: 1.5.3
-      iso-time: 1.10.1
+      iso-time: 1.11.1
       openai: 5.8.2(zod@4.3.4)
       rhachet-artifact: 1.0.3
       rhachet-artifact-git: 1.1.5
       serde-fns: 1.3.1
+      simple-log-methods: 0.6.9
       type-fns: 1.21.0
       uuid-fns: 1.0.1
       yaml: 2.8.2
