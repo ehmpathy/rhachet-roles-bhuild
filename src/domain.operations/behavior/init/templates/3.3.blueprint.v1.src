@@ -48,6 +48,7 @@ reference the below for full context
 - $BEHAVIOR_DIR_REL/3.1.research.access._.v1.i1.md (if declared)
 - $BEHAVIOR_DIR_REL/3.1.research.claims._.v1.i1.md (if declared)
 - $BEHAVIOR_DIR_REL/3.1.research.domain._.v1.i1.md (if declared)
+- $BEHAVIOR_DIR_REL/3.1.research.domain.terms.v1.i1.md (if declared)
 - $BEHAVIOR_DIR_REL/3.1.research.patterns._.code.prod.v1.i1.md (if declared)
 - $BEHAVIOR_DIR_REL/3.1.research.patterns._.code.test.v1.i1.md (if declared)
 - $BEHAVIOR_DIR_REL/3.1.research.patterns._.oss.levers.v1.i1.md (if declared)
