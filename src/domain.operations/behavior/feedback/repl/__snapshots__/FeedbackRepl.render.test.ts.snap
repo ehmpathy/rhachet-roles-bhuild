@@ -1,0 +1,6 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`FeedbackRepl.render given: [case1] fresh repl with no prior feedback when: [t0] component renders then: initial render matches snapshot 1`] = `
+"[31m# blocker.1[39m[2m (shift+tab to toggle)[22m
+> [7m [27m"
+`;

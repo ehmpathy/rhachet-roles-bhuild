@@ -13,7 +13,7 @@ process.env.FORCE_COLOR = 'true';
 const config: Config = {
   verbose: true,
   testEnvironment: 'node',
-  moduleFileExtensions: ['js', 'ts'],
+  moduleFileExtensions: ['js', 'ts', 'tsx'],
   moduleNameMapper: {
     '^@src/(.*)$': '<rootDir>/src/$1',
   },
@@ -21,14 +21,18 @@ const config: Config = {
     '^.+\\.(t|j)sx?$': '@swc/jest',
   },
   transformIgnorePatterns: [
-    // here's an example of how to ignore esm module transformation, when needed
-    // 'node_modules/(?!(@octokit|universal-user-agent|before-after-hook)/)',
+    // ink and yoga-layout use ESM and need to be transpiled
+    // pattern handles both npm and pnpm node_modules structures
+    'node_modules/(?!(\\.pnpm/)?(ink|ink-testing-library|yoga-layout|cli-cursor|restore-cursor|onetime|mimic-function|signal-exit|cli-truncate|slice-ansi|string-width|is-fullwidth-code-point|ansi-regex|strip-ansi|ansi-styles|wrap-ansi|emoji-regex|widest-line))',
   ],
   testMatch: [
     // note: order matters
     '**/*.test.ts',
+    '**/*.test.tsx',
     '!**/*.acceptance.test.ts',
+    '!**/*.acceptance.test.tsx',
     '!**/*.integration.test.ts',
+    '!**/*.integration.test.tsx',
     '!**/.yalc/**',
   ],
   setupFilesAfterEnv: ['./jest.unit.env.ts'],

@@ -21,6 +21,8 @@
 #                       required if branch is not bound to a behavior
 #   --version <N>       (optional) feedback version number (default: 1)
 #   --template <path>   (optional) custom template file path
+#   --open <editor>     (optional) open feedback file in editor (e.g., codium, code)
+#   --talk              (optional) interactive repl mode for live feedback entry
 #   --force             (optional) override bind mismatch
 #
 # .examples:
@@ -36,16 +38,21 @@
 #   # use custom template
 #   npx rhachet run --skill give.feedback --against wish --template ./my-template.md
 #
+#   # open feedback file in codium after creation
+#   npx rhachet run --skill give.feedback --against execution --open codium
+#
+#   # interactive repl mode for live feedback entry
+#   npx rhachet run --skill give.feedback --against execution --talk
+#
 #   # override bind mismatch with --force
 #   npx rhachet run --skill give.feedback --against blueprint --behavior other-feature --force
 #
 # .output:
 #   - creates: ${behaviorDir}/${artifactFileName}.[feedback].v${version}.[given].by_human.md
-#   - logs: feedback file path and target artifact to stdout
+#   - tree-style output with file status and tips
 #
 # .errors:
 #   - no artifact found: shows glob pattern used
-#   - feedback exists: prevents overwrite, suggests --version
 #   - template not found: indicates template path needed
 #   - bind mismatch: suggests --force to override
 ######################################################################

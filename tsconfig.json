@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "jsx": "react-jsx",
     "declaration": true,
     "importsNotUsedAsValues": "remove",
     "noPropertyAccessFromIndexSignature": false,
@@ -35,6 +36,7 @@
     "rhachet.use.ts"
   ],
   "include": [
-    "**/*.ts"
+    "**/*.ts",
+    "**/*.tsx"
   ]
 }

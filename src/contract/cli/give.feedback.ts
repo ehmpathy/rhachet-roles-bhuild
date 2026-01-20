@@ -9,17 +9,23 @@
  *   give.feedback.sh --against <name> --behavior <name>   # explicit behavior
  *   give.feedback.sh --against <name> --version 2   # create v2 feedback
  *   give.feedback.sh --against <name> --template <path>   # custom template
+ *   give.feedback.sh --against <name> --open codium   # open file in editor
+ *   give.feedback.sh --against <name> --talk   # interactive repl mode
  *
  * guarantee:
+ *   - findsert semantics (find or create)
  *   - fail-fast if artifact not found
- *   - fail-fast if feedback file already exists
  *   - fail-fast if template not found
  */
 
+import { relative } from 'path';
 import { z } from 'zod';
 
+import { computeFeedbackOutputTree } from '@src/domain.operations/behavior/feedback/computeFeedbackOutputTree';
 import { giveFeedback as giveFeedbackOp } from '@src/domain.operations/behavior/feedback/giveFeedback';
+import { runFeedbackRepl } from '@src/domain.operations/behavior/feedback/repl/runFeedbackRepl';
 import { getCliArgs } from '@src/infra/cli';
+import { openFileWithOpener } from '@src/infra/shell/openFileWithOpener';
 
 // ────────────────────────────────────────────────────────────────────
 // schema
@@ -33,6 +39,8 @@ const schemaOfArgs = z.object({
     version: z.coerce.number().optional(),
     template: z.string().optional(),
     force: z.boolean().optional(),
+    open: z.string().optional(),
+    talk: z.boolean().optional(),
     // rhachet passthrough args (optional, ignored)
     repo: z.string().optional(),
     role: z.string().optional(),
@@ -47,8 +55,21 @@ const schemaOfArgs = z.object({
 // ────────────────────────────────────────────────────────────────────
 
 export const giveFeedback = (): void => {
-  const { named } = getCliArgs({ schema: schemaOfArgs });
+  const { named } = getCliArgs({
+    schema: schemaOfArgs,
+    usage: {
+      command: 'give.feedback.sh --against <name> [--behavior <name>]',
+      examples: [
+        'give.feedback.sh --against execution',
+        'give.feedback.sh --against criteria.blackbox --behavior my-feature',
+        'give.feedback.sh --against execution --open codium',
+        'give.feedback.sh --against execution --talk',
+      ],
+    },
+  });
+  const cwd = process.cwd();
 
+  // create or find feedback file
   const result = giveFeedbackOp({
     against: named.against,
     behavior: named.behavior,
@@ -57,6 +78,26 @@ export const giveFeedback = (): void => {
     force: named.force,
   });
 
-  console.log(`✓ feedback created: ${result.feedbackFile}`);
-  console.log(`  against: ${result.artifactFile}`);
+  // compute relative path for display
+  const feedbackPathRel = relative(cwd, result.feedbackFile);
+
+  // open file if --open flag provided
+  if (named.open) {
+    openFileWithOpener({ opener: named.open, filePath: result.feedbackFile });
+  }
+
+  // output tree-style result
+  const output = computeFeedbackOutputTree({
+    feedbackPathRel,
+    found: result.found,
+    opener: named.open,
+    version: named.version ?? 1,
+  });
+  console.log(output);
+
+  // launch repl if --talk flag provided
+  if (named.talk) {
+    console.log('\n🎤 talk mode: enter feedback (ctrl+c to exit)\n');
+    runFeedbackRepl({ feedbackFile: result.feedbackFile });
+  }
 };

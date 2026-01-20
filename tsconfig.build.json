@@ -6,10 +6,12 @@
   },
   "include": [
     "src/**/*.ts",
+    "src/**/*.tsx",
     "nontyped_modules/**/*.d.ts"
   ],
   "exclude": [
     "**/*.test.ts", // all explicitly .test files are dev only assets too
+    "**/*.test.tsx",
     "**/*.test.js",
     "**/.test/**/*",
     "**/.scratch/**/*",

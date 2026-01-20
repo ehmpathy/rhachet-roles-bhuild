@@ -8,8 +8,8 @@ import { getLatestArtifactByName } from './getLatestArtifactByName';
 import { initFeedbackTemplate } from './initFeedbackTemplate';
 
 /**
- * .what = create a feedback file for a behavior artifact
- * .why = enables structured feedback on any behavior artifact with placeholder substitution
+ * .what = create or find a feedback file for a behavior artifact (findsert)
+ * .why = enables idempotent feedback file creation with placeholder substitution
  */
 export const giveFeedback = (
   input: {
@@ -20,7 +20,12 @@ export const giveFeedback = (
     force?: boolean;
   },
   context?: { cwd?: string },
-): { feedbackFile: string; artifactFile: string; behaviorDir: string } => {
+): {
+  feedbackFile: string;
+  artifactFile: string;
+  behaviorDir: string;
+  found: boolean;
+} => {
   const cwd = context?.cwd ?? process.cwd();
 
   // resolve behavior directory
@@ -48,11 +53,14 @@ export const giveFeedback = (
   });
   const feedbackPath = join(behaviorDir, feedbackFilename);
 
-  // check if feedback file already exists
+  // findsert: if feedback file already exists, return it (found)
   if (existsSync(feedbackPath)) {
-    throw new BadRequestError(
-      `feedback file already exists: ${feedbackFilename}. use --version ${feedbackVersion + 1} to create a new version.`,
-    );
+    return {
+      feedbackFile: feedbackPath,
+      artifactFile: artifact.path,
+      behaviorDir,
+      found: true,
+    };
   }
 
   // resolve template path
@@ -78,5 +86,6 @@ export const giveFeedback = (
     feedbackFile: feedbackPath,
     artifactFile: artifact.path,
     behaviorDir,
+    found: false,
   };
 };

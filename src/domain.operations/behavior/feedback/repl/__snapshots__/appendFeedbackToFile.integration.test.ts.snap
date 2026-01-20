@@ -1,0 +1,117 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`appendFeedbackToFile.integration given: [case1] append new feedback when: [t0] blocker feedback appended then: file content matches snapshot 1`] = `
+"# feedback
+
+---
+---
+---
+
+# blocker.1
+
+this variable should be renamed for clarity
+
+---
+---
+---
+"
+`;
+
+exports[`appendFeedbackToFile.integration given: [case1] append new feedback when: [t1] multiple feedbacks appended then: file content with multiple blocks matches snapshot 1`] = `
+"# feedback
+
+---
+---
+---
+
+# blocker.1
+
+critical bug in authentication
+
+---
+---
+---
+
+---
+---
+---
+
+# nitpick.2
+
+consider a more descriptive name
+
+---
+---
+---
+
+---
+---
+---
+
+# blocker.3
+
+missing error handling
+
+---
+---
+---
+"
+`;
+
+exports[`appendFeedbackToFile.integration given: [case2] update existing feedback when: [t0] same index submitted again then: file content after update matches snapshot 1`] = `
+"# feedback
+
+---
+---
+---
+
+# blocker.1
+
+updated feedback with more detail
+
+---
+---
+---
+"
+`;
+
+exports[`appendFeedbackToFile.integration given: [case3] undo last change when: [t0] feedback added then undone then: file content after undo matches snapshot 1`] = `
+"# feedback
+
+"
+`;
+
+exports[`appendFeedbackToFile.integration given: [case3] undo last change when: [t1] update then undo then: file content reverts to original 1`] = `
+"# feedback
+
+---
+---
+---
+
+# blocker.1
+
+original text
+
+---
+---
+---
+"
+`;
+
+exports[`appendFeedbackToFile.integration given: [case4] redo after undo when: [t0] add, undo, then redo then: file content after redo matches snapshot 1`] = `
+"# feedback
+
+
+---
+---
+---
+
+# blocker.1
+
+feedback to undo and redo
+
+---
+---
+---
+"
+`;

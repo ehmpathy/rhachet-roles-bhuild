@@ -53,12 +53,13 @@ describe('giveFeedback.integration', () => {
     });
 
     when('[t0] giveFeedback invoked for execution artifact', () => {
-      then('feedback file is created with placeholders replaced', () => {
+      then('returns found=false and creates file', () => {
         const result = giveFeedback(
           { against: 'execution', behavior: 'test-feature' },
           { cwd: scene.testDir },
         );
 
+        expect(result.found).toBe(false);
         expect(fs.existsSync(result.feedbackFile)).toBe(true);
         expect(result.feedbackFile).toContain(
           '5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md',
@@ -96,7 +97,7 @@ describe('giveFeedback.integration', () => {
     });
 
     when('[t1] giveFeedback invoked second time for same artifact', () => {
-      then('throws error about file already present', () => {
+      then('returns found=true (findsert)', () => {
         // ensure feedback file exists from prior test
         const behaviorDir = path.join(
           scene.testDir,
@@ -113,12 +114,40 @@ describe('giveFeedback.integration', () => {
           );
         }
 
-        expect(() =>
-          giveFeedback(
-            { against: 'execution', behavior: 'test-feature' },
-            { cwd: scene.testDir },
-          ),
-        ).toThrow(/already exists/);
+        const result = giveFeedback(
+          { against: 'execution', behavior: 'test-feature' },
+          { cwd: scene.testDir },
+        );
+
+        expect(result.found).toBe(true);
+        expect(result.feedbackFile).toContain(
+          '5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md',
+        );
+      });
+
+      then('does not overwrite prior content', () => {
+        // ensure feedback file exists with known content
+        const behaviorDir = path.join(
+          scene.testDir,
+          '.behavior/v2025_01_01.test-feature',
+        );
+        const feedbackPath = path.join(
+          behaviorDir,
+          '5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md',
+        );
+
+        // get content before second call
+        const contentBefore = fs.readFileSync(feedbackPath, 'utf-8');
+
+        // invoke again
+        giveFeedback(
+          { against: 'execution', behavior: 'test-feature' },
+          { cwd: scene.testDir },
+        );
+
+        // verify content unchanged
+        const contentAfter = fs.readFileSync(feedbackPath, 'utf-8');
+        expect(contentAfter).toEqual(contentBefore);
       });
     });
 

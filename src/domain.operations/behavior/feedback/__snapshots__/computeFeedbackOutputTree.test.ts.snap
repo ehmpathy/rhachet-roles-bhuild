@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`computeFeedbackOutputTree snapshot: created with opener 1`] = `
+"🦫 wassup?
+   ├─ + .behavior/v2026_01_15.test/5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md
+   ├─ opened in codium
+   └─ [2mtip: use --talk for interactive repl mode[0m"
+`;
+
+exports[`computeFeedbackOutputTree snapshot: created without opener 1`] = `
+"🦫 wassup?
+   ├─ + .behavior/v2026_01_15.test/5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md
+   ├─ [2mtip: use --open codium to open automatically[0m
+   └─ [2mtip: use --talk for interactive repl mode[0m"
+`;
+
+exports[`computeFeedbackOutputTree snapshot: found with opener 1`] = `
+"🦫 wassup?
+   ├─ ✓ .behavior/v2026_01_15.test/5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md
+   ├─ [2mtip: use --version 2 to create a new version[0m
+   ├─ opened in codium
+   └─ [2mtip: use --talk for interactive repl mode[0m"
+`;
+
+exports[`computeFeedbackOutputTree snapshot: found without opener 1`] = `
+"🦫 wassup?
+   ├─ ✓ .behavior/v2026_01_15.test/5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md
+   ├─ [2mtip: use --version 2 to create a new version[0m
+   ├─ [2mtip: use --open codium to open automatically[0m
+   └─ [2mtip: use --talk for interactive repl mode[0m"
+`;

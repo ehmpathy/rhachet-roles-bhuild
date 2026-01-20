@@ -1,0 +1,6 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`FeedbackRepl.severity given: [case1] severity toggle via shift+tab when: [t0] user presses shift+tab once then: post-toggle render matches snapshot 1`] = `
+"[33m# nitpick.1[39m[2m (shift+tab to toggle)[22m
+> [7m [27m"
+`;

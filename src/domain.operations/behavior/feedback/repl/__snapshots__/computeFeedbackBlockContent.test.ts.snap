@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`computeFeedbackBlockContent given: [case4] snapshot verification when: [t0] blocker with simple text then: matches snapshot 1`] = `
+"---
+---
+---
+
+# blocker.1
+
+need to fix this bug
+
+---
+---
+---
+"
+`;
+
+exports[`computeFeedbackBlockContent given: [case4] snapshot verification when: [t1] nitpick with multiline text then: matches snapshot 1`] = `
+"---
+---
+---
+
+# nitpick.5
+
+consider refactor
+the code is a bit messy
+but not critical
+
+---
+---
+---
+"
+`;

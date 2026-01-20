@@ -103,6 +103,10 @@ type CliSchemaWithRhachetArgs = z.ZodObject<{
 export const getCliArgs = <T extends CliSchemaWithRhachetArgs>(input: {
   schema: T;
   argv?: string[];
+  usage?: {
+    command: string;
+    examples?: string[];
+  };
 }): z.infer<T> => {
   // drop script filename from argv if present
   //
@@ -125,14 +129,52 @@ export const getCliArgs = <T extends CliSchemaWithRhachetArgs>(input: {
   const result = input.schema.safeParse(raw);
 
   if (!result.success) {
-    const errors = result.error.issues
-      .map((issue) => {
-        const path = issue.path.join('.');
-        return `  ${path}: ${issue.message}`;
-      })
-      .join('\n');
-    console.error('error: invalid arguments');
-    console.error(errors);
+    // transform zod errors into human-readable messages
+    const errors = result.error.issues.map((issue) => {
+      const path = issue.path;
+
+      // detect missing required arg (path = ['named', 'argName'])
+      if (
+        path.length === 2 &&
+        path[0] === 'named' &&
+        issue.message.includes('expected string, received undefined')
+      ) {
+        const argName = String(path[1]);
+        return `--${argName} is required but was not provided`;
+      }
+
+      // fallback to path.message format
+      return `${path.map(String).join('.')}: ${issue.message}`;
+    });
+
+    // dedupe errors
+    const uniqueErrors = [...new Set(errors)];
+
+    // output with treestruct
+    console.error('');
+    console.error('⛈️  invalid arguments');
+    uniqueErrors.forEach((err, i) => {
+      const isLast = i === uniqueErrors.length - 1 && !input.usage;
+      const prefix = isLast ? '└─' : '├─';
+      console.error(`   ${prefix} ${err}`);
+    });
+
+    // show recommendations if provided
+    if (input.usage) {
+      console.error('   │');
+      console.error(`   ├─ rec: ${input.usage.command}`);
+      if (input.usage.examples?.length) {
+        console.error('   │');
+        console.error('   └─ e.g.');
+        input.usage.examples.forEach((ex, i) => {
+          const isLastEx = i === input.usage!.examples!.length - 1;
+          const prefix = isLastEx ? '└─' : '├─';
+          console.error(`      ${prefix} ${ex}`);
+        });
+      }
+    }
+
+    console.error('');
     process.exit(1);
   }
 

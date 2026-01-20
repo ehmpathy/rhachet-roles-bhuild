@@ -45,7 +45,7 @@ describe('giveFeedback', () => {
     if (testDir) rmSync(testDir, { recursive: true, force: true });
   });
 
-  test('creates feedback for execution artifact', () => {
+  test('creates feedback for execution artifact (found=false)', () => {
     setupTestRepo();
     writeFileSync(join(behaviorDir, '5.1.execution.v1.i1.md'), '# execution');
 
@@ -54,6 +54,7 @@ describe('giveFeedback', () => {
       { cwd: testDir },
     );
 
+    expect(result.found).toBe(false);
     expect(existsSync(result.feedbackFile)).toBe(true);
     expect(result.feedbackFile).toContain(
       '5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md',
@@ -135,7 +136,7 @@ describe('giveFeedback', () => {
     ).toThrow(/no artifact found/);
   });
 
-  test('fails if feedback file already present', () => {
+  test('returns found=true if feedback file already present (findsert)', () => {
     setupTestRepo();
     writeFileSync(join(behaviorDir, '0.wish.md'), '# wish');
     writeFileSync(
@@ -143,18 +144,19 @@ describe('giveFeedback', () => {
       'prior feedback',
     );
 
-    expect(() =>
-      giveFeedback(
-        { against: 'wish', behavior: 'test-feature' },
-        { cwd: testDir },
-      ),
-    ).toThrow(BadRequestError);
-    expect(() =>
-      giveFeedback(
-        { against: 'wish', behavior: 'test-feature' },
-        { cwd: testDir },
-      ),
-    ).toThrow(/already exists/);
+    const result = giveFeedback(
+      { against: 'wish', behavior: 'test-feature' },
+      { cwd: testDir },
+    );
+
+    expect(result.found).toBe(true);
+    expect(result.feedbackFile).toContain(
+      '0.wish.md.[feedback].v1.[given].by_human.md',
+    );
+
+    // verify prior content is preserved
+    const content = readFileSync(result.feedbackFile, 'utf-8');
+    expect(content).toEqual('prior feedback');
   });
 
   test('fails if template not found', () => {
