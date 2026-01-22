@@ -7,8 +7,10 @@ export interface InitResult {
 }
 
 /**
- * .what = runs npx rhachet roles init
+ * .what = runs npx rhachet roles init, then init --hooks
  * .why  = tests role initialization as a consumer would use it
+ *         roles init runs inits.exec commands
+ *         init --hooks syncs Role.hooks declarations to brain configs
  */
 export const runRolesInit = (input: {
   repo: string;
@@ -19,9 +21,23 @@ export const runRolesInit = (input: {
   const timeout = input.timeout ?? 60000;
 
   try {
-    const stdout = execSync(
+    // run roles init (executes inits.exec commands)
+    const rolesInitStdout = execSync(
       `npx rhachet roles init --repo ${input.repo} --role ${input.role}`,
       {
+        cwd: input.repoDir,
+        encoding: 'utf-8',
+        timeout,
+        env: {
+          ...process.env,
+          PATH: process.env.PATH,
+        },
+        stdio: ['pipe', 'pipe', 'pipe'],
+      },
+    );
+
+    // run init --hooks (syncs Role.hooks declarations to brain configs)
+    const hooksStdout = execSync(`npx rhachet init --hooks`, {
       cwd: input.repoDir,
       encoding: 'utf-8',
       timeout,
@@ -31,7 +47,13 @@ export const runRolesInit = (input: {
       },
       stdio: ['pipe', 'pipe', 'pipe'],
     });
-    return { stdout: stdout.trim(), stderr: '', exitCode: 0 };
+
+    const stdout = [rolesInitStdout, hooksStdout]
+      .map((s) => s.toString().trim())
+      .filter(Boolean)
+      .join('\n');
+
+    return { stdout, stderr: '', exitCode: 0 };
   } catch (error: unknown) {
     const execError = error as {
       stdout?: Buffer | string;

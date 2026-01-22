@@ -20,3 +20,6 @@ ignores:
   - yalc
   - rhachet-roles-bhuild
   - "@anthropic-ai/claude-code"
+  - rhachet-brains-anthropic
+  - rhachet-roles-bhrain
+  - rhachet-roles-ehmpathy
