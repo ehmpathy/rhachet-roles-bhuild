@@ -51,13 +51,15 @@ export const genConsumerRepo = (input?: {
     ),
   );
 
-  // add rhachet-roles-bhuild as file dependency pointing to current project
+  // add rhachet-roles-bhuild as file dependency (points to current project)
+  // also add rhachet-brains-anthropic for brain adapter discovery (hooks require brain adapters)
   const packageJsonPath = path.join(repoDir, 'package.json');
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
   packageJson.dependencies = {
     ...packageJson.dependencies,
     'rhachet-roles-bhuild': `file:${process.cwd()}`,
     rhachet: '^1.15.0',
+    'rhachet-brains-anthropic': '^0.2.0',
   };
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 

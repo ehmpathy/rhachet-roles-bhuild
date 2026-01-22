@@ -9,8 +9,6 @@ roles:
       dirs: dist/domain.roles/behaver/skills
     inits:
       dirs: dist/domain.roles/behaver/inits
-      exec:
-        - dist/domain.roles/behaver/inits/init.claude.hooks.sh
   - slug: decomposer
     readme: dist/domain.roles/decomposer/readme.md
     briefs:
