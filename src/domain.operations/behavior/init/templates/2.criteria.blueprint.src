@@ -5,8 +5,6 @@ ref:
 - wish $BEHAVIOR_DIR_REL/0.wish.md
 - vision $BEHAVIOR_DIR_REL/1.vision.md (if declared)
 
-via the template in $BEHAVIOR_DIR_REL/2.criteria.blueprint.md
-
 emit into $BEHAVIOR_DIR_REL/2.criteria.blueprint.md
 
 ---
@@ -32,3 +30,36 @@ note: blueprint criteria is NOT "how to build" — that's decided in blueprint.m
       blueprint criteria is "what mechanisms must exist" to deliver the experience
 
 the HOW is discovered during research (3.1) and decided during blueprint (3.3)
+
+---
+
+## template
+
+```
+## blackbox criteria satisfied
+
+- usecase.1 = ... ✓
+- usecase.2 = ... ✓
+
+## subcomponent contracts
+
+given('componentName contract')
+  then('exposes: methodName(input: Type) => ReturnType')
+  then('throws ErrorType for invalid inputs')
+
+given('anotherComponent contract')
+  then('exposes: ...')
+
+## composition boundaries
+
+given('feature implementation')
+  then('composes componentA and componentB')
+  then('componentA provides X, componentB transforms to Y')
+
+## test coverage criteria
+
+given('feature')
+  then('has unit tests for ...')
+  then('has integration tests for ...')
+  then('has acceptance test for full usecase')
+```
