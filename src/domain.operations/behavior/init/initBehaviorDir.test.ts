@@ -33,7 +33,7 @@ describe('initBehaviorDir', () => {
         expect(fs.existsSync(path.join(behaviorDir, '0.wish.md'))).toBe(true);
         expect(fs.existsSync(path.join(behaviorDir, '1.vision.md'))).toBe(true);
         expect(
-          fs.existsSync(path.join(behaviorDir, '2.criteria.blackbox.md')),
+          fs.existsSync(path.join(behaviorDir, '2.criteria.blackbox.src')),
         ).toBe(true);
       });
 

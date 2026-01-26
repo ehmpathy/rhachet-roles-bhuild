@@ -28,6 +28,14 @@ include a treestruct of filediffs
 
 include a treestruct of codepaths
 
+**legend:**
+- `[+]` create — codepath to create
+- `[~]` update — codepath to update
+- `[○]` retain — codepath to retain
+- `[-]` delete — codepath to delete
+- `[←]` reuse — codepath to reuse from elsewhere
+- `[→]` eject — codepath to decompose for reuse
+
 
 ---
 

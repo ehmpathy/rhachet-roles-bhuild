@@ -1,0 +1,31 @@
+create a coverage matrix table that clearly illustrates
+
+- the independent variables that change between each subcase of each scene
+
+- the outcome that we expect in each subcase, based on those independent variables (i.e., the dependent variables)
+
+
+---
+
+create this table for each related set of usecases
+
+to make it easy to visualize
+- independent vs dependent variables
+- what we'll do in each combination
+
+
+---
+
+"todo: how to blend into blackbox criteria src?"
+
+this visualization makes it really easy to see if we missed coverage of a combination case, via symmetric analysis
+
+---
+
+note, maybe the matrix is always an extension and is only invoked when we want to see that comparison
+
+since we'd want to review the bkackbox against the matrix distillation
+
+and we need the blackbox proposal before we can extract a matrix distillation
+
+so its a yoyo oscilator againt
