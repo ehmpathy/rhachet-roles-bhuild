@@ -1,11 +1,11 @@
 declare the blueprint criteria (mechanism bounds) that satisfies the blackbox criteria
 
 ref:
-- blackbox criteria $BEHAVIOR_DIR_REL/2.criteria.blackbox.md
+- blackbox criteria $BEHAVIOR_DIR_REL/2.1.criteria.blackbox.md
 - wish $BEHAVIOR_DIR_REL/0.wish.md
 - vision $BEHAVIOR_DIR_REL/1.vision.md (if declared)
 
-emit into $BEHAVIOR_DIR_REL/2.criteria.blueprint.md
+emit into $BEHAVIOR_DIR_REL/2.3.criteria.blueprint.md
 
 ---
 

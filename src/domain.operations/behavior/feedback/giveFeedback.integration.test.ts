@@ -282,7 +282,7 @@ describe('giveFeedback.integration', () => {
 
       // create artifact
       fs.writeFileSync(
-        path.join(behaviorDir, '2.criteria.blackbox.md'),
+        path.join(behaviorDir, '2.1.criteria.blackbox.md'),
         '# blackbox criteria',
       );
 
@@ -305,7 +305,7 @@ describe('giveFeedback.integration', () => {
         );
 
         const content = fs.readFileSync(result.feedbackFile, 'utf-8');
-        expect(content).toContain('CUSTOM: review of 2.criteria.blackbox.md');
+        expect(content).toContain('CUSTOM: review of 2.1.criteria.blackbox.md');
         expect(content).toContain('.behavior/v2025_01_01.custom-template');
       });
     });

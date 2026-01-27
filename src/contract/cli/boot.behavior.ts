@@ -89,15 +89,15 @@ export const bootBehavior = (): void => {
   outputBehaviorFile('vision', `${behaviorDir}/1.vision.md`, false);
 
   // output criteria (optional - check for both new and legacy formats)
-  if (existsSync(`${behaviorDir}/2.criteria.blackbox.md`)) {
+  if (existsSync(`${behaviorDir}/2.1.criteria.blackbox.md`)) {
     outputBehaviorFile(
       'criteria-blackbox',
-      `${behaviorDir}/2.criteria.blackbox.md`,
+      `${behaviorDir}/2.1.criteria.blackbox.md`,
       false,
     );
     outputBehaviorFile(
       'criteria-blueprint',
-      `${behaviorDir}/2.criteria.blueprint.md`,
+      `${behaviorDir}/2.3.criteria.blueprint.md`,
       false,
     );
   } else {

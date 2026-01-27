@@ -4,7 +4,7 @@ declare the blackbox criteria required to fulfill
 
 via bdd declarations, per your briefs
 
-emit into $BEHAVIOR_DIR_REL/2.criteria.blackbox.md
+emit into $BEHAVIOR_DIR_REL/2.1.criteria.blackbox.md
 
 ---
 

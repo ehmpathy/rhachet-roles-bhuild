@@ -13,9 +13,9 @@ const TEST_CASES = [
   },
   {
     description: 'criteria without version',
-    given: { artifactFileName: '2.criteria.blackbox.md', feedbackVersion: 1 },
+    given: { artifactFileName: '2.1.criteria.blackbox.md', feedbackVersion: 1 },
     expect: {
-      output: '2.criteria.blackbox.md.[feedback].v1.[given].by_human.md',
+      output: '2.1.criteria.blackbox.md.[feedback].v1.[given].by_human.md',
     },
   },
   {

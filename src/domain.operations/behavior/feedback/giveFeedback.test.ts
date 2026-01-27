@@ -62,7 +62,7 @@ describe('giveFeedback', () => {
 
   test('creates feedback for criteria.blackbox', () => {
     setupTestRepo();
-    writeFileSync(join(behaviorDir, '2.criteria.blackbox.md'), '# criteria');
+    writeFileSync(join(behaviorDir, '2.1.criteria.blackbox.md'), '# criteria');
 
     const result = giveFeedback(
       { against: 'criteria.blackbox', behavior: 'test-feature' },
@@ -71,7 +71,7 @@ describe('giveFeedback', () => {
 
     expect(existsSync(result.feedbackFile)).toBe(true);
     expect(result.feedbackFile).toContain(
-      '2.criteria.blackbox.md.[feedback].v1.[given].by_human.md',
+      '2.1.criteria.blackbox.md.[feedback].v1.[given].by_human.md',
     );
   });
 

@@ -77,7 +77,7 @@ describe('initFeedbackTemplate', () => {
     initFeedbackTemplate({
       templatePath,
       targetPath,
-      artifactFileName: '2.criteria.blackbox.md',
+      artifactFileName: '2.1.criteria.blackbox.md',
       behaviorDirRel: '.behavior/v2026_01_08.give-feedback',
     });
 
@@ -85,9 +85,9 @@ describe('initFeedbackTemplate', () => {
     expect(content).toEqual(
       [
         'emit response to',
-        '- .behavior/v2026_01_08.give-feedback/2.criteria.blackbox.md.[feedback].v1.[taken].md',
+        '- .behavior/v2026_01_08.give-feedback/2.1.criteria.blackbox.md.[feedback].v1.[taken].md',
         '',
-        'target: 2.criteria.blackbox.md',
+        'target: 2.1.criteria.blackbox.md',
       ].join('\n'),
     );
   });

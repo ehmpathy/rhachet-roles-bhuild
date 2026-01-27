@@ -72,15 +72,15 @@ describe('getLatestArtifactByName', () => {
   });
 
   test('criteria.blackbox matches only blackbox, not blueprint', () => {
-    writeFileSync(join(testDir, '2.criteria.blackbox.md'), '');
-    writeFileSync(join(testDir, '2.criteria.blueprint.md'), '');
+    writeFileSync(join(testDir, '2.1.criteria.blackbox.md'), '');
+    writeFileSync(join(testDir, '2.3.criteria.blueprint.md'), '');
 
     const result = getLatestArtifactByName({
       behaviorDir: testDir,
       artifactName: 'criteria.blackbox',
     });
 
-    expect(result?.filename).toEqual('2.criteria.blackbox.md');
+    expect(result?.filename).toEqual('2.1.criteria.blackbox.md');
   });
 
   test('no version/attempt returns null version and attempt', () => {

@@ -1,7 +1,7 @@
 research the domain available in order to fulfill
 - this wish $BEHAVIOR_DIR_REL/0.wish.md
 - this vision $BEHAVIOR_DIR_REL/1.vision.md (if declared)
-- this criteria $BEHAVIOR_DIR_REL/2.criteria.blackbox.md (if declared)
+- this criteria $BEHAVIOR_DIR_REL/2.1.criteria.blackbox.md (if declared)
 
 specifically
 - what are the terms that we need to coin for the new domain.objects required to fulfill the above?
