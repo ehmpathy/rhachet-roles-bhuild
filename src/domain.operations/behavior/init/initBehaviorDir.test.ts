@@ -33,7 +33,7 @@ describe('initBehaviorDir', () => {
         expect(fs.existsSync(path.join(behaviorDir, '0.wish.md'))).toBe(true);
         expect(fs.existsSync(path.join(behaviorDir, '1.vision.md'))).toBe(true);
         expect(
-          fs.existsSync(path.join(behaviorDir, '2.criteria.blackbox.src')),
+          fs.existsSync(path.join(behaviorDir, '2.1.criteria.blackbox.src')),
         ).toBe(true);
       });
 
@@ -44,7 +44,7 @@ describe('initBehaviorDir', () => {
         });
 
         const criteriaBlackboxSrc = fs.readFileSync(
-          path.join(behaviorDir, '2.criteria.blackbox.src'),
+          path.join(behaviorDir, '2.1.criteria.blackbox.src'),
           'utf-8',
         );
 

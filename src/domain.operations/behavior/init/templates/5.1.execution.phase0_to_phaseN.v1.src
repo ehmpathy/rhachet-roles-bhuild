@@ -8,8 +8,8 @@ of roadmap
 ref:
 - $BEHAVIOR_DIR_REL/0.wish.md
 - $BEHAVIOR_DIR_REL/1.vision.md (if declared)
-- $BEHAVIOR_DIR_REL/2.criteria.blackbox.md (if declared)
-- $BEHAVIOR_DIR_REL/2.criteria.blueprint.md (if declared)
+- $BEHAVIOR_DIR_REL/2.1.criteria.blackbox.md (if declared)
+- $BEHAVIOR_DIR_REL/2.3.criteria.blueprint.md (if declared)
 - $BEHAVIOR_DIR_REL/3.2.distill.domain._.v1.i1.md (if declared)
 - $BEHAVIOR_DIR_REL/3.3.blueprint.v1.i1.md
 

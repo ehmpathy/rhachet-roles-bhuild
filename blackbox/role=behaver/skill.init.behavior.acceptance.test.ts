@@ -143,7 +143,7 @@ describe('init.behavior', () => {
           true,
         );
         expect(
-          fs.existsSync(path.join(behaviorPath, '2.criteria.blackbox.src')),
+          fs.existsSync(path.join(behaviorPath, '2.1.criteria.blackbox.src')),
         ).toBe(true);
         expect(
           fs.existsSync(path.join(behaviorPath, '3.3.blueprint.v1.src')),
@@ -259,10 +259,10 @@ describe('init.behavior', () => {
         expect(fs.existsSync(path.join(behaviorDir, '0.wish.md'))).toBe(true);
         expect(fs.existsSync(path.join(behaviorDir, '1.vision.md'))).toBe(true);
         expect(
-          fs.existsSync(path.join(behaviorDir, '2.criteria.blackbox.src')),
+          fs.existsSync(path.join(behaviorDir, '2.1.criteria.blackbox.src')),
         ).toBe(true);
         expect(
-          fs.existsSync(path.join(behaviorDir, '2.criteria.blueprint.src')),
+          fs.existsSync(path.join(behaviorDir, '2.3.criteria.blueprint.src')),
         ).toBe(true);
       });
 

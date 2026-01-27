@@ -1,8 +1,8 @@
 research the test codepath patterns available in order to fulfill
 - this wish $BEHAVIOR_DIR_REL/0.wish.md
 - this vision $BEHAVIOR_DIR_REL/1.vision.md (if declared)
-- this criteria $BEHAVIOR_DIR_REL/2.criteria.blackbox.md (if declared)
-- this criteria $BEHAVIOR_DIR_REL/2.criteria.blueprint.md (if declared)
+- this criteria $BEHAVIOR_DIR_REL/2.1.criteria.blackbox.md (if declared)
+- this criteria $BEHAVIOR_DIR_REL/2.3.criteria.blueprint.md (if declared)
 
 specifically
 - what are the current key patterns in this repo, that are relevant?

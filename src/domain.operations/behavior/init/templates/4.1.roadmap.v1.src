@@ -10,8 +10,8 @@ for how to execute the blueprint specified in $BEHAVIOR_DIR_REL/3.3.blueprint.v1
 ref:
 - $BEHAVIOR_DIR_REL/0.wish.md
 - $BEHAVIOR_DIR_REL/1.vision.md (if declared)
-- $BEHAVIOR_DIR_REL/2.criteria.blackbox.md (if declared)
-- $BEHAVIOR_DIR_REL/2.criteria.blueprint.md (if declared)
+- $BEHAVIOR_DIR_REL/2.1.criteria.blackbox.md (if declared)
+- $BEHAVIOR_DIR_REL/2.3.criteria.blueprint.md (if declared)
 - $BEHAVIOR_DIR_REL/3.1.research.access._.v1.i1.md (if declared)
 - $BEHAVIOR_DIR_REL/3.1.research.claims._.v1.i1.md (if declared)
 - $BEHAVIOR_DIR_REL/3.1.research.domain._.v1.i1.md (if declared)
@@ -29,7 +29,7 @@ for example,
 - if the phase includes tests, remind the builder to read
   - $BEHAVIOR_DIR_REL/3.1.research.patterns._.code.test.v1.i1.md (if declared)
 - if the phase includes acceptance tests, remind the builder to read
-  - $BEHAVIOR_DIR_REL/2.criteria.blackbox.md (if declared)
+  - $BEHAVIOR_DIR_REL/2.1.criteria.blackbox.md (if declared)
 - if the phase includes domain.objects, remind the builder to read
   - $BEHAVIOR_DIR_REL/3.1.research.domain._.v1.i1.md (if declared)
 etc
