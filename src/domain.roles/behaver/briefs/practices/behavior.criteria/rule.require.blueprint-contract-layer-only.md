@@ -10,7 +10,7 @@
   - testable integration contracts without implementation coupling
   - parallel work on subcomponents with defined interfaces
 
-.scope = applies to 2.criteria.blueprint.md only (not blackbox criteria)
+.scope = applies to 2.3.criteria.blueprint.md only (not blackbox criteria)
 
 .how = verify blueprint criteria declares only:
   - subcomponent contracts (what interface each exposes)

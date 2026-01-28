@@ -6,13 +6,13 @@
 
 .hierarchy:
 
-  | artifact | question | answers | bounds |
-  |----------|----------|---------|--------|
-  | 0.wish.md | WHY build this? | the motivation, desire, problem to solve | none — declares intent |
-  | 1.vision.md | WHAT does success look like? | the north star, ideal outcome | none — declares aspiration |
-  | 2.criteria.blackbox.md | WHAT experience must be delivered? | user inputs, outputs, usecases, boundaries | experience bounds |
-  | 2.criteria.blueprint.md | WHAT mechanisms must exist? | contracts, composition, integration points | mechanism bounds |
-  | 3.3.blueprint.md | HOW will we implement it? | specific patterns, algorithms, libraries | implementation decisions |
+  | artifact                  | question                           | answers                                    | bounds                     |
+  | ------------------------- | ---------------------------------- | ------------------------------------------ | -------------------------- |
+  | 0.wish.md                 | WHY build this?                    | the motivation, desire, problem to solve   | none — declares intent     |
+  | 1.vision.md               | WHAT does success look like?       | the north star, ideal outcome              | none — declares aspiration |
+  | 2.1.criteria.blackbox.md  | WHAT experience must be delivered? | user inputs, outputs, usecases, boundaries | experience bounds          |
+  | 2.3.criteria.blueprint.md | WHAT mechanisms must exist?        | contracts, composition, integration points | mechanism bounds           |
+  | 3.3.blueprint.md          | HOW will we implement it?          | specific patterns, algorithms, libraries   | implementation decisions   |
 
 .flow:
 

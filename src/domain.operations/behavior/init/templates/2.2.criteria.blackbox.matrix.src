@@ -1,6 +1,6 @@
 distill the blackbox criteria in $BEHAVIOR_DIR_REL/2.1.criteria.blackbox.md into a coverage matrix
 
-emit into $BEHAVIOR_DIR_REL/2.1.criteria.blackbox.matrix.md
+emit into $BEHAVIOR_DIR_REL/2.2.criteria.blackbox.matrix.md
 
 ---
 
