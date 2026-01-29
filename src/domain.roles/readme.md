@@ -19,3 +19,9 @@ used to maximize prioritized throughput within a resource bandwidth.
 ## 🍄 decomposer
 
 used to decompose large behaviors into focused, independent sub-behaviors.
+
+---
+
+## 🌙 dreamer
+
+used to dream of and catch the behaviors we want to see in the world.

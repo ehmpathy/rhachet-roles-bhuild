@@ -1,0 +1,57 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`genCliArgsErrorStdout enum errors formats enum error with available options 1`] = `
+"⛈️  error: input invalid
+   └─ --level invalid option: expected one of "debug"|"info"|"warn"|"error""
+`;
+
+exports[`genCliArgsErrorStdout fallback message uses lowercase zod message for unhandled codes 1`] = `
+"⛈️  error: input invalid
+   └─ --special custom validation failed"
+`;
+
+exports[`genCliArgsErrorStdout integration with real cli schema parses real schema errors correctly 1`] = `
+"⛈️  error: input invalid
+   └─ --name must be a string, got undefined"
+`;
+
+exports[`genCliArgsErrorStdout path to flag conversion handles empty path 1`] = `
+"⛈️  error: input invalid
+   └─ argument must be a object, got undefined"
+`;
+
+exports[`genCliArgsErrorStdout path to flag conversion handles nested path 1`] = `
+"⛈️  error: input invalid
+   └─ --config.apiKey must be a string, got undefined"
+`;
+
+exports[`genCliArgsErrorStdout path to flag conversion handles ordered array path 1`] = `
+"⛈️  error: input invalid
+   └─ argument[0] must be a string, got undefined"
+`;
+
+exports[`genCliArgsErrorStdout required field errors formats multiple required fields 1`] = `
+"⛈️  error: input invalid
+   ├─ --name must be a string, got undefined
+   └─ --email must be a string, got undefined"
+`;
+
+exports[`genCliArgsErrorStdout required field errors formats undefined field as "is required" 1`] = `
+"⛈️  error: input invalid
+   └─ --name must be a string, got undefined"
+`;
+
+exports[`genCliArgsErrorStdout string length errors formats too long error 1`] = `
+"⛈️  error: input invalid
+   └─ --description too big: expected string to have <=10 characters"
+`;
+
+exports[`genCliArgsErrorStdout string length errors formats too short error 1`] = `
+"⛈️  error: input invalid
+   └─ --tag too small: expected string to have >=3 characters"
+`;
+
+exports[`genCliArgsErrorStdout type mismatch errors formats type mismatch with expected and received 1`] = `
+"⛈️  error: input invalid
+   └─ --count must be a number, got undefined"
+`;

@@ -125,16 +125,98 @@ export const getCliArgs = <T extends CliSchemaWithRhachetArgs>(input: {
   const result = input.schema.safeParse(raw);
 
   if (!result.success) {
-    const errors = result.error.issues
-      .map((issue) => {
-        const path = issue.path.join('.');
-        return `  ${path}: ${issue.message}`;
-      })
-      .join('\n');
-    console.error('error: invalid arguments');
-    console.error(errors);
+    const errorOutput = genCliArgsErrorStdout({ issues: result.error.issues });
+    console.error(errorOutput);
     process.exit(1);
   }
 
   return result.data;
+};
+
+/**
+ * .what = generates human-friendly CLI error output from Zod issues
+ * .why = raw Zod errors are unclear for CLI users
+ */
+export const genCliArgsErrorStdout = (input: {
+  issues: z.ZodIssue[];
+}): string => {
+  const lines: string[] = ['⛈️  error: input invalid'];
+
+  for (let i = 0; i < input.issues.length; i++) {
+    const issue = input.issues[i]!;
+    const isLast = i === input.issues.length - 1;
+    const prefix = isLast ? '└─' : '├─';
+
+    // cast path to (string | number)[] since Zod's PropertyKey[] includes symbols we don't use
+    const path = issue.path as (string | number)[];
+    const flag = genCliFlagFromZodPath({ path });
+    const message = genCliMessageFromZodIssue({ issue });
+    lines.push(`   ${prefix} ${flag} ${message}`);
+  }
+
+  return lines.join('\n');
+};
+
+/**
+ * .what = converts Zod path array to CLI flag format
+ * .why = "named.name" should display as "--name"
+ */
+const genCliFlagFromZodPath = (input: {
+  path: (string | number)[];
+}): string => {
+  // handle ordered (positional) arguments
+  if (input.path[0] === 'ordered') {
+    const index = input.path[1];
+    if (typeof index === 'number') return `argument[${index}]`;
+    return 'argument';
+  }
+
+  // filter out "named" prefix and join rest of the parts
+  const parts = input.path.filter((p) => p !== 'named');
+
+  if (parts.length === 0) return 'argument';
+
+  // convert to --flag format
+  const flagName = parts.join('.');
+  return `--${flagName}`;
+};
+
+/**
+ * .what = converts Zod issue to human-friendly message
+ * .why = "Invalid input: expected string, received undefined" is unclear
+ *
+ * .note = uses `any` casts because Zod 4.x types differ from runtime shape
+ */
+const genCliMessageFromZodIssue = (input: { issue: z.ZodIssue }): string => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const issue = input.issue as any;
+
+  // handle "received undefined" as "is required"
+  if (issue.code === 'invalid_type' && issue.received === 'undefined') {
+    return 'is required';
+  }
+
+  // handle type mismatch
+  if (issue.code === 'invalid_type') {
+    return `must be a ${issue.expected}, got ${issue.received}`;
+  }
+
+  // handle enum errors
+  if (issue.code === 'invalid_enum_value') {
+    const options = issue.options.map((o: string) => `"${o}"`).join(', ');
+    return `must be one of: ${options}`;
+  }
+
+  // handle string too short
+  if (issue.code === 'too_small' && issue.type === 'string') {
+    return `must be at least ${issue.minimum} character(s)`;
+  }
+
+  // handle string too long
+  if (issue.code === 'too_big' && issue.type === 'string') {
+    return `must be at most ${issue.maximum} character(s)`;
+  }
+
+  // fallback to Zod's message
+  return issue.message.toLowerCase();
 };
