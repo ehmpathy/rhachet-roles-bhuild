@@ -40,6 +40,7 @@ else
   echo "  export OPENAI_API_KEY=sk-..."
   echo "  export ANTHROPIC_API_KEY=sk-..."
   echo "  export TAVILY_API_KEY=tvly-..."
+  echo "  export BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN=ghp_..."
   return 1
 fi
 
@@ -56,7 +57,12 @@ if [[ -z "$TAVILY_API_KEY" ]]; then
   echo "⚠ TAVILY_API_KEY not set (get one at https://tavily.com)"
   return 1
 fi
+if [[ -z "$BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN" ]]; then
+  echo "⚠ BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN not set"
+  return 1
+fi
 
 echo "✓ OPENAI_API_KEY set"
 echo "✓ ANTHROPIC_API_KEY set"
 echo "✓ TAVILY_API_KEY set"
+echo "✓ BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN set"

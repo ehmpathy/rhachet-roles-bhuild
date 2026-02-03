@@ -16,6 +16,9 @@ on:
       ANTHROPIC_API_KEY:
         description: "api key for claude code cli, used in integration tests"
         required: false
+      BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN:
+        description: "github token for bhuild demo repo, used in gh.issues acceptance tests"
+        required: false
 
 permissions:
   id-token: write # required for oidc
@@ -225,6 +228,7 @@ jobs:
           THOROUGH=true npm run test:integration -- --testPathPattern="$patterns" --json --outputFile=jest-results.json
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}
 
       - name: test:integration (dynamic ${{ matrix.shard.shard }}/${{ matrix.shard.total }})
         if: matrix.shard.type == 'dynamic'
@@ -237,6 +241,7 @@ jobs:
           fi
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}
 
       - name: report slow tests
         if: always() && hashFiles('jest-results.json') != ''
@@ -295,6 +300,7 @@ jobs:
           THOROUGH=true npm run test:acceptance -- --testPathPattern="$patterns" --json --outputFile=jest-results.json
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}
 
       - name: test:acceptance (dynamic ${{ matrix.shard.shard }}/${{ matrix.shard.total }})
         if: matrix.shard.type == 'dynamic'
@@ -307,6 +313,7 @@ jobs:
           fi
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}
 
       - name: report slow tests
         if: always() && hashFiles('jest-results.json') != ''

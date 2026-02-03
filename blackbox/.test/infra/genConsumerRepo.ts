@@ -22,10 +22,12 @@ export interface ConsumerRepo {
 export const genConsumerRepo = (input?: {
   prefix?: string;
   withClaudeDir?: boolean;
+  branchName?: string;
 }): ConsumerRepo => {
   // create base git repo
   const { repoDir, cleanup } = genTestGitRepo({
     prefix: input?.prefix ?? 'consumer-test-',
+    branchName: input?.branchName,
   });
 
   // create .claude directory if requested
@@ -85,6 +87,10 @@ export const getInvokeHooks = (): InvokeHooks[] => [getInvokeHooksBhuild()];
     stdio: 'pipe',
   });
   execSync('npx rhachet roles link --repo bhuild --role decomposer', {
+    cwd: repoDir,
+    stdio: 'pipe',
+  });
+  execSync('npx rhachet roles link --repo bhuild --role dispatcher', {
     cwd: repoDir,
     stdio: 'pipe',
   });

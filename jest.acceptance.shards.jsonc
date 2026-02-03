@@ -5,7 +5,10 @@
   //   - skill.review.deliverable.acceptance.test.ts (381 lines)
   //   - skill.init.behavior.acceptance.test.ts (352 lines)
   // NOTE: actual runtime data should drive explicit shard curation
-  "explicit": [],
+  "explicit": [
+    // gh.issues tests: ~86s (github api calls + search index latency)
+    ["skill.radio.task.push.via-gh-issues"]
+  ],
 
   // dynamic shards — rest of tests distributed via Jest --shard
   // per wish: at least 3 dynamic shards
