@@ -4,7 +4,10 @@ import * as os from 'os';
 import * as path from 'path';
 import { getError, given, then, useBeforeAll, when } from 'test-fns';
 
-import { getDaoRadioTask } from '../../../../access/daos/daoRadioTask';
+import {
+  type ContextGitRepo,
+  daoRadioTaskViaOsFileops,
+} from '../../../../access/daos/daoRadioTask';
 import { IdempotencyMode } from '../../../../domain.objects/IdempotencyMode';
 import { RadioChannel } from '../../../../domain.objects/RadioChannel';
 import { RadioTask } from '../../../../domain.objects/RadioTask';
@@ -25,10 +28,9 @@ describe('radioTaskPush via os.fileops', () => {
     testRepo.owner,
     testRepo.name,
   );
-  const dao = getDaoRadioTask({
-    channel: RadioChannel.OS_FILEOPS,
-    repo: testRepo,
-  });
+
+  // context for dao calls
+  const context: ContextGitRepo = { git: { repo: testRepo } };
 
   // cleanup after all tests
   afterAll(async () => {
@@ -38,14 +40,17 @@ describe('radioTaskPush via os.fileops', () => {
   given('[case1] create new task (no exid)', () => {
     when('[t0] radioTaskPush with title and description', () => {
       const result = useBeforeAll(async () => {
-        return radioTaskPush({
-          via: RadioChannel.OS_FILEOPS,
-          task: {
-            repo: testRepo,
-            title: 'new task via radioTaskPush',
-            description: 'test description',
+        return radioTaskPush(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            task: {
+              repo: testRepo,
+              title: 'new task via radioTaskPush',
+              description: 'test description',
+            },
           },
-        });
+          context,
+        );
       });
 
       then('returns outcome=created', () => {
@@ -64,13 +69,16 @@ describe('radioTaskPush via os.fileops', () => {
     when('[t1] radioTaskPush without title', () => {
       then('throws error: title required', async () => {
         const error = await getError(
-          radioTaskPush({
-            via: RadioChannel.OS_FILEOPS,
-            task: {
-              repo: testRepo,
-              description: 'no title',
+          radioTaskPush(
+            {
+              via: RadioChannel.OS_FILEOPS,
+              task: {
+                repo: testRepo,
+                description: 'no title',
+              },
             },
-          }),
+            context,
+          ),
         );
         expect(error).toBeInstanceOf(Error);
         expect(error.message).toContain('--title required');
@@ -80,13 +88,16 @@ describe('radioTaskPush via os.fileops', () => {
     when('[t2] radioTaskPush without description', () => {
       then('throws error: description required', async () => {
         const error = await getError(
-          radioTaskPush({
-            via: RadioChannel.OS_FILEOPS,
-            task: {
-              repo: testRepo,
-              title: 'no description',
+          radioTaskPush(
+            {
+              via: RadioChannel.OS_FILEOPS,
+              task: {
+                repo: testRepo,
+                title: 'no description',
+              },
             },
-          }),
+            context,
+          ),
         );
         expect(error).toBeInstanceOf(Error);
         expect(error.message).toContain('--description required');
@@ -109,19 +120,22 @@ describe('radioTaskPush via os.fileops', () => {
         deliveredAt: null,
         branch: null,
       });
-      return dao.set.findsert({ task });
+      return daoRadioTaskViaOsFileops.set.findsert({ task }, context);
     });
 
     when('[t0] radioTaskPush with exid and status', () => {
       then('dispatches to setPartRadioTask', async () => {
-        const result = await radioTaskPush({
-          via: RadioChannel.OS_FILEOPS,
-          task: {
-            repo: testRepo,
-            exid: taskCreated.exid,
-            status: RadioTaskStatus.CLAIMED,
+        const result = await radioTaskPush(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            task: {
+              repo: testRepo,
+              exid: taskCreated.exid,
+              status: RadioTaskStatus.CLAIMED,
+            },
           },
-        });
+          context,
+        );
         expect(result.outcome).toEqual('updated');
         expect(result.task.status).toEqual(RadioTaskStatus.CLAIMED);
       });
@@ -142,18 +156,21 @@ describe('radioTaskPush via os.fileops', () => {
           deliveredAt: null,
           branch: null,
         });
-        return dao.set.findsert({ task });
+        return daoRadioTaskViaOsFileops.set.findsert({ task }, context);
       });
 
       then('updates the title', async () => {
-        const result = await radioTaskPush({
-          via: RadioChannel.OS_FILEOPS,
-          task: {
-            repo: testRepo,
-            exid: anotherTask.exid,
-            title: 'updated title via main',
+        const result = await radioTaskPush(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            task: {
+              repo: testRepo,
+              exid: anotherTask.exid,
+              title: 'updated title via main',
+            },
           },
-        });
+          context,
+        );
         expect(result.outcome).toEqual('updated');
         expect(result.task.title).toEqual('updated title via main');
       });
@@ -163,27 +180,33 @@ describe('radioTaskPush via os.fileops', () => {
   given('[case3] idempotency modes', () => {
     when('[t0] findsert mode with duplicate title', () => {
       const firstResult = useBeforeAll(async () => {
-        return radioTaskPush({
-          via: RadioChannel.OS_FILEOPS,
-          idem: IdempotencyMode.FINDSERT,
-          task: {
-            repo: testRepo,
-            title: 'findsert duplicate test',
-            description: 'first',
+        return radioTaskPush(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            idem: IdempotencyMode.FINDSERT,
+            task: {
+              repo: testRepo,
+              title: 'findsert duplicate test',
+              description: 'first',
+            },
           },
-        });
+          context,
+        );
       });
 
       then('second push returns found', async () => {
-        const secondResult = await radioTaskPush({
-          via: RadioChannel.OS_FILEOPS,
-          idem: IdempotencyMode.FINDSERT,
-          task: {
-            repo: testRepo,
-            title: 'findsert duplicate test',
-            description: 'second',
+        const secondResult = await radioTaskPush(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            idem: IdempotencyMode.FINDSERT,
+            task: {
+              repo: testRepo,
+              title: 'findsert duplicate test',
+              description: 'second',
+            },
           },
-        });
+          context,
+        );
         expect(secondResult.outcome).toEqual('found');
         expect(secondResult.task.exid).toEqual(firstResult.task.exid);
       });
@@ -191,27 +214,33 @@ describe('radioTaskPush via os.fileops', () => {
 
     when('[t1] upsert mode with duplicate title', () => {
       const firstResult = useBeforeAll(async () => {
-        return radioTaskPush({
-          via: RadioChannel.OS_FILEOPS,
-          idem: IdempotencyMode.UPSERT,
-          task: {
-            repo: testRepo,
-            title: 'upsert duplicate test',
-            description: 'first',
+        return radioTaskPush(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            idem: IdempotencyMode.UPSERT,
+            task: {
+              repo: testRepo,
+              title: 'upsert duplicate test',
+              description: 'first',
+            },
           },
-        });
+          context,
+        );
       });
 
       then('second push updates description', async () => {
-        const secondResult = await radioTaskPush({
-          via: RadioChannel.OS_FILEOPS,
-          idem: IdempotencyMode.UPSERT,
-          task: {
-            repo: testRepo,
-            title: 'upsert duplicate test',
-            description: 'second updated',
+        const secondResult = await radioTaskPush(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            idem: IdempotencyMode.UPSERT,
+            task: {
+              repo: testRepo,
+              title: 'upsert duplicate test',
+              description: 'second updated',
+            },
           },
-        });
+          context,
+        );
         expect(secondResult.outcome).toEqual('created');
         expect(secondResult.task.description).toEqual('second updated');
       });
@@ -230,6 +259,7 @@ describe('radioTaskPush via os.fileops', () => {
       freshRepo.owner,
       freshRepo.name,
     );
+    const freshContext: ContextGitRepo = { git: { repo: freshRepo } };
 
     afterAll(async () => {
       await fs.rm(freshRadioDir, { recursive: true, force: true });
@@ -237,14 +267,17 @@ describe('radioTaskPush via os.fileops', () => {
 
     when('[t0] radioTaskPush to fresh repo', () => {
       then('creates radio directory structure', async () => {
-        await radioTaskPush({
-          via: RadioChannel.OS_FILEOPS,
-          task: {
-            repo: freshRepo,
-            title: 'bootstrap test task',
-            description: 'test',
+        await radioTaskPush(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            task: {
+              repo: freshRepo,
+              title: 'bootstrap test task',
+              description: 'test',
+            },
           },
-        });
+          freshContext,
+        );
 
         // verify radio dir exists
         const dirExists = await fs

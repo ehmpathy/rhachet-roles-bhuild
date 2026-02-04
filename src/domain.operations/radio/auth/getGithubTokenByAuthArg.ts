@@ -10,8 +10,8 @@ import { BadRequestError } from 'helpful-errors';
  *   outputs a token. this allows flexible auth without env var setup.
  *
  * .returns
- *   - { token: string } when token is available (as-robot or GITHUB_TOKEN)
- *   - { token: null } when as-human (use gh cli auto login)
+ *   - { token: string; role } when token is available (as-robot or env)
+ *   - { token: null; role: 'as-human' } when as-human (use gh cli auto login)
  *
  * .throws
  *   - BadRequestError when as-robot:env(VAR) but VAR not set
@@ -25,10 +25,10 @@ export const getGithubTokenByAuthArg = async (
     env: NodeJS.ProcessEnv;
     shx: (command: string) => Promise<{ stdout: string; stderr: string }>;
   },
-): Promise<{
-  token: string | null;
-  method: 'as-robot' | 'as-human' | 'env';
-}> => {
+): Promise<
+  | { token: string; role: 'as-robot' | 'env' }
+  | { token: null; role: 'as-human' }
+> => {
   // check for as-robot:shx(...) pattern (token from shell command)
   const shxMatch = input.auth?.match(/^as-robot:shx\((.+)\)$/);
   if (shxMatch) {
@@ -40,7 +40,7 @@ export const getGithubTokenByAuthArg = async (
         `--auth as-robot:shx(...) command produced no output. stderr: ${result.stderr}`,
       );
     }
-    return { token: tokenValue, method: 'as-robot' };
+    return { token: tokenValue, role: 'as-robot' };
   }
 
   // check for as-robot:env(...) pattern (explicit token from env var)
@@ -53,7 +53,7 @@ export const getGithubTokenByAuthArg = async (
         `--auth as-robot:env(${envVarName}) specified but ${envVarName} is not set`,
       );
     }
-    return { token: tokenValue, method: 'as-robot' };
+    return { token: tokenValue, role: 'as-robot' };
   }
 
   // check for as-human (explicit gh cli intent, takes precedence over GITHUB_TOKEN)
@@ -67,12 +67,12 @@ export const getGithubTokenByAuthArg = async (
         '--auth as-human is forbidden in test environment. use --auth as-robot:env(TOKEN_VAR) or --auth as-robot:shx(command) instead.',
       );
     }
-    return { token: null, method: 'as-human' };
+    return { token: null, role: 'as-human' };
   }
 
   // check for GITHUB_TOKEN in env (implicit fallback)
   if (context.env.GITHUB_TOKEN) {
-    return { token: context.env.GITHUB_TOKEN, method: 'env' };
+    return { token: context.env.GITHUB_TOKEN, role: 'env' };
   }
 
   // no auth detected

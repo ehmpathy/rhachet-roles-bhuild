@@ -4,7 +4,10 @@ import * as os from 'os';
 import * as path from 'path';
 import { getError, given, then, useBeforeAll, when } from 'test-fns';
 
-import { getDaoRadioTask } from '../../../../access/daos/daoRadioTask';
+import {
+  type ContextGitRepo,
+  daoRadioTaskViaOsFileops,
+} from '../../../../access/daos/daoRadioTask';
 import { RadioChannel } from '../../../../domain.objects/RadioChannel';
 import { RadioTask } from '../../../../domain.objects/RadioTask';
 import { RadioTaskRepo } from '../../../../domain.objects/RadioTaskRepo';
@@ -28,10 +31,9 @@ describe('radioTaskPull via os.fileops', () => {
     testRepo.owner,
     testRepo.name,
   );
-  const dao = getDaoRadioTask({
-    channel: RadioChannel.OS_FILEOPS,
-    repo: testRepo,
-  });
+
+  // context for dao calls
+  const context: ContextGitRepo = { git: { repo: testRepo } };
 
   // cleanup after all tests
   afterAll(async () => {
@@ -41,10 +43,10 @@ describe('radioTaskPull via os.fileops', () => {
   given('[case1] empty radio directory', () => {
     when('[t0] radioTaskPullAll is called', () => {
       then('returns empty array', async () => {
-        const result = await radioTaskPullAll({
-          via: RadioChannel.OS_FILEOPS,
-          repo: testRepo,
-        });
+        const result = await radioTaskPullAll(
+          { via: RadioChannel.OS_FILEOPS, repo: testRepo },
+          context,
+        );
         expect(result.tasks).toEqual([]);
       });
     });
@@ -91,18 +93,18 @@ describe('radioTaskPull via os.fileops', () => {
         deliveredAt: null,
         branch: null,
       });
-      await dao.set.findsert({ task: task1 });
-      await dao.set.findsert({ task: task2 });
-      await dao.set.findsert({ task: task3 });
+      await daoRadioTaskViaOsFileops.set.findsert({ task: task1 }, context);
+      await daoRadioTaskViaOsFileops.set.findsert({ task: task2 }, context);
+      await daoRadioTaskViaOsFileops.set.findsert({ task: task3 }, context);
       return { task1, task2, task3 };
     });
 
     when('[t0] radioTaskPullAll without filter', () => {
       then('returns all tasks', async () => {
-        const result = await radioTaskPullAll({
-          via: RadioChannel.OS_FILEOPS,
-          repo: testRepo,
-        });
+        const result = await radioTaskPullAll(
+          { via: RadioChannel.OS_FILEOPS, repo: testRepo },
+          context,
+        );
         expect(result.tasks.length).toBeGreaterThanOrEqual(3);
         const exids = result.tasks.map((t) => t.exid);
         expect(exids).toContain('pull-001');
@@ -113,11 +115,14 @@ describe('radioTaskPull via os.fileops', () => {
 
     when('[t1] radioTaskPullAll with status=QUEUED filter', () => {
       then('returns only QUEUED tasks', async () => {
-        const result = await radioTaskPullAll({
-          via: RadioChannel.OS_FILEOPS,
-          repo: testRepo,
-          filter: { status: RadioTaskStatus.QUEUED },
-        });
+        const result = await radioTaskPullAll(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            repo: testRepo,
+            filter: { status: RadioTaskStatus.QUEUED },
+          },
+          context,
+        );
         const exids = result.tasks.map((t) => t.exid);
         expect(exids).toContain('pull-001');
         expect(exids).not.toContain('pull-002');
@@ -127,11 +132,14 @@ describe('radioTaskPull via os.fileops', () => {
 
     when('[t2] radioTaskPullAll with status=CLAIMED filter', () => {
       then('returns only CLAIMED tasks', async () => {
-        const result = await radioTaskPullAll({
-          via: RadioChannel.OS_FILEOPS,
-          repo: testRepo,
-          filter: { status: RadioTaskStatus.CLAIMED },
-        });
+        const result = await radioTaskPullAll(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            repo: testRepo,
+            filter: { status: RadioTaskStatus.CLAIMED },
+          },
+          context,
+        );
         const exids = result.tasks.map((t) => t.exid);
         expect(exids).not.toContain('pull-001');
         expect(exids).toContain('pull-002');
@@ -141,11 +149,14 @@ describe('radioTaskPull via os.fileops', () => {
 
     when('[t3] radioTaskPullOne by exid', () => {
       then('returns the specific task', async () => {
-        const result = await radioTaskPullOne({
-          via: RadioChannel.OS_FILEOPS,
-          repo: testRepo,
-          ref: { exid: 'pull-001' },
-        });
+        const result = await radioTaskPullOne(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            repo: testRepo,
+            ref: { exid: 'pull-001' },
+          },
+          context,
+        );
         expect(result.task.exid).toEqual('pull-001');
         expect(result.task.title).toEqual('first pull test task');
         expect(result.cached).toEqual(false); // same channel, no cache
@@ -154,11 +165,14 @@ describe('radioTaskPull via os.fileops', () => {
 
     when('[t4] radioTaskPullOne by title', () => {
       then('returns the specific task', async () => {
-        const result = await radioTaskPullOne({
-          via: RadioChannel.OS_FILEOPS,
-          repo: testRepo,
-          ref: { title: 'second pull test task' },
-        });
+        const result = await radioTaskPullOne(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            repo: testRepo,
+            ref: { title: 'second pull test task' },
+          },
+          context,
+        );
         expect(result.task.exid).toEqual('pull-002');
         expect(result.task.title).toEqual('second pull test task');
       });
@@ -167,11 +181,14 @@ describe('radioTaskPull via os.fileops', () => {
     when('[t5] radioTaskPullOne with nonexistent exid', () => {
       then('throws error: task not found', async () => {
         const error = await getError(
-          radioTaskPullOne({
-            via: RadioChannel.OS_FILEOPS,
-            repo: testRepo,
-            ref: { exid: 'nonexistent' },
-          }),
+          radioTaskPullOne(
+            {
+              via: RadioChannel.OS_FILEOPS,
+              repo: testRepo,
+              ref: { exid: 'nonexistent' },
+            },
+            context,
+          ),
         );
         expect(error).toBeInstanceOf(Error);
         expect(error.message).toContain('task not found');
@@ -181,11 +198,14 @@ describe('radioTaskPull via os.fileops', () => {
     when('[t6] radioTaskPullOne with nonexistent title', () => {
       then('throws error: task not found', async () => {
         const error = await getError(
-          radioTaskPullOne({
-            via: RadioChannel.OS_FILEOPS,
-            repo: testRepo,
-            ref: { title: 'nonexistent title' },
-          }),
+          radioTaskPullOne(
+            {
+              via: RadioChannel.OS_FILEOPS,
+              repo: testRepo,
+              ref: { title: 'nonexistent title' },
+            },
+            context,
+          ),
         );
         expect(error).toBeInstanceOf(Error);
         expect(error.message).toContain('task not found');
@@ -208,16 +228,15 @@ describe('radioTaskPull via os.fileops', () => {
         deliveredAt: null,
         branch: null,
       });
-      return dao.set.findsert({ task });
+      return daoRadioTaskViaOsFileops.set.findsert({ task }, context);
     });
 
     when('[t0] radioTaskPull with all mode', () => {
       then('returns tasks array', async () => {
-        const result = await radioTaskPull({
-          via: RadioChannel.OS_FILEOPS,
-          repo: testRepo,
-          all: {},
-        });
+        const result = await radioTaskPull(
+          { via: RadioChannel.OS_FILEOPS, repo: testRepo, all: {} },
+          context,
+        );
         expect('tasks' in result).toBe(true);
         if ('tasks' in result) {
           expect(result.tasks.length).toBeGreaterThan(0);
@@ -227,11 +246,14 @@ describe('radioTaskPull via os.fileops', () => {
 
     when('[t1] radioTaskPull with one mode', () => {
       then('returns single task', async () => {
-        const result = await radioTaskPull({
-          via: RadioChannel.OS_FILEOPS,
-          repo: testRepo,
-          one: { exid: taskForUnified.exid },
-        });
+        const result = await radioTaskPull(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            repo: testRepo,
+            one: { exid: taskForUnified.exid },
+          },
+          context,
+        );
         expect('task' in result).toBe(true);
         if ('task' in result) {
           expect(result.task.exid).toEqual(taskForUnified.exid);

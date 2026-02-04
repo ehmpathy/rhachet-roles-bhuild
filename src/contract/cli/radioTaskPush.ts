@@ -9,6 +9,7 @@
 
 import { z } from 'zod';
 
+import type { ContextDispatchRadio } from '@src/access/daos/daoRadioTask';
 import { IdempotencyMode } from '@src/domain.objects/IdempotencyMode';
 import { RadioChannel } from '@src/domain.objects/RadioChannel';
 import { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
@@ -16,6 +17,7 @@ import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
 import { getGithubTokenByAuthArg } from '@src/domain.operations/radio/auth/getGithubTokenByAuthArg';
 import { radioTaskPush } from '@src/domain.operations/radio/task/push/radioTaskPush';
 import { getCliArgs } from '@src/infra/cli';
+import { getRepoFromGitContext } from '@src/infra/git/getRepoFromGitContext';
 import { shx } from '@src/infra/shell/shx';
 
 // ────────────────────────────────────────────────────────────────────
@@ -76,42 +78,47 @@ const parseRepo = (repoStr: string): RadioTaskRepo => {
 export const cliRadioTaskPush = async (): Promise<void> => {
   const { named } = getCliArgs({ schema: schemaOfArgs });
 
-  // resolve auth for gh.issues channel
-  if (named.via === RadioChannel.GH_ISSUES) {
-    const authResult = await getGithubTokenByAuthArg(
-      { auth: named.auth },
-      { env: process.env, shx },
-    );
-    if (authResult.token) {
-      process.env.GITHUB_TOKEN = authResult.token;
-    }
+  // resolve repo from cli arg or git context
+  const repo = named.repo
+    ? parseRepo(named.repo)
+    : await getRepoFromGitContext();
+  if (!repo) {
+    console.error('⛈️  error: --repo required (not in a git repo)');
+    process.exit(1);
   }
 
-  // parse repo if provided
-  const repo = named.repo ? parseRepo(named.repo) : undefined;
+  // build context based on channel
+  const context: ContextDispatchRadio<typeof named.via> =
+    named.via === RadioChannel.GH_ISSUES
+      ? {
+          github: {
+            auth: await getGithubTokenByAuthArg(
+              { auth: named.auth },
+              { env: process.env, shx },
+            ),
+          },
+          git: { repo },
+        }
+      : { git: { repo } };
 
   // dispatch to domain operation
-  const result = await radioTaskPush({
-    via: named.via,
-    idem: named.idem,
-    task: {
-      repo,
-      exid: named.exid,
-      title: named.title,
-      description: named.description,
-      status: named.status,
+  const result = await radioTaskPush(
+    {
+      via: named.via,
+      idem: named.idem,
+      task: {
+        repo,
+        exid: named.exid,
+        title: named.title,
+        description: named.description,
+        status: named.status,
+      },
     },
-  });
+    context,
+  );
 
   // format output
-  const statusIcon = (() => {
-    if (result.outcome === 'created') return '✨';
-    if (result.outcome === 'found') return '🔭';
-    if (result.outcome === 'updated') return '📝';
-    return '🎙️';
-  })();
-
-  console.log(`${statusIcon} ${result.outcome}: ${result.task.title}`);
+  console.log(`🎙️ ${result.outcome}: ${result.task.title}`);
   console.log(`   ├─ exid: ${result.task.exid}`);
   console.log(`   ├─ status: ${result.task.status}`);
   console.log(`   ├─ repo: ${result.task.repo.owner}/${result.task.repo.name}`);

@@ -1,5 +1,6 @@
 import { BadRequestError } from 'helpful-errors';
 
+import type { ContextDispatchRadio } from '../../../../access/daos/daoRadioTask';
 import type { IdempotencyMode } from '../../../../domain.objects/IdempotencyMode';
 import { RadioChannel } from '../../../../domain.objects/RadioChannel';
 import type { RadioTask } from '../../../../domain.objects/RadioTask';
@@ -14,17 +15,20 @@ import { setPartRadioTask } from './setPartRadioTask';
  * .what = dispatch to setFullRadioTask or setPartRadioTask
  * .why = single entry point for cli that routes based on input shape
  */
-export const radioTaskPush = async (input: {
-  via: RadioChannel;
-  idem?: IdempotencyMode;
-  task: {
-    repo?: RadioTaskRepo;
-    exid?: string;
-    title?: string;
-    description?: string;
-    status?: RadioTaskStatus;
-  };
-}): Promise<{
+export const radioTaskPush = async <TChannel extends RadioChannel>(
+  input: {
+    via: TChannel;
+    idem?: IdempotencyMode;
+    task: {
+      repo?: RadioTaskRepo;
+      exid?: string;
+      title?: string;
+      description?: string;
+      status?: RadioTaskStatus;
+    };
+  },
+  context: ContextDispatchRadio<TChannel>,
+): Promise<{
   task: RadioTask;
   outcome: 'created' | 'found' | 'updated' | 'unchanged';
   backup?: string;
@@ -42,16 +46,19 @@ export const radioTaskPush = async (input: {
 
   // dispatch to setPartRadioTask if exid provided (update mode)
   if (input.task.exid) {
-    return setPartRadioTask({
-      via: input.via,
-      task: {
-        repo,
-        exid: input.task.exid,
-        title: input.task.title,
-        description: input.task.description,
-        status: input.task.status,
+    return setPartRadioTask(
+      {
+        via: input.via,
+        task: {
+          repo,
+          exid: input.task.exid,
+          title: input.task.title,
+          description: input.task.description,
+          status: input.task.status,
+        },
       },
-    });
+      context,
+    );
   }
 
   // validate required fields for new task
@@ -63,13 +70,16 @@ export const radioTaskPush = async (input: {
   }
 
   // dispatch to setFullRadioTask (create mode)
-  return setFullRadioTask({
-    via: input.via,
-    idem: input.idem,
-    task: {
-      repo,
-      title: input.task.title,
-      description: input.task.description,
+  return setFullRadioTask(
+    {
+      via: input.via,
+      idem: input.idem,
+      task: {
+        repo,
+        title: input.task.title,
+        description: input.task.description,
+      },
     },
-  });
+    context,
+  );
 };

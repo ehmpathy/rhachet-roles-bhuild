@@ -4,6 +4,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
+import type { ContextGitRepo } from '../../../domain.objects/RadioContext';
 import { RadioTask } from '../../../domain.objects/RadioTask';
 import { RadioTaskRepo } from '../../../domain.objects/RadioTaskRepo';
 import { RadioTaskStatus } from '../../../domain.objects/RadioTaskStatus';
@@ -22,7 +23,9 @@ describe('daoRadioTaskViaOsFileops', () => {
     testRepo.owner,
     testRepo.name,
   );
-  const dao = daoRadioTaskViaOsFileops({ repo: testRepo });
+
+  // context for all dao calls
+  const context: ContextGitRepo = { git: { repo: testRepo } };
 
   // cleanup after all tests
   afterAll(async () => {
@@ -32,24 +35,30 @@ describe('daoRadioTaskViaOsFileops', () => {
   given('[case1] empty radio directory', () => {
     when('[t0] get.one.byPrimary for nonexistent task', () => {
       then('returns null', async () => {
-        const result = await dao.get.one.byPrimary({ exid: 'nonexistent' });
+        const result = await daoRadioTaskViaOsFileops.get.one.byPrimary(
+          { exid: 'nonexistent' },
+          context,
+        );
         expect(result).toBeNull();
       });
     });
 
     when('[t1] get.one.byUnique for nonexistent task', () => {
       then('returns null', async () => {
-        const result = await dao.get.one.byUnique({
-          repo: testRepo,
-          title: 'nonexistent',
-        });
+        const result = await daoRadioTaskViaOsFileops.get.one.byUnique(
+          { repo: testRepo, title: 'nonexistent' },
+          context,
+        );
         expect(result).toBeNull();
       });
     });
 
     when('[t2] get.all on empty directory', () => {
       then('returns empty array', async () => {
-        const result = await dao.get.all({ repo: testRepo });
+        const result = await daoRadioTaskViaOsFileops.get.all(
+          { repo: testRepo },
+          context,
+        );
         expect(result).toEqual([]);
       });
     });
@@ -72,7 +81,10 @@ describe('daoRadioTaskViaOsFileops', () => {
 
     when('[t0] findsert is called', () => {
       const taskCreated = useBeforeAll(async () => {
-        return dao.set.findsert({ task: taskToCreate });
+        return daoRadioTaskViaOsFileops.set.findsert(
+          { task: taskToCreate },
+          context,
+        );
       });
 
       then('returns task with exid', () => {
@@ -103,7 +115,10 @@ describe('daoRadioTaskViaOsFileops', () => {
 
     when('[t1] findsert same task again', () => {
       then('returns found task (idempotent)', async () => {
-        const result = await dao.set.findsert({ task: taskToCreate });
+        const result = await daoRadioTaskViaOsFileops.set.findsert(
+          { task: taskToCreate },
+          context,
+        );
         expect(result.exid).toEqual('test-001');
         expect(result.title).toEqual('test task for findsert');
       });
@@ -111,7 +126,10 @@ describe('daoRadioTaskViaOsFileops', () => {
 
     when('[t2] get.one.byPrimary for created task', () => {
       then('returns the task', async () => {
-        const result = await dao.get.one.byPrimary({ exid: 'test-001' });
+        const result = await daoRadioTaskViaOsFileops.get.one.byPrimary(
+          { exid: 'test-001' },
+          context,
+        );
         expect(result).not.toBeNull();
         expect(result?.title).toEqual('test task for findsert');
       });
@@ -119,10 +137,10 @@ describe('daoRadioTaskViaOsFileops', () => {
 
     when('[t3] get.one.byUnique for created task', () => {
       then('returns the task', async () => {
-        const result = await dao.get.one.byUnique({
-          repo: testRepo,
-          title: 'test task for findsert',
-        });
+        const result = await daoRadioTaskViaOsFileops.get.one.byUnique(
+          { repo: testRepo, title: 'test task for findsert' },
+          context,
+        );
         expect(result).not.toBeNull();
         expect(result?.exid).toEqual('test-001');
       });
@@ -145,7 +163,10 @@ describe('daoRadioTaskViaOsFileops', () => {
     });
 
     const taskCreated = useBeforeAll(async () => {
-      return dao.set.findsert({ task: taskToCreate });
+      return daoRadioTaskViaOsFileops.set.findsert(
+        { task: taskToCreate },
+        context,
+      );
     });
 
     when('[t0] upsert with updated status', () => {
@@ -158,7 +179,10 @@ describe('daoRadioTaskViaOsFileops', () => {
           branch: 'worker/test-branch',
         });
 
-        const updated = await dao.set.upsert({ task: taskToUpdate });
+        const updated = await daoRadioTaskViaOsFileops.set.upsert(
+          { task: taskToUpdate },
+          context,
+        );
         expect(updated.status).toEqual(RadioTaskStatus.CLAIMED);
         expect(updated.claimedBy).toEqual('worker');
         expect(updated.branch).toEqual('worker/test-branch');
@@ -232,17 +256,23 @@ describe('daoRadioTaskViaOsFileops', () => {
     });
 
     useBeforeAll(async () => {
-      const t1 = await dao.set.findsert({ task: taskEnqueued });
-      const t2 = await dao.set.findsert({ task: taskClaimed });
+      const t1 = await daoRadioTaskViaOsFileops.set.findsert(
+        { task: taskEnqueued },
+        context,
+      );
+      const t2 = await daoRadioTaskViaOsFileops.set.findsert(
+        { task: taskClaimed },
+        context,
+      );
       return { t1, t2 };
     });
 
     when('[t0] get.all with status=QUEUED', () => {
       then('returns only QUEUED tasks', async () => {
-        const result = await dao.get.all({
-          repo: testRepo,
-          filter: { status: RadioTaskStatus.QUEUED },
-        });
+        const result = await daoRadioTaskViaOsFileops.get.all(
+          { repo: testRepo, filter: { status: RadioTaskStatus.QUEUED } },
+          context,
+        );
         const exids = result.map((t) => t.exid);
         expect(exids).toContain('test-003');
         expect(exids).not.toContain('test-004');
@@ -251,10 +281,10 @@ describe('daoRadioTaskViaOsFileops', () => {
 
     when('[t1] get.all with status=CLAIMED', () => {
       then('returns only CLAIMED tasks', async () => {
-        const result = await dao.get.all({
-          repo: testRepo,
-          filter: { status: RadioTaskStatus.CLAIMED },
-        });
+        const result = await daoRadioTaskViaOsFileops.get.all(
+          { repo: testRepo, filter: { status: RadioTaskStatus.CLAIMED } },
+          context,
+        );
         const exids = result.map((t) => t.exid);
         expect(exids).toContain('test-004');
         // test-002 was also claimed in case3
@@ -279,14 +309,20 @@ describe('daoRadioTaskViaOsFileops', () => {
     });
 
     useBeforeAll(async () => {
-      const task = await dao.set.findsert({ task: taskToDelete });
+      const task = await daoRadioTaskViaOsFileops.set.findsert(
+        { task: taskToDelete },
+        context,
+      );
       return { task };
     });
 
     when('[t0] del is called', () => {
       then('task is removed', async () => {
-        await dao.del({ exid: 'test-005' });
-        const result = await dao.get.one.byPrimary({ exid: 'test-005' });
+        await daoRadioTaskViaOsFileops.del({ exid: 'test-005' }, context);
+        const result = await daoRadioTaskViaOsFileops.get.one.byPrimary(
+          { exid: 'test-005' },
+          context,
+        );
         expect(result).toBeNull();
       });
     });

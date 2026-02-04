@@ -225,7 +225,7 @@ jobs:
         if: matrix.shard.type == 'explicit'
         run: |
           patterns='${{ join(matrix.shard.patterns, '|') }}'
-          THOROUGH=true npm run test:integration -- --testPathPattern="$patterns" --json --outputFile=jest-results.json
+          THOROUGH=true npm run test:integration -- --testPathPatterns="$patterns" --json --outputFile=jest-results.json
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}
@@ -297,7 +297,7 @@ jobs:
         if: matrix.shard.type == 'explicit'
         run: |
           patterns='${{ join(matrix.shard.patterns, '|') }}'
-          THOROUGH=true npm run test:acceptance -- --testPathPattern="$patterns" --json --outputFile=jest-results.json
+          THOROUGH=true npm run test:acceptance -- --testPathPatterns="$patterns" --json --outputFile=jest-results.json
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}

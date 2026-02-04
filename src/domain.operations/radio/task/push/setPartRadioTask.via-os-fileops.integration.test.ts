@@ -4,7 +4,10 @@ import * as os from 'os';
 import * as path from 'path';
 import { getError, given, then, useBeforeAll, when } from 'test-fns';
 
-import { getDaoRadioTask } from '../../../../access/daos/daoRadioTask';
+import {
+  type ContextGitRepo,
+  daoRadioTaskViaOsFileops,
+} from '../../../../access/daos/daoRadioTask';
 import { RadioChannel } from '../../../../domain.objects/RadioChannel';
 import { RadioTask } from '../../../../domain.objects/RadioTask';
 import { RadioTaskRepo } from '../../../../domain.objects/RadioTaskRepo';
@@ -24,10 +27,9 @@ describe('setPartRadioTask via os.fileops', () => {
     testRepo.owner,
     testRepo.name,
   );
-  const dao = getDaoRadioTask({
-    channel: RadioChannel.OS_FILEOPS,
-    repo: testRepo,
-  });
+
+  // context for dao calls
+  const context: ContextGitRepo = { git: { repo: testRepo } };
 
   // cleanup after all tests
   afterAll(async () => {
@@ -49,19 +51,22 @@ describe('setPartRadioTask via os.fileops', () => {
         deliveredAt: null,
         branch: null,
       });
-      return dao.set.findsert({ task });
+      return daoRadioTaskViaOsFileops.set.findsert({ task }, context);
     });
 
     when('[t0] status updated to CLAIMED', () => {
       then('task is claimed with branch and actor', async () => {
-        const result = await setPartRadioTask({
-          via: RadioChannel.OS_FILEOPS,
-          task: {
-            repo: testRepo,
-            exid: taskCreated.exid,
-            status: RadioTaskStatus.CLAIMED,
+        const result = await setPartRadioTask(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            task: {
+              repo: testRepo,
+              exid: taskCreated.exid,
+              status: RadioTaskStatus.CLAIMED,
+            },
           },
-        });
+          context,
+        );
         expect(result.outcome).toEqual('updated');
         expect(result.task.status).toEqual(RadioTaskStatus.CLAIMED);
         expect(result.task.claimedBy).toBeDefined();
@@ -85,19 +90,22 @@ describe('setPartRadioTask via os.fileops', () => {
           deliveredAt: null,
           branch: null,
         });
-        return dao.set.findsert({ task });
+        return daoRadioTaskViaOsFileops.set.findsert({ task }, context);
       });
 
       then('throws error: cannot deliver unclaimed task', async () => {
         const error = await getError(
-          setPartRadioTask({
-            via: RadioChannel.OS_FILEOPS,
-            task: {
-              repo: testRepo,
-              exid: freshTask.exid,
-              status: RadioTaskStatus.DELIVERED,
+          setPartRadioTask(
+            {
+              via: RadioChannel.OS_FILEOPS,
+              task: {
+                repo: testRepo,
+                exid: freshTask.exid,
+                status: RadioTaskStatus.DELIVERED,
+              },
             },
-          }),
+            context,
+          ),
         );
         expect(error).toBeInstanceOf(Error);
         expect(error.message).toContain('cannot deliver unclaimed task');
@@ -120,19 +128,22 @@ describe('setPartRadioTask via os.fileops', () => {
         deliveredAt: null,
         branch: 'worker/test-branch',
       });
-      return dao.set.findsert({ task });
+      return daoRadioTaskViaOsFileops.set.findsert({ task }, context);
     });
 
     when('[t0] status updated to DELIVERED', () => {
       then('task is delivered with deliveredAt', async () => {
-        const result = await setPartRadioTask({
-          via: RadioChannel.OS_FILEOPS,
-          task: {
-            repo: testRepo,
-            exid: claimedTask.exid,
-            status: RadioTaskStatus.DELIVERED,
+        const result = await setPartRadioTask(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            task: {
+              repo: testRepo,
+              exid: claimedTask.exid,
+              status: RadioTaskStatus.DELIVERED,
+            },
           },
-        });
+          context,
+        );
         expect(result.outcome).toEqual('updated');
         expect(result.task.status).toEqual(RadioTaskStatus.DELIVERED);
         expect(result.task.deliveredAt).toBeDefined();
@@ -155,19 +166,22 @@ describe('setPartRadioTask via os.fileops', () => {
         deliveredAt: null,
         branch: null,
       });
-      return dao.set.findsert({ task });
+      return daoRadioTaskViaOsFileops.set.findsert({ task }, context);
     });
 
     when('[t0] title is updated', () => {
       then('task has new title', async () => {
-        const result = await setPartRadioTask({
-          via: RadioChannel.OS_FILEOPS,
-          task: {
-            repo: testRepo,
-            exid: taskToEdit.exid,
-            title: 'updated title',
+        const result = await setPartRadioTask(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            task: {
+              repo: testRepo,
+              exid: taskToEdit.exid,
+              title: 'updated title',
+            },
           },
-        });
+          context,
+        );
         expect(result.outcome).toEqual('updated');
         expect(result.task.title).toEqual('updated title');
       });
@@ -175,14 +189,17 @@ describe('setPartRadioTask via os.fileops', () => {
 
     when('[t1] description is updated', () => {
       then('task has new description', async () => {
-        const result = await setPartRadioTask({
-          via: RadioChannel.OS_FILEOPS,
-          task: {
-            repo: testRepo,
-            exid: taskToEdit.exid,
-            description: 'updated description',
+        const result = await setPartRadioTask(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            task: {
+              repo: testRepo,
+              exid: taskToEdit.exid,
+              description: 'updated description',
+            },
           },
-        });
+          context,
+        );
         expect(result.outcome).toEqual('updated');
         expect(result.task.description).toEqual('updated description');
       });
@@ -193,14 +210,17 @@ describe('setPartRadioTask via os.fileops', () => {
     when('[t0] setPartRadioTask with nonexistent exid', () => {
       then('throws error: task not found', async () => {
         const error = await getError(
-          setPartRadioTask({
-            via: RadioChannel.OS_FILEOPS,
-            task: {
-              repo: testRepo,
-              exid: 'nonexistent-exid',
-              status: RadioTaskStatus.CLAIMED,
+          setPartRadioTask(
+            {
+              via: RadioChannel.OS_FILEOPS,
+              task: {
+                repo: testRepo,
+                exid: 'nonexistent-exid',
+                status: RadioTaskStatus.CLAIMED,
+              },
             },
-          }),
+            context,
+          ),
         );
         expect(error).toBeInstanceOf(Error);
         expect(error.message).toContain('task not found');
@@ -223,18 +243,21 @@ describe('setPartRadioTask via os.fileops', () => {
         deliveredAt: null,
         branch: null,
       });
-      return dao.set.findsert({ task });
+      return daoRadioTaskViaOsFileops.set.findsert({ task }, context);
     });
 
     when('[t0] setPartRadioTask with no changes', () => {
       then('returns outcome=unchanged', async () => {
-        const result = await setPartRadioTask({
-          via: RadioChannel.OS_FILEOPS,
-          task: {
-            repo: testRepo,
-            exid: unchangedTask.exid,
+        const result = await setPartRadioTask(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            task: {
+              repo: testRepo,
+              exid: unchangedTask.exid,
+            },
           },
-        });
+          context,
+        );
         expect(result.outcome).toEqual('unchanged');
         expect(result.task.exid).toEqual(unchangedTask.exid);
       });
