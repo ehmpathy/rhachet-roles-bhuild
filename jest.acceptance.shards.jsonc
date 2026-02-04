@@ -7,7 +7,7 @@
   // NOTE: actual runtime data should drive explicit shard curation
   "explicit": [
     // gh.issues tests: ~86s (github api calls + search index latency)
-    ["skill.radio.task.push.via-gh-issues"]
+    { "patterns": ["skill.radio.task.push.via-gh-issues"] }
   ],
 
   // dynamic shards — rest of tests distributed via Jest --shard
