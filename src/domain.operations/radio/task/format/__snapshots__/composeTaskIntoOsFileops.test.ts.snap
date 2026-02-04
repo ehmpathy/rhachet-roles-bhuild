@@ -1,0 +1,63 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`composeTaskIntoOsFileops given: [case1] task in QUEUED status when: [t0] composed into os.fileops format then: matches snapshot 1`] = `
+"---
+exid: "142"
+title: "fix flaky test"
+status: QUEUED
+repo: "ehmpathy/acme-app"
+pushed_by: casey
+pushed_at: 2026-01-30
+claimed_by: null
+claimed_at: null
+delivered_at: null
+branch: null
+---
+🎙️ task - fix flaky test
+
+🦫  dispatch to foreman
+
+💧 task enqueued
+   ├─ priority = ?
+   ├─ yieldage = ?
+   └─ leverage = ?
+
+---
+
+fix flaky test
+
+timeout in ci needs attention
+"
+`;
+
+exports[`composeTaskIntoOsFileops given: [case2] task in CLAIMED status with branch when: [t0] composed into os.fileops format then: matches snapshot 1`] = `
+"---
+exid: "142"
+title: "fix flaky test"
+status: CLAIMED
+repo: "ehmpathy/acme-app"
+pushed_by: casey
+pushed_at: 2026-01-30
+claimed_by: foreman
+claimed_at: 2026-01-30
+delivered_at: null
+branch: foreman/fix-flaky-test
+---
+🎙️ task - fix flaky test
+
+🦫  dispatch to foreman
+
+💧 task enqueued
+   ├─ priority = ?
+   ├─ yieldage = ?
+   └─ leverage = ?
+
+🌲 tree planted at foreman/fix-flaky-test
+
+---
+
+fix flaky test
+
+timeout in ci needs attention
+"
+`;

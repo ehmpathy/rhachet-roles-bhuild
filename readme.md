@@ -104,6 +104,119 @@ npx rhachet run --repo bhuild --role behaver --skill review.deliverable \
   --interactive
 ```
 
+## 💧 dispatcher skills
+
+### radio.task.push
+
+broadcast tasks to a radio channel for distributed dispatch. supports github issues and local filesystem channels.
+
+```sh
+# push a new task to github issues
+npx rhachet run --repo bhuild --role dispatcher --skill radio.task.push \
+  --via gh.issues \
+  --title "fix flaky test" \
+  --description "timeout in ci needs retry logic"
+
+# push to a specific repo
+npx rhachet run --repo bhuild --role dispatcher --skill radio.task.push \
+  --via gh.issues \
+  --repo ehmpathy/acme-app \
+  --title "add dark mode" \
+  --description "user preference for theme"
+
+# claim a task (QUEUED → CLAIMED)
+npx rhachet run --repo bhuild --role dispatcher --skill radio.task.push \
+  --via gh.issues \
+  --exid 142 \
+  --status CLAIMED
+
+# deliver a task (CLAIMED → DELIVERED)
+npx rhachet run --repo bhuild --role dispatcher --skill radio.task.push \
+  --via gh.issues \
+  --exid 142 \
+  --status DELIVERED
+
+# push to local filesystem
+npx rhachet run --repo bhuild --role dispatcher --skill radio.task.push \
+  --via os.fileops \
+  --title "offline task" \
+  --description "works without network"
+```
+
+### radio.task.pull
+
+pull tasks from a radio channel. lists available tasks or retrieves specific task details.
+
+```sh
+# list all tasks from github issues
+npx rhachet run --repo bhuild --role dispatcher --skill radio.task.pull \
+  --via gh.issues \
+  --list
+
+# list tasks with status filter
+npx rhachet run --repo bhuild --role dispatcher --skill radio.task.pull \
+  --via gh.issues \
+  --list \
+  --status QUEUED
+
+# pull specific task by exid
+npx rhachet run --repo bhuild --role dispatcher --skill radio.task.pull \
+  --via gh.issues \
+  --exid 142
+
+# pull from local cache
+npx rhachet run --repo bhuild --role dispatcher --skill radio.task.pull \
+  --via os.fileops \
+  --list
+```
+
+### auth modes
+
+for `gh.issues` channel, authentication is required. supported modes:
+
+| mode                | usage                              | description                                  |
+| ------------------- | ---------------------------------- | -------------------------------------------- |
+| `as-human`          | `--auth as-human`                  | use gh cli's logged-in session (interactive) |
+| `as-robot:env(VAR)` | `--auth as-robot:env(GITHUB_TOKEN)`| use token from environment variable          |
+| `as-robot:shx(cmd)` | `--auth as-robot:shx(op read ...)` | execute shell command to retrieve token      |
+| env fallback        | (no --auth)                        | use `GITHUB_TOKEN` env var if set            |
+
+examples:
+
+```sh
+# use gh cli login (human interactive)
+npx rhachet run --repo bhuild --role dispatcher --skill radio.task.push \
+  --via gh.issues \
+  --auth as-human \
+  --title "task" --description "desc"
+
+# use token from environment variable
+npx rhachet run --repo bhuild --role dispatcher --skill radio.task.push \
+  --via gh.issues \
+  --auth as-robot:env(MY_GITHUB_TOKEN) \
+  --title "task" --description "desc"
+
+# use bhuild beaver app token (short-lived github app auth)
+npx rhachet run --repo bhuild --role dispatcher --skill radio.task.push \
+  --via gh.issues \
+  --auth "as-robot:shx(use.github.as.bhuild.beaver)" \
+  --title "task" --description "desc"
+
+# use 1password cli to retrieve token
+npx rhachet run --repo bhuild --role dispatcher --skill radio.task.push \
+  --via gh.issues \
+  --auth "as-robot:shx(op read op://vault/github-token/credential)" \
+  --title "task" --description "desc"
+```
+
+the `shx(...)` pattern enables token retrieval from any cli tool that outputs a token:
+- bhuild beaver app (`use.github.as.bhuild.beaver`) — short-lived github app tokens
+- 1password (`op read ...`)
+- hashicorp vault (`vault kv get ...`)
+- aws secrets manager (`aws secretsmanager get-secret-value ...`)
+- azure key vault (`az keyvault secret show ...`)
+- google secret manager (`gcloud secrets versions access ...`)
+
 ## 🍄 decomposer skills
 
 ### review.behavior

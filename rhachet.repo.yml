@@ -17,6 +17,14 @@ roles:
       dirs: dist/domain.roles/decomposer/skills
     inits:
       dirs: dist/domain.roles/decomposer/inits
+  - slug: dispatcher
+    readme: dist/domain.roles/dispatcher/readme.md
+    briefs:
+      dirs: []
+    skills:
+      dirs: dist/domain.roles/dispatcher/skills
+    inits:
+      dirs: dist/domain.roles/dispatcher/inits
   - slug: dreamer
     readme: dist/domain.roles/dreamer/readme.md
     briefs:

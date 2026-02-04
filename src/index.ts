@@ -9,6 +9,8 @@ import { catchDream } from './contract/cli/catch.dream';
 import { decomposeBehavior } from './contract/cli/decompose.behavior';
 import { giveFeedback } from './contract/cli/give.feedback';
 import { initBehavior } from './contract/cli/init.behavior';
+import { cliRadioTaskPull } from './contract/cli/radioTaskPull';
+import { cliRadioTaskPush } from './contract/cli/radioTaskPush';
 import { reviewBehavior } from './contract/cli/review.behavior';
 
 export const cli = {
@@ -19,6 +21,10 @@ export const cli = {
     withEmojiSpaceShim({ logic: async () => decomposeBehavior() }),
   giveFeedback: () => withEmojiSpaceShim({ logic: async () => giveFeedback() }),
   initBehavior: () => withEmojiSpaceShim({ logic: async () => initBehavior() }),
+  radioTaskPull: () =>
+    withEmojiSpaceShim({ logic: async () => cliRadioTaskPull() }),
+  radioTaskPush: () =>
+    withEmojiSpaceShim({ logic: async () => cliRadioTaskPush() }),
   reviewBehavior: () =>
     withEmojiSpaceShim({ logic: async () => reviewBehavior() }),
 };
