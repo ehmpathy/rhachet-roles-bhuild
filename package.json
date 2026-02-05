@@ -63,7 +63,7 @@
   },
   "dependencies": {
     "domain-objects": "0.31.9",
-    "emoji-space-shim": "0.0.0",
+    "emoji-space-shim": "0.1.5",
     "helpful-errors": "1.5.3",
     "iso-time": "1.11.3",
     "test-fns": "1.7.2",
@@ -92,7 +92,7 @@
     "rhachet": "1.25.5",
     "rhachet-brains-anthropic": "0.2.2",
     "rhachet-roles-bhrain": "0.5.11",
-    "rhachet-roles-bhuild": "file:.",
+    "rhachet-roles-bhuild": "link:.",
     "rhachet-roles-ehmpathy": "1.17.27",
     "tsc-alias": "1.8.10",
     "tsx": "4.20.6",

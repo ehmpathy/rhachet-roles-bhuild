@@ -118,13 +118,21 @@ export const cliRadioTaskPush = async (): Promise<void> => {
   );
 
   // format output
+  const repoSlug = `${result.task.repo.owner}/${result.task.repo.name}`;
   console.log(`🎙️ ${result.outcome}: ${result.task.title}`);
   console.log(`   ├─ exid: ${result.task.exid}`);
   console.log(`   ├─ status: ${result.task.status}`);
-  console.log(`   ├─ repo: ${result.task.repo.owner}/${result.task.repo.name}`);
-  console.log(`   └─ via: ${named.via}`);
+  console.log(`   ├─ repo: ${repoSlug}`);
+
+  if (named.via === RadioChannel.GH_ISSUES) {
+    console.log(
+      `   ├─ url: https://github.com/${repoSlug}/issues/${result.task.exid}`,
+    );
+  }
 
   if (result.task.branch) {
-    console.log(`   └─ 🌲 branch: ${result.task.branch}`);
+    console.log(`   ├─ 🌲 branch: ${result.task.branch}`);
   }
+
+  console.log(`   └─ via: ${named.via}`);
 };

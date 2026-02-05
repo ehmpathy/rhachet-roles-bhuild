@@ -35,11 +35,11 @@ export const composeTaskIntoGhIssues = (input: {
     '',
     treeSection,
     '',
-    '**title**',
+    '### title',
     '',
     task.title,
     '',
-    '**description**',
+    '### description',
     '',
     task.description,
   ]
