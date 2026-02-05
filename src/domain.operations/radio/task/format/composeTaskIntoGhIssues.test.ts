@@ -46,9 +46,9 @@ describe('composeTaskIntoGhIssues', () => {
 
       then('body contains title and description sections', () => {
         const result = composeTaskIntoGhIssues({ task });
-        expect(result.body).toContain('**title**');
+        expect(result.body).toContain('### title');
         expect(result.body).toContain('fix flaky test');
-        expect(result.body).toContain('**description**');
+        expect(result.body).toContain('### description');
         expect(result.body).toContain('timeout in ci needs attention');
       });
 

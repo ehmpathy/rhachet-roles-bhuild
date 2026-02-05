@@ -12,6 +12,7 @@ import { initBehavior } from './contract/cli/init.behavior';
 import { cliRadioTaskPull } from './contract/cli/radioTaskPull';
 import { cliRadioTaskPush } from './contract/cli/radioTaskPush';
 import { reviewBehavior } from './contract/cli/review.behavior';
+import { withCliErrorHandler } from './infra/cli/withCliErrorHandler';
 
 export const cli = {
   bindBehavior: () => withEmojiSpaceShim({ logic: async () => bindBehavior() }),
@@ -22,9 +23,13 @@ export const cli = {
   giveFeedback: () => withEmojiSpaceShim({ logic: async () => giveFeedback() }),
   initBehavior: () => withEmojiSpaceShim({ logic: async () => initBehavior() }),
   radioTaskPull: () =>
-    withEmojiSpaceShim({ logic: async () => cliRadioTaskPull() }),
+    withCliErrorHandler({
+      logic: () => withEmojiSpaceShim({ logic: cliRadioTaskPull }),
+    }),
   radioTaskPush: () =>
-    withEmojiSpaceShim({ logic: async () => cliRadioTaskPush() }),
+    withCliErrorHandler({
+      logic: () => withEmojiSpaceShim({ logic: cliRadioTaskPush }),
+    }),
   reviewBehavior: () =>
     withEmojiSpaceShim({ logic: async () => reviewBehavior() }),
 };

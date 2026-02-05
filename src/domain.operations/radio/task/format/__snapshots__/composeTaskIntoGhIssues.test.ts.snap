@@ -9,9 +9,9 @@ exports[`composeTaskIntoGhIssues given: [case1] task in QUEUED status when: [t0]
    ├─ yieldage = ?
    └─ leverage = ?
 \`\`\`
-**title**
+### title
 fix flaky test
-**description**
+### description
 timeout in ci needs attention",
   "title": "🎙️ task - fix flaky test",
 }
@@ -30,11 +30,11 @@ exports[`composeTaskIntoGhIssues given: [case2] task in CLAIMED status with bran
 
 🌲 tree planted at foreman/fix-flaky-test
 
-**title**
+### title
 
 fix flaky test
 
-**description**
+### description
 
 timeout in ci needs attention",
   "title": "🎙️ task - fix flaky test",
@@ -54,11 +54,11 @@ exports[`composeTaskIntoGhIssues given: [case3] task in DELIVERED status with br
 
 🌲 tree delivered at foreman/fix-flaky-test
 
-**title**
+### title
 
 fix flaky test
 
-**description**
+### description
 
 timeout in ci needs attention",
   "title": "🎙️ task - fix flaky test",
