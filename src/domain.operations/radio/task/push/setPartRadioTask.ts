@@ -1,13 +1,19 @@
 import { BadRequestError } from 'helpful-errors';
 import type { IsoDateStamp } from 'iso-time';
 
-import { getDaoRadioTask } from '../../../../access/daos/daoRadioTask';
-import type { RadioChannel } from '../../../../domain.objects/RadioChannel';
+import {
+  type ContextDispatchRadio,
+  daoRadioTaskViaGhIssues,
+  daoRadioTaskViaOsFileops,
+  isContextGithubAuth,
+} from '../../../../access/daos/daoRadioTask';
+import { RadioChannel } from '../../../../domain.objects/RadioChannel';
 import { RadioTask } from '../../../../domain.objects/RadioTask';
 import type { RadioTaskRepo } from '../../../../domain.objects/RadioTaskRepo';
 import { RadioTaskStatus } from '../../../../domain.objects/RadioTaskStatus';
 import { getCurrentActor } from '../../../../infra/git/getCurrentActor';
 import { getCurrentBranch } from '../../../../infra/git/getCurrentBranch';
+import { assure } from '../../../../infra/types/assure';
 
 /**
  * .what = convert Date to IsoDateStamp
@@ -21,24 +27,34 @@ const toIsoDateStamp = (date: Date): IsoDateStamp => {
  * .what = update a task on a channel (status, title, description)
  * .why = enables status transitions and partial updates with lifecycle validation
  */
-export const setPartRadioTask = async (input: {
-  via: RadioChannel;
-  task: {
-    repo: RadioTaskRepo;
-    exid: string;
-    title?: string;
-    description?: string;
-    status?: RadioTaskStatus;
-  };
-}): Promise<{
+export const setPartRadioTask = async <TChannel extends RadioChannel>(
+  input: {
+    via: TChannel;
+    task: {
+      repo: RadioTaskRepo;
+      exid: string;
+      title?: string;
+      description?: string;
+      status?: RadioTaskStatus;
+    };
+  },
+  context: ContextDispatchRadio<TChannel>,
+): Promise<{
   task: RadioTask;
   outcome: 'updated' | 'unchanged';
   backup?: string;
 }> => {
-  const dao = getDaoRadioTask({ channel: input.via, repo: input.task.repo });
-
-  // fetch task by primary key
-  const taskFound = await dao.get.one.byPrimary({ exid: input.task.exid });
+  // fetch task by primary key via channel-specific dao
+  const taskFound =
+    input.via === RadioChannel.GH_ISSUES
+      ? await daoRadioTaskViaGhIssues.get.one.byPrimary(
+          { exid: input.task.exid },
+          assure(isContextGithubAuth, context),
+        )
+      : await daoRadioTaskViaOsFileops.get.one.byPrimary(
+          { exid: input.task.exid },
+          context,
+        );
   if (!taskFound) {
     throw new BadRequestError('task not found', { exid: input.task.exid });
   }
@@ -70,11 +86,14 @@ export const setPartRadioTask = async (input: {
     input.task.status !== undefined &&
     input.task.status !== taskFound.status
   ) {
-    taskUpdated = await applyStatusTransition({
-      task: taskUpdated,
-      statusBefore: taskFound.status,
-      statusAfter: input.task.status,
-    });
+    taskUpdated = await applyStatusTransition(
+      {
+        task: taskUpdated,
+        statusBefore: taskFound.status,
+        statusAfter: input.task.status,
+      },
+      context,
+    );
     hasChanges = true;
   }
 
@@ -83,8 +102,17 @@ export const setPartRadioTask = async (input: {
     return { task: taskFound, outcome: 'unchanged' };
   }
 
-  // upsert the updated task
-  const task = await dao.set.upsert({ task: taskUpdated });
+  // upsert the updated task via channel-specific dao
+  const task =
+    input.via === RadioChannel.GH_ISSUES
+      ? await daoRadioTaskViaGhIssues.set.upsert(
+          { task: taskUpdated },
+          assure(isContextGithubAuth, context),
+        )
+      : await daoRadioTaskViaOsFileops.set.upsert(
+          { task: taskUpdated },
+          context,
+        );
 
   return { task, outcome: 'updated' };
 };
@@ -93,11 +121,14 @@ export const setPartRadioTask = async (input: {
  * .what = apply status transition with lifecycle validation
  * .why = enforce QUEUED → CLAIMED → DELIVERED order and record metadata
  */
-const applyStatusTransition = async (input: {
-  task: RadioTask;
-  statusBefore: RadioTaskStatus;
-  statusAfter: RadioTaskStatus;
-}): Promise<RadioTask> => {
+const applyStatusTransition = async (
+  input: {
+    task: RadioTask;
+    statusBefore: RadioTaskStatus;
+    statusAfter: RadioTaskStatus;
+  },
+  context: ContextDispatchRadio<RadioChannel>,
+): Promise<RadioTask> => {
   const { task, statusBefore, statusAfter } = input;
 
   // QUEUED → CLAIMED
@@ -106,7 +137,12 @@ const applyStatusTransition = async (input: {
     statusAfter === RadioTaskStatus.CLAIMED
   ) {
     const branch = await getCurrentBranch();
-    const actor = await getCurrentActor();
+    const actor = await getCurrentActor(
+      {},
+      isContextGithubAuth(context)
+        ? context
+        : { github: { auth: { token: null, role: 'as-human' as const } } },
+    );
 
     return new RadioTask({
       ...task,

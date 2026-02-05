@@ -18,7 +18,7 @@ describe('getGithubTokenByAuthArg.integration', () => {
           { env: {}, shx },
         );
         expect(result.token).toBe('secret-from-echo');
-        expect(result.method).toBe('as-robot');
+        expect(result.role).toBe('as-robot');
       });
     });
 
@@ -29,7 +29,7 @@ describe('getGithubTokenByAuthArg.integration', () => {
           { env: {}, shx },
         );
         expect(result.token).toBe('piped-token');
-        expect(result.method).toBe('as-robot');
+        expect(result.role).toBe('as-robot');
       });
     });
 
@@ -40,7 +40,7 @@ describe('getGithubTokenByAuthArg.integration', () => {
           { env: {}, shx },
         );
         expect(result.token).toBe('env-token');
-        expect(result.method).toBe('as-robot');
+        expect(result.role).toBe('as-robot');
       });
     });
   });

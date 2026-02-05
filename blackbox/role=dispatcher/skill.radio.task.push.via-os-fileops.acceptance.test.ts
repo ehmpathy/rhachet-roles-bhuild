@@ -82,7 +82,7 @@ describe('radio.task.push via os.fileops', () => {
       });
 
       then('output shows success with emoji', () => {
-        expect(result.output).toContain('✨');
+        expect(result.output).toContain('🎙️');
       });
 
       then('output shows outcome created', () => {
@@ -404,7 +404,7 @@ describe('radio.task.push via os.fileops', () => {
           path.join(formatRadioDir, taskFile!),
           'utf-8',
         );
-        expect(content).toContain('task:');
+        expect(content).toContain('🎙️ task -');
         expect(content).toContain('format test task');
       });
     });

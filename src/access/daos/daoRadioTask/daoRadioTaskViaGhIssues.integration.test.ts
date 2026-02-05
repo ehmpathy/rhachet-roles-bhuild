@@ -2,6 +2,10 @@ import { BadRequestError } from 'helpful-errors';
 import type { IsoDateStamp } from 'iso-time';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
+import type {
+  ContextGithubAuth,
+  ContextGitRepo,
+} from '../../../domain.objects/RadioContext';
 import { RadioTask } from '../../../domain.objects/RadioTask';
 import { RadioTaskRepo } from '../../../domain.objects/RadioTaskRepo';
 import { RadioTaskStatus } from '../../../domain.objects/RadioTaskStatus';
@@ -41,26 +45,27 @@ const BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN =
  */
 describe('daoRadioTaskViaGhIssues', () => {
   // failfast if BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN not set
-  beforeAll(() => {
-    if (!BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN) {
-      throw new BadRequestError(
-        [
-          'BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN not set',
-          '',
-          'integration tests MUST NOT use default gh cli auth',
-          'run: source .agent/repo=.this/role=any/skills/use.apikeys.sh',
-        ].join('\n'),
-      );
-    }
-
-    // set GITHUB_TOKEN for gh cli to use
-    // this ensures tests use explicit auth, not default gh cli login
-    process.env.GITHUB_TOKEN = BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN;
-  });
+  if (!BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN) {
+    throw new BadRequestError(
+      [
+        'BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN not set',
+        '',
+        'integration tests MUST NOT use default gh cli auth',
+        'run: source .agent/repo=.this/role=any/skills/use.apikeys.sh',
+      ].join('\n'),
+    );
+  }
 
   // use the demo repo for tests (NEVER this repo)
   const testRepo = GITHUB_DEMO_REPO;
-  const dao = daoRadioTaskViaGhIssues({ repo: testRepo });
+
+  // context for all dao calls
+  const context: ContextGithubAuth & ContextGitRepo = {
+    github: {
+      auth: { token: BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN, role: 'as-robot' },
+    },
+    git: { repo: testRepo },
+  };
 
   // unique title per test run to avoid collisions
   const testRunId = `test-${Date.now()}`;
@@ -68,17 +73,23 @@ describe('daoRadioTaskViaGhIssues', () => {
   given('[case1] get operations', () => {
     when('[t0] get.one.byPrimary for nonexistent issue', () => {
       then('returns null', async () => {
-        const result = await dao.get.one.byPrimary({ exid: '999999' });
+        const result = await daoRadioTaskViaGhIssues.get.one.byPrimary(
+          { exid: '999999' },
+          context,
+        );
         expect(result).toBeNull();
       });
     });
 
     when('[t1] get.one.byUnique for nonexistent issue', () => {
       then('returns null', async () => {
-        const result = await dao.get.one.byUnique({
-          repo: testRepo,
-          title: 'nonexistent-task-title-xyz',
-        });
+        const result = await daoRadioTaskViaGhIssues.get.one.byUnique(
+          {
+            repo: testRepo,
+            title: 'nonexistent-task-title-xyz',
+          },
+          context,
+        );
         expect(result).toBeNull();
       });
     });
@@ -101,7 +112,10 @@ describe('daoRadioTaskViaGhIssues', () => {
 
     when('[t0] findsert is called', () => {
       const taskCreated = useBeforeAll(async () => {
-        return dao.set.findsert({ task: taskToCreate });
+        return daoRadioTaskViaGhIssues.set.findsert(
+          { task: taskToCreate },
+          context,
+        );
       });
 
       then('returns task with github issue number as exid', () => {
@@ -109,7 +123,10 @@ describe('daoRadioTaskViaGhIssues', () => {
       });
 
       then('task can be retrieved by exid', async () => {
-        const found = await dao.get.one.byPrimary({ exid: taskCreated.exid });
+        const found = await daoRadioTaskViaGhIssues.get.one.byPrimary(
+          { exid: taskCreated.exid },
+          context,
+        );
         expect(found).not.toBeNull();
         expect(found?.title).toEqual(taskToCreate.title);
       });
@@ -118,7 +135,10 @@ describe('daoRadioTaskViaGhIssues', () => {
       afterAll(async () => {
         try {
           if (taskCreated.exid) {
-            await dao.del({ exid: taskCreated.exid });
+            await daoRadioTaskViaGhIssues.del(
+              { exid: taskCreated.exid },
+              context,
+            );
           }
         } catch {
           // ignore cleanup errors (e.g., when setup didn't complete)
@@ -128,7 +148,10 @@ describe('daoRadioTaskViaGhIssues', () => {
 
     when('[t1] findsert same task again', () => {
       then('returns found task (idempotent)', async () => {
-        const result = await dao.set.findsert({ task: taskToCreate });
+        const result = await daoRadioTaskViaGhIssues.set.findsert(
+          { task: taskToCreate },
+          context,
+        );
         expect(result.title).toEqual(taskToCreate.title);
       });
     });
@@ -150,14 +173,20 @@ describe('daoRadioTaskViaGhIssues', () => {
     });
 
     const taskCreated = useBeforeAll(async () => {
-      return dao.set.findsert({ task: taskToCreate });
+      return daoRadioTaskViaGhIssues.set.findsert(
+        { task: taskToCreate },
+        context,
+      );
     });
 
     // cleanup after all tests in this given block (guarded for when setup fails)
     afterAll(async () => {
       try {
         if (taskCreated.exid) {
-          await dao.del({ exid: taskCreated.exid });
+          await daoRadioTaskViaGhIssues.del(
+            { exid: taskCreated.exid },
+            context,
+          );
         }
       } catch {
         // ignore cleanup errors (e.g., when setup didn't complete)
@@ -171,11 +200,17 @@ describe('daoRadioTaskViaGhIssues', () => {
           description: 'updated description via upsert',
         });
 
-        const updated = await dao.set.upsert({ task: taskToUpdate });
+        const updated = await daoRadioTaskViaGhIssues.set.upsert(
+          { task: taskToUpdate },
+          context,
+        );
         expect(updated.exid).toEqual(taskCreated.exid);
 
         // verify by refetch
-        const fetched = await dao.get.one.byPrimary({ exid: updated.exid });
+        const fetched = await daoRadioTaskViaGhIssues.get.one.byPrimary(
+          { exid: updated.exid },
+          context,
+        );
         expect(fetched?.description).toEqual('updated description via upsert');
       });
     });
@@ -184,7 +219,10 @@ describe('daoRadioTaskViaGhIssues', () => {
   given('[case4] get.all lists radio tasks', () => {
     when('[t0] get.all is called', () => {
       then('returns array of RadioTask objects', async () => {
-        const result = await dao.get.all({ repo: testRepo, limit: 5 });
+        const result = await daoRadioTaskViaGhIssues.get.all(
+          { repo: testRepo, limit: 5 },
+          context,
+        );
         expect(Array.isArray(result)).toBe(true);
         // each result should be a RadioTask
         for (const task of result) {

@@ -6,7 +6,10 @@ describe('getCurrentActor', () => {
   given('[case1] inside a git repo with config', () => {
     when('[t0] called from current repo', () => {
       then('returns actor name string', async () => {
-        const actor = await getCurrentActor();
+        const actor = await getCurrentActor(
+          {},
+          { github: { auth: { token: null, role: 'as-human' } } },
+        );
         expect(typeof actor).toBe('string');
         expect(actor.length).toBeGreaterThan(0);
       });

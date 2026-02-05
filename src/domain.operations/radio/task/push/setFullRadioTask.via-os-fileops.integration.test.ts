@@ -3,6 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
+import type { ContextGitRepo } from '../../../../access/daos/daoRadioTask';
 import { IdempotencyMode } from '../../../../domain.objects/IdempotencyMode';
 import { RadioChannel } from '../../../../domain.objects/RadioChannel';
 import { RadioTaskRepo } from '../../../../domain.objects/RadioTaskRepo';
@@ -23,6 +24,9 @@ describe('setFullRadioTask via os.fileops', () => {
     testRepo.name,
   );
 
+  // context for domain operation calls
+  const context: ContextGitRepo = { git: { repo: testRepo } };
+
   // cleanup after all tests
   afterAll(async () => {
     await fs.rm(radioDir, { recursive: true, force: true });
@@ -31,14 +35,17 @@ describe('setFullRadioTask via os.fileops', () => {
   given('[case1] new task with findsert (default)', () => {
     when('[t0] setFullRadioTask is called', () => {
       const result = useBeforeAll(async () => {
-        return setFullRadioTask({
-          via: RadioChannel.OS_FILEOPS,
-          task: {
-            repo: testRepo,
-            title: 'test findsert task',
-            description: 'test description for findsert',
+        return setFullRadioTask(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            task: {
+              repo: testRepo,
+              title: 'test findsert task',
+              description: 'test description for findsert',
+            },
           },
-        });
+          context,
+        );
       });
 
       then('returns task with exid', () => {
@@ -84,26 +91,32 @@ describe('setFullRadioTask via os.fileops', () => {
 
     when('[t1] same task is pushed again (findsert mode)', () => {
       const firstResult = useBeforeAll(async () => {
-        return setFullRadioTask({
-          via: RadioChannel.OS_FILEOPS,
-          task: {
-            repo: testRepo,
-            title: 'duplicate findsert task',
-            description: 'first description',
+        return setFullRadioTask(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            task: {
+              repo: testRepo,
+              title: 'duplicate findsert task',
+              description: 'first description',
+            },
           },
-        });
+          context,
+        );
       });
 
       then('second push returns outcome=found', async () => {
-        const secondResult = await setFullRadioTask({
-          via: RadioChannel.OS_FILEOPS,
-          idem: IdempotencyMode.FINDSERT,
-          task: {
-            repo: testRepo,
-            title: 'duplicate findsert task',
-            description: 'different description',
+        const secondResult = await setFullRadioTask(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            idem: IdempotencyMode.FINDSERT,
+            task: {
+              repo: testRepo,
+              title: 'duplicate findsert task',
+              description: 'different description',
+            },
           },
-        });
+          context,
+        );
         expect(secondResult.outcome).toEqual('found');
         expect(secondResult.task.exid).toEqual(firstResult.task.exid);
       });
@@ -113,15 +126,18 @@ describe('setFullRadioTask via os.fileops', () => {
   given('[case2] new task with upsert', () => {
     when('[t0] setFullRadioTask with upsert mode', () => {
       const result = useBeforeAll(async () => {
-        return setFullRadioTask({
-          via: RadioChannel.OS_FILEOPS,
-          idem: IdempotencyMode.UPSERT,
-          task: {
-            repo: testRepo,
-            title: 'test upsert task',
-            description: 'original upsert description',
+        return setFullRadioTask(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            idem: IdempotencyMode.UPSERT,
+            task: {
+              repo: testRepo,
+              title: 'test upsert task',
+              description: 'original upsert description',
+            },
           },
-        });
+          context,
+        );
       });
 
       then('returns task with exid', () => {
@@ -135,27 +151,33 @@ describe('setFullRadioTask via os.fileops', () => {
 
     when('[t1] same task pushed again with upsert', () => {
       const firstResult = useBeforeAll(async () => {
-        return setFullRadioTask({
-          via: RadioChannel.OS_FILEOPS,
-          idem: IdempotencyMode.UPSERT,
-          task: {
-            repo: testRepo,
-            title: 'duplicate upsert task',
-            description: 'first upsert description',
+        return setFullRadioTask(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            idem: IdempotencyMode.UPSERT,
+            task: {
+              repo: testRepo,
+              title: 'duplicate upsert task',
+              description: 'first upsert description',
+            },
           },
-        });
+          context,
+        );
       });
 
       then('second push with upsert updates the task', async () => {
-        const secondResult = await setFullRadioTask({
-          via: RadioChannel.OS_FILEOPS,
-          idem: IdempotencyMode.UPSERT,
-          task: {
-            repo: testRepo,
-            title: 'duplicate upsert task',
-            description: 'updated upsert description',
+        const secondResult = await setFullRadioTask(
+          {
+            via: RadioChannel.OS_FILEOPS,
+            idem: IdempotencyMode.UPSERT,
+            task: {
+              repo: testRepo,
+              title: 'duplicate upsert task',
+              description: 'updated upsert description',
+            },
           },
-        });
+          context,
+        );
         expect(secondResult.outcome).toEqual('created');
         expect(secondResult.task.description).toEqual(
           'updated upsert description',

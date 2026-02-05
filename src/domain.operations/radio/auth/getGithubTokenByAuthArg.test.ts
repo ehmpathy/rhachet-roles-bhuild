@@ -28,7 +28,7 @@ describe('getGithubTokenByAuthArg', () => {
           { env: { MY_TOKEN: 'secret-token-123' }, shx: mockShx('') },
         );
         expect(result.token).toBe('secret-token-123');
-        expect(result.method).toBe('as-robot');
+        expect(result.role).toBe('as-robot');
       });
     });
 
@@ -65,7 +65,7 @@ describe('getGithubTokenByAuthArg', () => {
           { env: {}, shx: mockShx('secret-from-shell\n') },
         );
         expect(result.token).toBe('secret-from-shell');
-        expect(result.method).toBe('as-robot');
+        expect(result.role).toBe('as-robot');
       });
     });
 
@@ -124,7 +124,7 @@ describe('getGithubTokenByAuthArg', () => {
           { env: { GITHUB_TOKEN: 'env-token-456' }, shx: mockShx('') },
         );
         expect(result.token).toBe('env-token-456');
-        expect(result.method).toBe('env');
+        expect(result.role).toBe('env');
       });
     });
 
@@ -138,7 +138,7 @@ describe('getGithubTokenByAuthArg', () => {
           },
         );
         expect(result.token).toBe('custom-token');
-        expect(result.method).toBe('as-robot');
+        expect(result.role).toBe('as-robot');
       });
     });
   });
@@ -151,7 +151,7 @@ describe('getGithubTokenByAuthArg', () => {
           { env: {}, shx: mockShx('') },
         );
         expect(result.token).toBeNull();
-        expect(result.method).toBe('as-human');
+        expect(result.role).toBe('as-human');
       });
     });
 
@@ -162,7 +162,7 @@ describe('getGithubTokenByAuthArg', () => {
           { env: { GITHUB_TOKEN: 'env-token' }, shx: mockShx('') },
         );
         expect(result.token).toBeNull();
-        expect(result.method).toBe('as-human');
+        expect(result.role).toBe('as-human');
       });
     });
 

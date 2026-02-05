@@ -2,7 +2,7 @@ import { BadRequestError } from 'helpful-errors';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
-  genTestGitRepo,
+  genConsumerRepo,
   BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN,
   GITHUB_DEMO_REPO,
   runRhachetSkill,
@@ -35,7 +35,9 @@ const runRadioTaskPush = (input: {
 }) => {
   const args = [
     `--via ${input.via}`,
-    input.auth ? `--auth ${input.auth}` : '',
+    input.auth
+      ? `--auth "${input.auth.replace(/\(/g, '\\(').replace(/\)/g, '\\)')}"`
+      : '',
     `--repo "${input.repo}"`,
     `--title "${input.title}"`,
     `--description "${input.description}"`,
@@ -69,7 +71,9 @@ const runRadioTaskPull = (input: {
 }) => {
   const args = [
     `--via ${input.via}`,
-    input.auth ? `--auth ${input.auth}` : '',
+    input.auth
+      ? `--auth "${input.auth.replace(/\(/g, '\\(').replace(/\)/g, '\\)')}"`
+      : '',
     input.repo ? `--repo "${input.repo}"` : '',
     input.list ? '--list' : '',
     input.exid ? `--exid "${input.exid}"` : '',
@@ -99,15 +103,16 @@ describe('radio.task.pull via gh.issues', () => {
     }
   });
 
-  given('[case1] list tasks from gh.issues', () => {
-    const testGitRepo = useBeforeAll(async () =>
-      genTestGitRepo({ prefix: 'radio-gh-pull-list-' }),
-    );
+  // shared consumer repo for all test cases (pnpm install is expensive)
+  const sharedRepo = useBeforeAll(async () =>
+    genConsumerRepo({ prefix: 'radio-gh-pull-acpt-' }),
+  );
 
+  given('[case1] list tasks from gh.issues', () => {
     // create a task first to ensure there is content to list
     useBeforeAll(async () =>
       runRadioTaskPush({
-        repoDir: testGitRepo.repoDir,
+        repoDir: sharedRepo.repoDir,
         via: 'gh.issues',
         auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
         repo: GITHUB_DEMO_REPO,
@@ -119,7 +124,7 @@ describe('radio.task.pull via gh.issues', () => {
     when('[t0] pull --list from gh.issues', () => {
       const result = useBeforeAll(async () =>
         runRadioTaskPull({
-          repoDir: testGitRepo.repoDir,
+          repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
           auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
           repo: GITHUB_DEMO_REPO,
@@ -139,22 +144,19 @@ describe('radio.task.pull via gh.issues', () => {
   });
 
   given('[case2] pull specific task from gh.issues', () => {
-    const testGitRepo = useBeforeAll(async () =>
-      genTestGitRepo({ prefix: 'radio-gh-pull-one-' }),
-    );
     let issueNumber: string;
 
     // create a task to pull
     useBeforeAll(async () => {
       const result = runRadioTaskPush({
-        repoDir: testGitRepo.repoDir,
+        repoDir: sharedRepo.repoDir,
         via: 'gh.issues',
         auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
         repo: GITHUB_DEMO_REPO,
         title: `pull one test ${Date.now()}`,
         description: 'for specific pull',
       });
-      const match = result.output.match(/#(\d+)/);
+      const match = result.output.match(/exid: (\d+)/);
       if (match) issueNumber = match[1]!;
       return { result };
     });
@@ -162,7 +164,7 @@ describe('radio.task.pull via gh.issues', () => {
     when('[t0] pull by exid', () => {
       then('returns the task', () => {
         const result = runRadioTaskPull({
-          repoDir: testGitRepo.repoDir,
+          repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
           auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
           repo: GITHUB_DEMO_REPO,
@@ -176,7 +178,7 @@ describe('radio.task.pull via gh.issues', () => {
     when('[t1] pull nonexistent issue', () => {
       then('fails with not found', () => {
         const result = runRadioTaskPull({
-          repoDir: testGitRepo.repoDir,
+          repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
           auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
           repo: GITHUB_DEMO_REPO,
@@ -189,22 +191,19 @@ describe('radio.task.pull via gh.issues', () => {
   });
 
   given('[case3] auto-cache on remote pull', () => {
-    const testGitRepo = useBeforeAll(async () =>
-      genTestGitRepo({ prefix: 'radio-gh-pull-cache-' }),
-    );
     let issueNumber: string;
 
     // create a task to pull
     useBeforeAll(async () => {
       const result = runRadioTaskPush({
-        repoDir: testGitRepo.repoDir,
+        repoDir: sharedRepo.repoDir,
         via: 'gh.issues',
         auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
         repo: GITHUB_DEMO_REPO,
         title: `cache test ${Date.now()}`,
         description: 'for cache verification',
       });
-      const match = result.output.match(/#(\d+)/);
+      const match = result.output.match(/exid: (\d+)/);
       if (match) issueNumber = match[1]!;
       return { result };
     });
@@ -212,7 +211,7 @@ describe('radio.task.pull via gh.issues', () => {
     when('[t0] pull from gh.issues', () => {
       const result = useBeforeAll(async () =>
         runRadioTaskPull({
-          repoDir: testGitRepo.repoDir,
+          repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
           auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
           repo: GITHUB_DEMO_REPO,
@@ -229,14 +228,10 @@ describe('radio.task.pull via gh.issues', () => {
   });
 
   given('[case4] filter by status', () => {
-    const testGitRepo = useBeforeAll(async () =>
-      genTestGitRepo({ prefix: 'radio-gh-pull-filter-' }),
-    );
-
     when('[t0] pull --list with status=QUEUED', () => {
       const result = useBeforeAll(async () =>
         runRadioTaskPull({
-          repoDir: testGitRepo.repoDir,
+          repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
           auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
           repo: GITHUB_DEMO_REPO,
