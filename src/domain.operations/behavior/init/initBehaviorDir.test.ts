@@ -29,11 +29,21 @@ describe('initBehaviorDir', () => {
         expect(result.created.length).toBeGreaterThan(0);
         expect(result.kept.length).toBe(0);
 
-        // verify files created
+        // verify core files created
         expect(fs.existsSync(path.join(behaviorDir, '0.wish.md'))).toBe(true);
-        expect(fs.existsSync(path.join(behaviorDir, '1.vision.md'))).toBe(true);
+        expect(fs.existsSync(path.join(behaviorDir, '1.vision.stone'))).toBe(
+          true,
+        );
         expect(
-          fs.existsSync(path.join(behaviorDir, '2.1.criteria.blackbox.src')),
+          fs.existsSync(path.join(behaviorDir, '2.1.criteria.blackbox.stone')),
+        ).toBe(true);
+
+        // verify guard files created
+        expect(fs.existsSync(path.join(behaviorDir, '1.vision.guard'))).toBe(
+          true,
+        );
+        expect(
+          fs.existsSync(path.join(behaviorDir, '3.3.blueprint.v1.guard')),
         ).toBe(true);
       });
 
@@ -43,15 +53,25 @@ describe('initBehaviorDir', () => {
           behaviorDirRel: '.behavior/v2025_01_01.test-feature',
         });
 
-        const criteriaBlackboxSrc = fs.readFileSync(
-          path.join(behaviorDir, '2.1.criteria.blackbox.src'),
+        // verify replacement in stone files
+        const criteriaBlackboxStone = fs.readFileSync(
+          path.join(behaviorDir, '2.1.criteria.blackbox.stone'),
           'utf-8',
         );
-
-        expect(criteriaBlackboxSrc).toContain(
+        expect(criteriaBlackboxStone).toContain(
           '.behavior/v2025_01_01.test-feature/0.wish.md',
         );
-        expect(criteriaBlackboxSrc).not.toContain('$BEHAVIOR_DIR_REL');
+        expect(criteriaBlackboxStone).not.toContain('$BEHAVIOR_DIR_REL');
+
+        // verify replacement in guard files
+        const visionGuard = fs.readFileSync(
+          path.join(behaviorDir, '1.vision.guard'),
+          'utf-8',
+        );
+        expect(visionGuard).toContain(
+          '--route .behavior/v2025_01_01.test-feature',
+        );
+        expect(visionGuard).not.toContain('$BEHAVIOR_DIR_REL');
       });
     });
   });
@@ -89,8 +109,10 @@ describe('initBehaviorDir', () => {
           behaviorDirRel: '.behavior/v2025_01_01.test-feature',
         });
 
-        expect(result.created).toContain('1.vision.md');
-        expect(fs.existsSync(path.join(behaviorDir, '1.vision.md'))).toBe(true);
+        expect(result.created).toContain('1.vision.stone');
+        expect(fs.existsSync(path.join(behaviorDir, '1.vision.stone'))).toBe(
+          true,
+        );
       });
     });
   });

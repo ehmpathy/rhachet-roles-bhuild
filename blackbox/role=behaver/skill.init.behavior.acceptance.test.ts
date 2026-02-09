@@ -139,14 +139,21 @@ describe('init.behavior', () => {
 
         const behaviorPath = path.join(behaviorRoot, scaffoldDir!);
         expect(fs.existsSync(path.join(behaviorPath, '0.wish.md'))).toBe(true);
-        expect(fs.existsSync(path.join(behaviorPath, '1.vision.md'))).toBe(
+        expect(fs.existsSync(path.join(behaviorPath, '1.vision.stone'))).toBe(
           true,
         );
         expect(
-          fs.existsSync(path.join(behaviorPath, '2.1.criteria.blackbox.src')),
+          fs.existsSync(path.join(behaviorPath, '2.1.criteria.blackbox.stone')),
         ).toBe(true);
         expect(
-          fs.existsSync(path.join(behaviorPath, '3.3.blueprint.v1.src')),
+          fs.existsSync(path.join(behaviorPath, '3.3.blueprint.v1.stone')),
+        ).toBe(true);
+        // verify guard files
+        expect(fs.existsSync(path.join(behaviorPath, '1.vision.guard'))).toBe(
+          true,
+        );
+        expect(
+          fs.existsSync(path.join(behaviorPath, '3.3.blueprint.v1.guard')),
         ).toBe(true);
       });
 
@@ -257,12 +264,21 @@ describe('init.behavior', () => {
         const behaviorDir = path.join(behaviorRoot, behaviorDirs[0]!);
 
         expect(fs.existsSync(path.join(behaviorDir, '0.wish.md'))).toBe(true);
-        expect(fs.existsSync(path.join(behaviorDir, '1.vision.md'))).toBe(true);
+        expect(fs.existsSync(path.join(behaviorDir, '1.vision.stone'))).toBe(
+          true,
+        );
         expect(
-          fs.existsSync(path.join(behaviorDir, '2.1.criteria.blackbox.src')),
+          fs.existsSync(path.join(behaviorDir, '2.1.criteria.blackbox.stone')),
         ).toBe(true);
         expect(
-          fs.existsSync(path.join(behaviorDir, '2.3.criteria.blueprint.src')),
+          fs.existsSync(path.join(behaviorDir, '2.3.criteria.blueprint.stone')),
+        ).toBe(true);
+        // verify guard files
+        expect(fs.existsSync(path.join(behaviorDir, '1.vision.guard'))).toBe(
+          true,
+        );
+        expect(
+          fs.existsSync(path.join(behaviorDir, '3.3.blueprint.v1.guard')),
         ).toBe(true);
       });
 
