@@ -32,11 +32,11 @@ describe('FeedbackRepl.exit', () => {
     });
   });
 
-  given('[case2] exit via ctrl+c with empty input', () => {
-    when('[t0] input is empty and user presses ctrl+c', () => {
-      then('onExit is called with summary', async () => {
+  given('[case2] exit via double ctrl+c with empty input', () => {
+    when('[t0] input is empty and user presses ctrl+c twice', () => {
+      then('onExit is called with summary after second ctrl+c', async () => {
         const onExit = jest.fn();
-        const { stdin } = render(
+        const { stdin, lastFrame } = render(
           React.createElement(FeedbackRepl, {
             feedbackFile: 'test.feedback.md',
             onSubmit: jest.fn(),
@@ -45,6 +45,13 @@ describe('FeedbackRepl.exit', () => {
         );
         const emit = emitInkStdin({ stdin });
 
+        // first ctrl+c shows prompt
+        await emit.key('ctrlC');
+        expect(onExit).not.toHaveBeenCalled();
+        expect(lastFrame()).toContain('press ctrl+c again to exit');
+
+        // wait 500ms then second ctrl+c exits
+        await emit.wait(550);
         await emit.key('ctrlC');
 
         expect(onExit).toHaveBeenCalledWith({ feedbackCount: 0 });
@@ -52,7 +59,7 @@ describe('FeedbackRepl.exit', () => {
     });
 
     when(
-      '[t1] after submitting feedback, input is empty and user presses ctrl+c',
+      '[t1] after feedback, double ctrl+c exits with correct feedbackCount',
       () => {
         then('onExit is called with correct feedbackCount', async () => {
           const onExit = jest.fn();
@@ -71,12 +78,45 @@ describe('FeedbackRepl.exit', () => {
           await emit.text('second');
           await emit.key('enter');
 
-          // now exit
+          // first ctrl+c shows prompt
+          await emit.key('ctrlC');
+          expect(onExit).not.toHaveBeenCalled();
+
+          // wait 500ms then second ctrl+c exits
+          await emit.wait(550);
           await emit.key('ctrlC');
 
           expect(onExit).toHaveBeenCalledWith({ feedbackCount: 2 });
         });
       },
     );
+
+    when('[t2] ctrl+c pressed too fast (under 500ms)', () => {
+      then('does not exit, waits for proper double ctrl+c', async () => {
+        const onExit = jest.fn();
+        const { stdin, lastFrame } = render(
+          React.createElement(FeedbackRepl, {
+            feedbackFile: 'test.feedback.md',
+            onSubmit: jest.fn(),
+            onExit,
+          }),
+        );
+        const emit = emitInkStdin({ stdin });
+
+        // first ctrl+c
+        await emit.key('ctrlC');
+        expect(onExit).not.toHaveBeenCalled();
+        expect(lastFrame()).toContain('press ctrl+c again to exit');
+
+        // second ctrl+c too fast (only 100ms delay from emit.key)
+        await emit.key('ctrlC');
+        expect(onExit).not.toHaveBeenCalled();
+
+        // now wait and do proper double ctrl+c
+        await emit.wait(550);
+        await emit.key('ctrlC');
+        expect(onExit).toHaveBeenCalledWith({ feedbackCount: 0 });
+      });
+    });
   });
 });

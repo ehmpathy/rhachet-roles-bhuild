@@ -93,7 +93,7 @@ export const giveFeedback = (): void => {
     opener: named.open,
     version: named.version ?? 1,
   });
-  console.log(output);
+  console.log('\n' + output); // newline before beaver
 
   // launch repl if --talk flag provided
   if (named.talk) {

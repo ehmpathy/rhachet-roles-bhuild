@@ -1,3 +1,5 @@
+import { basename } from 'path';
+
 /**
  * .what = compute tree-style output for give.feedback result
  * .why = vibed, scannable output that shows feedback file status
@@ -25,8 +27,9 @@ export const computeFeedbackOutputTree = (input: {
   // collect all lines
   const lines: string[] = [];
 
-  // first line: file path with status
-  lines.push(`   ├─ ${symbol} ${input.feedbackPathRel}`);
+  // first line: just filename (full path shown in repl prior feedback section)
+  const filename = basename(input.feedbackPathRel);
+  lines.push(`   ├─ ${symbol} ${filename}`);
 
   // add version tip if file was found (dimmed)
   if (input.found) {

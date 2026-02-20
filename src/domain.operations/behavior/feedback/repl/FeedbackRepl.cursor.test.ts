@@ -223,7 +223,9 @@ describe('FeedbackRepl.cursor', () => {
         const { lastFrame, stdin } = render(
           React.createElement(FeedbackRepl, {
             feedbackFile: 'test.feedback.md',
-            initialHistory: ['history text'],
+            initialHistory: [
+              { text: 'history text', severity: 'blocker', index: 1 },
+            ],
             onSubmit: jest.fn(),
             onExit: jest.fn(),
           }),

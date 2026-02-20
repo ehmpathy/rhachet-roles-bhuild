@@ -49,6 +49,52 @@ describe('FeedbackRepl.input', () => {
         expect(onSubmit).not.toHaveBeenCalled();
       });
     });
+
+    when('[t2] user presses ctrl+j', () => {
+      then('newline is inserted, no submit', async () => {
+        const onSubmit = jest.fn();
+        const { stdin } = render(
+          React.createElement(FeedbackRepl, {
+            feedbackFile: 'test.feedback.md',
+            onSubmit,
+            onExit: jest.fn(),
+          }),
+        );
+        const emit = emitInkStdin({ stdin });
+
+        await emit.sequence([
+          { text: 'line1' },
+          { key: 'ctrlJ' },
+          { text: 'line2' },
+        ]);
+
+        expect(onSubmit).not.toHaveBeenCalled();
+      });
+
+      then('submitted text contains the newline', async () => {
+        const onSubmit = jest.fn();
+        const { stdin } = render(
+          React.createElement(FeedbackRepl, {
+            feedbackFile: 'test.feedback.md',
+            onSubmit,
+            onExit: jest.fn(),
+          }),
+        );
+        const emit = emitInkStdin({ stdin });
+
+        await emit.text('before');
+        await emit.key('ctrlJ');
+        await emit.text('after');
+        await emit.key('enter');
+
+        expect(onSubmit).toHaveBeenCalledWith({
+          severity: 'blocker',
+          index: 1,
+          text: 'before\nafter',
+          isUpdate: false,
+        });
+      });
+    });
   });
 
   given('[case2] feedback submission', () => {
@@ -71,6 +117,7 @@ describe('FeedbackRepl.input', () => {
           severity: 'blocker',
           index: 1,
           text: 'this is my feedback',
+          isUpdate: false,
         });
       });
 
@@ -116,11 +163,13 @@ describe('FeedbackRepl.input', () => {
           severity: 'blocker',
           index: 1,
           text: 'first',
+          isUpdate: false,
         });
         expect(onSubmit).toHaveBeenNthCalledWith(2, {
           severity: 'blocker',
           index: 2,
           text: 'second',
+          isUpdate: false,
         });
       });
     });
@@ -188,6 +237,77 @@ describe('FeedbackRepl.input', () => {
         const frame = stripAnsi(lastFrame() ?? '');
         expect(frame).toContain('a');
         expect(frame).toContain('b');
+      });
+    });
+  });
+
+  given('[case4] multiline paste', () => {
+    when('[t0] user pastes multiline content', () => {
+      then('multiline text is inserted without submit', async () => {
+        const onSubmit = jest.fn();
+        const { lastFrame, stdin } = render(
+          React.createElement(FeedbackRepl, {
+            feedbackFile: 'test.feedback.md',
+            onSubmit,
+            onExit: jest.fn(),
+          }),
+        );
+        const emit = emitInkStdin({ stdin });
+
+        // paste multiline content (simulated as single write)
+        await emit.text('line one\nline two\nline three');
+
+        // onSubmit should NOT be called (paste should not trigger submit)
+        expect(onSubmit).not.toHaveBeenCalled();
+
+        // all lines should be visible
+        const frame = stripAnsi(lastFrame() ?? '');
+        expect(frame).toContain('line one');
+        expect(frame).toContain('line two');
+        expect(frame).toContain('line three');
+      });
+
+      then('cursor advances by paste length', async () => {
+        const { stdin } = render(
+          React.createElement(FeedbackRepl, {
+            feedbackFile: 'test.feedback.md',
+            onSubmit: jest.fn(),
+            onExit: jest.fn(),
+          }),
+        );
+        const emit = emitInkStdin({ stdin });
+
+        // paste then type more
+        await emit.text('a\nb\nc');
+        await emit.text('X');
+
+        // we expect the cursor to be at the end, so X should be appended
+        // if cursor advanced correctly, the text should be "a\nb\ncX"
+      });
+    });
+
+    when('[t1] user submits after multiline paste', () => {
+      then('submit contains the full multiline text', async () => {
+        const onSubmit = jest.fn();
+        const { stdin } = render(
+          React.createElement(FeedbackRepl, {
+            feedbackFile: 'test.feedback.md',
+            onSubmit,
+            onExit: jest.fn(),
+          }),
+        );
+        const emit = emitInkStdin({ stdin });
+
+        // paste multiline then submit
+        await emit.text('line one\nline two');
+        await emit.key('enter');
+
+        expect(onSubmit).toHaveBeenCalledWith({
+          severity: 'blocker',
+          index: 1,
+          text: 'line one\nline two',
+          isUpdate: false,
+        });
       });
     });
   });

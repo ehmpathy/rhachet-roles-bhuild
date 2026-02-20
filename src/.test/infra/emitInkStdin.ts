@@ -31,6 +31,7 @@
 export const INK_KEYS = {
   enter: '\r',
   shiftEnter: '\u001B[13;2u',
+  ctrlJ: '\x0a', // ctrl+j sends linefeed (0x0a), ink converts to inputChar='j' with key.ctrl=true
   tab: '\t',
   shiftTab: '\u001B[Z',
   ctrlC: '\x03',
@@ -93,6 +94,13 @@ export const emitInkStdin = (input: {
       await delay();
       input.stdin.write(sequence);
       await delay();
+    },
+
+    /**
+     * wait for a specific duration (ms)
+     */
+    wait: async (ms: number): Promise<void> => {
+      await new Promise((resolve) => setTimeout(resolve, ms));
     },
 
     /**

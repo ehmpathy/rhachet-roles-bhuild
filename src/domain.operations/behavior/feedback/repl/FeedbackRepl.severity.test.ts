@@ -79,6 +79,7 @@ describe('FeedbackRepl.severity', () => {
           severity: 'nitpick',
           index: 1,
           text: 'minor issue',
+          isUpdate: false,
         });
       });
     });

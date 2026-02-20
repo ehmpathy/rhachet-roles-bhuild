@@ -13,6 +13,28 @@ import { redoLastUndo } from './redoLastUndo';
 import { undoLastChange } from './undoLastChange';
 
 export const runFeedbackRepl = (input: { feedbackFile: string }): void => {
+  // check if stdin is a TTY (required for ink's raw mode)
+  if (!process.stdin.isTTY) {
+    console.error('');
+    console.error('⛈️  error: interactive repl requires a TTY terminal');
+    console.error('');
+    console.error(
+      '   stdin.isTTY is false, which means raw mode cannot be enabled.',
+    );
+    console.error(
+      '   this happens when the command is run via a non-interactive context',
+    );
+    console.error('   (e.g., piped input, CI/CD, or agent tool execution).');
+    console.error('');
+    console.error('   solution: run this command directly in your terminal:');
+    console.error('');
+    console.error(
+      `   npx rhachet run --skill give.feedback --against <artifact> --talk`,
+    );
+    console.error('');
+    process.exit(1);
+  }
+
   // count prior feedback for initial state
   const prior = countPriorFeedback({ feedbackFile: input.feedbackFile });
 
@@ -31,6 +53,7 @@ export const runFeedbackRepl = (input: { feedbackFile: string }): void => {
   const termWidth = process.stdout.columns || 80;
   const separator = '─'.repeat(termWidth);
   console.log(`\x1b[2m${separator}\x1b[0m`);
+  console.log(''); // blank line after separator
 
   // show welcome header
   const dim = '\x1b[2m';
@@ -41,8 +64,9 @@ export const runFeedbackRepl = (input: { feedbackFile: string }): void => {
   console.log('   each entry is saved to the feedback file in realtime.');
   console.log('');
   console.log('   controls:');
-  console.log('   ├─ enter        submit feedback');
-  console.log('   ├─ shift+enter  newline');
+  console.log('   ├─ enter        save feedback');
+  console.log('   ├─ ctrl+s       save feedback');
+  console.log('   ├─ ctrl+j       newline (or ctrl/shift/alt+enter)');
   console.log('   ├─ shift+tab    toggle blocker/nitpick');
   console.log('   ├─ ctrl+z       undo');
   console.log('   ├─ ctrl+y       redo');
@@ -75,11 +99,12 @@ export const runFeedbackRepl = (input: { feedbackFile: string }): void => {
       feedbackFile: input.feedbackFile,
       initialBlockerCount: prior.blockerCount,
       initialNitpickCount: prior.nitpickCount,
-      initialHistory: prior.texts.reverse(), // reverse so most recent first
+      initialHistory: [...prior.entries].reverse(), // reverse so most recent first
       onSubmit: (feedback: {
         severity: 'blocker' | 'nitpick';
         index: number;
         text: string;
+        isUpdate: boolean;
       }) => {
         // write feedback to file (with upsert semantics)
         const result = appendFeedbackToFile({
@@ -140,5 +165,6 @@ export const runFeedbackRepl = (input: { feedbackFile: string }): void => {
         process.exit(0);
       },
     }),
+    { exitOnCtrlC: false }, // let our handler manage ctrl+c
   );
 };

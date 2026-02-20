@@ -13,15 +13,18 @@ describe('countPriorFeedback', () => {
 
   given('[case1] file does not exist', () => {
     when('[t0] countPriorFeedback called', () => {
-      then('returns count=0, blockerCount=0, nitpickCount=0, empty texts', () => {
-        const result = countPriorFeedback({
-          feedbackFile: `/tmp/nonexistent-${getUniqueId()}.md`,
-        });
-        expect(result.count).toBe(0);
-        expect(result.blockerCount).toBe(0);
-        expect(result.nitpickCount).toBe(0);
-        expect(result.texts).toEqual([]);
-      });
+      then(
+        'returns count=0, blockerCount=0, nitpickCount=0, empty texts',
+        () => {
+          const result = countPriorFeedback({
+            feedbackFile: `/tmp/nonexistent-${getUniqueId()}.md`,
+          });
+          expect(result.count).toBe(0);
+          expect(result.blockerCount).toBe(0);
+          expect(result.nitpickCount).toBe(0);
+          expect(result.texts).toEqual([]);
+        },
+      );
     });
   });
 

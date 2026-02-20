@@ -16,7 +16,10 @@ describe('FeedbackRepl.history', () => {
         const { lastFrame, stdin } = render(
           React.createElement(FeedbackRepl, {
             feedbackFile: 'test.feedback.md',
-            initialHistory: ['first feedback', 'second feedback'],
+            initialHistory: [
+              { text: 'first feedback', severity: 'blocker', index: 1 },
+              { text: 'second feedback', severity: 'blocker', index: 2 },
+            ],
             onSubmit: jest.fn(),
             onExit: jest.fn(),
           }),
@@ -32,7 +35,10 @@ describe('FeedbackRepl.history', () => {
         const { lastFrame, stdin } = render(
           React.createElement(FeedbackRepl, {
             feedbackFile: 'test.feedback.md',
-            initialHistory: ['first feedback', 'second feedback'],
+            initialHistory: [
+              { text: 'first feedback', severity: 'blocker', index: 1 },
+              { text: 'second feedback', severity: 'blocker', index: 2 },
+            ],
             onSubmit: jest.fn(),
             onExit: jest.fn(),
           }),
@@ -51,7 +57,10 @@ describe('FeedbackRepl.history', () => {
         const { lastFrame, stdin } = render(
           React.createElement(FeedbackRepl, {
             feedbackFile: 'test.feedback.md',
-            initialHistory: ['first feedback', 'second feedback'],
+            initialHistory: [
+              { text: 'first feedback', severity: 'blocker', index: 1 },
+              { text: 'second feedback', severity: 'blocker', index: 2 },
+            ],
             onSubmit: jest.fn(),
             onExit: jest.fn(),
           }),
@@ -71,7 +80,9 @@ describe('FeedbackRepl.history', () => {
           const { lastFrame, stdin } = render(
             React.createElement(FeedbackRepl, {
               feedbackFile: 'test.feedback.md',
-              initialHistory: ['only feedback'],
+              initialHistory: [
+                { text: 'only feedback', severity: 'blocker', index: 1 },
+              ],
               onSubmit: jest.fn(),
               onExit: jest.fn(),
             }),
@@ -120,7 +131,10 @@ describe('FeedbackRepl.history', () => {
         const { lastFrame, stdin } = render(
           React.createElement(FeedbackRepl, {
             feedbackFile: 'test.feedback.md',
-            initialHistory: ['first', 'second'],
+            initialHistory: [
+              { text: 'first', severity: 'blocker', index: 1 },
+              { text: 'second', severity: 'blocker', index: 2 },
+            ],
             onSubmit: jest.fn(),
             onExit: jest.fn(),
           }),
@@ -144,7 +158,10 @@ describe('FeedbackRepl.history', () => {
         const { lastFrame, stdin } = render(
           React.createElement(FeedbackRepl, {
             feedbackFile: 'test.feedback.md',
-            initialHistory: ['first', 'second'],
+            initialHistory: [
+              { text: 'first', severity: 'blocker', index: 1 },
+              { text: 'second', severity: 'blocker', index: 2 },
+            ],
             onSubmit: jest.fn(),
             onExit: jest.fn(),
           }),
@@ -169,7 +186,11 @@ describe('FeedbackRepl.history', () => {
         const { lastFrame, stdin } = render(
           React.createElement(FeedbackRepl, {
             feedbackFile: 'test.feedback.md',
-            initialHistory: ['first', 'second', 'third'],
+            initialHistory: [
+              { text: 'first', severity: 'blocker', index: 1 },
+              { text: 'second', severity: 'blocker', index: 2 },
+              { text: 'third', severity: 'blocker', index: 3 },
+            ],
             onSubmit: jest.fn(),
             onExit: jest.fn(),
           }),
@@ -195,7 +216,10 @@ describe('FeedbackRepl.history', () => {
         const { lastFrame, stdin } = render(
           React.createElement(FeedbackRepl, {
             feedbackFile: 'test.feedback.md',
-            initialHistory: ['first', 'second'],
+            initialHistory: [
+              { text: 'first', severity: 'blocker', index: 1 },
+              { text: 'second', severity: 'blocker', index: 2 },
+            ],
             onSubmit: jest.fn(),
             onExit: jest.fn(),
           }),
@@ -218,7 +242,9 @@ describe('FeedbackRepl.history', () => {
         const { lastFrame, stdin } = render(
           React.createElement(FeedbackRepl, {
             feedbackFile: 'test.feedback.md',
-            initialHistory: ['history entry'],
+            initialHistory: [
+              { text: 'history entry', severity: 'blocker', index: 1 },
+            ],
             onSubmit: jest.fn(),
             onExit: jest.fn(),
           }),
@@ -248,7 +274,9 @@ describe('FeedbackRepl.history', () => {
         const { lastFrame, stdin } = render(
           React.createElement(FeedbackRepl, {
             feedbackFile: 'test.feedback.md',
-            initialHistory: ['history entry'],
+            initialHistory: [
+              { text: 'history entry', severity: 'blocker', index: 1 },
+            ],
             onSubmit: jest.fn(),
             onExit: jest.fn(),
           }),
@@ -273,7 +301,10 @@ describe('FeedbackRepl.history', () => {
           const { lastFrame, stdin } = render(
             React.createElement(FeedbackRepl, {
               feedbackFile: 'test.feedback.md',
-              initialHistory: ['first', 'second'],
+              initialHistory: [
+                { text: 'first', severity: 'blocker', index: 1 },
+                { text: 'second', severity: 'blocker', index: 2 },
+              ],
               onSubmit: jest.fn(),
               onExit: jest.fn(),
             }),
