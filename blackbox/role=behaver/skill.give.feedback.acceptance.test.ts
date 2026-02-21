@@ -93,7 +93,7 @@ describe('give.feedback', () => {
         expect(content).toContain('5.1.execution.v1.i1.md');
       });
 
-      then('outputs success message', () => {
+      then('outputs 🦫 wassup? format with filename', () => {
         // create new branch for fresh test
         execSync('git checkout -b feedback-output-test', {
           cwd: consumer.repoDir,
@@ -112,13 +112,14 @@ describe('give.feedback', () => {
           repoDir: consumer.repoDir,
         });
 
-        expect(result.output).toContain('feedback created');
+        expect(result.output).toContain('🦫 wassup?');
         expect(result.output).toContain('5.1.execution.v1.i1.md');
+        expect(result.output).toContain('--version ++');
       });
     });
   });
 
-  given('[case2] consumer: feedback file already exists', () => {
+  given('[case2] consumer: feedback file already exists (findsert)', () => {
     let consumer: ConsumerRepo;
 
     beforeAll(() => {
@@ -155,12 +156,17 @@ describe('give.feedback', () => {
         }),
       );
 
-      then('exits with non-zero code', () => {
-        expect(result.exitCode).not.toBe(0);
+      then('exits with code 0 (findsert)', () => {
+        expect(result.exitCode).toBe(0);
       });
 
-      then('output mentions file already exists', () => {
-        expect(result.output).toContain('already exists');
+      then('output shows 🦫 wassup? format with filename', () => {
+        expect(result.output).toContain('🦫 wassup?');
+        expect(result.output).toContain('[feedback].v1');
+      });
+
+      then('output shows --version ++ tip', () => {
+        expect(result.output).toContain('--version ++');
       });
     });
   });

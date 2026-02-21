@@ -135,7 +135,7 @@ describe('giveFeedback', () => {
     ).toThrow(/no artifact found/);
   });
 
-  test('fails if feedback file already present', () => {
+  test('findsert: returns found when feedback v1 exists', () => {
     setupTestRepo();
     writeFileSync(join(behaviorDir, '0.wish.md'), '# wish');
     writeFileSync(
@@ -143,18 +143,104 @@ describe('giveFeedback', () => {
       'prior feedback',
     );
 
-    expect(() =>
-      giveFeedback(
-        { against: 'wish', behavior: 'test-feature' },
-        { cwd: testDir },
-      ),
-    ).toThrow(BadRequestError);
-    expect(() =>
-      giveFeedback(
-        { against: 'wish', behavior: 'test-feature' },
-        { cwd: testDir },
-      ),
-    ).toThrow(/already exists/);
+    const result = giveFeedback(
+      { against: 'wish', behavior: 'test-feature' },
+      { cwd: testDir },
+    );
+
+    expect(result.created).toBe(false);
+    expect(result.feedbackFile).toContain('[feedback].v1.[given].by_human.md');
+  });
+
+  test('defaults to latest version when v1 exists', () => {
+    setupTestRepo();
+    writeFileSync(join(behaviorDir, '0.wish.md'), '# wish');
+    writeFileSync(
+      join(behaviorDir, '0.wish.md.[feedback].v1.[given].by_human.md'),
+      'v1 feedback',
+    );
+
+    const result = giveFeedback(
+      { against: 'wish', behavior: 'test-feature' },
+      { cwd: testDir },
+    );
+
+    // should open v1 (latest), not create v2
+    expect(result.feedbackFile).toContain('[feedback].v1.[given].by_human.md');
+    expect(result.created).toBe(false);
+  });
+
+  test('defaults to latest version when v1+v2 exist', () => {
+    setupTestRepo();
+    writeFileSync(join(behaviorDir, '0.wish.md'), '# wish');
+    writeFileSync(
+      join(behaviorDir, '0.wish.md.[feedback].v1.[given].by_human.md'),
+      'v1 feedback',
+    );
+    writeFileSync(
+      join(behaviorDir, '0.wish.md.[feedback].v2.[given].by_human.md'),
+      'v2 feedback',
+    );
+
+    const result = giveFeedback(
+      { against: 'wish', behavior: 'test-feature' },
+      { cwd: testDir },
+    );
+
+    // should open v2 (latest)
+    expect(result.feedbackFile).toContain('[feedback].v2.[given].by_human.md');
+    expect(result.created).toBe(false);
+  });
+
+  test('version ++ creates v2 when v1 exists', () => {
+    setupTestRepo();
+    writeFileSync(join(behaviorDir, '0.wish.md'), '# wish');
+    writeFileSync(
+      join(behaviorDir, '0.wish.md.[feedback].v1.[given].by_human.md'),
+      'v1 feedback',
+    );
+
+    const result = giveFeedback(
+      { against: 'wish', behavior: 'test-feature', version: '++' },
+      { cwd: testDir },
+    );
+
+    expect(result.feedbackFile).toContain('[feedback].v2.[given].by_human.md');
+    expect(result.created).toBe(true);
+  });
+
+  test('version ++ creates v3 when v1+v2 exist', () => {
+    setupTestRepo();
+    writeFileSync(join(behaviorDir, '0.wish.md'), '# wish');
+    writeFileSync(
+      join(behaviorDir, '0.wish.md.[feedback].v1.[given].by_human.md'),
+      'v1 feedback',
+    );
+    writeFileSync(
+      join(behaviorDir, '0.wish.md.[feedback].v2.[given].by_human.md'),
+      'v2 feedback',
+    );
+
+    const result = giveFeedback(
+      { against: 'wish', behavior: 'test-feature', version: '++' },
+      { cwd: testDir },
+    );
+
+    expect(result.feedbackFile).toContain('[feedback].v3.[given].by_human.md');
+    expect(result.created).toBe(true);
+  });
+
+  test('version ++ creates v1 when none exist', () => {
+    setupTestRepo();
+    writeFileSync(join(behaviorDir, '0.wish.md'), '# wish');
+
+    const result = giveFeedback(
+      { against: 'wish', behavior: 'test-feature', version: '++' },
+      { cwd: testDir },
+    );
+
+    expect(result.feedbackFile).toContain('[feedback].v1.[given].by_human.md');
+    expect(result.created).toBe(true);
   });
 
   test('fails if template not found', () => {

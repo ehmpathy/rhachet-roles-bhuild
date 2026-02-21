@@ -96,7 +96,7 @@ describe('giveFeedback.integration', () => {
     });
 
     when('[t1] giveFeedback invoked second time for same artifact', () => {
-      then('throws error about file already present', () => {
+      then('returns found feedback file without error (findsert)', () => {
         // ensure feedback file exists from prior test
         const behaviorDir = path.join(
           scene.testDir,
@@ -113,12 +113,16 @@ describe('giveFeedback.integration', () => {
           );
         }
 
-        expect(() =>
-          giveFeedback(
-            { against: 'execution', behavior: 'test-feature' },
-            { cwd: scene.testDir },
-          ),
-        ).toThrow(/already exists/);
+        // should not throw, should return found
+        const result = giveFeedback(
+          { against: 'execution', behavior: 'test-feature' },
+          { cwd: scene.testDir },
+        );
+
+        expect(result.created).toBe(false);
+        expect(result.feedbackFile).toContain(
+          '5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md',
+        );
       });
     });
 
@@ -307,6 +311,156 @@ describe('giveFeedback.integration', () => {
         const content = fs.readFileSync(result.feedbackFile, 'utf-8');
         expect(content).toContain('CUSTOM: review of 2.1.criteria.blackbox.md');
         expect(content).toContain('.behavior/v2025_01_01.custom-template');
+      });
+    });
+  });
+
+  given('[case5] feedback v1 already present', () => {
+    const testDir = path.join(os.tmpdir(), 'giveFeedback-int-case5');
+
+    const scene = useBeforeAll(async () => {
+      // clean and setup test repo
+      fs.rmSync(testDir, { recursive: true, force: true });
+      fs.mkdirSync(testDir, { recursive: true });
+
+      // init git repo
+      execSync('git init', { cwd: testDir });
+      execSync('git config user.email "test@test.com"', { cwd: testDir });
+      execSync('git config user.name "Test"', { cwd: testDir });
+      fs.writeFileSync(path.join(testDir, 'README.md'), '# test');
+      execSync('git add . && git commit -m "init"', { cwd: testDir });
+
+      // create behavior directory
+      const behaviorDir = path.join(
+        testDir,
+        '.behavior/v2025_01_01.has-v1-feedback',
+      );
+      fs.mkdirSync(behaviorDir, { recursive: true });
+
+      // create template
+      fs.writeFileSync(
+        path.join(behaviorDir, '.ref.[feedback].v1.[given].by_human.md'),
+        'feedback for $BEHAVIOR_REF_NAME',
+      );
+
+      // create artifact
+      fs.writeFileSync(path.join(behaviorDir, '0.wish.md'), '# wish');
+
+      // create v1 feedback (prior)
+      fs.writeFileSync(
+        path.join(behaviorDir, '0.wish.md.[feedback].v1.[given].by_human.md'),
+        'prior v1 feedback content',
+      );
+
+      return { testDir, behaviorDir };
+    });
+
+    afterAll(() => {
+      fs.rmSync(testDir, { recursive: true, force: true });
+    });
+
+    when('[t0] giveFeedback invoked without --version', () => {
+      then('returns v1 (latest)', () => {
+        const result = giveFeedback(
+          { against: 'wish', behavior: 'has-v1-feedback' },
+          { cwd: scene.testDir },
+        );
+
+        expect(result.created).toBe(false);
+        expect(result.feedbackFile).toContain(
+          '0.wish.md.[feedback].v1.[given].by_human.md',
+        );
+      });
+    });
+
+    when('[t1] giveFeedback invoked with --version ++', () => {
+      then('creates v2', () => {
+        const result = giveFeedback(
+          { against: 'wish', behavior: 'has-v1-feedback', version: '++' },
+          { cwd: scene.testDir },
+        );
+
+        expect(result.created).toBe(true);
+        expect(result.feedbackFile).toContain(
+          '0.wish.md.[feedback].v2.[given].by_human.md',
+        );
+      });
+    });
+  });
+
+  given('[case6] feedback v1+v2 already present', () => {
+    const testDir = path.join(os.tmpdir(), 'giveFeedback-int-case6');
+
+    const scene = useBeforeAll(async () => {
+      // clean and setup test repo
+      fs.rmSync(testDir, { recursive: true, force: true });
+      fs.mkdirSync(testDir, { recursive: true });
+
+      // init git repo
+      execSync('git init', { cwd: testDir });
+      execSync('git config user.email "test@test.com"', { cwd: testDir });
+      execSync('git config user.name "Test"', { cwd: testDir });
+      fs.writeFileSync(path.join(testDir, 'README.md'), '# test');
+      execSync('git add . && git commit -m "init"', { cwd: testDir });
+
+      // create behavior directory
+      const behaviorDir = path.join(
+        testDir,
+        '.behavior/v2025_01_01.has-v1v2-feedback',
+      );
+      fs.mkdirSync(behaviorDir, { recursive: true });
+
+      // create template
+      fs.writeFileSync(
+        path.join(behaviorDir, '.ref.[feedback].v1.[given].by_human.md'),
+        'feedback for $BEHAVIOR_REF_NAME',
+      );
+
+      // create artifact
+      fs.writeFileSync(path.join(behaviorDir, '0.wish.md'), '# wish');
+
+      // create v1+v2 feedback (prior)
+      fs.writeFileSync(
+        path.join(behaviorDir, '0.wish.md.[feedback].v1.[given].by_human.md'),
+        'prior v1 feedback',
+      );
+      fs.writeFileSync(
+        path.join(behaviorDir, '0.wish.md.[feedback].v2.[given].by_human.md'),
+        'prior v2 feedback',
+      );
+
+      return { testDir, behaviorDir };
+    });
+
+    afterAll(() => {
+      fs.rmSync(testDir, { recursive: true, force: true });
+    });
+
+    when('[t0] giveFeedback invoked without --version', () => {
+      then('returns v2 (latest)', () => {
+        const result = giveFeedback(
+          { against: 'wish', behavior: 'has-v1v2-feedback' },
+          { cwd: scene.testDir },
+        );
+
+        expect(result.created).toBe(false);
+        expect(result.feedbackFile).toContain(
+          '0.wish.md.[feedback].v2.[given].by_human.md',
+        );
+      });
+    });
+
+    when('[t1] giveFeedback invoked with --version ++', () => {
+      then('creates v3', () => {
+        const result = giveFeedback(
+          { against: 'wish', behavior: 'has-v1v2-feedback', version: '++' },
+          { cwd: scene.testDir },
+        );
+
+        expect(result.created).toBe(true);
+        expect(result.feedbackFile).toContain(
+          '0.wish.md.[feedback].v3.[given].by_human.md',
+        );
       });
     });
   });
