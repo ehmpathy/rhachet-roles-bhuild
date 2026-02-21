@@ -1,17 +1,16 @@
 {
   // explicit shards — each entry becomes one dedicated shard
-  // candidates based on test size (lines of code as proxy):
-  //   - skill.bind.behavior.acceptance.test.ts (545 lines)
-  //   - skill.review.deliverable.acceptance.test.ts (381 lines)
-  //   - skill.init.behavior.acceptance.test.ts (352 lines)
-  // NOTE: actual runtime data should drive explicit shard curation
+  // runtime data from ci run 22257526172 (2026-02-21)
   "explicit": [
-    // gh.issues tests: ~86s (github api calls + search index latency)
+    // skill.review.deliverable: 91.8s (llm calls for deliverable review)
+    { "patterns": ["skill.review.deliverable"] },
+    // skill.review.behavior.caseValidBehavior: 87.1s (llm calls for behavior validation)
+    { "patterns": ["skill.review.behavior.caseValidBehavior"] },
+    // skill.radio.task.push.via-gh-issues: ~24s (github api calls + search index latency)
     { "patterns": ["skill.radio.task.push.via-gh-issues"] }
   ],
 
   // dynamic shards — rest of tests distributed via Jest --shard
-  // per wish: at least 3 dynamic shards
   "dynamic": {
     "shards": 3
   }
