@@ -9,6 +9,7 @@ export const initFeedbackTemplate = (input: {
   targetPath: string;
   artifactFileName: string;
   behaviorDirRel: string;
+  feedbackVersion: number;
 }): void => {
   // read template content
   const templateContent = readFileSync(input.templatePath, 'utf-8');
@@ -16,7 +17,8 @@ export const initFeedbackTemplate = (input: {
   // replace placeholders with actual values
   const content = templateContent
     .replace(/\$BEHAVIOR_REF_NAME/g, input.artifactFileName)
-    .replace(/\$BEHAVIOR_DIR_REL/g, input.behaviorDirRel);
+    .replace(/\$BEHAVIOR_DIR_REL/g, input.behaviorDirRel)
+    .replace(/\$FEEDBACK_VERSION/g, String(input.feedbackVersion));
 
   // write to target path
   writeFileSync(input.targetPath, content, 'utf-8');
