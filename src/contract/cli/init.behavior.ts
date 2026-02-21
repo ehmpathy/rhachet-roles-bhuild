@@ -5,6 +5,7 @@
  * see src/domain.roles/behaver/skills/init.behavior.sh for full documentation
  */
 
+import { execSync } from 'child_process';
 import { basename, join, relative } from 'path';
 import { z } from 'zod';
 
@@ -139,11 +140,24 @@ export const initBehavior = (): void => {
   const footerOutput = computeFooterOutput({ wishPathRel, opener: openerUsed });
   console.log(footerOutput);
 
-  // auto-bind: bind current branch to newly created behavior
+  // auto-bind: bind current branch to newly created behavior (behaver hooks)
   setBranchBehaviorBind(
     { branchName: currentBranch, behaviorDir, boundBy: 'init.behavior skill' },
     context,
   );
+
+  // auto-bind: bind route for bhrain driver
+  try {
+    execSync(
+      `npx rhachet run --repo bhrain --skill route.bind --route ${behaviorDirRel}`,
+      {
+        cwd: targetDir,
+        stdio: 'pipe',
+      },
+    );
+  } catch {
+    // route.bind may fail if bhrain is not installed; this is ok
+  }
 
   // log branch bind confirmation
   const dim = '\x1b[2m';
@@ -155,5 +169,8 @@ export const initBehavior = (): void => {
   );
   console.log(
     `   └─ ${dim}branch bound to behavior, to boot via hooks${reset}`,
+  );
+  console.log(
+    `   └─ ${dim}route bound for driver, via bhrain route.bind${reset}`,
   );
 };

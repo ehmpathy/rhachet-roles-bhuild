@@ -4,15 +4,9 @@
 #
 # .why  = standardize the behavior-driven development thoughtroute
 #         by creation of a structured directory with:
-#           - wish definition
-#           - vision statement
-#           - blackbox criteria (user-faced behavioral requirements)
-#           - blueprint criteria (implementation requirements)
-#           - research prompts
-#           - distillation prompts
-#           - blueprint prompts
-#           - roadmap prompts
-#           - execution prompts
+#           - wish definition (0.wish.md)
+#           - milestone stones (.stone files for vision, criteria, research, etc)
+#           - guard files (.guard for vision and blueprint checkpoints)
 #           - feedback template
 #
 # usage:
@@ -22,7 +16,9 @@
 #   - creates .behavior/ if not found
 #   - creates versioned behavior directory
 #   - findserts all thoughtroute files (creates if not found, skips if present)
-#   - auto-binds current branch to newly created behavior
+#   - auto-binds current branch to newly created behavior (behaver hooks)
+#   - auto-binds route for bhrain driver (route.bind skill)
+#   - creates guard files for vision and blueprint (require human approval)
 #   - idempotent: safe to rerun
 #   - fail-fast on errors
 ######################################################################
