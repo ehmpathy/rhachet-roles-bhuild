@@ -7,12 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
-import {
-  genConsumerRepo,
-  genTestGitRepo,
-  runRhachetSkill,
-  type ConsumerRepo,
-} from '../.test/infra';
+import { genConsumerRepo, runRhachetSkill } from '../.test/infra';
 
 /**
  * .what = shim a string with emoji space adjustments
@@ -80,15 +75,6 @@ const runInitBehaviorSkillDirect = (input: {
   }
 };
 
-/**
- * .what = creates a temporary git repo for testing init.behavior
- * .why = init.behavior.sh requires a git repo context
- */
-const createTestRepo = (input: { branchName: string }) =>
-  genTestGitRepo({
-    prefix: 'init-behavior-test-',
-    branchName: input.branchName,
-  });
 
 describe('init.behavior', () => {
   // ========================================
@@ -96,21 +82,15 @@ describe('init.behavior', () => {
   // ========================================
 
   given('[case1] consumer: fresh consumer repo on main branch', () => {
-    let consumer: ConsumerRepo;
-
-    beforeAll(() => {
-      consumer = genConsumerRepo({ prefix: 'init-behavior-test-' });
-    });
-
-    afterAll(() => {
-      consumer.cleanup();
-    });
+    const scene = useBeforeAll(async () =>
+      genConsumerRepo({ prefix: 'init-behavior-test' }),
+    );
 
     when('[t0] init.behavior --name test-feature is invoked', () => {
       then('rejects bind to main branch', () => {
         const result = runInitBehaviorSkillViaRhachet({
           behaviorName: 'test-feature',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         });
 
         expect(result.exitCode).toBe(1);
@@ -120,15 +100,15 @@ describe('init.behavior', () => {
 
       then('creates behavior directory with scaffold files', () => {
         execSync('git checkout -b scaffold-test-branch', {
-          cwd: consumer.repoDir,
+          cwd: scene.repoDir,
         });
 
         runInitBehaviorSkillViaRhachet({
           behaviorName: 'scaffold-test',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         });
 
-        const behaviorRoot = path.join(consumer.repoDir, '.behavior');
+        const behaviorRoot = path.join(scene.repoDir, '.behavior');
         expect(fs.existsSync(behaviorRoot)).toBe(true);
 
         const behaviorDirs = fs.readdirSync(behaviorRoot);
@@ -158,14 +138,14 @@ describe('init.behavior', () => {
       });
 
       then('auto-binds current branch to the behavior', () => {
-        execSync('git checkout -b auto-bind-test', { cwd: consumer.repoDir });
+        execSync('git checkout -b auto-bind-test', { cwd: scene.repoDir });
 
         runInitBehaviorSkillViaRhachet({
           behaviorName: 'auto-bind-test',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         });
 
-        const behaviorRoot = path.join(consumer.repoDir, '.behavior');
+        const behaviorRoot = path.join(scene.repoDir, '.behavior');
         const behaviorDirs = fs.readdirSync(behaviorRoot);
         const autoBindDir = behaviorDirs.find((d) =>
           d.includes('auto-bind-test'),
@@ -180,11 +160,11 @@ describe('init.behavior', () => {
       });
 
       then('outputs success message', () => {
-        execSync('git checkout -b output-test', { cwd: consumer.repoDir });
+        execSync('git checkout -b output-test', { cwd: scene.repoDir });
 
         const result = runInitBehaviorSkillViaRhachet({
           behaviorName: 'output-test',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         });
 
         expect(result.output).toContain(shim('🦫 oh, behave!'));
@@ -193,28 +173,23 @@ describe('init.behavior', () => {
   });
 
   given('[case2] consumer: branch already bound to a behavior', () => {
-    let consumer: ConsumerRepo;
-
-    beforeAll(() => {
-      consumer = genConsumerRepo({ prefix: 'init-behavior-bound-test-' });
-      execSync('git checkout -b already-bound-branch', {
-        cwd: consumer.repoDir,
+    const scene = useBeforeAll(async () => {
+      const { repoDir } = genConsumerRepo({
+        prefix: 'init-behavior-bound-test',
+        branchName: 'already-bound-branch',
       });
       runInitBehaviorSkillViaRhachet({
         behaviorName: 'first-behavior',
-        repoDir: consumer.repoDir,
+        repoDir,
       });
-    });
-
-    afterAll(() => {
-      consumer.cleanup();
+      return { repoDir };
     });
 
     when('[t0] init.behavior --name second-behavior is invoked', () => {
       const result = useBeforeAll(async () =>
         runInitBehaviorSkillViaRhachet({
           behaviorName: 'second-behavior',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         }),
       );
 
@@ -234,27 +209,20 @@ describe('init.behavior', () => {
 
   given('[case3] direct: unbound branch', () => {
     when('[t0] init.behavior executed', () => {
-      const branchName = 'feature/new-behavior-test';
-      let testRepo: { repoDir: string; cleanup: () => void };
-
-      beforeAll(() => {
-        testRepo = createTestRepo({ branchName });
-      });
-
-      afterAll(() => {
-        testRepo.cleanup();
-      });
+      const scene = useBeforeAll(async () =>
+        genConsumerRepo({ branchName: 'feature/new-behavior-test' }),
+      );
 
       then('creates behavior directory with all scaffold files', () => {
         const result = runInitBehaviorSkillDirect({
           args: '--name test-behavior',
-          targetDir: testRepo.repoDir,
+          targetDir: scene.repoDir,
         });
 
         expect(result.exitCode).toBe(0);
         expect(result.stdout).toContain(shim('🦫 oh, behave!'));
 
-        const behaviorRoot = path.join(testRepo.repoDir, '.behavior');
+        const behaviorRoot = path.join(scene.repoDir, '.behavior');
         expect(fs.existsSync(behaviorRoot)).toBe(true);
 
         const behaviorDirs = fs.readdirSync(behaviorRoot);
@@ -283,65 +251,58 @@ describe('init.behavior', () => {
       });
 
       then('auto-binds current branch to created behavior', () => {
-        const freshRepo = createTestRepo({ branchName: 'feature/auto-bind' });
+        const { repoDir } = genConsumerRepo({
+          branchName: 'feature/auto-bind',
+        });
 
-        try {
-          const result = runInitBehaviorSkillDirect({
-            args: '--name auto-bind-test',
-            targetDir: freshRepo.repoDir,
-          });
+        const result = runInitBehaviorSkillDirect({
+          args: '--name auto-bind-test',
+          targetDir: repoDir,
+        });
 
-          expect(result.exitCode).toBe(0);
-          expect(result.stdout).toContain(`🍄 we'll remember,`);
-          expect(result.stdout).toContain('feature/auto-bind <-> behavior');
-          expect(result.stdout).toContain('to boot via hooks');
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain(`🍄 we'll remember,`);
+        expect(result.stdout).toContain('feature/auto-bind <-> behavior');
+        expect(result.stdout).toContain('to boot via hooks');
 
-          const behaviorRoot = path.join(freshRepo.repoDir, '.behavior');
-          const behaviorDirs = fs.readdirSync(behaviorRoot);
-          const behaviorDir = path.join(behaviorRoot, behaviorDirs[0]!);
-          const bindDir = path.join(behaviorDir, '.bind');
+        const behaviorRoot = path.join(repoDir, '.behavior');
+        const behaviorDirs = fs.readdirSync(behaviorRoot);
+        const behaviorDir = path.join(behaviorRoot, behaviorDirs[0]!);
+        const bindDir = path.join(behaviorDir, '.bind');
 
-          expect(fs.existsSync(bindDir)).toBe(true);
+        expect(fs.existsSync(bindDir)).toBe(true);
 
-          const flagFiles = fs.readdirSync(bindDir);
-          expect(flagFiles.length).toBe(1);
-          expect(flagFiles[0]).toContain('feature.auto-bind.flag');
+        const flagFiles = fs.readdirSync(bindDir);
+        expect(flagFiles.length).toBe(1);
+        expect(flagFiles[0]).toContain('feature.auto-bind.flag');
 
-          const flagContent = fs.readFileSync(
-            path.join(bindDir, flagFiles[0]!),
-            'utf-8',
-          );
-          expect(flagContent).toContain('branch: feature/auto-bind');
-          expect(flagContent).toContain('bound_by: init.behavior skill');
-        } finally {
-          freshRepo.cleanup();
-        }
+        const flagContent = fs.readFileSync(
+          path.join(bindDir, flagFiles[0]!),
+          'utf-8',
+        );
+        expect(flagContent).toContain('branch: feature/auto-bind');
+        expect(flagContent).toContain('bound_by: init.behavior skill');
       });
     });
   });
 
   given('[case4] direct: branch already bound to a behavior', () => {
     when('[t0] init.behavior executed', () => {
-      const branchName = 'feature/already-bound-test';
-      let testRepo: { repoDir: string; cleanup: () => void };
-
-      beforeAll(() => {
-        testRepo = createTestRepo({ branchName });
-
+      const scene = useBeforeAll(async () => {
+        const { repoDir } = genConsumerRepo({
+          branchName: 'feature/already-bound-test',
+        });
         runInitBehaviorSkillDirect({
           args: '--name first-behavior',
-          targetDir: testRepo.repoDir,
+          targetDir: repoDir,
         });
-      });
-
-      afterAll(() => {
-        testRepo.cleanup();
+        return { repoDir };
       });
 
       then('fails fast with helpful error', () => {
         const result = runInitBehaviorSkillDirect({
           args: '--name second-behavior',
-          targetDir: testRepo.repoDir,
+          targetDir: scene.repoDir,
         });
 
         expect(result.exitCode).toBe(1);
@@ -353,28 +314,21 @@ describe('init.behavior', () => {
 
   given('[case5] direct: idempotent rerun on same behavior', () => {
     when('[t0] init.behavior executed twice with same name', () => {
-      const branchName = 'feature/idempotent-init-test';
-      let testRepo: { repoDir: string; cleanup: () => void };
-
-      beforeAll(() => {
-        testRepo = createTestRepo({ branchName });
-      });
-
-      afterAll(() => {
-        testRepo.cleanup();
-      });
+      const scene = useBeforeAll(async () =>
+        genConsumerRepo({ branchName: 'feature/idempotent-init-test' }),
+      );
 
       then('second run succeeds (idempotent)', () => {
         const firstResult = runInitBehaviorSkillDirect({
           args: '--name same-behavior',
-          targetDir: testRepo.repoDir,
+          targetDir: scene.repoDir,
         });
         expect(firstResult.exitCode).toBe(0);
         expect(firstResult.stdout).toContain('+ 0.wish.md');
 
         const secondResult = runInitBehaviorSkillDirect({
           args: '--name same-behavior',
-          targetDir: testRepo.repoDir,
+          targetDir: scene.repoDir,
         });
         expect(secondResult.exitCode).toBe(0);
         expect(secondResult.stdout).toContain('✓ 0.wish.md');
@@ -384,21 +338,14 @@ describe('init.behavior', () => {
 
   given('[case6] direct: --open flag with cat command', () => {
     when('[t0] init.behavior executed with --open cat', () => {
-      const branchName = 'feature/open-cat-test';
-      let testRepo: { repoDir: string; cleanup: () => void };
-
-      beforeAll(() => {
-        testRepo = createTestRepo({ branchName });
-      });
-
-      afterAll(() => {
-        testRepo.cleanup();
-      });
+      const scene = useBeforeAll(async () =>
+        genConsumerRepo({ branchName: 'feature/open-cat-test' }),
+      );
 
       then('cat command outputs wish file content', () => {
         const result = runInitBehaviorSkillDirect({
           args: '--name open-test --open cat',
-          targetDir: testRepo.repoDir,
+          targetDir: scene.repoDir,
         });
 
         expect(result.exitCode).toBe(0);
@@ -406,61 +353,50 @@ describe('init.behavior', () => {
       });
 
       then('footer shows "opened in cat"', () => {
-        const freshRepo = createTestRepo({ branchName: 'feature/opened-in-test' });
+        const { repoDir } = genConsumerRepo({
+          branchName: 'feature/opened-in-test',
+        });
 
-        try {
-          const result = runInitBehaviorSkillDirect({
-            args: '--name opened-in-test --open cat',
-            targetDir: freshRepo.repoDir,
-          });
+        const result = runInitBehaviorSkillDirect({
+          args: '--name opened-in-test --open cat',
+          targetDir: repoDir,
+        });
 
-          expect(result.exitCode).toBe(0);
-          expect(result.stdout).toContain('opened in cat');
-        } finally {
-          freshRepo.cleanup();
-        }
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain('opened in cat');
       });
 
       then('output contains footer with relative wish path', () => {
-        const freshRepo = createTestRepo({ branchName: 'feature/footer-test' });
+        const { repoDir } = genConsumerRepo({
+          branchName: 'feature/footer-test',
+        });
 
-        try {
-          const result = runInitBehaviorSkillDirect({
-            args: '--name footer-test',
-            targetDir: freshRepo.repoDir,
-          });
+        const result = runInitBehaviorSkillDirect({
+          args: '--name footer-test',
+          targetDir: repoDir,
+        });
 
-          expect(result.exitCode).toBe(0);
-          expect(result.stdout).toContain('🌲 go on then,');
-          expect(result.stdout).toContain('0.wish.md');
-        } finally {
-          freshRepo.cleanup();
-        }
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain('🌲 go on then,');
+        expect(result.stdout).toContain('0.wish.md');
       });
     });
   });
 
   given('[case7] direct: --open flag with unavailable command', () => {
     when('[t0] init.behavior executed with --open nonexistent-xyz', () => {
-      const branchName = 'feature/open-fail-test';
-      let testRepo: { repoDir: string; cleanup: () => void };
-
-      beforeAll(() => {
-        testRepo = createTestRepo({ branchName });
-      });
-
-      afterAll(() => {
-        testRepo.cleanup();
-      });
+      const scene = useBeforeAll(async () =>
+        genConsumerRepo({ branchName: 'feature/open-fail-test' }),
+      );
 
       then('behavior files are still created', () => {
         const result = runInitBehaviorSkillDirect({
           args: '--name open-fail-test --open nonexistent-xyz-12345',
-          targetDir: testRepo.repoDir,
+          targetDir: scene.repoDir,
         });
 
         // init should still succeed even if opener fails
-        const behaviorRoot = path.join(testRepo.repoDir, '.behavior');
+        const behaviorRoot = path.join(scene.repoDir, '.behavior');
         expect(fs.existsSync(behaviorRoot)).toBe(true);
 
         const behaviorDirs = fs.readdirSync(behaviorRoot);
@@ -470,25 +406,129 @@ describe('init.behavior', () => {
         expect(openFailDir).toBeDefined();
 
         expect(
-          fs.existsSync(
-            path.join(behaviorRoot, openFailDir!, '0.wish.md'),
-          ),
+          fs.existsSync(path.join(behaviorRoot, openFailDir!, '0.wish.md')),
         ).toBe(true);
       });
 
       then('warn is shown about opener unavailable', () => {
-        const freshRepo = createTestRepo({ branchName: 'feature/warn-test' });
+        const { repoDir } = genConsumerRepo({
+          branchName: 'feature/warn-test',
+        });
 
-        try {
-          const result = runInitBehaviorSkillDirect({
-            args: '--name warn-test --open nonexistent-xyz-12345',
-            targetDir: freshRepo.repoDir,
-          });
+        const result = runInitBehaviorSkillDirect({
+          args: '--name warn-test --open nonexistent-xyz-12345',
+          targetDir: repoDir,
+        });
 
-          expect(result.stdout).toContain('unavailable');
-        } finally {
-          freshRepo.cleanup();
-        }
+        expect(result.stdout).toContain('unavailable');
+      });
+    });
+  });
+
+  given('[case8] direct: route bind output', () => {
+    when('[t0] init.behavior executed', () => {
+      const scene = useBeforeAll(async () =>
+        genConsumerRepo({ branchName: 'feature/route-bind-test' }),
+      );
+
+      then('output shows behavior bind line', () => {
+        const result = runInitBehaviorSkillDirect({
+          args: '--name route-test',
+          targetDir: scene.repoDir,
+        });
+
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain('branch bound to behavior');
+        expect(result.stdout).toContain('to boot via hooks');
+      });
+
+      then('output shows route bind line', () => {
+        const { repoDir } = genConsumerRepo({
+          branchName: 'feature/route-output-test',
+        });
+
+        const result = runInitBehaviorSkillDirect({
+          args: '--name route-output-test',
+          targetDir: repoDir,
+        });
+
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain('branch bound to route');
+        expect(result.stdout).toContain('to drive via hooks');
+      });
+    });
+  });
+
+  given('[case9] direct: idempotent reruns preserve both binds', () => {
+    when('[t0] init.behavior executed three times on same behavior', () => {
+      const scene = useBeforeAll(async () => {
+        const consumer = genConsumerRepo({
+          branchName: 'feature/idempotent-binds-test',
+        });
+
+        // first run creates files and binds
+        const first = runInitBehaviorSkillDirect({
+          args: '--name idem-test',
+          targetDir: consumer.repoDir,
+        });
+
+        // find the behavior dir
+        const behaviorRoot = path.join(consumer.repoDir, '.behavior');
+        const behaviorDirs = fs.readdirSync(behaviorRoot);
+        const behaviorDir = path.join(behaviorRoot, behaviorDirs[0]!);
+
+        return { ...consumer, first, behaviorDir };
+      });
+
+      then('first run creates files and both binds succeed', () => {
+        expect(scene.first.exitCode).toBe(0);
+        expect(scene.first.stdout).toContain('+ 0.wish.md');
+
+        // behavior bind succeeded
+        expect(scene.first.stdout).toContain('branch bound to behavior');
+        const behaviorBindDir = path.join(scene.behaviorDir, '.bind');
+        expect(fs.existsSync(behaviorBindDir)).toBe(true);
+        const behaviorBindFlags = fs.readdirSync(behaviorBindDir);
+        expect(behaviorBindFlags.length).toBe(1);
+
+        // route bind succeeded
+        expect(scene.first.stdout).toContain('branch bound to route');
+        const routeBindDir = path.join(scene.behaviorDir, '.route');
+        expect(fs.existsSync(routeBindDir)).toBe(true);
+        const routeBindFlags = fs
+          .readdirSync(routeBindDir)
+          .filter((f) => f.startsWith('.bind.'));
+        expect(routeBindFlags.length).toBe(1);
+      });
+
+      then('second and third runs are idempotent', () => {
+        const second = runInitBehaviorSkillDirect({
+          args: '--name idem-test',
+          targetDir: scene.repoDir,
+        });
+        expect(second.exitCode).toBe(0);
+        expect(second.stdout).toContain('✓ 0.wish.md');
+
+        const third = runInitBehaviorSkillDirect({
+          args: '--name idem-test',
+          targetDir: scene.repoDir,
+        });
+        expect(third.exitCode).toBe(0);
+        expect(third.stdout).toContain('✓ 0.wish.md');
+      });
+
+      then('bind files remain consistent after reruns', () => {
+        // verify behavior bind unchanged
+        const behaviorBindDir = path.join(scene.behaviorDir, '.bind');
+        const behaviorBindFlags = fs.readdirSync(behaviorBindDir);
+        expect(behaviorBindFlags.length).toBe(1);
+
+        // verify route bind unchanged
+        const routeBindDir = path.join(scene.behaviorDir, '.route');
+        const routeBindFlags = fs
+          .readdirSync(routeBindDir)
+          .filter((f) => f.startsWith('.bind.'));
+        expect(routeBindFlags.length).toBe(1);
       });
     });
   });

@@ -8,7 +8,6 @@ import {
   genBehaviorFixture,
   genTestGitRepo,
   runRhachetSkill,
-  type ConsumerRepo,
 } from '../.test/infra';
 
 const SCRIPT_PATH = path.join(
@@ -104,26 +103,21 @@ describe('bind.behavior', () => {
   // consumer invocation tests (via rhachet)
   // ========================================
 
-  given('[case1] consumer: unbound branch with existing behavior', () => {
-    let consumer: ConsumerRepo;
-
-    beforeAll(() => {
-      consumer = genConsumerRepo({ prefix: 'bind-behavior-test-' });
+  given('[case1] consumer: unbound branch with extant behavior', () => {
+    const scene = useBeforeAll(async () => {
+      const consumer = genConsumerRepo({ prefix: 'bind-behavior-test-' });
       genBehaviorFixture({
         repoDir: consumer.repoDir,
         behaviorName: 'test-feature',
       });
-    });
-
-    afterAll(() => {
-      consumer.cleanup();
+      return consumer;
     });
 
     when('[t0] get is invoked', () => {
       const result = useBeforeAll(async () =>
         runBindBehaviorSkillViaRhachet({
           action: 'get',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         }),
       );
 
@@ -138,28 +132,28 @@ describe('bind.behavior', () => {
 
     when('[t1] set --behavior test-feature is invoked', () => {
       then('exits with code 0', () => {
-        execSync('git checkout -b bind-test-branch', { cwd: consumer.repoDir });
+        execSync('git checkout -b bind-test-branch', { cwd: scene.repoDir });
 
         const result = runBindBehaviorSkillViaRhachet({
           action: 'set',
           behaviorName: 'test-feature',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         });
 
         expect(result.exitCode).toBe(0);
       });
 
       then('creates bind flag file', () => {
-        execSync('git checkout -b bind-flag-test', { cwd: consumer.repoDir });
+        execSync('git checkout -b bind-flag-test', { cwd: scene.repoDir });
 
         runBindBehaviorSkillViaRhachet({
           action: 'set',
           behaviorName: 'test-feature',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         });
 
         const bindDir = path.join(
-          consumer.repoDir,
+          scene.repoDir,
           '.behavior',
           'v2025_01_01.test-feature',
           '.bind',
@@ -171,12 +165,12 @@ describe('bind.behavior', () => {
       });
 
       then('outputs success message', () => {
-        execSync('git checkout -b success-test', { cwd: consumer.repoDir });
+        execSync('git checkout -b success-test', { cwd: scene.repoDir });
 
         const result = runBindBehaviorSkillViaRhachet({
           action: 'set',
           behaviorName: 'test-feature',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         });
 
         expect(result.output).toContain('bound');
@@ -185,10 +179,8 @@ describe('bind.behavior', () => {
   });
 
   given('[case2] consumer: bound branch', () => {
-    let consumer: ConsumerRepo;
-
-    beforeAll(() => {
-      consumer = genConsumerRepo({ prefix: 'bind-behavior-bound-test-' });
+    const scene = useBeforeAll(async () => {
+      const consumer = genConsumerRepo({ prefix: 'bind-behavior-bound-test-' });
       genBehaviorFixture({
         repoDir: consumer.repoDir,
         behaviorName: 'bound-feature',
@@ -200,17 +192,14 @@ describe('bind.behavior', () => {
         behaviorName: 'bound-feature',
         repoDir: consumer.repoDir,
       });
-    });
-
-    afterAll(() => {
-      consumer.cleanup();
+      return consumer;
     });
 
     when('[t0] get is invoked', () => {
       const result = useBeforeAll(async () =>
         runBindBehaviorSkillViaRhachet({
           action: 'get',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         }),
       );
 
@@ -223,7 +212,7 @@ describe('bind.behavior', () => {
       const delResult = useBeforeAll(async () =>
         runBindBehaviorSkillViaRhachet({
           action: 'del',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         }),
       );
 
@@ -231,29 +220,24 @@ describe('bind.behavior', () => {
         expect(delResult.exitCode).toBe(0);
       });
 
-      then('removes the binding', () => {
+      then('unbinds the branch', () => {
         const getResult = runBindBehaviorSkillViaRhachet({
           action: 'get',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         });
         expect(getResult.output).toContain('not bound');
       });
     });
   });
 
-  given('[case3] consumer: set with nonexistent behavior', () => {
-    let consumer: ConsumerRepo;
-
-    beforeAll(() => {
-      consumer = genConsumerRepo({ prefix: 'bind-behavior-notfound-test-' });
+  given('[case3] consumer: set with absent behavior', () => {
+    const scene = useBeforeAll(async () => {
+      const consumer = genConsumerRepo({ prefix: 'bind-behavior-notfound-test-' });
       genBehaviorFixture({
         repoDir: consumer.repoDir,
         behaviorName: 'some-feature',
       });
-    });
-
-    afterAll(() => {
-      consumer.cleanup();
+      return consumer;
     });
 
     when('[t0] skill is invoked with unknown behavior name', () => {
@@ -261,7 +245,7 @@ describe('bind.behavior', () => {
         runBindBehaviorSkillViaRhachet({
           action: 'set',
           behaviorName: 'nonexistent',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         }),
       );
 

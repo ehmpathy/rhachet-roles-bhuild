@@ -7,7 +7,6 @@ import {
   genBehaviorFixture,
   genConsumerRepo,
   runRhachetSkill,
-  type ConsumerRepo,
 } from '../.test/infra';
 
 /**
@@ -46,11 +45,8 @@ describe('give.feedback', () => {
   // ========================================
 
   given('[case1] consumer: behavior with execution artifact', () => {
-    let consumer: ConsumerRepo;
-    let behaviorDir: string;
-
-    beforeAll(() => {
-      consumer = genConsumerRepo({ prefix: 'give-feedback-test-' });
+    const scene = useBeforeAll(async () => {
+      const consumer = genConsumerRepo({ prefix: 'give-feedback-test-' });
       execSync('git checkout -b feedback-test-branch', {
         cwd: consumer.repoDir,
       });
@@ -62,11 +58,7 @@ describe('give.feedback', () => {
         withFeedbackTemplate: true,
         withExecution: true,
       });
-      behaviorDir = fixture.behaviorDir;
-    });
-
-    afterAll(() => {
-      consumer.cleanup();
+      return { repoDir: consumer.repoDir, behaviorDir: fixture.behaviorDir };
     });
 
     when('[t0] give.feedback --against execution is invoked', () => {
@@ -74,7 +66,7 @@ describe('give.feedback', () => {
         const result = runGiveFeedbackSkillViaRhachet({
           against: 'execution',
           behavior: 'feedback-test',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         });
 
         expect(result.exitCode).toBe(0);
@@ -82,12 +74,12 @@ describe('give.feedback', () => {
 
       then('creates feedback file with placeholders replaced', () => {
         // check feedback file was created (exclude template files)
-        const feedbackFiles = fs.readdirSync(behaviorDir).filter(
+        const feedbackFiles = fs.readdirSync(scene.behaviorDir).filter(
           (f) => f.includes('[feedback]') && !f.startsWith('.ref.'),
         );
         expect(feedbackFiles.length).toBeGreaterThan(0);
 
-        const feedbackPath = path.join(behaviorDir, feedbackFiles[0]!);
+        const feedbackPath = path.join(scene.behaviorDir, feedbackFiles[0]!);
         const content = fs.readFileSync(feedbackPath, 'utf-8');
         expect(content).toContain('# feedback for');
         expect(content).toContain('5.1.execution.v1.i1.md');
@@ -96,11 +88,11 @@ describe('give.feedback', () => {
       then('outputs 🦫 wassup? format with filename', () => {
         // create new branch for fresh test
         execSync('git checkout -b feedback-output-test', {
-          cwd: consumer.repoDir,
+          cwd: scene.repoDir,
         });
 
         genBehaviorFixture({
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
           behaviorName: 'output-test',
           withFeedbackTemplate: true,
           withExecution: true,
@@ -109,7 +101,7 @@ describe('give.feedback', () => {
         const result = runGiveFeedbackSkillViaRhachet({
           against: 'execution',
           behavior: 'output-test',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         });
 
         expect(result.output).toContain('🦫 wassup?');
@@ -120,10 +112,8 @@ describe('give.feedback', () => {
   });
 
   given('[case2] consumer: feedback file already exists (findsert)', () => {
-    let consumer: ConsumerRepo;
-
-    beforeAll(() => {
-      consumer = genConsumerRepo({ prefix: 'give-feedback-exists-test-' });
+    const scene = useBeforeAll(async () => {
+      const consumer = genConsumerRepo({ prefix: 'give-feedback-exists-test-' });
       execSync('git checkout -b feedback-exists-branch', {
         cwd: consumer.repoDir,
       });
@@ -141,10 +131,7 @@ describe('give.feedback', () => {
         behavior: 'exists-test',
         repoDir: consumer.repoDir,
       });
-    });
-
-    afterAll(() => {
-      consumer.cleanup();
+      return consumer;
     });
 
     when('[t0] give.feedback invoked again for same artifact', () => {
@@ -152,7 +139,7 @@ describe('give.feedback', () => {
         runGiveFeedbackSkillViaRhachet({
           against: 'execution',
           behavior: 'exists-test',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         }),
       );
 
@@ -172,11 +159,8 @@ describe('give.feedback', () => {
   });
 
   given('[case3] consumer: version flag creates v2 feedback', () => {
-    let consumer: ConsumerRepo;
-    let behaviorDir: string;
-
-    beforeAll(() => {
-      consumer = genConsumerRepo({ prefix: 'give-feedback-version-test-' });
+    const scene = useBeforeAll(async () => {
+      const consumer = genConsumerRepo({ prefix: 'give-feedback-version-test-' });
       execSync('git checkout -b feedback-version-branch', {
         cwd: consumer.repoDir,
       });
@@ -187,11 +171,7 @@ describe('give.feedback', () => {
         withFeedbackTemplate: true,
         withExecution: true,
       });
-      behaviorDir = fixture.behaviorDir;
-    });
-
-    afterAll(() => {
-      consumer.cleanup();
+      return { repoDir: consumer.repoDir, behaviorDir: fixture.behaviorDir };
     });
 
     when('[t0] give.feedback --version 2 is invoked', () => {
@@ -200,12 +180,12 @@ describe('give.feedback', () => {
           against: 'execution',
           behavior: 'version-test',
           version: 2,
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         });
 
         expect(result.exitCode).toBe(0);
 
-        const feedbackFiles = fs.readdirSync(behaviorDir).filter((f) =>
+        const feedbackFiles = fs.readdirSync(scene.behaviorDir).filter((f) =>
           f.includes('[feedback].v2'),
         );
         expect(feedbackFiles.length).toBe(1);
@@ -214,10 +194,8 @@ describe('give.feedback', () => {
   });
 
   given('[case4] consumer: artifact not found', () => {
-    let consumer: ConsumerRepo;
-
-    beforeAll(() => {
-      consumer = genConsumerRepo({ prefix: 'give-feedback-notfound-test-' });
+    const scene = useBeforeAll(async () => {
+      const consumer = genConsumerRepo({ prefix: 'give-feedback-notfound-test-' });
       execSync('git checkout -b feedback-notfound-branch', {
         cwd: consumer.repoDir,
       });
@@ -229,10 +207,7 @@ describe('give.feedback', () => {
         withFeedbackTemplate: true,
         withExecution: false, // no execution artifact
       });
-    });
-
-    afterAll(() => {
-      consumer.cleanup();
+      return consumer;
     });
 
     when('[t0] give.feedback for absent artifact', () => {
@@ -240,7 +215,7 @@ describe('give.feedback', () => {
         runGiveFeedbackSkillViaRhachet({
           against: 'execution',
           behavior: 'notfound-test',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         }),
       );
 
@@ -255,10 +230,8 @@ describe('give.feedback', () => {
   });
 
   given('[case5] consumer: template not found', () => {
-    let consumer: ConsumerRepo;
-
-    beforeAll(() => {
-      consumer = genConsumerRepo({ prefix: 'give-feedback-notemplate-test-' });
+    const scene = useBeforeAll(async () => {
+      const consumer = genConsumerRepo({ prefix: 'give-feedback-notemplate-test-' });
       execSync('git checkout -b feedback-notemplate-branch', {
         cwd: consumer.repoDir,
       });
@@ -270,10 +243,7 @@ describe('give.feedback', () => {
         withFeedbackTemplate: false, // no template
         withExecution: true,
       });
-    });
-
-    afterAll(() => {
-      consumer.cleanup();
+      return consumer;
     });
 
     when('[t0] give.feedback without template', () => {
@@ -281,7 +251,7 @@ describe('give.feedback', () => {
         runGiveFeedbackSkillViaRhachet({
           against: 'execution',
           behavior: 'notemplate-test',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         }),
       );
 

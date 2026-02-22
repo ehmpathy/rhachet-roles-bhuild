@@ -4,7 +4,6 @@ import {
   genConsumerRepo,
   genBehaviorFixture,
   runRhachetSkill,
-  type ConsumerRepo,
 } from '../.test/infra';
 
 const runReviewBehaviorSkill = (input: { behaviorName: string; repoDir: string }) =>
@@ -18,26 +17,21 @@ const runReviewBehaviorSkill = (input: { behaviorName: string; repoDir: string }
 
 describe('decomposer.review.behavior acceptance (as consumer)', () => {
   given('[case1] behavior with criteria under threshold', () => {
-    let consumer: ConsumerRepo;
-
-    beforeAll(() => {
-      consumer = genConsumerRepo({ prefix: 'review-behavior-test-' });
+    const scene = useBeforeAll(async () => {
+      const consumer = genConsumerRepo({ prefix: 'review-behavior-test-' });
       genBehaviorFixture({
         repoDir: consumer.repoDir,
         behaviorName: 'small-feature',
         withCriteria: true,
       });
-    });
-
-    afterAll(() => {
-      consumer.cleanup();
+      return consumer;
     });
 
     when('[t0] skill is invoked', () => {
       const result = useBeforeAll(async () =>
         runReviewBehaviorSkill({
           behaviorName: 'small-feature',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         }),
       );
 
@@ -56,26 +50,21 @@ describe('decomposer.review.behavior acceptance (as consumer)', () => {
   });
 
   given('[case2] behavior without criteria', () => {
-    let consumer: ConsumerRepo;
-
-    beforeAll(() => {
-      consumer = genConsumerRepo({ prefix: 'review-behavior-nocriteria-test-' });
+    const scene = useBeforeAll(async () => {
+      const consumer = genConsumerRepo({ prefix: 'review-behavior-nocriteria-test-' });
       genBehaviorFixture({
         repoDir: consumer.repoDir,
         behaviorName: 'incomplete-feature',
         withCriteria: false,
       });
-    });
-
-    afterAll(() => {
-      consumer.cleanup();
+      return consumer;
     });
 
     when('[t0] skill is invoked', () => {
       const result = useBeforeAll(async () =>
         runReviewBehaviorSkill({
           behaviorName: 'incomplete-feature',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         }),
       );
 
@@ -90,26 +79,21 @@ describe('decomposer.review.behavior acceptance (as consumer)', () => {
   });
 
   given('[case3] behavior not found', () => {
-    let consumer: ConsumerRepo;
-
-    beforeAll(() => {
-      consumer = genConsumerRepo({ prefix: 'review-behavior-notfound-test-' });
+    const scene = useBeforeAll(async () => {
+      const consumer = genConsumerRepo({ prefix: 'review-behavior-notfound-test-' });
       genBehaviorFixture({
         repoDir: consumer.repoDir,
-        behaviorName: 'existing-feature',
+        behaviorName: 'extant-feature',
         withCriteria: true,
       });
-    });
-
-    afterAll(() => {
-      consumer.cleanup();
+      return consumer;
     });
 
     when('[t0] skill invoked with unknown name', () => {
       const result = useBeforeAll(async () =>
         runReviewBehaviorSkill({
           behaviorName: 'nonexistent',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         }),
       );
 

@@ -5,7 +5,7 @@
  * see src/domain.roles/behaver/skills/init.behavior.sh for full documentation
  */
 
-import { execSync } from 'child_process';
+import { spawnSync } from 'child_process';
 import { basename, join, relative } from 'path';
 import { z } from 'zod';
 
@@ -146,17 +146,27 @@ export const initBehavior = (): void => {
     context,
   );
 
-  // auto-bind: bind route for bhrain driver
-  try {
-    execSync(
-      `npx rhachet run --repo bhrain --skill route.bind --route ${behaviorDirRel}`,
-      {
-        cwd: targetDir,
-        stdio: 'pipe',
-      },
+  // auto-bind: bind route for bhrain driver (fail fast if fails)
+  const routeBindResult = spawnSync(
+    'npx',
+    [
+      'rhachet',
+      'run',
+      '--repo',
+      'bhrain',
+      '--skill',
+      'route.bind.set',
+      '--route',
+      behaviorDirRel,
+    ],
+    { cwd: targetDir, stdio: 'inherit' },
+  );
+  if (routeBindResult.status !== 0) {
+    console.error('');
+    console.error(
+      `⛈️  route.bind.set failed. is rhachet-roles-bhrain installed?`,
     );
-  } catch {
-    // route.bind may fail if bhrain is not installed; this is ok
+    process.exit(routeBindResult.status ?? 1);
   }
 
   // log branch bind confirmation
@@ -168,9 +178,7 @@ export const initBehavior = (): void => {
     `   ├─ branch ${currentBranch} <-> behavior v${isoDate}.${behaviorName}`,
   );
   console.log(
-    `   └─ ${dim}branch bound to behavior, to boot via hooks${reset}`,
+    `   ├─ ${dim}branch bound to behavior, to boot via hooks${reset}`,
   );
-  console.log(
-    `   └─ ${dim}route bound for driver, via bhrain route.bind${reset}`,
-  );
+  console.log(`   └─ ${dim}branch bound to route, to drive via hooks${reset}`);
 };

@@ -3,11 +3,7 @@ import os from 'os';
 import path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
-import {
-  genConsumerRepo,
-  runRhachetSkill,
-  type ConsumerRepo,
-} from '../.test/infra';
+import { genConsumerRepo, runRhachetSkill } from '../.test/infra';
 
 /**
  * .what = runs radio.task.push via rhachet dispatch (consumer pattern)

@@ -66,7 +66,7 @@
     "emoji-space-shim": "0.0.0",
     "helpful-errors": "1.5.3",
     "iso-time": "1.11.3",
-    "test-fns": "1.7.2",
+    "test-fns": "1.15.0",
     "zod": "4.3.4"
   },
   "devDependencies": {
@@ -91,13 +91,16 @@
     "jest": "30.2.0",
     "rhachet": "1.35.0",
     "rhachet-brains-anthropic": "0.3.3",
-    "rhachet-roles-bhrain": "0.12.1",
-    "rhachet-roles-bhuild": "file:.",
+    "rhachet-roles-bhrain": "0.12.3",
+    "rhachet-roles-bhuild": "link:.",
     "rhachet-roles-ehmpathy": "1.26.2",
     "tsc-alias": "1.8.10",
     "tsx": "4.20.6",
     "typescript": "5.4.5",
     "yalc": "1.0.0-pre.53"
+  },
+  "peerDependencies": {
+    "rhachet-roles-bhrain": ">=0.12.1"
   },
   "config": {
     "commitizen": {
