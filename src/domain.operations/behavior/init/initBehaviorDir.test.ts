@@ -63,14 +63,12 @@ describe('initBehaviorDir', () => {
         );
         expect(criteriaBlackboxStone).not.toContain('$BEHAVIOR_DIR_REL');
 
-        // verify replacement in guard files
+        // verify guard files use $route (substituted by bhrain at runtime, not initBehaviorDir)
         const visionGuard = fs.readFileSync(
           path.join(behaviorDir, '1.vision.guard'),
           'utf-8',
         );
-        expect(visionGuard).toContain(
-          '--route .behavior/v2025_01_01.test-feature',
-        );
+        expect(visionGuard).toContain('--route $route');
         expect(visionGuard).not.toContain('$BEHAVIOR_DIR_REL');
       });
     });
