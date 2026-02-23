@@ -9,17 +9,17 @@ import { flattenBranchName } from './flattenBranchName';
  * .why  = both hooks and skills need to discover binds
  */
 export const getBranchBehaviorBind = (
-  input: { branchName?: string },
-  context?: { cwd?: string },
+  input: { branchName?: string; targetDir?: string },
+  context: { cwd: string },
 ): { behaviorDir: string | null; binds: string[] } => {
-  const cwd = context?.cwd ?? process.cwd();
+  const targetDir = input.targetDir ?? '.';
 
   // get the current branch name if not provided
   const branchName =
     input.branchName ??
     execSync('git rev-parse --abbrev-ref HEAD', {
-      cwd,
       encoding: 'utf-8',
+      cwd: context.cwd,
     }).trim();
 
   // flatten the branch name for filesystem lookup
@@ -27,7 +27,7 @@ export const getBranchBehaviorBind = (
   const flagFileName = `${flatBranch}.flag`;
 
   // search for .behavior/*/.bind/${flagFileName}
-  const behaviorRoot = join(cwd, '.behavior');
+  const behaviorRoot = join(context.cwd, targetDir, '.behavior');
   if (!existsSync(behaviorRoot)) return { behaviorDir: null, binds: [] };
 
   // find all behavior directories

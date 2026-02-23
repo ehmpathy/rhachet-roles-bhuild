@@ -39,10 +39,12 @@ const outputBehaviorFile = (
 // ────────────────────────────────────────────────────────────────────
 
 export const bootBehavior = (): void => {
+  const context = { cwd: process.cwd() };
+
   // get current branch (exit silently if not in git repo)
   let currentBranch: string;
   try {
-    currentBranch = getCurrentBranch({});
+    currentBranch = getCurrentBranch({}, context);
   } catch {
     process.exit(0);
   }
@@ -52,7 +54,10 @@ export const bootBehavior = (): void => {
   }
 
   // check if bound
-  const bindResult = getBranchBehaviorBind({ branchName: currentBranch });
+  const bindResult = getBranchBehaviorBind(
+    { branchName: currentBranch },
+    context,
+  );
   const behaviorDir = bindResult.behaviorDir;
   const bindsCount = bindResult.binds.length;
 

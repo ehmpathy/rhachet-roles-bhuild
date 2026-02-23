@@ -9,12 +9,15 @@ import { join } from 'path';
  *
  * @throws BadRequestError if not found or ambiguous
  */
-export const getBehaviorDir = (input: {
-  name: string;
-  targetDir?: string;
-}): string => {
-  const targetDir = input.targetDir ?? process.cwd();
-  const behaviorRoot = join(targetDir, '.behavior');
+export const getBehaviorDir = (
+  input: {
+    name: string;
+    targetDir?: string;
+  },
+  context: { cwd: string },
+): string => {
+  const targetDir = input.targetDir ?? '.';
+  const behaviorRoot = join(context.cwd, targetDir, '.behavior');
 
   if (!existsSync(behaviorRoot)) {
     throw new BadRequestError('.behavior/ directory not found');

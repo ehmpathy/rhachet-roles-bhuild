@@ -55,6 +55,7 @@ const schemaOfArgs = z.object({
 
 export const giveFeedback = (): void => {
   const { named } = getCliArgs({ schema: schemaOfArgs });
+  const context = { cwd: process.cwd() };
 
   // validate --open has a value if provided
   if (named.open !== undefined && named.open.trim() === '') {
@@ -69,13 +70,16 @@ export const giveFeedback = (): void => {
   }
 
   // create or find feedback file
-  const result = giveFeedbackOp({
-    against: named.against,
-    behavior: named.behavior,
-    version: named.version,
-    template: named.template,
-    force: named.force,
-  });
+  const result = giveFeedbackOp(
+    {
+      against: named.against,
+      behavior: named.behavior,
+      version: named.version,
+      template: named.template,
+      force: named.force,
+    },
+    context,
+  );
 
   // extract just the filename (not full path)
   const feedbackFilename = basename(result.feedbackFile);

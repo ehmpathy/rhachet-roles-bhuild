@@ -6,6 +6,7 @@ import { getLatestArtifactByName } from './getLatestArtifactByName';
 
 describe('getLatestArtifactByName', () => {
   let testDir: string;
+  const context = { cwd: process.cwd() };
 
   beforeEach(() => {
     testDir = mkdtempSync(join(tmpdir(), 'artifact-test-'));
@@ -18,10 +19,13 @@ describe('getLatestArtifactByName', () => {
   test('single execution file', () => {
     writeFileSync(join(testDir, '5.1.execution.v1.i1.md'), '');
 
-    const result = getLatestArtifactByName({
-      behaviorDir: testDir,
-      artifactName: 'execution',
-    });
+    const result = getLatestArtifactByName(
+      {
+        behaviorDir: testDir,
+        artifactName: 'execution',
+      },
+      context,
+    );
 
     expect(result).not.toBeNull();
     expect(result?.filename).toEqual('5.1.execution.v1.i1.md');
@@ -33,10 +37,13 @@ describe('getLatestArtifactByName', () => {
     writeFileSync(join(testDir, '5.1.execution.v1.i1.md'), '');
     writeFileSync(join(testDir, '5.1.execution.v2.i1.md'), '');
 
-    const result = getLatestArtifactByName({
-      behaviorDir: testDir,
-      artifactName: 'execution',
-    });
+    const result = getLatestArtifactByName(
+      {
+        behaviorDir: testDir,
+        artifactName: 'execution',
+      },
+      context,
+    );
 
     expect(result?.filename).toEqual('5.1.execution.v2.i1.md');
     expect(result?.version).toEqual(2);
@@ -46,10 +53,13 @@ describe('getLatestArtifactByName', () => {
     writeFileSync(join(testDir, '5.1.execution.v1.i1.md'), '');
     writeFileSync(join(testDir, '5.1.execution.v1.i2.md'), '');
 
-    const result = getLatestArtifactByName({
-      behaviorDir: testDir,
-      artifactName: 'execution',
-    });
+    const result = getLatestArtifactByName(
+      {
+        behaviorDir: testDir,
+        artifactName: 'execution',
+      },
+      context,
+    );
 
     expect(result?.filename).toEqual('5.1.execution.v1.i2.md');
     expect(result?.attempt).toEqual(2);
@@ -62,10 +72,13 @@ describe('getLatestArtifactByName', () => {
       '',
     );
 
-    const result = getLatestArtifactByName({
-      behaviorDir: testDir,
-      artifactName: 'execution',
-    });
+    const result = getLatestArtifactByName(
+      {
+        behaviorDir: testDir,
+        artifactName: 'execution',
+      },
+      context,
+    );
 
     expect(result?.filename).toEqual('5.1.execution.v1.i1.md');
     expect(result?.filename).not.toContain('[feedback]');
@@ -75,10 +88,13 @@ describe('getLatestArtifactByName', () => {
     writeFileSync(join(testDir, '2.1.criteria.blackbox.md'), '');
     writeFileSync(join(testDir, '2.3.criteria.blueprint.md'), '');
 
-    const result = getLatestArtifactByName({
-      behaviorDir: testDir,
-      artifactName: 'criteria.blackbox',
-    });
+    const result = getLatestArtifactByName(
+      {
+        behaviorDir: testDir,
+        artifactName: 'criteria.blackbox',
+      },
+      context,
+    );
 
     expect(result?.filename).toEqual('2.1.criteria.blackbox.md');
   });
@@ -86,10 +102,13 @@ describe('getLatestArtifactByName', () => {
   test('no version/attempt returns null version and attempt', () => {
     writeFileSync(join(testDir, '0.wish.md'), '');
 
-    const result = getLatestArtifactByName({
-      behaviorDir: testDir,
-      artifactName: 'wish',
-    });
+    const result = getLatestArtifactByName(
+      {
+        behaviorDir: testDir,
+        artifactName: 'wish',
+      },
+      context,
+    );
 
     expect(result?.filename).toEqual('0.wish.md');
     expect(result?.version).toBeNull();
@@ -99,10 +118,13 @@ describe('getLatestArtifactByName', () => {
   test('no match returns null', () => {
     writeFileSync(join(testDir, '0.wish.md'), '');
 
-    const result = getLatestArtifactByName({
-      behaviorDir: testDir,
-      artifactName: 'execution',
-    });
+    const result = getLatestArtifactByName(
+      {
+        behaviorDir: testDir,
+        artifactName: 'execution',
+      },
+      context,
+    );
 
     expect(result).toBeNull();
   });
@@ -111,10 +133,13 @@ describe('getLatestArtifactByName', () => {
     writeFileSync(join(testDir, '5.1.execution.v1.i3.md'), '');
     writeFileSync(join(testDir, '5.1.execution.v2.i1.md'), '');
 
-    const result = getLatestArtifactByName({
-      behaviorDir: testDir,
-      artifactName: 'execution',
-    });
+    const result = getLatestArtifactByName(
+      {
+        behaviorDir: testDir,
+        artifactName: 'execution',
+      },
+      context,
+    );
 
     expect(result?.filename).toEqual('5.1.execution.v2.i1.md');
     expect(result?.version).toEqual(2);
@@ -124,10 +149,13 @@ describe('getLatestArtifactByName', () => {
     writeFileSync(join(testDir, '3.1.research.domain._.v1.src'), '');
     writeFileSync(join(testDir, '3.1.research.domain._.v1.md'), '');
 
-    const result = getLatestArtifactByName({
-      behaviorDir: testDir,
-      artifactName: 'research.domain',
-    });
+    const result = getLatestArtifactByName(
+      {
+        behaviorDir: testDir,
+        artifactName: 'research.domain',
+      },
+      context,
+    );
 
     expect(result?.filename).toEqual('3.1.research.domain._.v1.md');
   });

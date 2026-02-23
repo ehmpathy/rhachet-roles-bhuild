@@ -173,10 +173,11 @@ const modeApply = async (
 
 export const decomposeBehavior = async (): Promise<void> => {
   const { named } = getCliArgs({ schema: schemaOfArgs });
+  const context = { cwd: process.cwd() };
   const behaviorName = named.of;
   const mode = named.mode;
   const planFile = named.plan ?? '';
-  const targetDir = named.dir ?? process.cwd();
+  const targetDir = named.dir ?? '.';
 
   // validate apply mode requires plan
   if (mode === 'apply' && !planFile) {
@@ -191,7 +192,10 @@ export const decomposeBehavior = async (): Promise<void> => {
   }
 
   // get behavior directory
-  const behaviorDir = getBehaviorDir({ name: behaviorName, targetDir });
+  const behaviorDir = getBehaviorDir(
+    { name: behaviorName, targetDir },
+    context,
+  );
   const behaviorDirRel = path.relative(process.cwd(), behaviorDir);
 
   // criteria validation

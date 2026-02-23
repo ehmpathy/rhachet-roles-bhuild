@@ -7,9 +7,11 @@ import { getBehaviorDir } from './getBehaviorDir';
 
 describe('getBehaviorDir', () => {
   let tempDir: string;
+  let context: { cwd: string };
 
   beforeEach(() => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'getBehaviorDir-test-'));
+    context = { cwd: tempDir };
   });
 
   afterEach(() => {
@@ -19,9 +21,9 @@ describe('getBehaviorDir', () => {
   given('no .behavior directory', () => {
     when('getBehaviorDir is called', () => {
       then('throws BadRequestError', () => {
-        expect(() =>
-          getBehaviorDir({ name: 'test', targetDir: tempDir }),
-        ).toThrow('.behavior/ directory not found');
+        expect(() => getBehaviorDir({ name: 'test' }, context)).toThrow(
+          '.behavior/ directory not found',
+        );
       });
     });
   });
@@ -38,17 +40,14 @@ describe('getBehaviorDir', () => {
 
     when('getBehaviorDir is called with matching name', () => {
       then('returns the behavior directory path', () => {
-        const result = getBehaviorDir({
-          name: 'my-feature',
-          targetDir: tempDir,
-        });
+        const result = getBehaviorDir({ name: 'my-feature' }, context);
         expect(result).toContain('v2025_01_01.my-feature');
       });
     });
 
     when('getBehaviorDir is called with partial name', () => {
       then('returns the behavior directory path', () => {
-        const result = getBehaviorDir({ name: 'feature', targetDir: tempDir });
+        const result = getBehaviorDir({ name: 'feature' }, context);
         expect(result).toContain('v2025_01_01.my-feature');
       });
     });
@@ -66,9 +65,9 @@ describe('getBehaviorDir', () => {
 
     when('getBehaviorDir is called with non-matching name', () => {
       then('throws BadRequestError with available behaviors', () => {
-        expect(() =>
-          getBehaviorDir({ name: 'nonexistent', targetDir: tempDir }),
-        ).toThrow("no behavior found matching 'nonexistent'");
+        expect(() => getBehaviorDir({ name: 'nonexistent' }, context)).toThrow(
+          "no behavior found matching 'nonexistent'",
+        );
       });
     });
   });
@@ -85,9 +84,9 @@ describe('getBehaviorDir', () => {
 
     when('getBehaviorDir is called with ambiguous name', () => {
       then('throws BadRequestError listing matches', () => {
-        expect(() =>
-          getBehaviorDir({ name: 'feature', targetDir: tempDir }),
-        ).toThrow("multiple behaviors match 'feature'");
+        expect(() => getBehaviorDir({ name: 'feature' }, context)).toThrow(
+          "multiple behaviors match 'feature'",
+        );
       });
     });
   });

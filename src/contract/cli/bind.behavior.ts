@@ -42,9 +42,14 @@ const schemaOfArgs = z.object({
 export const bindBehavior = (): void => {
   const { named, ordered } = getCliArgs({ schema: schemaOfArgs });
 
+  // context.cwd is always the git root
+  const context = { cwd: process.cwd() };
+
+  // targetDir is relative path from cwd where .behavior lives
+  const targetDir = named.dir ?? '.';
+
   // action is first ordered arg
   const action = ordered[0];
-  const cwd = named.dir ?? process.cwd();
 
   if (!action) {
     console.error('error: no action specified');
@@ -62,12 +67,11 @@ export const bindBehavior = (): void => {
     process.exit(1);
   }
 
-  const context = { cwd };
   const branchName = getCurrentBranch({}, context);
 
   // dispatch
   if (action === 'get') {
-    const result = getBranchBehaviorBind({ branchName }, context);
+    const result = getBranchBehaviorBind({ branchName, targetDir }, context);
     if (!result.behaviorDir) {
       console.log('not bound');
     } else {
@@ -80,9 +84,15 @@ export const bindBehavior = (): void => {
       process.exit(1);
     }
 
-    const behaviorDir = getBehaviorDir({ name: behaviorName, targetDir: cwd });
+    const behaviorDir = getBehaviorDir(
+      { name: behaviorName, targetDir },
+      context,
+    );
 
-    const result = setBranchBehaviorBind({ branchName, behaviorDir }, context);
+    const result = setBranchBehaviorBind(
+      { branchName, behaviorDir, targetDir },
+      context,
+    );
 
     if (!result.success) {
       console.error(`error: ${result.message}`);

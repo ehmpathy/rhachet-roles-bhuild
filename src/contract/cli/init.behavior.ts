@@ -6,7 +6,7 @@
  */
 
 import { spawnSync } from 'child_process';
-import { basename, join, relative } from 'path';
+import { basename, join, resolve } from 'path';
 import { z } from 'zod';
 
 import {
@@ -49,12 +49,12 @@ const schemaOfArgs = z.object({
 export const initBehavior = (): void => {
   const { named } = getCliArgs({ schema: schemaOfArgs });
   const behaviorName = named.name;
-  const rawTargetDir = named.dir ?? process.cwd();
-  const context = { cwd: rawTargetDir };
+  const context = { cwd: process.cwd() };
+  const targetDirRaw = named.dir ?? '.';
 
   // validate --open has a value if provided
   if (named.open !== undefined && named.open.trim() === '') {
-    console.error('⛈️  error: --open requires an editor name');
+    console.error('💥 error: --open requires an editor name');
     console.error('');
     console.error('please specify what editor to open with. for example:');
     console.error('  --open codium');
@@ -67,43 +67,42 @@ export const initBehavior = (): void => {
   // get current branch
   const currentBranch = getCurrentBranch({}, context);
 
-  // normalize target dir (trim trailing .behavior)
-  const targetDir = rawTargetDir.replace(/\/?\.behavior\/?$/, '');
+  // trim trailing .behavior from target dir
+  const targetDir = targetDirRaw.replace(/\/?\.behavior\/?$/, '');
 
   // generate isodate in format YYYY_MM_DD
   const now = new Date();
   const isoDate = `${now.getFullYear()}_${String(now.getMonth() + 1).padStart(2, '0')}_${String(now.getDate()).padStart(2, '0')}`;
 
-  // construct behavior directory path (absolute)
+  // construct behavior directory path (relative to cwd)
   const behaviorDir = join(
     targetDir,
     '.behavior',
     `v${isoDate}.${behaviorName}`,
   );
 
+  // clean up leading ./ for display and route binding
+  const behaviorDirRel = behaviorDir.replace(/^\.\//, '');
+
   // check if branch already bound (must be after behaviorDir is computed)
   const bindResult = getBranchBehaviorBind(
-    { branchName: currentBranch },
+    {
+      branchName: currentBranch,
+      targetDir,
+    },
     context,
   );
-  if (bindResult.behaviorDir && bindResult.behaviorDir !== behaviorDir) {
+  // compare absolute paths to handle relative vs absolute format differences
+  const behaviorDirAbs = resolve(context.cwd, behaviorDir);
+  if (bindResult.behaviorDir && bindResult.behaviorDir !== behaviorDirAbs) {
     console.error(
-      `⛈️  error: branch '${currentBranch}' is already bound to: ${basename(bindResult.behaviorDir)}`,
+      `💥 error: branch '${currentBranch}' is already bound to: ${basename(bindResult.behaviorDir)}`,
     );
     console.error('');
     console.error('to create a new behavior, use a new tree:');
     console.error('  git tree set --from main --open <branch-name-new>');
     process.exit(1);
   }
-
-  // compute relative path from caller's PWD for file contents
-  let behaviorDirRel = join(
-    relative(process.cwd(), targetDir),
-    '.behavior',
-    `v${isoDate}.${behaviorName}`,
-  );
-  // normalize: remove leading ./ if present
-  behaviorDirRel = behaviorDirRel.replace(/^\.\//, '');
 
   // initialize behavior directory with template files
   const result = initBehaviorDir({ behaviorDir, behaviorDirRel });
@@ -142,11 +141,16 @@ export const initBehavior = (): void => {
 
   // auto-bind: bind current branch to newly created behavior (behaver hooks)
   setBranchBehaviorBind(
-    { branchName: currentBranch, behaviorDir, boundBy: 'init.behavior skill' },
+    {
+      branchName: currentBranch,
+      behaviorDir,
+      boundBy: 'init.behavior skill',
+      targetDir,
+    },
     context,
   );
 
-  // auto-bind: bind route for bhrain driver (fail fast if fails)
+  // auto-bind: bind route for bhrain driver (suppress success output, show errors only)
   const routeBindResult = spawnSync(
     'npx',
     [
@@ -159,13 +163,10 @@ export const initBehavior = (): void => {
       '--route',
       behaviorDirRel,
     ],
-    { cwd: targetDir, stdio: 'inherit' },
+    { stdio: 'pipe', encoding: 'utf-8' },
   );
   if (routeBindResult.status !== 0) {
-    console.error('');
-    console.error(
-      `⛈️  route.bind.set failed. is rhachet-roles-bhrain installed?`,
-    );
+    if (routeBindResult.stderr) console.error(routeBindResult.stderr);
     process.exit(routeBindResult.status ?? 1);
   }
 

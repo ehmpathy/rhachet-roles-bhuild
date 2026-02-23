@@ -7,10 +7,10 @@ import { execSync } from 'child_process';
  */
 export const getCurrentBranch = (
   _input: Record<string, never>,
-  context?: { cwd?: string },
+  context: { cwd: string },
 ): string => {
   return execSync('git rev-parse --abbrev-ref HEAD', {
     encoding: 'utf-8',
-    cwd: context?.cwd,
+    cwd: context.cwd,
   }).trim();
 };

@@ -38,11 +38,15 @@ const schemaOfArgs = z.object({
 
 export const reviewBehavior = async (): Promise<void> => {
   const { named } = getCliArgs({ schema: schemaOfArgs });
+  const context = { cwd: process.cwd() };
   const behaviorName = named.of;
-  const targetDir = named.dir ?? process.cwd();
+  const targetDir = named.dir ?? '.';
 
   // get behavior directory
-  const behaviorDir = getBehaviorDir({ name: behaviorName, targetDir });
+  const behaviorDir = getBehaviorDir(
+    { name: behaviorName, targetDir },
+    context,
+  );
   const behaviorDirRel = relative(process.cwd(), behaviorDir);
 
   // criteria validation

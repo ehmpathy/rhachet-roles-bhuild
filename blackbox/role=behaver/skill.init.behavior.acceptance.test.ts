@@ -16,6 +16,17 @@ import { genConsumerRepo, runRhachetSkill } from '../.test/infra';
 const shim = (message: string) =>
   transformMessageForTerminal({ message, terminal: detectTerminalChoice() });
 
+/**
+ * .what = mask dynamic values in stdout for snapshot consistency
+ * .why = dates and some paths vary per run, mask them for stable snapshots
+ */
+const asSnapshotStable = (stdout: string): string =>
+  stdout
+    // mask iso dates in behavior dir names: v2026_02_23 -> v{DATE}
+    .replace(/v\d{4}_\d{2}_\d{2}/g, 'v{DATE}')
+    // mask branch-specific bind flags: .bind.feature.foo.flag -> .bind.{BRANCH}.flag
+    .replace(/\.bind\.[a-z0-9._-]+\.flag/gi, '.bind.{BRANCH}.flag');
+
 const SCRIPT_PATH = path.join(
   __dirname,
   '../../src/domain.roles/behaver/skills/init.behavior.sh',
@@ -42,19 +53,17 @@ const runInitBehaviorSkillViaRhachet = (input: {
  */
 const runInitBehaviorSkillDirect = (input: {
   args: string;
-  targetDir: string;
+  repoDir: string;
 }): { stdout: string; exitCode: number } => {
   try {
-    const stdout = execSync(
-      `bash "${SCRIPT_PATH}" ${input.args} --dir "${input.targetDir}"`,
-      {
-        encoding: 'utf-8',
-        env: {
-          ...process.env,
-          PATH: process.env.PATH,
-        },
+    const stdout = execSync(`bash "${SCRIPT_PATH}" ${input.args}`, {
+      cwd: input.repoDir,
+      encoding: 'utf-8',
+      env: {
+        ...process.env,
+        PATH: process.env.PATH,
       },
-    );
+    });
     return { stdout: stdout.trim(), exitCode: 0 };
   } catch (error: unknown) {
     const execError = error as {
@@ -216,11 +225,14 @@ describe('init.behavior', () => {
       then('creates behavior directory with all scaffold files', () => {
         const result = runInitBehaviorSkillDirect({
           args: '--name test-behavior',
-          targetDir: scene.repoDir,
+          repoDir: scene.repoDir,
         });
 
         expect(result.exitCode).toBe(0);
         expect(result.stdout).toContain(shim('🦫 oh, behave!'));
+
+        // snapshot for vibe-check
+        expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
 
         const behaviorRoot = path.join(scene.repoDir, '.behavior');
         expect(fs.existsSync(behaviorRoot)).toBe(true);
@@ -257,7 +269,7 @@ describe('init.behavior', () => {
 
         const result = runInitBehaviorSkillDirect({
           args: '--name auto-bind-test',
-          targetDir: repoDir,
+          repoDir: repoDir,
         });
 
         expect(result.exitCode).toBe(0);
@@ -294,7 +306,7 @@ describe('init.behavior', () => {
         });
         runInitBehaviorSkillDirect({
           args: '--name first-behavior',
-          targetDir: repoDir,
+          repoDir: repoDir,
         });
         return { repoDir };
       });
@@ -302,12 +314,15 @@ describe('init.behavior', () => {
       then('fails fast with helpful error', () => {
         const result = runInitBehaviorSkillDirect({
           args: '--name second-behavior',
-          targetDir: scene.repoDir,
+          repoDir: scene.repoDir,
         });
 
         expect(result.exitCode).toBe(1);
         expect(result.stdout).toContain('already bound to');
         expect(result.stdout).toContain('tree');
+
+        // snapshot for vibe-check
+        expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
       });
     });
   });
@@ -321,17 +336,27 @@ describe('init.behavior', () => {
       then('second run succeeds (idempotent)', () => {
         const firstResult = runInitBehaviorSkillDirect({
           args: '--name same-behavior',
-          targetDir: scene.repoDir,
+          repoDir: scene.repoDir,
         });
         expect(firstResult.exitCode).toBe(0);
         expect(firstResult.stdout).toContain('+ 0.wish.md');
 
+        // snapshot first run for vibe-check
+        expect(asSnapshotStable(firstResult.stdout)).toMatchSnapshot(
+          'first run output',
+        );
+
         const secondResult = runInitBehaviorSkillDirect({
           args: '--name same-behavior',
-          targetDir: scene.repoDir,
+          repoDir: scene.repoDir,
         });
         expect(secondResult.exitCode).toBe(0);
         expect(secondResult.stdout).toContain('✓ 0.wish.md');
+
+        // snapshot second run for vibe-check (idempotent markers)
+        expect(asSnapshotStable(secondResult.stdout)).toMatchSnapshot(
+          'second run output (idempotent)',
+        );
       });
     });
   });
@@ -345,7 +370,7 @@ describe('init.behavior', () => {
       then('cat command outputs wish file content', () => {
         const result = runInitBehaviorSkillDirect({
           args: '--name open-test --open cat',
-          targetDir: scene.repoDir,
+          repoDir: scene.repoDir,
         });
 
         expect(result.exitCode).toBe(0);
@@ -359,7 +384,7 @@ describe('init.behavior', () => {
 
         const result = runInitBehaviorSkillDirect({
           args: '--name opened-in-test --open cat',
-          targetDir: repoDir,
+          repoDir: repoDir,
         });
 
         expect(result.exitCode).toBe(0);
@@ -373,12 +398,15 @@ describe('init.behavior', () => {
 
         const result = runInitBehaviorSkillDirect({
           args: '--name footer-test',
-          targetDir: repoDir,
+          repoDir: repoDir,
         });
 
         expect(result.exitCode).toBe(0);
         expect(result.stdout).toContain('🌲 go on then,');
         expect(result.stdout).toContain('0.wish.md');
+
+        // snapshot for vibe-check
+        expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
       });
     });
   });
@@ -392,7 +420,7 @@ describe('init.behavior', () => {
       then('behavior files are still created', () => {
         const result = runInitBehaviorSkillDirect({
           args: '--name open-fail-test --open nonexistent-xyz-12345',
-          targetDir: scene.repoDir,
+          repoDir: scene.repoDir,
         });
 
         // init should still succeed even if opener fails
@@ -417,7 +445,7 @@ describe('init.behavior', () => {
 
         const result = runInitBehaviorSkillDirect({
           args: '--name warn-test --open nonexistent-xyz-12345',
-          targetDir: repoDir,
+          repoDir: repoDir,
         });
 
         expect(result.stdout).toContain('unavailable');
@@ -434,7 +462,7 @@ describe('init.behavior', () => {
       then('output shows behavior bind line', () => {
         const result = runInitBehaviorSkillDirect({
           args: '--name route-test',
-          targetDir: scene.repoDir,
+          repoDir: scene.repoDir,
         });
 
         expect(result.exitCode).toBe(0);
@@ -449,12 +477,15 @@ describe('init.behavior', () => {
 
         const result = runInitBehaviorSkillDirect({
           args: '--name route-output-test',
-          targetDir: repoDir,
+          repoDir: repoDir,
         });
 
         expect(result.exitCode).toBe(0);
         expect(result.stdout).toContain('branch bound to route');
         expect(result.stdout).toContain('to drive via hooks');
+
+        // snapshot for vibe-check (full output with both binds)
+        expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
       });
     });
   });
@@ -469,7 +500,7 @@ describe('init.behavior', () => {
         // first run creates files and binds
         const first = runInitBehaviorSkillDirect({
           args: '--name idem-test',
-          targetDir: consumer.repoDir,
+          repoDir: consumer.repoDir,
         });
 
         // find the behavior dir
@@ -499,19 +530,22 @@ describe('init.behavior', () => {
           .readdirSync(routeBindDir)
           .filter((f) => f.startsWith('.bind.'));
         expect(routeBindFlags.length).toBe(1);
+
+        // snapshot for vibe-check
+        expect(asSnapshotStable(scene.first.stdout)).toMatchSnapshot();
       });
 
       then('second and third runs are idempotent', () => {
         const second = runInitBehaviorSkillDirect({
           args: '--name idem-test',
-          targetDir: scene.repoDir,
+          repoDir: scene.repoDir,
         });
         expect(second.exitCode).toBe(0);
         expect(second.stdout).toContain('✓ 0.wish.md');
 
         const third = runInitBehaviorSkillDirect({
           args: '--name idem-test',
-          targetDir: scene.repoDir,
+          repoDir: scene.repoDir,
         });
         expect(third.exitCode).toBe(0);
         expect(third.stdout).toContain('✓ 0.wish.md');
