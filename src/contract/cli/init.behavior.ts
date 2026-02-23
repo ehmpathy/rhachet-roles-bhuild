@@ -14,6 +14,7 @@ import {
   getCurrentBranch,
   setBranchBehaviorBind,
 } from '@src/domain.operations/behavior/bind';
+import { findBehaviorByExactName } from '@src/domain.operations/behavior/findBehaviorByExactName';
 import {
   computeOutputTree,
   initBehaviorDir,
@@ -67,19 +68,25 @@ export const initBehavior = (): void => {
   // get current branch
   const currentBranch = getCurrentBranch({}, context);
 
-  // trim trailing .behavior from target dir
+  // trim .behavior suffix from target dir if present
   const targetDir = targetDirRaw.replace(/\/?\.behavior\/?$/, '');
 
-  // generate isodate in format YYYY_MM_DD
-  const now = new Date();
-  const isoDate = `${now.getFullYear()}_${String(now.getMonth() + 1).padStart(2, '0')}_${String(now.getDate()).padStart(2, '0')}`;
-
-  // construct behavior directory path (relative to cwd)
-  const behaviorDir = join(
-    targetDir,
-    '.behavior',
-    `v${isoDate}.${behaviorName}`,
+  // check for extant behavior with same name (different date)
+  const behaviorFound = findBehaviorByExactName(
+    { name: behaviorName, targetDir },
+    context,
   );
+
+  // reuse extant behavior or create new with today's date
+  const behaviorDir = (() => {
+    if (behaviorFound) {
+      return behaviorFound;
+    }
+    // generate isodate in format YYYY_MM_DD
+    const now = new Date();
+    const isoDate = `${now.getFullYear()}_${String(now.getMonth() + 1).padStart(2, '0')}_${String(now.getDate()).padStart(2, '0')}`;
+    return join(targetDir, '.behavior', `v${isoDate}.${behaviorName}`);
+  })();
 
   // clean up leading ./ for display and route binding
   const behaviorDirRel = behaviorDir.replace(/^\.\//, '');
@@ -176,7 +183,7 @@ export const initBehavior = (): void => {
   console.log('');
   console.log(`🍄 we'll remember,`);
   console.log(
-    `   ├─ branch ${currentBranch} <-> behavior v${isoDate}.${behaviorName}`,
+    `   ├─ branch ${currentBranch} <-> behavior ${basename(behaviorDir)}`,
   );
   console.log(
     `   ├─ ${dim}branch bound to behavior, to boot via hooks${reset}`,

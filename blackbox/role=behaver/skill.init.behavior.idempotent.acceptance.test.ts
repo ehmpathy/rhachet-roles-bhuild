@@ -44,6 +44,64 @@ describe('init.behavior.idempotent', () => {
     });
   });
 
+  given('[case6] direct: reuses extant behavior with different date prefix', () => {
+    when('[t0] behavior exists with earlier date, init called with same name', () => {
+      const scene = useBeforeAll(async () => {
+        const consumer = genConsumerRepo({
+          branchName: 'feature/reuse-date-test',
+        });
+
+        // create a behavior directory with an earlier date manually
+        const earlierDateBehaviorName = 'v2025_01_01.reuse-date-feature';
+        const behaviorDir = path.join(
+          consumer.repoDir,
+          '.behavior',
+          earlierDateBehaviorName,
+        );
+        fs.mkdirSync(behaviorDir, { recursive: true });
+        fs.writeFileSync(
+          path.join(behaviorDir, '0.wish.md'),
+          '# wish\n\noriginal wish from earlier date',
+        );
+
+        return { ...consumer, earlierDateBehaviorName, behaviorDir };
+      });
+
+      then('reuses the extant behavior directory', () => {
+        // run init.behavior with the same name (but current date would be different)
+        const result = runInitBehaviorSkillDirect({
+          args: '--name reuse-date-feature',
+          repoDir: scene.repoDir,
+        });
+
+        expect(result.exitCode).toBe(0);
+
+        // should show the earlier date behavior, not create a new one
+        expect(result.stdout).toContain('v2025_01_01.reuse-date-feature');
+
+        // should show files as already present (kept), not created
+        expect(result.stdout).toContain('✓ 0.wish.md');
+      });
+
+      then('does not create a new behavior directory with today date', () => {
+        const behaviorRoot = path.join(scene.repoDir, '.behavior');
+        const behaviorDirs = fs.readdirSync(behaviorRoot);
+
+        // only the original behavior directory should exist
+        expect(behaviorDirs.length).toBe(1);
+        expect(behaviorDirs[0]).toBe(scene.earlierDateBehaviorName);
+      });
+
+      then('preserves original wish content', () => {
+        const wishContent = fs.readFileSync(
+          path.join(scene.behaviorDir, '0.wish.md'),
+          'utf-8',
+        );
+        expect(wishContent).toContain('original wish from earlier date');
+      });
+    });
+  });
+
   given('[case9] direct: idempotent reruns preserve both binds', () => {
     when('[t0] init.behavior executed three times on same behavior', () => {
       const scene = useBeforeAll(async () => {
