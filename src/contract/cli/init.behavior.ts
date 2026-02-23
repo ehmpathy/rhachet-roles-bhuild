@@ -5,8 +5,8 @@
  * see src/domain.roles/behaver/skills/init.behavior.sh for full documentation
  */
 
-import { spawnSync } from 'child_process';
 import { basename, join, resolve } from 'path';
+import { setRouteBind } from 'rhachet-roles-bhrain/sdk/route';
 import { z } from 'zod';
 
 import {
@@ -47,7 +47,7 @@ const schemaOfArgs = z.object({
 // exported CLI entry point
 // ────────────────────────────────────────────────────────────────────
 
-export const initBehavior = (): void => {
+export const initBehavior = async (): Promise<void> => {
   const { named } = getCliArgs({ schema: schemaOfArgs });
   const behaviorName = named.name;
   const context = { cwd: process.cwd() };
@@ -157,25 +157,8 @@ export const initBehavior = (): void => {
     context,
   );
 
-  // auto-bind: bind route for bhrain driver (suppress success output, show errors only)
-  const routeBindResult = spawnSync(
-    'npx',
-    [
-      'rhachet',
-      'run',
-      '--repo',
-      'bhrain',
-      '--skill',
-      'route.bind.set',
-      '--route',
-      behaviorDirRel,
-    ],
-    { stdio: 'pipe', encoding: 'utf-8' },
-  );
-  if (routeBindResult.status !== 0) {
-    if (routeBindResult.stderr) console.error(routeBindResult.stderr);
-    process.exit(routeBindResult.status ?? 1);
-  }
+  // auto-bind: bind route for bhrain driver
+  await setRouteBind({ route: behaviorDirRel });
 
   // log branch bind confirmation
   const dim = '\x1b[2m';
