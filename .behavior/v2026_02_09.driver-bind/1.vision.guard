@@ -2,4 +2,4 @@
 # requires human approval before stone can be marked as passed
 
 judges:
-  - "npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone 1.vision --route .behavior/v2026_02_09.driver-bind"
+  - "rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone 1.vision --route .behavior/v2026_02_09.driver-bind"
