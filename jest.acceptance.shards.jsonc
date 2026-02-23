@@ -8,8 +8,13 @@
     { "patterns": ["skill.review.behavior.caseValidBehavior"] },
     // skill.radio.task.push.via-gh-issues: ~24s (github api calls + search index latency)
     { "patterns": ["skill.radio.task.push.via-gh-issues"] },
-    // skill.init.behavior: ~120s (spawns consumer repos, runs init.behavior skill multiple times)
-    { "patterns": ["skill.init.behavior"] }
+    // skill.init.behavior.*: split into subscopes for parallelism (~20-55s each)
+    { "patterns": ["skill.init.behavior.consumer"] },
+    { "patterns": ["skill.init.behavior.scaffold"] },
+    { "patterns": ["skill.init.behavior.idempotent"] },
+    { "patterns": ["skill.init.behavior.flags"] },
+    { "patterns": ["skill.init.behavior.bind"] },
+    { "patterns": ["skill.init.behavior.guards"] }
   ],
 
   // dynamic shards — rest of tests distributed via Jest --shard
