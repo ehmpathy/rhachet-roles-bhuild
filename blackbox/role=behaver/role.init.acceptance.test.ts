@@ -2,31 +2,23 @@ import fs from 'fs';
 import path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
-import {
-  genConsumerRepo,
-  runRolesInit,
-  type ConsumerRepo,
-} from '../.test/infra';
+import { genConsumerRepo, runRolesInit } from '../.test/infra';
 
 describe('behaver role.init acceptance (as consumer)', () => {
   given('[case1] fresh consumer repo without behaver initialization', () => {
     when('[t0] roles init --role behaver is executed', () => {
-      const consumer = useBeforeAll(async () =>
+      const scene = useBeforeAll(async () =>
         genConsumerRepo({
-          prefix: 'roles-init-behaver-test-',
+          prefix: 'roles-init-behaver-test',
           withClaudeDir: true,
         }),
       );
-
-      afterAll(() => {
-        consumer.cleanup();
-      });
 
       const result = useBeforeAll(async () =>
         runRolesInit({
           repo: 'bhuild',
           role: 'behaver',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         }),
       );
 
@@ -37,7 +29,7 @@ describe('behaver role.init acceptance (as consumer)', () => {
       then('binds hooks to settings.json (repo-level)', () => {
         // verify hooks are bound to settings.json (not settings.local.json)
         const settingsPath = path.join(
-          consumer.repoDir,
+          scene.repoDir,
           '.claude',
           'settings.json',
         );
@@ -62,7 +54,7 @@ describe('behaver role.init acceptance (as consumer)', () => {
 
       then('hook command uses rhachet run --init pattern', () => {
         const settingsPath = path.join(
-          consumer.repoDir,
+          scene.repoDir,
           '.claude',
           'settings.json',
         );
@@ -82,7 +74,7 @@ describe('behaver role.init acceptance (as consumer)', () => {
 
       then('hook has correct author tag', () => {
         const settingsPath = path.join(
-          consumer.repoDir,
+          scene.repoDir,
           '.claude',
           'settings.json',
         );
@@ -100,25 +92,19 @@ describe('behaver role.init acceptance (as consumer)', () => {
     });
 
     when('[t1] roles init --role behaver is executed twice', () => {
-      let consumer: ConsumerRepo;
-
-      beforeAll(() => {
-        consumer = genConsumerRepo({
-          prefix: 'roles-init-behaver-idempotent-test-',
+      const scene = useBeforeAll(async () =>
+        genConsumerRepo({
+          prefix: 'roles-init-behaver-idempotent-test',
           withClaudeDir: true,
-        });
-      });
-
-      afterAll(() => {
-        consumer.cleanup();
-      });
+        }),
+      );
 
       then('is idempotent - second run also succeeds', () => {
         // first run
         const firstResult = runRolesInit({
           repo: 'bhuild',
           role: 'behaver',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         });
         expect(firstResult.exitCode).toBe(0);
 
@@ -126,7 +112,7 @@ describe('behaver role.init acceptance (as consumer)', () => {
         const secondResult = runRolesInit({
           repo: 'bhuild',
           role: 'behaver',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         });
         expect(secondResult.exitCode).toBe(0);
       });
@@ -135,14 +121,14 @@ describe('behaver role.init acceptance (as consumer)', () => {
 
   given('[case2] consumer repo with stale hook from prior version', () => {
     when('[t0] roles init --role behaver is executed', () => {
-      const consumer = useBeforeAll(async () => {
-        const repo = genConsumerRepo({
-          prefix: 'roles-init-cleanup-test-',
+      const scene = useBeforeAll(async () => {
+        const { repoDir } = genConsumerRepo({
+          prefix: 'roles-init-cleanup-test',
           withClaudeDir: true,
         });
 
         // inject a stale hook that uses deprecated .agent/ path pattern
-        const settingsPath = path.join(repo.repoDir, '.claude', 'settings.json');
+        const settingsPath = path.join(repoDir, '.claude', 'settings.json');
         const staleSettings = {
           hooks: {
             SessionStart: [
@@ -163,18 +149,14 @@ describe('behaver role.init acceptance (as consumer)', () => {
         };
         fs.writeFileSync(settingsPath, JSON.stringify(staleSettings, null, 2));
 
-        return repo;
-      });
-
-      afterAll(() => {
-        consumer.cleanup();
+        return { repoDir };
       });
 
       const result = useBeforeAll(async () =>
         runRolesInit({
           repo: 'bhuild',
           role: 'behaver',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         }),
       );
 
@@ -184,7 +166,7 @@ describe('behaver role.init acceptance (as consumer)', () => {
 
       then('stale hook is cleaned and replaced', () => {
         const settingsPath = path.join(
-          consumer.repoDir,
+          scene.repoDir,
           '.claude',
           'settings.json',
         );

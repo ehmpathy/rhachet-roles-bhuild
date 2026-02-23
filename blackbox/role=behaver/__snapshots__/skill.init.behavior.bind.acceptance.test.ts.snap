@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`init.behavior.bind given: [case8] direct: route bind output when: [t0] init.behavior executed then: output shows route bind line 1`] = `
+"🦫 oh, behave!
+   ├─ + .ref.[feedback].v1.[given].by_human.md
+   ├─ + 0.wish.md
+   ├─ + 1.vision.guard
+   ├─ + 1.vision.stone
+   ├─ + 2.1.criteria.blackbox.guard
+   ├─ + 2.1.criteria.blackbox.stone
+   ├─ + 2.2.criteria.blackbox.matrix.stone
+   ├─ + 2.3.criteria.blueprint.stone
+   ├─ + 3.1.research.access._.v1.stone
+   ├─ + 3.1.research.claims._.v1.stone
+   ├─ + 3.1.research.domain._.v1.stone
+   ├─ + 3.1.research.domain.terms.v1.stone
+   ├─ + 3.1.research.patterns._.code.prod.v1.stone
+   ├─ + 3.1.research.patterns._.code.test.v1.stone
+   ├─ + 3.1.research.patterns._.oss.levers.v1.stone
+   ├─ + 3.1.research.references._.v1.stone
+   ├─ + 3.1.research.templates._.v1.stone
+   ├─ + 3.2.distill.domain._.v1.stone
+   ├─ + 3.3.blueprint.v1.guard
+   ├─ + 3.3.blueprint.v1.stone
+   ├─ + 4.1.roadmap.v1.stone
+   ├─ + 5.1.execution.phase0_to_phaseN.v1.guard
+   └─ + 5.1.execution.phase0_to_phaseN.v1.stone
+
+🌲 go on then,
+   ├─ .behavior/v{DATE}.route-output-test/0.wish.md
+   └─ [2mtip: use --open to open the wish automatically[0m
+
+🍄 we'll remember,
+   ├─ branch feature/route-output-test <-> behavior v{DATE}.route-output-test
+   ├─ [2mbranch bound to behavior, to boot via hooks[0m
+   └─ [2mbranch bound to route, to drive via hooks[0m"
+`;

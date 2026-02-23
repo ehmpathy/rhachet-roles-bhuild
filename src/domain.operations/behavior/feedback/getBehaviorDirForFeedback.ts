@@ -4,7 +4,7 @@ import { getBranchBehaviorBind } from '../bind/getBranchBehaviorBind';
 import { getBehaviorDir } from '../getBehaviorDir';
 
 /**
- * .what = resolve the behavior directory for feedback operations
+ * .what = get the behavior directory for feedback operations
  * .why = supports both bound behavior discovery and explicit --behavior flag
  *
  * .note = priority:
@@ -15,21 +15,27 @@ import { getBehaviorDir } from '../getBehaviorDir';
  *         - if branch not bound and no flag → error
  */
 export const getBehaviorDirForFeedback = (
-  input: { behavior?: string; force?: boolean },
-  context?: { cwd?: string },
+  input: { behavior?: string; force?: boolean; targetDir?: string },
+  context: { cwd: string },
 ): string => {
-  const cwd = context?.cwd ?? process.cwd();
+  const targetDir = input.targetDir ?? '.';
 
   // check for branch bind
-  const { behaviorDir: boundDir } = getBranchBehaviorBind({}, { cwd });
+  const { behaviorDir: boundDir } = getBranchBehaviorBind(
+    { targetDir },
+    context,
+  );
 
   // branch is bound
   if (boundDir) {
     // no explicit flag → use bind
     if (!input.behavior) return boundDir;
 
-    // resolve the flag to a directory
-    const flagDir = getBehaviorDir({ name: input.behavior, targetDir: cwd });
+    // expand the flag to a directory path
+    const flagDir = getBehaviorDir(
+      { name: input.behavior, targetDir },
+      context,
+    );
 
     // flag matches bind → use bind
     if (flagDir === boundDir) return boundDir;
@@ -47,7 +53,7 @@ export const getBehaviorDirForFeedback = (
 
   // branch not bound, flag provided → use flag
   if (input.behavior) {
-    return getBehaviorDir({ name: input.behavior, targetDir: cwd });
+    return getBehaviorDir({ name: input.behavior, targetDir }, context);
   }
 
   // branch not bound, no flag → error

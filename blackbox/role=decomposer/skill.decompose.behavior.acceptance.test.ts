@@ -4,7 +4,6 @@ import {
   genConsumerRepo,
   genBehaviorFixture,
   runRhachetSkill,
-  type ConsumerRepo,
 } from '../.test/infra';
 
 const runDecomposeSkill = (input: {
@@ -28,20 +27,15 @@ const runDecomposeSkill = (input: {
 
 describe('decomposer.decompose acceptance (as consumer)', () => {
   given('[case1] behavior already decomposed', () => {
-    let consumer: ConsumerRepo;
-
-    beforeAll(() => {
-      consumer = genConsumerRepo({ prefix: 'decompose-behavior-test-' });
+    const scene = useBeforeAll(async () => {
+      const consumer = genConsumerRepo({ prefix: 'decompose-behavior-test-' });
       genBehaviorFixture({
         repoDir: consumer.repoDir,
         behaviorName: 'decomposed-feature',
         withCriteria: true,
         withDecomposed: true,
       });
-    });
-
-    afterAll(() => {
-      consumer.cleanup();
+      return consumer;
     });
 
     when('[t0] --mode plan is invoked', () => {
@@ -49,7 +43,7 @@ describe('decomposer.decompose acceptance (as consumer)', () => {
         runDecomposeSkill({
           behaviorName: 'decomposed-feature',
           mode: 'plan',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         }),
       );
 
@@ -64,19 +58,14 @@ describe('decomposer.decompose acceptance (as consumer)', () => {
   });
 
   given('[case2] behavior without criteria', () => {
-    let consumer: ConsumerRepo;
-
-    beforeAll(() => {
-      consumer = genConsumerRepo({ prefix: 'decompose-nocriteria-test-' });
+    const scene = useBeforeAll(async () => {
+      const consumer = genConsumerRepo({ prefix: 'decompose-nocriteria-test-' });
       genBehaviorFixture({
         repoDir: consumer.repoDir,
         behaviorName: 'no-criteria-feature',
         withCriteria: false,
       });
-    });
-
-    afterAll(() => {
-      consumer.cleanup();
+      return consumer;
     });
 
     when('[t0] --mode plan is invoked', () => {
@@ -84,7 +73,7 @@ describe('decomposer.decompose acceptance (as consumer)', () => {
         runDecomposeSkill({
           behaviorName: 'no-criteria-feature',
           mode: 'plan',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         }),
       );
 
@@ -99,19 +88,14 @@ describe('decomposer.decompose acceptance (as consumer)', () => {
   });
 
   given('[case3] --mode apply without --plan', () => {
-    let consumer: ConsumerRepo;
-
-    beforeAll(() => {
-      consumer = genConsumerRepo({ prefix: 'decompose-noplan-test-' });
+    const scene = useBeforeAll(async () => {
+      const consumer = genConsumerRepo({ prefix: 'decompose-noplan-test-' });
       genBehaviorFixture({
         repoDir: consumer.repoDir,
         behaviorName: 'apply-test-feature',
         withCriteria: true,
       });
-    });
-
-    afterAll(() => {
-      consumer.cleanup();
+      return consumer;
     });
 
     when('[t0] invoked without plan file', () => {
@@ -119,7 +103,7 @@ describe('decomposer.decompose acceptance (as consumer)', () => {
         runDecomposeSkill({
           behaviorName: 'apply-test-feature',
           mode: 'apply',
-          repoDir: consumer.repoDir,
+          repoDir: scene.repoDir,
         }),
       );
 

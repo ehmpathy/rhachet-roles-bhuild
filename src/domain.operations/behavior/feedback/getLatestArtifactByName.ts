@@ -4,7 +4,7 @@ import { join } from 'path';
 import { BehaviorArtifact } from '../../../domain.objects/BehaviorArtifact';
 
 /**
- * .what = resolve the latest artifact by name from a behavior directory
+ * .what = get the latest artifact by name from a behavior directory
  * .why = enables feedback to target the most recent version of any artifact
  *
  * .note = version precedence:
@@ -14,7 +14,7 @@ import { BehaviorArtifact } from '../../../domain.objects/BehaviorArtifact';
  */
 export const getLatestArtifactByName = (
   input: { behaviorDir: string; artifactName: string },
-  context?: { cwd?: string },
+  _context: { cwd: string },
 ): BehaviorArtifact | null => {
   // read directory contents
   const files = readdirSync(input.behaviorDir);

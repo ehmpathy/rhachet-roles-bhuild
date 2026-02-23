@@ -41,17 +41,17 @@ optional validation gate that must pass before a stone is complete:
 
 ## .skills
 
-### route.bind — bind route to branch
+### route.bind.* — bind route to branch
 
 ```sh
 # bind a route to current branch
-npx rhachet run --repo bhrain --skill route.bind --route .behavior/my-feature
+npx rhachet run --repo bhrain --skill route.bind.set --route .behavior/my-feature
 
 # query current bound route
-npx rhachet run --repo bhrain --skill route.bind --get
+npx rhachet run --repo bhrain --skill route.bind.get
 
 # remove bound route
-npx rhachet run --repo bhrain --skill route.bind --del
+npx rhachet run --repo bhrain --skill route.bind.del
 ```
 
 ### route.stone.get — discover next stone
@@ -132,7 +132,7 @@ judges:
 
 1. **bind the route** to your branch:
    ```sh
-   npx rhachet run --repo bhrain --skill route.bind --route .behavior/my-feature
+   npx rhachet run --repo bhrain --skill route.bind.set --route .behavior/my-feature
    ```
 
 2. **get next stone** to work on:

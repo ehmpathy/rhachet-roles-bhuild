@@ -21,26 +21,29 @@ export const giveFeedback = (
     version?: number | '++';
     template?: string;
     force?: boolean;
+    targetDir?: string;
   },
-  context?: { cwd?: string },
+  context: { cwd: string },
 ): {
   feedbackFile: string;
   artifactFile: string;
   behaviorDir: string;
   created: boolean;
 } => {
-  const cwd = context?.cwd ?? process.cwd();
-
-  // resolve behavior directory
+  // get behavior directory
   const behaviorDir = getBehaviorDirForFeedback(
-    { behavior: input.behavior, force: input.force },
-    { cwd },
+    {
+      behavior: input.behavior,
+      force: input.force,
+      targetDir: input.targetDir,
+    },
+    context,
   );
 
   // find latest artifact
   const artifact = getLatestArtifactByName(
     { behaviorDir, artifactName: input.against },
-    { cwd },
+    context,
   );
   if (!artifact) {
     throw new BadRequestError(
@@ -90,7 +93,7 @@ export const giveFeedback = (
   }
 
   // compute relative behavior directory path
-  const behaviorDirRel = relative(cwd, behaviorDir);
+  const behaviorDirRel = relative(context.cwd, behaviorDir);
 
   // init feedback file from template
   initFeedbackTemplate({

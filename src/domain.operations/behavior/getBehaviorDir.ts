@@ -1,6 +1,6 @@
 import { existsSync, readdirSync } from 'fs';
 import { BadRequestError } from 'helpful-errors';
-import { join } from 'path';
+import { isAbsolute, join } from 'path';
 
 /**
  * .what = get a behavior directory by name (fuzzy match)
@@ -9,12 +9,19 @@ import { join } from 'path';
  *
  * @throws BadRequestError if not found or ambiguous
  */
-export const getBehaviorDir = (input: {
-  name: string;
-  targetDir?: string;
-}): string => {
-  const targetDir = input.targetDir ?? process.cwd();
-  const behaviorRoot = join(targetDir, '.behavior');
+export const getBehaviorDir = (
+  input: {
+    name: string;
+    targetDir?: string;
+  },
+  context: { cwd: string },
+): string => {
+  const targetDir = input.targetDir ?? '.';
+
+  // handle absolute vs relative targetDir
+  const behaviorRoot = isAbsolute(targetDir)
+    ? join(targetDir, '.behavior')
+    : join(context.cwd, targetDir, '.behavior');
 
   if (!existsSync(behaviorRoot)) {
     throw new BadRequestError('.behavior/ directory not found');

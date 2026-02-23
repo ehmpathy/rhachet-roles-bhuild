@@ -12,14 +12,14 @@ import { getBranchBehaviorBind } from './getBranchBehaviorBind';
  * @returns success status and message
  */
 export const delBranchBehaviorBind = (
-  input: { branchName: string },
-  context?: { cwd?: string },
+  input: { branchName: string; targetDir?: string },
+  context: { cwd: string },
 ): { success: boolean; message: string; wasUnbound?: boolean } => {
   const flatBranch = flattenBranchName({ branchName: input.branchName });
 
   // check if bound
   const bound = getBranchBehaviorBind(
-    { branchName: input.branchName },
+    { branchName: input.branchName, targetDir: input.targetDir },
     context,
   );
 

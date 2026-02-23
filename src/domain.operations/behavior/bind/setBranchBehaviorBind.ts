@@ -17,8 +17,9 @@ export const setBranchBehaviorBind = (
     branchName: string;
     behaviorDir: string;
     boundBy?: string;
+    targetDir?: string;
   },
-  context?: { cwd?: string },
+  context: { cwd: string },
 ): { success: boolean; message: string; alreadyBound?: boolean } => {
   // reject bind to main or master branch
   const branchesProtected = ['main', 'master'];
@@ -32,7 +33,10 @@ export const setBranchBehaviorBind = (
 
   // check if already bound
   const bound = getBranchBehaviorBind(
-    { branchName: input.branchName },
+    {
+      branchName: input.branchName,
+      targetDir: input.targetDir,
+    },
     context,
   );
 

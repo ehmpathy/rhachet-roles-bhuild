@@ -4,14 +4,19 @@ import { given, then, when } from 'test-fns';
 import { setBranchBehaviorBind } from './setBranchBehaviorBind';
 
 describe('setBranchBehaviorBind', () => {
+  const context = { cwd: process.cwd() };
+
   given('[case1] protected branch names', () => {
     when('[t0] branchName is main', () => {
       then('throws BadRequestError', async () => {
         const error = await getError(async () =>
-          setBranchBehaviorBind({
-            branchName: 'main',
-            behaviorDir: '/some/behavior/dir',
-          }),
+          setBranchBehaviorBind(
+            {
+              branchName: 'main',
+              behaviorDir: '/some/behavior/dir',
+            },
+            context,
+          ),
         );
         expect(error).toBeInstanceOf(BadRequestError);
         expect(error.message).toContain('can not bind');
@@ -23,10 +28,13 @@ describe('setBranchBehaviorBind', () => {
     when('[t1] branchName is master', () => {
       then('throws BadRequestError', async () => {
         const error = await getError(async () =>
-          setBranchBehaviorBind({
-            branchName: 'master',
-            behaviorDir: '/some/behavior/dir',
-          }),
+          setBranchBehaviorBind(
+            {
+              branchName: 'master',
+              behaviorDir: '/some/behavior/dir',
+            },
+            context,
+          ),
         );
         expect(error).toBeInstanceOf(BadRequestError);
         expect(error.message).toContain('can not bind');

@@ -17,7 +17,7 @@
 #   - creates versioned behavior directory
 #   - findserts all thoughtroute files (creates if not found, skips if present)
 #   - auto-binds current branch to newly created behavior (behaver hooks)
-#   - auto-binds route for bhrain driver (route.bind skill)
+#   - auto-binds route for bhrain driver (route.bind.set skill)
 #   - creates guard files for vision and blueprint (require human approval)
 #   - idempotent: safe to rerun
 #   - fail-fast on errors
