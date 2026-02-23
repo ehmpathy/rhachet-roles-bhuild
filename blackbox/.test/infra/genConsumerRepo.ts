@@ -35,14 +35,17 @@ export const genConsumerRepo = (input?: {
     );
   }
 
-  // create package.json
+  // create package.json with rhachet-brains-anthropic for brain hooks adapter discovery
+  // (init --hooks scans package.json for rhachet-brains-* packages)
   fs.writeFileSync(
     path.join(repoDir, 'package.json'),
     JSON.stringify(
       {
         name: 'test-consumer',
         version: '1.0.0',
-        dependencies: {},
+        dependencies: {
+          'rhachet-brains-anthropic': '*',
+        },
       },
       null,
       2,

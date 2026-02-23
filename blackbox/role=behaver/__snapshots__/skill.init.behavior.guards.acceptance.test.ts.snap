@@ -14,19 +14,15 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
       │   └─ 1.vision.md
       └─ judges
           └─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
-              ├─ finished 2.0s ✗
+              ├─ finished 0.9s ✗
               ├─ judge: .route/1.vision.guard.judge.i1p1.d0db8b0c016b73977fad2df32c9cb3516381287e27403d824d4da3c9611dbe73.dabe714fd2c418ba29e23363f9e9d18ba44e891dd196bc817fb5bd0bd66a92d8.j1.md
-              └─ reason: wait for human approvalj1: inflight
-  ✗ j1: finished 2.0s
-    reason: wait for human approval
-[0m[31m
-⛈️ skill execution failed
-
-{
-  "skill": "route.stone.set",
-  "path": "/tmp/full-journey-mywdV8/.agent/repo=bhrain/role=driver/skills/route.stone.set.sh",
-  "exitCode": 1
-}[0m"
+              └─ reason: wait for human approval[0m[31m[0m
+[0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set[0m
+[0m[31m   └─ 💥 failed with an error[0m
+[0m[31m[0m
+[0m[31mj1: inflight
+  ✗ j1: finished 0.9s
+    reason: wait for human approval[0m"
 `;
 
 exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t1] vision pass attempted after approval then: allowed 1`] = `
@@ -42,7 +38,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
       │   └─ 1.vision.md
       └─ judges
           └─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
-              ├─ finished 3.0s ✓
+              ├─ finished 2.0s ✓
               └─ judge: .route/1.vision.guard.judge.i1p1.d0db8b0c016b73977fad2df32c9cb3516381287e27403d824d4da3c9611dbe73.9b7fca35d5c2f9d6a6bedaa04679bafdd19a55ff89872d2b45aeb00178e59614.j1.md"
 `;
 
@@ -74,14 +70,10 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │  └─
    │
    └─ promise its done? if so, run
-      └─ rhx route.stone.set --stone 2.1.criteria.blackbox --as promised --that all-real-junior[0m[31m
-⛈️ skill execution failed
-
-{
-  "skill": "route.stone.set",
-  "path": "/tmp/full-journey-mywdV8/.agent/repo=bhrain/role=driver/skills/route.stone.set.sh",
-  "exitCode": 1
-}[0m"
+      └─ rhx route.stone.set --stone 2.1.criteria.blackbox --as promised --that all-real-junior[0m[31m[0m
+[0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set[0m
+[0m[31m   └─ 💥 failed with an error[0m
+[0m[31m[0m"
 `;
 
 exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t3] criteria pass attempted after promise then: allowed (no judges) 1`] = `
@@ -121,14 +113,10 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │  └─
    │
    └─ promise its done? if so, run
-      └─ rhx route.stone.set --stone 3.3.blueprint.v1 --as promised --that all-done-self[0m[31m
-⛈️ skill execution failed
-
-{
-  "skill": "route.stone.set",
-  "path": "/tmp/full-journey-mywdV8/.agent/repo=bhrain/role=driver/skills/route.stone.set.sh",
-  "exitCode": 1
-}[0m"
+      └─ rhx route.stone.set --stone 3.3.blueprint.v1 --as promised --that all-done-self[0m[31m[0m
+[0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set[0m
+[0m[31m   └─ 💥 failed with an error[0m
+[0m[31m[0m"
 `;
 
 exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t5] blueprint pass attempted with promises but no approval then: blocked by judge 1`] = `
@@ -145,19 +133,15 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
       │   └─ 3.3.blueprint.v1.i1.md
       └─ judges
           └─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
-              ├─ finished 2.5s ✗
+              ├─ finished 0.7s ✗
               ├─ judge: .route/3.3.blueprint.v1.guard.judge.i1p1.2f26d37384e66b5ee1d297c4c4b442c33f7f3f95919edeac42290e626a898964.a98e11103806256a1e8519508c981535ffc3e93d16160fa22521b64ae2d6b467.j1.md
-              └─ reason: wait for human approvalj1: inflight
-  ✗ j1: finished 2.5s
-    reason: wait for human approval
-[0m[31m
-⛈️ skill execution failed
-
-{
-  "skill": "route.stone.set",
-  "path": "/tmp/full-journey-mywdV8/.agent/repo=bhrain/role=driver/skills/route.stone.set.sh",
-  "exitCode": 1
-}[0m"
+              └─ reason: wait for human approval[0m[31m[0m
+[0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set[0m
+[0m[31m   └─ 💥 failed with an error[0m
+[0m[31m[0m
+[0m[31mj1: inflight
+  ✗ j1: finished 0.7s
+    reason: wait for human approval[0m"
 `;
 
 exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t6] blueprint pass attempted after approval then: allowed 1`] = `
@@ -173,7 +157,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
       │   └─ 3.3.blueprint.v1.i1.md
       └─ judges
           └─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
-              ├─ finished 2.0s ✓
+              ├─ finished 0.6s ✓
               └─ judge: .route/3.3.blueprint.v1.guard.judge.i1p1.2f26d37384e66b5ee1d297c4c4b442c33f7f3f95919edeac42290e626a898964.e386f26165482a37924bd5e9cfb4da99b30cd0eadd84a25e5a0f525652ea6b77.j1.md"
 `;
 
@@ -204,14 +188,10 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │  └─
    │
    └─ promise its done? if so, run
-      └─ rhx route.stone.set --stone 5.1.execution.phase0_to_phaseN.v1 --as promised --that all-done-self[0m[31m
-⛈️ skill execution failed
-
-{
-  "skill": "route.stone.set",
-  "path": "/tmp/full-journey-mywdV8/.agent/repo=bhrain/role=driver/skills/route.stone.set.sh",
-  "exitCode": 1
-}[0m"
+      └─ rhx route.stone.set --stone 5.1.execution.phase0_to_phaseN.v1 --as promised --that all-done-self[0m[31m[0m
+[0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set[0m
+[0m[31m   └─ 💥 failed with an error[0m
+[0m[31m[0m"
 `;
 
 exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t8] execution pass attempted after promises then: allowed (no judges) 1`] = `

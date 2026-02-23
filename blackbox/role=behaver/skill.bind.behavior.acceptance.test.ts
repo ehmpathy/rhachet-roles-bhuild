@@ -39,22 +39,23 @@ const runBindBehaviorSkillViaRhachet = (input: {
 /**
  * .what = runs bind.behavior via direct bash spawn
  * .why = tests the shell script directly without rhachet dispatch
+ *
+ * .note = sets cwd to repoDir to simulate user running from that repo,
+ *         per rule.forbid.cwd-override pattern
  */
 const runBindBehaviorSkillDirect = (input: {
   args: string;
-  targetDir: string;
+  repoDir: string;
 }): { stdout: string; exitCode: number } => {
   try {
-    const stdout = execSync(
-      `bash "${SCRIPT_PATH}" ${input.args} --dir "${input.targetDir}"`,
-      {
-        encoding: 'utf-8',
-        env: {
-          ...process.env,
-          PATH: process.env.PATH,
-        },
+    const stdout = execSync(`bash "${SCRIPT_PATH}" ${input.args}`, {
+      cwd: input.repoDir, // simulate user running from temp repo
+      encoding: 'utf-8',
+      env: {
+        ...process.env,
+        PATH: process.env.PATH,
       },
-    );
+    });
     return { stdout: stdout.trim(), exitCode: 0 };
   } catch (error: unknown) {
     const execError = error as {
@@ -76,8 +77,11 @@ const runBindBehaviorSkillDirect = (input: {
 };
 
 /**
- * .what = creates a test repo with a behavior directory for direct script tests
+ * .what = creates a test repo with a behavior directory for direct tests
  * .why = bind.behavior.sh requires a git repo context with .behavior/
+ *
+ * .note = symlinks node_modules so rhachet-roles-bhuild is resolvable
+ *         when running from the temp repo with cwd override
  */
 const createTestRepoWithBehavior = (input: {
   branchName: string;
@@ -87,6 +91,11 @@ const createTestRepoWithBehavior = (input: {
     prefix: 'bind-behavior-test-',
     branchName: input.branchName,
   });
+
+  // symlink node_modules so package is resolvable from temp repo
+  const nodeModulesTarget = path.join(process.cwd(), 'node_modules');
+  const nodeModulesLink = path.join(repoDir, 'node_modules');
+  fs.symlinkSync(nodeModulesTarget, nodeModulesLink);
 
   const behaviorDir = path.join(repoDir, '.behavior', input.behaviorName);
   fs.mkdirSync(behaviorDir, { recursive: true });
@@ -280,7 +289,7 @@ describe('bind.behavior', () => {
       then('creates .bind directory with flag file', () => {
         const result = runBindBehaviorSkillDirect({
           args: 'set --behavior test-behavior',
-          targetDir: testRepo.repoDir,
+          repoDir: testRepo.repoDir,
         });
 
         expect(result.exitCode).toBe(0);
@@ -312,7 +321,7 @@ describe('bind.behavior', () => {
         testRepo = createTestRepoWithBehavior({ branchName, behaviorName });
         runBindBehaviorSkillDirect({
           args: 'set --behavior same-behavior',
-          targetDir: testRepo.repoDir,
+          repoDir: testRepo.repoDir,
         });
       });
 
@@ -323,7 +332,7 @@ describe('bind.behavior', () => {
       then('succeeds idempotently', () => {
         const result = runBindBehaviorSkillDirect({
           args: 'set --behavior same-behavior',
-          targetDir: testRepo.repoDir,
+          repoDir: testRepo.repoDir,
         });
 
         expect(result.exitCode).toBe(0);
@@ -354,7 +363,7 @@ describe('bind.behavior', () => {
 
         runBindBehaviorSkillDirect({
           args: 'set --behavior first-behavior',
-          targetDir: testRepo.repoDir,
+          repoDir: testRepo.repoDir,
         });
       });
 
@@ -365,7 +374,7 @@ describe('bind.behavior', () => {
       then('fails fast with helpful error', () => {
         const result = runBindBehaviorSkillDirect({
           args: 'set --behavior second-behavior',
-          targetDir: testRepo.repoDir,
+          repoDir: testRepo.repoDir,
         });
 
         expect(result.exitCode).toBe(1);
@@ -394,7 +403,7 @@ describe('bind.behavior', () => {
 
         runBindBehaviorSkillDirect({
           args: 'set --behavior delete-behavior',
-          targetDir: testRepo.repoDir,
+          repoDir: testRepo.repoDir,
         });
       });
 
@@ -407,7 +416,7 @@ describe('bind.behavior', () => {
 
         const result = runBindBehaviorSkillDirect({
           args: 'del',
-          targetDir: testRepo.repoDir,
+          repoDir: testRepo.repoDir,
         });
 
         expect(result.exitCode).toBe(0);
@@ -434,7 +443,7 @@ describe('bind.behavior', () => {
       then('succeeds idempotently', () => {
         const result = runBindBehaviorSkillDirect({
           args: 'del',
-          targetDir: testRepo.repoDir,
+          repoDir: testRepo.repoDir,
         });
 
         expect(result.exitCode).toBe(0);
@@ -453,7 +462,7 @@ describe('bind.behavior', () => {
         testRepo = createTestRepoWithBehavior({ branchName, behaviorName });
         runBindBehaviorSkillDirect({
           args: 'set --behavior get-behavior',
-          targetDir: testRepo.repoDir,
+          repoDir: testRepo.repoDir,
         });
       });
 
@@ -464,7 +473,7 @@ describe('bind.behavior', () => {
       then('returns behavior name', () => {
         const result = runBindBehaviorSkillDirect({
           args: 'get',
-          targetDir: testRepo.repoDir,
+          repoDir: testRepo.repoDir,
         });
 
         expect(result.exitCode).toBe(0);
@@ -491,7 +500,7 @@ describe('bind.behavior', () => {
       then('returns "not bound"', () => {
         const result = runBindBehaviorSkillDirect({
           args: 'get',
-          targetDir: testRepo.repoDir,
+          repoDir: testRepo.repoDir,
         });
 
         expect(result.exitCode).toBe(0);
@@ -517,7 +526,7 @@ describe('bind.behavior', () => {
       then('fails fast with usage guidance', () => {
         const result = runBindBehaviorSkillDirect({
           args: '',
-          targetDir: testRepo.repoDir,
+          repoDir: testRepo.repoDir,
         });
 
         expect(result.exitCode).toBe(1);
