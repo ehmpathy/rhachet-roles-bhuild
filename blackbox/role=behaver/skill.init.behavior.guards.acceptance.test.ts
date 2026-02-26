@@ -98,7 +98,7 @@ describe('skill.init.behavior.guards.journey', () => {
    *
    * journey covers:
    *   - vision stone: human approval gate
-   *   - criteria stone: self-review (1 prompt)
+   *   - criteria stone: self-review (1 prompt) + human approval
    *   - blueprint stone: self-review (3 prompts) + human approval
    *   - execution stone: self-review (2 prompts), no human approval
    */
@@ -129,7 +129,12 @@ describe('skill.init.behavior.guards.journey', () => {
         stdout: string;
         stderr: string;
       } | null,
-      criteriaPassAfterPromise: null as {
+      criteriaPassWithPromiseNoApproval: null as {
+        code: number;
+        stdout: string;
+        stderr: string;
+      } | null,
+      criteriaPassAfterApproval: null as {
         code: number;
         stdout: string;
         stderr: string;
@@ -221,7 +226,7 @@ describe('skill.init.behavior.guards.journey', () => {
       });
 
       // ═══════════════════════════════════════════════════════════════
-      // CRITERIA STONE: 1 self-review (all-real-junior)
+      // CRITERIA STONE: 1 self-review (all-real-junior) + human approval
       // ═══════════════════════════════════════════════════════════════
       fs.writeFileSync(
         path.join(behaviorDir, '2.1.criteria.blackbox.i1.md'),
@@ -236,14 +241,30 @@ describe('skill.init.behavior.guards.journey', () => {
         cwd: repoDir,
       });
 
-      // promise self-review, then pass → allowed (no judges)
+      // promise self-review
       runSkill({
         repo: 'bhrain',
         skill: 'route.stone.set',
         args: `--stone 2.1.criteria.blackbox --route ${behaviorDirRel} --as promised --that all-real-junior`,
         cwd: repoDir,
       });
-      checkpoints.criteriaPassAfterPromise = runSkill({
+
+      // try pass with promise but no approval → blocked by judge
+      checkpoints.criteriaPassWithPromiseNoApproval = runSkill({
+        repo: 'bhrain',
+        skill: 'route.stone.set',
+        args: `--stone 2.1.criteria.blackbox --route ${behaviorDirRel} --as passed`,
+        cwd: repoDir,
+      });
+
+      // approve, then pass → allowed
+      runSkill({
+        repo: 'bhrain',
+        skill: 'route.stone.set',
+        args: `--stone 2.1.criteria.blackbox --route ${behaviorDirRel} --as approved`,
+        cwd: repoDir,
+      });
+      checkpoints.criteriaPassAfterApproval = runSkill({
         repo: 'bhrain',
         skill: 'route.stone.set',
         args: `--stone 2.1.criteria.blackbox --route ${behaviorDirRel} --as passed`,
@@ -402,12 +423,25 @@ describe('skill.init.behavior.guards.journey', () => {
       });
     });
 
-    when('[t3] criteria pass attempted after promise', () => {
-      then('allowed (no judges)', () => {
-        expect(checkpoints.criteriaPassAfterPromise!.code).toEqual(0);
+    when('[t3] criteria pass attempted with promise but no approval', () => {
+      then('blocked by judge', () => {
+        expect(
+          checkpoints.criteriaPassWithPromiseNoApproval!.code,
+        ).not.toEqual(0);
         const output =
-          checkpoints.criteriaPassAfterPromise!.stdout +
-          checkpoints.criteriaPassAfterPromise!.stderr;
+          checkpoints.criteriaPassWithPromiseNoApproval!.stdout +
+          checkpoints.criteriaPassWithPromiseNoApproval!.stderr;
+        expect(output).toMatchSnapshot();
+        expect(output.toLowerCase()).toContain('judge');
+      });
+    });
+
+    when('[t4] criteria pass attempted after approval', () => {
+      then('allowed', () => {
+        expect(checkpoints.criteriaPassAfterApproval!.code).toEqual(0);
+        const output =
+          checkpoints.criteriaPassAfterApproval!.stdout +
+          checkpoints.criteriaPassAfterApproval!.stderr;
         expect(output).toMatchSnapshot();
         expect(output).toContain('passage = allowed');
       });
@@ -416,7 +450,7 @@ describe('skill.init.behavior.guards.journey', () => {
     // ═══════════════════════════════════════════════════════════════
     // BLUEPRINT STONE
     // ═══════════════════════════════════════════════════════════════
-    when('[t4] blueprint pass attempted without promises', () => {
+    when('[t5] blueprint pass attempted without promises', () => {
       then('blocked by unpromised self-review', () => {
         expect(checkpoints.blueprintPassWithoutPromises!.code).not.toEqual(0);
         const output =
@@ -427,7 +461,7 @@ describe('skill.init.behavior.guards.journey', () => {
       });
     });
 
-    when('[t5] blueprint pass attempted with promises but no approval', () => {
+    when('[t6] blueprint pass attempted with promises but no approval', () => {
       then('blocked by judge', () => {
         expect(
           checkpoints.blueprintPassWithPromisesNoApproval!.code,
@@ -440,7 +474,7 @@ describe('skill.init.behavior.guards.journey', () => {
       });
     });
 
-    when('[t6] blueprint pass attempted after approval', () => {
+    when('[t7] blueprint pass attempted after approval', () => {
       then('allowed', () => {
         expect(checkpoints.blueprintPassAfterApproval!.code).toEqual(0);
         const output =
@@ -454,7 +488,7 @@ describe('skill.init.behavior.guards.journey', () => {
     // ═══════════════════════════════════════════════════════════════
     // EXECUTION STONE
     // ═══════════════════════════════════════════════════════════════
-    when('[t7] execution pass attempted without promises', () => {
+    when('[t8] execution pass attempted without promises', () => {
       then('blocked by unpromised self-review', () => {
         expect(checkpoints.executionPassWithoutPromises!.code).not.toEqual(0);
         const output =
@@ -465,7 +499,7 @@ describe('skill.init.behavior.guards.journey', () => {
       });
     });
 
-    when('[t8] execution pass attempted after promises', () => {
+    when('[t9] execution pass attempted after promises', () => {
       then('allowed (no judges)', () => {
         expect(checkpoints.executionPassAfterPromises!.code).toEqual(0);
         const output =
@@ -479,7 +513,7 @@ describe('skill.init.behavior.guards.journey', () => {
     // ═══════════════════════════════════════════════════════════════
     // FINAL STATE
     // ═══════════════════════════════════════════════════════════════
-    when('[t9] journey complete', () => {
+    when('[t10] journey complete', () => {
       then('all stones have passage markers', () => {
         const routeDir = path.join(behaviorDir, '.route');
         expect(fs.existsSync(path.join(routeDir, '1.vision.passed'))).toBe(
