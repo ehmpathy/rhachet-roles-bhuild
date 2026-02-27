@@ -4,6 +4,112 @@ import * as path from 'path';
 
 import { given, then, when } from 'test-fns';
 
+/**
+ * .what = backdate specific triggered file to bypass bhrain 90-second cooldown
+ * .why = bhrain checks mtime of triggered files; backdate specific slug per bhrain test pattern
+ */
+const backdateTriggeredFile = (input: {
+  routeDir: string;
+  stone: string;
+  slug: string;
+}): void => {
+  const files = fs.readdirSync(input.routeDir);
+  const triggeredFile = files.find(
+    (f) =>
+      f.includes(`${input.stone}.guard.selfreview.${input.slug}`) &&
+      f.endsWith('.triggered'),
+  );
+  if (triggeredFile) {
+    const filePath = path.join(input.routeDir, triggeredFile);
+    const mtimePast = new Date(Date.now() - 91 * 1000);
+    fs.utimesSync(filePath, mtimePast, mtimePast);
+  }
+};
+
+/**
+ * .what = promise all self-reviews for a stone via bhrain test pattern
+ * .why = follows bhrain pattern exactly:
+ *   t0: --as passed (triggers review 1, blocked) ← done by caller
+ *   t1: backdate review 1 + promise (NO pass call)
+ *   t2: --as passed (triggers review 2) + backdate + promise
+ *   tN: --as passed (triggers review N) + backdate + promise
+ */
+const promiseAllSelfReviews = (input: {
+  repoDir: string;
+  routeDir: string;
+  routeRel: string;
+  stone: string;
+  slugs: string[];
+}): void => {
+  for (let i = 0; i < input.slugs.length; i++) {
+    const slug = input.slugs[i]!; // safe: bounded by array length
+
+    // 1. trigger next review via --as passed (skip for i=0, already triggered by caller)
+    if (i > 0) {
+      try {
+        execSync(
+          `npx rhachet run --repo bhrain --skill route.stone.set -- --stone ${input.stone} --route ${input.routeRel} --as passed`,
+          { cwd: input.repoDir, stdio: ['pipe', 'pipe', 'pipe'] },
+        );
+      } catch {
+        // expected — blocked by self-review
+      }
+    }
+
+    // 2. verify triggered file exists for this slug
+    const filesBefore = fs.readdirSync(input.routeDir);
+    const triggeredFile = filesBefore.find(
+      (f) =>
+        f.includes(`${input.stone}.guard.selfreview.${slug}`) &&
+        f.endsWith('.triggered'),
+    );
+    if (!triggeredFile) {
+      throw new Error(
+        `[${i}] no triggered file for slug=${slug}. files: ${filesBefore.join(', ')}`,
+      );
+    }
+
+    // 3. backdate the triggered file (same as bhrain's backdateTriggeredReport)
+    backdateTriggeredFile({
+      routeDir: input.routeDir,
+      stone: input.stone,
+      slug,
+    });
+
+    // 4. promise this review
+    try {
+      execSync(
+        `npx rhachet run --repo bhrain --skill route.stone.set -- --stone ${input.stone} --route ${input.routeRel} --as promised --that ${slug}`,
+        { cwd: input.repoDir, stdio: ['pipe', 'pipe', 'pipe'] },
+      );
+    } catch (error: unknown) {
+      // unexpected — log to aid debug before re-throw
+      const execError = error as {
+        stdout?: Buffer;
+        stderr?: Buffer;
+        status?: number;
+      };
+      console.error(
+        `[${i}] promise call FAILED: status=${execError.status}, stdout=${execError.stdout?.toString()}, stderr=${execError.stderr?.toString()}`,
+      );
+      throw error;
+    }
+
+    // 5. verify promise file was created
+    const filesAfter = fs.readdirSync(input.routeDir);
+    const promiseFile = filesAfter.find(
+      (f) =>
+        f.startsWith(`${input.stone}.guard.promise.${slug}.`) &&
+        f.endsWith('.md'),
+    );
+    if (!promiseFile) {
+      throw new Error(
+        `[${i}] promise file not created for slug=${slug}. files: ${filesAfter.join(', ')}`,
+      );
+    }
+  }
+};
+
 import { genTestGitRepo } from '../.test/infra';
 
 /**
@@ -99,8 +205,8 @@ describe('skill.init.behavior.guards.journey', () => {
    * journey covers:
    *   - vision stone: human approval gate
    *   - criteria stone: self-review (1 prompt) + human approval
-   *   - blueprint stone: self-review (3 prompts) + human approval
-   *   - execution stone: self-review (2 prompts), no human approval
+   *   - blueprint stone: self-review (4 prompts) + human approval
+   *   - execution stone: self-review (4 prompts), no human approval
    */
   given('[case1] full behavior route with guards', () => {
     // scene: consumer repo with behavior initialized
@@ -241,7 +347,13 @@ describe('skill.init.behavior.guards.journey', () => {
         cwd: repoDir,
       });
 
-      // promise self-review
+      // promise the self-review via bhrain test pattern
+      const routeDir = path.join(behaviorDir, '.route');
+      backdateTriggeredFile({
+        routeDir,
+        stone: '2.1.criteria.blackbox',
+        slug: 'all-real-junior',
+      });
       runSkill({
         repo: 'bhrain',
         skill: 'route.stone.set',
@@ -272,7 +384,7 @@ describe('skill.init.behavior.guards.journey', () => {
       });
 
       // ═══════════════════════════════════════════════════════════════
-      // BLUEPRINT STONE: 3 self-reviews + human approval
+      // BLUEPRINT STONE: 4 self-reviews + human approval
       // ═══════════════════════════════════════════════════════════════
       fs.writeFileSync(
         path.join(behaviorDir, '3.3.blueprint.v1.i1.md'),
@@ -287,24 +399,19 @@ describe('skill.init.behavior.guards.journey', () => {
         cwd: repoDir,
       });
 
-      // promise all 3 self-reviews
-      runSkill({
-        repo: 'bhrain',
-        skill: 'route.stone.set',
-        args: `--stone 3.3.blueprint.v1 --route ${behaviorDirRel} --as promised --that all-done-self`,
-        cwd: repoDir,
-      });
-      runSkill({
-        repo: 'bhrain',
-        skill: 'route.stone.set',
-        args: `--stone 3.3.blueprint.v1 --route ${behaviorDirRel} --as promised --that all-done-junior`,
-        cwd: repoDir,
-      });
-      runSkill({
-        repo: 'bhrain',
-        skill: 'route.stone.set',
-        args: `--stone 3.3.blueprint.v1 --route ${behaviorDirRel} --as promised --that all-simple-junior`,
-        cwd: repoDir,
+      // promise all 4 self-reviews via bhrain test pattern
+      const standardSlugs = [
+        'behavior-declaration-coverage',
+        'behavior-declaration-adherance',
+        'role-standards-adherance',
+        'role-standards-coverage',
+      ];
+      promiseAllSelfReviews({
+        repoDir,
+        routeDir,
+        routeRel: behaviorDirRel,
+        stone: '3.3.blueprint.v1',
+        slugs: standardSlugs,
       });
 
       // try pass with promises but no approval → blocked by judge
@@ -344,7 +451,7 @@ describe('skill.init.behavior.guards.journey', () => {
       });
 
       // ═══════════════════════════════════════════════════════════════
-      // EXECUTION STONE: 2 self-reviews, no human approval
+      // EXECUTION STONE: 4 self-reviews, no human approval
       // ═══════════════════════════════════════════════════════════════
       fs.writeFileSync(
         path.join(behaviorDir, '5.1.execution.phase0_to_phaseN.v1.i1.md'),
@@ -359,18 +466,13 @@ describe('skill.init.behavior.guards.journey', () => {
         cwd: repoDir,
       });
 
-      // promise both self-reviews, then pass → allowed (no judges)
-      runSkill({
-        repo: 'bhrain',
-        skill: 'route.stone.set',
-        args: `--stone 5.1.execution.phase0_to_phaseN.v1 --route ${behaviorDirRel} --as promised --that all-done-self`,
-        cwd: repoDir,
-      });
-      runSkill({
-        repo: 'bhrain',
-        skill: 'route.stone.set',
-        args: `--stone 5.1.execution.phase0_to_phaseN.v1 --route ${behaviorDirRel} --as promised --that all-done-junior`,
-        cwd: repoDir,
+      // promise all 4 self-reviews via bhrain test pattern
+      promiseAllSelfReviews({
+        repoDir,
+        routeDir,
+        routeRel: behaviorDirRel,
+        stone: '5.1.execution.phase0_to_phaseN.v1',
+        slugs: standardSlugs,
       });
       checkpoints.executionPassAfterPromises = runSkill({
         repo: 'bhrain',
@@ -457,7 +559,7 @@ describe('skill.init.behavior.guards.journey', () => {
           checkpoints.blueprintPassWithoutPromises!.stdout +
           checkpoints.blueprintPassWithoutPromises!.stderr;
         expect(output).toMatchSnapshot();
-        expect(output).toContain('all-done-self');
+        expect(output).toContain('behavior-declaration-coverage');
       });
     });
 
@@ -495,7 +597,7 @@ describe('skill.init.behavior.guards.journey', () => {
           checkpoints.executionPassWithoutPromises!.stdout +
           checkpoints.executionPassWithoutPromises!.stderr;
         expect(output).toMatchSnapshot();
-        expect(output).toContain('all-done-self');
+        expect(output).toContain('behavior-declaration-coverage');
       });
     });
 
