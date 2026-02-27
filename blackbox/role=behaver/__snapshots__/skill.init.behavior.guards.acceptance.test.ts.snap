@@ -14,14 +14,14 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
       │   └─ 1.vision.md
       └─ judges
           └─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
-              ├─ finished 3.9s ✗
+              ├─ finished 2.8s ✗
               ├─ judge: .route/1.vision.guard.judge.i1p1.d0db8b0c016b73977fad2df32c9cb3516381287e27403d824d4da3c9611dbe73.dabe714fd2c418ba29e23363f9e9d18ba44e891dd196bc817fb5bd0bd66a92d8.j1.md
               └─ reason: wait for human approval[0m[31m[0m
 [0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set[0m
 [0m[31m   └─ ✋ blocked by constraints[0m
 [0m[31m[0m
 [0m[31mj1: inflight
-  ✗ j1: finished 3.9s
+  ✗ j1: finished 2.8s
     reason: wait for human approval
 
 🔎 judge 1
@@ -52,7 +52,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
       │   └─ 1.vision.md
       └─ judges
           └─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
-              ├─ finished 2.5s ✓
+              ├─ finished 3.6s ✓
               └─ judge: .route/1.vision.guard.judge.i1p1.d0db8b0c016b73977fad2df32c9cb3516381287e27403d824d4da3c9611dbe73.9b7fca35d5c2f9d6a6bedaa04679bafdd19a55ff89872d2b45aeb00178e59614.j1.md"
 `;
 
@@ -130,64 +130,53 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 
 🗿 route.stone.set
    ├─ stone = 2.1.criteria.blackbox
-   └─ passage = blocked (self-review required)
-
-🌕 lets reflect
-   │
-   ├─ review.self 1/1
-   │  ├─ slug = all-real-junior
-   │  ├─ question all, especially yourself
-   │  └─ see the guide below
-   │
-   ├─ stillness 🪷
-   │  ├─
-   │  │
-   │  │  so it is. a chance to slow down, breathe, and see clearly.
-   │  │
-   │  │  self review time is a sanctuary. a gift. a luxury not always available.
-   │  │
-   │  │  it is not every day one has a quiet moment to take a slow,
-   │  │  methodical, patient, and thorough review.
-   │  │
-   │  │  tea first. then, we proceed 🍵
-   │  │
-   │  └─
-   │
-   ├─ before you begin 🪷
-   │  ├─
-   │  │
-   │  │  - clear your mind. this is dedicated review time.
-   │  │  - open each artifact mentioned in the guide
-   │  │  - read through them slowly, line by line
-   │  │  - question every assumption made
-   │  │  - look with fresh eyes, as if for the first time
-   │  │
-   │  └─
-   │
-   ├─ here's the guide
-   │  ├─
-   │  │
-   │  │  a junior recently worked on this criteria. are there any unquestioned
-   │  │    assumptions the junior took as requirements? any of these need to
-   │  │    be asked to the wisher instead?
-   │  │
-   │  └─
-   │
-   ├─ after you finish 🪷
-   │  ├─
-   │  │
-   │  │  - did you check slowly, step by step?
-   │  │  - did you take your time, or rush through?
-   │  │  - have you been honest with yourself?
-   │  │  - if you found issues, fix them before you promise
-   │  │
-   │  └─
-   │
-   └─ promise its done? if so, run
-      └─ rhx route.stone.set --stone 2.1.criteria.blackbox --as promised --that all-real-junior[0m[31m[0m
+   ├─ passage = blocked
+   ├─ reason = wait for human approval
+   └─ guard
+      ├─ artifacts
+      │   └─ 2.1.criteria.blackbox.i1.md
+      └─ judges
+          └─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
+              ├─ finished 4.1s ✗
+              ├─ judge: .route/2.1.criteria.blackbox.guard.judge.i1p1.bf65b3bf43aeb8f21aabacf4bb68c8a0be19374e8211503cd209366ba214b909.9d4f68f4491b8b09592d4796a31e770e94f7a871be29f7bd25c9f93b16e258de.j1.md
+              └─ reason: wait for human approval[0m[31m[0m
 [0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set[0m
 [0m[31m   └─ ✋ blocked by constraints[0m
-[0m[31m[0m"
+[0m[31m[0m
+[0m[31mj1: inflight
+  ✗ j1: finished 4.1s
+    reason: wait for human approval
+
+🔎 judge 1
+   ├─
+   │
+   │  🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.judge
+   │  passed: false
+   │  reason: wait for human approval
+   │  [0m[31m[0m
+   │  [0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.judge[0m
+   │  [0m[31m   └─ ✋ blocked by constraints[0m
+   │  [0m[31m[0m
+   │  exit code: 1
+   │
+   └─[0m"
+`;
+
+exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t4] criteria pass attempted after approval then: allowed 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+
+🦉 so you're saying there's a chance?
+
+🗿 route.stone.set
+   ├─ stone = 2.1.criteria.blackbox
+   ├─ passage = allowed
+   └─ guard
+      ├─ artifacts
+      │   └─ 2.1.criteria.blackbox.i1.md
+      └─ judges
+          └─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
+              ├─ finished 4.2s ✓
+              └─ judge: .route/2.1.criteria.blackbox.guard.judge.i1p1.bf65b3bf43aeb8f21aabacf4bb68c8a0be19374e8211503cd209366ba214b909.b2b433a6ad409a2c21c32621f8d3525be375c4e608eb45d57efdd5252b31e603.j1.md"
 `;
 
 exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t5] blueprint pass attempted without promises then: blocked by unpromised self-review 1`] = `
@@ -202,7 +191,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 🌕 lets reflect
    │
    ├─ review.self 1/4
-   │  ├─ slug = behavior.declaration.coverage
+   │  ├─ slug = behavior-declaration-coverage
    │  ├─ question all, especially yourself
    │  └─ see the guide below
    │
@@ -246,7 +235,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │  │    - is every criterion from the criteria satisfied?
    │  │    - did the junior skip or forget any part of the spec?
    │  │  
-   │  │    emit your findings to .behavior/$thisBehavior/reviews/{stone}.behavior.declaration.coverage.md
+   │  │    emit your findings to .behavior/$thisBehavior/reviews/{stone}.behavior-declaration-coverage.md
    │  │    then fix all gaps before you continue.
    │  │
    │  └─
@@ -262,7 +251,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │  └─
    │
    └─ promise its done? if so, run
-      └─ rhx route.stone.set --stone 3.3.blueprint.v1 --as promised --that behavior.declaration.coverage[0m[31m[0m
+      └─ rhx route.stone.set --stone 3.3.blueprint.v1 --as promised --that behavior-declaration-coverage[0m[31m[0m
 [0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set[0m
 [0m[31m   └─ ✋ blocked by constraints[0m
 [0m[31m[0m"
@@ -275,75 +264,53 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 
 🗿 route.stone.set
    ├─ stone = 3.3.blueprint.v1
-   └─ passage = blocked (self-review required)
-
-🌕 lets reflect
-   │
-   ├─ review.self 1/4
-   │  ├─ slug = behavior.declaration.coverage
-   │  ├─ question all, especially yourself
-   │  └─ see the guide below
-   │
-   ├─ stillness 🪷
-   │  ├─
-   │  │
-   │  │  so it is. a chance to slow down, breathe, and see clearly.
-   │  │
-   │  │  self review time is a sanctuary. a gift. a luxury not always available.
-   │  │
-   │  │  it is not every day one has a quiet moment to take a slow,
-   │  │  methodical, patient, and thorough review.
-   │  │
-   │  │  tea first. then, we proceed 🍵
-   │  │
-   │  └─
-   │
-   ├─ before you begin 🪷
-   │  ├─
-   │  │
-   │  │  - clear your mind. this is dedicated review time.
-   │  │  - open each artifact mentioned in the guide
-   │  │  - read through them slowly, line by line
-   │  │  - question every assumption made
-   │  │  - look with fresh eyes, as if for the first time
-   │  │
-   │  └─
-   │
-   ├─ here's the guide
-   │  ├─
-   │  │
-   │  │  review for coverage of the behavior declaration.
-   │  │  
-   │  │    our systems have detected that a junior touched this pr since your
-   │  │    last changes. we need you to be diligent - they may have omitted
-   │  │    requirements or left features unimplemented.
-   │  │  
-   │  │    go through the behavior's vision and criteria, then check
-   │  │    each requirement against the blueprint line by line:
-   │  │    - is every requirement from the vision addressed?
-   │  │    - is every criterion from the criteria satisfied?
-   │  │    - did the junior skip or forget any part of the spec?
-   │  │  
-   │  │    emit your findings to .behavior/$thisBehavior/reviews/{stone}.behavior.declaration.coverage.md
-   │  │    then fix all gaps before you continue.
-   │  │
-   │  └─
-   │
-   ├─ after you finish 🪷
-   │  ├─
-   │  │
-   │  │  - did you check slowly, step by step?
-   │  │  - did you take your time, or rush through?
-   │  │  - have you been honest with yourself?
-   │  │  - if you found issues, fix them before you promise
-   │  │
-   │  └─
-   │
-   └─ promise its done? if so, run
-      └─ rhx route.stone.set --stone 3.3.blueprint.v1 --as promised --that behavior.declaration.coverage[0m[31m[0m
+   ├─ passage = blocked
+   ├─ reason = wait for human approval
+   └─ guard
+      ├─ artifacts
+      │   └─ 3.3.blueprint.v1.i1.md
+      └─ judges
+          └─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
+              ├─ finished 4.2s ✗
+              ├─ judge: .route/3.3.blueprint.v1.guard.judge.i1p1.2f26d37384e66b5ee1d297c4c4b442c33f7f3f95919edeac42290e626a898964.a98e11103806256a1e8519508c981535ffc3e93d16160fa22521b64ae2d6b467.j1.md
+              └─ reason: wait for human approval[0m[31m[0m
 [0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set[0m
 [0m[31m   └─ ✋ blocked by constraints[0m
-[0m[31m[0m"
+[0m[31m[0m
+[0m[31mj1: inflight
+  ✗ j1: finished 4.2s
+    reason: wait for human approval
+
+🔎 judge 1
+   ├─
+   │
+   │  🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.judge
+   │  passed: false
+   │  reason: wait for human approval
+   │  [0m[31m[0m
+   │  [0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.judge[0m
+   │  [0m[31m   └─ ✋ blocked by constraints[0m
+   │  [0m[31m[0m
+   │  exit code: 1
+   │
+   └─[0m"
+`;
+
+exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t7] blueprint pass attempted after approval then: allowed 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+
+🦉 so you're saying there's a chance?
+
+🗿 route.stone.set
+   ├─ stone = 3.3.blueprint.v1
+   ├─ passage = allowed
+   └─ guard
+      ├─ artifacts
+      │   └─ 3.3.blueprint.v1.i1.md
+      └─ judges
+          └─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
+              ├─ finished 2.5s ✓
+              └─ judge: .route/3.3.blueprint.v1.guard.judge.i1p1.2f26d37384e66b5ee1d297c4c4b442c33f7f3f95919edeac42290e626a898964.e386f26165482a37924bd5e9cfb4da99b30cd0eadd84a25e5a0f525652ea6b77.j1.md"
 `;
 
 exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t8] execution pass attempted without promises then: blocked by unpromised self-review 1`] = `
@@ -358,7 +325,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 🌕 lets reflect
    │
    ├─ review.self 1/4
-   │  ├─ slug = behavior.declaration.coverage
+   │  ├─ slug = behavior-declaration-coverage
    │  ├─ question all, especially yourself
    │  └─ see the guide below
    │
@@ -403,7 +370,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │  │    - is every component from the blueprint implemented?
    │  │    - did the junior skip or forget any part of the spec?
    │  │  
-   │  │    emit your findings to .behavior/$thisBehavior/reviews/{stone}.behavior.declaration.coverage.md
+   │  │    emit your findings to .behavior/$thisBehavior/reviews/{stone}.behavior-declaration-coverage.md
    │  │    then fix all gaps before you continue.
    │  │
    │  └─
@@ -419,8 +386,18 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │  └─
    │
    └─ promise its done? if so, run
-      └─ rhx route.stone.set --stone 5.1.execution.phase0_to_phaseN.v1 --as promised --that behavior.declaration.coverage[0m[31m[0m
+      └─ rhx route.stone.set --stone 5.1.execution.phase0_to_phaseN.v1 --as promised --that behavior-declaration-coverage[0m[31m[0m
 [0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set[0m
 [0m[31m   └─ ✋ blocked by constraints[0m
 [0m[31m[0m"
+`;
+
+exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t9] execution pass attempted after promises then: allowed (no judges) 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+
+🦉 so you're saying there's a chance?
+
+🗿 route.stone.set
+   ├─ stone = 5.1.execution.phase0_to_phaseN.v1
+   └─ passage = allowed (artifacts only)"
 `;
