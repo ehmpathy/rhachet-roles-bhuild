@@ -34,6 +34,7 @@ const schemaOfArgs = z.object({
     name: z.string(),
     dir: z.string().optional(),
     open: z.string().optional(),
+    guard: z.enum(['light', 'heavy']).optional(),
     // rhachet passthrough args (optional, ignored)
     repo: z.string().optional(),
     role: z.string().optional(),
@@ -112,7 +113,11 @@ export const initBehavior = async (): Promise<void> => {
   }
 
   // initialize behavior directory with template files
-  const result = initBehaviorDir({ behaviorDir, behaviorDirRel });
+  const result = initBehaviorDir({
+    behaviorDir,
+    behaviorDirRel,
+    guard: named.guard,
+  });
 
   // render tree-style output
   const treeOutput = computeOutputTree({

@@ -3,8 +3,38 @@
 
 reviews:
   self:
-    # 1. review against behavior declaration - coverage
-    - slug: behavior-declaration-coverage
+    # 1. delete before optimize
+    - slug: has-questioned-deletables
+      say: |
+        try hard to delete before you optimize:
+
+        for each component, ask:
+        - can this be removed entirely?
+        - if we deleted this and had to add it back, would we?
+        - did we optimize a component that shouldn't exist?
+        - what is the simplest version that works?
+
+        delete and simplify before we proceed.
+
+    # 2. question assumptions
+    - slug: has-questioned-assumptions
+      say: |
+        a junior recently modified files in this repo. we need to carefully
+        review the blueprint due to this.
+
+        are there any hidden technical assumptions the junior made?
+
+        for each assumption, ask:
+        - what do we assume here without evidence?
+        - what if the opposite were true?
+        - is this architecture choice based on evidence or habit?
+        - what exceptions or counterexamples exist?
+        - could a simpler approach work?
+
+        surface all technical assumptions and question each one.
+
+    # 3. behavior declaration - coverage
+    - slug: has-behavior-declaration-coverage
       say: |
         review for coverage of the behavior declaration.
 
@@ -21,8 +51,8 @@ reviews:
         emit your findings to .behavior/$thisBehavior/reviews/{stone}.behavior-declaration-coverage.md
         then fix all gaps before you continue.
 
-    # 2. review against behavior declaration - adherance
-    - slug: behavior-declaration-adherance
+    # 4. behavior declaration - adherance
+    - slug: has-behavior-declaration-adherance
       say: |
         review for adherance to the behavior declaration.
 
@@ -39,8 +69,8 @@ reviews:
         emit your findings to .behavior/$thisBehavior/reviews/{stone}.behavior-declaration-adherance.md
         then fix all gaps before you continue.
 
-    # 3. review against role standards - adherance
-    - slug: role-standards-adherance
+    # 5. role standards - adherance
+    - slug: has-role-standards-adherance
       say: |
         review for adherance to mechanic role standards.
 
@@ -48,7 +78,11 @@ reviews:
         last changes. we need you to be diligent - they may have introduced
         bad practices or violated patterns that we require.
 
-        go through the blueprint line by line, and check:
+        first, enumerate the rule directories you will check:
+        - list each briefs/ subdirectory relevant to this blueprint
+        - confirm you have not missed any rule categories
+
+        then go through the blueprint line by line, and check:
         - does the blueprint follow mechanic standards correctly?
         - are there violations of required patterns?
         - did the junior introduce anti-patterns, bad practices, or deviations from our conventions?
@@ -56,8 +90,8 @@ reviews:
         emit your findings to .behavior/$thisBehavior/reviews/{stone}.role-standards-adherance.md
         then fix all gaps before you continue.
 
-    # 4. review against role standards - coverage
-    - slug: role-standards-coverage
+    # 6. role standards - coverage
+    - slug: has-role-standards-coverage
       say: |
         review for coverage of mechanic role standards.
 
@@ -65,7 +99,11 @@ reviews:
         last changes. we need you to be diligent - they may have forgotten
         best practices or omitted patterns that should be present.
 
-        go through the blueprint line by line, and check:
+        first, enumerate the rule directories you will check:
+        - list each briefs/ subdirectory relevant to this blueprint
+        - confirm you have not missed any rule categories
+
+        then go through the blueprint line by line, and check:
         - are all relevant mechanic standards applied?
         - are there patterns that should be present but are absent?
         - did the junior forget to include error handle, validation, tests, types, or other required practices?

@@ -35,4 +35,14 @@ specifically,
 - what are the pros? the cons?
 - what edgecases exist and how do our contracts keep users in a pit of success?
 
-uncover anything awkward
+## open questions & assumptions
+
+- what assumptions have we made?
+- what questions remain unanswered?
+- what must we validate with the wisher before we proceed?
+
+## what is awkward?
+
+- what feels off or forced?
+- where does the design fight the user's mental model?
+- what tradeoffs feel uncomfortable?
