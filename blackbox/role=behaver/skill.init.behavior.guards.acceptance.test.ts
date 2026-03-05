@@ -202,10 +202,10 @@ describe('skill.init.behavior.guards.journey', () => {
    * .what = full end-to-end journey through behavior route with guards
    * .why = verifies init.behavior guard templates work with bhrain driver
    *
-   * journey covers:
-   *   - vision stone: human approval gate
-   *   - criteria stone: self-review (1 prompt) + human approval
-   *   - blueprint stone: self-review (4 prompts) + human approval
+   * journey covers (heavy mode):
+   *   - vision stone: self-review (8 prompts) + human approval
+   *   - criteria stone: self-review (4 prompts) + human approval
+   *   - blueprint stone: self-review (10 prompts) + human approval
    *   - execution stone: self-review (4 prompts), no human approval
    */
   given('[case1] full behavior route with guards', () => {
@@ -285,11 +285,11 @@ describe('skill.init.behavior.guards.journey', () => {
       repoDir = consumer.repoDir;
       cleanup = consumer.cleanup;
 
-      // initialize behavior
+      // initialize behavior with heavy guards (tests full guard journey)
       runSkill({
         repo: 'bhuild',
         skill: 'init.behavior',
-        args: '--name full-journey',
+        args: '--name full-journey --guard heavy',
         cwd: repoDir,
       });
 
@@ -302,12 +302,14 @@ describe('skill.init.behavior.guards.journey', () => {
       behaviorDirRel = `.behavior/${behaviorDirName}`;
 
       // ═══════════════════════════════════════════════════════════════
-      // VISION STONE: human approval only
+      // VISION STONE: 8 self-reviews + human approval (heavy mode)
       // ═══════════════════════════════════════════════════════════════
       fs.writeFileSync(
         path.join(behaviorDir, '1.vision.md'),
         '# Vision\n\nTest vision.',
       );
+
+      const routeDir = path.join(behaviorDir, '.route');
 
       // try pass without approval → blocked
       checkpoints.visionPassWithoutApproval = runSkill({
@@ -315,6 +317,25 @@ describe('skill.init.behavior.guards.journey', () => {
         skill: 'route.stone.set',
         args: `--stone 1.vision --route ${behaviorDirRel} --as passed`,
         cwd: repoDir,
+      });
+
+      // promise all 8 vision self-reviews via bhrain test pattern
+      const visionSlugs = [
+        'has-questioned-fundamentals',
+        'has-questioned-requirements',
+        'has-questioned-assumptions',
+        'has-questioned-inverse',
+        'has-questioned-devils-advocate',
+        'has-questioned-premortem',
+        'has-questioned-5whys',
+        'has-questioned-questions',
+      ];
+      promiseAllSelfReviews({
+        repoDir,
+        routeDir,
+        routeRel: behaviorDirRel,
+        stone: '1.vision',
+        slugs: visionSlugs,
       });
 
       // approve, then pass → allowed
@@ -332,7 +353,7 @@ describe('skill.init.behavior.guards.journey', () => {
       });
 
       // ═══════════════════════════════════════════════════════════════
-      // CRITERIA STONE: 1 self-review (all-real-junior) + human approval
+      // CRITERIA STONE: 4 self-reviews + human approval (heavy mode)
       // ═══════════════════════════════════════════════════════════════
       fs.writeFileSync(
         path.join(behaviorDir, '2.1.criteria.blackbox.i1.md'),
@@ -347,18 +368,19 @@ describe('skill.init.behavior.guards.journey', () => {
         cwd: repoDir,
       });
 
-      // promise the self-review via bhrain test pattern
-      const routeDir = path.join(behaviorDir, '.route');
-      backdateTriggeredFile({
+      // promise all 4 criteria self-reviews via bhrain test pattern
+      const criteriaSlugs = [
+        'has-questioned-requirements',
+        'has-questioned-devils-advocate',
+        'has-questioned-counterexamples',
+        'has-questioned-5whys',
+      ];
+      promiseAllSelfReviews({
+        repoDir,
         routeDir,
+        routeRel: behaviorDirRel,
         stone: '2.1.criteria.blackbox',
-        slug: 'all-real-junior',
-      });
-      runSkill({
-        repo: 'bhrain',
-        skill: 'route.stone.set',
-        args: `--stone 2.1.criteria.blackbox --route ${behaviorDirRel} --as promised --that all-real-junior`,
-        cwd: repoDir,
+        slugs: criteriaSlugs,
       });
 
       // try pass with promise but no approval → blocked by judge
@@ -384,7 +406,7 @@ describe('skill.init.behavior.guards.journey', () => {
       });
 
       // ═══════════════════════════════════════════════════════════════
-      // BLUEPRINT STONE: 4 self-reviews + human approval
+      // BLUEPRINT STONE: 10 self-reviews + human approval (heavy mode)
       // ═══════════════════════════════════════════════════════════════
       fs.writeFileSync(
         path.join(behaviorDir, '3.3.blueprint.v1.i1.md'),
@@ -399,19 +421,25 @@ describe('skill.init.behavior.guards.journey', () => {
         cwd: repoDir,
       });
 
-      // promise all 4 self-reviews via bhrain test pattern
-      const standardSlugs = [
-        'behavior-declaration-coverage',
-        'behavior-declaration-adherance',
-        'role-standards-adherance',
-        'role-standards-coverage',
+      // promise all 10 blueprint self-reviews via bhrain test pattern
+      const blueprintSlugs = [
+        'has-questioned-deletables',
+        'has-questioned-assumptions',
+        'has-questioned-5whys',
+        'has-questioned-premortem',
+        'has-questioned-inverse',
+        'has-questioned-devils-advocate',
+        'has-behavior-declaration-coverage',
+        'has-behavior-declaration-adherance',
+        'has-role-standards-adherance',
+        'has-role-standards-coverage',
       ];
       promiseAllSelfReviews({
         repoDir,
         routeDir,
         routeRel: behaviorDirRel,
         stone: '3.3.blueprint.v1',
-        slugs: standardSlugs,
+        slugs: blueprintSlugs,
       });
 
       // try pass with promises but no approval → blocked by judge
@@ -466,13 +494,19 @@ describe('skill.init.behavior.guards.journey', () => {
         cwd: repoDir,
       });
 
-      // promise all 4 self-reviews via bhrain test pattern
+      // promise all 4 execution self-reviews via bhrain test pattern
+      const executionSlugs = [
+        'behavior-declaration-coverage',
+        'behavior-declaration-adherance',
+        'role-standards-adherance',
+        'role-standards-coverage',
+      ];
       promiseAllSelfReviews({
         repoDir,
         routeDir,
         routeRel: behaviorDirRel,
         stone: '5.1.execution.phase0_to_phaseN.v1',
-        slugs: standardSlugs,
+        slugs: executionSlugs,
       });
       checkpoints.executionPassAfterPromises = runSkill({
         repo: 'bhrain',
@@ -489,18 +523,18 @@ describe('skill.init.behavior.guards.journey', () => {
     // ═══════════════════════════════════════════════════════════════
     // VISION STONE
     // ═══════════════════════════════════════════════════════════════
-    when('[t0] vision pass attempted without approval', () => {
-      then('blocked by judge', () => {
+    when('[t0] vision pass attempted without promises', () => {
+      then('blocked by unpromised self-review', () => {
         expect(checkpoints.visionPassWithoutApproval!.code).not.toEqual(0);
         const output =
           checkpoints.visionPassWithoutApproval!.stdout +
           checkpoints.visionPassWithoutApproval!.stderr;
         expect(output).toMatchSnapshot();
-        expect(output.toLowerCase()).toContain('judge');
+        expect(output).toContain('has-questioned-fundamentals');
       });
     });
 
-    when('[t1] vision pass attempted after approval', () => {
+    when('[t1] vision pass attempted after promises and approval', () => {
       then('allowed', () => {
         expect(checkpoints.visionPassAfterApproval!.code).toEqual(0);
         const output =
@@ -521,7 +555,7 @@ describe('skill.init.behavior.guards.journey', () => {
           checkpoints.criteriaPassWithoutPromise!.stdout +
           checkpoints.criteriaPassWithoutPromise!.stderr;
         expect(output).toMatchSnapshot();
-        expect(output).toContain('all-real-junior');
+        expect(output).toContain('has-questioned-requirements');
       });
     });
 
@@ -559,7 +593,7 @@ describe('skill.init.behavior.guards.journey', () => {
           checkpoints.blueprintPassWithoutPromises!.stdout +
           checkpoints.blueprintPassWithoutPromises!.stderr;
         expect(output).toMatchSnapshot();
-        expect(output).toContain('behavior-declaration-coverage');
+        expect(output).toContain('has-questioned-deletables');
       });
     });
 
@@ -616,25 +650,28 @@ describe('skill.init.behavior.guards.journey', () => {
     // FINAL STATE
     // ═══════════════════════════════════════════════════════════════
     when('[t10] journey complete', () => {
-      then('all stones have passage markers', () => {
+      then('all stones have passage markers in passage.jsonl', () => {
         const routeDir = path.join(behaviorDir, '.route');
-        expect(fs.existsSync(path.join(routeDir, '1.vision.passed'))).toBe(
-          true,
-        );
-        expect(
-          fs.existsSync(path.join(routeDir, '2.1.criteria.blackbox.passed')),
-        ).toBe(true);
-        expect(
-          fs.existsSync(path.join(routeDir, '3.3.blueprint.v1.passed')),
-        ).toBe(true);
-        expect(
-          fs.existsSync(path.join(routeDir, '4.1.roadmap.v1.passed')),
-        ).toBe(true);
-        expect(
-          fs.existsSync(
-            path.join(routeDir, '5.1.execution.phase0_to_phaseN.v1.passed'),
-          ),
-        ).toBe(true);
+        const passageFile = path.join(routeDir, 'passage.jsonl');
+        expect(fs.existsSync(passageFile)).toBe(true);
+
+        // read passage.jsonl and check all stones are recorded
+        const passageContent = fs.readFileSync(passageFile, 'utf-8');
+        const passageLines = passageContent
+          .trim()
+          .split('\n')
+          .map((line) => JSON.parse(line));
+
+        // check each stone has a passage record with status="passed"
+        const passedStones = passageLines
+          .filter((p: { status?: string }) => p.status === 'passed')
+          .map((p: { stone: string }) => p.stone);
+
+        expect(passedStones).toContain('1.vision');
+        expect(passedStones).toContain('2.1.criteria.blackbox');
+        expect(passedStones).toContain('3.3.blueprint.v1');
+        expect(passedStones).toContain('4.1.roadmap.v1');
+        expect(passedStones).toContain('5.1.execution.phase0_to_phaseN.v1');
       });
     });
   });

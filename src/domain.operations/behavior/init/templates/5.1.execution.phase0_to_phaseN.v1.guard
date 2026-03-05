@@ -50,7 +50,11 @@ reviews:
         last changes. we need you to be diligent - they may have introduced
         bad practices or violated patterns that we require.
 
-        go through each file changed in this pr, line by line, and check:
+        first, enumerate the rule directories you will check:
+        - list each briefs/ subdirectory relevant to this code
+        - confirm you have not missed any rule categories
+
+        then go through each file changed in this pr, line by line, and check:
         - does the code follow mechanic standards correctly?
         - are there violations of required patterns?
         - did the junior introduce anti-patterns, bad practices, or deviations from our conventions?
@@ -67,7 +71,11 @@ reviews:
         last changes. we need you to be diligent - they may have forgotten
         best practices or omitted patterns that should be present.
 
-        go through each file changed in this pr, line by line, and check:
+        first, enumerate the rule directories you will check:
+        - list each briefs/ subdirectory relevant to this code
+        - confirm you have not missed any rule categories
+
+        then go through each file changed in this pr, line by line, and check:
         - are all relevant mechanic standards applied?
         - are there patterns that should be present but are absent?
         - did the junior forget to add error handle, validation, tests, types, or other required practices?

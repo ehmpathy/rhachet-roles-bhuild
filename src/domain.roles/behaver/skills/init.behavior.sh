@@ -10,7 +10,15 @@
 #           - feedback template
 #
 # usage:
-#   init.behavior.sh --name <behaviorname> [--dir <directory>]
+#   init.behavior.sh --name <behaviorname> [--dir <directory>] [--guard <light|heavy>]
+#
+# options:
+#   --name <name>     behavior name (required)
+#   --dir <directory> target directory (default: .)
+#   --guard <level>   guard level: light (default) or heavy
+#                     - light: minimal self-reviews (3 vision, 0 criteria, 5 blueprint)
+#                     - heavy: comprehensive self-reviews (8 vision, 4 criteria, 11 blueprint)
+#   --open <editor>   open wish file in editor after init
 #
 # guarantee:
 #   - creates .behavior/ if not found
