@@ -82,7 +82,7 @@ describe('init.behavior --name @branch', () => {
     beforeAll(() => {
       const { repoDir } = genConsumerRepo({
         prefix: 'at-branch-main',
-        // no branchName = stays on main
+        branchName: 'main', // explicit main (CI default might be master)
       });
       scene.repoDir = repoDir;
     });

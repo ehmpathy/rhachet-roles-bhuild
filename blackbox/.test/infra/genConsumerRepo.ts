@@ -63,9 +63,9 @@ export const getInvokeHooks = (): InvokeHooks[] => [getInvokeHooksBhuild()];
 `.trim();
   fs.writeFileSync(path.join(repoDir, 'rhachet.use.ts'), rhachetUseContent);
 
-  // checkout requested branch if different from main
-  if (input?.branchName && input.branchName !== 'main') {
-    execSync(`git checkout -b "${input.branchName}"`, { cwd: repoDir });
+  // checkout requested branch (use -B to force create/reset if exists)
+  if (input?.branchName) {
+    execSync(`git checkout -B "${input.branchName}"`, { cwd: repoDir });
   }
 
   // link roles so skills are available
