@@ -91,8 +91,8 @@ importers:
         specifier: 0.3.3
         version: 0.3.3(rhachet@1.37.8(zod@4.3.4))
       rhachet-roles-bhrain:
-        specifier: 0.15.10
-        version: 0.15.10(@types/node@22.15.21)
+        specifier: 0.15.12
+        version: 0.15.12(@types/node@22.15.21)
       rhachet-roles-bhuild:
         specifier: link:.
         version: 'link:'
@@ -4040,8 +4040,8 @@ packages:
     peerDependencies:
       rhachet: '>=1.21.4'
 
-  rhachet-roles-bhrain@0.15.10:
-    resolution: {integrity: sha512-v4XsmT+CG+EWhUf6gWRk88VixGD1wwKhVwssCITuNfPTr0i99V8wfMz52GMvPVLqSkKcj0zZMjGPnzcy3d3tmg==}
+  rhachet-roles-bhrain@0.15.12:
+    resolution: {integrity: sha512-lq4ZpmxMV+nTgyEuTaijX3DB1Ox3Ruq7+OGzvKTmPkX2J0bmf28ovN6f2wiKooIfFUAMzuNqAEAUzBKpeScN2Q==}
     engines: {node: '>=8.0.0'}
 
   rhachet-roles-bhrain@0.7.5:
@@ -9369,7 +9369,7 @@ snapshots:
       - aws-crt
       - ws
 
-  rhachet-roles-bhrain@0.15.10(@types/node@22.15.21):
+  rhachet-roles-bhrain@0.15.12(@types/node@22.15.21):
     dependencies:
       '@anthropic-ai/sdk': 0.51.0
       '@ehmpathy/as-command': 1.0.3

@@ -6,7 +6,6 @@ exports[`init.behavior.scaffold given: [case3] direct: unbound branch when: [t0]
    ├─ + 0.wish.md
    ├─ + 1.vision.guard
    ├─ + 1.vision.stone
-   ├─ + 2.1.criteria.blackbox.guard
    ├─ + 2.1.criteria.blackbox.stone
    ├─ + 2.2.criteria.blackbox.matrix.stone
    ├─ + 2.3.criteria.blueprint.stone
@@ -17,9 +16,12 @@ exports[`init.behavior.scaffold given: [case3] direct: unbound branch when: [t0]
    ├─ + 3.1.research.patterns._.code.prod.v1.stone
    ├─ + 3.1.research.patterns._.code.test.v1.stone
    ├─ + 3.1.research.patterns._.oss.levers.v1.stone
+   ├─ + 3.1.research.playloop._.v1.stone
    ├─ + 3.1.research.references._.v1.stone
    ├─ + 3.1.research.templates._.v1.stone
    ├─ + 3.2.distill.domain._.v1.stone
+   ├─ + 3.2.enframe.playloops.v1.guard
+   ├─ + 3.2.enframe.playloops.v1.stone
    ├─ + 3.3.blueprint.v1.guard
    ├─ + 3.3.blueprint.v1.stone
    ├─ + 4.1.roadmap.v1.stone
