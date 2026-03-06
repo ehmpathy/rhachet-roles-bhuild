@@ -17,7 +17,7 @@ const backdateTriggeredFile = (input: {
   const triggeredFile = files.find(
     (f) =>
       f.includes(`${input.stone}.guard.selfreview.${input.slug}`) &&
-      f.endsWith('.triggered'),
+      f.includes('.triggered'),
   );
   if (triggeredFile) {
     const filePath = path.join(input.routeDir, triggeredFile);
@@ -61,7 +61,7 @@ const promiseAllSelfReviews = (input: {
     const triggeredFile = filesBefore.find(
       (f) =>
         f.includes(`${input.stone}.guard.selfreview.${slug}`) &&
-        f.endsWith('.triggered'),
+        f.includes('.triggered'),
     );
     if (!triggeredFile) {
       throw new Error(
