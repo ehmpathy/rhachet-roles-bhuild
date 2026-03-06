@@ -18,7 +18,7 @@ dots in slugs cause bhrain to fail to recognize promises as valid.
 
 bhrain uses `.triggered` files for state management. deletion breaks the promise flow:
 - bhrain creates triggered file when self-review is first encountered
-- bhrain checks triggered file mtime for 90-second cooldown
+- bhrain checks triggered file mtime for stillness
 - bhrain matches promise files to triggered files
 
 if you delete triggered files, promises become orphaned and bhrain won't recognize them.
@@ -62,7 +62,7 @@ when('[t2] second review is promised', () => {
 
 ### backdateTriggeredFile
 
-bhrain enforces 90-second cooldown via mtime check. backdate to bypass:
+bhrain enforces stillness via mtime check. backdate to bypass in tests:
 
 ```typescript
 const backdateTriggeredFile = (input: {
@@ -143,7 +143,7 @@ pattern: `{stone}.guard.promise.{slug}.{hash}.md`
 | dots in slug names | "review.self 1/4" stays after promise | use dashes: `behavior-declaration-coverage` |
 | delete triggered files | promises not recognized | never delete triggered files |
 | call pass on i=0 | no triggered file for slug | skip pass for i=0, already triggered by caller |
-| forget backdate | 90-second cooldown blocks promise | backdate mtime by 91+ seconds |
+| forget backdate | stillness check blocks promise | backdate mtime in tests |
 
 ## .see also
 

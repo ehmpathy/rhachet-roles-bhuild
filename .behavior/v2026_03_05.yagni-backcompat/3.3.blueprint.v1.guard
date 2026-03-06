@@ -33,7 +33,85 @@ reviews:
 
         surface all technical assumptions and question each one.
 
-    # 3. minimalism - yagni
+    # 3. behavior declaration - coverage
+    - slug: has-behavior-declaration-coverage
+      say: |
+        review for coverage of the behavior declaration.
+
+        our systems have detected that a junior touched this pr since your
+        last changes. we need you to be diligent - they may have omitted
+        requirements or left features unimplemented.
+
+        go through the behavior's vision and criteria, then check
+        each requirement against the blueprint line by line:
+        - is every requirement from the vision addressed?
+        - is every criterion from the criteria satisfied?
+        - did the junior skip or forget any part of the spec?
+
+        emit your findings to .behavior/$thisBehavior/reviews/{stone}.behavior-declaration-coverage.md
+        then fix all gaps before you continue.
+
+    # 4. behavior declaration - adherance
+    - slug: has-behavior-declaration-adherance
+      say: |
+        review for adherance to the behavior declaration.
+
+        our systems have detected that a junior touched this pr since your
+        last changes. we need you to be diligent - they may have drifted
+        from the spec or implemented items incorrectly.
+
+        go through the blueprint line by line, and check
+        against the behavior's vision and criteria:
+        - does the blueprint match what the vision describes?
+        - does the blueprint satisfy the criteria correctly?
+        - did the junior misinterpret or deviate from the spec?
+
+        emit your findings to .behavior/$thisBehavior/reviews/{stone}.behavior-declaration-adherance.md
+        then fix all gaps before you continue.
+
+    # 5. role standards - adherance
+    - slug: has-role-standards-adherance
+      say: |
+        review for adherance to mechanic role standards.
+
+        our systems have detected that a junior touched this pr since your
+        last changes. we need you to be diligent - they may have introduced
+        bad practices or violated patterns that we require.
+
+        first, enumerate the rule directories you will check:
+        - list each briefs/ subdirectory relevant to this blueprint
+        - confirm you have not missed any rule categories
+
+        then go through the blueprint line by line, and check:
+        - does the blueprint follow mechanic standards correctly?
+        - are there violations of required patterns?
+        - did the junior introduce anti-patterns, bad practices, or deviations from our conventions?
+
+        emit your findings to .behavior/$thisBehavior/reviews/{stone}.role-standards-adherance.md
+        then fix all gaps before you continue.
+
+    # 6. role standards - coverage
+    - slug: has-role-standards-coverage
+      say: |
+        review for coverage of mechanic role standards.
+
+        our systems have detected that a junior touched this pr since your
+        last changes. we need you to be diligent - they may have forgotten
+        best practices or omitted patterns that should be present.
+
+        first, enumerate the rule directories you will check:
+        - list each briefs/ subdirectory relevant to this blueprint
+        - confirm you have not missed any rule categories
+
+        then go through the blueprint line by line, and check:
+        - are all relevant mechanic standards applied?
+        - are there patterns that should be present but are absent?
+        - did the junior forget to include error handle, validation, tests, types, or other required practices?
+
+        emit your findings to .behavior/$thisBehavior/reviews/{stone}.role-standards-coverage.md
+        then fix all gaps before you continue.
+
+    # 7. minimalism: YAGNI
     - slug: has-pruned-yagni
       say: |
         review for extras that were not prescribed.
@@ -50,7 +128,9 @@ reviews:
         if a component was not requested, delete it or flag it as an open question
         for the wisher to decide.
 
-    # 4. minimalism - backwards compat
+        emit findings to .behavior/$thisBehavior/reviews/{stone}.minimalism-yagni.md
+
+    # 8. minimalism: backwards compatibility
     - slug: has-pruned-backcompat
       say: |
         review for backwards compatibility that was not explicitly requested.
@@ -62,10 +142,12 @@ reviews:
 
         if backwards compat was not explicitly requested:
         1. flag it as an open question for the wisher
-        2. eliminate it if not confirmed as required
+        2. plan to eliminate it if not confirmed as required
         3. make the open question very clearly reported
 
-    # 5. consistency - mechanisms
+        emit findings to .behavior/$thisBehavior/reviews/{stone}.minimalism-backcompat.md
+
+    # 9. consistency: mechanisms
     - slug: has-consistent-mechanisms
       say: |
         review for new mechanisms that duplicate extant functionality.
@@ -84,7 +166,9 @@ reviews:
         1. replace with the extant mechanism
         2. or flag as an open question if unsure
 
-    # 6. consistency - conventions
+        emit findings to .behavior/$thisBehavior/reviews/{stone}.consistency-mechanisms.md
+
+    # 10. consistency: conventions
     - slug: has-consistent-conventions
       say: |
         review for divergence from extant names and patterns.
@@ -104,83 +188,7 @@ reviews:
         1. align with the extant convention
         2. or flag as an open question if the extant convention seems wrong
 
-    # 7. behavior declaration - coverage
-    - slug: has-behavior-declaration-coverage
-      say: |
-        review for coverage of the behavior declaration.
-
-        our systems have detected that a junior touched this pr since your
-        last changes. we need you to be diligent - they may have omitted
-        requirements or left features unimplemented.
-
-        go through the behavior's vision and criteria, then check
-        each requirement against the blueprint line by line:
-        - is every requirement from the vision addressed?
-        - is every criterion from the criteria satisfied?
-        - did the junior skip or forget any part of the spec?
-
-        fix all gaps before you continue.
-
-    # 8. behavior declaration - adherance
-    - slug: has-behavior-declaration-adherance
-      say: |
-        review for adherance to the behavior declaration.
-
-        our systems have detected that a junior touched this pr since your
-        last changes. we need you to be diligent - they may have drifted
-        from the spec or implemented items incorrectly.
-
-        go through the blueprint line by line, and check
-        against the behavior's vision and criteria:
-        - does the blueprint match what the vision describes?
-        - does the blueprint satisfy the criteria correctly?
-        - did the junior misinterpret or deviate from the spec?
-
-        fix all gaps before you continue.
-
-    # 9. role standards - adherance
-    - slug: has-role-standards-adherance
-      say: |
-        review for adherance to mechanic role standards.
-
-        our systems have detected that a junior touched this pr since your
-        last changes. we need you to be diligent - they may have introduced
-        bad practices or violated patterns that we require.
-
-        first, enumerate the rule directories you will check:
-        - list each briefs/ subdirectory relevant to this blueprint
-        - confirm you have not missed any rule categories
-
-        then go through the blueprint line by line, and check:
-        - does the blueprint follow mechanic standards correctly?
-        - are there violations of required patterns?
-        - did the junior introduce anti-patterns, bad practices, or deviations from our conventions?
-
-        fix all gaps before you continue.
-
-    # 10. role standards - coverage
-    - slug: has-role-standards-coverage
-      say: |
-        review for coverage of mechanic role standards.
-
-        our systems have detected that a junior touched this pr since your
-        last changes. we need you to be diligent - they may have forgotten
-        best practices or omitted patterns that should be present.
-
-        first, enumerate the rule directories you will check:
-        - list each briefs/ subdirectory relevant to this blueprint
-        - confirm you have not missed any rule categories
-
-        then go through the blueprint line by line, and check:
-        - are all relevant mechanic standards applied?
-        - are there patterns that should be present but are absent?
-        - did the junior forget to include error handle, validation, tests, types, or other required practices?
-
-        fix all gaps before you continue.
-
-  peer:
-    - bash -c ". .agent/repo=.this/role=any/skills/use.apikeys.sh && npx rhachet run --repo bhrain --skill review --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with '$route/3.3.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.failhides.md' --mode hard 2>&1"
+        emit findings to .behavior/$thisBehavior/reviews/{stone}.consistency-conventions.md
 
 judges:
-  - npx rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
   - npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route

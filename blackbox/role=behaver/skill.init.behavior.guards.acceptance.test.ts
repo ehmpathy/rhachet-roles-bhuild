@@ -5,7 +5,17 @@ import * as path from 'path';
 import { given, then, when } from 'test-fns';
 
 /**
- * .what = backdate specific triggered file to bypass bhrain 90-second cooldown
+ * .what = extract self-review slugs from a guard file
+ * .why = dynamically discover reviews instead of hardcoded lists
+ */
+const getSlugsFromGuardFile = (guardPath: string): string[] => {
+  const content = fs.readFileSync(guardPath, 'utf-8');
+  const slugMatches = content.matchAll(/^\s+-\s+slug:\s+(.+)$/gm);
+  return Array.from(slugMatches, (m) => m[1]!.trim());
+};
+
+/**
+ * .what = backdate specific triggered file to bypass bhrain stillness check
  * .why = bhrain checks mtime of triggered files; backdate specific slug per bhrain test pattern
  */
 const backdateTriggeredFile = (input: {
@@ -203,10 +213,10 @@ describe('skill.init.behavior.guards.journey', () => {
    * .why = verifies init.behavior guard templates work with bhrain driver
    *
    * journey covers (heavy mode):
-   *   - vision stone: self-review (8 prompts) + human approval
-   *   - criteria stone: self-review (4 prompts) + human approval
-   *   - blueprint stone: self-review (10 prompts) + human approval
-   *   - execution stone: self-review (4 prompts), no human approval
+   *   - vision stone: self-reviews + human approval
+   *   - criteria stone: self-reviews + human approval
+   *   - blueprint stone: self-reviews + human approval
+   *   - execution stone: self-reviews, no human approval
    */
   given('[case1] full behavior route with guards', () => {
     // scene: consumer repo with behavior initialized
@@ -302,7 +312,7 @@ describe('skill.init.behavior.guards.journey', () => {
       behaviorDirRel = `.behavior/${behaviorDirName}`;
 
       // ═══════════════════════════════════════════════════════════════
-      // VISION STONE: 8 self-reviews + human approval (heavy mode)
+      // VISION STONE: self-reviews + human approval (heavy mode)
       // ═══════════════════════════════════════════════════════════════
       fs.writeFileSync(
         path.join(behaviorDir, '1.vision.md'),
@@ -319,17 +329,12 @@ describe('skill.init.behavior.guards.journey', () => {
         cwd: repoDir,
       });
 
-      // promise all 8 vision self-reviews via bhrain test pattern
-      const visionSlugs = [
-        'has-questioned-fundamentals',
-        'has-questioned-requirements',
-        'has-questioned-assumptions',
-        'has-questioned-inverse',
-        'has-questioned-devils-advocate',
-        'has-questioned-premortem',
-        'has-questioned-5whys',
-        'has-questioned-questions',
-      ];
+      // promise all vision self-reviews via bhrain test pattern
+      const visionSlugs = getSlugsFromGuardFile(
+        path.join(behaviorDir, '1.vision.guard'),
+      );
+      if (visionSlugs.length === 0)
+        throw new Error('no self-review slugs found in 1.vision.guard');
       promiseAllSelfReviews({
         repoDir,
         routeDir,
@@ -353,7 +358,7 @@ describe('skill.init.behavior.guards.journey', () => {
       });
 
       // ═══════════════════════════════════════════════════════════════
-      // CRITERIA STONE: 4 self-reviews + human approval (heavy mode)
+      // CRITERIA STONE: self-reviews + human approval (heavy mode)
       // ═══════════════════════════════════════════════════════════════
       fs.writeFileSync(
         path.join(behaviorDir, '2.1.criteria.blackbox.i1.md'),
@@ -368,13 +373,12 @@ describe('skill.init.behavior.guards.journey', () => {
         cwd: repoDir,
       });
 
-      // promise all 4 criteria self-reviews via bhrain test pattern
-      const criteriaSlugs = [
-        'has-questioned-requirements',
-        'has-questioned-devils-advocate',
-        'has-questioned-counterexamples',
-        'has-questioned-5whys',
-      ];
+      // promise all criteria self-reviews via bhrain test pattern
+      const criteriaSlugs = getSlugsFromGuardFile(
+        path.join(behaviorDir, '2.1.criteria.blackbox.guard'),
+      );
+      if (criteriaSlugs.length === 0)
+        throw new Error('no self-review slugs found in 2.1.criteria.blackbox.guard');
       promiseAllSelfReviews({
         repoDir,
         routeDir,
@@ -406,7 +410,7 @@ describe('skill.init.behavior.guards.journey', () => {
       });
 
       // ═══════════════════════════════════════════════════════════════
-      // BLUEPRINT STONE: 10 self-reviews + human approval (heavy mode)
+      // BLUEPRINT STONE: self-reviews + human approval (heavy mode)
       // ═══════════════════════════════════════════════════════════════
       fs.writeFileSync(
         path.join(behaviorDir, '3.3.blueprint.v1.i1.md'),
@@ -421,19 +425,12 @@ describe('skill.init.behavior.guards.journey', () => {
         cwd: repoDir,
       });
 
-      // promise all 10 blueprint self-reviews via bhrain test pattern
-      const blueprintSlugs = [
-        'has-questioned-deletables',
-        'has-questioned-assumptions',
-        'has-questioned-5whys',
-        'has-questioned-premortem',
-        'has-questioned-inverse',
-        'has-questioned-devils-advocate',
-        'has-behavior-declaration-coverage',
-        'has-behavior-declaration-adherance',
-        'has-role-standards-adherance',
-        'has-role-standards-coverage',
-      ];
+      // promise all blueprint self-reviews via bhrain test pattern
+      const blueprintSlugs = getSlugsFromGuardFile(
+        path.join(behaviorDir, '3.3.blueprint.v1.guard'),
+      );
+      if (blueprintSlugs.length === 0)
+        throw new Error('no self-review slugs found in 3.3.blueprint.v1.guard');
       promiseAllSelfReviews({
         repoDir,
         routeDir,
@@ -479,7 +476,7 @@ describe('skill.init.behavior.guards.journey', () => {
       });
 
       // ═══════════════════════════════════════════════════════════════
-      // EXECUTION STONE: 4 self-reviews, no human approval
+      // EXECUTION STONE: self-reviews, no human approval
       // ═══════════════════════════════════════════════════════════════
       fs.writeFileSync(
         path.join(behaviorDir, '5.1.execution.phase0_to_phaseN.v1.i1.md'),
@@ -494,13 +491,14 @@ describe('skill.init.behavior.guards.journey', () => {
         cwd: repoDir,
       });
 
-      // promise all 4 execution self-reviews via bhrain test pattern
-      const executionSlugs = [
-        'behavior-declaration-coverage',
-        'behavior-declaration-adherance',
-        'role-standards-adherance',
-        'role-standards-coverage',
-      ];
+      // promise all execution self-reviews via bhrain test pattern
+      const executionSlugs = getSlugsFromGuardFile(
+        path.join(behaviorDir, '5.1.execution.phase0_to_phaseN.v1.guard'),
+      );
+      if (executionSlugs.length === 0)
+        throw new Error(
+          'no self-review slugs found in 5.1.execution.phase0_to_phaseN.v1.guard',
+        );
       promiseAllSelfReviews({
         repoDir,
         routeDir,
@@ -530,7 +528,7 @@ describe('skill.init.behavior.guards.journey', () => {
           checkpoints.visionPassWithoutApproval!.stdout +
           checkpoints.visionPassWithoutApproval!.stderr;
         expect(output).toMatchSnapshot();
-        expect(output).toContain('has-questioned-fundamentals');
+        expect(output).toContain('review.self required');
       });
     });
 
@@ -555,7 +553,7 @@ describe('skill.init.behavior.guards.journey', () => {
           checkpoints.criteriaPassWithoutPromise!.stdout +
           checkpoints.criteriaPassWithoutPromise!.stderr;
         expect(output).toMatchSnapshot();
-        expect(output).toContain('has-questioned-requirements');
+        expect(output).toContain('review.self required');
       });
     });
 
@@ -593,7 +591,7 @@ describe('skill.init.behavior.guards.journey', () => {
           checkpoints.blueprintPassWithoutPromises!.stdout +
           checkpoints.blueprintPassWithoutPromises!.stderr;
         expect(output).toMatchSnapshot();
-        expect(output).toContain('has-questioned-deletables');
+        expect(output).toContain('review.self required');
       });
     });
 
@@ -631,7 +629,7 @@ describe('skill.init.behavior.guards.journey', () => {
           checkpoints.executionPassWithoutPromises!.stdout +
           checkpoints.executionPassWithoutPromises!.stderr;
         expect(output).toMatchSnapshot();
-        expect(output).toContain('behavior-declaration-coverage');
+        expect(output).toContain('review.self required');
       });
     });
 
