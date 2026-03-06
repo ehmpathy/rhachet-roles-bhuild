@@ -6,7 +6,6 @@ exports[`init.behavior.flags given: [case6] direct: --open flag with cat command
    ├─ + 0.wish.md
    ├─ + 1.vision.guard
    ├─ + 1.vision.stone
-   ├─ + 2.1.criteria.blackbox.guard
    ├─ + 2.1.criteria.blackbox.stone
    ├─ + 2.2.criteria.blackbox.matrix.stone
    ├─ + 2.3.criteria.blueprint.stone
