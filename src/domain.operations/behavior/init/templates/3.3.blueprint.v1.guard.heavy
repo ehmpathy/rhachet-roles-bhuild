@@ -168,3 +168,4 @@ reviews:
 
 judges:
   - npx rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
+  - npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
