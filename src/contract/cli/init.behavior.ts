@@ -19,6 +19,7 @@ import {
   computeOutputTree,
   initBehaviorDir,
 } from '@src/domain.operations/behavior/init';
+import { expandBehaviorName } from '@src/domain.operations/behavior/name/expandBehaviorName';
 import { computeFooterOutput } from '@src/domain.operations/behavior/render/computeFooterOutput';
 import { getCliArgs } from '@src/infra/cli';
 import { OpenerUnavailableError } from '@src/infra/shell/OpenerUnavailableError';
@@ -50,7 +51,6 @@ const schemaOfArgs = z.object({
 
 export const initBehavior = async (): Promise<void> => {
   const { named } = getCliArgs({ schema: schemaOfArgs });
-  const behaviorName = named.name;
   const context = { cwd: process.cwd() };
   const targetDirRaw = named.dir ?? '.';
 
@@ -68,6 +68,12 @@ export const initBehavior = async (): Promise<void> => {
 
   // get current branch
   const currentBranch = getCurrentBranch({}, context);
+
+  // expand @branch token to behavior name
+  const behaviorName = expandBehaviorName({
+    name: named.name,
+    branch: currentBranch,
+  });
 
   // trim .behavior suffix from target dir if present
   const targetDir = targetDirRaw.replace(/\/?\.behavior\/?$/, '');
