@@ -4,6 +4,9 @@ propose a blueprint for how we can implement the wish described
 with the domain distillation declared
 - in $BEHAVIOR_DIR_REL/3.2.distill.domain._.v1.i1.md (if declared)
 
+with the playloop declared
+- in $BEHAVIOR_DIR_REL/3.2.enframe.playloops.v1.i1.md (if declared)
+
 follow the patterns already present in this repo
 
 ---
@@ -62,6 +65,7 @@ reference the below for full context
 - $BEHAVIOR_DIR_REL/3.1.research.patterns._.oss.levers.v1.i1.md (if declared)
 - $BEHAVIOR_DIR_REL/3.1.research.templates._.v1.i1.md (if declared)
 - $BEHAVIOR_DIR_REL/3.2.distill.domain._.v1.i1.md (if declared)
+- $BEHAVIOR_DIR_REL/3.2.enframe.playloops.v1.i1.md (if declared)
 
 ---
 
