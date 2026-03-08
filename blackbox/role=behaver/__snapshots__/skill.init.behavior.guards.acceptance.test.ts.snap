@@ -87,7 +87,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 "🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
-   └─ ✓ judge.1 - passed 3.4s
+   └─ ✓ judge.1 - passed 0.6s
 
 🗿 route.stone.set
    ├─ stone = 1.vision
@@ -97,7 +97,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
       │   └─ 1.vision.md
       └─ judges
           └─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
-              └─ finished 3.4s ✓"
+              └─ finished 0.6s ✓"
 `;
 
 exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t2] criteria pass attempted without promise then: blocked by unpromised self-review 1`] = `
@@ -183,69 +183,17 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 [0m[31m[0m"
 `;
 
-exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t3] criteria pass attempted with promise but no approval then: blocked by judge 1`] = `
+exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t3] criteria pass attempted after promises then: allowed (no judges) 1`] = `
 "🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
-   └─ ✗ judge.1 - failed 4.2s
 
 🗿 route.stone.set
-   ├─ stone = 2.1.criteria.blackbox
-   ├─ passage = blocked
-   ├─ reason = wait for human approval
-   └─ guard
-      ├─ artifacts
-      │   └─ 2.1.criteria.blackbox.i1.md
-      └─ judges
-          └─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
-              ├─ finished 4.2s ✗
-              └─ reason: wait for human approval[0m[31m[0m
-[0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set[0m
-[0m[31m   └─ ✋ blocked by constraints[0m
-[0m[31m[0m
-[0m[31m🔎 judge 1
-   ├─
-   │
-   │  🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.judge
-   │  
-   │  passed: false
-   │  reason: wait for human approval
-   │  
-   │  ✋ halted, human approval required
-   │     ├─ please ask your human to
-   │     │  └─ rhx route.stone.set --stone 2.1.criteria.blackbox --as approved
-   │     │
-   │     └─ after human approves, run
-   │        └─ rhx route.stone.set --stone 2.1.criteria.blackbox --as passed
-   │  
-   │  [0m[31m[0m
-   │  [0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.judge[0m
-   │  [0m[31m   └─ ✋ blocked by constraints[0m
-   │  [0m[31m[0m
-   │  
-   │  exit code: 1
-   │
-   └─[0m"
+   └─ stone = 2.1.criteria.blackbox
+   └─ passage = allowed (artifacts only)"
 `;
 
-exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t4] criteria pass attempted after approval then: allowed 1`] = `
-"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
-
-🦉 the way speaks for itself
-   └─ ✓ judge.1 - passed 3.9s
-
-🗿 route.stone.set
-   ├─ stone = 2.1.criteria.blackbox
-   ├─ passage = allowed
-   └─ guard
-      ├─ artifacts
-      │   └─ 2.1.criteria.blackbox.i1.md
-      └─ judges
-          └─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
-              └─ finished 3.9s ✓"
-`;
-
-exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t5] blueprint pass attempted without promises then: blocked by unpromised self-review 1`] = `
+exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t4] blueprint pass attempted without promises then: blocked by unpromised self-review 1`] = `
 "🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
@@ -328,13 +276,13 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 [0m[31m[0m"
 `;
 
-exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t6] blueprint pass attempted with promises but no approval then: blocked by judge 1`] = `
+exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t5] blueprint pass attempted with promises but no approval then: blocked by judge 1`] = `
 "🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
-   ├─ ✓ review.1 - done 0.1s
-   ├─ ✓ judge.1 - passed 4.8s
-   └─ ✗ judge.2 - failed 3.5s
+   ├─ ✓ review.1 - done 0.0s
+   ├─ ✓ judge.1 - passed 0.5s
+   └─ ✗ judge.2 - failed 0.5s
 
 🗿 route.stone.set
    ├─ stone = 3.3.blueprint.v1
@@ -345,13 +293,13 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
       │   └─ 3.3.blueprint.v1.i1.md
       ├─ reviews
       │   └─ r1: bash -c ". .agent/repo=.this/role=any/skills/use.apikeys.sh && npx rhachet run --repo bhrain --skill review --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with '$route/3.3.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.failhides.md' --mode hard 2>&1"
-      │       ├─ finished 0.1s ✓
+      │       ├─ finished 0.0s ✓
       │       └─ review: .route/3.3.blueprint.v1.guard.review.i1.2f26d37384e66b5ee1d297c4c4b442c33f7f3f95919edeac42290e626a898964.r1.md
       └─ judges
           ├─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
-          │   └─ finished 4.8s ✓
+          │   └─ finished 0.5s ✓
           └─ j2: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
-              ├─ finished 3.5s ✗
+              ├─ finished 0.5s ✗
               └─ reason: wait for human approval[0m[31m[0m
 [0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set[0m
 [0m[31m   └─ ✋ blocked by constraints[0m
@@ -381,13 +329,13 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    └─[0m"
 `;
 
-exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t7] blueprint pass attempted after approval then: allowed 1`] = `
+exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t6] blueprint pass attempted after approval then: allowed 1`] = `
 "🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
    ├─ ✓ review.1 - done (cached)
-   ├─ ✓ judge.1 - passed 3.6s
-   └─ ✓ judge.2 - passed 4.3s
+   ├─ ✓ judge.1 - passed 0.5s
+   └─ ✓ judge.2 - passed 0.5s
 
 🗿 route.stone.set
    ├─ stone = 3.3.blueprint.v1
@@ -400,12 +348,12 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
       │       └─ · cached
       └─ judges
           ├─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
-          │   └─ finished 3.6s ✓
+          │   └─ finished 0.5s ✓
           └─ j2: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
-              └─ finished 4.3s ✓"
+              └─ finished 0.5s ✓"
 `;
 
-exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t8] execution pass attempted without promises then: blocked by unpromised self-review 1`] = `
+exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t7] execution pass attempted without promises then: blocked by unpromised self-review 1`] = `
 "🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
@@ -492,12 +440,12 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 [0m[31m[0m"
 `;
 
-exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t9] execution pass attempted after promises then: allowed (no judges) 1`] = `
+exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t8] execution pass attempted after promises then: allowed (no judges) 1`] = `
 "🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
    ├─ ✓ review.1 - done 0.0s
-   └─ ✓ judge.1 - passed 4.3s
+   └─ ✓ judge.1 - passed 0.5s
 
 🗿 route.stone.set
    ├─ stone = 5.1.execution.phase0_to_phaseN.v1
@@ -511,5 +459,5 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
       │       └─ review: .route/5.1.execution.phase0_to_phaseN.v1.guard.review.i1.107a1a95cb348e3659a0296f5256810e2582d7ef5faa515848fbf4d414ef9794.r1.md
       └─ judges
           └─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
-              └─ finished 4.3s ✓"
+              └─ finished 0.5s ✓"
 `;
