@@ -30,14 +30,16 @@ describe('initBehaviorDir.integration', () => {
 
         // verify guard files created (without .light suffix)
         expect(result.created).toContain('1.vision.guard');
-        expect(result.created).toContain('3.3.blueprint.v1.guard');
+        expect(result.created).toContain('3.3.1.blueprint.product.v1.guard');
 
         // verify files exist on disk
         expect(fs.existsSync(path.join(behaviorDir, '1.vision.guard'))).toBe(
           true,
         );
         expect(
-          fs.existsSync(path.join(behaviorDir, '3.3.blueprint.v1.guard')),
+          fs.existsSync(
+            path.join(behaviorDir, '3.3.1.blueprint.product.v1.guard'),
+          ),
         ).toBe(true);
 
         // verify no .light or .heavy suffix files created
@@ -52,7 +54,7 @@ describe('initBehaviorDir.integration', () => {
         });
 
         const blueprintGuard = fs.readFileSync(
-          path.join(behaviorDir, '3.3.blueprint.v1.guard'),
+          path.join(behaviorDir, '3.3.1.blueprint.product.v1.guard'),
           'utf-8',
         );
 
@@ -143,7 +145,7 @@ describe('initBehaviorDir.integration', () => {
         // verify guard files created (without .heavy suffix)
         expect(result.created).toContain('1.vision.guard');
         expect(result.created).toContain('2.1.criteria.blackbox.guard');
-        expect(result.created).toContain('3.3.blueprint.v1.guard');
+        expect(result.created).toContain('3.3.1.blueprint.product.v1.guard');
 
         // verify no .light or .heavy suffix files created
         expect(result.created).not.toContain('1.vision.guard.light');
@@ -202,7 +204,7 @@ describe('initBehaviorDir.integration', () => {
         });
 
         const blueprintGuard = fs.readFileSync(
-          path.join(behaviorDir, '3.3.blueprint.v1.guard'),
+          path.join(behaviorDir, '3.3.1.blueprint.product.v1.guard'),
           'utf-8',
         );
 

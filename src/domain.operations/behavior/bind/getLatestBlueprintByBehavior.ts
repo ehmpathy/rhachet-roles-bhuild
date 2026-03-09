@@ -2,18 +2,26 @@ import { readdirSync } from 'fs';
 import { join } from 'path';
 
 /**
- * .what = resolve the latest blueprint version from a behavior directory
+ * .what = find the latest blueprint version from a behavior directory
  * .why  = both hooks and review.deliverable need this logic
  *
  * .note = version precedence:
  *         - v3.i2 > v2.i3 (major version wins)
  *         - v2.i3 > v2.i1 (latest iteration within major)
+ *
+ * .note = factory vs product:
+ *         - 'factory' → 3.3.0.blueprint.factory.*
+ *         - 'product' → 3.3.1.blueprint.product.* or 3.3.blueprint.* (backcompat)
  */
 export const getLatestBlueprintByBehavior = (input: {
   behaviorDir: string;
+  which: 'factory' | 'product';
 }): string | null => {
-  // find all blueprint files matching pattern: *.blueprint.v*.i*.md
-  const blueprintPattern = /\.blueprint\.v(\d+)\.i(\d+)\.md$/;
+  // select pattern based on which blueprint type
+  const blueprintPattern =
+    input.which === 'factory'
+      ? /\.blueprint\.factory\.v(\d+)\.i(\d+)\.md$/
+      : /\.blueprint(?:\.product)?\.v(\d+)\.i(\d+)\.md$/;
 
   let files: string[];
   try {

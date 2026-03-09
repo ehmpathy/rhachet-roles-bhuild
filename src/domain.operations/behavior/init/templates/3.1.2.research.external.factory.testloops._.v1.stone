@@ -1,4 +1,4 @@
-research what enables rapid playtest feedback for
+research what test frameworks enable rapid verification feedback for
 - this wish $BEHAVIOR_DIR_REL/0.wish.md
 - this vision $BEHAVIOR_DIR_REL/1.vision.md (if declared)
 - this criteria $BEHAVIOR_DIR_REL/2.1.criteria.blackbox.md (if declared)
@@ -55,10 +55,10 @@ use web search to discover and research
 ---
 
 remember
-- this is to research what enables rapid playtest feedback
+- this is to research what test frameworks enable rapid verification feedback
 - focus on the fundamental experience that needs reproduction
-- the goal is to inform the enframe.playloops stone
+- the goal is to inform the factory blueprint
 
 ---
 
-emit into $BEHAVIOR_DIR_REL/3.1.research.playloop._.v1.i1.md
+emit into $BEHAVIOR_DIR_REL/3.1.2.research.external.factory.testloops._.v1.i1.md
