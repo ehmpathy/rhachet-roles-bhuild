@@ -53,7 +53,7 @@ describe('init.behavior.scaffold', () => {
           true,
         );
         expect(
-          fs.existsSync(path.join(behaviorDir, '3.3.blueprint.v1.guard')),
+          fs.existsSync(path.join(behaviorDir, '3.3.1.blueprint.product.v1.guard')),
         ).toBe(true);
       });
 

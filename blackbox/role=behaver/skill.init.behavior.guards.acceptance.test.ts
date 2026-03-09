@@ -394,7 +394,7 @@ describe('skill.init.behavior.guards.journey', () => {
       // BLUEPRINT STONE: self-reviews + human approval (heavy mode)
       // ═══════════════════════════════════════════════════════════════
       fs.writeFileSync(
-        path.join(behaviorDir, '3.3.blueprint.v1.i1.md'),
+        path.join(behaviorDir, '3.3.1.blueprint.product.v1.i1.md'),
         '# Blueprint\n\nTest blueprint.',
       );
 
@@ -402,21 +402,21 @@ describe('skill.init.behavior.guards.journey', () => {
       checkpoints.blueprintPassWithoutPromises = runSkill({
         repo: 'bhrain',
         skill: 'route.stone.set',
-        args: `--stone 3.3.blueprint.v1 --route ${behaviorDirRel} --as passed`,
+        args: `--stone 3.3.1.blueprint.product.v1 --route ${behaviorDirRel} --as passed`,
         cwd: repoDir,
       });
 
       // promise all blueprint self-reviews via bhrain test pattern
       const blueprintSlugs = getSlugsFromGuardFile(
-        path.join(behaviorDir, '3.3.blueprint.v1.guard'),
+        path.join(behaviorDir, '3.3.1.blueprint.product.v1.guard'),
       );
       if (blueprintSlugs.length === 0)
-        throw new Error('no self-review slugs found in 3.3.blueprint.v1.guard');
+        throw new Error('no self-review slugs found in 3.3.1.blueprint.product.v1.guard');
       promiseAllSelfReviews({
         repoDir,
         routeDir,
         routeRel: behaviorDirRel,
-        stone: '3.3.blueprint.v1',
+        stone: '3.3.1.blueprint.product.v1',
         slugs: blueprintSlugs,
       });
 
@@ -424,7 +424,7 @@ describe('skill.init.behavior.guards.journey', () => {
       checkpoints.blueprintPassWithPromisesNoApproval = runSkill({
         repo: 'bhrain',
         skill: 'route.stone.set',
-        args: `--stone 3.3.blueprint.v1 --route ${behaviorDirRel} --as passed`,
+        args: `--stone 3.3.1.blueprint.product.v1 --route ${behaviorDirRel} --as passed`,
         cwd: repoDir,
       });
 
@@ -432,13 +432,13 @@ describe('skill.init.behavior.guards.journey', () => {
       runSkill({
         repo: 'bhrain',
         skill: 'route.stone.set',
-        args: `--stone 3.3.blueprint.v1 --route ${behaviorDirRel} --as approved`,
+        args: `--stone 3.3.1.blueprint.product.v1 --route ${behaviorDirRel} --as approved`,
         cwd: repoDir,
       });
       checkpoints.blueprintPassAfterApproval = runSkill({
         repo: 'bhrain',
         skill: 'route.stone.set',
-        args: `--stone 3.3.blueprint.v1 --route ${behaviorDirRel} --as passed`,
+        args: `--stone 3.3.1.blueprint.product.v1 --route ${behaviorDirRel} --as passed`,
         cwd: repoDir,
       });
 
@@ -635,7 +635,7 @@ describe('skill.init.behavior.guards.journey', () => {
 
         expect(passedStones).toContain('1.vision');
         expect(passedStones).toContain('2.1.criteria.blackbox');
-        expect(passedStones).toContain('3.3.blueprint.v1');
+        expect(passedStones).toContain('3.3.1.blueprint.product.v1');
         expect(passedStones).toContain('4.1.roadmap.v1');
         expect(passedStones).toContain('5.1.execution.phase0_to_phaseN.v1');
       });

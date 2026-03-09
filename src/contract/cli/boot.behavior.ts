@@ -110,10 +110,22 @@ export const bootBehavior = (): void => {
     outputBehaviorFile('criteria', `${behaviorDir}/2.criteria.md`, false);
   }
 
-  // output latest blueprint (optional)
-  const latestBlueprint = getLatestBlueprintByBehavior({ behaviorDir });
-  if (latestBlueprint && existsSync(latestBlueprint)) {
-    outputBehaviorFile('blueprint', latestBlueprint, false);
+  // output latest factory blueprint (optional - the machine that builds the machine)
+  const latestFactoryBlueprint = getLatestBlueprintByBehavior({
+    behaviorDir,
+    which: 'factory',
+  });
+  if (latestFactoryBlueprint && existsSync(latestFactoryBlueprint)) {
+    outputBehaviorFile('blueprint-factory', latestFactoryBlueprint, false);
+  }
+
+  // output latest product blueprint (optional - the deliverable)
+  const latestProductBlueprint = getLatestBlueprintByBehavior({
+    behaviorDir,
+    which: 'product',
+  });
+  if (latestProductBlueprint && existsSync(latestProductBlueprint)) {
+    outputBehaviorFile('blueprint', latestProductBlueprint, false);
   }
 
   console.log('==================================================');
