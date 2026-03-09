@@ -225,7 +225,90 @@ describe('initBehaviorDir.integration', () => {
     });
   });
 
-  given('[case3] guard level change after init', () => {
+  given('[case3] verification and playtest templates', () => {
+    when('[t0] initBehaviorDir is called', () => {
+      then('creates 5.3.verification.v1.stone', () => {
+        const result = initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+        });
+
+        expect(result.created).toContain('5.3.verification.v1.stone');
+        expect(
+          fs.existsSync(path.join(behaviorDir, '5.3.verification.v1.stone')),
+        ).toBe(true);
+
+        const content = fs.readFileSync(
+          path.join(behaviorDir, '5.3.verification.v1.stone'),
+          'utf-8',
+        );
+        expect(content).toContain('.what');
+        expect(content).toContain('.why');
+        expect(content).toContain('.how');
+      });
+
+      then('creates 5.3.verification.v1.guard with self-reviews', () => {
+        const result = initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+        });
+
+        expect(result.created).toContain('5.3.verification.v1.guard');
+
+        const content = fs.readFileSync(
+          path.join(behaviorDir, '5.3.verification.v1.guard'),
+          'utf-8',
+        );
+        expect(content).toContain('has-behavior-coverage');
+        expect(content).toContain('has-zero-test-skips');
+        expect(content).toContain('has-all-tests-passed');
+        // no judges on verification guard
+        expect(content).not.toContain('judges:');
+      });
+
+      then('creates 5.5.playtest.v1.stone', () => {
+        const result = initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+        });
+
+        expect(result.created).toContain('5.5.playtest.v1.stone');
+        expect(
+          fs.existsSync(path.join(behaviorDir, '5.5.playtest.v1.stone')),
+        ).toBe(true);
+
+        const content = fs.readFileSync(
+          path.join(behaviorDir, '5.5.playtest.v1.stone'),
+          'utf-8',
+        );
+        expect(content).toContain('.what');
+        expect(content).toContain('.why');
+        expect(content).toContain('.how');
+      });
+
+      then('creates 5.5.playtest.v1.guard with self-reviews and judge', () => {
+        const result = initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+        });
+
+        expect(result.created).toContain('5.5.playtest.v1.guard');
+
+        const content = fs.readFileSync(
+          path.join(behaviorDir, '5.5.playtest.v1.guard'),
+          'utf-8',
+        );
+        expect(content).toContain('has-clear-instructions');
+        expect(content).toContain('has-vision-coverage');
+        expect(content).toContain('has-edgecase-coverage');
+        // playtest guard has approved? judge
+        expect(content).toContain('judges:');
+        expect(content).toContain('approved?');
+      });
+    });
+  });
+
+  given('[case4] guard level change after init', () => {
     when(
       '[t0] behavior already has light guards, called again with heavy',
       () => {
