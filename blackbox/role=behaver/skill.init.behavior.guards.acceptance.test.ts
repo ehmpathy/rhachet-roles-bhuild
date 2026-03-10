@@ -4,6 +4,8 @@ import * as path from 'path';
 
 import { given, then, when } from 'test-fns';
 
+import { asSnapshotStable } from './.test/skill.init.behavior.utils';
+
 /**
  * .what = extract self-review slugs from a guard file
  * .why = dynamically discover reviews instead of hardcoded lists
@@ -508,7 +510,7 @@ describe('skill.init.behavior.guards.journey', () => {
         const output =
           checkpoints.visionPassWithoutApproval!.stdout +
           checkpoints.visionPassWithoutApproval!.stderr;
-        expect(output).toMatchSnapshot();
+        expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('review.self required');
       });
     });
@@ -519,7 +521,7 @@ describe('skill.init.behavior.guards.journey', () => {
         const output =
           checkpoints.visionPassAfterApproval!.stdout +
           checkpoints.visionPassAfterApproval!.stderr;
-        expect(output).toMatchSnapshot();
+        expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('passage = allowed');
       });
     });
@@ -533,7 +535,7 @@ describe('skill.init.behavior.guards.journey', () => {
         const output =
           checkpoints.criteriaPassWithoutPromise!.stdout +
           checkpoints.criteriaPassWithoutPromise!.stderr;
-        expect(output).toMatchSnapshot();
+        expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('review.self required');
       });
     });
@@ -544,7 +546,7 @@ describe('skill.init.behavior.guards.journey', () => {
         const output =
           checkpoints.criteriaPassAfterPromises!.stdout +
           checkpoints.criteriaPassAfterPromises!.stderr;
-        expect(output).toMatchSnapshot();
+        expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('passage = allowed');
       });
     });
@@ -558,7 +560,7 @@ describe('skill.init.behavior.guards.journey', () => {
         const output =
           checkpoints.blueprintPassWithoutPromises!.stdout +
           checkpoints.blueprintPassWithoutPromises!.stderr;
-        expect(output).toMatchSnapshot();
+        expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('review.self required');
       });
     });
@@ -571,7 +573,7 @@ describe('skill.init.behavior.guards.journey', () => {
         const output =
           checkpoints.blueprintPassWithPromisesNoApproval!.stdout +
           checkpoints.blueprintPassWithPromisesNoApproval!.stderr;
-        expect(output).toMatchSnapshot();
+        expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output.toLowerCase()).toContain('judge');
       });
     });
@@ -582,7 +584,7 @@ describe('skill.init.behavior.guards.journey', () => {
         const output =
           checkpoints.blueprintPassAfterApproval!.stdout +
           checkpoints.blueprintPassAfterApproval!.stderr;
-        expect(output).toMatchSnapshot();
+        expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('passage = allowed');
       });
     });
@@ -596,7 +598,7 @@ describe('skill.init.behavior.guards.journey', () => {
         const output =
           checkpoints.executionPassWithoutPromises!.stdout +
           checkpoints.executionPassWithoutPromises!.stderr;
-        expect(output).toMatchSnapshot();
+        expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('review.self required');
       });
     });
@@ -607,7 +609,7 @@ describe('skill.init.behavior.guards.journey', () => {
         const output =
           checkpoints.executionPassAfterPromises!.stdout +
           checkpoints.executionPassAfterPromises!.stderr;
-        expect(output).toMatchSnapshot();
+        expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('passage = allowed');
       });
     });

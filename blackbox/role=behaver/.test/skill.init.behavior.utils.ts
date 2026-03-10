@@ -23,7 +23,9 @@ export const asSnapshotStable = (stdout: string): string =>
     // mask iso dates in behavior dir names: v2026_02_23 -> v{DATE}
     .replace(/v\d{4}_\d{2}_\d{2}/g, 'v{DATE}')
     // mask branch-specific bind flags: .bind.feature.foo.flag -> .bind.{BRANCH}.flag
-    .replace(/\.bind\.[a-z0-9._-]+\.flag/gi, '.bind.{BRANCH}.flag');
+    .replace(/\.bind\.[a-z0-9._-]+\.flag/gi, '.bind.{BRANCH}.flag')
+    // mask time values: "passed 3.6s" -> "passed [time]"
+    .replace(/\d+\.\d+s/g, '[time]');
 
 export const SCRIPT_PATH = path.join(
   __dirname,
