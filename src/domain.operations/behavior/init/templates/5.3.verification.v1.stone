@@ -63,6 +63,11 @@ this is your roadmap. emit it first, then work through it step by step.
 - [ ] no silent credential bypasses
 - [ ] no prior failures carried forward
 
+### snapshot coverage for contract outputs
+- [ ] new cli commands have `.snap` snapshots for stdout/stderr
+- [ ] new app screens have `.snap` snapshots for screenshots
+- [ ] snapshot demonstrates actual output, not just "it ran"
+
 ### tests executed
 - [ ] `npm run test` — passed
 

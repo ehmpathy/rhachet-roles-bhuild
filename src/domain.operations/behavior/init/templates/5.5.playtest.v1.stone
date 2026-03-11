@@ -74,6 +74,10 @@ emit to
 ### prerequisites
 - what your crew needs before start (dependencies, setup, access)
 
+### sandbox
+- all os.fileops (file creates, writes, deletes) must target `@gitroot/.temp/`
+- never pollute the repo root or other directories in playtest steps
+
 ### happy paths
 1. [action] → [expected outcome]
 2. [action] → [expected outcome]
