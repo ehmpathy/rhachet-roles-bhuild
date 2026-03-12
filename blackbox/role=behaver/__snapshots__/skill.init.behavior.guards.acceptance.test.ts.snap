@@ -189,8 +189,8 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 🦉 the way speaks for itself
 
 🗿 route.stone.set
-   └─ stone = 2.1.criteria.blackbox
-      └─ passage = allowed (artifacts only)"
+   ├─ stone = 2.1.criteria.blackbox
+   └─ passage = allowed (artifacts only)"
 `;
 
 exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t4] blueprint pass attempted without promises then: blocked by unpromised self-review 1`] = `
