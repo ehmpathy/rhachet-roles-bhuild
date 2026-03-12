@@ -21,6 +21,9 @@ exports[`init.behavior.scaffold given: [case3] direct: unbound branch when: [t0]
    ├─ + 3.1.3.research.internal.product.code.test._.v1.stone
    ├─ + 3.1.4.research.internal.factory.blockers._.v1.stone
    ├─ + 3.1.4.research.internal.factory.opports._.v1.stone
+   ├─ + 3.1.5.research.reflection.product.audience._.v1.stone
+   ├─ + 3.1.5.research.reflection.product.premortem._.v1.stone
+   ├─ + 3.1.5.research.reflection.product.rootcause._.v1.stone
    ├─ + 3.2.distill.domain._.v1.stone
    ├─ + 3.2.distill.factory.upgrades._.v1.stone
    ├─ + 3.2.distill.repros.experience._.v1.stone
