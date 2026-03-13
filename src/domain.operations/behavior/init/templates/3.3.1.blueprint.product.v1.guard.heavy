@@ -1,6 +1,9 @@
 # guard for blueprint stone
 # includes standardized self-review frame + human approval
 
+protect:
+  - src/**/*
+
 reviews:
   self:
     # 1. delete before optimize
