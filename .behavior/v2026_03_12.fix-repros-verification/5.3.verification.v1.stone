@@ -33,17 +33,16 @@ you fix it yourself. you exhaust every option: debug, research, try alternatives
 ## .how
 
 reference the below for full context
-- $BEHAVIOR_DIR_REL/0.wish.md
-- $BEHAVIOR_DIR_REL/1.vision.md
-- $BEHAVIOR_DIR_REL/2.1.criteria.blackbox.md (if declared)
-- $BEHAVIOR_DIR_REL/3.2.distill.repros.experience.*.md (if declared) ← **repros artifact**
+- .behavior/v2026_03_12.fix-repros-verification/0.wish.md
+- .behavior/v2026_03_12.fix-repros-verification/1.vision.md
+- .behavior/v2026_03_12.fix-repros-verification/2.1.criteria.blackbox.md (if declared)
 
 ---
 
 ### step 1: emit verification checklist
 
 emit to
-- $BEHAVIOR_DIR_REL/5.3.verification.v1.i1.md
+- .behavior/v2026_03_12.fix-repros-verification/5.3.verification.v1.i1.md
 
 this is your roadmap. emit it first, then work through it step by step.
 
@@ -52,14 +51,11 @@ this is your roadmap. emit it first, then work through it step by step.
 ```
 ## verification checklist
 
-### behavior coverage (with reference to repros)
-
-for each journey sketched in repros, verify it was implemented with snapshots.
-
-| journey (from repros) | test file | snapshots? | critical path? | ergonomics ok? | status |
-|-----------------------|-----------|------------|----------------|----------------|--------|
-| {journey 1}           | {path}    | ✓ / ✗      | ✓ frictionless / needs work | ✓ natural / needs work | ⏳ |
-| {journey 2}           | {path}    | ✓ / ✗      | ✓ frictionless / needs work | ✓ natural / needs work | ⏳ |
+### behavior coverage
+| behavior (from wish/vision) | test file | status |
+|-----------------------------|-----------|--------|
+| {behavior 1}                | {path}    | ⏳     |
+| {behavior 2}                | {path}    | ⏳     |
 ...
 
 ### zero skips verified
@@ -159,7 +155,7 @@ handoff is the absolute last resort. you must exhaust every option before you co
 if you need to emit a handoff:
 
 emit to
-- $BEHAVIOR_DIR_REL/5.3.verification.handoff.v$N.to_foreman.md
+- .behavior/v2026_03_12.fix-repros-verification/5.3.verification.handoff.v$N.to_foreman.md
 
 **handoff must include:**
 1. what you tried (list every approach you attempted)

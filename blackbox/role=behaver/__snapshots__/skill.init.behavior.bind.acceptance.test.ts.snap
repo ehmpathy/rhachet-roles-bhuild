@@ -26,6 +26,7 @@ exports[`init.behavior.bind given: [case8] direct: route bind output when: [t0] 
    ├─ + 3.1.5.research.reflection.product.rootcause._.v1.stone
    ├─ + 3.2.distill.domain._.v1.stone
    ├─ + 3.2.distill.factory.upgrades._.v1.stone
+   ├─ + 3.2.distill.repros.experience._.v1.guard
    ├─ + 3.2.distill.repros.experience._.v1.stone
    ├─ + 3.3.0.blueprint.factory.v1.stone
    ├─ + 3.3.1.blueprint.product.v1.guard
@@ -33,6 +34,8 @@ exports[`init.behavior.bind given: [case8] direct: route bind output when: [t0] 
    ├─ + 4.1.roadmap.v1.stone
    ├─ + 5.1.execution.phase0_to_phaseN.v1.guard
    ├─ + 5.1.execution.phase0_to_phaseN.v1.stone
+   ├─ + 5.2.evaluation.v1.guard
+   ├─ + 5.2.evaluation.v1.stone
    ├─ + 5.3.verification.v1.guard
    ├─ + 5.3.verification.v1.stone
    ├─ + 5.5.playtest.v1.guard

@@ -341,4 +341,252 @@ describe('initBehaviorDir.integration', () => {
       },
     );
   });
+
+  given('[case5] repros stone and guard', () => {
+    when('[t0] initBehaviorDir is called', () => {
+      then('creates repros guard with 3 self-reviews', () => {
+        const result = initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+        });
+
+        expect(result.created).toContain(
+          '3.2.distill.repros.experience._.v1.guard',
+        );
+
+        const guardContent = fs.readFileSync(
+          path.join(behaviorDir, '3.2.distill.repros.experience._.v1.guard'),
+          'utf-8',
+        );
+
+        expect(guardContent).toContain('has-critical-paths-identified');
+        expect(guardContent).toContain('has-ergonomics-reviewed');
+        expect(guardContent).toContain('has-play-test-convention');
+      });
+
+      then('repros stone includes journey sketch guidance', () => {
+        initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+        });
+
+        const stoneContent = fs.readFileSync(
+          path.join(behaviorDir, '3.2.distill.repros.experience._.v1.stone'),
+          'utf-8',
+        );
+
+        expect(stoneContent).toContain('journey test sketches');
+        expect(stoneContent).toContain('given/when/then');
+        expect(stoneContent).toContain('[tN]');
+      });
+
+      then('repros stone includes input/output pairs guidance', () => {
+        initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+        });
+
+        const stoneContent = fs.readFileSync(
+          path.join(behaviorDir, '3.2.distill.repros.experience._.v1.stone'),
+          'utf-8',
+        );
+
+        expect(stoneContent).toContain('input/output pairs');
+        expect(stoneContent).toContain('snapshot target');
+      });
+
+      then('repros stone includes critical paths section', () => {
+        initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+        });
+
+        const stoneContent = fs.readFileSync(
+          path.join(behaviorDir, '3.2.distill.repros.experience._.v1.stone'),
+          'utf-8',
+        );
+
+        expect(stoneContent).toContain('## critical paths');
+        expect(stoneContent).toContain('happy paths');
+      });
+
+      then('repros stone includes ergonomics section', () => {
+        initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+        });
+
+        const stoneContent = fs.readFileSync(
+          path.join(behaviorDir, '3.2.distill.repros.experience._.v1.stone'),
+          'utf-8',
+        );
+
+        expect(stoneContent).toContain('## ergonomics review');
+        expect(stoneContent).toContain('feel natural');
+      });
+    });
+  });
+
+  given('[case6] verification stone and guard enhancements', () => {
+    when('[t0] initBehaviorDir is called', () => {
+      then('verification stone references repros artifact', () => {
+        initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+        });
+
+        const stoneContent = fs.readFileSync(
+          path.join(behaviorDir, '5.3.verification.v1.stone'),
+          'utf-8',
+        );
+
+        expect(stoneContent).toContain('3.2.distill.repros.experience');
+        expect(stoneContent).toContain('repros artifact');
+      });
+
+      then('verification stone has enhanced behavior coverage table', () => {
+        initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+        });
+
+        const stoneContent = fs.readFileSync(
+          path.join(behaviorDir, '5.3.verification.v1.stone'),
+          'utf-8',
+        );
+
+        expect(stoneContent).toContain('snapshots?');
+        expect(stoneContent).toContain('critical path?');
+        expect(stoneContent).toContain('ergonomics ok?');
+      });
+
+      then('verification guard has 9 total self-reviews', () => {
+        initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+        });
+
+        const guardContent = fs.readFileSync(
+          path.join(behaviorDir, '5.3.verification.v1.guard'),
+          'utf-8',
+        );
+
+        // 4 retained reviews
+        expect(guardContent).toContain('has-behavior-coverage');
+        expect(guardContent).toContain('has-zero-test-skips');
+        expect(guardContent).toContain('has-all-tests-passed');
+        expect(guardContent).toContain('has-preserved-test-intentions');
+
+        // 5 new reviews
+        expect(guardContent).toContain('has-journey-tests-from-repros');
+        expect(guardContent).toContain('has-snapshot-coverage');
+        expect(guardContent).toContain('has-critical-paths-frictionless');
+        expect(guardContent).toContain('has-ergonomics-validated');
+        expect(guardContent).toContain('has-play-test-convention');
+      });
+    });
+  });
+
+  given('[case7] evaluation stone and guard', () => {
+    when('[t0] initBehaviorDir is called', () => {
+      then('creates 5.2.evaluation.v1.stone', () => {
+        const result = initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+        });
+
+        expect(result.created).toContain('5.2.evaluation.v1.stone');
+        expect(
+          fs.existsSync(path.join(behaviorDir, '5.2.evaluation.v1.stone')),
+        ).toBe(true);
+      });
+
+      then('evaluation stone mirrors blueprint structure', () => {
+        initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+        });
+
+        const stoneContent = fs.readFileSync(
+          path.join(behaviorDir, '5.2.evaluation.v1.stone'),
+          'utf-8',
+        );
+
+        // mirrors blueprint sections
+        expect(stoneContent).toContain('## summary (as implemented)');
+        expect(stoneContent).toContain('## filediff tree (as implemented)');
+        expect(stoneContent).toContain('## codepath tree (as implemented)');
+        expect(stoneContent).toContain('## test coverage (as implemented)');
+      });
+
+      then('evaluation stone includes divergence analysis', () => {
+        initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+        });
+
+        const stoneContent = fs.readFileSync(
+          path.join(behaviorDir, '5.2.evaluation.v1.stone'),
+          'utf-8',
+        );
+
+        expect(stoneContent).toContain('## divergence analysis');
+        expect(stoneContent).toContain('### divergences found');
+        expect(stoneContent).toContain('### divergence resolution');
+        expect(stoneContent).toContain('repair');
+        expect(stoneContent).toContain('backup');
+      });
+
+      then('evaluation stone references blueprint artifact', () => {
+        initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+        });
+
+        const stoneContent = fs.readFileSync(
+          path.join(behaviorDir, '5.2.evaluation.v1.stone'),
+          'utf-8',
+        );
+
+        expect(stoneContent).toContain('3.3.1.blueprint.product.v1');
+        expect(stoneContent).toContain('.behavior/v2025_01_01.test-feature');
+      });
+
+      then('creates 5.2.evaluation.v1.guard with 4 self-reviews', () => {
+        const result = initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+        });
+
+        expect(result.created).toContain('5.2.evaluation.v1.guard');
+
+        const guardContent = fs.readFileSync(
+          path.join(behaviorDir, '5.2.evaluation.v1.guard'),
+          'utf-8',
+        );
+
+        expect(guardContent).toContain('has-complete-implementation-record');
+        expect(guardContent).toContain('has-divergence-analysis');
+        expect(guardContent).toContain('has-divergence-addressed');
+        expect(guardContent).toContain('has-no-silent-scope-creep');
+      });
+
+      then('evaluation guard checks divergences skeptically', () => {
+        initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+        });
+
+        const guardContent = fs.readFileSync(
+          path.join(behaviorDir, '5.2.evaluation.v1.guard'),
+          'utf-8',
+        );
+
+        // skeptical checks of backups
+        expect(guardContent).toContain('skeptical');
+        expect(guardContent).toContain('laziness');
+        expect(guardContent).toContain('rationale');
+      });
+    });
+  });
 });
