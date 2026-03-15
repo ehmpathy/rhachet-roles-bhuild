@@ -88,6 +88,15 @@ const promiseAllSelfReviews = (input: {
       slug,
     });
 
+    // 3.5. create articulation file (bhrain requires content before promise)
+    const behaviorDir = path.dirname(input.routeDir); // routeDir is .behavior/{name}/.route
+    const reviewDir = path.join(behaviorDir, 'review', 'self');
+    fs.mkdirSync(reviewDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(reviewDir, `${input.stone}.${i + 1}.${slug}.md`),
+      `# ${slug}\n\nTest articulation for ${slug}.`,
+    );
+
     // 4. promise this review
     try {
       execSync(
@@ -203,8 +212,41 @@ const genConsumerRepoWithBhrain = (input: {
   });
   execSync('npx rhachet roles link --repo bhrain --role driver', {
     cwd: repoDir,
-    stdio: 'pipe',
   });
+
+  // create dummy use.apikeys.sh (peer reviews source this, but no real keys needed in tests)
+  const apikeysDir = path.join(repoDir, '.agent', 'repo=.this', 'role=any', 'skills');
+  fs.mkdirSync(apikeysDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(apikeysDir, 'use.apikeys.sh'),
+    '#!/usr/bin/env bash\n# dummy for tests - no API keys needed\n',
+  );
+  fs.chmodSync(path.join(apikeysDir, 'use.apikeys.sh'), 0o755);
+
+  // create stub review skill (peer reviews invoke this, outputs success with no issues)
+  const reviewSkillDir = path.join(repoDir, '.agent', 'repo=bhrain', 'role=driver', 'skills');
+  fs.mkdirSync(reviewSkillDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(reviewSkillDir, 'review.sh'),
+    `#!/usr/bin/env bash
+# stub review skill for tests - outputs success with no blockers
+OUTPUT=""
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --output) OUTPUT="$2"; shift 2 ;;
+    *) shift ;;
+  esac
+done
+if [[ -n "$OUTPUT" ]]; then
+  mkdir -p "$(dirname "$OUTPUT")"
+  echo "# peer review (stub)" > "$OUTPUT"
+  echo "" >> "$OUTPUT"
+  echo "no blockers found." >> "$OUTPUT"
+fi
+exit 0
+`,
+  );
+  fs.chmodSync(path.join(reviewSkillDir, 'review.sh'), 0o755);
 
   return { repoDir, cleanup };
 };
@@ -422,6 +464,17 @@ describe('skill.init.behavior.guards.journey', () => {
         slugs: blueprintSlugs,
       });
 
+      // create mock peer review file (reviewed? judge requires peer review artifacts)
+      const blueprintReviewsDir = path.join(routeDir, '.reviews');
+      fs.mkdirSync(blueprintReviewsDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(
+          blueprintReviewsDir,
+          '3.3.1.blueprint.product.v1.peer-review.failhides.md',
+        ),
+        '# peer review\n\nno blockers found.\n',
+      );
+
       // try pass with promises but no approval → blocked by judge
       checkpoints.blueprintPassWithPromisesNoApproval = runSkill({
         repo: 'bhrain',
@@ -489,6 +542,17 @@ describe('skill.init.behavior.guards.journey', () => {
         stone: '5.1.execution.phase0_to_phaseN.v1',
         slugs: executionSlugs,
       });
+
+      // create mock peer review file (reviewed? judge requires peer review artifacts)
+      fs.writeFileSync(
+        path.join(
+          routeDir,
+          '.reviews',
+          '5.1.execution.phase0_to_phaseN.v1.peer-review.failhides.md',
+        ),
+        '# peer review\n\nno blockers found.\n',
+      );
+
       checkpoints.executionPassAfterPromises = runSkill({
         repo: 'bhrain',
         skill: 'route.stone.set',

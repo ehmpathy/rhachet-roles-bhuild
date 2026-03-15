@@ -76,7 +76,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ walk the way 🪷
    │  │
    │  ├─ articulate into
-   │  │  └─ /review/self/1.vision.has-questioned-fundamentals.md
+   │  │  └─ /review/self/1.vision.1.has-questioned-fundamentals.md
    │  │
    │  ├─ for each found issue 🪘
    │  │  ├─
@@ -105,7 +105,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 "🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
-   └─ ✓ judge.1 - passed [time]
+   └─ ✓ judge.1 - allowed [time]
 
 🗿 route.stone.set
    ├─ stone = 1.vision
@@ -194,7 +194,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ walk the way 🪷
    │  │
    │  ├─ articulate into
-   │  │  └─ /review/self/2.1.criteria.blackbox.has-questioned-requirements.md
+   │  │  └─ /review/self/2.1.criteria.blackbox.1.has-questioned-requirements.md
    │  │
    │  ├─ for each found issue 🪘
    │  │  ├─
@@ -305,7 +305,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ walk the way 🪷
    │  │
    │  ├─ articulate into
-   │  │  └─ /review/self/3.3.1.blueprint.product.v1.has-questioned-deletables.md
+   │  │  └─ /review/self/3.3.1.blueprint.product.v1.1.has-questioned-deletables.md
    │  │
    │  ├─ for each found issue 🪘
    │  │  ├─
@@ -334,9 +334,9 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 "🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
-   ├─ ✓ review.1 - done [time]
-   ├─ ✓ judge.1 - passed [time]
-   └─ ✗ judge.2 - failed [time]
+   ├─ ✓ review.1 - completed [time]
+   ├─ ✓ judge.1 - allowed [time]
+   └─ ✗ judge.2 - blocked [time]
 
 🗿 route.stone.set
    ├─ stone = 3.3.1.blueprint.product.v1
@@ -358,38 +358,44 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 [0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set[0m
 [0m[31m   └─ ✋ blocked by constraints[0m
 [0m[31m[0m
-[0m[31m🔎 judge 2
-   ├─
-   │
-   │  🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.judge
-   │  
-   │  passed: false
-   │  reason: wait for human approval
-   │  
-   │  ✋ halted, human approval required
-   │     ├─ please ask your human to
-   │     │  └─ rhx route.stone.set --stone 3.3.1.blueprint.product.v1 --as approved
-   │     │
-   │     └─ after human approves, run
-   │        └─ rhx route.stone.set --stone 3.3.1.blueprint.product.v1 --as passed
-   │  
-   │  [0m[31m[0m
-   │  [0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.judge[0m
-   │  [0m[31m   └─ ✋ blocked by constraints[0m
-   │  [0m[31m[0m
-   │  
-   │  exit code: 1
-   │
-   └─[0m"
+[0m[31m🪶 judge 2
+   ├─ stdout
+   │  ├─
+   │  │
+   │  │  🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.judge
+   │  │  
+   │  │  passed: false
+   │  │  reason: wait for human approval
+   │  │  
+   │  │  ✋ halted, human approval required
+   │  │     ├─ please ask your human to
+   │  │     │  └─ rhx route.stone.set --stone 3.3.1.blueprint.product.v1 --as approved
+   │  │     │
+   │  │     └─ after human approves, run
+   │  │        └─ rhx route.stone.set --stone 3.3.1.blueprint.product.v1 --as passed
+   │  │
+   │  └─
+   ├─ stderr
+   │  ├─
+   │  │
+   │  │  [0m[31m[0m
+   │  │  [0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.judge[0m
+   │  │  [0m[31m   └─ ✋ blocked by constraints[0m
+   │  │  [0m[31m[0m
+   │  │
+   │  └─
+   └─ passage blocked
+      ├─ blocked by constraints
+      └─ exit code: 2 ✋[0m"
 `;
 
 exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t6] blueprint pass attempted after approval then: allowed 1`] = `
 "🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
-   ├─ ✓ review.1 - done (cached)
-   ├─ ✓ judge.1 - passed [time]
-   └─ ✓ judge.2 - passed [time]
+   ├─ ✓ review.1 - completed (cached)
+   ├─ ✓ judge.1 - allowed [time]
+   └─ ✓ judge.2 - allowed [time]
 
 🗿 route.stone.set
    ├─ stone = 3.3.1.blueprint.product.v1
@@ -487,7 +493,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ walk the way 🪷
    │  │
    │  ├─ articulate into
-   │  │  └─ /review/self/5.1.execution.phase0_to_phaseN.v1.has-pruned-yagni.md
+   │  │  └─ /review/self/5.1.execution.phase0_to_phaseN.v1.1.has-pruned-yagni.md
    │  │
    │  ├─ for each found issue 🪘
    │  │  ├─
@@ -516,8 +522,8 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 "🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
-   ├─ ✓ review.1 - done [time]
-   └─ ✓ judge.1 - passed [time]
+   ├─ ✓ review.1 - completed [time]
+   └─ ✓ judge.1 - allowed [time]
 
 🗿 route.stone.set
    ├─ stone = 5.1.execution.phase0_to_phaseN.v1
