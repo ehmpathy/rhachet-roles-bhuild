@@ -460,7 +460,7 @@ describe('initBehaviorDir.integration', () => {
         expect(stoneContent).toContain('ergonomics ok?');
       });
 
-      then('verification guard has 9 total self-reviews', () => {
+      then('verification guard has 10 total self-reviews', () => {
         initBehaviorDir({
           behaviorDir,
           behaviorDirRel: '.behavior/v2025_01_01.test-feature',
@@ -477,9 +477,10 @@ describe('initBehaviorDir.integration', () => {
         expect(guardContent).toContain('has-all-tests-passed');
         expect(guardContent).toContain('has-preserved-test-intentions');
 
-        // 5 new reviews
+        // 6 new reviews
         expect(guardContent).toContain('has-journey-tests-from-repros');
-        expect(guardContent).toContain('has-snapshot-coverage');
+        expect(guardContent).toContain('has-contract-output-variants-snapped');
+        expect(guardContent).toContain('has-snap-changes-rationalized');
         expect(guardContent).toContain('has-critical-paths-frictionless');
         expect(guardContent).toContain('has-ergonomics-validated');
         expect(guardContent).toContain('has-play-test-convention');

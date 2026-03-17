@@ -68,9 +68,37 @@ for each journey sketched in repros, verify it was implemented with snapshots.
 - [ ] no prior failures carried forward
 
 ### snapshot coverage for contract outputs
-- [ ] new cli commands have `.snap` snapshots for stdout/stderr
-- [ ] new app screens have `.snap` snapshots for screenshots
-- [ ] snapshot demonstrates actual output, not just "it ran"
+
+each public contract needs dedicated snapshots that demonstrate its stdout for:
+- **vibechecks in prs** — reviewers see actual output without executing code
+- **drift detection** — changes to output surface in diffs over time
+
+| contract | output variants | snapshot file | status |
+|----------|-----------------|---------------|--------|
+| {command 1} | success, error, help | {path.snap} | ⏳ |
+| {command 2} | success, error, help | {path.snap} | ⏳ |
+...
+
+checklist:
+- [ ] every new cli command has `.snap` snapshots for stdout/stderr
+- [ ] every new app screen has `.snap` snapshots for screenshots
+- [ ] every new sdk method has `.snap` snapshots for responses
+- [ ] each output variant is exercised (success, error, edge cases)
+- [ ] snapshots demonstrate actual output, not just "it ran"
+
+### snapshot change rationalization
+
+for each `.snap` file changed, rationalize whether the change was intended or accidental:
+
+| snap file | change type | intended? | rationale |
+|-----------|-------------|-----------|-----------|
+| {path.snap} | added / modified / deleted | yes / no | {why this change is correct} |
+...
+
+checklist:
+- [ ] every `.snap` change has been reviewed
+- [ ] intended changes have clear rationale
+- [ ] accidental changes have been reverted or justified as improvements
 
 ### tests executed
 - [ ] `npm run test` — passed

@@ -85,33 +85,20 @@ importers:
         specifier: 30.2.0
         version: 30.2.0(@types/node@22.15.21)(esbuild-register@3.6.0(esbuild@0.25.12))(ts-node@10.9.2(@swc/core@1.15.3)(@types/node@22.15.21)(typescript@5.4.5))
       rhachet:
-<<<<<<< HEAD
-        specifier: 1.37.14
-        version: 1.37.14(zod@4.3.4)
+        specifier: 1.37.17
+        version: 1.37.17(zod@4.3.4)
       rhachet-brains-anthropic:
-        specifier: 0.3.3
-        version: 0.3.3(rhachet@1.37.14(zod@4.3.4))
-=======
-        specifier: 1.37.15
-        version: 1.37.15(zod@4.3.4)
-      rhachet-brains-anthropic:
-        specifier: 0.3.3
-        version: 0.3.3(rhachet@1.37.15(zod@4.3.4))
->>>>>>> 975de2a (fix(templates): enhance repros and verification with pit of success principles)
+        specifier: 0.4.0
+        version: 0.4.0(rhachet@1.37.17(zod@4.3.4))
       rhachet-roles-bhrain:
-        specifier: 0.18.1
-        version: 0.18.1(@types/node@22.15.21)
+        specifier: 0.20.2
+        version: 0.20.2(@types/node@22.15.21)
       rhachet-roles-bhuild:
         specifier: link:.
         version: 'link:'
       rhachet-roles-ehmpathy:
-<<<<<<< HEAD
-        specifier: 1.27.12
-        version: 1.27.12(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))(@types/node@22.15.21)(rhachet@1.37.14(zod@4.3.4))
-=======
-        specifier: 1.27.13
-        version: 1.27.13(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))(@types/node@22.15.21)(rhachet@1.37.15(zod@4.3.4))
->>>>>>> 975de2a (fix(templates): enhance repros and verification with pit of success principles)
+        specifier: 1.29.1
+        version: 1.29.1(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))(@types/node@22.15.21)(rhachet@1.37.17(zod@4.3.4))
       tsc-alias:
         specifier: 1.8.10
         version: 1.8.10
@@ -4041,8 +4028,8 @@ packages:
     resolution: {integrity: sha512-yzDL+Dv1az5WGpVvrRZT6gLBwDAzxLO/7newlyrfMM+ku91PFR9OvlADoqyulBCCUWnazv3eXl0vzrIyak4hAQ==}
     engines: {node: '>=8.0.0'}
 
-  rhachet-brains-anthropic@0.3.3:
-    resolution: {integrity: sha512-TRWAxs18GAFXO7GNxs27OOUCMqg/WdZNCXLGSDHY3vaRWrlaoh9e7GrUGNm3ju55A3X950bQUSNawyO6tKvLWw==}
+  rhachet-brains-anthropic@0.4.0:
+    resolution: {integrity: sha512-84VilMmja+9qKc4xV+ao/mHoA1wo+H4fIOApN1zIh86E5NfzOwO3Ij2kU+VU6fqdzs0353ZirEFXV3VNkA4epA==}
     engines: {node: '>=8.0.0'}
     peerDependencies:
       rhachet: '>=1.21.4'
@@ -4053,29 +4040,20 @@ packages:
     peerDependencies:
       rhachet: '>=1.21.4'
 
-  rhachet-roles-bhrain@0.18.1:
-    resolution: {integrity: sha512-AEpTCksEm2eKc+At8jsINpTYeU7L+zET1d9CnFbn6T3Mrs9ESVMOvWonpA0kPzPjJGw0kuoOoI2BUOi532z/Bg==}
+  rhachet-roles-bhrain@0.20.2:
+    resolution: {integrity: sha512-/DYAsMsOEDGDtD7rfrEKke1oAuzvuHBHJtDW+4PIzPBmmEHPUli/F/AfE7NYMOzTj6R31D2v316hkRYi9DTAxw==}
     engines: {node: '>=8.0.0'}
 
   rhachet-roles-bhrain@0.7.5:
     resolution: {integrity: sha512-O2zRlITFHmpTHbS3E5PUODlqAWWVt+xV44uu3P3RSLygcgFrG8q9NekLMJTMBsnL2ug4S8mNU7Ji7wCwjkX7qg==}
     engines: {node: '>=8.0.0'}
 
-<<<<<<< HEAD
-  rhachet-roles-ehmpathy@1.27.12:
-    resolution: {integrity: sha512-sf4tBX9T/cNw3uCuSiKW5H/vDJLQ7w9nyKRb+jKonKZleKCOHGlL2KJfmdTDAlVhTWlXtzCMkv9u/5Ttr7Ypew==}
+  rhachet-roles-ehmpathy@1.29.1:
+    resolution: {integrity: sha512-pd+ffSHqImIqgPcX/2fs2qgrmwd3bgF4mRBKgBL9WudBd/Cjpe1HTKyEPSlXKwRgCHaCLpvkeOUDSqb9uM1MbQ==}
     engines: {node: '>=8.0.0'}
 
-  rhachet@1.37.14:
-    resolution: {integrity: sha512-WauILSFtStgc+xxkBvXBktxy5De9o9QZnQOJMs2vlHKsmPamgemkt/wevyz3K5bsKsWeVhecqU+hoEXeLlz9UA==}
-=======
-  rhachet-roles-ehmpathy@1.27.13:
-    resolution: {integrity: sha512-NfVUMftIC4k1Wyu1lbK9p0P2pokD9JFYYVGJj9GpDqKUJE0POcoDpVRxzxVlqQhRPEM5SxQhGWXenwNO/reXcg==}
-    engines: {node: '>=8.0.0'}
-
-  rhachet@1.37.15:
-    resolution: {integrity: sha512-SDKeAqDQ2nANxPoI7T7dRMjeT6dQuF28tR0GxoSi/XWX1e09PfJ2l574ihjy7xInZ0B4oySpYacYVOaxOpgE6w==}
->>>>>>> 975de2a (fix(templates): enhance repros and verification with pit of success principles)
+  rhachet@1.37.17:
+    resolution: {integrity: sha512-KwwODCTvQYRTBcuxoqala6IYsWJ4vLqGb8wl0d9+MrggZxboQGLBEgtF+K4qI+e7SCKHOUCm6sAMoiUKBsKokw==}
     engines: {node: '>=22.0.0'}
     hasBin: true
     peerDependencies:
@@ -7797,13 +7775,8 @@ snapshots:
       domain-objects: 0.31.3
       helpful-errors: 1.5.3
       joi: 17.4.0
-<<<<<<< HEAD
-      rhachet: 1.37.14(zod@4.3.4)
-      rhachet-roles-ehmpathy: 1.27.12(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))(@types/node@22.15.21)(rhachet@1.37.14(zod@4.3.4))
-=======
-      rhachet: 1.37.15(zod@4.3.4)
-      rhachet-roles-ehmpathy: 1.27.13(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))(@types/node@22.15.21)(rhachet@1.37.15(zod@4.3.4))
->>>>>>> 975de2a (fix(templates): enhance repros and verification with pit of success principles)
+      rhachet: 1.37.17(zod@4.3.4)
+      rhachet-roles-ehmpathy: 1.29.1(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))(@types/node@22.15.21)(rhachet@1.37.17(zod@4.3.4))
       type-fns: 1.21.0
       uuid-fns: 1.1.3
     transitivePeerDependencies:
@@ -9365,11 +9338,7 @@ snapshots:
       domain-objects: 0.31.9
       helpful-errors: 1.5.3
 
-<<<<<<< HEAD
-  rhachet-brains-anthropic@0.3.3(rhachet@1.37.14(zod@4.3.4)):
-=======
-  rhachet-brains-anthropic@0.3.3(rhachet@1.37.15(zod@4.3.4)):
->>>>>>> 975de2a (fix(templates): enhance repros and verification with pit of success principles)
+  rhachet-brains-anthropic@0.4.0(rhachet@1.37.17(zod@4.3.4)):
     dependencies:
       '@anthropic-ai/claude-agent-sdk': 0.1.76(zod@4.3.4)
       '@anthropic-ai/sdk': 0.71.2(zod@4.3.4)
@@ -9377,31 +9346,19 @@ snapshots:
       helpful-errors: 1.5.3
       iso-price: 1.1.1(domain-objects@0.31.9)
       iso-time: 1.11.1
-<<<<<<< HEAD
-      rhachet: 1.37.14(zod@4.3.4)
-=======
-      rhachet: 1.37.15(zod@4.3.4)
->>>>>>> 975de2a (fix(templates): enhance repros and verification with pit of success principles)
+      rhachet: 1.37.17(zod@4.3.4)
       rhachet-artifact: 1.0.1
       rhachet-artifact-git: 1.1.5
       type-fns: 1.21.0
       zod: 4.3.4
 
-<<<<<<< HEAD
-  rhachet-brains-xai@0.2.1(@types/node@22.15.21)(rhachet@1.37.14(zod@4.3.4)):
-=======
-  rhachet-brains-xai@0.2.1(@types/node@22.15.21)(rhachet@1.37.15(zod@4.3.4)):
->>>>>>> 975de2a (fix(templates): enhance repros and verification with pit of success principles)
+  rhachet-brains-xai@0.2.1(@types/node@22.15.21)(rhachet@1.37.17(zod@4.3.4)):
     dependencies:
       domain-objects: 0.31.9
       helpful-errors: 1.5.3
       iso-price: 1.1.1(domain-objects@0.31.9)
       openai: 5.8.2(zod@4.3.4)
-<<<<<<< HEAD
-      rhachet: 1.37.14(zod@4.3.4)
-=======
-      rhachet: 1.37.15(zod@4.3.4)
->>>>>>> 975de2a (fix(templates): enhance repros and verification with pit of success principles)
+      rhachet: 1.37.17(zod@4.3.4)
       rhachet-artifact: 1.0.1
       rhachet-artifact-git: 1.1.5
       rhachet-roles-bhrain: 0.7.5(@types/node@22.15.21)
@@ -9412,7 +9369,7 @@ snapshots:
       - aws-crt
       - ws
 
-  rhachet-roles-bhrain@0.18.1(@types/node@22.15.21):
+  rhachet-roles-bhrain@0.20.2(@types/node@22.15.21):
     dependencies:
       '@ehmpathy/as-command': 1.0.3
       '@ehmpathy/uni-time': 1.8.1
@@ -9465,11 +9422,7 @@ snapshots:
       - aws-crt
       - ws
 
-<<<<<<< HEAD
-  rhachet-roles-ehmpathy@1.27.12(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))(@types/node@22.15.21)(rhachet@1.37.14(zod@4.3.4)):
-=======
-  rhachet-roles-ehmpathy@1.27.13(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))(@types/node@22.15.21)(rhachet@1.37.15(zod@4.3.4)):
->>>>>>> 975de2a (fix(templates): enhance repros and verification with pit of success principles)
+  rhachet-roles-ehmpathy@1.29.1(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))(@types/node@22.15.21)(rhachet@1.37.17(zod@4.3.4)):
     dependencies:
       '@atjsh/llmlingua-2': 2.0.3(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))(js-tiktoken@1.0.21)
       '@ehmpathy/as-command': 1.0.3
@@ -9483,11 +9436,7 @@ snapshots:
       openai: 5.8.2(zod@4.3.4)
       rhachet-artifact: 1.0.0
       rhachet-artifact-git: 1.1.0
-<<<<<<< HEAD
-      rhachet-brains-xai: 0.2.1(@types/node@22.15.21)(rhachet@1.37.14(zod@4.3.4))
-=======
-      rhachet-brains-xai: 0.2.1(@types/node@22.15.21)(rhachet@1.37.15(zod@4.3.4))
->>>>>>> 975de2a (fix(templates): enhance repros and verification with pit of success principles)
+      rhachet-brains-xai: 0.2.1(@types/node@22.15.21)(rhachet@1.37.17(zod@4.3.4))
       serde-fns: 1.2.0
       simple-in-memory-cache: 0.4.0
       simple-on-disk-cache: 1.7.3
@@ -9504,11 +9453,7 @@ snapshots:
       - rhachet
       - ws
 
-<<<<<<< HEAD
-  rhachet@1.37.14(zod@4.3.4):
-=======
-  rhachet@1.37.15(zod@4.3.4):
->>>>>>> 975de2a (fix(templates): enhance repros and verification with pit of success principles)
+  rhachet@1.37.17(zod@4.3.4):
     dependencies:
       '@noble/curves': 2.0.1
       '@noble/hashes': 2.0.1
