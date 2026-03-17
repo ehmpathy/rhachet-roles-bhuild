@@ -24,5 +24,36 @@ reviews:
         - what inputs are unusual but valid?
         - are boundaries tested?
 
+    - slug: has-acceptance-test-citations
+      say: |
+        coverage check: cite the acceptance test for each playtest step.
+
+        for each step in the playtest:
+        - which acceptance test file verifies this behavior?
+        - which specific test case (given/when/then) covers it?
+        - cite the exact file path and test name
+
+        if a step lacks acceptance test coverage:
+        - is this a gap that needs a new test?
+        - or is this behavior untestable via automation?
+
+        the playtest and acceptance tests should align. cite the proof.
+
+    - slug: has-self-run-verification
+      say: |
+        dogfood check: did you run the playtest yourself?
+
+        before you hand off to the foreman, run every step yourself:
+        - follow each instruction exactly as written
+        - verify each expected outcome matches reality
+        - note any friction, confusion, or absent context
+
+        if you found issues while you ran it:
+        - did you fix the instructions?
+        - did you update expected outcomes?
+        - is the playtest now accurate to what you observed?
+
+        the foreman deserves a playtest that works. prove it works by self-test first.
+
 judges:
   - npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
