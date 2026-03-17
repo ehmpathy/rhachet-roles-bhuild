@@ -67,19 +67,51 @@ reviews:
 
         if any journey was planned but not implemented, go back and add it.
 
-    - slug: has-snapshot-coverage
+    - slug: has-contract-output-variants-snapped
       say: |
-        double-check: do snapshots capture input/output for caller visibility?
+        double-check: does each public contract have snapshots for all output variants?
 
-        for each journey test:
-        - does it have `.toMatchSnapshot()` or equivalent assertions?
-        - does the snapshot show what the caller would actually see?
-        - for CLI: is stdout/stderr captured?
-        - for UI: are screens captured?
-        - for SDK: are responses captured?
+        for each new or modified public contract (cli command, sdk method, api endpoint):
+        - is there a dedicated snapshot file with `.toMatchSnapshot()` or equivalent?
+        - does the snapshot capture what the caller would actually see?
+        - does it exercise the success case?
+        - does it exercise error cases?
+        - does it exercise edge cases and variants (e.g., --help, empty input)?
 
-        snapshots let reviewers see the actual output without the need to run the code.
-        if snapshots are absent, the reviewer can't verify the user experience.
+        output types to capture:
+        - for CLI: stdout/stderr
+        - for UI: screens
+        - for SDK: responses
+
+        why this matters:
+        - snapshots enable vibecheck in prs — reviewers see actual output without execute
+        - snapshots detect drift over time — output changes surface in diffs
+        - absent variants mean blind spots in review
+
+        if a contract lacks variant coverage, add the test cases now.
+
+    - slug: has-snap-changes-rationalized
+      say: |
+        double-check: is every `.snap` file change intentional and justified?
+
+        for each `.snap` file in git diff:
+        1. what changed? (added, modified, deleted)
+        2. was this change intended or accidental?
+        3. if intended: what is the rationale?
+        4. if accidental: revert it or explain why the new output is an improvement
+
+        common regressions caught here:
+        - output format degraded (lost alignment, lost structure)
+        - error messages became less helpful
+        - timestamps or ids leaked into snapshots (flaky)
+        - extra output added unintentionally
+
+        forbidden:
+        - "updated snapshots" without per-file rationale
+        - bulk snapshot updates without review
+        - regressions accepted without justification
+
+        every snap change tells a story. make sure the story is intentional.
 
     - slug: has-critical-paths-frictionless
       say: |
