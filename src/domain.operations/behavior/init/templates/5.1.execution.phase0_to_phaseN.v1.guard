@@ -1,6 +1,10 @@
 # guard for execution stone
 # includes standardized self-review frame
 
+artifacts:
+  # track actual implementation in src/
+  - "src/**/*"
+
 reviews:
   self:
     # 1. minimalism - yagni

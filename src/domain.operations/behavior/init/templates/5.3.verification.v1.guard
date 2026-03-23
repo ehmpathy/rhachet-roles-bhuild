@@ -1,3 +1,7 @@
+artifacts:
+  # track actual implementation in src/
+  - "src/**/*"
+
 reviews:
   self:
     - slug: has-behavior-coverage
