@@ -2,6 +2,8 @@
 # includes standardized self-review frame
 
 artifacts:
+  # track execution progress
+  - "$route/5.1.execution.phase0_to_phaseN.v1.i1.md"
   # track actual implementation in src/
   - "src/**/*"
 
