@@ -3,8 +3,9 @@ evaluate what was implemented against the blueprint
 .what = articulate exactly what was implemented, then check for divergences from blueprint.
 
 .why = the blueprint declared what the execution would adhere to.
-- divergences may be intentional improvements or accidental drift
-- each divergence must be either repaired or backed up with rationale
+- divergences are NOT allowed
+- default action is REPAIR — fix implementation to match blueprint
+- if repair is impossible, raise BLOCKER and request human approval
 - this gate prevents silent deviations from approved design
 
 ---
@@ -68,20 +69,21 @@ for each section (summary, filediff, codepath, test coverage), compare:
 
 ### divergence resolution
 
-for each divergence, you must either:
+for each divergence:
 
-**repair** — fix the implementation to match the blueprint:
+**repair** (default) — fix the implementation to match the blueprint:
 - what needs to change to match blueprint?
 - make the change, then update the "as implemented" section above
 
-**backup** — document why the divergence is acceptable:
-- why did the implementation diverge?
-- why is the divergence better than the blueprint?
-- should the blueprint be updated for future reference?
+**blocker** (only if repair is impossible) — request human approval:
+- why is repair impossible?
+- what constraint prevents adherence to blueprint?
+- run `rhx route.stone.set --as blocked` to declare yourself blocked and request human approval
+- STOP and await human decision before you proceed
 
 | divergence | resolution | rationale |
 |------------|------------|-----------|
-| ... | repair/backup | ... |
+| ... | repair/blocker | ... |
 
 ---
 

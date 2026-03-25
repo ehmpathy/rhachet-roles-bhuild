@@ -76,7 +76,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ walk the way 🪷
    │  │
    │  ├─ articulate into
-   │  │  └─ /review/self/1.vision.1.has-questioned-fundamentals.md
+   │  │  └─ /review/self/for.1.vision._.r1.has-questioned-fundamentals.md
    │  │
    │  ├─ for each found issue 🪘
    │  │  ├─
@@ -110,12 +110,15 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 🗿 route.stone.set
    ├─ stone = 1.vision
    ├─ passage = allowed
-   └─ guard
-      ├─ artifacts
-      │   └─ 1.vision.md
-      └─ judges
-          └─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
-              └─ finished [time] ✓"
+   ├─ guard
+   │  ├─ artifacts
+   │  │   └─ 1.vision.md
+   │  └─ judges
+   │      └─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
+   │          └─ finished [time] ✓
+   │
+   └─ the way continues, run
+      └─ rhx route.drive"
 `;
 
 exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t2] criteria pass attempted without promise then: blocked by unpromised self-review 1`] = `
@@ -194,7 +197,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ walk the way 🪷
    │  │
    │  ├─ articulate into
-   │  │  └─ /review/self/2.1.criteria.blackbox.1.has-questioned-requirements.md
+   │  │  └─ /review/self/for.2.1.criteria.blackbox._.r1.has-questioned-requirements.md
    │  │
    │  ├─ for each found issue 🪘
    │  │  ├─
@@ -226,7 +229,10 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 
 🗿 route.stone.set
    ├─ stone = 2.1.criteria.blackbox
-   └─ passage = allowed (artifacts only)"
+   ├─ passage = allowed (artifacts only)
+   │
+   └─ the way continues, run
+      └─ rhx route.drive"
 `;
 
 exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t4] blueprint pass attempted without promises then: blocked by unpromised self-review 1`] = `
@@ -275,6 +281,19 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │  │
    │  │  try hard to delete before you optimize:
    │  │  
+   │  │    ## features
+   │  │  
+   │  │    for each feature in the blueprint, ask:
+   │  │    - does this feature trace to a requirement in the criteria?
+   │  │    - did the wisher explicitly ask for this feature?
+   │  │    - or did we assume it was needed?
+   │  │  
+   │  │    if a feature has no traceability to vision or criteria:
+   │  │    1. delete it
+   │  │    2. or flag it as an open question for the wisher
+   │  │  
+   │  │    ## components
+   │  │  
    │  │    for each component, ask:
    │  │    - can this be removed entirely?
    │  │    - if we deleted this and had to add it back, would we?
@@ -305,7 +324,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ walk the way 🪷
    │  │
    │  ├─ articulate into
-   │  │  └─ /review/self/3.3.1.blueprint.product.v1.1.has-questioned-deletables.md
+   │  │  └─ /review/self/for.3.3.1.blueprint.product.v1._.r1.has-questioned-deletables.md
    │  │
    │  ├─ for each found issue 🪘
    │  │  ├─
@@ -400,17 +419,20 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 🗿 route.stone.set
    ├─ stone = 3.3.1.blueprint.product.v1
    ├─ passage = allowed
-   └─ guard
-      ├─ artifacts
-      │   └─ 3.3.1.blueprint.product.v1.i1.md
-      ├─ reviews
-      │   └─ r1: bash -c ". .agent/repo=.this/role=any/skills/use.apikeys.sh && npx rhachet run --repo bhrain --skill review --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with '$route/3.3.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.failhides.md' --mode hard 2>&1"
-      │       └─ · cached
-      └─ judges
-          ├─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
-          │   └─ finished [time] ✓
-          └─ j2: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
-              └─ finished [time] ✓"
+   ├─ guard
+   │  ├─ artifacts
+   │  │   └─ 3.3.1.blueprint.product.v1.i1.md
+   │  ├─ reviews
+   │  │   └─ r1: bash -c ". .agent/repo=.this/role=any/skills/use.apikeys.sh && npx rhachet run --repo bhrain --skill review --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with '$route/3.3.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.failhides.md' --mode hard 2>&1"
+   │  │       └─ · cached
+   │  └─ judges
+   │      ├─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
+   │      │   └─ finished [time] ✓
+   │      └─ j2: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
+   │          └─ finished [time] ✓
+   │
+   └─ the way continues, run
+      └─ rhx route.drive"
 `;
 
 exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t7] execution pass attempted without promises then: blocked by unpromised self-review 1`] = `
@@ -493,7 +515,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ walk the way 🪷
    │  │
    │  ├─ articulate into
-   │  │  └─ /review/self/5.1.execution.phase0_to_phaseN.v1.1.has-pruned-yagni.md
+   │  │  └─ /review/self/for.5.1.execution.phase0_to_phaseN.v1._.r1.has-pruned-yagni.md
    │  │
    │  ├─ for each found issue 🪘
    │  │  ├─
@@ -528,14 +550,17 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 🗿 route.stone.set
    ├─ stone = 5.1.execution.phase0_to_phaseN.v1
    ├─ passage = allowed
-   └─ guard
-      ├─ artifacts
-      │   └─ 5.1.execution.phase0_to_phaseN.v1.i1.md
-      ├─ reviews
-      │   └─ r1: bash -c ". .agent/repo=.this/role=any/skills/use.apikeys.sh && npx rhachet run --repo bhrain --skill review --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with 'src/**/*.ts' --join intersect --output '$route/.reviews/$stone.peer-review.failhides.md' --mode hard 2>&1"
-      │       ├─ finished [time] ✓
-      │       └─ review: .route/5.1.execution.phase0_to_phaseN.v1.guard.review.i1.107a1a95cb348e3659a0296f5256810e2582d7ef5faa515848fbf4d414ef9794.r1.md
-      └─ judges
-          └─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
-              └─ finished [time] ✓"
+   ├─ guard
+   │  ├─ artifacts
+   │  │   └─ index.ts
+   │  ├─ reviews
+   │  │   └─ r1: bash -c ". .agent/repo=.this/role=any/skills/use.apikeys.sh && npx rhachet run --repo bhrain --skill review --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with 'src/**/*.ts' --join intersect --output '$route/.reviews/$stone.peer-review.failhides.md' --mode hard 2>&1"
+   │  │       ├─ finished [time] ✓
+   │  │       └─ review: .route/5.1.execution.phase0_to_phaseN.v1.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r1.md
+   │  └─ judges
+   │      └─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
+   │          └─ finished [time] ✓
+   │
+   └─ the way continues, run
+      └─ rhx route.drive"
 `;

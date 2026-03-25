@@ -11,6 +11,19 @@ reviews:
       say: |
         try hard to delete before you optimize:
 
+        ## features
+
+        for each feature in the blueprint, ask:
+        - does this feature trace to a requirement in the criteria?
+        - did the wisher explicitly ask for this feature?
+        - or did we assume it was needed?
+
+        if a feature has no traceability to vision or criteria:
+        1. delete it
+        2. or flag it as an open question for the wisher
+
+        ## components
+
         for each component, ask:
         - can this be removed entirely?
         - if we deleted this and had to add it back, would we?

@@ -89,11 +89,12 @@ const promiseAllSelfReviews = (input: {
     });
 
     // 3.5. create articulation file (bhrain requires content before promise)
+    // bhrain expects pattern: for.{stone}._.r{N}.{slug}.md
     const behaviorDir = path.dirname(input.routeDir); // routeDir is .behavior/{name}/.route
     const reviewDir = path.join(behaviorDir, 'review', 'self');
     fs.mkdirSync(reviewDir, { recursive: true });
     fs.writeFileSync(
-      path.join(reviewDir, `${input.stone}.${i + 1}.${slug}.md`),
+      path.join(reviewDir, `for.${input.stone}._.r${i + 1}.${slug}.md`),
       `# ${slug}\n\nTest articulation for ${slug}.`,
     );
 
@@ -334,6 +335,19 @@ describe('skill.init.behavior.guards.journey', () => {
       repoDir = consumer.repoDir;
       cleanup = consumer.cleanup;
 
+      // create initial src/ structure (execution guard requires src/**/* artifacts)
+      // this is committed early so we can modify it later to show a diff
+      const srcDir = path.join(repoDir, 'src');
+      fs.mkdirSync(srcDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(srcDir, 'index.ts'),
+        '// initial placeholder\nexport const version = "0.0.0";\n',
+      );
+      execSync('git add src/ && git commit -m "add initial src structure"', {
+        cwd: repoDir,
+        stdio: 'pipe',
+      });
+
       // initialize behavior with heavy guards (tests full guard journey)
       runSkill({
         repo: 'bhuild',
@@ -514,10 +528,24 @@ describe('skill.init.behavior.guards.journey', () => {
       // ═══════════════════════════════════════════════════════════════
       // EXECUTION STONE: self-reviews, no human approval
       // ═══════════════════════════════════════════════════════════════
+
+      // modify src/ to create artifact diff (execution guard requires src/**/* artifacts)
+      // src/index.ts was created earlier, now we modify it to simulate implementation work
       fs.writeFileSync(
-        path.join(behaviorDir, '5.1.execution.phase0_to_phaseN.v1.i1.md'),
-        '# Execution\n\nTest execution.',
+        path.join(repoDir, 'src', 'index.ts'),
+        '// test implementation file\nexport const foo = 1;\nexport const bar = 2;\n',
       );
+
+      // artifact path is $route/5.1.execution...i1.md, so create in routeDir
+      const i1Path = path.join(
+        routeDir,
+        '5.1.execution.phase0_to_phaseN.v1.i1.md',
+      );
+      fs.writeFileSync(i1Path, '# Execution\n\nTest execution.');
+
+      // force-add i1.md (ignored by .route/.gitignore) and stage src changes
+      // bhrain artifact detection requires uncommitted staged/modified changes
+      execSync(`git add -f "${i1Path}" src/`, { cwd: repoDir, stdio: 'pipe' });
 
       // try pass without promises → blocked
       checkpoints.executionPassWithoutPromises = runSkill({
