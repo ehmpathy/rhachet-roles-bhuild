@@ -535,7 +535,7 @@ describe('initBehaviorDir.integration', () => {
         expect(stoneContent).toContain('### divergences found');
         expect(stoneContent).toContain('### divergence resolution');
         expect(stoneContent).toContain('repair');
-        expect(stoneContent).toContain('backup');
+        expect(stoneContent).toContain('blocker');
       });
 
       then('evaluation stone references blueprint artifact', () => {
