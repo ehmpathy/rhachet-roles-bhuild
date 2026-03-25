@@ -91,8 +91,8 @@ importers:
         specifier: 0.4.0
         version: 0.4.0(rhachet@1.38.0(zod@4.3.4))
       rhachet-roles-bhrain:
-        specifier: 0.23.8
-        version: 0.23.8(@types/node@22.15.21)(rhachet-brains-xai@0.3.2(rhachet@1.38.0(zod@4.3.4)))
+        specifier: 0.23.9
+        version: 0.23.9(@types/node@22.15.21)(rhachet-brains-xai@0.3.2(rhachet@1.38.0(zod@4.3.4)))
       rhachet-roles-bhuild:
         specifier: link:.
         version: 'link:'
@@ -4162,8 +4162,8 @@ packages:
     peerDependencies:
       rhachet: '>=1.21.4'
 
-  rhachet-roles-bhrain@0.23.8:
-    resolution: {integrity: sha512-q3emg3ibFajCDHrmqsjvyGu1y+ZzAsxes995kYEvaBQCnCL7PkxXylSpTkZYAcWvdtkePlgD183NjdZilwWW5A==}
+  rhachet-roles-bhrain@0.23.9:
+    resolution: {integrity: sha512-Q/P27MKSqA6wH9rQW+NvIhBUUgB2cfgR3WZGYuiDuM5UbG83j5W5bRnZ4DFWjwimgoNICSfDd4G+uDcq4ZG49w==}
     engines: {node: '>=8.0.0'}
     peerDependencies:
       rhachet-brains-xai: '>=0.3.0'
@@ -9643,7 +9643,7 @@ snapshots:
     transitivePeerDependencies:
       - ws
 
-  rhachet-roles-bhrain@0.23.8(@types/node@22.15.21)(rhachet-brains-xai@0.3.2(rhachet@1.38.0(zod@4.3.4))):
+  rhachet-roles-bhrain@0.23.9(@types/node@22.15.21)(rhachet-brains-xai@0.3.2(rhachet@1.38.0(zod@4.3.4))):
     dependencies:
       '@ehmpathy/as-command': 1.0.3
       '@ehmpathy/uni-time': 1.8.1
