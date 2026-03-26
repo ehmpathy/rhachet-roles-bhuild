@@ -10,7 +10,8 @@ import {
   SKILL_PATH,
 } from './.test/utils';
 
-describe('review.behavior', () => {
+// .note = deprecated: anthropic api key disabled, queued for xai brain integration
+describe.skip('review.behavior', () => {
   given('ambiguous behavior name', () => {
     const scene = useBeforeAll(async () => {
       const fixture = path.join(FIXTURES_PATH, 'ambiguous-behavior');

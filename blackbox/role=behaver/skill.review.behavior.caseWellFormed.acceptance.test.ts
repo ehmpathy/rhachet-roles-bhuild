@@ -10,7 +10,8 @@ import {
   SKILL_PATH,
 } from './.test/utils';
 
-describe('review.behavior', () => {
+// .note = deprecated: anthropic api key disabled, queued for xai brain integration
+describe.skip('review.behavior', () => {
   given('[case9] behavior with well-formed artifacts', () => {
     const scene = useBeforeAll(async () => {
       const fixture = path.join(FIXTURES_PATH, 'behavior-well-formed');
