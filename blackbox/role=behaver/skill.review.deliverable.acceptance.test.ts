@@ -53,7 +53,8 @@ const prepareFixtureWithGit = (input: { fixturePath: string }): string => {
   return repoDir;
 };
 
-describe('review.deliverable', () => {
+// .note = deprecated: anthropic api key disabled, queued for xai brain integration
+describe.skip('review.deliverable', () => {
   given('[case1] valid behavior with complete deliverable', () => {
     const scene = useBeforeAll(async () => {
       const fixture = path.join(FIXTURES_PATH, 'valid-behavior');

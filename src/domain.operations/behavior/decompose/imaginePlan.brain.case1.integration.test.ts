@@ -37,7 +37,8 @@ const createBrainContext = () => ({
   },
 });
 
-describe('imaginePlan.brain.case1.integration', () => {
+// .note = deprecated: anthropic api key disabled, pending xai brain integration
+describe.skip('imaginePlan.brain.case1.integration', () => {
   given('[case1] behavior with multiple distinct usecases', () => {
     const behaviorPath = path.join(
       ASSETS_DIR,
