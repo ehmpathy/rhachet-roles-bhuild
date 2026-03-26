@@ -8,7 +8,8 @@ jest.setTimeout(120000);
 
 const ASSETS_DIR = path.join(__dirname, '.test/assets/example.repo');
 
-describe('decompose.behavior.brain.case1.integration', () => {
+// .note = deprecated: anthropic api key disabled, pending xai brain integration
+describe.skip('decompose.behavior.brain.case1.integration', () => {
   given('[case1] behavior that needs decomposition', () => {
     when('[t0] --mode plan invoked with brain', () => {
       // invoke brain once, reuse result across assertions

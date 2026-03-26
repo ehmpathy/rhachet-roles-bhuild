@@ -89,7 +89,7 @@
     "esbuild-register": "3.6.0",
     "husky": "8.0.3",
     "jest": "30.2.0",
-    "rhachet": "1.38.0",
+    "rhachet": "1.38.1",
     "rhachet-brains-anthropic": "0.4.0",
     "rhachet-roles-bhrain": "0.23.9",
     "rhachet-roles-bhuild": "link:.",
