@@ -5,9 +5,32 @@ import {
   readFileSync,
   writeFileSync,
 } from 'fs';
-import { join } from 'path';
+import { dirname, join } from 'path';
+
+import {
+  type BehaviorSizeLevel,
+  isTemplateInSize,
+} from './getAllTemplatesBySize';
 
 const TEMPLATES_DIR = join(__dirname, 'templates');
+
+/**
+ * .what = recursively read all files in a directory
+ * .why = templates may be in subdirectories (e.g., refs/)
+ */
+const getAllFilesRecursive = (dir: string, prefix = ''): string[] => {
+  const entries = readdirSync(dir, { withFileTypes: true });
+  const files: string[] = [];
+  for (const entry of entries) {
+    const relPath = prefix ? `${prefix}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) {
+      files.push(...getAllFilesRecursive(join(dir, entry.name), relPath));
+    } else {
+      files.push(relPath);
+    }
+  }
+  return files;
+};
 
 /**
  * .what = initialize a behavior directory with template files
@@ -16,29 +39,33 @@ const TEMPLATES_DIR = join(__dirname, 'templates');
  *
  * guarantee:
  *   - creates behavior directory if not found
- *   - findserts all template files (creates if not found, skips if exists)
+ *   - findserts all template files (creates if not found, skips if extant)
  *   - replaces $BEHAVIOR_DIR_REL in template content
+ *   - selects templates based on size level (nano → giga)
  *   - selects guard templates based on guard level (light or heavy)
  *   - idempotent: safe to rerun
  */
 export const initBehaviorDir = (input: {
   behaviorDir: string;
   behaviorDirRel: string;
+  size?: BehaviorSizeLevel;
   guard?: 'light' | 'heavy';
 }): { created: string[]; kept: string[] } => {
   const created: string[] = [];
   const kept: string[] = [];
+  const sizeLevel = input.size ?? 'medi';
   const guardLevel = input.guard ?? 'light';
 
   // create behavior directory (idempotent)
   mkdirSync(input.behaviorDir, { recursive: true });
 
-  // read all template files
-  const templateFiles = readdirSync(TEMPLATES_DIR);
+  // read all template files (recursive to include subdirectories like refs/)
+  const templateFiles = getAllFilesRecursive(TEMPLATES_DIR);
 
   // determine which templates to process
   const templatesToProcess = computeTemplatesToProcess({
     templateFiles,
+    sizeLevel,
     guardLevel,
   });
 
@@ -46,7 +73,13 @@ export const initBehaviorDir = (input: {
     const templatePath = join(TEMPLATES_DIR, templateName);
     const targetPath = join(input.behaviorDir, targetName);
 
-    // findsert: skip if exists
+    // create parent directory if needed (for refs/ subdirectory)
+    const targetDir = dirname(targetPath);
+    if (targetDir !== input.behaviorDir) {
+      mkdirSync(targetDir, { recursive: true });
+    }
+
+    // findsert: skip if extant
     if (existsSync(targetPath)) {
       kept.push(targetName);
       continue;
@@ -65,13 +98,14 @@ export const initBehaviorDir = (input: {
 };
 
 /**
- * .what = compute which templates to process based on guard level
+ * .what = compute which templates to process based on size and guard level
  *
- * .why  = guard files come in .light and .heavy variants; this selects
- *         the appropriate variant and maps it to the base filename
+ * .why  = templates are filtered by size level first (nano → giga),
+ *         then guard files select the .light or .heavy variant
  */
 const computeTemplatesToProcess = (input: {
   templateFiles: string[];
+  sizeLevel: BehaviorSizeLevel;
   guardLevel: 'light' | 'heavy';
 }): Array<{ templateName: string; targetName: string }> => {
   const result: Array<{ templateName: string; targetName: string }> = [];
@@ -91,15 +125,19 @@ const computeTemplatesToProcess = (input: {
       continue;
     }
 
-    // handle guard templates with level suffix - strip suffix for target name
-    if (templateName.endsWith(guardLevelChosenSuffix)) {
-      const targetName = templateName.slice(0, -guardLevelChosenSuffix.length);
-      result.push({ templateName, targetName });
+    // compute target name (strip guard level suffix if present)
+    const targetName = templateName.endsWith(guardLevelChosenSuffix)
+      ? templateName.slice(0, -guardLevelChosenSuffix.length)
+      : templateName;
+
+    // skip templates not in size level
+    if (
+      !isTemplateInSize({ templateName: targetName, size: input.sizeLevel })
+    ) {
       continue;
     }
 
-    // regular templates (no suffix) - use as-is
-    result.push({ templateName, targetName: templateName });
+    result.push({ templateName, targetName });
   }
 
   return result;

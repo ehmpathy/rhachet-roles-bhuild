@@ -24,6 +24,7 @@ describe('initBehaviorDir', () => {
         const result = initBehaviorDir({
           behaviorDir,
           behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+          size: 'mega', // use mega to test all templates
         });
 
         expect(result.created.length).toBeGreaterThan(0);

@@ -35,6 +35,7 @@ const schemaOfArgs = z.object({
     name: z.string(),
     dir: z.string().optional(),
     open: z.string().optional(),
+    size: z.enum(['nano', 'mini', 'medi', 'mega', 'giga']).optional(),
     guard: z.enum(['light', 'heavy']).optional(),
     // rhachet passthrough args (optional, ignored)
     repo: z.string().optional(),
@@ -122,6 +123,7 @@ export const initBehavior = async (): Promise<void> => {
   const result = initBehaviorDir({
     behaviorDir,
     behaviorDirRel,
+    size: named.size,
     guard: named.guard,
   });
 

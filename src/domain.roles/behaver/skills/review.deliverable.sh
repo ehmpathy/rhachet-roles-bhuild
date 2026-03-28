@@ -216,7 +216,7 @@ OUTPUT_FILE="$BEHAVIOR_DIR/7.1.review.behavior.per_${TARGETS_SLUG}.[feedback].[g
 OUTPUT_FILE_REL=$(realpath --relative-to="$TARGET_DIR" "$OUTPUT_FILE")
 
 # feedback template path (relative to TARGET_DIR where claude runs)
-TEMPLATE_FILE="$BEHAVIOR_DIR/.ref.[feedback].v1.[given].by_human.md"
+TEMPLATE_FILE="$BEHAVIOR_DIR/refs/template.[feedback].v1.[given].by_human.md"
 TEMPLATE_FILE_REL=$(realpath --relative-to="$TARGET_DIR" "$TEMPLATE_FILE")
 
 # build prompt (asks claude to output review to stdout, script writes to file)
