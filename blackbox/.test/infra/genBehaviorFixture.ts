@@ -49,8 +49,10 @@ export const genBehaviorFixture = (input: {
 
   // optionally create feedback template
   if (input.withFeedbackTemplate) {
+    const refsDir = path.join(behaviorDir, 'refs');
+    fs.mkdirSync(refsDir, { recursive: true });
     fs.writeFileSync(
-      path.join(behaviorDir, '.ref.[feedback].v1.[given].by_human.md'),
+      path.join(refsDir, 'template.[feedback].v1.[given].by_human.md'),
       [
         '# feedback for $BEHAVIOR_REF_NAME',
         '',

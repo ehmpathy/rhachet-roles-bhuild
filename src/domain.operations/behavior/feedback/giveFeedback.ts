@@ -87,7 +87,7 @@ export const giveFeedback = (
   // resolve template path
   const templatePath =
     input.template ??
-    join(behaviorDir, '.ref.[feedback].v1.[given].by_human.md');
+    join(behaviorDir, 'refs/template.[feedback].v1.[given].by_human.md');
   if (!existsSync(templatePath)) {
     throw new BadRequestError(`template not found: ${templatePath}`);
   }

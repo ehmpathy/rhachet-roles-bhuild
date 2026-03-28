@@ -27,13 +27,13 @@ describe('giveFeedback', () => {
     writeFileSync(join(testDir, 'README.md'), '# test');
     execSync('git add . && git commit -m "init"', { cwd: testDir });
 
-    // create behavior directory
+    // create behavior directory with refs subdirectory
     behaviorDir = join(testDir, '.behavior/v2025_01_01.test-feature');
-    mkdirSync(behaviorDir, { recursive: true });
+    mkdirSync(join(behaviorDir, 'refs'), { recursive: true });
 
     // create default template
     writeFileSync(
-      join(behaviorDir, '.ref.[feedback].v1.[given].by_human.md'),
+      join(behaviorDir, 'refs/template.[feedback].v1.[given].by_human.md'),
       [
         'feedback for $BEHAVIOR_REF_NAME',
         'emit response to $BEHAVIOR_DIR_REL/response.md',
@@ -248,7 +248,9 @@ describe('giveFeedback', () => {
     writeFileSync(join(behaviorDir, '0.wish.md'), '# wish');
 
     // remove the template
-    rmSync(join(behaviorDir, '.ref.[feedback].v1.[given].by_human.md'));
+    rmSync(
+      join(behaviorDir, 'refs/template.[feedback].v1.[given].by_human.md'),
+    );
 
     expect(() =>
       giveFeedback(

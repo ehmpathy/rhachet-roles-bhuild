@@ -22,16 +22,20 @@ describe('giveFeedback.integration', () => {
       fs.writeFileSync(path.join(testDir, 'README.md'), '# test');
       execSync('git add . && git commit -m "init"', { cwd: testDir });
 
-      // create behavior directory
+      // create behavior directory with refs subdirectory
       const behaviorDir = path.join(
         testDir,
         '.behavior/v2025_01_01.test-feature',
       );
       fs.mkdirSync(behaviorDir, { recursive: true });
+      fs.mkdirSync(path.join(behaviorDir, 'refs'), { recursive: true });
 
       // create template
       fs.writeFileSync(
-        path.join(behaviorDir, '.ref.[feedback].v1.[given].by_human.md'),
+        path.join(
+          behaviorDir,
+          'refs/template.[feedback].v1.[given].by_human.md',
+        ),
         [
           '# feedback for $BEHAVIOR_REF_NAME',
           '',
@@ -156,16 +160,20 @@ describe('giveFeedback.integration', () => {
       fs.writeFileSync(path.join(testDir, 'README.md'), '# test');
       execSync('git add . && git commit -m "init"', { cwd: testDir });
 
-      // create behavior directory
+      // create behavior directory with refs subdirectory
       const behaviorDir = path.join(
         testDir,
         '.behavior/v2025_01_01.multi-version',
       );
       fs.mkdirSync(behaviorDir, { recursive: true });
+      fs.mkdirSync(path.join(behaviorDir, 'refs'), { recursive: true });
 
       // create template
       fs.writeFileSync(
-        path.join(behaviorDir, '.ref.[feedback].v1.[given].by_human.md'),
+        path.join(
+          behaviorDir,
+          'refs/template.[feedback].v1.[given].by_human.md',
+        ),
         'feedback for $BEHAVIOR_REF_NAME',
       );
 
@@ -330,16 +338,20 @@ describe('giveFeedback.integration', () => {
       fs.writeFileSync(path.join(testDir, 'README.md'), '# test');
       execSync('git add . && git commit -m "init"', { cwd: testDir });
 
-      // create behavior directory
+      // create behavior directory with refs subdirectory
       const behaviorDir = path.join(
         testDir,
         '.behavior/v2025_01_01.has-v1-feedback',
       );
       fs.mkdirSync(behaviorDir, { recursive: true });
+      fs.mkdirSync(path.join(behaviorDir, 'refs'), { recursive: true });
 
       // create template
       fs.writeFileSync(
-        path.join(behaviorDir, '.ref.[feedback].v1.[given].by_human.md'),
+        path.join(
+          behaviorDir,
+          'refs/template.[feedback].v1.[given].by_human.md',
+        ),
         'feedback for $BEHAVIOR_REF_NAME',
       );
 
@@ -403,16 +415,20 @@ describe('giveFeedback.integration', () => {
       fs.writeFileSync(path.join(testDir, 'README.md'), '# test');
       execSync('git add . && git commit -m "init"', { cwd: testDir });
 
-      // create behavior directory
+      // create behavior directory with refs subdirectory
       const behaviorDir = path.join(
         testDir,
         '.behavior/v2025_01_01.has-v1v2-feedback',
       );
       fs.mkdirSync(behaviorDir, { recursive: true });
+      fs.mkdirSync(path.join(behaviorDir, 'refs'), { recursive: true });
 
       // create template
       fs.writeFileSync(
-        path.join(behaviorDir, '.ref.[feedback].v1.[given].by_human.md'),
+        path.join(
+          behaviorDir,
+          'refs/template.[feedback].v1.[given].by_human.md',
+        ),
         'feedback for $BEHAVIOR_REF_NAME',
       );
 
