@@ -59,7 +59,7 @@
     "prepare:husky": "husky install && chmod ug+x .husky/*",
     "prepare": "if [ -e .git ] && [ -z \"${CI:-}\" ]; then npm run prepare:husky && npm run prepare:rhachet; fi",
     "test:format:biome": "biome format",
-    "prepare:rhachet": "npm run build && rhachet init --hooks --roles behaver driver mechanic reviewer librarian"
+    "prepare:rhachet": "npm run build && rhachet init --hooks --roles mechanic behaver driver reviewer librarian ergonomist architect reflector dreamer dispatcher"
   },
   "dependencies": {
     "domain-objects": "0.31.9",
