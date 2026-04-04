@@ -3,3 +3,5 @@ env.prod: null
 env.test: null
 env.all:
   - EHMPATHY_SEATURTLE_PROD_GITHUB_TOKEN
+extends:
+  - .agent/repo=ehmpathy/role=mechanic/keyrack.yml

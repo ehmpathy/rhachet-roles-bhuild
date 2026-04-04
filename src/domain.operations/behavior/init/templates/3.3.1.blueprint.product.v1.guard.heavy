@@ -6,7 +6,59 @@ protect:
 
 reviews:
   self:
-    # 1. delete before optimize
+    # 1. research traceability
+    - slug: has-research-traceability
+      say: |
+        review that research recommendations were leveraged or explicitly omitted.
+
+        the research stone(s) produced recommendations. we must ensure the
+        blueprint either:
+        - leverages each recommendation, or
+        - provides clear rationale for why it was omitted
+
+        go through each research artifact in the route:
+        1. list every recommendation from the research
+        2. for each recommendation, check:
+           - is it reflected in the blueprint?
+           - if not, is there a clear rationale for the omission?
+           - did we silently ignore useful research?
+
+        for omissions, ensure the rationale is documented:
+        - "not applicable because..." (explain why)
+        - "deferred to future work because..." (explain scope)
+        - "contradicts requirement X because..." (cite conflict)
+
+        research done but not used is wasted effort. if we researched it,
+        we should either use it or explain why not.
+
+    # 2. zero deferrals
+    - slug: has-zero-deferrals
+      say: |
+        review that no item from the vision is deferred. zero leniance.
+
+        if the vision included it, it is not deferrable. the vision is the
+        contract — we deliver what was promised.
+
+        go through the blueprint and check:
+        1. are any items marked as "deferred", "future work", or "out of scope"?
+        2. for each deferral, check:
+           - was this item in the vision or criteria?
+           - if yes, it cannot be deferred — implement it or escalate to wisher
+           - if no, the deferral is acceptable (we can defer extras)
+
+        acceptable deferrals:
+        - nice-to-haves we identified ourselves
+        - optimizations beyond the stated requirements
+
+        unacceptable deferrals:
+        - any requirement from the vision
+        - any criterion from the criteria
+        - any explicit ask from the wisher
+
+        if vision items are deferred, either implement them or flag as blocker
+        for the wisher to re-scope.
+
+    # 3. delete before optimize
     - slug: has-questioned-deletables
       say: |
         try hard to delete before you optimize:
@@ -32,7 +84,7 @@ reviews:
 
         delete and simplify before we proceed.
 
-    # 2. question assumptions
+    # 4. question assumptions
     - slug: has-questioned-assumptions
       say: |
         a junior recently modified files in this repo. we need to carefully
@@ -49,7 +101,7 @@ reviews:
 
         surface all technical assumptions and question each one.
 
-    # 3. drill with 5 whys
+    # 5. drill with 5 whys
     - slug: has-questioned-5whys
       say: |
         for each technical decision, drill deep with 5 whys:
@@ -62,7 +114,7 @@ reviews:
 
         ensure we understand the root reasons for these choices.
 
-    # 4. pre-mortem
+    # 6. pre-mortem
     - slug: has-questioned-premortem
       say: |
         imagine this blueprint was implemented and failed miserably.
@@ -75,7 +127,7 @@ reviews:
 
         address all failure modes identified before we proceed.
 
-    # 5. inverse
+    # 7. inverse
     - slug: has-questioned-inverse
       say: |
         did we consider the inverse?
@@ -88,7 +140,7 @@ reviews:
 
         ensure we know what to avoid, not just what to build.
 
-    # 7. devil's advocate
+    # 8. devils advocate
     - slug: has-questioned-devils-advocate
       say: |
         argue against this blueprint — play devil's advocate:
@@ -101,7 +153,7 @@ reviews:
 
         expose weak points before they undermine us.
 
-    # 8. minimalism - yagni
+    # 9. yagni
     - slug: has-pruned-yagni
       say: |
         review for extras that were not prescribed.
@@ -118,7 +170,7 @@ reviews:
         if a component was not requested, delete it or flag it as an open question
         for the wisher to decide.
 
-    # 9. minimalism - backwards compat
+    # 10. backwards compat
     - slug: has-pruned-backcompat
       say: |
         review for backwards compatibility that was not explicitly requested.
@@ -133,7 +185,7 @@ reviews:
         2. eliminate it if not confirmed as required
         3. make the open question very clearly reported
 
-    # 10. consistency - mechanisms
+    # 11. consistent mechanisms
     - slug: has-consistent-mechanisms
       say: |
         review for new mechanisms that duplicate extant functionality.
@@ -152,7 +204,7 @@ reviews:
         1. replace with the extant mechanism
         2. or flag as an open question if unsure
 
-    # 11. consistency - conventions
+    # 12. consistent conventions
     - slug: has-consistent-conventions
       say: |
         review for divergence from extant names and patterns.
@@ -172,7 +224,7 @@ reviews:
         1. align with the extant convention
         2. or flag as an open question if the extant convention seems wrong
 
-    # 12. behavior declaration - coverage
+    # 13. behavior coverage
     - slug: has-behavior-declaration-coverage
       say: |
         review for coverage of the behavior declaration.
@@ -189,7 +241,7 @@ reviews:
 
         fix all gaps before you continue.
 
-    # 13. behavior declaration - adherance
+    # 14. behavior adherance
     - slug: has-behavior-declaration-adherance
       say: |
         review for adherance to the behavior declaration.
@@ -206,7 +258,7 @@ reviews:
 
         fix all gaps before you continue.
 
-    # 14. role standards - adherance
+    # 15. standards adherance
     - slug: has-role-standards-adherance
       say: |
         review for adherance to mechanic role standards.
@@ -226,7 +278,7 @@ reviews:
 
         fix all gaps before you continue.
 
-    # 15. role standards - coverage
+    # 16. standards coverage
     - slug: has-role-standards-coverage
       say: |
         review for coverage of mechanic role standards.

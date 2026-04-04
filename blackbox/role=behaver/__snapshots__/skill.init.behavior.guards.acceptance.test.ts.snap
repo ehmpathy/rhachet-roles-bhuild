@@ -246,8 +246,8 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 
 🌕 lets reflect
    │
-   ├─ review.self 1/14
-   │  ├─ slug = has-questioned-deletables
+   ├─ review.self 1/16
+   │  ├─ slug = has-research-traceability
    │  ├─ question all, especially yourself
    │  └─ see the guide below
    │
@@ -279,28 +279,27 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ here's the guide
    │  ├─
    │  │
-   │  │  try hard to delete before you optimize:
+   │  │  review that research recommendations were leveraged or explicitly omitted.
    │  │  
-   │  │    ## features
+   │  │    the research stone(s) produced recommendations. we must ensure the
+   │  │    blueprint either:
+   │  │    - leverages each recommendation, or
+   │  │    - provides clear rationale for why it was omitted
    │  │  
-   │  │    for each feature in the blueprint, ask:
-   │  │    - does this feature trace to a requirement in the criteria?
-   │  │    - did the wisher explicitly ask for this feature?
-   │  │    - or did we assume it was needed?
+   │  │    go through each research artifact in the route:
+   │  │    1. list every recommendation from the research
+   │  │    2. for each recommendation, check:
+   │  │       - is it reflected in the blueprint?
+   │  │       - if not, is there a clear rationale for the omission?
+   │  │       - did we silently ignore useful research?
    │  │  
-   │  │    if a feature has no traceability to vision or criteria:
-   │  │    1. delete it
-   │  │    2. or flag it as an open question for the wisher
+   │  │    for omissions, ensure the rationale is documented:
+   │  │    - "not applicable because..." (explain why)
+   │  │    - "deferred to future work because..." (explain scope)
+   │  │    - "contradicts requirement X because..." (cite conflict)
    │  │  
-   │  │    ## components
-   │  │  
-   │  │    for each component, ask:
-   │  │    - can this be removed entirely?
-   │  │    - if we deleted this and had to add it back, would we?
-   │  │    - did we optimize a component that shouldn't exist?
-   │  │    - what is the simplest version that works?
-   │  │  
-   │  │    delete and simplify before we proceed.
+   │  │    research done but not used is wasted effort. if we researched it,
+   │  │    we should either use it or explain why not.
    │  │
    │  └─
    │
@@ -324,7 +323,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ walk the way 🪷
    │  │
    │  ├─ articulate into
-   │  │  └─ /review/self/for.3.3.1.blueprint.product.v1._.r1.has-questioned-deletables.md
+   │  │  └─ /review/self/for.3.3.1.blueprint.product.v1._.r1.has-research-traceability.md
    │  │
    │  ├─ for each found issue 🪘
    │  │  ├─
@@ -343,7 +342,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │     └─
    │
    └─ when you've truly reflected, run
-      └─ rhx route.stone.set --stone 3.3.1.blueprint.product.v1 --as promised --that has-questioned-deletables[0m[31m[0m
+      └─ rhx route.stone.set --stone 3.3.1.blueprint.product.v1 --as promised --that has-research-traceability[0m[31m[0m
 [0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set[0m
 [0m[31m   └─ ✋ blocked by constraints[0m
 [0m[31m[0m"
