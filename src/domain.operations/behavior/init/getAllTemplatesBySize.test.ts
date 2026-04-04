@@ -21,12 +21,8 @@ describe('getAllTemplatesBySize', () => {
       );
 
       then('all sizes have dels declared', () => {
-        for (const [size, config] of Object.entries(BEHAVIOR_SIZE_CONFIG)) {
-          expect(config).toHaveProperty(
-            'dels',
-            expect.any(Array),
-            `size=${size} must have dels array`,
-          );
+        for (const [, config] of Object.entries(BEHAVIOR_SIZE_CONFIG)) {
+          expect(config).toHaveProperty('dels', expect.any(Array));
         }
       });
     });
@@ -192,10 +188,7 @@ describe('getAllTemplatesBySize', () => {
         const sizes = ['mini', 'medi', 'mega', 'giga'] as const;
         for (const size of sizes) {
           const templates = getAllTemplatesBySize({ size });
-          expect(templates).not.toContain(
-            '5.1.execution.from_vision.v1.stone',
-            `from_vision should be deleted at size=${size}`,
-          );
+          expect(templates).not.toContain('5.1.execution.from_vision.v1.stone');
         }
       });
     });
@@ -206,10 +199,7 @@ describe('getAllTemplatesBySize', () => {
         const sizes = ['nano', 'mini', 'medi', 'mega', 'giga'] as const;
         for (const size of sizes) {
           const templates = getAllTemplatesBySize({ size });
-          expect(templates).toContain(
-            '0.wish.md',
-            `wish should be present at size=${size}`,
-          );
+          expect(templates).toContain('0.wish.md');
         }
       });
     });
