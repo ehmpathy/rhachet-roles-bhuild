@@ -24,17 +24,39 @@ reviews:
 
     - slug: has-all-tests-passed
       say: |
-        double-check: did all tests pass?
+        double-check: did all tests pass? prove it.
 
-        - did you run `npm run test`?
-        - did types, lint, unit, integration, acceptance all pass?
-        - if any failed, did you fix them or emit a handoff?
+        **zero unproven claims.** you must cite the exact command and output.
+
+        for each test suite:
+        - what command did you run?
+        - what was the exit code?
+        - how many tests passed?
+
+        example proof:
+        ```
+        $ npm run test:unit
+        > exit 0
+        > 47 tests passed
+        ```
+
+        if you cannot cite the command and output, you did not prove it.
 
         zero tolerance for extant failures:
         - "it was already broken" is not an excuse — fix it
         - "it's unrelated to my changes" is not an excuse — fix it
         - flaky tests must be stabilized, not tolerated
         - every failure is your responsibility now
+
+        zero tolerance for fake tests:
+        - tests that always pass are fraud
+        - tests that mock the system under test prove nothingness
+        - tests must verify real behavior
+
+        zero tolerance for credential excuses:
+        - "i don't have creds" means get them or mock them
+        - silent bypasses are forbidden
+        - if creds block tests, that is a BLOCKER — not a deferral
 
     - slug: has-preserved-test-intentions
       say: |
@@ -75,26 +97,35 @@ reviews:
 
     - slug: has-contract-output-variants-snapped
       say: |
-        double-check: does each public contract have snapshots for all output variants?
+        double-check: does each public contract have EXHAUSTIVE snapshots?
 
-        for each new or modified public contract (cli command, sdk method, api endpoint):
-        - is there a dedicated snapshot file with `.toMatchSnapshot()` or equivalent?
-        - does the snapshot capture what the caller would actually see?
-        - does it exercise the success case?
-        - does it exercise error cases?
-        - does it exercise edge cases and variants (e.g., --help, empty input)?
+        **zero gaps in caller experience.** every contract must snap every output variant.
 
-        output types to capture:
-        - for CLI: stdout/stderr
-        - for UI: screens
-        - for SDK: responses
+        for each new or modified public contract:
+
+        | contract type | what to snap | required variants |
+        |---------------|--------------|-------------------|
+        | cli command | stdout + stderr | success, error, --help, edge cases |
+        | api endpoint | response body | 2xx, 4xx, 5xx, edge cases |
+        | sdk method | return value | success, error, edge cases |
+
+        checklist per contract:
+        - [ ] positive path (success) is snapped
+        - [ ] negative path (error) is snapped
+        - [ ] help/usage is snapped (for cli)
+        - [ ] edge cases are snapped (empty, invalid, boundary)
+        - [ ] snapshot shows actual output, not placeholder
 
         why this matters:
         - snapshots enable vibecheck in prs — reviewers see actual output without execute
         - snapshots detect drift over time — output changes surface in diffs
         - absent variants mean blind spots in review
+        - exhaustive coverage proves the contract works for all callers
 
-        if a contract lacks variant coverage, add the test cases now.
+        **zero leniency.** if a contract lacks any variant, add the test case now.
+
+        if you find yourself about to say "this variant isn't worth a snapshot" — stop.
+        that is the variant that will break in prod. snap it.
 
     - slug: has-snap-changes-rationalized
       say: |
@@ -159,3 +190,14 @@ reviews:
         - are journey tests in the right location?
         - do they have the `.play.` suffix?
         - if not supported, is the fallback convention used?
+
+  peer:
+    # verify contract snapshot exhaustiveness
+    - npx rhachet run --repo bhrain --skill review --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.contract-snapshot-exhaustiveness.md' --diffs since-main --paths-with '{src,blackbox}/**/*.{test,snap}.ts' --join intersect --output '$route/.reviews/$stone.peer-review.contract-snapshots.md' --mode hard
+
+    # verify external contract integration tests
+    - npx rhachet run --repo bhrain --skill review --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.external-contract-integration-tests.md' --diffs since-main --paths-with '{src,blackbox}/**/*.{test,integration}.ts' --join intersect --output '$route/.reviews/$stone.peer-review.external-contracts.md' --mode hard
+
+judges:
+  # enforce peer reviews pass with zero blockers
+  - npx rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 0

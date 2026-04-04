@@ -6,6 +6,23 @@ prove the deliverable works via test verification
 
 this is the verification gate. you cannot pass execution without proof that all tests pass.
 
+## .strictness: zero tolerance, zero exceptions
+
+**this gate enforces absolute standards. there is no leniency.**
+
+| constraint | definition |
+|------------|------------|
+| zero deferrals | you cannot defer any test to later. all tests pass now or you fail. |
+| zero fake tests | tests must verify real behavior. assertions that always pass are fraud. |
+| zero unproven claims | every claim of "test passes" must cite the exact command run and output. |
+| zero credential excuses | "i don't have creds" is not an excuse. get them, mock them, or fail. |
+| zero skips | .skip() and .only() are forbidden. silent bypasses are forbidden. |
+| zero exceptions | there are no special cases. the rules apply to all. |
+
+**if a blocker prevents tests from run, that is a BLOCKER. full stop.**
+
+you do not proceed. you do not defer. you fix it or you fail the gate.
+
 ## .why
 
 **why does this gate exist?**
@@ -27,6 +44,7 @@ with this gate:
 **the cardinal rules**:
 1. never leave behavior without true, dependable test coverage
 2. never offload work onto your crew unless there is truly, fundamentally no other option
+3. never claim a test passes without cite of the exact command and output
 
 you fix it yourself. you exhaust every option: debug, research, try alternatives. only when you hit a wall that is physically impossible to climb alone — credentials only the foreman possesses, access only they can grant — only then may you ask for help.
 
@@ -100,8 +118,44 @@ checklist:
 - [ ] intended changes have clear rationale
 - [ ] accidental changes have been reverted or justified as improvements
 
-### tests executed
-- [ ] `npm run test` — passed
+### tests executed — with proof
+
+**every test run must be proven with exact command and output.**
+
+| test suite | command run | result | proof (exit code + summary) |
+|------------|-------------|--------|----------------------------|
+| types | `npm run test:types` | ✓ / ✗ | exit 0, no errors |
+| lint | `npm run test:lint` | ✓ / ✗ | exit 0, no errors |
+| format | `npm run test:format` | ✓ / ✗ | exit 0, no errors |
+| unit | `npm run test:unit` | ✓ / ✗ | exit 0, N tests passed |
+| integration | `npm run test:integration` | ✓ / ✗ | exit 0, N tests passed |
+| acceptance | `npm run test:acceptance` | ✓ / ✗ | exit 0, N tests passed |
+
+checklist:
+- [ ] every test command was run (not "i think it passed")
+- [ ] every test command output was observed (not assumed)
+- [ ] the exact exit code was verified (0 = pass, non-zero = fail)
+- [ ] no tests were skipped, mocked, or faked
+
+**zero unproven claims.** if you claim a test passes, cite the command and output.
+
+### contract output snapshot exhaustiveness
+
+**every user-faced contract must have exhaustive snapshot coverage.**
+
+| contract type | contract | positive path snapped? | negative path snapped? | edge cases snapped? |
+|---------------|----------|------------------------|------------------------|---------------------|
+| cli | {command} | ✓ / ✗ | ✓ / ✗ | ✓ / ✗ |
+| api | {endpoint} | ✓ / ✗ | ✓ / ✗ | ✓ / ✗ |
+| sdk | {method} | ✓ / ✗ | ✓ / ✗ | ✓ / ✗ |
+
+checklist:
+- [ ] every cli command has stdout/stderr snapshots for success, error, and help
+- [ ] every api endpoint has response snapshots for success and error codes
+- [ ] every sdk method has return value snapshots for success and error
+- [ ] every contract has edge case snapshots (empty input, invalid input, boundary)
+
+**zero gaps in caller experience.** the reviewer must see exactly what callers see.
 
 ### blockers
 - none (or list handoff references)
@@ -139,7 +193,18 @@ if you find skips, remove them. all tests must run. update your checklist.
 
 ### step 4: run all tests and fix all failures
 
-run `npm run test`. all must pass — no exceptions.
+run each test suite and **cite the exact command and output**.
+
+```bash
+npm run test:types      # cite exit code
+npm run test:lint       # cite exit code
+npm run test:format     # cite exit code
+npm run test:unit       # cite exit code + test count
+npm run test:integration # cite exit code + test count
+npm run test:acceptance  # cite exit code + test count
+```
+
+all must pass — no exceptions. no deferrals. no "i'll fix it later."
 
 if tests fail, fix them. that is the job.
 
@@ -150,6 +215,8 @@ if a test was broken before you started — fix it. if a test is flaky — fix i
 **take initiative. take ownership.**
 
 **preserve test intentions.** when you fix a test, you fix why it failed — not what it tests. to change what a test verifies is not a fix. it is at worst malicious deception, at best reckless negligence. the test knew a truth. if it fails, either the code is wrong or the test has a bug. fix the cause, not the assertion.
+
+**zero fake tests.** a test that always passes is fraud. a test that skips is a lie. a test that mocks the system under test proves nothingness. tests must verify real behavior against real code.
 
 **escalation path:**
 1. debug the failure — read the error, understand the cause
