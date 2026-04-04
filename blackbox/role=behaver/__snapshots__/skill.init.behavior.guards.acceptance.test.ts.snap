@@ -544,6 +544,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 
 🦉 the way speaks for itself
    ├─ ✓ review.1 - completed [time]
+   ├─ ✓ review.2 - completed [time]
    └─ ✓ judge.1 - allowed [time]
 
 🗿 route.stone.set
@@ -553,9 +554,12 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │  ├─ artifacts
    │  │   └─ index.ts
    │  ├─ reviews
-   │  │   └─ r1: npx rhachet run --repo bhrain --skill review --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.{prod,test}/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with 'src/**/*.ts' --join intersect --output '$route/.reviews/$stone.peer-review.failhides.md' --mode hard
+   │  │   ├─ r1: npx rhachet run --repo bhrain --skill review --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.{prod,test}/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with 'src/**/*' --join intersect --output '$route/.reviews/$stone.peer-review.failhides.md' --mode hard
+   │  │   │   ├─ finished [time] ✓
+   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.v1.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r1.md
+   │  │   └─ r2: npx rhachet run --repo bhrain --skill review --rules '.agent/repo=ehmpathy/role=architect/briefs/practices/rule.{forbid.decode-friction-in-orchestrators,require.orchestrators-as-narrative}.md' --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.narrative/rule.{forbid.inline-decode-friction,require.named-transforms}.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/{define.domain-operation-grains,philosophy.transform-orchestrator-separation.[philosophy]}.md' --diffs since-main --paths-with 'src/**/*' --paths-without '**/*.test.ts' --join intersect --output '$route/.reviews/$stone.peer-review.decode-friction.md' --mode hard
    │  │       ├─ finished [time] ✓
-   │  │       └─ review: .route/5.1.execution.phase0_to_phaseN.v1.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r1.md
+   │  │       └─ review: .route/5.1.execution.phase0_to_phaseN.v1.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r2.md
    │  └─ judges
    │      └─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
    │          └─ finished [time] ✓
