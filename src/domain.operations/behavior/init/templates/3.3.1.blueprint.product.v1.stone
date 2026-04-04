@@ -44,11 +44,65 @@ include a treestruct of codepaths.
 
 ## test coverage
 
-enforce thorough test coverage for proof of behavior satisfaction:
-- unit tests for domain logic
-- integration tests for access boundaries (os, apis, sdks, daos)
-- integration tests for end-to-end flows
-- acceptance tests for blackbox behaviors
+test coverage is a MANDATORY requirement, equal weight to implementation.
+a blueprint without thorough test coverage is incomplete.
+
+### coverage by layer
+
+| layer | scope | test type |
+|-------|-------|-----------|
+| transformers | pure computation, format conversion | unit tests |
+| communicators | sdks, daos, service clients (i/o boundary) | integration tests |
+| orchestrators | composition of transformers + communicators | integration tests |
+| contracts | cli, api, sdk entry points | integration + acceptance tests |
+
+### coverage by case
+
+for each codepath, declare coverage across:
+
+| case type | what it covers |
+|-----------|----------------|
+| positive | expected inputs produce expected outputs |
+| negative | invalid inputs produce expected errors |
+| happy path | typical successful flow |
+| edge cases | boundary conditions, empty inputs, max limits |
+
+### snapshots
+
+acceptance tests MUST snapshot contract stdouts — exhaustive for positive and negative cases:
+- cli stdout/stderr formats (success + all error paths)
+- api response shapes (success + all error responses)
+- sdk return types (success + all thrown errors)
+
+snapshots enable visual review in PRs — verify outputs look correct.
+
+### test tree
+
+include a treestruct of test coverage for each codepath:
+
+```
+src/domain.operations/myTransformer/
+├── myTransformer.ts
+└── myTransformer.test.ts              # unit: transformer (pure)
+
+src/domain.operations/myCommunicator/
+├── myCommunicator.ts
+└── myCommunicator.integration.test.ts # integration: communicator (i/o)
+
+src/domain.operations/myOrchestrator/
+├── myOrchestrator.ts
+└── myOrchestrator.integration.test.ts # integration: orchestrator
+
+src/contract/cli/myCommand.ts
+└── myCommand.integration.test.ts      # integration: contract (also an orchestrator)
+
+blackbox/cli/myCommand.acceptance.test.ts  # acceptance: contract (blackbox)
+```
+
+**legend:**
+- `[+]` create — test to create
+- `[~]` update — test to update
+- `[○]` retain — test to retain
 
 ---
 

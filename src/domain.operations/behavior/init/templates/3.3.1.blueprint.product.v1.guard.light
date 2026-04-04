@@ -133,7 +133,71 @@ reviews:
         2. eliminate it if not confirmed as required
         3. make the open question very clearly reported
 
-    # 7. consistent mechanisms
+    # 7. test coverage thoroughness
+    - slug: has-thorough-test-coverage
+      say: |
+        review the blueprint for thorough test coverage declaration.
+
+        test coverage is MANDATORY and equal weight to implementation.
+        a blueprint without thorough test coverage is incomplete.
+
+        ## layer coverage
+
+        for each codepath in the blueprint, verify test coverage by layer:
+
+        | layer | required test type |
+        |-------|-------------------|
+        | transformers (pure computation, format conversion) | unit tests |
+        | communicators (sdks, daos, service clients) | integration tests |
+        | orchestrators (composition of transformers + communicators) | integration tests |
+        | contracts (cli, api, sdk entry points) | integration + acceptance tests |
+
+        ask for each codepath:
+        - does this blueprint declare the appropriate test type for this layer?
+        - are transformers covered by unit tests?
+        - are communicators covered by integration tests?
+        - are orchestrators covered by integration tests?
+        - are contracts covered by both integration and acceptance tests?
+
+        ## case coverage
+
+        for each codepath, verify coverage across case types:
+
+        | case type | what it must cover |
+        |-----------|-------------------|
+        | positive | expected inputs → expected outputs |
+        | negative | invalid inputs → expected errors |
+        | happy path | typical successful flow |
+        | edge cases | boundary conditions, empty inputs, max limits |
+
+        ask for each codepath:
+        - are positive cases declared?
+        - are negative cases declared?
+        - is the happy path covered?
+        - are edge cases identified and covered?
+
+        ## snapshot coverage
+
+        acceptance tests MUST snapshot contract stdouts — exhaustive for positive and negative cases:
+        - cli stdout/stderr (success + all error paths)
+        - api responses (success + all error responses)
+        - sdk returns (success + all thrown errors)
+
+        ask:
+        - does the blueprint declare snapshots for all contract outputs?
+        - are snapshots exhaustive for both positive and negative cases?
+        - is every error path covered by a snapshot?
+
+        ## test tree
+
+        verify the blueprint includes a test tree that shows:
+        - which test files will be created/updated
+        - test file locations match convention
+        - test types match layer requirements
+
+        fix all gaps before you continue.
+
+    # 8. consistent mechanisms
     - slug: has-consistent-mechanisms
       say: |
         review for new mechanisms that duplicate extant functionality.
@@ -152,7 +216,7 @@ reviews:
         1. replace with the extant mechanism
         2. or flag as an open question if unsure
 
-    # 8. consistent conventions
+    # 9. consistent conventions
     - slug: has-consistent-conventions
       say: |
         review for divergence from extant names and patterns.
@@ -172,7 +236,7 @@ reviews:
         1. align with the extant convention
         2. or flag as an open question if the extant convention seems wrong
 
-    # 9. behavior coverage
+    # 10. behavior coverage
     - slug: has-behavior-declaration-coverage
       say: |
         review for coverage of the behavior declaration.
@@ -189,7 +253,7 @@ reviews:
 
         fix all gaps before you continue.
 
-    # 10. behavior adherance
+    # 11. behavior adherance
     - slug: has-behavior-declaration-adherance
       say: |
         review for adherance to the behavior declaration.
@@ -206,7 +270,7 @@ reviews:
 
         fix all gaps before you continue.
 
-    # 11. standards adherance
+    # 12. standards adherance
     - slug: has-role-standards-adherance
       say: |
         review for adherance to mechanic role standards.
@@ -226,7 +290,7 @@ reviews:
 
         fix all gaps before you continue.
 
-    # 12. standards coverage
+    # 13. standards coverage
     - slug: has-role-standards-coverage
       say: |
         review for coverage of mechanic role standards.
