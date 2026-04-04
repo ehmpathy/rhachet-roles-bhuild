@@ -5,11 +5,10 @@ exports[`init.behavior.sizes given: [case1] --size nano when: [t0] init.behavior
   "0.wish.md",
   "1.vision.guard",
   "1.vision.stone",
-  "3.3.1.blueprint.product.v1.guard",
-  "3.3.1.blueprint.product.v1.stone",
-  "4.1.roadmap.v1.stone",
-  "5.1.execution.phase0_to_phaseN.v1.guard",
-  "5.1.execution.phase0_to_phaseN.v1.stone",
+  "5.1.execution.from_vision.v1.guard",
+  "5.1.execution.from_vision.v1.stone",
+  "5.3.verification.v1.guard",
+  "5.3.verification.v1.stone",
   "refs/template.[feedback].v1.[given].by_human.md",
 ]
 `;
@@ -19,11 +18,10 @@ exports[`init.behavior.sizes given: [case1] --size nano when: [t0] init.behavior
    ├─ + 0.wish.md
    ├─ + 1.vision.guard
    ├─ + 1.vision.stone
-   ├─ + 3.3.1.blueprint.product.v1.guard
-   ├─ + 3.3.1.blueprint.product.v1.stone
-   ├─ + 4.1.roadmap.v1.stone
-   ├─ + 5.1.execution.phase0_to_phaseN.v1.guard
-   ├─ + 5.1.execution.phase0_to_phaseN.v1.stone
+   ├─ + 5.1.execution.from_vision.v1.guard
+   ├─ + 5.1.execution.from_vision.v1.stone
+   ├─ + 5.3.verification.v1.guard
+   ├─ + 5.3.verification.v1.stone
    └─ + refs/template.[feedback].v1.[given].by_human.md
 
 🌲 go on then,

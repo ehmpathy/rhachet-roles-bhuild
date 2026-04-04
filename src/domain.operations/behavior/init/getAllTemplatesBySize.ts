@@ -24,12 +24,12 @@ const BEHAVIOR_SIZE_CONFIG = {
       'refs/template.[feedback].v1.[given].by_human.md',
       '1.vision.stone',
       '1.vision.guard', // .light or .heavy variant
-      '3.3.1.blueprint.product.v1.stone',
-      '3.3.1.blueprint.product.v1.guard', // .light or .heavy variant
-      '4.1.roadmap.v1.stone',
-      '5.1.execution.phase0_to_phaseN.v1.stone',
-      '5.1.execution.phase0_to_phaseN.v1.guard',
+      '5.1.execution.from_vision.v1.stone', // vision → done (no blueprint/roadmap)
+      '5.1.execution.from_vision.v1.guard',
+      '5.3.verification.v1.stone', // tests should never be forgotten
+      '5.3.verification.v1.guard',
     ],
+    dels: [],
   },
   mini: {
     order: 1,
@@ -39,8 +39,15 @@ const BEHAVIOR_SIZE_CONFIG = {
       '2.2.criteria.blackbox.matrix.stone',
       '3.1.3.research.internal.product.code.prod._.v1.stone',
       '3.1.3.research.internal.product.code.test._.v1.stone',
-      '5.3.verification.v1.stone',
-      '5.3.verification.v1.guard',
+      '3.3.1.blueprint.product.v1.stone',
+      '3.3.1.blueprint.product.v1.guard', // .light or .heavy variant
+      '4.1.roadmap.v1.stone',
+      '5.1.execution.phase0_to_phaseN.v1.stone', // roadmap → phased execution
+      '5.1.execution.phase0_to_phaseN.v1.guard',
+    ],
+    dels: [
+      '5.1.execution.from_vision.v1.stone', // replaced by phased version
+      '5.1.execution.from_vision.v1.guard',
     ],
   },
   medi: {
@@ -59,6 +66,7 @@ const BEHAVIOR_SIZE_CONFIG = {
       '5.5.playtest.v1.stone',
       '5.5.playtest.v1.guard',
     ],
+    dels: [],
   },
   mega: {
     order: 3,
@@ -76,12 +84,17 @@ const BEHAVIOR_SIZE_CONFIG = {
       '3.2.distill.factory.upgrades._.v1.stone',
       '3.3.0.blueprint.factory.v1.stone',
     ],
+    dels: [],
   },
   giga: {
     order: 4,
     adds: [], // same as mega; reserved for future decomposition subroutes
+    dels: [],
   },
-} as const satisfies Record<string, { order: number; adds: readonly string[] }>;
+} as const satisfies Record<
+  string,
+  { order: number; adds: readonly string[]; dels: readonly string[] }
+>;
 
 // type derived from config keys - compiler enforces completeness
 export type BehaviorSizeLevel = keyof typeof BEHAVIOR_SIZE_CONFIG;
@@ -95,14 +108,21 @@ const BEHAVIOR_SIZE_ORDER = (
  * .what = get all templates for a given size level (cumulative)
  *
  * .why  = sizes are additive: mini = nano + mini adds, medi = nano + mini + medi adds, etc.
+ *         dels allow larger sizes to replace smaller size templates (e.g., mini replaces
+ *         nano's from_vision execution with phased execution)
  */
 export const getAllTemplatesBySize = (input: {
   size: BehaviorSizeLevel;
 }): string[] => {
   const index = BEHAVIOR_SIZE_ORDER.indexOf(input.size);
-  return BEHAVIOR_SIZE_ORDER.slice(0, index + 1).flatMap(
-    (s) => BEHAVIOR_SIZE_CONFIG[s].adds,
+  const sizesUpTo = BEHAVIOR_SIZE_ORDER.slice(0, index + 1);
+
+  const adds = sizesUpTo.flatMap((s) => BEHAVIOR_SIZE_CONFIG[s].adds);
+  const dels: readonly string[] = sizesUpTo.flatMap(
+    (s) => BEHAVIOR_SIZE_CONFIG[s].dels,
   );
+
+  return adds.filter((t) => !dels.includes(t));
 };
 
 /**
