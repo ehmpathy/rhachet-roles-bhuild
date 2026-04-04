@@ -262,8 +262,9 @@ describe('initBehaviorDir.integration', () => {
         expect(content).toContain('has-behavior-coverage');
         expect(content).toContain('has-zero-test-skips');
         expect(content).toContain('has-all-tests-passed');
-        // no judges on verification guard
-        expect(content).not.toContain('judges:');
+        // has peer reviews and judges for strict verification
+        expect(content).toContain('peer:');
+        expect(content).toContain('judges:');
       });
 
       then('creates 5.5.playtest.v1.stone', () => {
