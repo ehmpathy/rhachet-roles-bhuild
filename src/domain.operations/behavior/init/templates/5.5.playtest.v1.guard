@@ -14,6 +14,8 @@ reviews:
         - are commands copy-pasteable?
         - are expected outcomes explicit?
 
+        **if any instruction is unclear, fix it NOW.** this is buttonup.
+
     - slug: has-vision-coverage
       say: |
         double-check: does the playtest cover all behaviors?
@@ -22,6 +24,8 @@ reviews:
         - is every behavior in 1.vision.md verified?
         - are any requirements left untested?
 
+        **if any behavior lacks playtest coverage, add it NOW.** absent coverage = incomplete.
+
     - slug: has-edgecase-coverage
       say: |
         double-check: are edge cases covered?
@@ -29,6 +33,8 @@ reviews:
         - what could go wrong?
         - what inputs are unusual but valid?
         - are boundaries tested?
+
+        **if edge cases are absent, add them NOW.** this is buttonup — no gaps allowed.
 
     - slug: has-acceptance-test-citations
       say: |
@@ -49,15 +55,39 @@ reviews:
         ```
 
         if a step lacks acceptance test coverage:
-        - this is a BLOCKER — write the test before you proceed
+        - this is a BLOCKER — write the test NOW, before you proceed
         - "untestable via automation" is almost never true — find a way
 
         **zero gaps.** if you cannot cite a test, the step is unproven.
         unproven steps do not pass this gate.
 
+        **this is buttonup.** test coverage enforces prod coverage.
+        absent test = unproven behavior = incomplete implementation = fix it NOW.
+
+    - slug: has-fixed-all-gaps
+      say: |
+        buttonup check: did you FIX every gap you found, or just detect it?
+
+        **this is the buttonup phase. detection is not enough — you must fix.**
+
+        look back at all the reviews above. for every gap you identified:
+        - playtest step lacked acceptance test → did you WRITE the test?
+        - playtest revealed broken behavior → did you FIX the behavior?
+        - playtest revealed UX friction → did you FIX the UX?
+        - playtest step was ambiguous → did you CLARIFY it?
+
+        **zero omissions.** if any review above surfaced a gap, that gap must be fixed before you pass this gate.
+
+        ask yourself:
+        - did i just note the gap, or did i actually fix it?
+        - is there any item marked "todo" or "needs work"? (forbidden)
+        - is there any step without acceptance test citation? (forbidden)
+
+        **if you detected it, you fixed it.** prove it with citations.
+
     - slug: has-self-run-verification
       say: |
-        dogfood check: did you run the playtest yourself?
+        final proof: did you run the playtest yourself?
 
         **zero self-skip.** you must run every step before emit.
 
@@ -75,11 +105,15 @@ reviews:
         - did you fix the instructions?
         - did you update expected outcomes?
         - is the playtest now accurate to what you observed?
+        - **did you fix any broken behaviors you discovered?**
 
         the foreman deserves a playtest that works. prove it works by self-test first.
 
         **if you did not run it yourself, you did not verify it.**
         this is a BLOCKER, not a suggestion.
+
+        **this is the final proof.** you ran it, it worked, all gaps are fixed.
+        you are ready to hand off to foreman approval.
 
 judges:
   - npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
