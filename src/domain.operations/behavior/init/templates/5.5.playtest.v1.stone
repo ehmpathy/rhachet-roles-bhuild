@@ -1,12 +1,29 @@
-emit a playtest for foreman byhand verification
+emit a playtest for foreman byhand verification — fix all gaps found
 
 ---
 
 ## .what
 
-this is the playtest gate. you emit a step-by-step byhand quality assurance checklist that your crew can walk through to verify the deliverable feels right.
+this is the playtest gate — the **final buttonup phase**.
 
-automated tests prove the code works. the playtest proves the experience works.
+you emit a step-by-step byhand quality assurance checklist that your crew can walk through to verify the deliverable feels right.
+
+automated tests prove the code works. the playtest proves the experience works. **if the playtest reveals gaps, you fix them.**
+
+## .the buttonup mandate: zero omissions
+
+**this is not a detection phase. this is a completion phase.**
+
+when you find a gap — while you write the playtest OR while you run it yourself — you **fix it**.
+
+| gap type | action |
+|----------|--------|
+| playtest step lacks acceptance test | write the acceptance test NOW |
+| playtest reveals broken behavior | fix the behavior NOW |
+| playtest reveals UX friction | fix the UX NOW |
+| playtest step is ambiguous | clarify it NOW |
+
+**if you detect it, you fix it. no exceptions.**
 
 ## .strictness: zero tolerance, zero exceptions
 
@@ -18,6 +35,7 @@ automated tests prove the code works. the playtest proves the experience works.
 | zero untested paths | every playtest step must have automated coverage |
 | zero self-skip | you must run the playtest yourself before emit |
 | zero ambiguity | every step must be copy-pasteable with explicit expected output |
+| zero omissions | if playtest reveals a gap, you fix it before you emit |
 
 **every playtest step maps to an acceptance test.** if a step lacks automated coverage, write the test first.
 
@@ -28,6 +46,8 @@ automated tests prove the code works. the playtest proves the experience works.
 **automated tests have blind spots.** they verify behavior but miss ux friction, unclear flows, edge cases that "work" but feel wrong. the playtest catches what tests can't.
 
 **the playtest is a contract.** it says: "if you follow these steps and all pass as described, the deliverable is complete." it's explicit proof, not implicit trust.
+
+**test coverage enforces prod coverage.** every playtest step must trace to an acceptance test. if you cannot cite the test, the behavior is unproven. unproven = incomplete = fix it.
 
 ## .how
 
