@@ -45,14 +45,14 @@ describe('initBehaviorDir', () => {
         );
         expect(
           fs.existsSync(
-            path.join(behaviorDir, '3.3.1.blueprint.product.v1.guard'),
+            path.join(behaviorDir, '3.3.1.blueprint.product.guard'),
           ),
         ).toBe(true);
 
         // verify factory blueprint created
         expect(
           fs.existsSync(
-            path.join(behaviorDir, '3.3.0.blueprint.factory.v1.stone'),
+            path.join(behaviorDir, '3.3.0.blueprint.factory.stone'),
           ),
         ).toBe(true);
 
@@ -61,7 +61,7 @@ describe('initBehaviorDir', () => {
           fs.existsSync(
             path.join(
               behaviorDir,
-              '3.1.4.research.internal.factory.blockers._.v1.stone',
+              '3.1.4.research.internal.factory.blockers._.stone',
             ),
           ),
         ).toBe(true);
@@ -69,7 +69,7 @@ describe('initBehaviorDir', () => {
           fs.existsSync(
             path.join(
               behaviorDir,
-              '3.1.4.research.internal.factory.opports._.v1.stone',
+              '3.1.4.research.internal.factory.opports._.stone',
             ),
           ),
         ).toBe(true);
@@ -77,7 +77,7 @@ describe('initBehaviorDir', () => {
         // verify distill.repros.experience created
         expect(
           fs.existsSync(
-            path.join(behaviorDir, '3.2.distill.repros.experience._.v1.stone'),
+            path.join(behaviorDir, '3.2.distill.repros.experience._.stone'),
           ),
         ).toBe(true);
       });
