@@ -452,7 +452,7 @@ describe('skill.init.behavior.guards.journey', () => {
       // BLUEPRINT STONE: self-reviews + human approval (heavy mode)
       // ═══════════════════════════════════════════════════════════════
       fs.writeFileSync(
-        path.join(behaviorDir, '3.3.1.blueprint.product.v1.i1.md'),
+        path.join(behaviorDir, '3.3.1.blueprint.product.yield.md'),
         '# Blueprint\n\nTest blueprint.',
       );
 
@@ -460,21 +460,21 @@ describe('skill.init.behavior.guards.journey', () => {
       checkpoints.blueprintPassWithoutPromises = runSkill({
         repo: 'bhrain',
         skill: 'route.stone.set',
-        args: `--stone 3.3.1.blueprint.product.v1 --route ${behaviorDirRel} --as passed`,
+        args: `--stone 3.3.1.blueprint.product --route ${behaviorDirRel} --as passed`,
         cwd: repoDir,
       });
 
       // promise all blueprint self-reviews via bhrain test pattern
       const blueprintSlugs = getSlugsFromGuardFile(
-        path.join(behaviorDir, '3.3.1.blueprint.product.v1.guard'),
+        path.join(behaviorDir, '3.3.1.blueprint.product.guard'),
       );
       if (blueprintSlugs.length === 0)
-        throw new Error('no self-review slugs found in 3.3.1.blueprint.product.v1.guard');
+        throw new Error('no self-review slugs found in 3.3.1.blueprint.product.guard');
       promiseAllSelfReviews({
         repoDir,
         routeDir,
         routeRel: behaviorDirRel,
-        stone: '3.3.1.blueprint.product.v1',
+        stone: '3.3.1.blueprint.product',
         slugs: blueprintSlugs,
       });
 
@@ -484,7 +484,7 @@ describe('skill.init.behavior.guards.journey', () => {
       fs.writeFileSync(
         path.join(
           blueprintReviewsDir,
-          '3.3.1.blueprint.product.v1.peer-review.failhides.md',
+          '3.3.1.blueprint.product.peer-review.failhides.md',
         ),
         '# peer review\n\nno blockers found.\n',
       );
@@ -493,7 +493,7 @@ describe('skill.init.behavior.guards.journey', () => {
       checkpoints.blueprintPassWithPromisesNoApproval = runSkill({
         repo: 'bhrain',
         skill: 'route.stone.set',
-        args: `--stone 3.3.1.blueprint.product.v1 --route ${behaviorDirRel} --as passed`,
+        args: `--stone 3.3.1.blueprint.product --route ${behaviorDirRel} --as passed`,
         cwd: repoDir,
       });
 
@@ -501,13 +501,13 @@ describe('skill.init.behavior.guards.journey', () => {
       runSkill({
         repo: 'bhrain',
         skill: 'route.stone.set',
-        args: `--stone 3.3.1.blueprint.product.v1 --route ${behaviorDirRel} --as approved`,
+        args: `--stone 3.3.1.blueprint.product --route ${behaviorDirRel} --as approved`,
         cwd: repoDir,
       });
       checkpoints.blueprintPassAfterApproval = runSkill({
         repo: 'bhrain',
         skill: 'route.stone.set',
-        args: `--stone 3.3.1.blueprint.product.v1 --route ${behaviorDirRel} --as passed`,
+        args: `--stone 3.3.1.blueprint.product --route ${behaviorDirRel} --as passed`,
         cwd: repoDir,
       });
 
@@ -515,13 +515,13 @@ describe('skill.init.behavior.guards.journey', () => {
       // ROADMAP STONE: quick pass (no guards in template)
       // ═══════════════════════════════════════════════════════════════
       fs.writeFileSync(
-        path.join(behaviorDir, '4.1.roadmap.v1.md'),
+        path.join(behaviorDir, '4.1.roadmap.yield.md'),
         '# Roadmap\n\nTest roadmap.',
       );
       runSkill({
         repo: 'bhrain',
         skill: 'route.stone.set',
-        args: `--stone 4.1.roadmap.v1 --route ${behaviorDirRel} --as passed`,
+        args: `--stone 4.1.roadmap --route ${behaviorDirRel} --as passed`,
         cwd: repoDir,
       });
 
@@ -539,7 +539,7 @@ describe('skill.init.behavior.guards.journey', () => {
       // artifact path is $route/5.1.execution...i1.md, so create in routeDir
       const i1Path = path.join(
         routeDir,
-        '5.1.execution.phase0_to_phaseN.v1.i1.md',
+        '5.1.execution.phase0_to_phaseN.yield.md',
       );
       fs.writeFileSync(i1Path, '# Execution\n\nTest execution.');
 
@@ -551,23 +551,23 @@ describe('skill.init.behavior.guards.journey', () => {
       checkpoints.executionPassWithoutPromises = runSkill({
         repo: 'bhrain',
         skill: 'route.stone.set',
-        args: `--stone 5.1.execution.phase0_to_phaseN.v1 --route ${behaviorDirRel} --as passed`,
+        args: `--stone 5.1.execution.phase0_to_phaseN --route ${behaviorDirRel} --as passed`,
         cwd: repoDir,
       });
 
       // promise all execution self-reviews via bhrain test pattern
       const executionSlugs = getSlugsFromGuardFile(
-        path.join(behaviorDir, '5.1.execution.phase0_to_phaseN.v1.guard'),
+        path.join(behaviorDir, '5.1.execution.phase0_to_phaseN.guard'),
       );
       if (executionSlugs.length === 0)
         throw new Error(
-          'no self-review slugs found in 5.1.execution.phase0_to_phaseN.v1.guard',
+          'no self-review slugs found in 5.1.execution.phase0_to_phaseN.guard',
         );
       promiseAllSelfReviews({
         repoDir,
         routeDir,
         routeRel: behaviorDirRel,
-        stone: '5.1.execution.phase0_to_phaseN.v1',
+        stone: '5.1.execution.phase0_to_phaseN',
         slugs: executionSlugs,
       });
 
@@ -576,7 +576,7 @@ describe('skill.init.behavior.guards.journey', () => {
         path.join(
           routeDir,
           '.reviews',
-          '5.1.execution.phase0_to_phaseN.v1.peer-review.failhides.md',
+          '5.1.execution.phase0_to_phaseN.peer-review.failhides.md',
         ),
         '# peer review\n\nno blockers found.\n',
       );
@@ -584,7 +584,7 @@ describe('skill.init.behavior.guards.journey', () => {
       checkpoints.executionPassAfterPromises = runSkill({
         repo: 'bhrain',
         skill: 'route.stone.set',
-        args: `--stone 5.1.execution.phase0_to_phaseN.v1 --route ${behaviorDirRel} --as passed`,
+        args: `--stone 5.1.execution.phase0_to_phaseN --route ${behaviorDirRel} --as passed`,
         cwd: repoDir,
       });
     });
@@ -729,9 +729,9 @@ describe('skill.init.behavior.guards.journey', () => {
 
         expect(passedStones).toContain('1.vision');
         expect(passedStones).toContain('2.1.criteria.blackbox');
-        expect(passedStones).toContain('3.3.1.blueprint.product.v1');
-        expect(passedStones).toContain('4.1.roadmap.v1');
-        expect(passedStones).toContain('5.1.execution.phase0_to_phaseN.v1');
+        expect(passedStones).toContain('3.3.1.blueprint.product');
+        expect(passedStones).toContain('4.1.roadmap');
+        expect(passedStones).toContain('5.1.execution.phase0_to_phaseN');
       });
     });
   });

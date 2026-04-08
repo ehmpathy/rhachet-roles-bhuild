@@ -5,7 +5,7 @@ ref:
 - wish $BEHAVIOR_DIR_REL/0.wish.md
 - vision $BEHAVIOR_DIR_REL/1.vision.md (if declared)
 
-emit into $BEHAVIOR_DIR_REL/2.3.criteria.blueprint.md
+emit into $BEHAVIOR_DIR_REL/2.3.criteria.blueprint.yield.md
 
 ---
 

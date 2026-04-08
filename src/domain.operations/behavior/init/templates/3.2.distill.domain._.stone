@@ -1,0 +1,41 @@
+distill the declastruct domain.objects and domain.operations that would
+- enable fulfillment of
+  - this wish $BEHAVIOR_DIR_REL/0.wish.md
+  - this vision $BEHAVIOR_DIR_REL/1.vision.md (if declared)
+  - this criteria $BEHAVIOR_DIR_REL/2.1.criteria.blackbox.md (if declared)
+- given the research declared here
+  - $BEHAVIOR_DIR_REL/3.1.1.research.external.product.access.*.yield.md (if declared)
+  - $BEHAVIOR_DIR_REL/3.1.1.research.external.product.claims.*.yield.md (if declared)
+  - $BEHAVIOR_DIR_REL/3.1.1.research.external.product.domain.*.yield.md (if declared)
+  - $BEHAVIOR_DIR_REL/3.1.1.research.external.product.domain.terms.yield.md (if declared)
+  - $BEHAVIOR_DIR_REL/3.1.3.research.internal.product.code.prod.*.yield.md (if declared)
+  - $BEHAVIOR_DIR_REL/3.1.3.research.internal.product.code.test.*.yield.md (if declared)
+  - $BEHAVIOR_DIR_REL/3.1.2.research.external.factory.templates.*.yield.md (if declared)
+
+procedure
+1. declare the usecases and envision the contract that would be used to fulfill the usecases
+2. declare the domain.objects, domain.operations, and access.daos that would fulfill this, via the declastruct pattern in this repo
+
+---
+
+specifically
+- what are the domain objects that are involved with this wish
+  - entities
+  - events
+  - literals
+- what are the domain operations
+  - getOne
+  - getAll
+  - setCreate
+  - setUpdate
+  - setDelete
+- what are the relationships between the domain objects?
+  - is there a treestruct of decoration?
+  - is there a treestruct of common subdomains?
+  - are there dependencies?
+- how do the domain objects and operations compose to support wish?
+
+---
+
+emit into
+- $BEHAVIOR_DIR_REL/3.2.distill.domain._.yield.md

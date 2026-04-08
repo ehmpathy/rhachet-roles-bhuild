@@ -30,7 +30,7 @@ describe('initBehaviorDir.integration', () => {
 
         // verify guard files created (without .light suffix)
         expect(result.created).toContain('1.vision.guard');
-        expect(result.created).toContain('3.3.1.blueprint.product.v1.guard');
+        expect(result.created).toContain('3.3.1.blueprint.product.guard');
 
         // verify files exist on disk
         expect(fs.existsSync(path.join(behaviorDir, '1.vision.guard'))).toBe(
@@ -38,7 +38,7 @@ describe('initBehaviorDir.integration', () => {
         );
         expect(
           fs.existsSync(
-            path.join(behaviorDir, '3.3.1.blueprint.product.v1.guard'),
+            path.join(behaviorDir, '3.3.1.blueprint.product.guard'),
           ),
         ).toBe(true);
 
@@ -54,7 +54,7 @@ describe('initBehaviorDir.integration', () => {
         });
 
         const blueprintGuard = fs.readFileSync(
-          path.join(behaviorDir, '3.3.1.blueprint.product.v1.guard'),
+          path.join(behaviorDir, '3.3.1.blueprint.product.guard'),
           'utf-8',
         );
 
@@ -145,7 +145,7 @@ describe('initBehaviorDir.integration', () => {
         // verify guard files created (without .heavy suffix)
         expect(result.created).toContain('1.vision.guard');
         expect(result.created).toContain('2.1.criteria.blackbox.guard');
-        expect(result.created).toContain('3.3.1.blueprint.product.v1.guard');
+        expect(result.created).toContain('3.3.1.blueprint.product.guard');
 
         // verify no .light or .heavy suffix files created
         expect(result.created).not.toContain('1.vision.guard.light');
@@ -204,7 +204,7 @@ describe('initBehaviorDir.integration', () => {
         });
 
         const blueprintGuard = fs.readFileSync(
-          path.join(behaviorDir, '3.3.1.blueprint.product.v1.guard'),
+          path.join(behaviorDir, '3.3.1.blueprint.product.guard'),
           'utf-8',
         );
 
@@ -227,19 +227,19 @@ describe('initBehaviorDir.integration', () => {
 
   given('[case3] verification and playtest templates', () => {
     when('[t0] initBehaviorDir is called', () => {
-      then('creates 5.3.verification.v1.stone', () => {
+      then('creates 5.3.verification.stone', () => {
         const result = initBehaviorDir({
           behaviorDir,
           behaviorDirRel: '.behavior/v2025_01_01.test-feature',
         });
 
-        expect(result.created).toContain('5.3.verification.v1.stone');
+        expect(result.created).toContain('5.3.verification.stone');
         expect(
-          fs.existsSync(path.join(behaviorDir, '5.3.verification.v1.stone')),
+          fs.existsSync(path.join(behaviorDir, '5.3.verification.stone')),
         ).toBe(true);
 
         const content = fs.readFileSync(
-          path.join(behaviorDir, '5.3.verification.v1.stone'),
+          path.join(behaviorDir, '5.3.verification.stone'),
           'utf-8',
         );
         expect(content).toContain('.what');
@@ -247,16 +247,16 @@ describe('initBehaviorDir.integration', () => {
         expect(content).toContain('.how');
       });
 
-      then('creates 5.3.verification.v1.guard with self-reviews', () => {
+      then('creates 5.3.verification.guard with self-reviews', () => {
         const result = initBehaviorDir({
           behaviorDir,
           behaviorDirRel: '.behavior/v2025_01_01.test-feature',
         });
 
-        expect(result.created).toContain('5.3.verification.v1.guard');
+        expect(result.created).toContain('5.3.verification.guard');
 
         const content = fs.readFileSync(
-          path.join(behaviorDir, '5.3.verification.v1.guard'),
+          path.join(behaviorDir, '5.3.verification.guard'),
           'utf-8',
         );
         expect(content).toContain('has-behavior-coverage');
@@ -267,19 +267,19 @@ describe('initBehaviorDir.integration', () => {
         expect(content).toContain('judges:');
       });
 
-      then('creates 5.5.playtest.v1.stone', () => {
+      then('creates 5.5.playtest.stone', () => {
         const result = initBehaviorDir({
           behaviorDir,
           behaviorDirRel: '.behavior/v2025_01_01.test-feature',
         });
 
-        expect(result.created).toContain('5.5.playtest.v1.stone');
+        expect(result.created).toContain('5.5.playtest.stone');
         expect(
-          fs.existsSync(path.join(behaviorDir, '5.5.playtest.v1.stone')),
+          fs.existsSync(path.join(behaviorDir, '5.5.playtest.stone')),
         ).toBe(true);
 
         const content = fs.readFileSync(
-          path.join(behaviorDir, '5.5.playtest.v1.stone'),
+          path.join(behaviorDir, '5.5.playtest.stone'),
           'utf-8',
         );
         expect(content).toContain('.what');
@@ -287,16 +287,16 @@ describe('initBehaviorDir.integration', () => {
         expect(content).toContain('.how');
       });
 
-      then('creates 5.5.playtest.v1.guard with self-reviews and judge', () => {
+      then('creates 5.5.playtest.guard with self-reviews and judge', () => {
         const result = initBehaviorDir({
           behaviorDir,
           behaviorDirRel: '.behavior/v2025_01_01.test-feature',
         });
 
-        expect(result.created).toContain('5.5.playtest.v1.guard');
+        expect(result.created).toContain('5.5.playtest.guard');
 
         const content = fs.readFileSync(
-          path.join(behaviorDir, '5.5.playtest.v1.guard'),
+          path.join(behaviorDir, '5.5.playtest.guard'),
           'utf-8',
         );
         expect(content).toContain('has-clear-instructions');
@@ -352,11 +352,11 @@ describe('initBehaviorDir.integration', () => {
         });
 
         expect(result.created).toContain(
-          '3.2.distill.repros.experience._.v1.guard',
+          '3.2.distill.repros.experience._.guard',
         );
 
         const guardContent = fs.readFileSync(
-          path.join(behaviorDir, '3.2.distill.repros.experience._.v1.guard'),
+          path.join(behaviorDir, '3.2.distill.repros.experience._.guard'),
           'utf-8',
         );
 
@@ -372,7 +372,7 @@ describe('initBehaviorDir.integration', () => {
         });
 
         const stoneContent = fs.readFileSync(
-          path.join(behaviorDir, '3.2.distill.repros.experience._.v1.stone'),
+          path.join(behaviorDir, '3.2.distill.repros.experience._.stone'),
           'utf-8',
         );
 
@@ -388,7 +388,7 @@ describe('initBehaviorDir.integration', () => {
         });
 
         const stoneContent = fs.readFileSync(
-          path.join(behaviorDir, '3.2.distill.repros.experience._.v1.stone'),
+          path.join(behaviorDir, '3.2.distill.repros.experience._.stone'),
           'utf-8',
         );
 
@@ -403,7 +403,7 @@ describe('initBehaviorDir.integration', () => {
         });
 
         const stoneContent = fs.readFileSync(
-          path.join(behaviorDir, '3.2.distill.repros.experience._.v1.stone'),
+          path.join(behaviorDir, '3.2.distill.repros.experience._.stone'),
           'utf-8',
         );
 
@@ -418,7 +418,7 @@ describe('initBehaviorDir.integration', () => {
         });
 
         const stoneContent = fs.readFileSync(
-          path.join(behaviorDir, '3.2.distill.repros.experience._.v1.stone'),
+          path.join(behaviorDir, '3.2.distill.repros.experience._.stone'),
           'utf-8',
         );
 
@@ -437,7 +437,7 @@ describe('initBehaviorDir.integration', () => {
         });
 
         const stoneContent = fs.readFileSync(
-          path.join(behaviorDir, '5.3.verification.v1.stone'),
+          path.join(behaviorDir, '5.3.verification.stone'),
           'utf-8',
         );
 
@@ -452,7 +452,7 @@ describe('initBehaviorDir.integration', () => {
         });
 
         const stoneContent = fs.readFileSync(
-          path.join(behaviorDir, '5.3.verification.v1.stone'),
+          path.join(behaviorDir, '5.3.verification.stone'),
           'utf-8',
         );
 
@@ -468,7 +468,7 @@ describe('initBehaviorDir.integration', () => {
         });
 
         const guardContent = fs.readFileSync(
-          path.join(behaviorDir, '5.3.verification.v1.guard'),
+          path.join(behaviorDir, '5.3.verification.guard'),
           'utf-8',
         );
 
@@ -491,15 +491,15 @@ describe('initBehaviorDir.integration', () => {
 
   given('[case7] evaluation stone and guard', () => {
     when('[t0] initBehaviorDir is called', () => {
-      then('creates 5.2.evaluation.v1.stone', () => {
+      then('creates 5.2.evaluation.stone', () => {
         const result = initBehaviorDir({
           behaviorDir,
           behaviorDirRel: '.behavior/v2025_01_01.test-feature',
         });
 
-        expect(result.created).toContain('5.2.evaluation.v1.stone');
+        expect(result.created).toContain('5.2.evaluation.stone');
         expect(
-          fs.existsSync(path.join(behaviorDir, '5.2.evaluation.v1.stone')),
+          fs.existsSync(path.join(behaviorDir, '5.2.evaluation.stone')),
         ).toBe(true);
       });
 
@@ -510,7 +510,7 @@ describe('initBehaviorDir.integration', () => {
         });
 
         const stoneContent = fs.readFileSync(
-          path.join(behaviorDir, '5.2.evaluation.v1.stone'),
+          path.join(behaviorDir, '5.2.evaluation.stone'),
           'utf-8',
         );
 
@@ -528,7 +528,7 @@ describe('initBehaviorDir.integration', () => {
         });
 
         const stoneContent = fs.readFileSync(
-          path.join(behaviorDir, '5.2.evaluation.v1.stone'),
+          path.join(behaviorDir, '5.2.evaluation.stone'),
           'utf-8',
         );
 
@@ -546,24 +546,24 @@ describe('initBehaviorDir.integration', () => {
         });
 
         const stoneContent = fs.readFileSync(
-          path.join(behaviorDir, '5.2.evaluation.v1.stone'),
+          path.join(behaviorDir, '5.2.evaluation.stone'),
           'utf-8',
         );
 
-        expect(stoneContent).toContain('3.3.1.blueprint.product.v1');
+        expect(stoneContent).toContain('3.3.1.blueprint.product');
         expect(stoneContent).toContain('.behavior/v2025_01_01.test-feature');
       });
 
-      then('creates 5.2.evaluation.v1.guard with 4 self-reviews', () => {
+      then('creates 5.2.evaluation.guard with 4 self-reviews', () => {
         const result = initBehaviorDir({
           behaviorDir,
           behaviorDirRel: '.behavior/v2025_01_01.test-feature',
         });
 
-        expect(result.created).toContain('5.2.evaluation.v1.guard');
+        expect(result.created).toContain('5.2.evaluation.guard');
 
         const guardContent = fs.readFileSync(
-          path.join(behaviorDir, '5.2.evaluation.v1.guard'),
+          path.join(behaviorDir, '5.2.evaluation.guard'),
           'utf-8',
         );
 
@@ -580,7 +580,7 @@ describe('initBehaviorDir.integration', () => {
         });
 
         const guardContent = fs.readFileSync(
-          path.join(behaviorDir, '5.2.evaluation.v1.guard'),
+          path.join(behaviorDir, '5.2.evaluation.guard'),
           'utf-8',
         );
 

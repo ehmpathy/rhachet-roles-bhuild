@@ -8,26 +8,26 @@ exports[`init.behavior.idempotent given: [case5] direct: idempotent rerun on sam
    ├─ + 2.1.criteria.blackbox.stone
    ├─ + 2.2.criteria.blackbox.matrix.stone
    ├─ + 2.3.criteria.blueprint.stone
-   ├─ + 3.1.1.research.external.product.access._.v1.stone
-   ├─ + 3.1.1.research.external.product.claims._.v1.stone
-   ├─ + 3.1.3.research.internal.product.code.prod._.v1.stone
-   ├─ + 3.1.3.research.internal.product.code.test._.v1.stone
-   ├─ + 3.1.5.research.reflection.product.audience._.v1.stone
-   ├─ + 3.1.5.research.reflection.product.premortem._.v1.stone
-   ├─ + 3.1.5.research.reflection.product.rootcause._.v1.stone
-   ├─ + 3.2.distill.repros.experience._.v1.guard
-   ├─ + 3.2.distill.repros.experience._.v1.stone
-   ├─ + 3.3.1.blueprint.product.v1.guard
-   ├─ + 3.3.1.blueprint.product.v1.stone
-   ├─ + 4.1.roadmap.v1.stone
-   ├─ + 5.1.execution.phase0_to_phaseN.v1.guard
-   ├─ + 5.1.execution.phase0_to_phaseN.v1.stone
-   ├─ + 5.2.evaluation.v1.guard
-   ├─ + 5.2.evaluation.v1.stone
-   ├─ + 5.3.verification.v1.guard
-   ├─ + 5.3.verification.v1.stone
-   ├─ + 5.5.playtest.v1.guard
-   ├─ + 5.5.playtest.v1.stone
+   ├─ + 3.1.1.research.external.product.access._.stone
+   ├─ + 3.1.1.research.external.product.claims._.stone
+   ├─ + 3.1.3.research.internal.product.code.prod._.stone
+   ├─ + 3.1.3.research.internal.product.code.test._.stone
+   ├─ + 3.1.5.research.reflection.product.audience._.stone
+   ├─ + 3.1.5.research.reflection.product.premortem._.stone
+   ├─ + 3.1.5.research.reflection.product.rootcause._.stone
+   ├─ + 3.2.distill.repros.experience._.guard
+   ├─ + 3.2.distill.repros.experience._.stone
+   ├─ + 3.3.1.blueprint.product.guard
+   ├─ + 3.3.1.blueprint.product.stone
+   ├─ + 4.1.roadmap.stone
+   ├─ + 5.1.execution.phase0_to_phaseN.guard
+   ├─ + 5.1.execution.phase0_to_phaseN.stone
+   ├─ + 5.2.evaluation.guard
+   ├─ + 5.2.evaluation.stone
+   ├─ + 5.3.verification.guard
+   ├─ + 5.3.verification.stone
+   ├─ + 5.5.playtest.guard
+   ├─ + 5.5.playtest.stone
    └─ + refs/template.[feedback].v1.[given].by_human.md
 
 🌲 go on then,
@@ -48,26 +48,26 @@ exports[`init.behavior.idempotent given: [case5] direct: idempotent rerun on sam
    ├─ ✓ 2.1.criteria.blackbox.stone
    ├─ ✓ 2.2.criteria.blackbox.matrix.stone
    ├─ ✓ 2.3.criteria.blueprint.stone
-   ├─ ✓ 3.1.1.research.external.product.access._.v1.stone
-   ├─ ✓ 3.1.1.research.external.product.claims._.v1.stone
-   ├─ ✓ 3.1.3.research.internal.product.code.prod._.v1.stone
-   ├─ ✓ 3.1.3.research.internal.product.code.test._.v1.stone
-   ├─ ✓ 3.1.5.research.reflection.product.audience._.v1.stone
-   ├─ ✓ 3.1.5.research.reflection.product.premortem._.v1.stone
-   ├─ ✓ 3.1.5.research.reflection.product.rootcause._.v1.stone
-   ├─ ✓ 3.2.distill.repros.experience._.v1.guard
-   ├─ ✓ 3.2.distill.repros.experience._.v1.stone
-   ├─ ✓ 3.3.1.blueprint.product.v1.guard
-   ├─ ✓ 3.3.1.blueprint.product.v1.stone
-   ├─ ✓ 4.1.roadmap.v1.stone
-   ├─ ✓ 5.1.execution.phase0_to_phaseN.v1.guard
-   ├─ ✓ 5.1.execution.phase0_to_phaseN.v1.stone
-   ├─ ✓ 5.2.evaluation.v1.guard
-   ├─ ✓ 5.2.evaluation.v1.stone
-   ├─ ✓ 5.3.verification.v1.guard
-   ├─ ✓ 5.3.verification.v1.stone
-   ├─ ✓ 5.5.playtest.v1.guard
-   ├─ ✓ 5.5.playtest.v1.stone
+   ├─ ✓ 3.1.1.research.external.product.access._.stone
+   ├─ ✓ 3.1.1.research.external.product.claims._.stone
+   ├─ ✓ 3.1.3.research.internal.product.code.prod._.stone
+   ├─ ✓ 3.1.3.research.internal.product.code.test._.stone
+   ├─ ✓ 3.1.5.research.reflection.product.audience._.stone
+   ├─ ✓ 3.1.5.research.reflection.product.premortem._.stone
+   ├─ ✓ 3.1.5.research.reflection.product.rootcause._.stone
+   ├─ ✓ 3.2.distill.repros.experience._.guard
+   ├─ ✓ 3.2.distill.repros.experience._.stone
+   ├─ ✓ 3.3.1.blueprint.product.guard
+   ├─ ✓ 3.3.1.blueprint.product.stone
+   ├─ ✓ 4.1.roadmap.stone
+   ├─ ✓ 5.1.execution.phase0_to_phaseN.guard
+   ├─ ✓ 5.1.execution.phase0_to_phaseN.stone
+   ├─ ✓ 5.2.evaluation.guard
+   ├─ ✓ 5.2.evaluation.stone
+   ├─ ✓ 5.3.verification.guard
+   ├─ ✓ 5.3.verification.stone
+   ├─ ✓ 5.5.playtest.guard
+   ├─ ✓ 5.5.playtest.stone
    └─ ✓ refs/template.[feedback].v1.[given].by_human.md
 
 🌲 go on then,
@@ -88,26 +88,26 @@ exports[`init.behavior.idempotent given: [case9] direct: idempotent reruns prese
    ├─ + 2.1.criteria.blackbox.stone
    ├─ + 2.2.criteria.blackbox.matrix.stone
    ├─ + 2.3.criteria.blueprint.stone
-   ├─ + 3.1.1.research.external.product.access._.v1.stone
-   ├─ + 3.1.1.research.external.product.claims._.v1.stone
-   ├─ + 3.1.3.research.internal.product.code.prod._.v1.stone
-   ├─ + 3.1.3.research.internal.product.code.test._.v1.stone
-   ├─ + 3.1.5.research.reflection.product.audience._.v1.stone
-   ├─ + 3.1.5.research.reflection.product.premortem._.v1.stone
-   ├─ + 3.1.5.research.reflection.product.rootcause._.v1.stone
-   ├─ + 3.2.distill.repros.experience._.v1.guard
-   ├─ + 3.2.distill.repros.experience._.v1.stone
-   ├─ + 3.3.1.blueprint.product.v1.guard
-   ├─ + 3.3.1.blueprint.product.v1.stone
-   ├─ + 4.1.roadmap.v1.stone
-   ├─ + 5.1.execution.phase0_to_phaseN.v1.guard
-   ├─ + 5.1.execution.phase0_to_phaseN.v1.stone
-   ├─ + 5.2.evaluation.v1.guard
-   ├─ + 5.2.evaluation.v1.stone
-   ├─ + 5.3.verification.v1.guard
-   ├─ + 5.3.verification.v1.stone
-   ├─ + 5.5.playtest.v1.guard
-   ├─ + 5.5.playtest.v1.stone
+   ├─ + 3.1.1.research.external.product.access._.stone
+   ├─ + 3.1.1.research.external.product.claims._.stone
+   ├─ + 3.1.3.research.internal.product.code.prod._.stone
+   ├─ + 3.1.3.research.internal.product.code.test._.stone
+   ├─ + 3.1.5.research.reflection.product.audience._.stone
+   ├─ + 3.1.5.research.reflection.product.premortem._.stone
+   ├─ + 3.1.5.research.reflection.product.rootcause._.stone
+   ├─ + 3.2.distill.repros.experience._.guard
+   ├─ + 3.2.distill.repros.experience._.stone
+   ├─ + 3.3.1.blueprint.product.guard
+   ├─ + 3.3.1.blueprint.product.stone
+   ├─ + 4.1.roadmap.stone
+   ├─ + 5.1.execution.phase0_to_phaseN.guard
+   ├─ + 5.1.execution.phase0_to_phaseN.stone
+   ├─ + 5.2.evaluation.guard
+   ├─ + 5.2.evaluation.stone
+   ├─ + 5.3.verification.guard
+   ├─ + 5.3.verification.stone
+   ├─ + 5.5.playtest.guard
+   ├─ + 5.5.playtest.stone
    └─ + refs/template.[feedback].v1.[given].by_human.md
 
 🌲 go on then,

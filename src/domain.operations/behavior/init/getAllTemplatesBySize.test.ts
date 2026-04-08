@@ -40,30 +40,26 @@ describe('getAllTemplatesBySize', () => {
 
       then('includes from_vision execution (nano-specific)', () => {
         const templates = getAllTemplatesBySize({ size: 'nano' });
-        expect(templates).toContain('5.1.execution.from_vision.v1.stone');
-        expect(templates).toContain('5.1.execution.from_vision.v1.guard');
+        expect(templates).toContain('5.1.execution.from_vision.stone');
+        expect(templates).toContain('5.1.execution.from_vision.guard');
       });
 
       then('does NOT include phased execution (mini+)', () => {
         const templates = getAllTemplatesBySize({ size: 'nano' });
-        expect(templates).not.toContain(
-          '5.1.execution.phase0_to_phaseN.v1.stone',
-        );
-        expect(templates).not.toContain(
-          '5.1.execution.phase0_to_phaseN.v1.guard',
-        );
+        expect(templates).not.toContain('5.1.execution.phase0_to_phaseN.stone');
+        expect(templates).not.toContain('5.1.execution.phase0_to_phaseN.guard');
       });
 
       then('does NOT include blueprint or roadmap (mini+)', () => {
         const templates = getAllTemplatesBySize({ size: 'nano' });
-        expect(templates).not.toContain('3.3.1.blueprint.product.v1.stone');
-        expect(templates).not.toContain('4.1.roadmap.v1.stone');
+        expect(templates).not.toContain('3.3.1.blueprint.product.stone');
+        expect(templates).not.toContain('4.1.roadmap.stone');
       });
 
       then('includes verification (tests should never be forgotten)', () => {
         const templates = getAllTemplatesBySize({ size: 'nano' });
-        expect(templates).toContain('5.3.verification.v1.stone');
-        expect(templates).toContain('5.3.verification.v1.guard');
+        expect(templates).toContain('5.3.verification.stone');
+        expect(templates).toContain('5.3.verification.guard');
       });
     });
   });
@@ -79,29 +75,29 @@ describe('getAllTemplatesBySize', () => {
         // mini templates
         expect(templates).toContain('2.1.criteria.blackbox.stone');
         expect(templates).toContain(
-          '3.1.3.research.internal.product.code.prod._.v1.stone',
+          '3.1.3.research.internal.product.code.prod._.stone',
         );
         // not medi
-        expect(templates).not.toContain('5.5.playtest.v1.stone');
+        expect(templates).not.toContain('5.5.playtest.stone');
       });
 
       then('includes phased execution (replaces from_vision)', () => {
         const templates = getAllTemplatesBySize({ size: 'mini' });
-        expect(templates).toContain('5.1.execution.phase0_to_phaseN.v1.stone');
-        expect(templates).toContain('5.1.execution.phase0_to_phaseN.v1.guard');
+        expect(templates).toContain('5.1.execution.phase0_to_phaseN.stone');
+        expect(templates).toContain('5.1.execution.phase0_to_phaseN.guard');
       });
 
       then('does NOT include from_vision execution (deleted by mini)', () => {
         const templates = getAllTemplatesBySize({ size: 'mini' });
-        expect(templates).not.toContain('5.1.execution.from_vision.v1.stone');
-        expect(templates).not.toContain('5.1.execution.from_vision.v1.guard');
+        expect(templates).not.toContain('5.1.execution.from_vision.stone');
+        expect(templates).not.toContain('5.1.execution.from_vision.guard');
       });
 
       then('includes blueprint and roadmap (moved from nano)', () => {
         const templates = getAllTemplatesBySize({ size: 'mini' });
-        expect(templates).toContain('3.3.1.blueprint.product.v1.stone');
-        expect(templates).toContain('3.3.1.blueprint.product.v1.guard');
-        expect(templates).toContain('4.1.roadmap.v1.stone');
+        expect(templates).toContain('3.3.1.blueprint.product.stone');
+        expect(templates).toContain('3.3.1.blueprint.product.guard');
+        expect(templates).toContain('4.1.roadmap.stone');
       });
     });
   });
@@ -116,18 +112,18 @@ describe('getAllTemplatesBySize', () => {
         // mini templates
         expect(templates).toContain('2.1.criteria.blackbox.stone');
         // medi templates
-        expect(templates).toContain('5.5.playtest.v1.stone');
-        expect(templates).toContain('3.2.distill.repros.experience._.v1.stone');
+        expect(templates).toContain('5.5.playtest.stone');
+        expect(templates).toContain('3.2.distill.repros.experience._.stone');
         // not mega
         expect(templates).not.toContain(
-          '3.1.1.research.external.product.domain._.v1.stone',
+          '3.1.1.research.external.product.domain._.stone',
         );
       });
 
       then('dels accumulate: from_vision still deleted', () => {
         const templates = getAllTemplatesBySize({ size: 'medi' });
-        expect(templates).not.toContain('5.1.execution.from_vision.v1.stone');
-        expect(templates).not.toContain('5.1.execution.from_vision.v1.guard');
+        expect(templates).not.toContain('5.1.execution.from_vision.stone');
+        expect(templates).not.toContain('5.1.execution.from_vision.guard');
       });
     });
   });
@@ -139,16 +135,16 @@ describe('getAllTemplatesBySize', () => {
         expect(templates).toMatchSnapshot();
         // mega templates
         expect(templates).toContain(
-          '3.1.1.research.external.product.domain._.v1.stone',
+          '3.1.1.research.external.product.domain._.stone',
         );
-        expect(templates).toContain('3.2.distill.domain._.v1.guard');
-        expect(templates).toContain('3.3.0.blueprint.factory.v1.stone');
+        expect(templates).toContain('3.2.distill.domain._.guard');
+        expect(templates).toContain('3.3.0.blueprint.factory.stone');
       });
 
       then('dels accumulate: from_vision still deleted', () => {
         const templates = getAllTemplatesBySize({ size: 'mega' });
-        expect(templates).not.toContain('5.1.execution.from_vision.v1.stone');
-        expect(templates).not.toContain('5.1.execution.from_vision.v1.guard');
+        expect(templates).not.toContain('5.1.execution.from_vision.stone');
+        expect(templates).not.toContain('5.1.execution.from_vision.guard');
       });
     });
   });
@@ -163,8 +159,8 @@ describe('getAllTemplatesBySize', () => {
 
       then('dels accumulate: from_vision still deleted', () => {
         const templates = getAllTemplatesBySize({ size: 'giga' });
-        expect(templates).not.toContain('5.1.execution.from_vision.v1.stone');
-        expect(templates).not.toContain('5.1.execution.from_vision.v1.guard');
+        expect(templates).not.toContain('5.1.execution.from_vision.stone');
+        expect(templates).not.toContain('5.1.execution.from_vision.guard');
       });
     });
   });
@@ -174,12 +170,12 @@ describe('getAllTemplatesBySize', () => {
       then('it appears in the smaller size but not the larger size', () => {
         // nano has from_vision
         const nano = getAllTemplatesBySize({ size: 'nano' });
-        expect(nano).toContain('5.1.execution.from_vision.v1.stone');
+        expect(nano).toContain('5.1.execution.from_vision.stone');
 
         // mini dels from_vision, adds phased
         const mini = getAllTemplatesBySize({ size: 'mini' });
-        expect(mini).not.toContain('5.1.execution.from_vision.v1.stone');
-        expect(mini).toContain('5.1.execution.phase0_to_phaseN.v1.stone');
+        expect(mini).not.toContain('5.1.execution.from_vision.stone');
+        expect(mini).toContain('5.1.execution.phase0_to_phaseN.stone');
       });
     });
 
@@ -188,7 +184,7 @@ describe('getAllTemplatesBySize', () => {
         const sizes = ['mini', 'medi', 'mega', 'giga'] as const;
         for (const size of sizes) {
           const templates = getAllTemplatesBySize({ size });
-          expect(templates).not.toContain('5.1.execution.from_vision.v1.stone');
+          expect(templates).not.toContain('5.1.execution.from_vision.stone');
         }
       });
     });
