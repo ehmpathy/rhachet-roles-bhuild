@@ -66,7 +66,6 @@
     "emoji-space-shim": "0.0.0",
     "helpful-errors": "1.5.3",
     "iso-time": "1.11.3",
-    "rhachet-roles-rhachet": "0.1.5",
     "test-fns": "1.15.0",
     "zod": "4.3.4"
   },
