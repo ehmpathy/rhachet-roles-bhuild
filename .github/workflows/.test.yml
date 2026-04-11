@@ -234,7 +234,7 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}
-          EHMPATH_BEAVER_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}
+          EHMPATH_BEAVER_GITHUB_TOKEN: ${{ secrets.EHMPATH_BEAVER_GITHUB_TOKEN }}
 
       - name: test:integration (dynamic ${{ matrix.shard.shard }}/${{ matrix.shard.total }})
         if: matrix.shard.type == 'dynamic'
@@ -248,7 +248,7 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}
-          EHMPATH_BEAVER_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}
+          EHMPATH_BEAVER_GITHUB_TOKEN: ${{ secrets.EHMPATH_BEAVER_GITHUB_TOKEN }}
 
       - name: report slow tests
         if: always() && hashFiles('jest-results.json') != ''
@@ -313,7 +313,7 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}
-          EHMPATH_BEAVER_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}
+          EHMPATH_BEAVER_GITHUB_TOKEN: ${{ secrets.EHMPATH_BEAVER_GITHUB_TOKEN }}
 
       - name: test:acceptance (dynamic ${{ matrix.shard.shard }}/${{ matrix.shard.total }})
         if: matrix.shard.type == 'dynamic'
@@ -327,7 +327,7 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}
-          EHMPATH_BEAVER_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}
+          EHMPATH_BEAVER_GITHUB_TOKEN: ${{ secrets.EHMPATH_BEAVER_GITHUB_TOKEN }}
 
       - name: report slow tests
         if: always() && hashFiles('jest-results.json') != ''
