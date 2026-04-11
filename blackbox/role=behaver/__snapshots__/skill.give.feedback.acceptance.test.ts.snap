@@ -43,7 +43,7 @@ exports[`give.feedback given: [case4] consumer: artifact not found when: [t0] gi
         throw new helpful_errors_1.BadRequestError(\`no artifact found for '\${input.against}' in \${behaviorDir}\`);
               ^
 
-BadRequestError: BadRequestError: no artifact found for 'execution' in /tmp/{TEMP}/rhachet-roles-bhuild.vlad.give-feedback-onstop/.temp/{TIMESTAMP}/.behavior/v{DATE}.{NAME}
+BadRequestError: BadRequestError: no artifact found for 'execution' in /tmp/{TEMP}/rhachet-roles-bhuild/.temp/{TIMESTAMP}/.behavior/v{DATE}.{NAME}
     at feedbackGive ({REPO}/dist/domain.operations/behavior/feedback/feedbackGive.js:28:15)
     at feedbackGive ({REPO}/dist/contract/cli/feedback.give.js:68:52)
     at Object.logic ({REPO}/dist/index.js:40:122)
@@ -64,7 +64,7 @@ exports[`give.feedback given: [case5] consumer: template not found when: [t0] gi
         throw new helpful_errors_1.BadRequestError(\`template not found: \${templatePath}\`);
               ^
 
-BadRequestError: BadRequestError: template not found: /tmp/{TEMP}/rhachet-roles-bhuild.vlad.give-feedback-onstop/.temp/{TIMESTAMP}/.behavior/v{DATE}.{NAME}/refs/template.[feedback].v1.[given].by_human.md
+BadRequestError: BadRequestError: template not found: /tmp/{TEMP}/rhachet-roles-bhuild/.temp/{TIMESTAMP}/.behavior/v{DATE}.{NAME}/refs/template.[feedback].v1.[given].by_human.md
     at feedbackGive ({REPO}/dist/domain.operations/behavior/feedback/feedbackGive.js:65:15)
     at feedbackGive ({REPO}/dist/contract/cli/feedback.give.js:68:52)
     at Object.logic ({REPO}/dist/index.js:40:122)
@@ -85,7 +85,7 @@ exports[`give.feedback given: [case6] consumer: --force overrides behavior bind 
             throw new helpful_errors_1.BadRequestError(\`branch is bound to \${boundDir} but --behavior flag specifies \${flagDir}. use --force to override.\`);
                   ^
 
-BadRequestError: BadRequestError: branch is bound to /tmp/{TEMP}/rhachet-roles-bhuild.vlad.give-feedback-onstop/.temp/{TIMESTAMP}/.behavior/v{DATE}.{NAME} but --behavior flag specifies /tmp/{TEMP}/rhachet-roles-bhuild.vlad.give-feedback-onstop/.temp/{TIMESTAMP}/.behavior/v{DATE}.{NAME}. use --force to override.
+BadRequestError: BadRequestError: branch is bound to /tmp/{TEMP}/rhachet-roles-bhuild/.temp/{TIMESTAMP}/.behavior/v{DATE}.{NAME} but --behavior flag specifies /tmp/{TEMP}/rhachet-roles-bhuild/.temp/{TIMESTAMP}/.behavior/v{DATE}.{NAME}. use --force to override.
     at getBehaviorDirForFeedback ({REPO}/dist/domain.operations/behavior/feedback/getBehaviorDirForFeedback.js:34:19)
     at feedbackGive ({REPO}/dist/domain.operations/behavior/feedback/feedbackGive.js:20:83)
     at feedbackGive ({REPO}/dist/contract/cli/feedback.give.js:68:52)
