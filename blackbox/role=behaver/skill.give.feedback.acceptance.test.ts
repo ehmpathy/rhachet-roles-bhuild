@@ -15,6 +15,8 @@ import {
  */
 const asSnapshotStable = (output: string): string =>
   output
+    // mask repo root paths (local worktree or CI runner) to consistent placeholder
+    .replace(/\/home\/[^/]+\/[^\s]+rhachet-roles-bhuild[^\s/]*/g, '{REPO}')
     // mask behavior names with dates: v2026_04_09.my-feature -> v{DATE}.{NAME}
     .replace(/v\d{4}_\d{2}_\d{2}\.[a-z0-9-]+/gi, 'v{DATE}.{NAME}')
     // mask behavior dir names only: v2026_04_09 -> v{DATE}

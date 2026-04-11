@@ -39,16 +39,16 @@ exports[`give.feedback given: [case4] consumer: artifact not found when: [t0] gi
 [0m[31m🪨 run solid skill repo=bhuild/role=behaver/skill=give.feedback[0m
 [0m[31m   └─ 💥 failed with an error[0m
 [0m[31m[0m
-[0m[31m/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/domain.operations/behavior/feedback/feedbackGive.js:28
+[0m[31m{REPO}/dist/domain.operations/behavior/feedback/feedbackGive.js:28
         throw new helpful_errors_1.BadRequestError(\`no artifact found for '\${input.against}' in \${behaviorDir}\`);
               ^
 
 BadRequestError: BadRequestError: no artifact found for 'execution' in /tmp/{TEMP}/rhachet-roles-bhuild.vlad.give-feedback-onstop/.temp/{TIMESTAMP}/.behavior/v{DATE}.{NAME}
-    at feedbackGive (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/domain.operations/behavior/feedback/feedbackGive.js:28:15)
-    at feedbackGive (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/contract/cli/feedback.give.js:68:52)
-    at Object.logic (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/index.js:40:122)
-    at withEmojiSpaceShim (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/node_modules/[4m.pnpm[24m/emoji-space-shim@0.0.0/node_modules/[4memoji-space-shim[24m/dist/contract/sdk/withEmojiSpaceShim.js:14:28)
-    at Object.giveFeedback (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/index.js:40:67)
+    at feedbackGive ({REPO}/dist/domain.operations/behavior/feedback/feedbackGive.js:28:15)
+    at feedbackGive ({REPO}/dist/contract/cli/feedback.give.js:68:52)
+    at Object.logic ({REPO}/dist/index.js:40:122)
+    at withEmojiSpaceShim ({REPO}/node_modules/[4m.pnpm[24m/emoji-space-shim@0.0.0/node_modules/[4memoji-space-shim[24m/dist/contract/sdk/withEmojiSpaceShim.js:14:28)
+    at Object.giveFeedback ({REPO}/dist/index.js:40:67)
     at [eval]:1:48
 
 Node.js v22.21.0[0m"
@@ -60,16 +60,16 @@ exports[`give.feedback given: [case5] consumer: template not found when: [t0] gi
 [0m[31m🪨 run solid skill repo=bhuild/role=behaver/skill=give.feedback[0m
 [0m[31m   └─ 💥 failed with an error[0m
 [0m[31m[0m
-[0m[31m/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/domain.operations/behavior/feedback/feedbackGive.js:65
+[0m[31m{REPO}/dist/domain.operations/behavior/feedback/feedbackGive.js:65
         throw new helpful_errors_1.BadRequestError(\`template not found: \${templatePath}\`);
               ^
 
 BadRequestError: BadRequestError: template not found: /tmp/{TEMP}/rhachet-roles-bhuild.vlad.give-feedback-onstop/.temp/{TIMESTAMP}/.behavior/v{DATE}.{NAME}/refs/template.[feedback].v1.[given].by_human.md
-    at feedbackGive (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/domain.operations/behavior/feedback/feedbackGive.js:65:15)
-    at feedbackGive (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/contract/cli/feedback.give.js:68:52)
-    at Object.logic (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/index.js:40:122)
-    at withEmojiSpaceShim (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/node_modules/[4m.pnpm[24m/emoji-space-shim@0.0.0/node_modules/[4memoji-space-shim[24m/dist/contract/sdk/withEmojiSpaceShim.js:14:28)
-    at Object.giveFeedback (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/index.js:40:67)
+    at feedbackGive ({REPO}/dist/domain.operations/behavior/feedback/feedbackGive.js:65:15)
+    at feedbackGive ({REPO}/dist/contract/cli/feedback.give.js:68:52)
+    at Object.logic ({REPO}/dist/index.js:40:122)
+    at withEmojiSpaceShim ({REPO}/node_modules/[4m.pnpm[24m/emoji-space-shim@0.0.0/node_modules/[4memoji-space-shim[24m/dist/contract/sdk/withEmojiSpaceShim.js:14:28)
+    at Object.giveFeedback ({REPO}/dist/index.js:40:67)
     at [eval]:1:48
 
 Node.js v22.21.0[0m"
@@ -81,17 +81,17 @@ exports[`give.feedback given: [case6] consumer: --force overrides behavior bind 
 [0m[31m🪨 run solid skill repo=bhuild/role=behaver/skill=give.feedback[0m
 [0m[31m   └─ 💥 failed with an error[0m
 [0m[31m[0m
-[0m[31m/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/domain.operations/behavior/feedback/getBehaviorDirForFeedback.js:34
+[0m[31m{REPO}/dist/domain.operations/behavior/feedback/getBehaviorDirForFeedback.js:34
             throw new helpful_errors_1.BadRequestError(\`branch is bound to \${boundDir} but --behavior flag specifies \${flagDir}. use --force to override.\`);
                   ^
 
 BadRequestError: BadRequestError: branch is bound to /tmp/{TEMP}/rhachet-roles-bhuild.vlad.give-feedback-onstop/.temp/{TIMESTAMP}/.behavior/v{DATE}.{NAME} but --behavior flag specifies /tmp/{TEMP}/rhachet-roles-bhuild.vlad.give-feedback-onstop/.temp/{TIMESTAMP}/.behavior/v{DATE}.{NAME}. use --force to override.
-    at getBehaviorDirForFeedback (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/domain.operations/behavior/feedback/getBehaviorDirForFeedback.js:34:19)
-    at feedbackGive (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/domain.operations/behavior/feedback/feedbackGive.js:20:83)
-    at feedbackGive (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/contract/cli/feedback.give.js:68:52)
-    at Object.logic (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/index.js:40:122)
-    at withEmojiSpaceShim (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/node_modules/[4m.pnpm[24m/emoji-space-shim@0.0.0/node_modules/[4memoji-space-shim[24m/dist/contract/sdk/withEmojiSpaceShim.js:14:28)
-    at Object.giveFeedback (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/index.js:40:67)
+    at getBehaviorDirForFeedback ({REPO}/dist/domain.operations/behavior/feedback/getBehaviorDirForFeedback.js:34:19)
+    at feedbackGive ({REPO}/dist/domain.operations/behavior/feedback/feedbackGive.js:20:83)
+    at feedbackGive ({REPO}/dist/contract/cli/feedback.give.js:68:52)
+    at Object.logic ({REPO}/dist/index.js:40:122)
+    at withEmojiSpaceShim ({REPO}/node_modules/[4m.pnpm[24m/emoji-space-shim@0.0.0/node_modules/[4memoji-space-shim[24m/dist/contract/sdk/withEmojiSpaceShim.js:14:28)
+    at Object.giveFeedback ({REPO}/dist/index.js:40:67)
     at [eval]:1:48
 
 Node.js v22.21.0[0m"
