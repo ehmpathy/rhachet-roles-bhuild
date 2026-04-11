@@ -1,23 +1,26 @@
 import { BadRequestError } from 'helpful-errors';
 
+import { getAuthFromKeyrack } from './getAuthFromKeyrack';
+
 /**
- * .what = resolve github token from auth argument
- * .why = centralizes auth resolution logic for gh.issues channel
+ * .what = get github token from auth argument
+ * .why = centralizes auth derivation logic for gh.issues channel
  *
  * .note
- *   the shx(...) pattern enables token retrieval from adhoc remote sources,
- *   such as 1password, vault, aws secrets manager, or any cli tool that
- *   outputs a token. this allows flexible auth without env var setup.
+ *   - defaults to via-keyrack(ehmpath) when --auth not specified
+ *   - the shx(...) pattern enables token retrieval from adhoc remote sources,
+ *     such as 1password, vault, aws secrets manager, or any cli tool that
+ *     outputs a token
  *
  * .returns
- *   - { token: string; role } when token is available (as-robot or env)
+ *   - { token: string; role: 'as-robot' } when token is available
  *   - { token: null; role: 'as-human' } when as-human (use gh cli auto login)
  *
  * .throws
  *   - BadRequestError when as-robot:env(VAR) but VAR not set
  *   - BadRequestError when as-robot:shx(...) command fails or has no output
+ *   - BadRequestError when as-robot:via-keyrack(owner) fails
  *   - BadRequestError when as-human in test environment (tests must use explicit tokens)
- *   - BadRequestError when no auth method detected
  */
 export const getGithubTokenByAuthArg = async (
   input: { auth: string | undefined },
@@ -26,11 +29,24 @@ export const getGithubTokenByAuthArg = async (
     shx: (command: string) => Promise<{ stdout: string; stderr: string }>;
   },
 ): Promise<
-  | { token: string; role: 'as-robot' | 'env' }
-  | { token: null; role: 'as-human' }
+  { token: string; role: 'as-robot' } | { token: null; role: 'as-human' }
 > => {
+  // default to via-keyrack(ehmpath) if no --auth specified
+  const auth = input.auth ?? 'as-robot:via-keyrack(ehmpath)';
+  // check for as-robot:via-keyrack(owner) pattern (token from keyrack)
+  const keyrackMatch = auth.match(/^as-robot:via-keyrack\((.+)\)$/);
+  if (keyrackMatch) {
+    const owner = keyrackMatch[1]!;
+    const { token } = await getAuthFromKeyrack({
+      owner,
+      env: 'prep',
+      key: 'EHMPATH_BEAVER_GITHUB_TOKEN',
+    });
+    return { token, role: 'as-robot' };
+  }
+
   // check for as-robot:shx(...) pattern (token from shell command)
-  const shxMatch = input.auth?.match(/^as-robot:shx\((.+)\)$/);
+  const shxMatch = auth.match(/^as-robot:shx\((.+)\)$/);
   if (shxMatch) {
     const shellCommand = shxMatch[1]!;
     const result = await context.shx(shellCommand);
@@ -44,7 +60,7 @@ export const getGithubTokenByAuthArg = async (
   }
 
   // check for as-robot:env(...) pattern (explicit token from env var)
-  const envMatch = input.auth?.match(/^as-robot:env\((.+)\)$/);
+  const envMatch = auth?.match(/^as-robot:env\((.+)\)$/);
   if (envMatch) {
     const envVarName = envMatch[1]!;
     const tokenValue = context.env[envVarName];
@@ -57,7 +73,7 @@ export const getGithubTokenByAuthArg = async (
   }
 
   // check for as-human (explicit gh cli intent, takes precedence over GITHUB_TOKEN)
-  if (input.auth === 'as-human') {
+  if (auth === 'as-human') {
     // failfast in test env — tests must use explicit tokens, not gh cli auto login
     const isTestEnv =
       context.env.NODE_ENV === 'test' ||
@@ -70,23 +86,20 @@ export const getGithubTokenByAuthArg = async (
     return { token: null, role: 'as-human' };
   }
 
-  // check for GITHUB_TOKEN in env (implicit fallback)
-  if (context.env.GITHUB_TOKEN) {
-    return { token: context.env.GITHUB_TOKEN, role: 'env' };
-  }
-
-  // no auth detected
+  // unrecognized auth mode
   throw new BadRequestError(
     [
-      'no auth detected for gh.issues channel',
+      `unrecognized --auth mode: ${auth}`,
       '',
-      'tips:',
-      '├─ --auth as-human',
-      '│     use gh cli logged-in session (interactive)',
-      '├─ --auth as-robot:env(VAR)',
+      'supported modes:',
+      '├─ as-robot:via-keyrack(owner)  (default: ehmpath)',
+      '│     use token from keyrack',
+      '├─ as-robot:shx(command)',
+      '│     execute shell command to retrieve token',
+      '├─ as-robot:env(VAR)',
       '│     use token from environment variable',
-      '└─ --auth as-robot:shx(command)',
-      '      execute shell command to retrieve token',
+      '└─ as-human',
+      '      use gh cli logged-in session (interactive)',
     ].join('\n'),
   );
 };

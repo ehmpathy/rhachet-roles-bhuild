@@ -11,12 +11,39 @@ provision/github.apps/
 └── resources.app.bhuild-beaver.ts         # app auth for beaver role (radio.task.push)
 ```
 
+## prerequisites
+
+### store admin token in keyrack
+
+declastruct needs a GitHub token with admin access to create apps. set it in keyrack from 1password:
+
+```bash
+rhx keyrack set --key GITHUB_TOKEN --env sudo --vault 1password
+
+# to find a 1password uri:
+#   1. open 1password app
+#   2. find item
+#   3. right-click field → "Copy Secret Reference"
+#
+# enter 1password uri (e.g., op://vault/item/field): **************
+```
+
+verify the key was set:
+
+```bash
+rhx keyrack get --key GITHUB_TOKEN --env sudo
+
+# ✅ granted: GITHUB_TOKEN
+```
+
+the provision commands will auto-fetch the token via `keyrack.get()`.
+
 ## usage
 
 ### generate a plan
 
 ```bash
-GITHUB_TOKEN=<token> npx declastruct plan \
+npx declastruct plan \
   --wish ./provision/github.apps/resources.ts \
   --into ./provision/github.apps/.temp/plan.json
 ```
@@ -24,8 +51,49 @@ GITHUB_TOKEN=<token> npx declastruct plan \
 ### apply the plan
 
 ```bash
-GITHUB_TOKEN=<token> npx declastruct apply \
+npx declastruct apply \
   --plan ./provision/github.apps/.temp/plan.json
+```
+
+### store app credentials in keyrack
+
+after apply completes, store the produced credentials (appId, privateKey, installationId) in keyrack:
+
+1. get the installation id:
+
+```bash
+gh api --method GET /orgs/ehmpathy/installations | jq '.installations[] | select(.app_slug == "beaver-by-bhuild") | {app_id, id}'
+# returns: { "app_id": 3234162, "id": 120377098 }
+```
+
+2. store in keyrack (pipe the json via stdin):
+
+```bash
+jq -c -n --rawfile key ~/Downloads/beaver-by-bhuild.YYYY-MM-DD.private-key.pem \
+  '{appId: "APP_ID", privateKey: $key, installationId: "INSTALLATION_ID"}' | \
+npx rhachet keyrack set \
+  --key EHMPATH_BEAVER_GITHUB_TOKEN \
+  --env prep \
+  --vault os.secure \
+  --owner ehmpath \
+  --mech EPHEMERAL_VIA_GITHUB_APP
+```
+
+replace `APP_ID`, `INSTALLATION_ID`, and the pem file path with actual values.
+
+3. verify:
+
+```bash
+rhx keyrack get --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep --owner ehmpath
+# ✅ granted: EHMPATH_BEAVER_GITHUB_TOKEN
+```
+
+### manual override
+
+if you prefer to set the token manually (skips keyrack):
+
+```bash
+GITHUB_TOKEN=<token> npx declastruct plan ...
 ```
 
 ## local usage (cli)

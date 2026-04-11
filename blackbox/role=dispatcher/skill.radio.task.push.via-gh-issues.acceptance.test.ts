@@ -3,7 +3,6 @@ import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
   genConsumerRepo,
-  BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN,
   GITHUB_DEMO_REPO,
   runRhachetSkill,
 } from '../.test/infra';
@@ -12,11 +11,10 @@ import {
  * .what = acceptance tests for radio.task.push via gh.issues channel
  * .why = validates the github issues integration end-to-end
  *
- * .note = these tests require github authentication
- *         set BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN before test execution
+ * .note = auth is provided via keyrack (EHMPATH_BEAVER_GITHUB_TOKEN)
+ *         keyrack.source() is called in jest.acceptance.env.ts
  *
  * .usage:
- *   source .agent/repo=.this/role=any/skills/use.apikeys.sh
  *   npm run test:acceptance -- skill.radio.task.push.via-gh-issues
  */
 
@@ -38,9 +36,7 @@ const runRadioTaskPush = (input: {
 }) => {
   const args = [
     `--via ${input.via}`,
-    input.auth
-      ? `--auth "${input.auth.replace(/\(/g, '\\(').replace(/\)/g, '\\)')}"`
-      : '',
+    input.auth ? `--auth "${input.auth}"` : '',
     input.repo ? `--repo "${input.repo}"` : '',
     input.title ? `--title "${input.title}"` : '',
     input.description ? `--description "${input.description}"` : '',
@@ -61,22 +57,21 @@ const runRadioTaskPush = (input: {
   });
 };
 
-// TODO: unskip once keyrack provides BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN
-describe.skip('radio.task.push via gh.issues', () => {
+describe('radio.task.push via gh.issues', () => {
 
   // shared consumer repo for all test cases (pnpm install is expensive)
   const sharedRepo = useBeforeAll(async () =>
     genConsumerRepo({ prefix: 'radio-gh-acpt-' }),
   );
 
-  given('[case1] push new task to gh.issues', () => {
+  given('[case1] push new task to gh.issues (default auth via keyrack)', () => {
 
-    when('[t0] push with title and description', () => {
+    when('[t0] push with title and description (no --auth flag)', () => {
       const result = useBeforeAll(async () =>
         runRadioTaskPush({
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
-          auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
+          // no auth — uses default as-robot:via-keyrack(ehmpath)
           repo: GITHUB_DEMO_REPO,
           title: `test task ${Date.now()}`,
           description: 'automated acceptance test task',
@@ -100,12 +95,12 @@ describe.skip('radio.task.push via gh.issues', () => {
       });
     });
 
-    when('[t1] push without title', () => {
+    when('[t1] push without title (no --auth flag)', () => {
       const result = useBeforeAll(async () =>
         runRadioTaskPush({
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
-          auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
+          // no auth — uses default as-robot:via-keyrack(ehmpath)
           repo: GITHUB_DEMO_REPO,
           description: 'no title',
         }),
@@ -129,7 +124,7 @@ describe.skip('radio.task.push via gh.issues', () => {
         const result = runRadioTaskPush({
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
-          auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
+          // no auth — uses default as-robot:via-keyrack(ehmpath)
           repo: GITHUB_DEMO_REPO,
           title: `status test ${Date.now()}`,
           description: 'for status transition test',
@@ -151,7 +146,7 @@ describe.skip('radio.task.push via gh.issues', () => {
         const claimResult = runRadioTaskPush({
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
-          auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
+          // no auth — uses default as-robot:via-keyrack(ehmpath)
           repo: GITHUB_DEMO_REPO,
           exid: issueNumber,
           status: 'CLAIMED',
@@ -164,7 +159,7 @@ describe.skip('radio.task.push via gh.issues', () => {
         const deliverResult = runRadioTaskPush({
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
-          auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
+          // no auth — uses default as-robot:via-keyrack(ehmpath)
           repo: GITHUB_DEMO_REPO,
           exid: issueNumber,
           status: 'DELIVERED',
@@ -183,7 +178,7 @@ describe.skip('radio.task.push via gh.issues', () => {
         runRadioTaskPush({
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
-          auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
+          // no auth — uses default as-robot:via-keyrack(ehmpath)
           repo: GITHUB_DEMO_REPO,
           title: uniqueTitle,
           description: 'first push',
@@ -203,7 +198,7 @@ describe.skip('radio.task.push via gh.issues', () => {
         const secondResult = runRadioTaskPush({
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
-          auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
+          // no auth — uses default as-robot:via-keyrack(ehmpath)
           repo: GITHUB_DEMO_REPO,
           title: uniqueTitle,
           description: 'second push',
@@ -221,7 +216,7 @@ describe.skip('radio.task.push via gh.issues', () => {
         runRadioTaskPush({
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
-          auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
+          // no auth — uses default as-robot:via-keyrack(ehmpath)
           repo: GITHUB_DEMO_REPO,
           title: `format test ${Date.now()}`,
           description: 'verify issue format',

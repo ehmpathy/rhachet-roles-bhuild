@@ -1,6 +1,6 @@
 import { exec } from 'child_process';
 import * as fs from 'fs';
-import { BadRequestError } from 'helpful-errors';
+import { BadRequestError, UnexpectedCodePathError } from 'helpful-errors';
 import type { IsoDateStamp } from 'iso-time';
 import * as os from 'os';
 import * as path from 'path';
@@ -241,7 +241,10 @@ export const daoRadioTaskViaGhIssues = {
         // parse issue number from URL output (e.g., "https://github.com/owner/repo/issues/123")
         const issueNumberMatch = output.match(/\/issues\/(\d+)/);
         if (!issueNumberMatch)
-          throw new Error(`failed to parse issue number from: ${output}`);
+          throw new UnexpectedCodePathError(
+            'failed to parse issue number from gh cli output',
+            { output, repoSlug },
+          );
 
         return new RadioTask({
           ...input.task,
@@ -294,15 +297,30 @@ export const daoRadioTaskViaGhIssues = {
         await unlinkAsync(tempFile).catch(() => {});
       }
 
-      // add assignee for CLAIMED status
+      // add assignee for CLAIMED status (best-effort — may fail for app tokens or invalid users)
       if (
         input.task.status === RadioTaskStatus.CLAIMED &&
         input.task.claimedBy
       ) {
-        await runGhCommand(
-          `gh issue edit ${taskFound.exid} --repo ${repoSlug} --add-assignee "${input.task.claimedBy}"`,
-          context,
-        );
+        try {
+          await runGhCommand(
+            `gh issue edit ${taskFound.exid} --repo ${repoSlug} --add-assignee "${input.task.claimedBy}"`,
+            context,
+          );
+        } catch (error: unknown) {
+          // allowlist expected errors: app token permissions, invalid user
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+          const stderr = (error as { stderr?: string })?.stderr ?? '';
+          const fullError = `${errorMessage} ${stderr}`;
+          const isExpectedError =
+            fullError.includes('Resource not accessible by integration') ||
+            fullError.includes('Could not resolve to a User') ||
+            fullError.includes('is not a valid assignee') ||
+            fullError.includes('not found'); // gh cli error: 'username' not found
+          if (!isExpectedError) throw error;
+          // expected error: assignee add failed but claim is recorded in issue body
+        }
       }
 
       // close issue for DELIVERED status

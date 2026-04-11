@@ -11,6 +11,9 @@ export const GITHUB_DEMO_REPO = 'ehmpathy/rhachet-roles-bhuild-demo';
 
 /**
  * .what = github token for bhuild demo repo
- * .why = auth for gh.issues acceptance tests
+ * .why = auth for gh.issues acceptance tests (explicit auth mode)
+ *
+ * .deprecated = prefer default keyrack auth via EHMPATH_BEAVER_GITHUB_TOKEN
+ *               this constant is retained for backward compatibility tests
  */
 export const BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN = process.env.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN;
