@@ -16,6 +16,8 @@ import {
  */
 const asSnapshotStable = (output: string): string =>
   output
+    // mask worktree suffix in repo path: rhachet-roles-bhuild.branch-name -> rhachet-roles-bhuild
+    .replace(/rhachet-roles-bhuild\.[a-z0-9._-]+/gi, 'rhachet-roles-bhuild')
     // mask behavior names with dates: v2026_04_09.my-feature -> v{DATE}.{NAME}
     .replace(/v\d{4}_\d{2}_\d{2}\.[a-z0-9-]+/gi, 'v{DATE}.{NAME}')
     // mask behavior dir names only: v2026_04_09 -> v{DATE}
