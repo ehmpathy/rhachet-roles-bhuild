@@ -1,4 +1,7 @@
-import { readdirSync } from 'fs';
+import { existsSync, readdirSync } from 'fs';
+import { join } from 'path';
+
+import { getAllFeedbackVersionsForArtifact } from './getAllFeedbackVersionsForArtifact';
 
 /**
  * .what = find the highest feedback version for an artifact
@@ -8,40 +11,22 @@ export const getLatestFeedbackVersion = (input: {
   behaviorDir: string;
   artifactFileName: string;
 }): number | null => {
+  // feedback files live in the feedback/ subdir
+  const feedbackDir = join(input.behaviorDir, 'feedback');
+
+  // if feedback dir doesn't exist, no feedback
+  if (!existsSync(feedbackDir)) return null;
+
   // read directory contents
-  const files = readdirSync(input.behaviorDir);
+  const filenames = readdirSync(feedbackDir);
 
-  // pattern to match feedback files for this artifact
-  // format: {artifactFileName}.[feedback].v{N}.[given].by_human.md
-  const feedbackPattern = new RegExp(
-    `^${escapeRegex(input.artifactFileName)}\\.\\[feedback\\]\\.v(\\d+)\\.`,
-  );
+  // extract versions for this artifact
+  const versions = getAllFeedbackVersionsForArtifact({
+    filenames,
+    artifactFileName: input.artifactFileName,
+  });
 
-  // collect feedback versions
-  const versions: number[] = [];
-
-  for (const file of files) {
-    const match = file.match(feedbackPattern);
-    if (!match) continue;
-
-    const version = parseInt(match[1] ?? '', 10);
-    if (!isNaN(version)) {
-      versions.push(version);
-    }
-  }
-
-  // return null if no feedback exists
+  // return max version or null if none
   if (versions.length === 0) return null;
-
-  // sort desc and return highest
-  versions.sort((a, b) => b - a);
-  return versions[0] ?? null;
-};
-
-/**
- * .what = escape special regex characters in a string
- * .why = enables safe use of artifact filenames in regex patterns
- */
-const escapeRegex = (str: string): string => {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return Math.max(...versions);
 };

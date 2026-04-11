@@ -4,11 +4,11 @@ import * as os from 'os';
 import * as path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
-import { giveFeedback } from './giveFeedback';
+import { feedbackGive } from './feedbackGive';
 
-describe('giveFeedback.integration', () => {
+describe('feedbackGive.integration', () => {
   given('[case1] behavior with execution artifact', () => {
-    const testDir = path.join(os.tmpdir(), 'giveFeedback-int-case1');
+    const testDir = path.join(os.tmpdir(), 'feedbackGive-int-case1');
 
     const scene = useBeforeAll(async () => {
       // clean and setup test repo
@@ -56,14 +56,15 @@ describe('giveFeedback.integration', () => {
       fs.rmSync(testDir, { recursive: true, force: true });
     });
 
-    when('[t0] giveFeedback invoked for execution artifact', () => {
-      then('feedback file is created with placeholders replaced', () => {
-        const result = giveFeedback(
+    when('[t0] feedbackGive invoked for execution artifact', () => {
+      then('feedback file is created in feedback/ subdir', () => {
+        const result = feedbackGive(
           { against: 'execution', behavior: 'test-feature' },
           { cwd: scene.testDir },
         );
 
         expect(fs.existsSync(result.feedbackFile)).toBe(true);
+        expect(result.feedbackFile).toContain('feedback/');
         expect(result.feedbackFile).toContain(
           '5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md',
         );
@@ -83,11 +84,12 @@ describe('giveFeedback.integration', () => {
         );
         const feedbackPath = path.join(
           behaviorDir,
+          'feedback',
           '5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md',
         );
         if (fs.existsSync(feedbackPath)) fs.rmSync(feedbackPath);
 
-        const result = giveFeedback(
+        const result = feedbackGive(
           { against: 'execution', behavior: 'test-feature' },
           { cwd: scene.testDir },
         );
@@ -99,7 +101,7 @@ describe('giveFeedback.integration', () => {
       });
     });
 
-    when('[t1] giveFeedback invoked second time for same artifact', () => {
+    when('[t1] feedbackGive invoked second time for same artifact', () => {
       then('returns found feedback file without error (findsert)', () => {
         // ensure feedback file exists from prior test
         const behaviorDir = path.join(
@@ -108,17 +110,18 @@ describe('giveFeedback.integration', () => {
         );
         const feedbackPath = path.join(
           behaviorDir,
+          'feedback',
           '5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md',
         );
         if (!fs.existsSync(feedbackPath)) {
-          giveFeedback(
+          feedbackGive(
             { against: 'execution', behavior: 'test-feature' },
             { cwd: scene.testDir },
           );
         }
 
         // should not throw, should return found
-        const result = giveFeedback(
+        const result = feedbackGive(
           { against: 'execution', behavior: 'test-feature' },
           { cwd: scene.testDir },
         );
@@ -130,9 +133,9 @@ describe('giveFeedback.integration', () => {
       });
     });
 
-    when('[t2] giveFeedback invoked with --version 2', () => {
+    when('[t2] feedbackGive invoked with --version 2', () => {
       then('v2 feedback file is created', () => {
-        const result = giveFeedback(
+        const result = feedbackGive(
           { against: 'execution', behavior: 'test-feature', version: 2 },
           { cwd: scene.testDir },
         );
@@ -146,7 +149,7 @@ describe('giveFeedback.integration', () => {
   });
 
   given('[case2] behavior with multiple artifact versions', () => {
-    const testDir = path.join(os.tmpdir(), 'giveFeedback-int-case2');
+    const testDir = path.join(os.tmpdir(), 'feedbackGive-int-case2');
 
     const scene = useBeforeAll(async () => {
       // clean and setup test repo
@@ -198,9 +201,9 @@ describe('giveFeedback.integration', () => {
       fs.rmSync(testDir, { recursive: true, force: true });
     });
 
-    when('[t0] giveFeedback invoked for execution', () => {
+    when('[t0] feedbackGive invoked for execution', () => {
       then('targets the latest version (v2.i1)', () => {
-        const result = giveFeedback(
+        const result = feedbackGive(
           { against: 'execution', behavior: 'multi-version' },
           { cwd: scene.testDir },
         );
@@ -217,7 +220,7 @@ describe('giveFeedback.integration', () => {
   });
 
   given('[case3] behavior without template', () => {
-    const testDir = path.join(os.tmpdir(), 'giveFeedback-int-case3');
+    const testDir = path.join(os.tmpdir(), 'feedbackGive-int-case3');
 
     const scene = useBeforeAll(async () => {
       // clean and setup test repo
@@ -248,10 +251,10 @@ describe('giveFeedback.integration', () => {
       fs.rmSync(testDir, { recursive: true, force: true });
     });
 
-    when('[t0] giveFeedback invoked', () => {
+    when('[t0] feedbackGive invoked', () => {
       then('throws "template not found" error', () => {
         expect(() =>
-          giveFeedback(
+          feedbackGive(
             { against: 'wish', behavior: 'no-template' },
             { cwd: scene.testDir },
           ),
@@ -261,7 +264,7 @@ describe('giveFeedback.integration', () => {
   });
 
   given('[case4] behavior with custom template path', () => {
-    const testDir = path.join(os.tmpdir(), 'giveFeedback-int-case4');
+    const testDir = path.join(os.tmpdir(), 'feedbackGive-int-case4');
 
     const scene = useBeforeAll(async () => {
       // clean and setup test repo
@@ -305,9 +308,9 @@ describe('giveFeedback.integration', () => {
       fs.rmSync(testDir, { recursive: true, force: true });
     });
 
-    when('[t0] giveFeedback invoked with custom template', () => {
+    when('[t0] feedbackGive invoked with custom template', () => {
       then('uses the custom template content', () => {
-        const result = giveFeedback(
+        const result = feedbackGive(
           {
             against: 'criteria.blackbox',
             behavior: 'custom-template',
@@ -323,8 +326,8 @@ describe('giveFeedback.integration', () => {
     });
   });
 
-  given('[case5] feedback v1 already present', () => {
-    const testDir = path.join(os.tmpdir(), 'giveFeedback-int-case5');
+  given('[case5] feedback v1 already present in feedback/ subdir', () => {
+    const testDir = path.join(os.tmpdir(), 'feedbackGive-int-case5');
 
     const scene = useBeforeAll(async () => {
       // clean and setup test repo
@@ -338,13 +341,14 @@ describe('giveFeedback.integration', () => {
       fs.writeFileSync(path.join(testDir, 'README.md'), '# test');
       execSync('git add . && git commit -m "init"', { cwd: testDir });
 
-      // create behavior directory with refs subdirectory
+      // create behavior directory with refs and feedback subdirectories
       const behaviorDir = path.join(
         testDir,
         '.behavior/v2025_01_01.has-v1-feedback',
       );
       fs.mkdirSync(behaviorDir, { recursive: true });
       fs.mkdirSync(path.join(behaviorDir, 'refs'), { recursive: true });
+      fs.mkdirSync(path.join(behaviorDir, 'feedback'), { recursive: true });
 
       // create template
       fs.writeFileSync(
@@ -358,9 +362,13 @@ describe('giveFeedback.integration', () => {
       // create artifact
       fs.writeFileSync(path.join(behaviorDir, '0.wish.md'), '# wish');
 
-      // create v1 feedback (prior)
+      // create v1 feedback (prior) in feedback/ subdir
       fs.writeFileSync(
-        path.join(behaviorDir, '0.wish.md.[feedback].v1.[given].by_human.md'),
+        path.join(
+          behaviorDir,
+          'feedback',
+          '0.wish.md.[feedback].v1.[given].by_human.md',
+        ),
         'prior v1 feedback content',
       );
 
@@ -371,9 +379,9 @@ describe('giveFeedback.integration', () => {
       fs.rmSync(testDir, { recursive: true, force: true });
     });
 
-    when('[t0] giveFeedback invoked without --version', () => {
+    when('[t0] feedbackGive invoked without --version', () => {
       then('returns v1 (latest)', () => {
-        const result = giveFeedback(
+        const result = feedbackGive(
           { against: 'wish', behavior: 'has-v1-feedback' },
           { cwd: scene.testDir },
         );
@@ -385,9 +393,9 @@ describe('giveFeedback.integration', () => {
       });
     });
 
-    when('[t1] giveFeedback invoked with --version ++', () => {
+    when('[t1] feedbackGive invoked with --version ++', () => {
       then('creates v2', () => {
-        const result = giveFeedback(
+        const result = feedbackGive(
           { against: 'wish', behavior: 'has-v1-feedback', version: '++' },
           { cwd: scene.testDir },
         );
@@ -400,8 +408,8 @@ describe('giveFeedback.integration', () => {
     });
   });
 
-  given('[case6] feedback v1+v2 already present', () => {
-    const testDir = path.join(os.tmpdir(), 'giveFeedback-int-case6');
+  given('[case6] feedback v1+v2 already present in feedback/ subdir', () => {
+    const testDir = path.join(os.tmpdir(), 'feedbackGive-int-case6');
 
     const scene = useBeforeAll(async () => {
       // clean and setup test repo
@@ -415,13 +423,14 @@ describe('giveFeedback.integration', () => {
       fs.writeFileSync(path.join(testDir, 'README.md'), '# test');
       execSync('git add . && git commit -m "init"', { cwd: testDir });
 
-      // create behavior directory with refs subdirectory
+      // create behavior directory with refs and feedback subdirectories
       const behaviorDir = path.join(
         testDir,
         '.behavior/v2025_01_01.has-v1v2-feedback',
       );
       fs.mkdirSync(behaviorDir, { recursive: true });
       fs.mkdirSync(path.join(behaviorDir, 'refs'), { recursive: true });
+      fs.mkdirSync(path.join(behaviorDir, 'feedback'), { recursive: true });
 
       // create template
       fs.writeFileSync(
@@ -435,13 +444,21 @@ describe('giveFeedback.integration', () => {
       // create artifact
       fs.writeFileSync(path.join(behaviorDir, '0.wish.md'), '# wish');
 
-      // create v1+v2 feedback (prior)
+      // create v1+v2 feedback (prior) in feedback/ subdir
       fs.writeFileSync(
-        path.join(behaviorDir, '0.wish.md.[feedback].v1.[given].by_human.md'),
+        path.join(
+          behaviorDir,
+          'feedback',
+          '0.wish.md.[feedback].v1.[given].by_human.md',
+        ),
         'prior v1 feedback',
       );
       fs.writeFileSync(
-        path.join(behaviorDir, '0.wish.md.[feedback].v2.[given].by_human.md'),
+        path.join(
+          behaviorDir,
+          'feedback',
+          '0.wish.md.[feedback].v2.[given].by_human.md',
+        ),
         'prior v2 feedback',
       );
 
@@ -452,9 +469,9 @@ describe('giveFeedback.integration', () => {
       fs.rmSync(testDir, { recursive: true, force: true });
     });
 
-    when('[t0] giveFeedback invoked without --version', () => {
+    when('[t0] feedbackGive invoked without --version', () => {
       then('returns v2 (latest)', () => {
-        const result = giveFeedback(
+        const result = feedbackGive(
           { against: 'wish', behavior: 'has-v1v2-feedback' },
           { cwd: scene.testDir },
         );
@@ -466,9 +483,9 @@ describe('giveFeedback.integration', () => {
       });
     });
 
-    when('[t1] giveFeedback invoked with --version ++', () => {
+    when('[t1] feedbackGive invoked with --version ++', () => {
       then('creates v3', () => {
-        const result = giveFeedback(
+        const result = feedbackGive(
           { against: 'wish', behavior: 'has-v1v2-feedback', version: '++' },
           { cwd: scene.testDir },
         );

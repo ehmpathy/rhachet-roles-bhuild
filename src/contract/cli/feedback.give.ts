@@ -21,7 +21,7 @@
 import { basename } from 'path';
 import { z } from 'zod';
 
-import { giveFeedback as giveFeedbackOp } from '@src/domain.operations/behavior/feedback/giveFeedback';
+import { feedbackGive as feedbackGiveOp } from '@src/domain.operations/behavior/feedback/feedbackGive';
 import { computeFeedbackOutput } from '@src/domain.operations/behavior/render/computeFeedbackOutput';
 import { getCliArgs } from '@src/infra/cli';
 import { OpenerUnavailableError } from '@src/infra/shell/OpenerUnavailableError';
@@ -53,7 +53,7 @@ const schemaOfArgs = z.object({
 // exported CLI entry point
 // ────────────────────────────────────────────────────────────────────
 
-export const giveFeedback = (): void => {
+export const feedbackGive = (): void => {
   const { named } = getCliArgs({ schema: schemaOfArgs });
   const context = { cwd: process.cwd() };
 
@@ -70,7 +70,7 @@ export const giveFeedback = (): void => {
   }
 
   // create or find feedback file
-  const result = giveFeedbackOp(
+  const result = feedbackGiveOp(
     {
       against: named.against,
       behavior: named.behavior,
@@ -103,6 +103,7 @@ export const giveFeedback = (): void => {
   // render output
   const output = computeFeedbackOutput({
     feedbackFilename,
+    artifact: named.against,
     opener: openerUsed,
   });
   console.log(output);

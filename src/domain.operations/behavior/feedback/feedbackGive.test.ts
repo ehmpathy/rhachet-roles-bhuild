@@ -11,9 +11,9 @@ import { BadRequestError } from 'helpful-errors';
 import { tmpdir } from 'os';
 import { join } from 'path';
 
-import { giveFeedback } from './giveFeedback';
+import { feedbackGive } from './feedbackGive';
 
-describe('giveFeedback', () => {
+describe('feedbackGive', () => {
   let testDir: string;
   let behaviorDir: string;
 
@@ -49,7 +49,7 @@ describe('giveFeedback', () => {
     setupTestRepo();
     writeFileSync(join(behaviorDir, '5.1.execution.v1.i1.md'), '# execution');
 
-    const result = giveFeedback(
+    const result = feedbackGive(
       { against: 'execution', behavior: 'test-feature' },
       { cwd: testDir },
     );
@@ -64,7 +64,7 @@ describe('giveFeedback', () => {
     setupTestRepo();
     writeFileSync(join(behaviorDir, '2.1.criteria.blackbox.md'), '# criteria');
 
-    const result = giveFeedback(
+    const result = feedbackGive(
       { against: 'criteria.blackbox', behavior: 'test-feature' },
       { cwd: testDir },
     );
@@ -79,7 +79,7 @@ describe('giveFeedback', () => {
     setupTestRepo();
     writeFileSync(join(behaviorDir, '0.wish.md'), '# wish');
 
-    const result = giveFeedback(
+    const result = feedbackGive(
       { against: 'wish', behavior: 'test-feature' },
       { cwd: testDir },
     );
@@ -94,7 +94,7 @@ describe('giveFeedback', () => {
     setupTestRepo();
     writeFileSync(join(behaviorDir, '0.wish.md'), '# wish');
 
-    const result = giveFeedback(
+    const result = feedbackGive(
       { against: 'wish', behavior: 'test-feature', version: 2 },
       { cwd: testDir },
     );
@@ -109,7 +109,7 @@ describe('giveFeedback', () => {
     const customTemplate = join(testDir, 'custom-template.md');
     writeFileSync(customTemplate, 'custom: $BEHAVIOR_REF_NAME');
 
-    const result = giveFeedback(
+    const result = feedbackGive(
       { against: 'wish', behavior: 'test-feature', template: customTemplate },
       { cwd: testDir },
     );
@@ -122,13 +122,13 @@ describe('giveFeedback', () => {
     setupTestRepo();
 
     expect(() =>
-      giveFeedback(
+      feedbackGive(
         { against: 'nonexistent', behavior: 'test-feature' },
         { cwd: testDir },
       ),
     ).toThrow(BadRequestError);
     expect(() =>
-      giveFeedback(
+      feedbackGive(
         { against: 'nonexistent', behavior: 'test-feature' },
         { cwd: testDir },
       ),
@@ -138,12 +138,14 @@ describe('giveFeedback', () => {
   test('findsert: returns found when feedback v1 exists', () => {
     setupTestRepo();
     writeFileSync(join(behaviorDir, '0.wish.md'), '# wish');
+    const feedbackDir = join(behaviorDir, 'feedback');
+    mkdirSync(feedbackDir, { recursive: true });
     writeFileSync(
-      join(behaviorDir, '0.wish.md.[feedback].v1.[given].by_human.md'),
+      join(feedbackDir, '0.wish.md.[feedback].v1.[given].by_human.md'),
       'prior feedback',
     );
 
-    const result = giveFeedback(
+    const result = feedbackGive(
       { against: 'wish', behavior: 'test-feature' },
       { cwd: testDir },
     );
@@ -155,12 +157,14 @@ describe('giveFeedback', () => {
   test('defaults to latest version when v1 exists', () => {
     setupTestRepo();
     writeFileSync(join(behaviorDir, '0.wish.md'), '# wish');
+    const feedbackDir = join(behaviorDir, 'feedback');
+    mkdirSync(feedbackDir, { recursive: true });
     writeFileSync(
-      join(behaviorDir, '0.wish.md.[feedback].v1.[given].by_human.md'),
+      join(feedbackDir, '0.wish.md.[feedback].v1.[given].by_human.md'),
       'v1 feedback',
     );
 
-    const result = giveFeedback(
+    const result = feedbackGive(
       { against: 'wish', behavior: 'test-feature' },
       { cwd: testDir },
     );
@@ -173,16 +177,18 @@ describe('giveFeedback', () => {
   test('defaults to latest version when v1+v2 exist', () => {
     setupTestRepo();
     writeFileSync(join(behaviorDir, '0.wish.md'), '# wish');
+    const feedbackDir = join(behaviorDir, 'feedback');
+    mkdirSync(feedbackDir, { recursive: true });
     writeFileSync(
-      join(behaviorDir, '0.wish.md.[feedback].v1.[given].by_human.md'),
+      join(feedbackDir, '0.wish.md.[feedback].v1.[given].by_human.md'),
       'v1 feedback',
     );
     writeFileSync(
-      join(behaviorDir, '0.wish.md.[feedback].v2.[given].by_human.md'),
+      join(feedbackDir, '0.wish.md.[feedback].v2.[given].by_human.md'),
       'v2 feedback',
     );
 
-    const result = giveFeedback(
+    const result = feedbackGive(
       { against: 'wish', behavior: 'test-feature' },
       { cwd: testDir },
     );
@@ -195,12 +201,14 @@ describe('giveFeedback', () => {
   test('version ++ creates v2 when v1 exists', () => {
     setupTestRepo();
     writeFileSync(join(behaviorDir, '0.wish.md'), '# wish');
+    const feedbackDir = join(behaviorDir, 'feedback');
+    mkdirSync(feedbackDir, { recursive: true });
     writeFileSync(
-      join(behaviorDir, '0.wish.md.[feedback].v1.[given].by_human.md'),
+      join(feedbackDir, '0.wish.md.[feedback].v1.[given].by_human.md'),
       'v1 feedback',
     );
 
-    const result = giveFeedback(
+    const result = feedbackGive(
       { against: 'wish', behavior: 'test-feature', version: '++' },
       { cwd: testDir },
     );
@@ -212,16 +220,18 @@ describe('giveFeedback', () => {
   test('version ++ creates v3 when v1+v2 exist', () => {
     setupTestRepo();
     writeFileSync(join(behaviorDir, '0.wish.md'), '# wish');
+    const feedbackDir = join(behaviorDir, 'feedback');
+    mkdirSync(feedbackDir, { recursive: true });
     writeFileSync(
-      join(behaviorDir, '0.wish.md.[feedback].v1.[given].by_human.md'),
+      join(feedbackDir, '0.wish.md.[feedback].v1.[given].by_human.md'),
       'v1 feedback',
     );
     writeFileSync(
-      join(behaviorDir, '0.wish.md.[feedback].v2.[given].by_human.md'),
+      join(feedbackDir, '0.wish.md.[feedback].v2.[given].by_human.md'),
       'v2 feedback',
     );
 
-    const result = giveFeedback(
+    const result = feedbackGive(
       { against: 'wish', behavior: 'test-feature', version: '++' },
       { cwd: testDir },
     );
@@ -234,7 +244,7 @@ describe('giveFeedback', () => {
     setupTestRepo();
     writeFileSync(join(behaviorDir, '0.wish.md'), '# wish');
 
-    const result = giveFeedback(
+    const result = feedbackGive(
       { against: 'wish', behavior: 'test-feature', version: '++' },
       { cwd: testDir },
     );
@@ -253,13 +263,13 @@ describe('giveFeedback', () => {
     );
 
     expect(() =>
-      giveFeedback(
+      feedbackGive(
         { against: 'wish', behavior: 'test-feature' },
         { cwd: testDir },
       ),
     ).toThrow(BadRequestError);
     expect(() =>
-      giveFeedback(
+      feedbackGive(
         { against: 'wish', behavior: 'test-feature' },
         { cwd: testDir },
       ),

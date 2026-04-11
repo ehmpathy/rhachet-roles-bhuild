@@ -1,4 +1,4 @@
-import { existsSync } from 'fs';
+import { existsSync, mkdirSync } from 'fs';
 import { BadRequestError } from 'helpful-errors';
 import { join, relative } from 'path';
 
@@ -14,7 +14,7 @@ import { initFeedbackTemplate } from './initFeedbackTemplate';
  *
  * .note = findsert behavior: if feedback exists, returns it instead of throw
  */
-export const giveFeedback = (
+export const feedbackGive = (
   input: {
     against: string;
     behavior?: string;
@@ -67,12 +67,13 @@ export const giveFeedback = (
     return latestVersion ?? 1;
   })();
 
-  // compute feedback filename
+  // compute feedback filename and path in feedback/ subdir
   const feedbackFilename = computeBehaviorFeedbackName({
     artifactFileName: artifact.filename,
     feedbackVersion,
   });
-  const feedbackPath = join(behaviorDir, feedbackFilename);
+  const feedbackDir = join(behaviorDir, 'feedback');
+  const feedbackPath = join(feedbackDir, feedbackFilename);
 
   // findsert: if feedback file exists, return it
   if (existsSync(feedbackPath)) {
@@ -94,6 +95,9 @@ export const giveFeedback = (
 
   // compute relative behavior directory path
   const behaviorDirRel = relative(context.cwd, behaviorDir);
+
+  // ensure feedback/ subdir exists
+  mkdirSync(feedbackDir, { recursive: true });
 
   // init feedback file from template
   initFeedbackTemplate({
