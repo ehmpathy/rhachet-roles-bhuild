@@ -1,0 +1,13 @@
+org: ehmpathy
+
+env.all:
+  # - keys available in all environments
+
+env.prod:
+  # - production keys
+
+env.prep:
+  - EHMPATH_BEAVER_GITHUB_TOKEN
+
+env.test:
+  # - test keys (uses same as prep via keyrack.source)

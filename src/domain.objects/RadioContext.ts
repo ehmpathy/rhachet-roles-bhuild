@@ -9,7 +9,7 @@ import type { RadioTaskRepo } from './RadioTaskRepo';
 export type ContextGithubAuth = {
   github: {
     auth:
-      | { token: string; role: 'as-robot' | 'env' }
+      | { token: string; role: 'as-robot' }
       | { token: null; role: 'as-human' };
   };
 };

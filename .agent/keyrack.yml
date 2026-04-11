@@ -1,7 +1,10 @@
 org: ehmpathy
-env.prod: null
-env.test: null
-env.all:
-  - EHMPATHY_SEATURTLE_PROD_GITHUB_TOKEN
 extends:
+  - .agent/repo=bhuild/role=dispatcher/keyrack.yml
   - .agent/repo=ehmpathy/role=mechanic/keyrack.yml
+env.prod:
+  - EHMPATHY_SEATURTLE_PROD_GITHUB_TOKEN
+env.test: null
+env.all: null
+env.prep:
+  - EHMPATH_BEAVER_GITHUB_TOKEN
