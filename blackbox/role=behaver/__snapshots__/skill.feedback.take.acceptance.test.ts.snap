@@ -1,0 +1,127 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`feedback.take given: [case1] behavior with no feedback files when: [t0] feedback.take.get is called then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=feedback.take.get
+
+🦫 roight,
+
+🌲 feedback.take.get --behavior v{DATE}.{NAME}
+   └─ [2mno feedback files found[0m"
+`;
+
+exports[`feedback.take given: [case1] behavior with no feedback files when: [t1] feedback.take.get --when hook.onStop is called then: output matches snapshot 1`] = `"🪨 run solid skill repo=bhuild/role=behaver/skill=feedback.take.get"`;
+
+exports[`feedback.take given: [case2] behavior with unresponded feedback when: [t0] feedback.take.get is called then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=feedback.take.get
+
+🦫 roight,
+
+🌲 feedback.take.get --behavior v{DATE}.{NAME}
+   ├─ [31m1 open[0m / 1 total
+   ├─ [31munresponded:[0m
+   │  └─ .behavior/v{DATE}.{NAME}/feedback/5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md"
+`;
+
+exports[`feedback.take given: [case2] behavior with unresponded feedback when: [t1] feedback.take.get --when hook.onStop is called then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=feedback.take.get
+
+🦫 hold up...
+
+🌲 feedback.take.get --when hook.onStop --behavior v{DATE}.{NAME}
+   ├─ [31m1 open[0m / 1 total
+   ├─ [31munresponded:[0m
+   │  └─ .behavior/v{DATE}.{NAME}/feedback/5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md
+
+[31m✋ respond to all feedback before you finish your work[0m
+
+use: rhx feedback.take.set --from <given> --into <taken>
+[0m[31m[0m
+[0m[31m🪨 run solid skill repo=bhuild/role=behaver/skill=feedback.take.get[0m
+[0m[31m   └─ ✋ blocked by constraints[0m
+[0m[31m[0m"
+`;
+
+exports[`feedback.take given: [case3] respond to feedback via feedback.take.set when: [t0] feedback.take.set is called then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=feedback.take.set
+
+🦫 mkurrr,
+
+🌲 feedback.take.set --from 5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md --into 5.1.execution.v1.i1.md.[feedback].v1.[taken].by_robot.md
+   ├─ [32m✓[0m 5.1.execution.v1.i1.md.[feedback].v1.[taken].by_robot.md
+   └─ [2mhash: abf4c432...[0m"
+`;
+
+exports[`feedback.take given: [case3] respond to feedback via feedback.take.set when: [t1] feedback.take.get is called after response then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=feedback.take.get
+
+🦫 roight,
+
+🌲 feedback.take.get --behavior v{DATE}.{NAME}
+   ├─ [32m0 open[0m / 1 total
+   └─ [32mresponded:[0m
+      └─ .behavior/v{DATE}.{NAME}/feedback/5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md [2m→ /tmp/{TEMP}/rhachet-roles-bhuild.vlad.give-feedback-onstop/.temp/{TIMESTAMP}/.behavior/v{DATE}.{NAME}/feedback/5.1.execution.v1.i1.md.[feedback].v1.[taken].by_robot.md[0m"
+`;
+
+exports[`feedback.take given: [case3] respond to feedback via feedback.take.set when: [t2] feedback.take.get --when hook.onStop is called after response then: output matches snapshot 1`] = `"🪨 run solid skill repo=bhuild/role=behaver/skill=feedback.take.get"`;
+
+exports[`feedback.take given: [case4] behavior with stale feedback (hash mismatch) when: [t0] feedback.take.get is called then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=feedback.take.get
+
+🦫 roight,
+
+🌲 feedback.take.get --behavior v{DATE}.{NAME}
+   ├─ [31m1 open[0m / 1 total
+   ├─ [33mstale (updated):[0m
+   │  └─ .behavior/v{DATE}.{NAME}/feedback/5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md"
+`;
+
+exports[`feedback.take given: [case4] behavior with stale feedback (hash mismatch) when: [t1] feedback.take.get --when hook.onStop is called then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=feedback.take.get
+
+🦫 hold up...
+
+🌲 feedback.take.get --when hook.onStop --behavior v{DATE}.{NAME}
+   ├─ [31m1 open[0m / 1 total
+   ├─ [33mstale (updated):[0m
+   │  └─ .behavior/v{DATE}.{NAME}/feedback/5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md
+
+[31m✋ respond to all feedback before you finish your work[0m
+
+use: rhx feedback.take.set --from <given> --into <taken>
+[0m[31m[0m
+[0m[31m🪨 run solid skill repo=bhuild/role=behaver/skill=feedback.take.get[0m
+[0m[31m   └─ ✋ blocked by constraints[0m
+[0m[31m[0m"
+`;
+
+exports[`feedback.take given: [case5] behavior with mixed feedback statuses when: [t0] feedback.take.get is called then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=feedback.take.get
+
+🦫 roight,
+
+🌲 feedback.take.get --behavior v{DATE}.{NAME}
+   ├─ [31m1 open[0m / 2 total
+   ├─ [31munresponded:[0m
+   │  ├─ .behavior/v{DATE}.{NAME}/feedback/0.wish.md.[feedback].v1.[given].by_human.md
+   └─ [32mresponded:[0m
+      └─ .behavior/v{DATE}.{NAME}/feedback/1.vision.yield.md.[feedback].v1.[given].by_human.md [2m→ /tmp/{TEMP}/rhachet-roles-bhuild.vlad.give-feedback-onstop/.temp/{TIMESTAMP}/.behavior/v{DATE}.{NAME}/feedback/1.vision.yield.md.[feedback].v1.[taken].by_robot.md[0m"
+`;
+
+exports[`feedback.take given: [case5] behavior with mixed feedback statuses when: [t1] feedback.take.get --when hook.onStop is called then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=feedback.take.get
+
+🦫 hold up...
+
+🌲 feedback.take.get --when hook.onStop --behavior v{DATE}.{NAME}
+   ├─ [31m1 open[0m / 2 total
+   ├─ [31munresponded:[0m
+   │  ├─ .behavior/v{DATE}.{NAME}/feedback/0.wish.md.[feedback].v1.[given].by_human.md
+
+[31m✋ respond to all feedback before you finish your work[0m
+
+use: rhx feedback.take.set --from <given> --into <taken>
+[0m[31m[0m
+[0m[31m🪨 run solid skill repo=bhuild/role=behaver/skill=feedback.take.get[0m
+[0m[31m   └─ ✋ blocked by constraints[0m
+[0m[31m[0m"
+`;

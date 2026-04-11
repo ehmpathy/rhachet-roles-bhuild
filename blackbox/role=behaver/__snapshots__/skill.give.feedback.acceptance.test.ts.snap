@@ -1,0 +1,120 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`give.feedback given: [case1] consumer: behavior with execution artifact when: [t0] give.feedback --against execution is invoked then: outputs 🦫 wassup? format with filename 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=give.feedback
+
+🦫 wassup?
+
+🌲 feedback.give --against execution
+   ├─ ✓ 5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md
+   ├─ [2mtip: use --version ++ to create a new version[0m
+   └─ [2mtip: use --open nvim to open automatically[0m"
+`;
+
+exports[`give.feedback given: [case2] consumer: feedback file already exists (findsert) when: [t0] give.feedback invoked again for same artifact then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=give.feedback
+
+🦫 wassup?
+
+🌲 feedback.give --against execution
+   ├─ ✓ 5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md
+   ├─ [2mtip: use --version ++ to create a new version[0m
+   └─ [2mtip: use --open nvim to open automatically[0m"
+`;
+
+exports[`give.feedback given: [case3] consumer: version flag creates v2 feedback when: [t0] give.feedback --version 2 is invoked then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=give.feedback
+
+🦫 wassup?
+
+🌲 feedback.give --against execution
+   ├─ ✓ 5.1.execution.v1.i1.md.[feedback].v2.[given].by_human.md
+   ├─ [2mtip: use --version ++ to create a new version[0m
+   └─ [2mtip: use --open nvim to open automatically[0m"
+`;
+
+exports[`give.feedback given: [case4] consumer: artifact not found when: [t0] give.feedback for absent artifact then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=give.feedback
+[0m[31m[0m
+[0m[31m🪨 run solid skill repo=bhuild/role=behaver/skill=give.feedback[0m
+[0m[31m   └─ 💥 failed with an error[0m
+[0m[31m[0m
+[0m[31m/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/domain.operations/behavior/feedback/feedbackGive.js:28
+        throw new helpful_errors_1.BadRequestError(\`no artifact found for '\${input.against}' in \${behaviorDir}\`);
+              ^
+
+BadRequestError: BadRequestError: no artifact found for 'execution' in /tmp/{TEMP}/rhachet-roles-bhuild.vlad.give-feedback-onstop/.temp/{TIMESTAMP}/.behavior/v{DATE}.{NAME}
+    at feedbackGive (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/domain.operations/behavior/feedback/feedbackGive.js:28:15)
+    at feedbackGive (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/contract/cli/feedback.give.js:68:52)
+    at Object.logic (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/index.js:40:122)
+    at withEmojiSpaceShim (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/node_modules/[4m.pnpm[24m/emoji-space-shim@0.0.0/node_modules/[4memoji-space-shim[24m/dist/contract/sdk/withEmojiSpaceShim.js:14:28)
+    at Object.giveFeedback (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/index.js:40:67)
+    at [eval]:1:48
+
+Node.js v22.21.0[0m"
+`;
+
+exports[`give.feedback given: [case5] consumer: template not found when: [t0] give.feedback without template then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=give.feedback
+[0m[31m[0m
+[0m[31m🪨 run solid skill repo=bhuild/role=behaver/skill=give.feedback[0m
+[0m[31m   └─ 💥 failed with an error[0m
+[0m[31m[0m
+[0m[31m/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/domain.operations/behavior/feedback/feedbackGive.js:65
+        throw new helpful_errors_1.BadRequestError(\`template not found: \${templatePath}\`);
+              ^
+
+BadRequestError: BadRequestError: template not found: /tmp/{TEMP}/rhachet-roles-bhuild.vlad.give-feedback-onstop/.temp/{TIMESTAMP}/.behavior/v{DATE}.{NAME}/refs/template.[feedback].v1.[given].by_human.md
+    at feedbackGive (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/domain.operations/behavior/feedback/feedbackGive.js:65:15)
+    at feedbackGive (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/contract/cli/feedback.give.js:68:52)
+    at Object.logic (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/index.js:40:122)
+    at withEmojiSpaceShim (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/node_modules/[4m.pnpm[24m/emoji-space-shim@0.0.0/node_modules/[4memoji-space-shim[24m/dist/contract/sdk/withEmojiSpaceShim.js:14:28)
+    at Object.giveFeedback (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/index.js:40:67)
+    at [eval]:1:48
+
+Node.js v22.21.0[0m"
+`;
+
+exports[`give.feedback given: [case6] consumer: --force overrides behavior bind when: [t0] give.feedback --behavior other without --force then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=give.feedback
+[0m[31m[0m
+[0m[31m🪨 run solid skill repo=bhuild/role=behaver/skill=give.feedback[0m
+[0m[31m   └─ 💥 failed with an error[0m
+[0m[31m[0m
+[0m[31m/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/domain.operations/behavior/feedback/getBehaviorDirForFeedback.js:34
+            throw new helpful_errors_1.BadRequestError(\`branch is bound to \${boundDir} but --behavior flag specifies \${flagDir}. use --force to override.\`);
+                  ^
+
+BadRequestError: BadRequestError: branch is bound to /tmp/{TEMP}/rhachet-roles-bhuild.vlad.give-feedback-onstop/.temp/{TIMESTAMP}/.behavior/v{DATE}.{NAME} but --behavior flag specifies /tmp/{TEMP}/rhachet-roles-bhuild.vlad.give-feedback-onstop/.temp/{TIMESTAMP}/.behavior/v{DATE}.{NAME}. use --force to override.
+    at getBehaviorDirForFeedback (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/domain.operations/behavior/feedback/getBehaviorDirForFeedback.js:34:19)
+    at feedbackGive (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/domain.operations/behavior/feedback/feedbackGive.js:20:83)
+    at feedbackGive (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/contract/cli/feedback.give.js:68:52)
+    at Object.logic (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/index.js:40:122)
+    at withEmojiSpaceShim (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/node_modules/[4m.pnpm[24m/emoji-space-shim@0.0.0/node_modules/[4memoji-space-shim[24m/dist/contract/sdk/withEmojiSpaceShim.js:14:28)
+    at Object.giveFeedback (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.give-feedback-onstop/dist/index.js:40:67)
+    at [eval]:1:48
+
+Node.js v22.21.0[0m"
+`;
+
+exports[`give.feedback given: [case6] consumer: --force overrides behavior bind when: [t1] give.feedback --behavior other --force then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=give.feedback
+
+🦫 wassup?
+
+🌲 feedback.give --against execution
+   ├─ ✓ 5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md
+   ├─ [2mtip: use --version ++ to create a new version[0m
+   └─ [2mtip: use --open nvim to open automatically[0m"
+`;
+
+exports[`give.feedback given: [case7] consumer: custom template via --template flag when: [t0] give.feedback --template with full path is invoked then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=give.feedback
+
+🦫 wassup?
+
+🌲 feedback.give --against execution
+   ├─ ✓ 5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md
+   ├─ [2mtip: use --version ++ to create a new version[0m
+   └─ [2mtip: use --open nvim to open automatically[0m"
+`;

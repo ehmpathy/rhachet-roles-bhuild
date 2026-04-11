@@ -1,13 +1,32 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { given, then, useBeforeAll, when } from 'test-fns';
+import { given, then, useBeforeAll, useThen, when } from 'test-fns';
 
 import {
   genBehaviorFixture,
   genConsumerRepo,
   runRhachetSkill,
 } from '../.test/infra';
+
+/**
+ * .what = mask dynamic values in output for snapshot consistency
+ * .why = paths, dates, and hashes vary per run, mask them for stable snapshots
+ */
+const asSnapshotStable = (output: string): string =>
+  output
+    // mask behavior names with dates: v2026_04_09.my-feature -> v{DATE}.{NAME}
+    .replace(/v\d{4}_\d{2}_\d{2}\.[a-z0-9-]+/gi, 'v{DATE}.{NAME}')
+    // mask behavior dir names only: v2026_04_09 -> v{DATE}
+    .replace(/v\d{4}_\d{2}_\d{2}/g, 'v{DATE}')
+    // mask sha256 hashes: 64-char hex -> {HASH}
+    .replace(/[a-f0-9]{64}/gi, '{HASH}')
+    // mask temp directory paths: /tmp/xxx-xxx -> /tmp/{TEMP}
+    .replace(/\/tmp\/[a-z0-9-]+/gi, '/tmp/{TEMP}')
+    // mask .temp dir with iso timestamp: .temp/2026-04-10T15-23-19.328Z.name.uuid -> .temp/{TIMESTAMP}
+    .replace(/\.temp\/\d{4}-\d{2}-\d{2}T[\d-]+\.\d+Z\.[a-z0-9-]+\.[a-f0-9]+/gi, '.temp/{TIMESTAMP}')
+    // mask time values: "passed 3.6s" -> "passed [time]"
+    .replace(/\d+\.\d+s/g, '[time]');
 
 /**
  * .what = runs give.feedback via rhachet dispatch (consumer pattern)
@@ -73,13 +92,14 @@ describe('give.feedback', () => {
       });
 
       then('creates feedback file with placeholders replaced', () => {
-        // check feedback file was created (exclude template files)
-        const feedbackFiles = fs.readdirSync(scene.behaviorDir).filter(
-          (f) => f.includes('[feedback]') && !f.startsWith('.ref.'),
+        // check feedback file was created in feedback/ subdirectory
+        const feedbackDir = path.join(scene.behaviorDir, 'feedback');
+        const feedbackFiles = fs.readdirSync(feedbackDir).filter(
+          (f) => f.includes('[feedback]') && f.includes('[given]'),
         );
         expect(feedbackFiles.length).toBeGreaterThan(0);
 
-        const feedbackPath = path.join(scene.behaviorDir, feedbackFiles[0]!);
+        const feedbackPath = path.join(feedbackDir, feedbackFiles[0]!);
         const content = fs.readFileSync(feedbackPath, 'utf-8');
         expect(content).toContain('# feedback for');
         expect(content).toContain('5.1.execution.v1.i1.md');
@@ -107,6 +127,9 @@ describe('give.feedback', () => {
         expect(result.output).toContain('🦫 wassup?');
         expect(result.output).toContain('5.1.execution.v1.i1.md');
         expect(result.output).toContain('--version ++');
+
+        // snapshot for vibecheck
+        expect(asSnapshotStable(result.output)).toMatchSnapshot();
       });
     });
   });
@@ -155,6 +178,10 @@ describe('give.feedback', () => {
       then('output shows --version ++ tip', () => {
         expect(result.output).toContain('--version ++');
       });
+
+      then('output matches snapshot', () => {
+        expect(asSnapshotStable(result.output)).toMatchSnapshot();
+      });
     });
   });
 
@@ -175,20 +202,29 @@ describe('give.feedback', () => {
     });
 
     when('[t0] give.feedback --version 2 is invoked', () => {
-      then('creates v2 feedback file', () => {
-        const result = runGiveFeedbackSkillViaRhachet({
+      const result = useThen('it succeeds', () =>
+        runGiveFeedbackSkillViaRhachet({
           against: 'execution',
           behavior: 'version-test',
           version: 2,
           repoDir: scene.repoDir,
-        });
+        }),
+      );
 
+      then('exits with code 0', () => {
         expect(result.exitCode).toBe(0);
+      });
 
-        const feedbackFiles = fs.readdirSync(scene.behaviorDir).filter((f) =>
+      then('creates v2 feedback file', () => {
+        const feedbackDir = path.join(scene.behaviorDir, 'feedback');
+        const feedbackFiles = fs.readdirSync(feedbackDir).filter((f) =>
           f.includes('[feedback].v2'),
         );
         expect(feedbackFiles.length).toBe(1);
+      });
+
+      then('output matches snapshot', () => {
+        expect(asSnapshotStable(result.output)).toMatchSnapshot();
       });
     });
   });
@@ -226,6 +262,10 @@ describe('give.feedback', () => {
       then('output mentions artifact not found', () => {
         expect(result.output).toContain('no artifact found');
       });
+
+      then('output matches snapshot', () => {
+        expect(asSnapshotStable(result.output)).toMatchSnapshot();
+      });
     });
   });
 
@@ -261,6 +301,173 @@ describe('give.feedback', () => {
 
       then('output mentions template not found', () => {
         expect(result.output).toContain('template not found');
+      });
+
+      then('output matches snapshot', () => {
+        expect(asSnapshotStable(result.output)).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case6] consumer: --force overrides behavior bind', () => {
+    const scene = useBeforeAll(async () => {
+      const consumer = genConsumerRepo({ prefix: 'give-feedback-force-test-' });
+      execSync('git checkout -b feedback-force-branch', {
+        cwd: consumer.repoDir,
+      });
+
+      // create two behaviors
+      const bound = genBehaviorFixture({
+        repoDir: consumer.repoDir,
+        behaviorName: 'bound-behavior',
+        withFeedbackTemplate: true,
+        withExecution: true,
+      });
+
+      const other = genBehaviorFixture({
+        repoDir: consumer.repoDir,
+        behaviorName: 'other-behavior',
+        withFeedbackTemplate: true,
+        withExecution: true,
+      });
+
+      // bind branch to first behavior via bind flag file
+      // bind flags go in .bind/ dir with flattened branch name
+      fs.mkdirSync(path.join(bound.behaviorDir, '.bind'), { recursive: true });
+      const branchName = execSync('git rev-parse --abbrev-ref HEAD', {
+        cwd: consumer.repoDir,
+      })
+        .toString()
+        .trim();
+      // flatten: replace / with . and keep only alphanumeric, dots, dashes, underscores
+      const flatBranch = branchName
+        .replace(/\//g, '.')
+        .replace(/[^a-zA-Z0-9._-]/g, '_')
+        .replace(/_$/, '');
+      fs.writeFileSync(
+        path.join(bound.behaviorDir, '.bind', `${flatBranch}.flag`),
+        '',
+      );
+
+      return {
+        repoDir: consumer.repoDir,
+        boundDir: bound.behaviorDir,
+        otherDir: other.behaviorDir,
+      };
+    });
+
+    when('[t0] give.feedback --behavior other without --force', () => {
+      const result = useThen('it fails', () =>
+        runGiveFeedbackSkillViaRhachet({
+          against: 'execution',
+          behavior: 'other-behavior',
+          repoDir: scene.repoDir,
+        }),
+      );
+
+      then('exits with non-zero code', () => {
+        expect(result.exitCode).not.toBe(0);
+      });
+
+      then('output mentions force override', () => {
+        expect(result.output).toContain('--force');
+      });
+
+      then('output matches snapshot', () => {
+        expect(asSnapshotStable(result.output)).toMatchSnapshot();
+      });
+    });
+
+    when('[t1] give.feedback --behavior other --force', () => {
+      const result = useThen('it succeeds', () =>
+        runGiveFeedbackSkillViaRhachet({
+          against: 'execution',
+          behavior: 'other-behavior',
+          force: true,
+          repoDir: scene.repoDir,
+        }),
+      );
+
+      then('exits with code 0', () => {
+        expect(result.exitCode).toBe(0);
+      });
+
+      then('creates feedback in other behavior', () => {
+        const feedbackDir = path.join(scene.otherDir, 'feedback');
+        const feedbackFiles = fs.readdirSync(feedbackDir).filter(
+          (f) => f.includes('[feedback]') && f.includes('[given]'),
+        );
+        expect(feedbackFiles.length).toBe(1);
+      });
+
+      then('output matches snapshot', () => {
+        expect(asSnapshotStable(result.output)).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case7] consumer: custom template via --template flag', () => {
+    const scene = useBeforeAll(async () => {
+      const consumer = genConsumerRepo({
+        prefix: 'give-feedback-custom-template-test-',
+      });
+      execSync('git checkout -b feedback-custom-template-branch', {
+        cwd: consumer.repoDir,
+      });
+
+      const fixture = genBehaviorFixture({
+        repoDir: consumer.repoDir,
+        behaviorName: 'custom-template-test',
+        withFeedbackTemplate: true,
+        withExecution: true,
+      });
+
+      // create a custom template in refs/
+      const refsDir = path.join(fixture.behaviorDir, 'refs');
+      fs.mkdirSync(refsDir, { recursive: true });
+      const customTemplatePath = path.join(
+        refsDir,
+        'template.[feedback].custom.[given].by_human.md',
+      );
+      fs.writeFileSync(
+        customTemplatePath,
+        '# custom feedback\n\n$artifact\n\n## custom section\n',
+      );
+
+      return {
+        repoDir: consumer.repoDir,
+        behaviorDir: fixture.behaviorDir,
+        customTemplatePath,
+      };
+    });
+
+    when('[t0] give.feedback --template with full path is invoked', () => {
+      const result = useThen('it succeeds', () =>
+        runGiveFeedbackSkillViaRhachet({
+          against: 'execution',
+          behavior: 'custom-template-test',
+          template: scene.customTemplatePath,
+          repoDir: scene.repoDir,
+        }),
+      );
+
+      then('exits with code 0', () => {
+        expect(result.exitCode).toBe(0);
+      });
+
+      then('uses custom template content', () => {
+        const feedbackDir = path.join(scene.behaviorDir, 'feedback');
+        const feedbackFiles = fs.readdirSync(feedbackDir).filter(
+          (f) => f.includes('[feedback]') && f.includes('[given]'),
+        );
+        const feedbackPath = path.join(feedbackDir, feedbackFiles[0]!);
+        const content = fs.readFileSync(feedbackPath, 'utf-8');
+        expect(content).toContain('# custom feedback');
+        expect(content).toContain('## custom section');
+      });
+
+      then('output matches snapshot', () => {
+        expect(asSnapshotStable(result.output)).toMatchSnapshot();
       });
     });
   });

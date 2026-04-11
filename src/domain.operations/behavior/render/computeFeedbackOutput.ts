@@ -4,6 +4,7 @@
  */
 export const computeFeedbackOutput = (input: {
   feedbackFilename: string;
+  artifact: string;
   opener?: string;
 }): string => {
   const dim = '\x1b[2m';
@@ -11,8 +12,9 @@ export const computeFeedbackOutput = (input: {
 
   // build output lines
   const lines = [
-    '', // blank line before header
     `🦫 wassup?`,
+    '', // blank line between mascot and artifact
+    `🌲 feedback.give --against ${input.artifact}`,
     `   ├─ ✓ ${input.feedbackFilename}`,
     `   ├─ ${dim}tip: use --version ++ to create a new version${reset}`,
   ];

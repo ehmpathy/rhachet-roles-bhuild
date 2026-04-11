@@ -7,7 +7,9 @@ import { bindBehavior } from './contract/cli/bind.behavior';
 import { bootBehavior } from './contract/cli/boot.behavior';
 import { catchDream } from './contract/cli/catch.dream';
 import { decomposeBehavior } from './contract/cli/decompose.behavior';
-import { giveFeedback } from './contract/cli/give.feedback';
+import { feedbackGive } from './contract/cli/feedback.give';
+import { feedbackTakeGet } from './contract/cli/feedback.take.get';
+import { feedbackTakeSet } from './contract/cli/feedback.take.set';
 import { initBehavior } from './contract/cli/init.behavior';
 import { cliRadioTaskPull } from './contract/cli/radioTaskPull';
 import { cliRadioTaskPush } from './contract/cli/radioTaskPush';
@@ -19,7 +21,12 @@ export const cli = {
   catchDream: () => withEmojiSpaceShim({ logic: async () => catchDream() }),
   decomposeBehavior: () =>
     withEmojiSpaceShim({ logic: async () => decomposeBehavior() }),
-  giveFeedback: () => withEmojiSpaceShim({ logic: async () => giveFeedback() }),
+  feedbackGive: () => withEmojiSpaceShim({ logic: async () => feedbackGive() }),
+  feedbackTakeGet: () =>
+    withEmojiSpaceShim({ logic: async () => feedbackTakeGet() }),
+  feedbackTakeSet: () =>
+    withEmojiSpaceShim({ logic: async () => feedbackTakeSet() }),
+  giveFeedback: () => withEmojiSpaceShim({ logic: async () => feedbackGive() }), // backwards compat
   initBehavior: () => withEmojiSpaceShim({ logic: async () => initBehavior() }),
   radioTaskPull: () =>
     withEmojiSpaceShim({ logic: async () => cliRadioTaskPull() }),

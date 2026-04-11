@@ -1,4 +1,4 @@
-import { mkdtempSync, rmSync, writeFileSync } from 'fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
 import { given, then, when } from 'test-fns';
@@ -7,9 +7,12 @@ import { getLatestFeedbackVersion } from './getLatestFeedbackVersion';
 
 describe('getLatestFeedbackVersion', () => {
   let testDir: string;
+  let feedbackDir: string;
 
   const setupTestDir = () => {
     testDir = mkdtempSync(join(tmpdir(), 'getLatestFeedbackVersion-test-'));
+    feedbackDir = join(testDir, 'feedback');
+    mkdirSync(feedbackDir, { recursive: true });
     return testDir;
   };
 
@@ -44,7 +47,7 @@ describe('getLatestFeedbackVersion', () => {
         writeFileSync(join(testDir, '5.1.execution.v1.i1.md'), 'content');
         writeFileSync(
           join(
-            testDir,
+            feedbackDir,
             '5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md',
           ),
           'feedback v1',
@@ -69,14 +72,14 @@ describe('getLatestFeedbackVersion', () => {
         writeFileSync(join(testDir, '5.1.execution.v1.i1.md'), 'content');
         writeFileSync(
           join(
-            testDir,
+            feedbackDir,
             '5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md',
           ),
           'feedback v1',
         );
         writeFileSync(
           join(
-            testDir,
+            feedbackDir,
             '5.1.execution.v1.i1.md.[feedback].v2.[given].by_human.md',
           ),
           'feedback v2',
@@ -106,7 +109,7 @@ describe('getLatestFeedbackVersion', () => {
           // execution has v1 feedback
           writeFileSync(
             join(
-              testDir,
+              feedbackDir,
               '5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md',
             ),
             'feedback v1',
@@ -114,15 +117,15 @@ describe('getLatestFeedbackVersion', () => {
 
           // wish has v1+v2+v3 feedback
           writeFileSync(
-            join(testDir, '0.wish.md.[feedback].v1.[given].by_human.md'),
+            join(feedbackDir, '0.wish.md.[feedback].v1.[given].by_human.md'),
             'feedback v1',
           );
           writeFileSync(
-            join(testDir, '0.wish.md.[feedback].v2.[given].by_human.md'),
+            join(feedbackDir, '0.wish.md.[feedback].v2.[given].by_human.md'),
             'feedback v2',
           );
           writeFileSync(
-            join(testDir, '0.wish.md.[feedback].v3.[given].by_human.md'),
+            join(feedbackDir, '0.wish.md.[feedback].v3.[given].by_human.md'),
             'feedback v3',
           );
 
@@ -148,21 +151,21 @@ describe('getLatestFeedbackVersion', () => {
         // create v3 first, then v1, then v2
         writeFileSync(
           join(
-            testDir,
+            feedbackDir,
             '5.1.execution.v1.i1.md.[feedback].v3.[given].by_human.md',
           ),
           'feedback v3',
         );
         writeFileSync(
           join(
-            testDir,
+            feedbackDir,
             '5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md',
           ),
           'feedback v1',
         );
         writeFileSync(
           join(
-            testDir,
+            feedbackDir,
             '5.1.execution.v1.i1.md.[feedback].v2.[given].by_human.md',
           ),
           'feedback v2',
