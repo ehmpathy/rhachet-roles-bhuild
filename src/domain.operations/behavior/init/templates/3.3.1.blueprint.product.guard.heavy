@@ -288,7 +288,87 @@ reviews:
         1. align with the extant convention
         2. or flag as an open question if the extant convention seems wrong
 
-    # 14. behavior coverage
+    # 14. directory decomposition
+    - slug: has-proper-directory-decomposition
+      say: |
+        review that directories follow the layered decomposition pattern and
+        that subdomains have proper namespace via subdirectories.
+
+        ## layer structure
+
+        the blueprint must organize files into the correct top-level layers:
+
+        ```
+        src/
+          contract/           # public interfaces (cli/, api/, sdk/)
+          access/             # infrastructure (daos/, sdks/, svcs/)
+          domain.objects/     # domain declarations
+          domain.operations/  # domain behavior
+          infra/              # adapters
+        ```
+
+        for each file in the blueprint, ask:
+        - is this file placed in the correct layer?
+        - does a transformer belong in domain.operations/, not contract/?
+        - does a dao belong in access/daos/, not domain.operations/?
+        - does an api endpoint belong in contract/api/, not at src/ root?
+
+        ## subdomain namespace structure
+
+        subdomains must be namespaced via subdirectories, not flat at the root.
+
+        👎 bad — flat structure (no subdomain directories):
+        ```
+        domain.operations/
+          getCustomer.ts
+          setCustomer.ts
+          getInvoice.ts
+          setInvoice.ts
+          computeTotal.ts
+        ```
+
+        👎 bad — subdomains flattened to root:
+        ```
+        domain.operations/
+          customer/
+          phone/           # should be under customer/
+          invoice/
+          lineItem/        # should be under invoice/
+        ```
+
+        👍 good — properly nested by subdomain:
+        ```
+        domain.operations/
+          customer/
+            getCustomer.ts
+            setCustomer.ts
+            phone/
+              getCustomerPhone.ts
+              setCustomerPhone.ts
+          invoice/
+            getInvoice.ts
+            setInvoice.ts
+            lineItem/
+              computeLineItemTotal.ts
+              getLineItems.ts
+        ```
+
+        for each new file in the blueprint, ask:
+        - is this file namespaced under a subdomain directory?
+        - are related operations grouped together?
+        - does the directory structure reflect bounded contexts?
+        - did we dump all files flat at the layer root?
+
+        ## consistency with extant structure
+
+        check how the codebase currently organizes files:
+        - does the blueprint match extant directory patterns?
+        - if extant structure is flat, should we propose refactor or match it?
+        - if extant structure is namespaced, do we follow the same pattern?
+
+        fix all directory placement issues before you continue.
+
+    # 15. behavior coverage
     - slug: has-behavior-declaration-coverage
       say: |
         review for coverage of the behavior declaration.
@@ -305,7 +385,7 @@ reviews:
 
         fix all gaps before you continue.
 
-    # 15. behavior adherance
+    # 16. behavior adherance
     - slug: has-behavior-declaration-adherance
       say: |
         review for adherance to the behavior declaration.
@@ -322,7 +402,7 @@ reviews:
 
         fix all gaps before you continue.
 
-    # 16. standards adherance
+    # 17. standards adherance
     - slug: has-role-standards-adherance
       say: |
         review for adherance to mechanic role standards.
@@ -342,7 +422,7 @@ reviews:
 
         fix all gaps before you continue.
 
-    # 17. standards coverage
+    # 18. standards coverage
     - slug: has-role-standards-coverage
       say: |
         review for coverage of mechanic role standards.

@@ -246,7 +246,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 
 🌕 lets reflect
    │
-   ├─ review.self 1/17
+   ├─ review.self 1/18
    │  ├─ slug = has-research-traceability
    │  ├─ question all, especially yourself
    │  └─ see the guide below
@@ -362,11 +362,12 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ reason = wait for human approval
    └─ guard
       ├─ artifacts
+      │   ├─ 3.3.1.blueprint.product.yield.md
       │   └─ 3.3.1.blueprint.product.yield.md
       ├─ reviews
       │   └─ r1: npx rhachet run --repo bhrain --skill review --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.{prod,test}/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with '$route/3.3.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.failhides.md' --mode hard
       │       ├─ finished [time] ✓
-      │       └─ review: .route/3.3.1.blueprint.product.guard.review.i1.b32e81c0243f833ead9d83a736ce48ef4111c16f834a1ccbd5e7e66dfc4399b9.r1.md
+      │       └─ review: .route/3.3.1.blueprint.product.guard.review.i1.39b43fb8815ed028463dacbb96ae2eb8e5c63aa730f616bbc1cb1aa06d7a6658.r1.md
       └─ judges
           ├─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
           │   └─ finished [time] ✓
@@ -420,6 +421,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ passage = allowed
    ├─ guard
    │  ├─ artifacts
+   │  │   ├─ 3.3.1.blueprint.product.yield.md
    │  │   └─ 3.3.1.blueprint.product.yield.md
    │  ├─ reviews
    │  │   └─ r1: npx rhachet run --repo bhrain --skill review --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.{prod,test}/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with '$route/3.3.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.failhides.md' --mode hard
