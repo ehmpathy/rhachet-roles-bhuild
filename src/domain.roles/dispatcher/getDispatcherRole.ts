@@ -17,6 +17,7 @@ export const ROLE_DISPATCHER: Role = Role.build({
     dirs: { uri: __dirname + '/inits' },
     exec: [],
   },
+  keyrack: { uri: __dirname + '/keyrack.yml' },
   hooks: {
     onBrain: {
       onBoot: [],

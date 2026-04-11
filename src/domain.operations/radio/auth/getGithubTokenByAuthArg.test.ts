@@ -3,6 +3,14 @@ import { given, then, when } from 'test-fns';
 
 import { getGithubTokenByAuthArg } from './getGithubTokenByAuthArg';
 
+// mock the keyrack module
+jest.mock('./getAuthFromKeyrack', () => ({
+  getAuthFromKeyrack: jest.fn(),
+}));
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { getAuthFromKeyrack } = require('./getAuthFromKeyrack');
+
 /**
  * .what = mock shx that returns specified output
  * .why = enables unit test without real shell execution
@@ -20,6 +28,10 @@ const mockShxError = (error: Error) => async () => {
 };
 
 describe('getGithubTokenByAuthArg', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   given('[case1] --auth as-robot:env(ENV_VAR)', () => {
     when('[t0] env var is set', () => {
       then('returns token from env var', async () => {
@@ -116,34 +128,89 @@ describe('getGithubTokenByAuthArg', () => {
     });
   });
 
-  given('[case3] GITHUB_TOKEN in env', () => {
-    when('[t0] GITHUB_TOKEN is set and no --auth', () => {
-      then('returns token from GITHUB_TOKEN', async () => {
+  given('[case3] --auth as-robot:via-keyrack(owner)', () => {
+    when('[t0] keyrack succeeds', () => {
+      then('returns token from keyrack with specified owner', async () => {
+        getAuthFromKeyrack.mockResolvedValue({ token: 'custom-owner-token' });
+
         const result = await getGithubTokenByAuthArg(
-          { auth: undefined },
-          { env: { GITHUB_TOKEN: 'env-token-456' }, shx: mockShx('') },
+          { auth: 'as-robot:via-keyrack(myorg)' },
+          { env: {}, shx: mockShx('') },
         );
-        expect(result.token).toBe('env-token-456');
-        expect(result.role).toBe('env');
+        expect(result.token).toBe('custom-owner-token');
+        expect(result.role).toBe('as-robot');
+        expect(getAuthFromKeyrack).toHaveBeenCalledWith({
+          owner: 'myorg',
+          env: 'prep',
+          key: 'EHMPATH_BEAVER_GITHUB_TOKEN',
+        });
       });
     });
 
-    when('[t1] both GITHUB_TOKEN and --auth as-robot:env(VAR) set', () => {
-      then('as-robot takes precedence', async () => {
-        const result = await getGithubTokenByAuthArg(
-          { auth: 'as-robot:env(CUSTOM_TOKEN)' },
-          {
-            env: { GITHUB_TOKEN: 'env-token', CUSTOM_TOKEN: 'custom-token' },
-            shx: mockShx(''),
-          },
+    when('[t1] keyrack fails', () => {
+      then('propagates the keyrack error', async () => {
+        getAuthFromKeyrack.mockRejectedValue(
+          new Error('keyrack: vault locked'),
         );
-        expect(result.token).toBe('custom-token');
-        expect(result.role).toBe('as-robot');
+
+        await expect(
+          getGithubTokenByAuthArg(
+            { auth: 'as-robot:via-keyrack(someowner)' },
+            { env: {}, shx: mockShx('') },
+          ),
+        ).rejects.toThrow('keyrack: vault locked');
       });
     });
   });
 
-  given('[case4] --auth as-human', () => {
+  given('[case4] default via-keyrack(ehmpath) when no --auth', () => {
+    when('[t0] keyrack succeeds', () => {
+      then('returns token from keyrack', async () => {
+        getAuthFromKeyrack.mockResolvedValue({ token: 'keyrack-token-123' });
+
+        const result = await getGithubTokenByAuthArg(
+          { auth: undefined },
+          { env: {}, shx: mockShx('') },
+        );
+        expect(result.token).toBe('keyrack-token-123');
+        expect(result.role).toBe('as-robot');
+        expect(getAuthFromKeyrack).toHaveBeenCalledWith({
+          owner: 'ehmpath',
+          env: 'prep',
+          key: 'EHMPATH_BEAVER_GITHUB_TOKEN',
+        });
+      });
+    });
+
+    when('[t1] keyrack fails', () => {
+      then('propagates the keyrack error', async () => {
+        getAuthFromKeyrack.mockRejectedValue(
+          new Error('keyrack: credential not found'),
+        );
+
+        await expect(
+          getGithubTokenByAuthArg(
+            { auth: undefined },
+            { env: {}, shx: mockShx('') },
+          ),
+        ).rejects.toThrow('keyrack: credential not found');
+      });
+    });
+
+    when('[t2] explicit --auth overrides default', () => {
+      then('uses explicit auth mode', async () => {
+        const result = await getGithubTokenByAuthArg(
+          { auth: 'as-robot:env(CUSTOM_TOKEN)' },
+          { env: { CUSTOM_TOKEN: 'custom-token' }, shx: mockShx('') },
+        );
+        expect(result.token).toBe('custom-token');
+        expect(result.role).toBe('as-robot');
+        expect(getAuthFromKeyrack).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  given('[case5] --auth as-human', () => {
     when('[t0] as-human in non-test env', () => {
       then('returns null token with as-human method', async () => {
         const result = await getGithubTokenByAuthArg(
@@ -203,29 +270,32 @@ describe('getGithubTokenByAuthArg', () => {
     });
   });
 
-  given('[case5] no auth detected', () => {
-    when('[t0] no --auth and no GITHUB_TOKEN', () => {
+  given('[case6] unrecognized auth mode', () => {
+    when('[t0] --auth with invalid mode', () => {
       then('throws BadRequestError', async () => {
         await expect(
           getGithubTokenByAuthArg(
-            { auth: undefined },
+            { auth: 'invalid-mode' },
             { env: {}, shx: mockShx('') },
           ),
         ).rejects.toThrow(BadRequestError);
       });
 
-      then('error message includes tip', async () => {
+      then('error message lists supported modes', async () => {
         try {
           await getGithubTokenByAuthArg(
-            { auth: undefined },
+            { auth: 'some-unknown-mode' },
             { env: {}, shx: mockShx('') },
           );
           fail('expected error');
         } catch (error) {
-          expect((error as Error).message).toContain('no auth detected');
+          expect((error as Error).message).toContain(
+            'unrecognized --auth mode',
+          );
           expect((error as Error).message).toContain('as-human');
-          expect((error as Error).message).toContain('as-robot');
-          expect((error as Error).message).toContain('shx');
+          expect((error as Error).message).toContain('as-robot:env');
+          expect((error as Error).message).toContain('as-robot:shx');
+          expect((error as Error).message).toContain('as-robot:via-keyrack');
         }
       });
     });
