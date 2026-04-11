@@ -221,6 +221,9 @@ jobs:
       - name: build
         run: npm run build
 
+      - name: prepare:rhachet
+        run: npx rhachet roles link --role dispatcher
+
       - name: test:integration (explicit ${{ matrix.shard.index }})
         if: matrix.shard.type == 'explicit'
         run: |
@@ -294,6 +297,9 @@ jobs:
 
       - name: build
         run: npm run build
+
+      - name: prepare:rhachet
+        run: npx rhachet roles link --role dispatcher
 
       - name: test:acceptance (explicit ${{ matrix.shard.index }})
         if: matrix.shard.type == 'explicit'
