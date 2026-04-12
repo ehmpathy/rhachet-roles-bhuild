@@ -37,6 +37,7 @@ const BEHAVIOR_SIZE_CONFIG = {
       '2.1.criteria.blackbox.stone',
       '2.1.criteria.blackbox.guard', // .heavy only (light has no criteria guard)
       '2.2.criteria.blackbox.matrix.stone',
+      '3.1.1.research.external.product.flagged._.stone', // research what vision flagged
       '3.1.3.research.internal.product.code.prod._.stone',
       '3.1.3.research.internal.product.code.test._.stone',
       '3.3.1.blueprint.product.stone',
@@ -44,6 +45,8 @@ const BEHAVIOR_SIZE_CONFIG = {
       '4.1.roadmap.stone',
       '5.1.execution.phase0_to_phaseN.stone', // roadmap → phased execution
       '5.1.execution.phase0_to_phaseN.guard',
+      '5.5.playtest.stone', // playtest for mini and above
+      '5.5.playtest.guard',
     ],
     dels: [
       '5.1.execution.from_vision.stone', // replaced by phased version
@@ -63,8 +66,6 @@ const BEHAVIOR_SIZE_CONFIG = {
       '3.2.distill.repros.experience._.guard',
       '5.2.evaluation.stone',
       '5.2.evaluation.guard',
-      '5.5.playtest.stone',
-      '5.5.playtest.guard',
     ],
     dels: [],
   },

@@ -122,9 +122,9 @@ describe('init.behavior.sizes', () => {
         expect(files.some((f) => f.includes('3.1.3.research'))).toBe(true);
       });
 
-      then('does NOT include playtest', () => {
+      then('includes playtest', () => {
         const files = getBehaviorFiles(result.repoDir);
-        expect(files.some((f) => f.includes('5.5.playtest'))).toBe(false);
+        expect(files.some((f) => f.includes('5.5.playtest'))).toBe(true);
       });
     });
   });
@@ -280,9 +280,9 @@ describe('init.behavior.sizes', () => {
 
       then('creates mini-level files', () => {
         const files = getBehaviorFiles(result.repoDir);
-        // should have criteria but not playtest
+        // should have criteria and playtest
         expect(files.some((f) => f.includes('2.1.criteria'))).toBe(true);
-        expect(files.some((f) => f.includes('5.5.playtest'))).toBe(false);
+        expect(files.some((f) => f.includes('5.5.playtest'))).toBe(true);
       });
 
       then('guard file has heavy content', () => {

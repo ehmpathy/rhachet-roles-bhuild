@@ -123,6 +123,7 @@ reference
 - $BEHAVIOR_DIR_REL/3.1.1.research.external.product.access.*.yield.md (if declared)
 - $BEHAVIOR_DIR_REL/3.1.1.research.external.product.claims.*.yield.md (if declared)
 - $BEHAVIOR_DIR_REL/3.1.1.research.external.product.domain.*.yield.md (if declared)
+- $BEHAVIOR_DIR_REL/3.1.1.research.external.product.flagged.*.yield.md (if declared)
 - $BEHAVIOR_DIR_REL/3.1.3.research.internal.product.code.prod.*.yield.md (if declared)
 - $BEHAVIOR_DIR_REL/3.1.3.research.internal.product.code.test.*.yield.md (if declared)
 - $BEHAVIOR_DIR_REL/3.2.distill.domain.*.yield.md (if declared)

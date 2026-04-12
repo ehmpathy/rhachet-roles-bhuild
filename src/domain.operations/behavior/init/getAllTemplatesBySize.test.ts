@@ -77,8 +77,10 @@ describe('getAllTemplatesBySize', () => {
         expect(templates).toContain(
           '3.1.3.research.internal.product.code.prod._.stone',
         );
+        // mini includes playtest
+        expect(templates).toContain('5.5.playtest.stone');
         // not medi
-        expect(templates).not.toContain('5.5.playtest.stone');
+        expect(templates).not.toContain('5.2.evaluation.stone');
       });
 
       then('includes phased execution (replaces from_vision)', () => {
@@ -98,6 +100,13 @@ describe('getAllTemplatesBySize', () => {
         expect(templates).toContain('3.3.1.blueprint.product.stone');
         expect(templates).toContain('3.3.1.blueprint.product.guard');
         expect(templates).toContain('4.1.roadmap.stone');
+      });
+
+      then('includes flagged research (for blueprint support)', () => {
+        const templates = getAllTemplatesBySize({ size: 'mini' });
+        expect(templates).toContain(
+          '3.1.1.research.external.product.flagged._.stone',
+        );
       });
     });
   });
