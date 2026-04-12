@@ -33,12 +33,12 @@ exports[`init.behavior.idempotent given: [case5] direct: idempotent rerun on sam
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.same-behavior/0.wish.md
-   └─ [2mtip: use --open to open the wish automatically[0m
+   └─ [2mtip: use --open to open the wish automatically[0m
 
 🍄 we'll remember,
    ├─ branch feature/idempotent-init-test <-> behavior v{DATE}.same-behavior
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ [2mbranch bound to behavior, to boot via hooks[0m
+   └─ [2mbranch bound to route, to drive via hooks[0m"
 `;
 
 exports[`init.behavior.idempotent given: [case5] direct: idempotent rerun on same behavior when: [t0] init.behavior executed twice with same name then: second run succeeds (idempotent): second run output (idempotent) 1`] = `
@@ -74,12 +74,12 @@ exports[`init.behavior.idempotent given: [case5] direct: idempotent rerun on sam
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.same-behavior/0.wish.md
-   └─ [2mtip: use --open to open the wish automatically[0m
+   └─ [2mtip: use --open to open the wish automatically[0m
 
 🍄 we'll remember,
    ├─ branch feature/idempotent-init-test <-> behavior v{DATE}.same-behavior
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ [2mbranch bound to behavior, to boot via hooks[0m
+   └─ [2mbranch bound to route, to drive via hooks[0m"
 `;
 
 exports[`init.behavior.idempotent given: [case9] direct: idempotent reruns preserve both binds when: [t0] init.behavior executed three times on same behavior then: first run creates files and both binds succeed 1`] = `
@@ -115,10 +115,10 @@ exports[`init.behavior.idempotent given: [case9] direct: idempotent reruns prese
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.idem-test/0.wish.md
-   └─ [2mtip: use --open to open the wish automatically[0m
+   └─ [2mtip: use --open to open the wish automatically[0m
 
 🍄 we'll remember,
    ├─ branch feature/idempotent-binds-test <-> behavior v{DATE}.idem-test
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ [2mbranch bound to behavior, to boot via hooks[0m
+   └─ [2mbranch bound to route, to drive via hooks[0m"
 `;
