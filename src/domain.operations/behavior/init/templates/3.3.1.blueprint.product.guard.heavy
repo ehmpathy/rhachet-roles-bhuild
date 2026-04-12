@@ -6,30 +6,35 @@ protect:
 
 reviews:
   self:
-    # 1. research traceability
-    - slug: has-research-traceability
+    # 1. research citations
+    - slug: has-research-citations
       say: |
-        review that research recommendations were leveraged or explicitly omitted.
+        review that the blueprint cites research results with full traceability.
 
-        the research stone(s) produced recommendations. we must ensure the
-        blueprint either:
-        - leverages each recommendation, or
-        - provides clear rationale for why it was omitted
+        the research stone(s) produced claims with citations. the blueprint
+        must cite both:
+        1. the research yield file (e.g., 3.1.1.research.external.product.flagged._.yield.md)
+        2. the original source from that research (e.g., [3] from the yield)
 
         go through each research artifact in the route:
-        1. list every recommendation from the research
-        2. for each recommendation, check:
-           - is it reflected in the blueprint?
-           - if not, is there a clear rationale for the omission?
-           - did we silently ignore useful research?
+        1. list every [FACT], [SUMP], [KHUE], [OPIN] from the research
+        2. for each claim, check:
+           - is it cited in the blueprint where relevant?
+           - does the citation reference the yield file?
+           - does the citation reference the original source from the yield?
+           - was it leveraged or explicitly omitted with rationale?
 
-        for omissions, ensure the rationale is documented:
+        the blueprint should include citations like:
+        - "per 3.1.1.research...flagged.yield.md [3], we use X approach..."
+        - "research...claims.yield.md source [7] warns against Y, so we avoid..."
+        - "multiple sources in research...yield.md [2,5,9] agree on Z..."
+
+        for omissions, document the rationale:
         - "not applicable because..." (explain why)
         - "deferred to future work because..." (explain scope)
         - "contradicts requirement X because..." (cite conflict)
 
-        research done but not used is wasted effort. if we researched it,
-        we should either use it or explain why not.
+        research done but not cited is wasted effort. cite your sources.
 
     # 2. zero deferrals
     - slug: has-zero-deferrals
