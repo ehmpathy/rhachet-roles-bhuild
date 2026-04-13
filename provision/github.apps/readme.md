@@ -57,7 +57,68 @@ npx declastruct apply \
 
 ### store app credentials in keyrack
 
-after apply completes, store the produced credentials (appId, privateKey, installationId) in keyrack:
+after apply completes, store the produced credentials in keyrack.
+
+#### interactive flow (recommended)
+
+use the interactive `keyrack set` flow — it handles the GitHub App JSON format automatically.
+
+**run twice** — once for local tests, once for CI/CD (github.secrets is write-only):
+
+```bash
+# for local test use
+rhx keyrack set --key EHMPATH_BEAVER_GITHUB_TOKEN --env test --vault os.secure
+
+# for CI/CD
+rhx keyrack set --key EHMPATH_BEAVER_GITHUB_TOKEN --env test --vault github.secrets
+```
+
+both commands use the same interactive prompt to ensure the credential is formatted correctly:
+
+```bash
+
+   which mechanism?
+   1. EPHEMERAL_VIA_GITHUB_APP — github app installation (short-lived tokens)
+   2. PERMANENT_VIA_REPLICA — static secret (api key, password)
+
+   choice: 1
+🔐 keyrack set ehmpathy.test.EHMPATH_BEAVER_GITHUB_TOKEN via EPHEMERAL_VIA_GITHUB_APP
+   │
+   ├─ which github org?
+   │  ├─ options
+   │  │  ├─ 1. rheuse
+   │  │  ├─ 2. bhuild
+   │  │  ├─ 3. ehmpathy
+   │  └─ choice: 3
+   │     └─ ehmpathy ✓
+   │
+   ├─ which github app?
+   │  ├─ options
+   │  │  ├─ 1. declastruct-github-conformer (id: 2471935)
+   │  │  ├─ 2. rhelease (id: 2472031)
+   │  │  ├─ 3. beaver-by-bhuild (id: 3234162)
+   │  └─ choice: 3
+   │     └─ beaver-by-bhuild ✓
+   │
+   ├─ which github app secret?
+   │  └─ private key path (.pem): ~/path/to/beaver-by-bhuild.private-key.pem
+   │
+   └─ ✓ pushed to github.secrets (no roundtrip — write-only vault)
+⠀
+🔐 keyrack set (org: ehmpathy, env: test)
+   └─ ehmpathy.test.EHMPATH_BEAVER_GITHUB_TOKEN
+      ├─ mech: EPHEMERAL_VIA_GITHUB_APP
+      └─ vault: github.secrets
+```
+
+keyrack automatically:
+- fetches the installation id from GitHub API
+- constructs the JSON blob with appId, privateKey, installationId
+- pushes to the specified vault (github.secrets for CI, os.secure for local)
+
+#### manual flow (advanced)
+
+if you prefer to construct the JSON manually:
 
 1. get the installation id:
 
@@ -69,7 +130,7 @@ gh api --method GET /orgs/ehmpathy/installations | jq '.installations[] | select
 2. store in keyrack (pipe the json via stdin):
 
 ```bash
-jq -c -n --rawfile key ~/Downloads/beaver-by-bhuild.YYYY-MM-DD.private-key.pem \
+jq -c -n --rawfile key ~/path/to/beaver-by-bhuild.private-key.pem \
   '{appId: "APP_ID", privateKey: $key, installationId: "INSTALLATION_ID"}' | \
 npx rhachet keyrack set \
   --key EHMPATH_BEAVER_GITHUB_TOKEN \
@@ -81,7 +142,7 @@ npx rhachet keyrack set \
 
 replace `APP_ID`, `INSTALLATION_ID`, and the pem file path with actual values.
 
-3. verify:
+#### verify
 
 ```bash
 rhx keyrack get --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep --owner ehmpath
