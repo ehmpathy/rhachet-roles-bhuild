@@ -222,9 +222,7 @@ jobs:
         run: npm run build
 
       - name: prepare:rhachet
-        run: |
-          npx rhachet roles link --role dispatcher
-          npx rhachet roles link --role mechanic
+        run: npx rhachet init --roles mechanic behaver driver reviewer librarian ergonomist architect dispatcher
 
       - name: test:integration (explicit ${{ matrix.shard.index }})
         if: matrix.shard.type == 'explicit'
@@ -301,9 +299,7 @@ jobs:
         run: npm run build
 
       - name: prepare:rhachet
-        run: |
-          npx rhachet roles link --role dispatcher
-          npx rhachet roles link --role mechanic
+        run: npx rhachet init --roles mechanic behaver driver reviewer librarian ergonomist architect dispatcher
 
       - name: test:acceptance (explicit ${{ matrix.shard.index }})
         if: matrix.shard.type == 'explicit'
