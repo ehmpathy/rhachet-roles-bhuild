@@ -30,8 +30,9 @@ export const extractTaskFromGhIssues = (input: {
   // determine status from state and body content
   const status = (() => {
     if (input.state === 'closed') return RadioTaskStatus.DELIVERED;
-    if (branchMatch?.includes('delivered')) return RadioTaskStatus.DELIVERED;
-    if (branchMatch?.includes('planted')) return RadioTaskStatus.CLAIMED;
+    if (branchMatch?.[0]?.includes('delivered'))
+      return RadioTaskStatus.DELIVERED;
+    if (branchMatch?.[0]?.includes('planted')) return RadioTaskStatus.CLAIMED;
     if (input.assignees.length > 0) return RadioTaskStatus.CLAIMED;
     return RadioTaskStatus.QUEUED;
   })();

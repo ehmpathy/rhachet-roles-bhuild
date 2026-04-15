@@ -25,6 +25,7 @@ roles:
       dirs: dist/domain.roles/dispatcher/skills
     inits:
       dirs: dist/domain.roles/dispatcher/inits
+    keyrack: dist/domain.roles/dispatcher/keyrack.yml
   - slug: dreamer
     readme: dist/domain.roles/dreamer/readme.md
     briefs:

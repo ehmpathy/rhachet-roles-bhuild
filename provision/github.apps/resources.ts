@@ -1,9 +1,28 @@
 import type { DeclastructProvider } from 'declastruct';
 import { getDeclastructGithubProvider } from 'declastruct-github';
 import type { DomainEntity } from 'domain-objects';
-import { UnexpectedCodePathError } from 'helpful-errors';
+import { ConstraintError } from 'helpful-errors';
+import { keyrack } from 'rhachet/keyrack';
 
 import { getResourcesOfAppBhuildBeaver } from './resources.app.bhuild-beaver';
+
+/**
+ * .what = get admin github token from keyrack
+ * .why = auto-fetch credentials from 1password via keyrack
+ */
+const getGithubAdminToken = async (): Promise<string> => {
+  const { attempt, emit } = await keyrack.get({
+    for: { key: 'GITHUB_TOKEN' },
+    env: 'sudo',
+    allow: { dangerous: true },
+  });
+
+  if (attempt.status !== 'granted') {
+    throw new ConstraintError(`\n${emit.stdout}`, attempt);
+  }
+
+  return attempt.grant.key.secret;
+};
 
 /**
  * .what = declastruct provider configuration for github apps
@@ -13,9 +32,7 @@ export const getProviders = async (): Promise<DeclastructProvider[]> => [
   getDeclastructGithubProvider(
     {
       credentials: {
-        token:
-          process.env.GITHUB_TOKEN ??
-          UnexpectedCodePathError.throw('GITHUB_TOKEN not set'),
+        token: await getGithubAdminToken(),
       },
     },
     {
