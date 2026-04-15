@@ -19,6 +19,9 @@ on:
       BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN:
         description: "github token for bhuild demo repo, used in gh.issues acceptance tests"
         required: false
+      EHMPATH_BEAVER_GITHUB_TOKEN:
+        description: "github app token for ehmpath beaver, used in radio skill tests"
+        required: false
 
 permissions:
   id-token: write # required for oidc
