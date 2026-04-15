@@ -5,7 +5,7 @@ extends:
   - .agent/repo=ehmpathy/role=mechanic/keyrack.yml
 env.prod:
   - EHMPATHY_SEATURTLE_PROD_GITHUB_TOKEN
-env.test: null
-env.all: null
-env.prep:
+env.test:
   - EHMPATH_BEAVER_GITHUB_TOKEN
+env.all: null
+env.prep: null

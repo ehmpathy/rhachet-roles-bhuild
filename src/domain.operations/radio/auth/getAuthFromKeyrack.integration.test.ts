@@ -8,7 +8,7 @@ describe('getAuthFromKeyrack.integration', () => {
       then('returns ephemeral ghs_* token', async () => {
         const result = await getAuthFromKeyrack({
           owner: 'ehmpath',
-          env: 'prep',
+          env: 'test',
           key: 'EHMPATH_BEAVER_GITHUB_TOKEN',
         });
 
