@@ -246,7 +246,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 
 🌕 lets reflect
    │
-   ├─ review.self 1/18
+   ├─ review.self 1/19
    │  ├─ slug = has-research-citations
    │  ├─ question all, especially yourself
    │  └─ see the guide below

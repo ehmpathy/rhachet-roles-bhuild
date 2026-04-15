@@ -202,7 +202,72 @@ reviews:
 
         fix all gaps before you continue.
 
-    # 8. consistent mechanisms
+    # 8. journey acceptance test
+    - slug: has-journey-acceptance-test
+      say: |
+        review that the blueprint declares a journey acceptance test.
+
+        a journey acceptance test exercises a complete, realistic user journey
+        through multiple timesteps — not isolated unit tests, but an exhaustive
+        end-to-end flow that exercises real-world usage.
+
+        ## what a journey test must include
+
+        | requirement | description |
+        |-------------|-------------|
+        | multiple timesteps | [t0], [t1], [t2]... through the complete journey |
+        | realistic scenario | exercises actual user workflow, not contrived examples |
+        | edge cases along the way | blocked states, error paths, recovery flows |
+        | snapshots at checkpoints | visual diff at each significant state change |
+        | final state verification | journey ends with expected outcome verified |
+
+        ## pattern
+
+        ```typescript
+        describe('feature.journey', () => {
+          given('[case1] complete user journey', () => {
+            when('[t0] initial state', () => {
+              then('preconditions hold', () => { ... });
+            });
+
+            when('[t1] first action', () => {
+              then('state transitions correctly', () => {
+                expect(result).toMatchSnapshot();
+              });
+            });
+
+            when('[t2] blocked scenario', () => {
+              then('error is surfaced with helpful message', () => {
+                expect(error).toMatchSnapshot();
+              });
+            });
+
+            // ... more timesteps through the journey ...
+
+            when('[tN] journey complete', () => {
+              then('final state is correct', () => {
+                expect(finalState).toMatchSnapshot();
+              });
+            });
+          });
+        });
+        ```
+
+        ## ask for the blueprint
+
+        - does the blueprint declare a journey acceptance test?
+        - does the journey exercise a realistic user workflow?
+        - does the journey include multiple timesteps (not just t0)?
+        - does the journey cover blocked/error states along the way?
+        - does the journey snapshot at each significant checkpoint?
+        - does the journey verify the final expected outcome?
+
+        a blueprint without a journey test is incomplete. the journey test is
+        how we verify the feature works as a whole, not just in isolation.
+
+        fix all gaps before you continue.
+
+    # 9. consistent mechanisms
     - slug: has-consistent-mechanisms
       say: |
         review for new mechanisms that duplicate extant functionality.
@@ -221,7 +286,7 @@ reviews:
         1. replace with the extant mechanism
         2. or flag as an open question if unsure
 
-    # 9. consistent conventions
+    # 10. consistent conventions
     - slug: has-consistent-conventions
       say: |
         review for divergence from extant names and patterns.
@@ -241,7 +306,7 @@ reviews:
         1. align with the extant convention
         2. or flag as an open question if the extant convention seems wrong
 
-    # 10. directory decomposition
+    # 11. directory decomposition
     - slug: has-proper-directory-decomposition
       say: |
         review that directories follow the layered decomposition pattern and
@@ -321,7 +386,7 @@ reviews:
 
         fix all directory placement issues before you continue.
 
-    # 11. behavior coverage
+    # 12. behavior coverage
     - slug: has-behavior-declaration-coverage
       say: |
         review for coverage of the behavior declaration.
@@ -338,7 +403,7 @@ reviews:
 
         fix all gaps before you continue.
 
-    # 12. behavior adherance
+    # 13. behavior adherance
     - slug: has-behavior-declaration-adherance
       say: |
         review for adherance to the behavior declaration.
@@ -355,7 +420,7 @@ reviews:
 
         fix all gaps before you continue.
 
-    # 13. standards adherance
+    # 14. standards adherance
     - slug: has-role-standards-adherance
       say: |
         review for adherance to mechanic role standards.
@@ -375,7 +440,7 @@ reviews:
 
         fix all gaps before you continue.
 
-    # 14. standards coverage
+    # 15. standards coverage
     - slug: has-role-standards-coverage
       say: |
         review for coverage of mechanic role standards.
