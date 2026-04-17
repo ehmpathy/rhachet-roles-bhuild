@@ -224,6 +224,10 @@ const genConsumerRepoWithBhrain = (input: {
     cwd: repoDir,
     stdio: 'pipe',
   });
+  execSync('npx rhachet roles link --repo ehmpathy --role ergonomist', {
+    cwd: repoDir,
+    stdio: 'pipe',
+  });
 
   // create stub claude binary (peer reviews use rhachet enroll claude, which calls claude CLI)
   const binDir = path.join(repoDir, 'node_modules', '.bin');
@@ -288,6 +292,14 @@ exit 0
   fs.writeFileSync(
     path.join(mechanicRoleDir, 'readme.md'),
     '# mechanic (stub)\nstub role for tests\n',
+  );
+
+  // create stub ergonomist role (peer reviews require this role)
+  const ergonomistRoleDir = path.join(repoDir, '.agent', 'repo=ehmpathy', 'role=ergonomist');
+  fs.mkdirSync(ergonomistRoleDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(ergonomistRoleDir, 'readme.md'),
+    '# ergonomist (stub)\nstub role for tests\n',
   );
 
   // create stub enroll skill (peer reviews use rhachet enroll claude, must succeed in tests)
