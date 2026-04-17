@@ -182,7 +182,7 @@ const genConsumerRepoWithBhrain = (input: {
     branchName: input.branchName,
   });
 
-  // create package.json with both bhuild and bhrain
+  // create package.json with bhuild, bhrain, and ehmpathy roles
   fs.writeFileSync(
     path.join(repoDir, 'package.json'),
     JSON.stringify(
@@ -192,6 +192,7 @@ const genConsumerRepoWithBhrain = (input: {
         dependencies: {
           'rhachet-roles-bhuild': `file:${process.cwd()}`,
           'rhachet-roles-bhrain': '>=0.13.0',
+          'rhachet-roles-ehmpathy': '>=1.34.0',
           rhachet: '^1.15.0',
         },
       },
@@ -213,7 +214,31 @@ const genConsumerRepoWithBhrain = (input: {
   });
   execSync('npx rhachet roles link --repo bhrain --role driver', {
     cwd: repoDir,
+    stdio: 'pipe',
   });
+  execSync('npx rhachet roles link --repo ehmpathy --role architect', {
+    cwd: repoDir,
+    stdio: 'pipe',
+  });
+  execSync('npx rhachet roles link --repo ehmpathy --role mechanic', {
+    cwd: repoDir,
+    stdio: 'pipe',
+  });
+
+  // create stub claude binary (peer reviews use rhachet enroll claude, which calls claude CLI)
+  const binDir = path.join(repoDir, 'node_modules', '.bin');
+  fs.mkdirSync(binDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(binDir, 'claude'),
+    `#!/usr/bin/env bash
+# stub claude for tests - outputs success without API call
+echo "# arch review (stub)"
+echo ""
+echo "no blockers found."
+exit 0
+`,
+  );
+  fs.chmodSync(path.join(binDir, 'claude'), 0o755);
 
   // create dummy use.apikeys.sh (peer reviews source this, but no real keys needed in tests)
   const apikeysDir = path.join(repoDir, '.agent', 'repo=.this', 'role=any', 'skills');
@@ -248,6 +273,37 @@ exit 0
 `,
   );
   fs.chmodSync(path.join(reviewSkillDir, 'review.sh'), 0o755);
+
+  // create stub architect role (peer reviews require this role)
+  const architectRoleDir = path.join(repoDir, '.agent', 'repo=ehmpathy', 'role=architect');
+  fs.mkdirSync(architectRoleDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(architectRoleDir, 'readme.md'),
+    '# architect (stub)\nstub role for tests\n',
+  );
+
+  // create stub mechanic role (peer reviews require this role)
+  const mechanicRoleDir = path.join(repoDir, '.agent', 'repo=ehmpathy', 'role=mechanic');
+  fs.mkdirSync(mechanicRoleDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(mechanicRoleDir, 'readme.md'),
+    '# mechanic (stub)\nstub role for tests\n',
+  );
+
+  // create stub enroll skill (peer reviews use rhachet enroll claude, must succeed in tests)
+  const enrollSkillDir = path.join(repoDir, '.agent', 'repo=rhachet', 'role=any', 'skills');
+  fs.mkdirSync(enrollSkillDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(enrollSkillDir, 'enroll.sh'),
+    `#!/usr/bin/env bash
+# stub enroll skill for tests - outputs success without active claude
+echo "# arch review (stub)"
+echo ""
+echo "no blockers found."
+exit 0
+`,
+  );
+  fs.chmodSync(path.join(enrollSkillDir, 'enroll.sh'), 0o755);
 
   return { repoDir, cleanup };
 };
