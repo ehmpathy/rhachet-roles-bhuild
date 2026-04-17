@@ -360,6 +360,8 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ ✓ review.1 - completed [time]
    ├─ ✓ review.2 - completed [time]
    ├─ ✓ review.3 - completed [time]
+   ├─ ✓ review.4 - completed [time]
+   ├─ ✓ review.5 - completed [time]
    ├─ ✓ judge.1 - allowed [time]
    └─ ✗ judge.2 - blocked [time]
 
@@ -378,9 +380,15 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
       │   ├─ r2: npx rhachet enroll claude --roles architect,mechanic -p "review the blueprint at $route/$stone.md for architectural gaps and defects. emit BLOCKERS and NITPICKS."
       │   │   ├─ finished [time] ✓
       │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.39b43fb8815ed028463dacbb96ae2eb8e5c63aa730f616bbc1cb1aa06d7a6658.r2.md
-      │   └─ r3: npx rhachet enroll claude --roles architect,mechanic -p "review diff for architectural scope leak, decompose to reuse opportunities, and other arch smells. emit BLOCKERS and NITPICKS."
+      │   ├─ r3: npx rhachet enroll claude --roles architect,mechanic -p "review diff for architectural scope leak, decompose to reuse opportunities, and other arch smells. emit BLOCKERS and NITPICKS."
+      │   │   ├─ finished [time] ✓
+      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.39b43fb8815ed028463dacbb96ae2eb8e5c63aa730f616bbc1cb1aa06d7a6658.r3.md
+      │   ├─ r4: npx rhachet enroll claude --roles ergonomist,mechanic -p "review the blueprint for snapshot coverage on contract endpoints and acceptance test user journey coverage. emit BLOCKERS and NITPICKS."
+      │   │   ├─ finished [time] ✓
+      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.39b43fb8815ed028463dacbb96ae2eb8e5c63aa730f616bbc1cb1aa06d7a6658.r4.md
+      │   └─ r5: npx rhachet enroll claude --roles ergonomist,mechanic -p "review the blueprint for experiential and visual blemishes in snapshotted acceptance test journeys. emit BLOCKERS and NITPICKS."
       │       ├─ finished [time] ✓
-      │       └─ review: .route/3.3.1.blueprint.product.guard.review.i1.39b43fb8815ed028463dacbb96ae2eb8e5c63aa730f616bbc1cb1aa06d7a6658.r3.md
+      │       └─ review: .route/3.3.1.blueprint.product.guard.review.i1.39b43fb8815ed028463dacbb96ae2eb8e5c63aa730f616bbc1cb1aa06d7a6658.r5.md
       └─ judges
           ├─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
           │   └─ finished [time] ✓
@@ -428,6 +436,8 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ ✓ review.1 - completed (cached)
    ├─ ✓ review.2 - completed (cached)
    ├─ ✓ review.3 - completed (cached)
+   ├─ ✓ review.4 - completed (cached)
+   ├─ ✓ review.5 - completed (cached)
    ├─ ✓ judge.1 - allowed [time]
    └─ ✓ judge.2 - allowed [time]
 
@@ -443,7 +453,11 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │  │   │   └─ · cached
    │  │   ├─ r2: npx rhachet enroll claude --roles architect,mechanic -p "review the blueprint at $route/$stone.md for architectural gaps and defects. emit BLOCKERS and NITPICKS."
    │  │   │   └─ · cached
-   │  │   └─ r3: npx rhachet enroll claude --roles architect,mechanic -p "review diff for architectural scope leak, decompose to reuse opportunities, and other arch smells. emit BLOCKERS and NITPICKS."
+   │  │   ├─ r3: npx rhachet enroll claude --roles architect,mechanic -p "review diff for architectural scope leak, decompose to reuse opportunities, and other arch smells. emit BLOCKERS and NITPICKS."
+   │  │   │   └─ · cached
+   │  │   ├─ r4: npx rhachet enroll claude --roles ergonomist,mechanic -p "review the blueprint for snapshot coverage on contract endpoints and acceptance test user journey coverage. emit BLOCKERS and NITPICKS."
+   │  │   │   └─ · cached
+   │  │   └─ r5: npx rhachet enroll claude --roles ergonomist,mechanic -p "review the blueprint for experiential and visual blemishes in snapshotted acceptance test journeys. emit BLOCKERS and NITPICKS."
    │  │       └─ · cached
    │  └─ judges
    │      ├─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
@@ -566,6 +580,10 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 🦉 the way speaks for itself
    ├─ ✓ review.1 - completed [time]
    ├─ ✓ review.2 - completed [time]
+   ├─ ✓ review.3 - completed [time]
+   ├─ ✓ review.4 - completed [time]
+   ├─ ✓ review.5 - completed [time]
+   ├─ ✓ review.6 - completed [time]
    └─ ✓ judge.1 - allowed [time]
 
 🗿 route.stone.set
@@ -578,9 +596,21 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │  │   ├─ r1: npx rhachet run --repo bhrain --skill review --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.{prod,test}/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with 'src/**/*' --join intersect --output '$route/.reviews/$stone.peer-review.failhides.md' --mode hard
    │  │   │   ├─ finished [time] ✓
    │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r1.md
-   │  │   └─ r2: npx rhachet run --repo bhrain --skill review --rules '.agent/repo=ehmpathy/role=architect/briefs/practices/rule.{forbid.decode-friction-in-orchestrators,require.orchestrators-as-narrative}.md' --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.narrative/rule.{forbid.inline-decode-friction,require.named-transforms}.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/{define.domain-operation-grains,philosophy.transform-orchestrator-separation.[philosophy]}.md' --diffs since-main --paths-with 'src/**/*' --paths-without '**/*.test.ts' --join intersect --output '$route/.reviews/$stone.peer-review.decode-friction.md' --mode hard
+   │  │   ├─ r2: npx rhachet run --repo bhrain --skill review --rules '.agent/repo=ehmpathy/role=architect/briefs/practices/rule.{forbid.decode-friction-in-orchestrators,require.orchestrators-as-narrative}.md' --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.narrative/rule.{forbid.inline-decode-friction,require.named-transforms}.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/{define.domain-operation-grains,philosophy.transform-orchestrator-separation.[philosophy]}.md' --diffs since-main --paths-with 'src/**/*' --paths-without '**/*.test.ts' --join intersect --output '$route/.reviews/$stone.peer-review.decode-friction.md' --mode hard
+   │  │   │   ├─ finished [time] ✓
+   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r2.md
+   │  │   ├─ r3: npx rhachet enroll claude --roles architect,mechanic -p "review the diff for architectural gaps and defects. emit BLOCKERS and NITPICKS."
+   │  │   │   ├─ finished [time] ✓
+   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r3.md
+   │  │   ├─ r4: npx rhachet enroll claude --roles architect,mechanic -p "review diff for architectural scope leak, decompose to reuse opportunities, and other arch smells. emit BLOCKERS and NITPICKS."
+   │  │   │   ├─ finished [time] ✓
+   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r4.md
+   │  │   ├─ r5: npx rhachet enroll claude --roles ergonomist,mechanic -p "review the diff for snapshot coverage on contract endpoints and acceptance test user journey coverage. emit BLOCKERS and NITPICKS."
+   │  │   │   ├─ finished [time] ✓
+   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r5.md
+   │  │   └─ r6: npx rhachet enroll claude --roles ergonomist,mechanic -p "review the diff for experiential and visual blemishes in snapshotted acceptance test journeys. emit BLOCKERS and NITPICKS."
    │  │       ├─ finished [time] ✓
-   │  │       └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r2.md
+   │  │       └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r6.md
    │  └─ judges
    │      └─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
    │          └─ finished [time] ✓
