@@ -29,7 +29,9 @@ export const asSnapshotStable = (stdout: string): string =>
     // mask temp dir paths with timestamps: .temp/2026-04-17T17-05-08.861Z.name.hash -> .temp/{TEMP}
     .replace(/\.temp\/\d{4}-\d{2}-\d{2}T[\d-]+\.\d+Z\.[a-z0-9.-]+/gi, '.temp/{TEMP}')
     // mask repo name variations in temp paths (worktree vs non-worktree)
-    .replace(/\/tmp\/test-fns\/rhachet-roles-bhuild[^/]*/g, '/tmp/test-fns/{REPO}');
+    .replace(/\/tmp\/test-fns\/rhachet-roles-bhuild[^/]*/g, '/tmp/test-fns/{REPO}')
+    // mask stack trace paths (local vs CI): /home/.../dist/ -> {DIST}/
+    .replace(/\/home\/[^/]+\/[^\s]+\/dist\//g, '{DIST}/');
 
 export const SCRIPT_PATH = path.join(
   __dirname,

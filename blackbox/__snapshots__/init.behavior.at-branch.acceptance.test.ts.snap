@@ -87,16 +87,16 @@ exports[`init.behavior --name @branch given: [case2] bare branch without slashes
 `;
 
 exports[`init.behavior --name @branch given: [case3] on main branch when: [t0] user runs init.behavior --name @branch then: stderr matches snapshot 1`] = `
-"/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.init-behavior-stdin/dist/domain.operations/behavior/name/expandBehaviorName.js:19
+"{DIST}/domain.operations/behavior/name/expandBehaviorName.js:19
         throw new helpful_errors_1.BadRequestError(\`cannot init behavior on protected branch: \${input.branch}\`);
               ^
 
 BadRequestError: BadRequestError: cannot init behavior on protected branch: main
-    at expandBehaviorName (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.init-behavior-stdin/dist/domain.operations/behavior/name/expandBehaviorName.js:19:15)
-    at initBehavior (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.init-behavior-stdin/dist/contract/cli/init.behavior.js:62:70)
-    at Object.logic (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.init-behavior-stdin/dist/index.js:35:15)
-    at withEmojiSpaceShim (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.init-behavior-stdin/node_modules/[4m.pnpm[24m/emoji-space-shim@0.0.0/node_modules/[4memoji-space-shim[24m/dist/contract/sdk/withEmojiSpaceShim.js:14:28)
-    at Object.initBehavior (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.init-behavior-stdin/dist/index.js:60:67)
+    at expandBehaviorName ({DIST}/domain.operations/behavior/name/expandBehaviorName.js:19:15)
+    at initBehavior ({DIST}/contract/cli/init.behavior.js:62:70)
+    at Object.logic ({DIST}/index.js:35:15)
+    at withEmojiSpaceShim ({DIST}/contract/sdk/withEmojiSpaceShim.js:14:28)
+    at Object.initBehavior ({DIST}/index.js:60:67)
     at [eval]:1:48
 
 Node.js v22.21.0"
@@ -105,16 +105,16 @@ Node.js v22.21.0"
 exports[`init.behavior --name @branch given: [case3] on main branch when: [t0] user runs init.behavior --name @branch then: stdout matches snapshot 1`] = `""`;
 
 exports[`init.behavior --name @branch given: [case4] on master branch when: [t0] user runs init.behavior --name @branch then: stderr matches snapshot 1`] = `
-"/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.init-behavior-stdin/dist/domain.operations/behavior/name/expandBehaviorName.js:19
+"{DIST}/domain.operations/behavior/name/expandBehaviorName.js:19
         throw new helpful_errors_1.BadRequestError(\`cannot init behavior on protected branch: \${input.branch}\`);
               ^
 
 BadRequestError: BadRequestError: cannot init behavior on protected branch: master
-    at expandBehaviorName (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.init-behavior-stdin/dist/domain.operations/behavior/name/expandBehaviorName.js:19:15)
-    at initBehavior (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.init-behavior-stdin/dist/contract/cli/init.behavior.js:62:70)
-    at Object.logic (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.init-behavior-stdin/dist/index.js:35:15)
-    at withEmojiSpaceShim (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.init-behavior-stdin/node_modules/[4m.pnpm[24m/emoji-space-shim@0.0.0/node_modules/[4memoji-space-shim[24m/dist/contract/sdk/withEmojiSpaceShim.js:14:28)
-    at Object.initBehavior (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.init-behavior-stdin/dist/index.js:60:67)
+    at expandBehaviorName ({DIST}/domain.operations/behavior/name/expandBehaviorName.js:19:15)
+    at initBehavior ({DIST}/contract/cli/init.behavior.js:62:70)
+    at Object.logic ({DIST}/index.js:35:15)
+    at withEmojiSpaceShim ({DIST}/contract/sdk/withEmojiSpaceShim.js:14:28)
+    at Object.initBehavior ({DIST}/index.js:60:67)
     at [eval]:1:48
 
 Node.js v22.21.0"
@@ -123,16 +123,16 @@ Node.js v22.21.0"
 exports[`init.behavior --name @branch given: [case4] on master branch when: [t0] user runs init.behavior --name @branch then: stdout matches snapshot 1`] = `""`;
 
 exports[`init.behavior --name @branch given: [case5] detached HEAD state when: [t0] user runs init.behavior --name @branch then: stderr matches snapshot 1`] = `
-"/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.init-behavior-stdin/dist/domain.operations/behavior/name/expandBehaviorName.js:15
+"{DIST}/domain.operations/behavior/name/expandBehaviorName.js:15
         throw new helpful_errors_1.BadRequestError('cannot expand @branch in detached HEAD state');
               ^
 
 BadRequestError: BadRequestError: cannot expand @branch in detached HEAD state
-    at expandBehaviorName (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.init-behavior-stdin/dist/domain.operations/behavior/name/expandBehaviorName.js:15:15)
-    at initBehavior (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.init-behavior-stdin/dist/contract/cli/init.behavior.js:62:70)
-    at Object.logic (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.init-behavior-stdin/dist/index.js:35:15)
-    at withEmojiSpaceShim (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.init-behavior-stdin/node_modules/[4m.pnpm[24m/emoji-space-shim@0.0.0/node_modules/[4memoji-space-shim[24m/dist/contract/sdk/withEmojiSpaceShim.js:14:28)
-    at Object.initBehavior (/home/vlad/git/ehmpathy/_worktrees/rhachet-roles-bhuild.vlad.init-behavior-stdin/dist/index.js:60:67)
+    at expandBehaviorName ({DIST}/domain.operations/behavior/name/expandBehaviorName.js:15:15)
+    at initBehavior ({DIST}/contract/cli/init.behavior.js:62:70)
+    at Object.logic ({DIST}/index.js:35:15)
+    at withEmojiSpaceShim ({DIST}/contract/sdk/withEmojiSpaceShim.js:14:28)
+    at Object.initBehavior ({DIST}/index.js:60:67)
     at [eval]:1:48
 
 Node.js v22.21.0"
