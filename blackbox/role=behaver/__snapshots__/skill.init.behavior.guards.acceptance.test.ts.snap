@@ -11,8 +11,8 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 
 🌕 lets reflect
    │
-   ├─ review.self 1/8
-   │  ├─ slug = has-questioned-fundamentals
+   ├─ review.self 1/9
+   │  ├─ slug = has-grounded-in-reality
    │  ├─ question all, especially yourself
    │  └─ see the guide below
    │
@@ -44,15 +44,28 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ here's the guide
    │  ├─
    │  │
-   │  │  did we reason from first principles or from convention?
+   │  │  a junior recently modified files in this repo. we need to carefully
+   │  │    review the vision due to this.
    │  │  
-   │  │    for this vision, ask:
-   │  │    - what are the fundamental truths here that we know are true?
-   │  │    - do we build from those truths, or from "how it's usually done"?
-   │  │    - if we started from scratch with only the fundamentals, what would we build?
-   │  │    - what would this cost if we broke it down to raw materials/components?
+   │  │    did the junior ground the vision in reality, or make things up?
    │  │  
-   │  │    ensure we solve the right problem, not just the familiar one.
+   │  │    check the groundwork section:
+   │  │  
+   │  │    for external references (APIs, services, docs):
+   │  │    - did they actually verify these exist?
+   │  │    - did they cite what they checked?
+   │  │    - or did they assume without sanity check?
+   │  │  
+   │  │    for internal references (extant behavior, patterns, code):
+   │  │    - did they actually verify what that behavior is?
+   │  │    - did they verify extant contracts to conform to? (interfaces, types, signatures)
+   │  │    - did they verify extant vocab to reuse? (domain terms, name patterns)
+   │  │    - did they verify extant stdouts to match? (CLI output patterns, error formats)
+   │  │    - did they cite specific files/lines?
+   │  │    - or did they assume the code works a certain way without verification?
+   │  │  
+   │  │    this is NOT about exhaustive research — just sanity checks.
+   │  │    the question is: is this vision coherent with reality, or built on assumptions?
    │  │
    │  └─
    │
@@ -76,7 +89,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ walk the way 🪷
    │  │
    │  ├─ articulate into
-   │  │  └─ /review/self/for.1.vision._.r1.has-questioned-fundamentals.md
+   │  │  └─ /review/self/for.1.vision._.r1.has-grounded-in-reality.md
    │  │
    │  ├─ for each found issue 🪘
    │  │  ├─
@@ -95,7 +108,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │     └─
    │
    └─ when you've truly reflected, run
-      └─ rhx route.stone.set --stone 1.vision --as promised --that has-questioned-fundamentals[0m[31m[0m
+      └─ rhx route.stone.set --stone 1.vision --as promised --that has-grounded-in-reality[0m[31m[0m
 [0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set[0m
 [0m[31m   └─ ✋ blocked by constraints[0m
 [0m[31m[0m"
