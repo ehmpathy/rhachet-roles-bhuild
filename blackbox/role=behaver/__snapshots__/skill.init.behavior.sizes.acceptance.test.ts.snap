@@ -34,6 +34,8 @@ exports[`init.behavior.sizes given: [case1] --size nano when: [t0] init.behavior
    └─ [2mbranch bound to route, to drive via hooks[0m"
 `;
 
+exports[`init.behavior.sizes given: [case1] --size nano when: [t0] init.behavior executed with --size nano then: stderr matches snapshot 1`] = `""`;
+
 exports[`init.behavior.sizes given: [case2] --size mini when: [t0] init.behavior executed with --size mini then: creates mini-level files 1`] = `
 [
   "0.wish.md",
@@ -87,6 +89,8 @@ exports[`init.behavior.sizes given: [case2] --size mini when: [t0] init.behavior
    ├─ [2mbranch bound to behavior, to boot via hooks[0m
    └─ [2mbranch bound to route, to drive via hooks[0m"
 `;
+
+exports[`init.behavior.sizes given: [case2] --size mini when: [t0] init.behavior executed with --size mini then: stderr matches snapshot 1`] = `""`;
 
 exports[`init.behavior.sizes given: [case3] --size medi (default) when: [t0] init.behavior executed without --size flag then: creates medi-level files (default) 1`] = `
 [
@@ -161,6 +165,8 @@ exports[`init.behavior.sizes given: [case3] --size medi (default) when: [t0] ini
    ├─ [2mbranch bound to behavior, to boot via hooks[0m
    └─ [2mbranch bound to route, to drive via hooks[0m"
 `;
+
+exports[`init.behavior.sizes given: [case3] --size medi (default) when: [t0] init.behavior executed without --size flag then: stderr matches snapshot 1`] = `""`;
 
 exports[`init.behavior.sizes given: [case4] --size mega when: [t0] init.behavior executed with --size mega then: creates mega-level files 1`] = `
 [
@@ -260,6 +266,63 @@ exports[`init.behavior.sizes given: [case4] --size mega when: [t0] init.behavior
    └─ [2mbranch bound to route, to drive via hooks[0m"
 `;
 
+exports[`init.behavior.sizes given: [case4] --size mega when: [t0] init.behavior executed with --size mega then: stderr matches snapshot 1`] = `""`;
+
+exports[`init.behavior.sizes given: [case5] --size giga when: [t0] init.behavior executed with --size giga then: stderr matches snapshot 1`] = `""`;
+
+exports[`init.behavior.sizes given: [case5] --size giga when: [t0] init.behavior executed with --size giga then: stdout matches snapshot 1`] = `
+"🦫 oh, behave!
+   ├─ + 0.wish.md
+   ├─ + 1.vision.guard
+   ├─ + 1.vision.stone
+   ├─ + 2.1.criteria.blackbox.stone
+   ├─ + 2.2.criteria.blackbox.matrix.stone
+   ├─ + 2.3.criteria.blueprint.stone
+   ├─ + 3.1.1.research.external.product.access._.stone
+   ├─ + 3.1.1.research.external.product.claims._.stone
+   ├─ + 3.1.1.research.external.product.domain._.stone
+   ├─ + 3.1.1.research.external.product.domain.terms.stone
+   ├─ + 3.1.1.research.external.product.flagged._.stone
+   ├─ + 3.1.1.research.external.product.references._.stone
+   ├─ + 3.1.2.research.external.factory.oss.levers._.stone
+   ├─ + 3.1.2.research.external.factory.templates._.stone
+   ├─ + 3.1.2.research.external.factory.testloops._.stone
+   ├─ + 3.1.3.research.internal.product.code.prod._.stone
+   ├─ + 3.1.3.research.internal.product.code.test._.stone
+   ├─ + 3.1.4.research.internal.factory.blockers._.stone
+   ├─ + 3.1.4.research.internal.factory.opports._.stone
+   ├─ + 3.1.5.research.reflection.product.audience._.stone
+   ├─ + 3.1.5.research.reflection.product.premortem._.stone
+   ├─ + 3.1.5.research.reflection.product.rootcause._.stone
+   ├─ + 3.2.distill.domain._.guard
+   ├─ + 3.2.distill.domain._.stone
+   ├─ + 3.2.distill.factory.upgrades._.stone
+   ├─ + 3.2.distill.repros.experience._.guard
+   ├─ + 3.2.distill.repros.experience._.stone
+   ├─ + 3.3.0.blueprint.factory.stone
+   ├─ + 3.3.1.blueprint.product.guard
+   ├─ + 3.3.1.blueprint.product.stone
+   ├─ + 4.1.roadmap.stone
+   ├─ + 5.1.execution.phase0_to_phaseN.guard
+   ├─ + 5.1.execution.phase0_to_phaseN.stone
+   ├─ + 5.2.evaluation.guard
+   ├─ + 5.2.evaluation.stone
+   ├─ + 5.3.verification.guard
+   ├─ + 5.3.verification.stone
+   ├─ + 5.5.playtest.guard
+   ├─ + 5.5.playtest.stone
+   └─ + refs/template.[feedback].v1.[given].by_human.md
+
+🌲 go on then,
+   ├─ .behavior/v{DATE}.giga-test/0.wish.md
+   └─ [2mtip: use --open to open the wish automatically[0m
+
+🍄 we'll remember,
+   ├─ branch feature/size-giga-test <-> behavior v{DATE}.giga-test
+   ├─ [2mbranch bound to behavior, to boot via hooks[0m
+   └─ [2mbranch bound to route, to drive via hooks[0m"
+`;
+
 exports[`init.behavior.sizes given: [case6] --size composes with --guard when: [t0] init.behavior executed with --size mini --guard heavy then: output matches snapshot 1`] = `
 "🦫 oh, behave!
    ├─ + 0.wish.md
@@ -290,4 +353,20 @@ exports[`init.behavior.sizes given: [case6] --size composes with --guard when: [
    ├─ branch feature/size-guard-compose-test <-> behavior v{DATE}.compose-test
    ├─ [2mbranch bound to behavior, to boot via hooks[0m
    └─ [2mbranch bound to route, to drive via hooks[0m"
+`;
+
+exports[`init.behavior.sizes given: [case6] --size composes with --guard when: [t0] init.behavior executed with --size mini --guard heavy then: stderr matches snapshot 1`] = `""`;
+
+exports[`init.behavior.sizes given: [case7] invalid --size value when: [t0] init.behavior executed with --size invalid then: fails with validation error 1`] = `""`;
+
+exports[`init.behavior.sizes given: [case7] invalid --size value when: [t0] init.behavior executed with --size invalid then: fails with validation error 2`] = `
+"⛈️  error: input invalid
+   └─ --size invalid option: expected one of "nano"|"mini"|"medi"|"mega"|"giga""
+`;
+
+exports[`init.behavior.sizes given: [case8] invalid --guard value when: [t0] init.behavior executed with --guard invalid then: fails with validation error 1`] = `""`;
+
+exports[`init.behavior.sizes given: [case8] invalid --guard value when: [t0] init.behavior executed with --guard invalid then: fails with validation error 2`] = `
+"⛈️  error: input invalid
+   └─ --guard invalid option: expected one of "light"|"heavy""
 `;

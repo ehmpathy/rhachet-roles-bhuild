@@ -24,6 +24,9 @@ describe('init.behavior.flags', () => {
 
         expect(result.exitCode).toBe(0);
         expect(result.stdout).toContain('wish =');
+
+        expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
+        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
       });
 
       then('footer shows "opened in cat"', () => {
@@ -38,6 +41,9 @@ describe('init.behavior.flags', () => {
 
         expect(result.exitCode).toBe(0);
         expect(result.stdout).toContain('opened in cat');
+
+        expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
+        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
       });
 
       then('output contains footer with relative wish path', () => {
@@ -56,6 +62,7 @@ describe('init.behavior.flags', () => {
 
         // snapshot for vibe-check
         expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
+        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
       });
     });
   });
@@ -85,6 +92,8 @@ describe('init.behavior.flags', () => {
         expect(
           fs.existsSync(path.join(behaviorRoot, openFailDir!, '0.wish.md')),
         ).toBe(true);
+
+        expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
       });
 
       then('warn is shown about opener unavailable', () => {
@@ -97,7 +106,115 @@ describe('init.behavior.flags', () => {
           repoDir: repoDir,
         });
 
-        expect(result.stdout).toContain('unavailable');
+        expect(result.stderr).toContain('unavailable');
+
+        // snapshot for full stderr coverage
+        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case7] --help flag (currently errors - no help support)', () => {
+    when('[t0] init.behavior executed with --help', () => {
+      const scene = useBeforeAll(async () =>
+        genConsumerRepo({ branchName: 'feature/help-test' }),
+      );
+
+      then('exit code is non-zero (--help not supported)', () => {
+        const result = runInitBehaviorSkillDirect({
+          args: '--help',
+          repoDir: scene.repoDir,
+        });
+
+        expect(result.exitCode).not.toBe(0);
+      });
+
+      then('stdout matches snapshot', () => {
+        const result = runInitBehaviorSkillDirect({
+          args: '--help',
+          repoDir: scene.repoDir,
+        });
+
+        expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
+      });
+
+      then('stderr matches snapshot', () => {
+        const result = runInitBehaviorSkillDirect({
+          args: '--help',
+          repoDir: scene.repoDir,
+        });
+
+        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case8] absent required --name flag', () => {
+    when('[t0] init.behavior executed without --name', () => {
+      const scene = useBeforeAll(async () =>
+        genConsumerRepo({ branchName: 'feature/no-name-test' }),
+      );
+
+      then('exit code is non-zero', () => {
+        const result = runInitBehaviorSkillDirect({
+          args: '',
+          repoDir: scene.repoDir,
+        });
+
+        expect(result.exitCode).not.toBe(0);
+      });
+
+      then('stdout matches snapshot', () => {
+        const result = runInitBehaviorSkillDirect({
+          args: '',
+          repoDir: scene.repoDir,
+        });
+
+        expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
+      });
+
+      then('stderr matches snapshot', () => {
+        const result = runInitBehaviorSkillDirect({
+          args: '',
+          repoDir: scene.repoDir,
+        });
+
+        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case9] unknown flag (silently ignored)', () => {
+    when('[t0] init.behavior executed with --unknown flag', () => {
+      const scene = useBeforeAll(async () =>
+        genConsumerRepo({ branchName: 'feature/unknown-flag-test' }),
+      );
+
+      then('exit code is 0 (unknown flags ignored)', () => {
+        const result = runInitBehaviorSkillDirect({
+          args: '--name test --unknown-flag xyz',
+          repoDir: scene.repoDir,
+        });
+
+        expect(result.exitCode).toBe(0);
+      });
+
+      then('stdout matches snapshot', () => {
+        const result = runInitBehaviorSkillDirect({
+          args: '--name test --unknown-flag xyz',
+          repoDir: scene.repoDir,
+        });
+
+        expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
+      });
+
+      then('stderr matches snapshot', () => {
+        const result = runInitBehaviorSkillDirect({
+          args: '--name test --unknown-flag xyz',
+          repoDir: scene.repoDir,
+        });
+
+        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
       });
     });
   });

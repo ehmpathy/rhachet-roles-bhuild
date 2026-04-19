@@ -5,6 +5,7 @@
  * see src/domain.roles/behaver/skills/init.behavior.sh for full documentation
  */
 
+import { ConstraintError } from 'helpful-errors';
 import { basename, join, resolve } from 'path';
 import { setRouteBind } from 'rhachet-roles-bhrain/sdk/route';
 import { z } from 'zod';
@@ -19,6 +20,11 @@ import {
   computeOutputTree,
   initBehaviorDir,
 } from '@src/domain.operations/behavior/init';
+import { asBehaviorTargetDir } from '@src/domain.operations/behavior/init/asBehaviorTargetDir';
+import { asCleanRelativePath } from '@src/domain.operations/behavior/init/asCleanRelativePath';
+import { asDatedBehaviorDir } from '@src/domain.operations/behavior/init/asDatedBehaviorDir';
+import { findsertWishFromInput } from '@src/domain.operations/behavior/init/findsertWishFromInput';
+import { getWishContent } from '@src/domain.operations/behavior/init/getWishContent';
 import { expandBehaviorName } from '@src/domain.operations/behavior/name/expandBehaviorName';
 import { computeFooterOutput } from '@src/domain.operations/behavior/render/computeFooterOutput';
 import { getCliArgs } from '@src/infra/cli';
@@ -37,6 +43,7 @@ const schemaOfArgs = z.object({
     open: z.string().optional(),
     size: z.enum(['nano', 'mini', 'medi', 'mega', 'giga']).optional(),
     guard: z.enum(['light', 'heavy']).optional(),
+    wish: z.string().optional(),
     // rhachet passthrough args (optional, ignored)
     repo: z.string().optional(),
     role: z.string().optional(),
@@ -56,16 +63,10 @@ export const initBehavior = async (): Promise<void> => {
   const targetDirRaw = named.dir ?? '.';
 
   // validate --open has a value if provided
-  if (named.open !== undefined && named.open.trim() === '') {
-    console.error('💥 error: --open requires an editor name');
-    console.error('');
-    console.error('please specify what editor to open with. for example:');
-    console.error('  --open codium');
-    console.error('  --open vim');
-    console.error('  --open zed');
-    console.error('  --open code');
-    process.exit(1);
-  }
+  if (named.open !== undefined && named.open.trim() === '')
+    throw new ConstraintError('--open requires an editor name', {
+      hint: 'specify what editor to open with: --open codium, --open vim, --open zed, --open code',
+    });
 
   // get current branch
   const currentBranch = getCurrentBranch({}, context);
@@ -77,7 +78,7 @@ export const initBehavior = async (): Promise<void> => {
   });
 
   // trim .behavior suffix from target dir if present
-  const targetDir = targetDirRaw.replace(/\/?\.behavior\/?$/, '');
+  const targetDir = asBehaviorTargetDir({ targetDirRaw });
 
   // check for extant behavior with same name (different date)
   const behaviorFound = findBehaviorByExactName(
@@ -86,18 +87,11 @@ export const initBehavior = async (): Promise<void> => {
   );
 
   // reuse extant behavior or create new with today's date
-  const behaviorDir = (() => {
-    if (behaviorFound) {
-      return behaviorFound;
-    }
-    // generate isodate in format YYYY_MM_DD
-    const now = new Date();
-    const isoDate = `${now.getFullYear()}_${String(now.getMonth() + 1).padStart(2, '0')}_${String(now.getDate()).padStart(2, '0')}`;
-    return join(targetDir, '.behavior', `v${isoDate}.${behaviorName}`);
-  })();
+  const behaviorDir =
+    behaviorFound ?? asDatedBehaviorDir({ targetDir, behaviorName });
 
-  // clean up leading ./ for display and route binding
-  const behaviorDirRel = behaviorDir.replace(/^\.\//, '');
+  // remove prefix ./ for display and route bind
+  const behaviorDirRel = asCleanRelativePath({ path: behaviorDir });
 
   // check if branch already bound (must be after behaviorDir is computed)
   const bindResult = getBranchBehaviorBind(
@@ -109,15 +103,16 @@ export const initBehavior = async (): Promise<void> => {
   );
   // compare absolute paths to handle relative vs absolute format differences
   const behaviorDirAbs = resolve(context.cwd, behaviorDir);
-  if (bindResult.behaviorDir && bindResult.behaviorDir !== behaviorDirAbs) {
-    console.error(
-      `💥 error: branch '${currentBranch}' is already bound to: ${basename(bindResult.behaviorDir)}`,
+  if (bindResult.behaviorDir && bindResult.behaviorDir !== behaviorDirAbs)
+    throw new ConstraintError(
+      `branch '${currentBranch}' is already bound to: ${basename(bindResult.behaviorDir)}`,
+      {
+        hint: 'to create a new behavior, use a new tree: git tree set --from main --open <branch-name-new>',
+        currentBranch,
+        boundTo: bindResult.behaviorDir,
+        attempted: behaviorDirAbs,
+      },
     );
-    console.error('');
-    console.error('to create a new behavior, use a new tree:');
-    console.error('  git tree set --from main --open <branch-name-new>');
-    process.exit(1);
-  }
 
   // initialize behavior directory with template files
   const result = initBehaviorDir({
@@ -126,6 +121,15 @@ export const initBehavior = async (): Promise<void> => {
     size: named.size,
     guard: named.guard,
   });
+
+  // compute wish file path
+  const wishPath = join(behaviorDir, '0.wish.md');
+
+  // if --wish provided, findsert content into wish file
+  if (named.wish !== undefined) {
+    const wishInput = getWishContent({ wish: named.wish });
+    findsertWishFromInput({ wishInput, wishPath });
+  }
 
   // render tree-style output
   const treeOutput = computeOutputTree({
@@ -139,6 +143,7 @@ export const initBehavior = async (): Promise<void> => {
   const wishPathRel = `${behaviorDirRel}/0.wish.md`;
 
   // try opener if --open is provided (before footer render)
+  // .note = graceful degradation: behavior init succeeds even if opener fails
   let openerUsed: string | undefined;
   if (named.open) {
     try {
@@ -146,8 +151,10 @@ export const initBehavior = async (): Promise<void> => {
       openerUsed = named.open;
     } catch (error) {
       if (error instanceof OpenerUnavailableError) {
-        console.log('');
-        console.log(`⚠️  ${error.message}`);
+        // log to stderr: opener failed but behavior init succeeded
+        console.error('');
+        console.error(`⚠️  ${error.message}`);
+        console.error(`    behavior created, open manually: ${wishPathRel}`);
       } else {
         throw error;
       }
