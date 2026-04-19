@@ -21,7 +21,7 @@ export const ROLE_BEHAVER: Role = Role.build({
     onBrain: {
       onBoot: [
         {
-          command: './node_modules/.bin/rhachet roles boot --role behaver',
+          command: 'npx rhachet roles boot --role behaver',
           timeout: 'PT10S',
         },
         {
