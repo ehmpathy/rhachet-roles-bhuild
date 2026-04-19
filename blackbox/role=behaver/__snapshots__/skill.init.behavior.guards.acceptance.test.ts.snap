@@ -584,6 +584,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ ✓ review.4 - completed [time]
    ├─ ✓ review.5 - completed [time]
    ├─ ✓ review.6 - completed [time]
+   ├─ ✓ review.7 - completed [time]
    └─ ✓ judge.1 - allowed [time]
 
 🗿 route.stone.set
@@ -608,9 +609,12 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │  │   ├─ r5: npx rhachet enroll claude --roles ergonomist,mechanic -p "review the diff for snapshot coverage on contract endpoints and acceptance test user journey coverage. emit BLOCKERS and NITPICKS."
    │  │   │   ├─ finished [time] ✓
    │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r5.md
-   │  │   └─ r6: npx rhachet enroll claude --roles ergonomist,mechanic -p "review the diff for experiential and visual blemishes in snapshotted acceptance test journeys. emit BLOCKERS and NITPICKS."
+   │  │   ├─ r6: npx rhachet enroll claude --roles ergonomist,mechanic -p "review the diff for experiential and visual blemishes in snapshotted acceptance test journeys. emit BLOCKERS and NITPICKS."
+   │  │   │   ├─ finished [time] ✓
+   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r6.md
+   │  │   └─ r7: npx rhachet enroll claude --roles architect,mechanic -p "review the current src/ implementation against the wish and vision. identify gaps where requirements are not addressed and omissions where features are missing. emit BLOCKERS and NITPICKS."
    │  │       ├─ finished [time] ✓
-   │  │       └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r6.md
+   │  │       └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r7.md
    │  └─ judges
    │      └─ j1: npx rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
    │          └─ finished [time] ✓

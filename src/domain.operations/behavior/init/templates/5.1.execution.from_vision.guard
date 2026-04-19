@@ -158,6 +158,7 @@ reviews:
     - npx rhachet enroll claude --roles architect,mechanic -p "review diff for architectural scope leak, decompose to reuse opportunities, and other arch smells. emit BLOCKERS and NITPICKS."
     - npx rhachet enroll claude --roles ergonomist,mechanic -p "review the diff for snapshot coverage on contract endpoints and acceptance test user journey coverage. emit BLOCKERS and NITPICKS."
     - npx rhachet enroll claude --roles ergonomist,mechanic -p "review the diff for experiential and visual blemishes in snapshotted acceptance test journeys. emit BLOCKERS and NITPICKS."
+    - npx rhachet enroll claude --roles architect,mechanic -p "review the current src/ implementation against the wish and vision. identify gaps where requirements are not addressed and omissions where features are missing. emit BLOCKERS and NITPICKS."
 
 judges:
   - npx rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3

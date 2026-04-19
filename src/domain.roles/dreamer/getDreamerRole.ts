@@ -19,7 +19,12 @@ export const ROLE_DREAMER: Role = Role.build({
   },
   hooks: {
     onBrain: {
-      onBoot: [],
+      onBoot: [
+        {
+          command: './node_modules/.bin/rhachet roles boot --role dreamer',
+          timeout: 'PT10S',
+        },
+      ],
       onTool: [],
       onStop: [],
     },
