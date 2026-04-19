@@ -94,8 +94,8 @@ exports[`init.behavior.scaffold given: [case4] direct: branch already bound to a
 {
   "hint": "to create a new behavior, use a new tree: git tree set --from main --open <branch-name-new>",
   "currentBranch": "feature/already-bound-test",
-  "boundTo": "/tmp/test-fns/rhachet-roles-bhuild.vlad.init-behavior-stdin/.temp/{TEMP}/.behavior/v{DATE}.first-behavior",
-  "attempted": "/tmp/test-fns/rhachet-roles-bhuild.vlad.init-behavior-stdin/.temp/{TEMP}/.behavior/v{DATE}.second-behavior"
+  "boundTo": "/tmp/test-fns/{REPO}/.temp/{TEMP}/.behavior/v{DATE}.first-behavior",
+  "attempted": "/tmp/test-fns/{REPO}/.temp/{TEMP}/.behavior/v{DATE}.second-behavior"
 }
 
 to create a new behavior, use a new tree: git tree set --from main --open <branch-name-new>"
