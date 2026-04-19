@@ -25,7 +25,9 @@ export const asSnapshotStable = (stdout: string): string =>
     // mask branch-specific bind flags: .bind.feature.foo.flag -> .bind.{BRANCH}.flag
     .replace(/\.bind\.[a-z0-9._-]+\.flag/gi, '.bind.{BRANCH}.flag')
     // mask time values: "passed 3.6s" -> "passed [time]"
-    .replace(/\d+\.\d+s/g, '[time]');
+    .replace(/\d+\.\d+s/g, '[time]')
+    // mask temp dir paths with timestamps: .temp/2026-04-17T17-05-08.861Z.name.hash -> .temp/{TEMP}
+    .replace(/\.temp\/\d{4}-\d{2}-\d{2}T[\d-]+\.\d+Z\.[a-z0-9.-]+/gi, '.temp/{TEMP}');
 
 export const SCRIPT_PATH = path.join(
   __dirname,
@@ -54,32 +56,22 @@ export const runInitBehaviorSkillViaRhachet = (input: {
 export const runInitBehaviorSkillDirect = (input: {
   args: string;
   repoDir: string;
-}): { stdout: string; exitCode: number } => {
-  try {
-    const stdout = execSync(`bash "${SCRIPT_PATH}" ${input.args}`, {
-      cwd: input.repoDir,
-      encoding: 'utf-8',
-      env: {
-        ...process.env,
-        PATH: process.env.PATH,
-      },
-    });
-    return { stdout: stdout.trim(), exitCode: 0 };
-  } catch (error: unknown) {
-    const execError = error as {
-      stdout?: string;
-      stderr?: string;
-      status?: number;
-    };
-    const output = [
-      (execError.stdout ?? '').toString().trim(),
-      (execError.stderr ?? '').toString().trim(),
-    ]
-      .filter(Boolean)
-      .join('\n');
-    return {
-      stdout: output,
-      exitCode: execError.status ?? 1,
-    };
-  }
+  stdin?: string;
+}): { stdout: string; stderr: string; exitCode: number } => {
+  const { spawnSync } = require('child_process');
+  const result = spawnSync(`bash "${SCRIPT_PATH}" ${input.args}`, {
+    cwd: input.repoDir,
+    encoding: 'utf-8',
+    input: input.stdin,
+    env: {
+      ...process.env,
+      PATH: process.env.PATH,
+    },
+    shell: true,
+  });
+  return {
+    stdout: (result.stdout ?? '').trim(),
+    stderr: (result.stderr ?? '').trim(),
+    exitCode: result.status ?? 0,
+  };
 };

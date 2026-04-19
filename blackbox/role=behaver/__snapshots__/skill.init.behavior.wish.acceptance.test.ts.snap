@@ -1,0 +1,196 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`init.behavior.wish given: [case1] --wish with inline content when: [t0] init.behavior executed with --wish "my inline wish" then: stderr matches snapshot 1`] = `""`;
+
+exports[`init.behavior.wish given: [case1] --wish with inline content when: [t0] init.behavior executed with --wish "my inline wish" then: stdout matches snapshot 1`] = `
+"🦫 oh, behave!
+   ├─ + 0.wish.md
+   ├─ + 1.vision.guard
+   ├─ + 1.vision.stone
+   ├─ + 2.1.criteria.blackbox.stone
+   ├─ + 2.2.criteria.blackbox.matrix.stone
+   ├─ + 2.3.criteria.blueprint.stone
+   ├─ + 3.1.1.research.external.product.access._.stone
+   ├─ + 3.1.1.research.external.product.claims._.stone
+   ├─ + 3.1.1.research.external.product.flagged._.stone
+   ├─ + 3.1.3.research.internal.product.code.prod._.stone
+   ├─ + 3.1.3.research.internal.product.code.test._.stone
+   ├─ + 3.1.5.research.reflection.product.audience._.stone
+   ├─ + 3.1.5.research.reflection.product.premortem._.stone
+   ├─ + 3.1.5.research.reflection.product.rootcause._.stone
+   ├─ + 3.2.distill.repros.experience._.guard
+   ├─ + 3.2.distill.repros.experience._.stone
+   ├─ + 3.3.1.blueprint.product.guard
+   ├─ + 3.3.1.blueprint.product.stone
+   ├─ + 4.1.roadmap.stone
+   ├─ + 5.1.execution.phase0_to_phaseN.guard
+   ├─ + 5.1.execution.phase0_to_phaseN.stone
+   ├─ + 5.2.evaluation.guard
+   ├─ + 5.2.evaluation.stone
+   ├─ + 5.3.verification.guard
+   ├─ + 5.3.verification.stone
+   ├─ + 5.5.playtest.guard
+   ├─ + 5.5.playtest.stone
+   └─ + refs/template.[feedback].v1.[given].by_human.md
+
+🌲 go on then,
+   ├─ .behavior/v{DATE}.wish-inline-test/0.wish.md
+   └─ [2mtip: use --open to open the wish automatically[0m
+
+🍄 we'll remember,
+   ├─ branch feature/wish-inline-test <-> behavior v{DATE}.wish-inline-test
+   ├─ [2mbranch bound to behavior, to boot via hooks[0m
+   └─ [2mbranch bound to route, to drive via hooks[0m"
+`;
+
+exports[`init.behavior.wish given: [case2] --wish @stdin with piped content when: [t0] init.behavior executed with piped stdin then: stderr matches snapshot 1`] = `""`;
+
+exports[`init.behavior.wish given: [case2] --wish @stdin with piped content when: [t0] init.behavior executed with piped stdin then: stdout matches snapshot 1`] = `
+"🦫 oh, behave!
+   ├─ + 0.wish.md
+   ├─ + 1.vision.guard
+   ├─ + 1.vision.stone
+   ├─ + 2.1.criteria.blackbox.stone
+   ├─ + 2.2.criteria.blackbox.matrix.stone
+   ├─ + 2.3.criteria.blueprint.stone
+   ├─ + 3.1.1.research.external.product.access._.stone
+   ├─ + 3.1.1.research.external.product.claims._.stone
+   ├─ + 3.1.1.research.external.product.flagged._.stone
+   ├─ + 3.1.3.research.internal.product.code.prod._.stone
+   ├─ + 3.1.3.research.internal.product.code.test._.stone
+   ├─ + 3.1.5.research.reflection.product.audience._.stone
+   ├─ + 3.1.5.research.reflection.product.premortem._.stone
+   ├─ + 3.1.5.research.reflection.product.rootcause._.stone
+   ├─ + 3.2.distill.repros.experience._.guard
+   ├─ + 3.2.distill.repros.experience._.stone
+   ├─ + 3.3.1.blueprint.product.guard
+   ├─ + 3.3.1.blueprint.product.stone
+   ├─ + 4.1.roadmap.stone
+   ├─ + 5.1.execution.phase0_to_phaseN.guard
+   ├─ + 5.1.execution.phase0_to_phaseN.stone
+   ├─ + 5.2.evaluation.guard
+   ├─ + 5.2.evaluation.stone
+   ├─ + 5.3.verification.guard
+   ├─ + 5.3.verification.stone
+   ├─ + 5.5.playtest.guard
+   ├─ + 5.5.playtest.stone
+   └─ + refs/template.[feedback].v1.[given].by_human.md
+
+🌲 go on then,
+   ├─ .behavior/v{DATE}.wish-stdin-test/0.wish.md
+   └─ [2mtip: use --open to open the wish automatically[0m
+
+🍄 we'll remember,
+   ├─ branch feature/wish-stdin-test <-> behavior v{DATE}.wish-stdin-test
+   ├─ [2mbranch bound to behavior, to boot via hooks[0m
+   └─ [2mbranch bound to route, to drive via hooks[0m"
+`;
+
+exports[`init.behavior.wish given: [case3] --wish @stdin with empty stdin when: [t0] init.behavior executed with empty piped stdin then: stderr matches snapshot 1`] = `"error: --wish requires content"`;
+
+exports[`init.behavior.wish given: [case3] --wish @stdin with empty stdin when: [t0] init.behavior executed with empty piped stdin then: stdout matches snapshot 1`] = `""`;
+
+exports[`init.behavior.wish given: [case3b] --wish with empty inline content when: [t0] init.behavior executed with --wish "" then: stderr matches snapshot 1`] = `
+"⛈️  error: input invalid
+   └─ --wish must be a string, got undefined"
+`;
+
+exports[`init.behavior.wish given: [case3b] --wish with empty inline content when: [t0] init.behavior executed with --wish "" then: stdout matches snapshot 1`] = `""`;
+
+exports[`init.behavior.wish given: [case4] --wish on pre-populated wish file when: [t0] init.behavior executed twice with different wish then: stderr matches snapshot 1`] = `
+"error: wish file has been modified
+
+to overwrite, delete the wish file first:
+  rm .behavior/v{DATE}.wish-conflict-test/0.wish.md"
+`;
+
+exports[`init.behavior.wish given: [case4] --wish on pre-populated wish file when: [t0] init.behavior executed twice with different wish then: stdout matches snapshot 1`] = `""`;
+
+exports[`init.behavior.wish given: [case5] --wish idempotent with same content when: [t0] init.behavior executed twice with same wish then: stderr matches snapshot 1`] = `""`;
+
+exports[`init.behavior.wish given: [case5] --wish idempotent with same content when: [t0] init.behavior executed twice with same wish then: stdout matches snapshot 1`] = `
+"🦫 oh, behave!
+   ├─ ✓ 0.wish.md
+   ├─ ✓ 1.vision.guard
+   ├─ ✓ 1.vision.stone
+   ├─ ✓ 2.1.criteria.blackbox.stone
+   ├─ ✓ 2.2.criteria.blackbox.matrix.stone
+   ├─ ✓ 2.3.criteria.blueprint.stone
+   ├─ ✓ 3.1.1.research.external.product.access._.stone
+   ├─ ✓ 3.1.1.research.external.product.claims._.stone
+   ├─ ✓ 3.1.1.research.external.product.flagged._.stone
+   ├─ ✓ 3.1.3.research.internal.product.code.prod._.stone
+   ├─ ✓ 3.1.3.research.internal.product.code.test._.stone
+   ├─ ✓ 3.1.5.research.reflection.product.audience._.stone
+   ├─ ✓ 3.1.5.research.reflection.product.premortem._.stone
+   ├─ ✓ 3.1.5.research.reflection.product.rootcause._.stone
+   ├─ ✓ 3.2.distill.repros.experience._.guard
+   ├─ ✓ 3.2.distill.repros.experience._.stone
+   ├─ ✓ 3.3.1.blueprint.product.guard
+   ├─ ✓ 3.3.1.blueprint.product.stone
+   ├─ ✓ 4.1.roadmap.stone
+   ├─ ✓ 5.1.execution.phase0_to_phaseN.guard
+   ├─ ✓ 5.1.execution.phase0_to_phaseN.stone
+   ├─ ✓ 5.2.evaluation.guard
+   ├─ ✓ 5.2.evaluation.stone
+   ├─ ✓ 5.3.verification.guard
+   ├─ ✓ 5.3.verification.stone
+   ├─ ✓ 5.5.playtest.guard
+   ├─ ✓ 5.5.playtest.stone
+   └─ ✓ refs/template.[feedback].v1.[given].by_human.md
+
+🌲 go on then,
+   ├─ .behavior/v{DATE}.wish-idempotent-test/0.wish.md
+   └─ [2mtip: use --open to open the wish automatically[0m
+
+🍄 we'll remember,
+   ├─ branch feature/wish-idempotent-test <-> behavior v{DATE}.wish-idempotent-test
+   ├─ [2mbranch bound to behavior, to boot via hooks[0m
+   └─ [2mbranch bound to route, to drive via hooks[0m"
+`;
+
+exports[`init.behavior.wish given: [case6] --wish combined with --open when: [t0] init.behavior executed with --wish and --open cat then: stderr matches snapshot 1`] = `""`;
+
+exports[`init.behavior.wish given: [case6] --wish combined with --open when: [t0] init.behavior executed with --wish and --open cat then: stdout matches snapshot 1`] = `
+"🦫 oh, behave!
+   ├─ + 0.wish.md
+   ├─ + 1.vision.guard
+   ├─ + 1.vision.stone
+   ├─ + 2.1.criteria.blackbox.stone
+   ├─ + 2.2.criteria.blackbox.matrix.stone
+   ├─ + 2.3.criteria.blueprint.stone
+   ├─ + 3.1.1.research.external.product.access._.stone
+   ├─ + 3.1.1.research.external.product.claims._.stone
+   ├─ + 3.1.1.research.external.product.flagged._.stone
+   ├─ + 3.1.3.research.internal.product.code.prod._.stone
+   ├─ + 3.1.3.research.internal.product.code.test._.stone
+   ├─ + 3.1.5.research.reflection.product.audience._.stone
+   ├─ + 3.1.5.research.reflection.product.premortem._.stone
+   ├─ + 3.1.5.research.reflection.product.rootcause._.stone
+   ├─ + 3.2.distill.repros.experience._.guard
+   ├─ + 3.2.distill.repros.experience._.stone
+   ├─ + 3.3.1.blueprint.product.guard
+   ├─ + 3.3.1.blueprint.product.stone
+   ├─ + 4.1.roadmap.stone
+   ├─ + 5.1.execution.phase0_to_phaseN.guard
+   ├─ + 5.1.execution.phase0_to_phaseN.stone
+   ├─ + 5.2.evaluation.guard
+   ├─ + 5.2.evaluation.stone
+   ├─ + 5.3.verification.guard
+   ├─ + 5.3.verification.stone
+   ├─ + 5.5.playtest.guard
+   ├─ + 5.5.playtest.stone
+   └─ + refs/template.[feedback].v1.[given].by_human.md
+wish =
+
+wish before open
+
+🌲 go on then,
+   ├─ .behavior/v{DATE}.wish-open-test/0.wish.md
+   └─ [2mopened in cat[0m
+
+🍄 we'll remember,
+   ├─ branch feature/wish-open-test <-> behavior v{DATE}.wish-open-test
+   ├─ [2mbranch bound to behavior, to boot via hooks[0m
+   └─ [2mbranch bound to route, to drive via hooks[0m"
+`;

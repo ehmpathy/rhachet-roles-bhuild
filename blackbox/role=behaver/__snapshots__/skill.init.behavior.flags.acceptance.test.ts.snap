@@ -1,5 +1,95 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
+exports[`init.behavior.flags given: [case6] direct: --open flag with cat command when: [t0] init.behavior executed with --open cat then: cat command outputs wish file content 1`] = `
+"🦫 oh, behave!
+   ├─ + 0.wish.md
+   ├─ + 1.vision.guard
+   ├─ + 1.vision.stone
+   ├─ + 2.1.criteria.blackbox.stone
+   ├─ + 2.2.criteria.blackbox.matrix.stone
+   ├─ + 2.3.criteria.blueprint.stone
+   ├─ + 3.1.1.research.external.product.access._.stone
+   ├─ + 3.1.1.research.external.product.claims._.stone
+   ├─ + 3.1.1.research.external.product.flagged._.stone
+   ├─ + 3.1.3.research.internal.product.code.prod._.stone
+   ├─ + 3.1.3.research.internal.product.code.test._.stone
+   ├─ + 3.1.5.research.reflection.product.audience._.stone
+   ├─ + 3.1.5.research.reflection.product.premortem._.stone
+   ├─ + 3.1.5.research.reflection.product.rootcause._.stone
+   ├─ + 3.2.distill.repros.experience._.guard
+   ├─ + 3.2.distill.repros.experience._.stone
+   ├─ + 3.3.1.blueprint.product.guard
+   ├─ + 3.3.1.blueprint.product.stone
+   ├─ + 4.1.roadmap.stone
+   ├─ + 5.1.execution.phase0_to_phaseN.guard
+   ├─ + 5.1.execution.phase0_to_phaseN.stone
+   ├─ + 5.2.evaluation.guard
+   ├─ + 5.2.evaluation.stone
+   ├─ + 5.3.verification.guard
+   ├─ + 5.3.verification.stone
+   ├─ + 5.5.playtest.guard
+   ├─ + 5.5.playtest.stone
+   └─ + refs/template.[feedback].v1.[given].by_human.md
+wish =
+
+
+🌲 go on then,
+   ├─ .behavior/v{DATE}.open-test/0.wish.md
+   └─ [2mopened in cat[0m
+
+🍄 we'll remember,
+   ├─ branch feature/open-cat-test <-> behavior v{DATE}.open-test
+   ├─ [2mbranch bound to behavior, to boot via hooks[0m
+   └─ [2mbranch bound to route, to drive via hooks[0m"
+`;
+
+exports[`init.behavior.flags given: [case6] direct: --open flag with cat command when: [t0] init.behavior executed with --open cat then: cat command outputs wish file content 2`] = `""`;
+
+exports[`init.behavior.flags given: [case6] direct: --open flag with cat command when: [t0] init.behavior executed with --open cat then: footer shows "opened in cat" 1`] = `
+"🦫 oh, behave!
+   ├─ + 0.wish.md
+   ├─ + 1.vision.guard
+   ├─ + 1.vision.stone
+   ├─ + 2.1.criteria.blackbox.stone
+   ├─ + 2.2.criteria.blackbox.matrix.stone
+   ├─ + 2.3.criteria.blueprint.stone
+   ├─ + 3.1.1.research.external.product.access._.stone
+   ├─ + 3.1.1.research.external.product.claims._.stone
+   ├─ + 3.1.1.research.external.product.flagged._.stone
+   ├─ + 3.1.3.research.internal.product.code.prod._.stone
+   ├─ + 3.1.3.research.internal.product.code.test._.stone
+   ├─ + 3.1.5.research.reflection.product.audience._.stone
+   ├─ + 3.1.5.research.reflection.product.premortem._.stone
+   ├─ + 3.1.5.research.reflection.product.rootcause._.stone
+   ├─ + 3.2.distill.repros.experience._.guard
+   ├─ + 3.2.distill.repros.experience._.stone
+   ├─ + 3.3.1.blueprint.product.guard
+   ├─ + 3.3.1.blueprint.product.stone
+   ├─ + 4.1.roadmap.stone
+   ├─ + 5.1.execution.phase0_to_phaseN.guard
+   ├─ + 5.1.execution.phase0_to_phaseN.stone
+   ├─ + 5.2.evaluation.guard
+   ├─ + 5.2.evaluation.stone
+   ├─ + 5.3.verification.guard
+   ├─ + 5.3.verification.stone
+   ├─ + 5.5.playtest.guard
+   ├─ + 5.5.playtest.stone
+   └─ + refs/template.[feedback].v1.[given].by_human.md
+wish =
+
+
+🌲 go on then,
+   ├─ .behavior/v{DATE}.opened-in-test/0.wish.md
+   └─ [2mopened in cat[0m
+
+🍄 we'll remember,
+   ├─ branch feature/opened-in-test <-> behavior v{DATE}.opened-in-test
+   ├─ [2mbranch bound to behavior, to boot via hooks[0m
+   └─ [2mbranch bound to route, to drive via hooks[0m"
+`;
+
+exports[`init.behavior.flags given: [case6] direct: --open flag with cat command when: [t0] init.behavior executed with --open cat then: footer shows "opened in cat" 2`] = `""`;
+
 exports[`init.behavior.flags given: [case6] direct: --open flag with cat command when: [t0] init.behavior executed with --open cat then: output contains footer with relative wish path 1`] = `
 "🦫 oh, behave!
    ├─ + 0.wish.md
@@ -37,6 +127,113 @@ exports[`init.behavior.flags given: [case6] direct: --open flag with cat command
 
 🍄 we'll remember,
    ├─ branch feature/footer-test <-> behavior v{DATE}.footer-test
+   ├─ [2mbranch bound to behavior, to boot via hooks[0m
+   └─ [2mbranch bound to route, to drive via hooks[0m"
+`;
+
+exports[`init.behavior.flags given: [case6] direct: --open flag with cat command when: [t0] init.behavior executed with --open cat then: output contains footer with relative wish path 2`] = `""`;
+
+exports[`init.behavior.flags given: [case7] --help flag (currently errors - no help support) when: [t0] init.behavior executed with --help then: stderr matches snapshot 1`] = `
+"⛈️  error: input invalid
+   └─ --name must be a string, got undefined"
+`;
+
+exports[`init.behavior.flags given: [case7] --help flag (currently errors - no help support) when: [t0] init.behavior executed with --help then: stdout matches snapshot 1`] = `""`;
+
+exports[`init.behavior.flags given: [case7] direct: --open flag with unavailable command when: [t0] init.behavior executed with --open nonexistent-xyz then: behavior files are still created 1`] = `
+"🦫 oh, behave!
+   ├─ + 0.wish.md
+   ├─ + 1.vision.guard
+   ├─ + 1.vision.stone
+   ├─ + 2.1.criteria.blackbox.stone
+   ├─ + 2.2.criteria.blackbox.matrix.stone
+   ├─ + 2.3.criteria.blueprint.stone
+   ├─ + 3.1.1.research.external.product.access._.stone
+   ├─ + 3.1.1.research.external.product.claims._.stone
+   ├─ + 3.1.1.research.external.product.flagged._.stone
+   ├─ + 3.1.3.research.internal.product.code.prod._.stone
+   ├─ + 3.1.3.research.internal.product.code.test._.stone
+   ├─ + 3.1.5.research.reflection.product.audience._.stone
+   ├─ + 3.1.5.research.reflection.product.premortem._.stone
+   ├─ + 3.1.5.research.reflection.product.rootcause._.stone
+   ├─ + 3.2.distill.repros.experience._.guard
+   ├─ + 3.2.distill.repros.experience._.stone
+   ├─ + 3.3.1.blueprint.product.guard
+   ├─ + 3.3.1.blueprint.product.stone
+   ├─ + 4.1.roadmap.stone
+   ├─ + 5.1.execution.phase0_to_phaseN.guard
+   ├─ + 5.1.execution.phase0_to_phaseN.stone
+   ├─ + 5.2.evaluation.guard
+   ├─ + 5.2.evaluation.stone
+   ├─ + 5.3.verification.guard
+   ├─ + 5.3.verification.stone
+   ├─ + 5.5.playtest.guard
+   ├─ + 5.5.playtest.stone
+   └─ + refs/template.[feedback].v1.[given].by_human.md
+
+🌲 go on then,
+   ├─ .behavior/v{DATE}.open-fail-test/0.wish.md
+   └─ [2mtip: use --open to open the wish automatically[0m
+
+🍄 we'll remember,
+   ├─ branch feature/open-fail-test <-> behavior v{DATE}.open-fail-test
+   ├─ [2mbranch bound to behavior, to boot via hooks[0m
+   └─ [2mbranch bound to route, to drive via hooks[0m"
+`;
+
+exports[`init.behavior.flags given: [case7] direct: --open flag with unavailable command when: [t0] init.behavior executed with --open nonexistent-xyz then: warn is shown about opener unavailable 1`] = `
+"/bin/sh: 1: nonexistent-xyz-12345: not found
+
+⚠️  OpenerUnavailableError: opener 'nonexistent-xyz-12345' unavailable or failed
+    behavior created, open manually: .behavior/v{DATE}.warn-test/0.wish.md"
+`;
+
+exports[`init.behavior.flags given: [case8] absent required --name flag when: [t0] init.behavior executed without --name then: stderr matches snapshot 1`] = `
+"⛈️  error: input invalid
+   └─ --name must be a string, got undefined"
+`;
+
+exports[`init.behavior.flags given: [case8] absent required --name flag when: [t0] init.behavior executed without --name then: stdout matches snapshot 1`] = `""`;
+
+exports[`init.behavior.flags given: [case9] unknown flag (silently ignored) when: [t0] init.behavior executed with --unknown flag then: stderr matches snapshot 1`] = `""`;
+
+exports[`init.behavior.flags given: [case9] unknown flag (silently ignored) when: [t0] init.behavior executed with --unknown flag then: stdout matches snapshot 1`] = `
+"🦫 oh, behave!
+   ├─ ✓ 0.wish.md
+   ├─ ✓ 1.vision.guard
+   ├─ ✓ 1.vision.stone
+   ├─ ✓ 2.1.criteria.blackbox.stone
+   ├─ ✓ 2.2.criteria.blackbox.matrix.stone
+   ├─ ✓ 2.3.criteria.blueprint.stone
+   ├─ ✓ 3.1.1.research.external.product.access._.stone
+   ├─ ✓ 3.1.1.research.external.product.claims._.stone
+   ├─ ✓ 3.1.1.research.external.product.flagged._.stone
+   ├─ ✓ 3.1.3.research.internal.product.code.prod._.stone
+   ├─ ✓ 3.1.3.research.internal.product.code.test._.stone
+   ├─ ✓ 3.1.5.research.reflection.product.audience._.stone
+   ├─ ✓ 3.1.5.research.reflection.product.premortem._.stone
+   ├─ ✓ 3.1.5.research.reflection.product.rootcause._.stone
+   ├─ ✓ 3.2.distill.repros.experience._.guard
+   ├─ ✓ 3.2.distill.repros.experience._.stone
+   ├─ ✓ 3.3.1.blueprint.product.guard
+   ├─ ✓ 3.3.1.blueprint.product.stone
+   ├─ ✓ 4.1.roadmap.stone
+   ├─ ✓ 5.1.execution.phase0_to_phaseN.guard
+   ├─ ✓ 5.1.execution.phase0_to_phaseN.stone
+   ├─ ✓ 5.2.evaluation.guard
+   ├─ ✓ 5.2.evaluation.stone
+   ├─ ✓ 5.3.verification.guard
+   ├─ ✓ 5.3.verification.stone
+   ├─ ✓ 5.5.playtest.guard
+   ├─ ✓ 5.5.playtest.stone
+   └─ ✓ refs/template.[feedback].v1.[given].by_human.md
+
+🌲 go on then,
+   ├─ .behavior/v{DATE}.test/0.wish.md
+   └─ [2mtip: use --open to open the wish automatically[0m
+
+🍄 we'll remember,
+   ├─ branch feature/unknown-flag-test <-> behavior v{DATE}.test
    ├─ [2mbranch bound to behavior, to boot via hooks[0m
    └─ [2mbranch bound to route, to drive via hooks[0m"
 `;

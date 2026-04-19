@@ -28,6 +28,7 @@ describe('init.behavior.scaffold', () => {
 
         // snapshot for vibe-check
         expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
+        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
 
         const behaviorRoot = path.join(scene.repoDir, '.behavior');
         expect(fs.existsSync(behaviorRoot)).toBe(true);
@@ -72,6 +73,9 @@ describe('init.behavior.scaffold', () => {
         expect(result.stdout).toContain('feature/auto-bind <-> behavior');
         expect(result.stdout).toContain('to boot via hooks');
 
+        expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
+        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
+
         const behaviorRoot = path.join(repoDir, '.behavior');
         const behaviorDirs = fs.readdirSync(behaviorRoot);
         const behaviorDir = path.join(behaviorRoot, behaviorDirs[0]!);
@@ -112,12 +116,13 @@ describe('init.behavior.scaffold', () => {
           repoDir: scene.repoDir,
         });
 
-        expect(result.exitCode).toBe(1);
-        expect(result.stdout).toContain('already bound to');
-        expect(result.stdout).toContain('tree');
+        expect(result.exitCode).toBe(2);
+        expect(result.stderr).toContain('already bound to');
+        expect(result.stderr).toContain('tree');
 
         // snapshot for vibe-check
         expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
+        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
       });
     });
   });

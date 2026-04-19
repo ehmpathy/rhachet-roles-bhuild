@@ -68,6 +68,10 @@ describe('init.behavior.sizes', () => {
         expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
       });
 
+      then('stderr matches snapshot', () => {
+        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
+      });
+
       then('creates only nano-level files', () => {
         const files = getBehaviorFiles(result.repoDir);
         expect(files).toMatchSnapshot();
@@ -105,6 +109,10 @@ describe('init.behavior.sizes', () => {
 
       then('output matches snapshot', () => {
         expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
+      });
+
+      then('stderr matches snapshot', () => {
+        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
       });
 
       then('creates mini-level files', () => {
@@ -150,6 +158,10 @@ describe('init.behavior.sizes', () => {
         expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
       });
 
+      then('stderr matches snapshot', () => {
+        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
+      });
+
       then('creates medi-level files (default)', () => {
         const files = getBehaviorFiles(result.repoDir);
         expect(files).toMatchSnapshot();
@@ -193,6 +205,10 @@ describe('init.behavior.sizes', () => {
 
       then('output matches snapshot', () => {
         expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
+      });
+
+      then('stderr matches snapshot', () => {
+        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
       });
 
       then('creates mega-level files', () => {
@@ -249,6 +265,14 @@ describe('init.behavior.sizes', () => {
         expect(gigaResult.exitCode).toBe(0);
       });
 
+      then('stdout matches snapshot', () => {
+        expect(asSnapshotStable(gigaResult.stdout)).toMatchSnapshot();
+      });
+
+      then('stderr matches snapshot', () => {
+        expect(asSnapshotStable(gigaResult.stderr)).toMatchSnapshot();
+      });
+
       then('creates same files as mega', () => {
         const gigaFiles = getBehaviorFiles(gigaResult.repoDir);
         const megaFiles = getBehaviorFiles(megaResult.repoDir);
@@ -276,6 +300,10 @@ describe('init.behavior.sizes', () => {
 
       then('output matches snapshot', () => {
         expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
+      });
+
+      then('stderr matches snapshot', () => {
+        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
       });
 
       then('creates mini-level files', () => {
@@ -312,9 +340,30 @@ describe('init.behavior.sizes', () => {
         });
 
         expect(result.exitCode).not.toBe(0);
-        expect(result.stdout).toContain('expected one of');
-        expect(result.stdout).toContain('nano');
-        expect(result.stdout).toContain('mega');
+        expect(result.stderr).toContain('expected one of');
+        expect(result.stderr).toContain('nano');
+        expect(result.stderr).toContain('mega');
+
+        expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
+        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case8] invalid --guard value', () => {
+    when('[t0] init.behavior executed with --guard invalid', () => {
+      then('fails with validation error', () => {
+        const { repoDir } = genConsumerRepo({
+          branchName: 'feature/guard-invalid-test',
+        });
+        const result = runInitBehaviorSkillDirect({
+          args: '--name invalid-guard-test --guard invalid',
+          repoDir,
+        });
+
+        expect(result.exitCode).not.toBe(0);
+        expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
+        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
       });
     });
   });

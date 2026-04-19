@@ -5,7 +5,10 @@ import path from 'path';
 import { given, then, useThen, when } from 'test-fns';
 
 import { genConsumerRepo } from './.test/infra/genConsumerRepo';
-import { runInitBehaviorSkillDirect } from './role=behaver/.test/skill.init.behavior.utils';
+import {
+  asSnapshotStable,
+  runInitBehaviorSkillDirect,
+} from './role=behaver/.test/skill.init.behavior.utils';
 
 describe('init.behavior --name @branch', () => {
   given('[case1] feature branch with author prefix', () => {
@@ -28,6 +31,14 @@ describe('init.behavior --name @branch', () => {
 
       then('exit code is 0', () => {
         expect(result.exitCode).toEqual(0);
+      });
+
+      then('stdout matches snapshot', () => {
+        expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
+      });
+
+      then('stderr matches snapshot', () => {
+        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
       });
 
       then('behavior created with last segment as name', () => {
@@ -65,6 +76,14 @@ describe('init.behavior --name @branch', () => {
         expect(result.exitCode).toEqual(0);
       });
 
+      then('stdout matches snapshot', () => {
+        expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
+      });
+
+      then('stderr matches snapshot', () => {
+        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
+      });
+
       then('behavior created with full branch name', () => {
         const behaviorDirs = fs.readdirSync(
           path.join(scene.repoDir, '.behavior'),
@@ -100,9 +119,17 @@ describe('init.behavior --name @branch', () => {
       });
 
       then('error message mentions protected branch', () => {
-        expect(result.stdout).toContain(
+        expect(result.stderr).toContain(
           'cannot init behavior on protected branch: main',
         );
+      });
+
+      then('stdout matches snapshot', () => {
+        expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
+      });
+
+      then('stderr matches snapshot', () => {
+        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
       });
     });
   });
@@ -130,9 +157,17 @@ describe('init.behavior --name @branch', () => {
       });
 
       then('error message mentions protected branch', () => {
-        expect(result.stdout).toContain(
+        expect(result.stderr).toContain(
           'cannot init behavior on protected branch: master',
         );
+      });
+
+      then('stdout matches snapshot', () => {
+        expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
+      });
+
+      then('stderr matches snapshot', () => {
+        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
       });
     });
   });
@@ -162,9 +197,17 @@ describe('init.behavior --name @branch', () => {
       });
 
       then('error message mentions detached HEAD', () => {
-        expect(result.stdout).toContain(
+        expect(result.stderr).toContain(
           'cannot expand @branch in detached HEAD state',
         );
+      });
+
+      then('stdout matches snapshot', () => {
+        expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
+      });
+
+      then('stderr matches snapshot', () => {
+        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
       });
     });
   });
@@ -189,6 +232,14 @@ describe('init.behavior --name @branch', () => {
 
       then('exit code is 0', () => {
         expect(result.exitCode).toEqual(0);
+      });
+
+      then('stdout matches snapshot', () => {
+        expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
+      });
+
+      then('stderr matches snapshot', () => {
+        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
       });
 
       then('behavior created with explicit name (not branch)', () => {
