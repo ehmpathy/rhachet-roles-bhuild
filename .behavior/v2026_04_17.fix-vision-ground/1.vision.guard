@@ -9,31 +9,6 @@ judges:
 
 reviews:
   self:
-    - slug: has-grounded-in-reality
-      say: |
-        a junior recently modified files in this repo. we need to carefully
-        review the vision due to this.
-
-        did the junior ground the vision in reality, or make things up?
-
-        check the groundwork section:
-
-        for external references (APIs, services, docs):
-        - did they actually verify these exist?
-        - did they cite what they checked?
-        - or did they assume without sanity check?
-
-        for internal references (extant behavior, patterns, code):
-        - did they actually verify what that behavior is?
-        - did they verify extant contracts to conform to? (interfaces, types, signatures)
-        - did they verify extant vocab to reuse? (domain terms, name patterns)
-        - did they verify extant stdouts to match? (CLI output patterns, error formats)
-        - did they cite specific files/lines?
-        - or did they assume the code works a certain way without verification?
-
-        this is NOT about exhaustive research — just sanity checks.
-        the question is: is this vision coherent with reality, or built on assumptions?
-
     - slug: has-questioned-requirements
       say: |
         a junior recently modified files in this repo. we need to carefully
