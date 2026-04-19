@@ -17,4 +17,17 @@ export const ROLE_DECOMPOSER: Role = Role.build({
     dirs: { uri: __dirname + '/inits' },
     exec: [],
   },
+  hooks: {
+    onBrain: {
+      onBoot: [
+        {
+          command:
+            './node_modules/.bin/rhachet roles boot --role decomposer',
+          timeout: 'PT10S',
+        },
+      ],
+      onTool: [],
+      onStop: [],
+    },
+  },
 });

@@ -22,6 +22,11 @@ export const ROLE_BEHAVER: Role = Role.build({
       onBoot: [
         {
           command:
+            './node_modules/.bin/rhachet roles boot --role behaver',
+          timeout: 'PT10S',
+        },
+        {
+          command:
             './node_modules/.bin/rhachet run --repo bhuild --role behaver --init claude.hooks/sessionstart.boot-behavior',
           timeout: 'PT10S',
         },

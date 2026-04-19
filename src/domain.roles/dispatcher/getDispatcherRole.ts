@@ -19,7 +19,13 @@ export const ROLE_DISPATCHER: Role = Role.build({
   },
   hooks: {
     onBrain: {
-      onBoot: [],
+      onBoot: [
+        {
+          command:
+            './node_modules/.bin/rhachet roles boot --role dispatcher',
+          timeout: 'PT10S',
+        },
+      ],
       onTool: [],
       onStop: [],
     },
