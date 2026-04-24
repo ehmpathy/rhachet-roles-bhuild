@@ -9,6 +9,7 @@ roles:
       dirs: dist/domain.roles/behaver/skills
     inits:
       dirs: dist/domain.roles/behaver/inits
+    boot: dist/domain.roles/behaver/boot.yml
   - slug: decomposer
     readme: dist/domain.roles/decomposer/readme.md
     briefs:
@@ -17,6 +18,7 @@ roles:
       dirs: dist/domain.roles/decomposer/skills
     inits:
       dirs: dist/domain.roles/decomposer/inits
+    boot: dist/domain.roles/decomposer/boot.yml
   - slug: dispatcher
     readme: dist/domain.roles/dispatcher/readme.md
     briefs:

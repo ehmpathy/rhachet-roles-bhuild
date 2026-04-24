@@ -5,6 +5,7 @@ export const ROLE_BEHAVER: Role = Role.build({
   name: 'Behaver',
   purpose: 'declare clear, buildable, and testable behaviors',
   readme: { uri: __dirname + '/readme.md' },
+  boot: { uri: __dirname + '/boot.yml' },
   traits: [],
   skills: {
     dirs: [{ uri: __dirname + '/skills' }],

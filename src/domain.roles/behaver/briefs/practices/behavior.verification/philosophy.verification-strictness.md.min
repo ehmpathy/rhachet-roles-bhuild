@@ -1,0 +1,36 @@
+# philosophy: verification strictness
+
+a behavior is a promise. verification is the proof.
+
+## .zero tolerance
+
+- **deferrals** — a deferred test is a lie
+- **fake tests** — fraud that provides false confidence
+- **unproven claims** — cite command + output or it's a guess
+- **credential excuses** — blocker, not deferral
+- **skips** — hidden lies that pass ci
+
+## .exhaustive coverage
+
+every positive path, negative path, edge case. no gaps.
+
+if not snapped:
+- reviewers can't vibecheck
+- drift goes undetected
+- regressions ship silent
+
+## .real integration tests
+
+mocks lie. only real calls prove integration works.
+
+credential difficulty = blocker. not exception.
+
+## .cost of leniency
+
+leniency compounds → erodes trust → ships defects
+
+## .benefit of strictness
+
+strictness compounds → builds trust → prevents defects
+
+zero tolerance. zero exceptions. that's the price of trust.
