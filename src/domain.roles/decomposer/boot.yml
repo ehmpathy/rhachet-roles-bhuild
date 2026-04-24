@@ -1,0 +1,15 @@
+always:
+  briefs:
+    say: []
+
+    ref:
+      # decompose rules
+      - briefs/decompose/rule.require.contexts.bounded.md
+      - briefs/decompose/rule.require.dependencies.directional.md
+      - briefs/decompose/rule.require.wish.scoped.md
+      - briefs/decompose/rule.require.vision.scoped.md
+      - briefs/decompose/rule.require.names.ubiquitous.md
+
+      # review rules
+      - briefs/review/rule.require.context.threshold.md
+      - briefs/review/rule.require.domain.bounded.md

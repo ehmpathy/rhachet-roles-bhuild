@@ -5,6 +5,7 @@ export const ROLE_DECOMPOSER: Role = Role.build({
   name: 'Decomposer',
   purpose: 'decompose large behaviors into focused sub-behaviors',
   readme: { uri: __dirname + '/readme.md' },
+  boot: { uri: __dirname + '/boot.yml' },
   traits: [],
   skills: {
     dirs: [{ uri: __dirname + '/skills' }],

@@ -1,0 +1,38 @@
+always:
+  briefs:
+    say:
+      # philosophy
+      - briefs/practices/behavior.verification/philosophy.verification-strictness.md
+
+    ref:
+      # definitions
+      - briefs/practices/behavior.criteria/define.behavior-thoughtroute-hierarchy.md
+      - briefs/practices/behavior.criteria/define.criteria-blackbox.md
+      - briefs/practices/behavior.criteria/define.criteria-blueprint.md
+      - briefs/practices/behavior.criteria/define.criteria-blackbox-vs-blueprint.md
+
+      # wish rules
+      - briefs/practices/behavior.wish/rule.prefer.clear-desires.md
+      - briefs/practices/behavior.wish/rule.prefer.bounded-scope.md
+
+      # criteria rules
+      - briefs/practices/behavior.criteria/rule.require.bdd-format.md
+      - briefs/practices/behavior.criteria/rule.require.blackbox-no-implementation.md
+      - briefs/practices/behavior.criteria/rule.require.blueprint-contract-layer-only.md
+      - briefs/practices/behavior.criteria/rule.prefer.usecase-groups.md
+      - briefs/practices/behavior.criteria/rule.prefer.depth-groups.md
+      - briefs/practices/behavior.criteria/rule.prefer.dependency-order.md
+
+      # blueprint rules
+      - briefs/practices/behavior.blueprint/rule.require.criteria-satisfied.md
+      - briefs/practices/behavior.blueprint/rule.require.test-coverage-specified.md
+      - briefs/practices/behavior.blueprint/rule.require.test-patterns-specified.md
+      - briefs/practices/behavior.blueprint/rule.require.determinism-declared.md
+
+      # roadmap rules
+      - briefs/practices/behavior.roadmap/rule.prefer.clear-deliverables.md
+      - briefs/practices/behavior.roadmap/rule.prefer.dependency-order.md
+
+      # verification rules
+      - briefs/practices/behavior.verification/rule.require.external-contract-integration-tests.md
+      - briefs/practices/behavior.verification/rule.require.contract-snapshot-exhaustiveness.md
