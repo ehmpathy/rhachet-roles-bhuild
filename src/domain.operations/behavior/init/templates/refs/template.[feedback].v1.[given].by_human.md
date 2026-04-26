@@ -9,7 +9,7 @@ emit your response to the feedback into
 
 first, bootup your mechanics briefs again
 
-npx rhachet roles boot --repo ehmpathy --role mechanic
+./node_modules/.bin/rhachet roles boot --repo ehmpathy --role mechanic
 
 ---
 ---

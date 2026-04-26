@@ -9,12 +9,12 @@ this folder catches dreams — transient visions that strike in flow state.
 
 catch a dream:
 \`\`\`sh
-npx rhachet run --skill catch.dream --name "my-idea" --open codium
+./node_modules/.bin/rhachet run --skill catch.dream --name "my-idea" --open codium
 \`\`\`
 
 review dreams: browse this folder
 
-graduate to behavior: \`npx rhachet run --skill init.behavior --name "my-idea"\`
+graduate to behavior: \`./node_modules/.bin/rhachet run --skill init.behavior --name "my-idea"\`
 
 🌙
 `;

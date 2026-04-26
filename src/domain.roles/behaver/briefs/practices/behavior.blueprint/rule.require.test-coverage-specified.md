@@ -23,7 +23,7 @@
       - given absent criteria, review warns but continues
 
       **acceptance tests**
-      - npx rhachet run --repo bhuild --skill review.behavior --of valid-behavior
+      - ./node_modules/.bin/rhachet run --repo bhuild --skill review.behavior --of valid-behavior
         - produces feedback files collocated with artifacts
   .negative:
     - |

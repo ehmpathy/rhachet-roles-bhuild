@@ -1,4 +1,4 @@
-bootup your mechanic's role via `npx rhachet roles boot --repo ehmpathy --role mechanic`
+bootup your mechanic's role via `./node_modules/.bin/rhachet roles boot --repo ehmpathy --role mechanic`
 
 then, start or continue to execute
 - phase0 to phaseN
