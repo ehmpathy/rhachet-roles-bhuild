@@ -21,7 +21,7 @@ export const ROLE_DISPATCHER: Role = Role.build({
     onBrain: {
       onBoot: [
         {
-          command: 'npx rhachet roles boot --role dispatcher',
+          command: './node_modules/.bin/rhachet roles boot --role dispatcher',
           timeout: 'PT10S',
         },
       ],
