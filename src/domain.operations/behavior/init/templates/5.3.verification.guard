@@ -228,11 +228,11 @@ reviews:
 
   peer:
     # verify contract snapshot exhaustiveness
-    - npx rhachet run --repo bhrain --skill review --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.contract-snapshot-exhaustiveness.md' --diffs since-main --paths-with '{src,blackbox}/**/*.{test,snap}.ts' --join intersect --output '$route/.reviews/$stone.peer-review.contract-snapshots.md' --mode hard
+    - ./node_modules/.bin/rhachet run --repo bhrain --skill review --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.contract-snapshot-exhaustiveness.md' --diffs since-main --paths-with '{src,blackbox}/**/*.{test,snap}.ts' --join intersect --output '$route/.reviews/$stone.peer-review.contract-snapshots.md' --mode hard
 
     # verify external contract integration tests
-    - npx rhachet run --repo bhrain --skill review --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.external-contract-integration-tests.md' --diffs since-main --paths-with '{src,blackbox}/**/*.{test,integration}.ts' --join intersect --output '$route/.reviews/$stone.peer-review.external-contracts.md' --mode hard
+    - ./node_modules/.bin/rhachet run --repo bhrain --skill review --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.external-contract-integration-tests.md' --diffs since-main --paths-with '{src,blackbox}/**/*.{test,integration}.ts' --join intersect --output '$route/.reviews/$stone.peer-review.external-contracts.md' --mode hard
 
 judges:
   # enforce peer reviews pass with zero blockers
-  - npx rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 0
+  - ./node_modules/.bin/rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 0

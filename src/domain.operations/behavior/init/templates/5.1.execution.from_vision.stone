@@ -1,4 +1,4 @@
-bootup your mechanic's role via `npx rhachet roles boot --repo ehmpathy --role mechanic`
+bootup your mechanic's role via `./node_modules/.bin/rhachet roles boot --repo ehmpathy --role mechanic`
 
 then, execute the vision directly
 - $BEHAVIOR_DIR_REL/1.vision.md

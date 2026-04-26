@@ -30,16 +30,16 @@
 #
 # .examples:
 #   # open latest feedback (or create v1) for execution artifact
-#   npx rhachet run --skill feedback.give --against execution
+#   ./node_modules/.bin/rhachet run --skill feedback.give --against execution
 #
 #   # open latest and also open in editor
-#   npx rhachet run --skill feedback.give --against execution --open codium
+#   ./node_modules/.bin/rhachet run --skill feedback.give --against execution --open codium
 #
 #   # create next version (v2 if v1 exists, etc.)
-#   npx rhachet run --skill feedback.give --against execution --version ++
+#   ./node_modules/.bin/rhachet run --skill feedback.give --against execution --version ++
 #
 #   # generate feedback for criteria.blackbox with explicit behavior
-#   npx rhachet run --skill feedback.give --against criteria.blackbox --behavior give-feedback
+#   ./node_modules/.bin/rhachet run --skill feedback.give --against criteria.blackbox --behavior give-feedback
 #
 # .output:
 #   - creates or finds: ${behaviorDir}/feedback/${artifactFileName}.[feedback].v${version}.[given].by_human.md

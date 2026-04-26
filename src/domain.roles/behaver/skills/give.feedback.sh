@@ -3,7 +3,7 @@
 # .what = DEPRECATED: backwards compat alias for feedback.give
 #
 # .why  = preserves backwards compatibility after skill rename
-#         prefer: npx rhachet run --skill feedback.give
+#         prefer: ./node_modules/.bin/rhachet run --skill feedback.give
 #
 # .note = this skill dispatches to feedback.give via CLI export
 ######################################################################

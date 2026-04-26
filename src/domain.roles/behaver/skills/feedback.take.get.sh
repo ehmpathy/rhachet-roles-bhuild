@@ -21,13 +21,13 @@
 #
 # .examples:
 #   # list all feedback with status
-#   npx rhachet run --skill feedback.take.get
+#   ./node_modules/.bin/rhachet run --skill feedback.take.get
 #
 #   # list feedback for explicit behavior
-#   npx rhachet run --skill feedback.take.get --behavior my-feature
+#   ./node_modules/.bin/rhachet run --skill feedback.take.get --behavior my-feature
 #
 #   # hook mode: exit 2 if unresponded feedback exists
-#   npx rhachet run --skill feedback.take.get --when hook.onStop
+#   ./node_modules/.bin/rhachet run --skill feedback.take.get --when hook.onStop
 #
 # .output:
 #   - tree-style output with feedback status

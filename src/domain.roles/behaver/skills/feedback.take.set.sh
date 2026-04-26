@@ -19,13 +19,13 @@
 #
 # .examples:
 #   # respond to feedback inline
-#   npx rhachet run --skill feedback.take.set \
+#   ./node_modules/.bin/rhachet run --skill feedback.take.set \
 #     --from ".behavior/v2026_04_09.my-feature/feedback/0.wish.md.[feedback].v1.[given].by_human.md" \
 #     --into ".behavior/v2026_04_09.my-feature/feedback/0.wish.md.[feedback].v1.[taken].by_robot.md" \
 #     --response "acknowledged. will address the feedback."
 #
 #   # respond via stdin (for multiline responses)
-#   echo "my response" | npx rhachet run --skill feedback.take.set \
+#   echo "my response" | ./node_modules/.bin/rhachet run --skill feedback.take.set \
 #     --from "..." --into "..." --response @stdin
 #
 # .output:
