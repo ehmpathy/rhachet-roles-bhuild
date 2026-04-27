@@ -2,7 +2,7 @@
   "name": "rhachet-roles-bhuild",
   "author": "ehmpathy",
   "description": "roles for building resilient systems, via rhachet",
-  "version": "0.21.3",
+  "version": "0.21.4",
   "repository": "ehmpathy/rhachet-roles-bhuild",
   "homepage": "https://github.com/ehmpathy/rhachet-roles-bhuild",
   "keywords": [
@@ -70,7 +70,8 @@
     "zod": "4.3.4"
   },
   "peerDependencies": {
-    "@anthropic-ai/claude-code": ">=2.1.87"
+    "rhachet-brains-xai": ">=0.3.3",
+    "rhachet-roles-bhrain": ">=0.12.1"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.8",
@@ -101,10 +102,6 @@
     "tsx": "4.20.6",
     "typescript": "5.4.5",
     "yalc": "1.0.0-pre.53"
-  },
-  "peerDependencies": {
-    "rhachet-brains-xai": ">=0.3.3",
-    "rhachet-roles-bhrain": ">=0.12.1"
   },
   "config": {
     "commitizen": {
