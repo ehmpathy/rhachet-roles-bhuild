@@ -116,4 +116,4 @@ reviews:
         you are ready to hand off to foreman approval.
 
 judges:
-  - ./node_modules/.bin/rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
+  - $rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route

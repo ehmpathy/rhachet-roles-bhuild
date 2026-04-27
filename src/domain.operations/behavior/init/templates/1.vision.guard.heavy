@@ -5,7 +5,7 @@
 # the process needs to halt here for human review
 
 judges:
-  - ./node_modules/.bin/rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
+  - $rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
 
 reviews:
   self:
