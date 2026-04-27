@@ -370,76 +370,133 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 "🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
-   ├─ ✓ review.1 - completed [time]
-   ├─ ✓ review.2 - completed [time]
-   ├─ ✓ review.3 - completed [time]
-   ├─ ✓ review.4 - completed [time]
-   ├─ ✓ review.5 - completed [time]
-   ├─ ✓ judge.1 - allowed [time]
+   ├─ ✓ review.1 - malfunctioned [time]
+   ├─ ✓ review.2 - malfunctioned [time]
+   ├─ ✓ review.3 - malfunctioned [time]
+   ├─ ✓ review.4 - malfunctioned [time]
+   ├─ ✗ judge.1 - blocked [time]
    └─ ✗ judge.2 - blocked [time]
 
 🗿 route.stone.set
    ├─ stone = 3.3.1.blueprint.product
-   ├─ passage = blocked
-   ├─ reason = wait for human approval
+   ├─ passage = malfunction
+   ├─ reason = reviewer or judge malfunctioned
    └─ guard
       ├─ artifacts
       │   ├─ 3.3.1.blueprint.product.yield.md
       │   └─ 3.3.1.blueprint.product.yield.md
       ├─ reviews
-      │   ├─ r1: ./node_modules/.bin/rhachet run --repo bhrain --skill review --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.{prod,test}/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with '$route/3.3.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.failhides.md' --mode hard
+      │   ├─ r1: $rhachet run --repo bhrain --skill review --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.{prod,test}/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with '$route/3.3.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.failhides.md' --mode hard
       │   │   ├─ finished [time] ✓
       │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.39b43fb8815ed028463dacbb96ae2eb8e5c63aa730f616bbc1cb1aa06d7a6658.r1.md
-      │   ├─ r2: ./node_modules/.bin/rhachet enroll claude --model sonnet --roles behaver,architect,mechanic -p "review the blueprint at $route/$stone.md for architectural gaps and defects. emit BLOCKERS and NITPICKS."
+      │   ├─ r2: $rhachet enroll claude --roles behaver,architect,mechanic -p "review diff for architectural scope leak, decompose to reuse opportunities, and other arch smells. emit BLOCKERS and NITPICKS."
       │   │   ├─ finished [time] ✓
       │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.39b43fb8815ed028463dacbb96ae2eb8e5c63aa730f616bbc1cb1aa06d7a6658.r2.md
-      │   ├─ r3: ./node_modules/.bin/rhachet enroll claude --model sonnet --roles behaver,architect,mechanic -p "review diff for architectural scope leak, decompose to reuse opportunities, and other arch smells. emit BLOCKERS and NITPICKS."
+      │   ├─ r3: $rhachet enroll claude --model sonnet --roles behaver,ergonomist,mechanic -p "review the blueprint for snapshot coverage on contract endpoints and acceptance test user journey coverage. emit BLOCKERS and NITPICKS."
       │   │   ├─ finished [time] ✓
       │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.39b43fb8815ed028463dacbb96ae2eb8e5c63aa730f616bbc1cb1aa06d7a6658.r3.md
-      │   ├─ r4: ./node_modules/.bin/rhachet enroll claude --model sonnet --roles behaver,ergonomist,mechanic -p "review the blueprint for snapshot coverage on contract endpoints and acceptance test user journey coverage. emit BLOCKERS and NITPICKS."
-      │   │   ├─ finished [time] ✓
-      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.39b43fb8815ed028463dacbb96ae2eb8e5c63aa730f616bbc1cb1aa06d7a6658.r4.md
-      │   └─ r5: ./node_modules/.bin/rhachet enroll claude --model sonnet --roles behaver,ergonomist,mechanic -p "review the blueprint for experiential and visual blemishes in snapshotted acceptance test journeys. emit BLOCKERS and NITPICKS."
+      │   └─ r4: $rhachet enroll claude --model sonnet --roles behaver,ergonomist,mechanic -p "review the blueprint for experiential and visual blemishes in snapshotted acceptance test journeys. emit BLOCKERS and NITPICKS."
       │       ├─ finished [time] ✓
-      │       └─ review: .route/3.3.1.blueprint.product.guard.review.i1.39b43fb8815ed028463dacbb96ae2eb8e5c63aa730f616bbc1cb1aa06d7a6658.r5.md
+      │       └─ review: .route/3.3.1.blueprint.product.guard.review.i1.39b43fb8815ed028463dacbb96ae2eb8e5c63aa730f616bbc1cb1aa06d7a6658.r4.md
       └─ judges
-          ├─ j1: ./node_modules/.bin/rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
-          │   └─ finished [time] ✓
-          └─ j2: ./node_modules/.bin/rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
+          ├─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
+          │   ├─ finished [time] ✗
+          │   └─ reason: command exited 127; see judge artifact for details
+          └─ j2: $rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
               ├─ finished [time] ✗
-              └─ reason: wait for human approval[0m[31m[0m
+              └─ reason: command exited 127; see judge artifact for details[0m[31m[0m
 [0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set[0m
 [0m[31m   └─ ✋ blocked by constraints[0m
 [0m[31m[0m
-[0m[31m🪶 judge 2
+[0m[31m🔎 review 1
    ├─ stdout
    │  ├─
-   │  │
-   │  │  🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.judge
-   │  │  
-   │  │  passed: false
-   │  │  reason: wait for human approval
-   │  │  
-   │  │  ✋ halted, human approval required
-   │  │     ├─ please ask your human to
-   │  │     │  └─ rhx route.stone.set --stone 3.3.1.blueprint.product --as approved
-   │  │     │
-   │  │     └─ after human approves, run
-   │  │        └─ rhx route.stone.set --stone 3.3.1.blueprint.product --as passed
    │  │
    │  └─
    ├─ stderr
    │  ├─
    │  │
-   │  │  [0m[31m[0m
-   │  │  [0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.judge[0m
-   │  │  [0m[31m   └─ ✋ blocked by constraints[0m
-   │  │  [0m[31m[0m
+   │  │  /bin/sh: 1: run: not found
    │  │
    │  └─
    └─ passage blocked
-      ├─ blocked by constraints
-      └─ exit code: 2 ✋[0m"
+      ├─ blocked by malfunction
+      └─ exit code: 127 💥
+
+🔎 review 2
+   ├─ stdout
+   │  ├─
+   │  │
+   │  └─
+   ├─ stderr
+   │  ├─
+   │  │
+   │  │  /bin/sh: 1: enroll: not found
+   │  │
+   │  └─
+   └─ passage blocked
+      ├─ blocked by malfunction
+      └─ exit code: 127 💥
+
+🔎 review 3
+   ├─ stdout
+   │  ├─
+   │  │
+   │  └─
+   ├─ stderr
+   │  ├─
+   │  │
+   │  │  /bin/sh: 1: enroll: not found
+   │  │
+   │  └─
+   └─ passage blocked
+      ├─ blocked by malfunction
+      └─ exit code: 127 💥
+
+🔎 review 4
+   ├─ stdout
+   │  ├─
+   │  │
+   │  └─
+   ├─ stderr
+   │  ├─
+   │  │
+   │  │  /bin/sh: 1: enroll: not found
+   │  │
+   │  └─
+   └─ passage blocked
+      ├─ blocked by malfunction
+      └─ exit code: 127 💥
+
+🪶 judge 1
+   ├─ stdout
+   │  ├─
+   │  │
+   │  └─
+   ├─ stderr
+   │  ├─
+   │  │
+   │  │  /bin/sh: 1: run: not found
+   │  │
+   │  └─
+   └─ passage blocked
+      ├─ blocked by malfunction
+      └─ exit code: 127 💥
+
+🪶 judge 2
+   ├─ stdout
+   │  ├─
+   │  │
+   │  └─
+   ├─ stderr
+   │  ├─
+   │  │
+   │  │  /bin/sh: 1: run: not found
+   │  │
+   │  └─
+   └─ passage blocked
+      ├─ blocked by malfunction
+      └─ exit code: 127 💥[0m"
 `;
 
 exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t6] blueprint pass attempted after approval then: allowed 1`] = `
