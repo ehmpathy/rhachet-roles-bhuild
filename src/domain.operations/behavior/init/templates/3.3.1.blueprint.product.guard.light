@@ -462,7 +462,7 @@ reviews:
 
   peer:
     - $rhachet run --repo bhrain --skill review --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.{prod,test}/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with '$route/3.3.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.failhides.md' --mode hard
-    - $rhachet enroll claude --roles behaver,architect,mechanic -p "review diff for architectural scope leak, decompose to reuse opportunities, and other arch smells. emit BLOCKERS and NITPICKS."
+    - $rhachet enroll claude --roles behaver,architect,mechanic -p "review the current blueprint for architectural defects and omissions; opports to decompose for recompose, prevent scope leaks, and eliminate maintenance and behavior hazards structurally. emit BLOCKERS and NITPICKS."
     - $rhachet enroll claude --model sonnet --roles behaver,ergonomist,mechanic -p "review the blueprint for snapshot coverage on contract endpoints and acceptance test user journey coverage. emit BLOCKERS and NITPICKS."
     - $rhachet enroll claude --model sonnet --roles behaver,ergonomist,mechanic -p "review the blueprint for experiential and visual blemishes in snapshotted acceptance test journeys. emit BLOCKERS and NITPICKS."
 

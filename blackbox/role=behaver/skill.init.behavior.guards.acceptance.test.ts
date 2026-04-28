@@ -191,7 +191,7 @@ const genConsumerRepoWithBhrain = (input: {
         version: '1.0.0',
         dependencies: {
           'rhachet-roles-bhuild': `file:${process.cwd()}`,
-          'rhachet-roles-bhrain': '>=0.13.0',
+          'rhachet-roles-bhrain': '>=0.27.6',
           'rhachet-roles-ehmpathy': '>=1.34.0',
           rhachet: '^1.15.0',
         },
