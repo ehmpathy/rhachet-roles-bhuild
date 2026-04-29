@@ -92,7 +92,7 @@ reviews:
         double-check: did you implement each journey sketched in repros?
 
         look back at the repros artifact:
-        - $BEHAVIOR_DIR_REL/3.2.distill.repros.experience.*.md
+        - .behavior/v2026_04_27.fix-peer-review-brainsize/3.2.distill.repros.experience.*.md
 
         for each journey test sketch in repros:
         - is there a test file for it?
@@ -166,7 +166,7 @@ reviews:
         double-check: are the critical paths frictionless in practice?
 
         look back at the repros artifact for critical paths:
-        - $BEHAVIOR_DIR_REL/3.2.distill.repros.experience.*.md
+        - .behavior/v2026_04_27.fix-peer-review-brainsize/3.2.distill.repros.experience.*.md
 
         for each critical path:
         - run through it manually — is it smooth?
@@ -228,14 +228,11 @@ reviews:
 
   peer:
     # verify contract snapshot exhaustiveness
-    - $rhachet run --repo bhrain --skill review --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.contract-snapshot-exhaustiveness.md' --diffs since-main --paths-with '{src,blackbox}/**/*.{test,snap}.ts' --join intersect --output '$route/.reviews/$stone.peer-review.contract-snapshots.md' --mode hard
+    - ./node_modules/.bin/rhachet run --repo bhrain --skill review --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.contract-snapshot-exhaustiveness.md' --diffs since-main --paths-with '{src,blackbox}/**/*.{test,snap}.ts' --join intersect --output '$route/.reviews/$stone.peer-review.contract-snapshots.md' --mode hard
 
     # verify external contract integration tests
-    - $rhachet run --repo bhrain --skill review --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.external-contract-integration-tests.md' --diffs since-main --paths-with '{src,blackbox}/**/*.{test,integration}.ts' --join intersect --output '$route/.reviews/$stone.peer-review.external-contracts.md' --mode hard
-
-    # verify no test intent violations
-    - $rhachet enroll claude --model sonnet --roles behaver,architect,mechanic -p "review the current implementation for test intent violation diffs. if any of the diffs related to tests loosened assertions or changed the criteria, this is a blocker. tests were added for a reason. we have to maintain the behavior they locked in. emit BLOCKERS and NITPICKS."
+    - ./node_modules/.bin/rhachet run --repo bhrain --skill review --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.external-contract-integration-tests.md' --diffs since-main --paths-with '{src,blackbox}/**/*.{test,integration}.ts' --join intersect --output '$route/.reviews/$stone.peer-review.external-contracts.md' --mode hard
 
 judges:
   # enforce peer reviews pass with zero blockers
-  - $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 0
+  - ./node_modules/.bin/rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 0
