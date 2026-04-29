@@ -389,7 +389,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
       │   ├─ r1: $rhachet run --repo bhrain --skill review --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.{prod,test}/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with '$route/3.3.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.failhides.md' --mode hard
       │   │   ├─ finished [time] ✓
       │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.39b43fb8815ed028463dacbb96ae2eb8e5c63aa730f616bbc1cb1aa06d7a6658.r1.md
-      │   ├─ r2: $rhachet enroll claude --roles behaver,architect,mechanic -p "review diff for architectural scope leak, decompose to reuse opportunities, and other arch smells. emit BLOCKERS and NITPICKS."
+      │   ├─ r2: $rhachet enroll claude --roles behaver,architect,mechanic -p "review the current blueprint for architectural defects and omissions; opports to decompose for recompose, prevent scope leaks, and eliminate maintenance and behavior hazards structurally. emit BLOCKERS and NITPICKS."
       │   │   ├─ finished [time] ✓
       │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.39b43fb8815ed028463dacbb96ae2eb8e5c63aa730f616bbc1cb1aa06d7a6658.r2.md
       │   ├─ r3: $rhachet enroll claude --model sonnet --roles behaver,ergonomist,mechanic -p "review the blueprint for snapshot coverage on contract endpoints and acceptance test user journey coverage. emit BLOCKERS and NITPICKS."
@@ -459,7 +459,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │  ├─ reviews
    │  │   ├─ r1: $rhachet run --repo bhrain --skill review --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.{prod,test}/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with '$route/3.3.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.failhides.md' --mode hard
    │  │   │   └─ · cached
-   │  │   ├─ r2: $rhachet enroll claude --roles behaver,architect,mechanic -p "review diff for architectural scope leak, decompose to reuse opportunities, and other arch smells. emit BLOCKERS and NITPICKS."
+   │  │   ├─ r2: $rhachet enroll claude --roles behaver,architect,mechanic -p "review the current blueprint for architectural defects and omissions; opports to decompose for recompose, prevent scope leaks, and eliminate maintenance and behavior hazards structurally. emit BLOCKERS and NITPICKS."
    │  │   │   └─ · cached
    │  │   ├─ r3: $rhachet enroll claude --model sonnet --roles behaver,ergonomist,mechanic -p "review the blueprint for snapshot coverage on contract endpoints and acceptance test user journey coverage. emit BLOCKERS and NITPICKS."
    │  │   │   └─ · cached
@@ -605,16 +605,16 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │  │   ├─ r2: $rhachet run --repo bhrain --skill review --rules '.agent/repo=ehmpathy/role=architect/briefs/practices/rule.{forbid.decode-friction-in-orchestrators,require.orchestrators-as-narrative}.md' --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.narrative/rule.{forbid.inline-decode-friction,require.named-transforms}.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/{define.domain-operation-grains,philosophy.transform-orchestrator-separation.[philosophy]}.md' --diffs since-main --paths-with 'src/**/*' --paths-without '**/*.test.ts' --join intersect --output '$route/.reviews/$stone.peer-review.decode-friction.md' --mode hard
    │  │   │   ├─ finished [time] ✓
    │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r2.md
-   │  │   ├─ r3: $rhachet enroll claude --roles behaver,architect,mechanic -p "review diff for architectural scope leak, decompose to reuse opportunities, and other arch smells. emit BLOCKERS and NITPICKS."
+   │  │   ├─ r3: $rhachet enroll claude --roles behaver,architect,mechanic -p "review the current implementation for architectural defects and omissions; opports to decompose for recompose, prevent scope leaks, and eliminate maintenance and behavior hazards structurally. emit BLOCKERS and NITPICKS."
    │  │   │   ├─ finished [time] ✓
    │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r3.md
-   │  │   ├─ r4: $rhachet enroll claude --model sonnet --roles behaver,ergonomist,mechanic -p "review the diff for snapshot coverage on contract endpoints and acceptance test user journey coverage. emit BLOCKERS and NITPICKS."
+   │  │   ├─ r4: $rhachet enroll claude --roles behaver,architect,mechanic -p "review the current implementation for omissions or divergences from the wished and envisioned behavioral intent. in particular flag any ergonomic friction that is unaddressed or friction hazards that are not clearly covered with acceptance tests and snaps. emit BLOCKERS and NITPICKS."
    │  │   │   ├─ finished [time] ✓
    │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r4.md
-   │  │   ├─ r5: $rhachet enroll claude --model sonnet --roles behaver,ergonomist,mechanic -p "review the diff for experiential and visual blemishes in snapshotted acceptance test journeys. emit BLOCKERS and NITPICKS."
+   │  │   ├─ r5: $rhachet enroll claude --model sonnet --roles behaver,ergonomist,mechanic -p "review the diff for snapshot coverage on contract endpoints and acceptance test user journey coverage. emit BLOCKERS and NITPICKS."
    │  │   │   ├─ finished [time] ✓
    │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r5.md
-   │  │   └─ r6: $rhachet enroll claude --roles behaver,architect,mechanic -p "review the current src/ implementation against the wish and vision. identify gaps where requirements are not addressed and omissions where features are missing. emit BLOCKERS and NITPICKS."
+   │  │   └─ r6: $rhachet enroll claude --model sonnet --roles behaver,ergonomist,mechanic -p "review the diff for experiential and visual blemishes in snapshotted acceptance test journeys. emit BLOCKERS and NITPICKS."
    │  │       ├─ finished [time] ✓
    │  │       └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r6.md
    │  └─ judges
