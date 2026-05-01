@@ -236,6 +236,9 @@ reviews:
     # verify no test intent violations
     - $rhachet enroll claude --model sonnet --roles behaver,architect,mechanic -p "review the current implementation for test intent violation diffs. if any of the diffs related to tests loosened assertions or changed the criteria, this is a blocker. tests were added for a reason. we have to maintain the behavior they locked in. emit BLOCKERS and NITPICKS."
 
+    # verify test scope purity (grain, boundaries, mocks, blackbox)
+    - $rhachet run --repo bhrain --skill review --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/rule.require.test-coverage-by-grain.md,.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.unit/rule.forbid.unit.remote-boundaries.md,.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.integration/rule.forbid.integration.mocks.md,.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.acceptance/rule.forbid.acceptance.mocks.md,.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.acceptance/rule.require.acceptance.blackbox.md' --diffs since-main --paths-with '{src,blackbox}/**/*.test.ts' --join intersect --output '$route/.reviews/$stone.peer-review.test-scope-purity.md' --mode hard
+
 judges:
   # enforce peer reviews pass with zero blockers
   - $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 0
