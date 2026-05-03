@@ -227,14 +227,28 @@ reviews:
         prove that all items above were addressed — not deferred.
 
   peer:
-    # verify contract snapshot exhaustiveness
-    - $rhachet run --repo bhrain --skill review --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.contract-snapshot-exhaustiveness.md' --diffs since-main --paths-with '{src,blackbox}/**/*.{test,snap}.ts' --join intersect --output '$route/.reviews/$stone.peer-review.contract-snapshots.md' --mode hard
+    # slug = ergo-contract-snapshots
+    - $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.contract-snapshot-exhaustiveness.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --diffs since-main --paths-with '**/*.ts' --paths-with '**/*.snap' --join intersect --output '$route/.reviews/$stone.peer-review.ergo-contract-snapshots.md'
 
-    # verify external contract integration tests
-    - $rhachet run --repo bhrain --skill review --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.external-contract-integration-tests.md' --diffs since-main --paths-with '{src,blackbox}/**/*.{test,integration}.ts' --join intersect --output '$route/.reviews/$stone.peer-review.external-contracts.md' --mode hard
+    # slug = mech-external-contracts
+    - $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.external-contract-integration-tests.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.unit/rule.forbid.remote-boundaries.md' --diffs since-main --paths-with '**/*.ts' --paths-with '**/*.snap' --join intersect --output '$route/.reviews/$stone.peer-review.mech-external-contracts.md'
 
-    # verify no test intent violations
-    - $rhachet enroll claude --model sonnet --roles behaver,architect,mechanic -p "review the current implementation for test intent violation diffs. if any of the diffs related to tests loosened assertions or changed the criteria, this is a blocker. tests were added for a reason. we have to maintain the behavior they locked in. emit BLOCKERS and NITPICKS."
+    # --- ergonomist reviews ---
+    # lineage: $rhachet enroll claude --model sonnet --roles behaver,ergonomist,mechanic -p "review the diff for snapshot coverage on contract endpoints and acceptance test user journey coverage. emit BLOCKERS and NITPICKS."
+    # slug = ergo-acceptance-journey-coverage
+    - $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/ergonomist/rule.require.acceptance-journey-coverage.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/frames.behavior/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --diffs since-main --paths-with '**/*.ts' --paths-with '**/*.snap' --join intersect --output '$route/.reviews/$stone.peer-review.ergo-acceptance-journey-coverage.md'
+
+    # lineage: $rhachet enroll claude --model sonnet --roles behaver,ergonomist,mechanic -p "review the diff for experiential and visual blemishes in snapshotted acceptance test journeys. emit BLOCKERS and NITPICKS."
+    # slug = ergo-snapshot-visual-blemishes
+    - $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/ergonomist/rule.forbid.snapshot-visual-blemishes.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.tones/*.md.min' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.contract-snapshot-exhaustiveness.md' --diffs since-main --paths-with '**/*.ts' --paths-with '**/*.snap' --join intersect --output '$route/.reviews/$stone.peer-review.ergo-snapshot-visual-blemishes.md'
+
+    # slug = mech-given-when-then
+    - $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/frames.behavior/rule.require.given-when-then.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/criteria.given_when_then.[seed].v3.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/frames.behavior/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/lessons.howto/*.md.min' --diffs since-main --paths-with '**/*.test.ts' --paths-with '**/*.snap' --join intersect --output '$route/.reviews/$stone.peer-review.mech-given-when-then.md'
+
+    # --- test intent reviews ---
+    # lineage: $rhachet enroll claude --model sonnet --roles behaver,architect,mechanic -p "review the current implementation for test intent violation diffs. if any of the diffs related to tests loosened assertions or changed the criteria, this is a blocker. tests were added for a reason. we have to maintain the behavior they locked in. emit BLOCKERS and NITPICKS."
+    # slug = mech-test-intent
+    - $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.forbid.test-intent-violations.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/work.flow/refactor/rule.require.review-test-changes.md.min' --diffs since-main --paths-with '**/*.test.ts' --paths-with '**/*.snap' --join intersect --output '$route/.reviews/$stone.peer-review.mech-test-intent.md'
 
     # verify test scope purity (grain, boundaries, mocks, blackbox)
     - $rhachet run --repo bhrain --skill review --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/rule.require.test-coverage-by-grain.md,.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.unit/rule.forbid.unit.remote-boundaries.md,.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.integration/rule.forbid.integration.mocks.md,.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.acceptance/rule.forbid.acceptance.mocks.md,.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.acceptance/rule.require.acceptance.blackbox.md' --diffs since-main --paths-with '{src,blackbox}/**/*.test.ts' --join intersect --output '$route/.reviews/$stone.peer-review.test-scope-purity.md' --mode hard
