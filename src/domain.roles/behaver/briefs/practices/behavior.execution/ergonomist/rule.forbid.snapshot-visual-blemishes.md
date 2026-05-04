@@ -29,13 +29,12 @@ visual blemishes block merge. the snapshot is the contract — it must look corr
 for each snapshot in the diff, check:
 
 1. **structure clarity**
-   - treestruct format for hierarchical data
+   - treestruct format for hierarchical data (cli: visual branches, api: well-nested objects)
    - consistent indentation
    - logical groups
 
 2. **readability**
    - no debug noise
-   - no internal ids exposed to users
    - clear labels and messages
 
 3. **consistency**
@@ -43,10 +42,9 @@ for each snapshot in the diff, check:
    - same terminology throughout
    - matches extant patterns in codebase
 
-4. **turtle vibes** (for cli output)
-   - turtle emoji for headers
-   - treestruct branches
-   - vibe phrases for status
+4. **mascots** (only if cli repo with mascot defined in README)
+   - if mascot defined: emoji usage should match throughout
+   - if not a cli or no mascot: this check does not apply
 
 ## .examples
 
@@ -54,7 +52,7 @@ for each snapshot in the diff, check:
 
 ```
 exports[`behavior init`] = `
-🐚 init
+📦 init
    ├─ path: .behavior/foo
    ├─ DEBUG: internal state = { x: 1 }
    └─ done
@@ -72,35 +70,65 @@ one command outputs:
 
 another outputs:
 ```
-🐢 cowabunga!
-🐚 command
-   └─ done
+🦫 dammed right
+
+🌲 behavior.review --guard heavy
+   └─ complete
 ```
 
-format must be consistent across commands.
+format must be consistent across commands in the same repo.
 
-### blocker — exposed internal ids
+### blocker — flat api response (treestruct = well-nested objects)
 
 ```
-exports[`create invoice`] = `
+exports[`getInvoice`] = `
 {
-  "id": "inv_a1b2c3d4e5f6",
-  "internalDbId": 12345,
-  ...
+  "invoiceId": "inv_123",
+  "invoiceStatus": "paid",
+  "customerName": "acme",
+  "customerEmail": "acme@example.com",
+  "lineItem0Amount": 100,
+  "lineItem1Amount": 50
 }
 `;
 ```
 
-`internalDbId` should not appear in user-faced output.
-
-## .treestruct reference
+should be well-nested:
 
 ```
-🐢 {vibe phrase}
+exports[`getInvoice`] = `
+{
+  "invoice": {
+    "exid": "inv_123",
+    "status": "paid",
+    "customer": {
+      "name": "acme",
+      "email": "acme@example.com"
+    },
+    "lineItems": [
+      { "amount": 100 },
+      { "amount": 50 }
+    ]
+  }
+}
+`;
+```
 
-🐚 {command}
+## .treestruct reference (cli repos with mascots only)
+
+```
+{mascot emoji} {status phrase}
+
+{command emoji} {command}
    ├─ {key}: {value}
    └─ {section}
       ├─ {item}
       └─ {item}
 ```
+
+check repo README for mascot and emoji conventions.
+
+## .see also
+
+- `repo=ehmpathy/role=ergonomist` `rule.require.treestruct-output` — treestruct format for cli output
+- `repo=ehmpathy/role=mechanic` `rule.require.treestruct` — treestruct name patterns
