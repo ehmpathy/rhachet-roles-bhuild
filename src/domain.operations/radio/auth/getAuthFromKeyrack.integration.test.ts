@@ -17,6 +17,16 @@ describe('getAuthFromKeyrack.integration', () => {
         console.log('token length:', result.token.length);
         console.log('starts with ghs_:', result.token.startsWith('ghs_'));
 
+        // parse JSON to see what keys are present (if it's JSON)
+        try {
+          const parsed = JSON.parse(result.token);
+          console.log('parsed JSON keys:', Object.keys(parsed));
+          console.log('has mech?:', 'mech' in parsed);
+          console.log('mech value:', parsed.mech);
+        } catch {
+          console.log('not JSON — likely already translated');
+        }
+
         expect(result.token).toBeDefined();
         expect(result.token.startsWith('ghs_')).toBe(true);
       });

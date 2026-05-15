@@ -63,3 +63,46 @@ returns: raw JSON blob (not translated)
 ## branch
 
 `vlad/fix-radio` — PR #176
+
+---
+
+## diagnosis (2026-05-14)
+
+**root cause**: the GitHub secret JSON blob does NOT contain the `mech` field.
+
+### evidence
+
+the provision readme shows the manual flow constructs JSON without `mech`:
+```bash
+jq -c -n '{appId: "...", privateKey: $key, installationId: "..."}'
+```
+
+the `--mech EPHEMERAL_VIA_GITHUB_APP` flag is passed to `keyrack set` but that doesn't embed it in the stored JSON.
+
+### mechanism detection flow
+
+1. `vaultAdapterOsEnvvar.get()` reads from `process.env[EHMPATH_BEAVER_GITHUB_TOKEN]`
+2. calls `inferKeyrackMechForGet({ value: source })`
+3. `inferKeyrackMechForGet` parses JSON and looks for `parsed.mech`
+4. if no `.mech` field → returns `'PERMANENT_VIA_REPLICA'` (passthrough)
+5. passthrough means raw JSON blob is returned instead of translated `ghs_*` token
+
+### fix required
+
+re-set the GitHub secret with the `mech` field embedded in the JSON:
+
+```bash
+# construct JSON WITH mech field
+jq -c -n --rawfile key ~/path/to/beaver-by-bhuild.private-key.pem \
+  '{appId: "3234162", privateKey: $key, installationId: "INSTALLATION_ID", mech: "EPHEMERAL_VIA_GITHUB_APP"}' | \
+gh secret set EHMPATH_BEAVER_GITHUB_TOKEN --repo ehmpathy/rhachet-roles-bhuild
+```
+
+or use the interactive `rhx keyrack set --vault github.secrets` flow which handles this automatically.
+
+### action for human
+
+1. locate the private key PEM file
+2. get the installation ID via `gh api --method GET /orgs/ehmpathy/installations | jq '.installations[] | select(.app_slug == "beaver-by-bhuild") | .id'`
+3. re-set the secret with proper JSON structure
+4. re-run CI to verify fix
