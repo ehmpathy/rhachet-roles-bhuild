@@ -201,6 +201,12 @@ const genConsumerRepoWithBhrain = (input: {
     ),
   );
 
+  // create .gitignore to exclude node_modules (prevents ENOBUFS in bhrain's git ls-files)
+  fs.writeFileSync(
+    path.join(repoDir, '.gitignore'),
+    'node_modules/\n',
+  );
+
   // install dependencies
   execSync('npx pnpm install --ignore-scripts', {
     cwd: repoDir,
