@@ -38,9 +38,10 @@ if (
 /**
  * .what = source credentials from keyrack for test env
  * .why =
- *   - auto-inject keys into process.env
- *   - fail fast with helpful error if keyrack locked or keys absent
+ *   - auto-inject available keys into process.env
+ *   - lenient mode: tests that need absent keys will fail when they try to use them
+ *   - avoids halting all tests when a single key is absent
  */
 const keyrackYmlPath = join(process.cwd(), '.agent/keyrack.yml');
 if (existsSync(keyrackYmlPath))
-  keyrack.source({ env: 'test', owner: 'ehmpath', mode: 'strict' });
+  keyrack.source({ env: 'test', owner: 'ehmpath', mode: 'lenient' });
