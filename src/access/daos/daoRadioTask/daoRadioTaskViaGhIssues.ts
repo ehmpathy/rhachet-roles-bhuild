@@ -312,10 +312,10 @@ export const daoRadioTaskViaGhIssues = {
           const errorMessage =
             error instanceof Error ? error.message : String(error);
           const stderr = (error as { stderr?: string })?.stderr ?? '';
-          const fullError = `${errorMessage} ${stderr}`;
+          const fullError = `${errorMessage} ${stderr}`.toLowerCase();
           const isExpectedError =
-            fullError.includes('Resource not accessible by integration') ||
-            fullError.includes('Could not resolve to a User') ||
+            fullError.includes('resource not accessible by integration') ||
+            fullError.includes('could not resolve to a user') || // matches "user or bot" too
             fullError.includes('is not a valid assignee') ||
             fullError.includes('not found'); // gh cli error: 'username' not found
           if (!isExpectedError) throw error;
