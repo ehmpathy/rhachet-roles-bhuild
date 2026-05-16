@@ -53,5 +53,3 @@ reviews:
 
         if the repo doesn't support `.play.test.ts` directly, plan to use
         `.play.integration.test.ts` or `.play.acceptance.test.ts` instead.
-
-  peer: []

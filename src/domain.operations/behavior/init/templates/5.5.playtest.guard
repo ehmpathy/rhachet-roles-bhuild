@@ -115,7 +115,5 @@ reviews:
         **this is the final proof.** you ran it, it worked, all gaps are fixed.
         you are ready to hand off to foreman approval.
 
-  peer: []
-
 judges:
   - $rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
