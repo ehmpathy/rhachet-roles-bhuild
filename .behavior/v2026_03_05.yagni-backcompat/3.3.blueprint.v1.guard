@@ -191,4 +191,4 @@ reviews:
         emit findings to .behavior/$thisBehavior/reviews/{stone}.consistency-conventions.md
 
 judges:
-  - npx rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
+  - $rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
