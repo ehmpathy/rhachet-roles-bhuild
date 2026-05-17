@@ -21,12 +21,12 @@ export const getResourcesOfAppBhuildBeaver = async (): Promise<
   // declare the app
   const app = DeclaredGithubApp.as({
     owner,
-    slug: 'bhuild-beaver',
-    name: 'Bhuild Beaver',
+    slug: 'beaver-by-bhuild',
+    name: 'Beaver, by Bhuild',
     description:
-      'grant narrow auth to beaver role for radio task dispatch via gh.issues',
+      'grant narrow auth to the beaver role for skills like radio task dispatch via gh.issues',
     homepageUrl: 'https://github.com/ehmpathy/rhachet-roles-bhuild',
-    public: false,
+    public: true,
 
     // narrow permissions scoped to issue read/write only
     permissions: {
@@ -36,7 +36,7 @@ export const getResourcesOfAppBhuildBeaver = async (): Promise<
 
         metadata: 'read', // always required
       },
-      organization: {},
+      organization: null,
     },
     events: [],
     webhookUrl: null,
@@ -46,8 +46,8 @@ export const getResourcesOfAppBhuildBeaver = async (): Promise<
   const installation = DeclaredGithubAppInstallation.as({
     app: { owner, slug: app.slug },
     target: owner,
-    repositorySelection: 'selected',
-    repositories: ['rhachet-roles-bhuild-demo'],
+    repositorySelection: 'all',
+    repositories: null,
   });
 
   return [app, installation];

@@ -125,7 +125,6 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ passage = allowed
    ├─ guard
    │  ├─ artifacts
-   │  │   └─ 1.vision.md
    │  └─ judges
    │      └─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
    │          └─ finished [time] ✓
@@ -388,36 +387,34 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ reason = wait for human approval
    └─ guard
       ├─ artifacts
-      │   ├─ 3.3.1.blueprint.product.yield.md
-      │   └─ 3.3.1.blueprint.product.yield.md
       ├─ reviews
       │   ├─ r1: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.{prod,test}/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.mech-failhides.md'
       │   │   ├─ finished [time] ✓
-      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.39b43fb8815ed028463dacbb96ae2eb8e5c63aa730f616bbc1cb1aa06d7a6658.r1.md
+      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.c54cc0276e1b907a1f1edcec0332e7dd5668c7f081c35d78ea09f5cae0051204.r1.md
       │   ├─ r2: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=architect/briefs/practices/rule.{forbid.decode-friction-in-orchestrators,require.orchestrators-as-narrative}.md' --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.narrative/rule.{forbid.inline-decode-friction,require.named-transforms}.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/{define.domain-operation-grains,philosophy.transform-orchestrator-separation.[philosophy]}.md' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.mech-decode-friction.md'
       │   │   ├─ finished [time] ✓
-      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.39b43fb8815ed028463dacbb96ae2eb8e5c63aa730f616bbc1cb1aa06d7a6658.r2.md
+      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.c54cc0276e1b907a1f1edcec0332e7dd5668c7f081c35d78ea09f5cae0051204.r2.md
       │   ├─ r3: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.prefer.decomposable-architecture.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.architecture/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.domain.operations/*.md.min' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.arch-opport-decomposition.md'
       │   │   ├─ finished [time] ✓
-      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.39b43fb8815ed028463dacbb96ae2eb8e5c63aa730f616bbc1cb1aa06d7a6658.r3.md
+      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.c54cc0276e1b907a1f1edcec0332e7dd5668c7f081c35d78ea09f5cae0051204.r3.md
       │   ├─ r4: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.scope-leaks.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.architecture/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.domain.operations/*.md.min' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.arch-smell-scopeleaks.md'
       │   │   ├─ finished [time] ✓
-      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.39b43fb8815ed028463dacbb96ae2eb8e5c63aa730f616bbc1cb1aa06d7a6658.r4.md
+      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.c54cc0276e1b907a1f1edcec0332e7dd5668c7f081c35d78ea09f5cae0051204.r4.md
       │   ├─ r5: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.maintenance-hazards.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/rule.require.solve-at-cause.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.errors/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.typedefs/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.narrative/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.comments/*.md.min' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.arch-hazards-maintenance.md'
       │   │   ├─ finished [time] ✓
-      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.39b43fb8815ed028463dacbb96ae2eb8e5c63aa730f616bbc1cb1aa06d7a6658.r5.md
+      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.c54cc0276e1b907a1f1edcec0332e7dd5668c7f081c35d78ea09f5cae0051204.r5.md
       │   ├─ r6: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.behavior-hazards.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.arch-hazards-behavior.md'
       │   │   ├─ finished [time] ✓
-      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.39b43fb8815ed028463dacbb96ae2eb8e5c63aa730f616bbc1cb1aa06d7a6658.r6.md
+      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.c54cc0276e1b907a1f1edcec0332e7dd5668c7f081c35d78ea09f5cae0051204.r6.md
       │   ├─ r7: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.ambiguous-terms.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/ubiqlang.ambiguous-from-overload.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.terms/*.md.min' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.arch-ambiguous-terms.md'
       │   │   ├─ finished [time] ✓
-      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.39b43fb8815ed028463dacbb96ae2eb8e5c63aa730f616bbc1cb1aa06d7a6658.r7.md
+      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.c54cc0276e1b907a1f1edcec0332e7dd5668c7f081c35d78ea09f5cae0051204.r7.md
       │   ├─ r8: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/ergonomist/rule.require.acceptance-journey-coverage.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/frames.behavior/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.ergo-acceptance-journey-coverage.md'
       │   │   ├─ finished [time] ✓
-      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.39b43fb8815ed028463dacbb96ae2eb8e5c63aa730f616bbc1cb1aa06d7a6658.r8.md
+      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i1.c54cc0276e1b907a1f1edcec0332e7dd5668c7f081c35d78ea09f5cae0051204.r8.md
       │   └─ r9: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/ergonomist/rule.forbid.snapshot-visual-blemishes.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.tones/*.md.min' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.contract-snapshot-exhaustiveness.md' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.ergo-snapshot-visual-blemishes.md'
       │       ├─ finished [time] ✓
-      │       └─ review: .route/3.3.1.blueprint.product.guard.review.i1.39b43fb8815ed028463dacbb96ae2eb8e5c63aa730f616bbc1cb1aa06d7a6658.r9.md
+      │       └─ review: .route/3.3.1.blueprint.product.guard.review.i1.c54cc0276e1b907a1f1edcec0332e7dd5668c7f081c35d78ea09f5cae0051204.r9.md
       └─ judges
           ├─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
           │   └─ finished [time] ✓
@@ -479,8 +476,6 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ passage = allowed
    ├─ guard
    │  ├─ artifacts
-   │  │   ├─ 3.3.1.blueprint.product.yield.md
-   │  │   └─ 3.3.1.blueprint.product.yield.md
    │  ├─ reviews
    │  │   ├─ r1: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.{prod,test}/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.mech-failhides.md'
    │  │   │   └─ · cached
@@ -634,32 +629,33 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ passage = allowed
    ├─ guard
    │  ├─ artifacts
-   │  │   └─ index.ts
+   │  │   ├─ $route/5.1.execution.phase0_to_phaseN.yield.md
+   │  │   └─ src/**/*
    │  ├─ reviews
    │  │   ├─ r1: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.{prod,test}/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with '**/*.ts' --join intersect --output '$route/.reviews/$stone.peer-review.mech-failhides.md'
    │  │   │   ├─ finished [time] ✓
-   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r1.md
+   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.a41b1520f97615d59679d1bd023b99136f61098b23188113f2eac82ae52cc9ab.r1.md
    │  │   ├─ r2: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=architect/briefs/practices/rule.{forbid.decode-friction-in-orchestrators,require.orchestrators-as-narrative}.md' --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.narrative/rule.{forbid.inline-decode-friction,require.named-transforms}.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/{define.domain-operation-grains,philosophy.transform-orchestrator-separation.[philosophy]}.md' --diffs since-main --paths-with '**/*.ts' --paths-without '**/*.test.ts' --join intersect --output '$route/.reviews/$stone.peer-review.mech-decode-friction.md'
    │  │   │   ├─ finished [time] ✓
-   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r2.md
+   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.a41b1520f97615d59679d1bd023b99136f61098b23188113f2eac82ae52cc9ab.r2.md
    │  │   ├─ r3: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.prefer.decomposable-architecture.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.architecture/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.domain.operations/*.md.min' --diffs since-main --paths-with '**/*.ts' --join intersect --output '$route/.reviews/$stone.peer-review.arch-opport-decomposition.md'
    │  │   │   ├─ finished [time] ✓
-   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r3.md
+   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.a41b1520f97615d59679d1bd023b99136f61098b23188113f2eac82ae52cc9ab.r3.md
    │  │   ├─ r4: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.scope-leaks.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.architecture/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.domain.operations/*.md.min' --diffs since-main --paths-with '**/*.ts' --join intersect --output '$route/.reviews/$stone.peer-review.arch-smell-scopeleaks.md'
    │  │   │   ├─ finished [time] ✓
-   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r4.md
+   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.a41b1520f97615d59679d1bd023b99136f61098b23188113f2eac82ae52cc9ab.r4.md
    │  │   ├─ r5: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.maintenance-hazards.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/rule.require.solve-at-cause.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.errors/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.typedefs/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.narrative/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.comments/*.md.min' --diffs since-main --paths-with '**/*.ts' --join intersect --output '$route/.reviews/$stone.peer-review.arch-hazards-maintenance.md'
    │  │   │   ├─ finished [time] ✓
-   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r5.md
+   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.a41b1520f97615d59679d1bd023b99136f61098b23188113f2eac82ae52cc9ab.r5.md
    │  │   ├─ r6: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.behavior-hazards.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --diffs since-main --paths-with '**/*.ts' --join intersect --output '$route/.reviews/$stone.peer-review.arch-hazards-behavior.md'
    │  │   │   ├─ finished [time] ✓
-   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r6.md
+   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.a41b1520f97615d59679d1bd023b99136f61098b23188113f2eac82ae52cc9ab.r6.md
    │  │   ├─ r7: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.require.behavior-intent-coverage.md' --refs '$route/0.wish.md' --refs '$route/1.vision.yield.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.criteria/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --diffs since-main --paths-with '**/*.ts' --join intersect --output '$route/.reviews/$stone.peer-review.behavior-intent-coverage.md'
    │  │   │   ├─ finished [time] ✓
-   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r7.md
+   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.a41b1520f97615d59679d1bd023b99136f61098b23188113f2eac82ae52cc9ab.r7.md
    │  │   └─ r8: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.friction-hazards.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.tones/*.md.min' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --diffs since-main --paths-with '**/*.ts' --join intersect --output '$route/.reviews/$stone.peer-review.ergo-friction-hazards.md'
    │  │       ├─ finished [time] ✓
-   │  │       └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.2548bf19ddcb3f0d1f63f1f7efaa903490509acc8ff14f2bc5a829d5b8c64c7f.r8.md
+   │  │       └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i1.a41b1520f97615d59679d1bd023b99136f61098b23188113f2eac82ae52cc9ab.r8.md
    │  └─ judges
    │      └─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
    │          └─ finished [time] ✓

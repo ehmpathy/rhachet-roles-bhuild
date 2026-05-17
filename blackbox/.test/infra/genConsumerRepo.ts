@@ -86,5 +86,19 @@ export const getInvokeHooks = (): InvokeHooks[] => [getInvokeHooksBhuild()];
     stdio: 'pipe',
   });
 
+  // create .agent/keyrack.yml that extends dispatcher role keyrack
+  // .why = keyrack SDK requires keyrack.yml at gitroot to construct key slugs
+  const keyrackYmlContent = `org: ehmpathy
+extends:
+  - .agent/repo=bhuild/role=dispatcher/keyrack.yml
+env.prod: null
+env.prep:
+  - EHMPATH_BEAVER_GITHUB_TOKEN
+`;
+  fs.writeFileSync(
+    path.join(repoDir, '.agent', 'keyrack.yml'),
+    keyrackYmlContent,
+  );
+
   return { repoDir };
 };
