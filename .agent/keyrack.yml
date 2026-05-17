@@ -8,4 +8,5 @@ env.prod:
 env.test:
   - EHMPATH_BEAVER_GITHUB_TOKEN
 env.all: null
-env.prep: null
+env.prep:
+  - EHMPATH_BEAVER_GITHUB_TOKEN

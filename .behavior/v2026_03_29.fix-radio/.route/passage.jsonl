@@ -51,3 +51,7 @@
 {"stone":"5.5.playtest.v1","status":"blocked","blocker":"review.self","reason":"review.self required: has-clear-instructions"}
 {"stone":"5.5.playtest.v1","status":"blocked","blocker":"approval","reason":"wait for human approval"}
 {"stone":"5.5.playtest.v1","status":"blocked","blocker":"approval","reason":"wait for human approval"}
+{"stone":"5.5.playtest.v1","status":"blocked","blocker":"approval","reason":"wait for human approval"}
+{"stone":"5.5.playtest.v1","status":"blocked","blocker":"approval","reason":"wait for human approval"}
+{"stone":"5.5.playtest.v1","status":"approved"}
+{"stone":"5.5.playtest.v1","status":"passed"}
