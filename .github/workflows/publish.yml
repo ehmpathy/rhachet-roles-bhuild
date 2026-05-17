@@ -18,6 +18,7 @@ jobs:
     secrets:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}
+      EHMPATH_BEAVER_GITHUB_TOKEN: ${{ secrets.EHMPATH_BEAVER_GITHUB_TOKEN }}
 
   publish:
     uses: ./.github/workflows/.publish-npm.yml
