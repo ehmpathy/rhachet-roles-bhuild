@@ -29,7 +29,7 @@ const runRadioTaskPush = (input: {
   repoDir: string;
   via: string;
   auth?: string;
-  repo: string;
+  into: string;
   title: string;
   description: string;
 }) => {
@@ -38,7 +38,7 @@ const runRadioTaskPush = (input: {
     input.auth
       ? `--auth "${input.auth.replace(/\(/g, '\\(').replace(/\)/g, '\\)')}"`
       : '',
-    `--repo "${input.repo}"`,
+    `--into "${input.into}"`,
     `--title "${input.title}"`,
     `--description "${input.description}"`,
   ]
@@ -63,7 +63,7 @@ const runRadioTaskPull = (input: {
   repoDir: string;
   via: string;
   auth?: string;
-  repo?: string;
+  from?: string;
   list?: boolean;
   exid?: string;
   title?: string;
@@ -74,7 +74,7 @@ const runRadioTaskPull = (input: {
     input.auth
       ? `--auth "${input.auth.replace(/\(/g, '\\(').replace(/\)/g, '\\)')}"`
       : '',
-    input.repo ? `--repo "${input.repo}"` : '',
+    input.from ? `--from "${input.from}"` : '',
     input.list ? '--list' : '',
     input.exid ? `--exid "${input.exid}"` : '',
     input.title ? `--title "${input.title}"` : '',
@@ -108,7 +108,7 @@ describe.skip('radio.task.pull via gh.issues', () => {
         repoDir: sharedRepo.repoDir,
         via: 'gh.issues',
         auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
-        repo: GITHUB_DEMO_REPO,
+        into: GITHUB_DEMO_REPO,
         title: `pull list test ${Date.now()}`,
         description: 'for list verification',
       }),
@@ -120,7 +120,7 @@ describe.skip('radio.task.pull via gh.issues', () => {
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
           auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
-          repo: GITHUB_DEMO_REPO,
+          from: GITHUB_DEMO_REPO,
           list: true,
         }),
       );
@@ -145,7 +145,7 @@ describe.skip('radio.task.pull via gh.issues', () => {
         repoDir: sharedRepo.repoDir,
         via: 'gh.issues',
         auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
-        repo: GITHUB_DEMO_REPO,
+        into: GITHUB_DEMO_REPO,
         title: `pull one test ${Date.now()}`,
         description: 'for specific pull',
       });
@@ -160,7 +160,7 @@ describe.skip('radio.task.pull via gh.issues', () => {
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
           auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
-          repo: GITHUB_DEMO_REPO,
+          from: GITHUB_DEMO_REPO,
           exid: issueNumber,
         });
         expect(result.exitCode).toBe(0);
@@ -174,7 +174,7 @@ describe.skip('radio.task.pull via gh.issues', () => {
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
           auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
-          repo: GITHUB_DEMO_REPO,
+          from: GITHUB_DEMO_REPO,
           exid: '999999999',
         });
         expect(result.exitCode).not.toBe(0);
@@ -192,7 +192,7 @@ describe.skip('radio.task.pull via gh.issues', () => {
         repoDir: sharedRepo.repoDir,
         via: 'gh.issues',
         auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
-        repo: GITHUB_DEMO_REPO,
+        into: GITHUB_DEMO_REPO,
         title: `cache test ${Date.now()}`,
         description: 'for cache verification',
       });
@@ -207,7 +207,7 @@ describe.skip('radio.task.pull via gh.issues', () => {
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
           auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
-          repo: GITHUB_DEMO_REPO,
+          from: GITHUB_DEMO_REPO,
           exid: issueNumber,
         }),
       );
@@ -227,7 +227,7 @@ describe.skip('radio.task.pull via gh.issues', () => {
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
           auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
-          repo: GITHUB_DEMO_REPO,
+          from: GITHUB_DEMO_REPO,
           list: true,
           status: 'QUEUED',
         }),

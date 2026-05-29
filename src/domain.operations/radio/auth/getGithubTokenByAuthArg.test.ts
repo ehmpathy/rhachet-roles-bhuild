@@ -169,7 +169,7 @@ describe('getGithubTokenByAuthArg', () => {
         getAuthFromKeyrack.mockResolvedValue({ token: 'keyrack-token-123' });
 
         const result = await getGithubTokenByAuthArg(
-          { auth: undefined },
+          { auth: null },
           { env: {}, shx: mockShx('') },
         );
         expect(result.token).toBe('keyrack-token-123');
@@ -190,7 +190,7 @@ describe('getGithubTokenByAuthArg', () => {
 
         await expect(
           getGithubTokenByAuthArg(
-            { auth: undefined },
+            { auth: null },
             { env: {}, shx: mockShx('') },
           ),
         ).rejects.toThrow('keyrack: credential not found');

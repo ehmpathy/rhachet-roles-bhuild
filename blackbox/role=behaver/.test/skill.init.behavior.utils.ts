@@ -31,7 +31,9 @@ export const asSnapshotStable = (stdout: string): string =>
     // mask repo name variations in temp paths (worktree vs non-worktree)
     .replace(/\/tmp\/test-fns\/rhachet-roles-bhuild[^/]*/g, '/tmp/test-fns/{REPO}')
     // mask stack trace paths (local vs CI): /home/.../dist/ -> {DIST}/
-    .replace(/\/home\/[^/]+\/[^\s]+\/dist\//g, '{DIST}/');
+    .replace(/\/home\/[^/]+\/[^\s]+\/dist\//g, '{DIST}/')
+    // mask guard review hashes: .guard.review.i1.<64-hex>.r1.md -> .guard.review.i1.{HASH}.r1.md
+    .replace(/\.guard\.review\.i\d+\.[a-f0-9]{64}/g, '.guard.review.i{N}.{HASH}');
 
 export const SCRIPT_PATH = path.join(
   __dirname,

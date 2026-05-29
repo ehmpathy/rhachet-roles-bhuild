@@ -1,5 +1,5 @@
-import type { RadioChannel } from '../../../domain.objects/RadioChannel';
 import {
+  type ContextDispatchRadio,
   type ContextGithubAuth,
   type ContextGitRepo,
   isContextGithubAuth,
@@ -12,15 +12,4 @@ export {
   daoRadioTaskViaOsFileops,
   isContextGithubAuth,
 };
-export type { ContextGithubAuth, ContextGitRepo };
-
-/**
- * .what = generic context type that requires auth based on channel
- * .why = enables type-safe context requirements per channel
- *
- * .critical = GH_ISSUES requires ContextGithubAuth; OS_FILEOPS only needs ContextGitRepo
- */
-export type ContextDispatchRadio<TChannel extends RadioChannel> =
-  TChannel extends RadioChannel.GH_ISSUES
-    ? ContextGithubAuth & ContextGitRepo
-    : ContextGitRepo;
+export type { ContextDispatchRadio, ContextGithubAuth, ContextGitRepo };

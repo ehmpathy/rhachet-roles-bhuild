@@ -12,7 +12,7 @@ import { genConsumerRepo, runRhachetSkill } from '../.test/infra';
 const runRadioTaskPush = (input: {
   repoDir: string;
   via: string;
-  repo?: string;
+  into?: string;
   title?: string;
   description?: string;
   exid?: string;
@@ -21,7 +21,7 @@ const runRadioTaskPush = (input: {
 }) => {
   const args = [
     `--via ${input.via}`,
-    input.repo ? `--repo "${input.repo}"` : '',
+    input.into ? `--into "${input.into}"` : '',
     input.title ? `--title "${input.title}"` : '',
     input.description ? `--description "${input.description}"` : '',
     input.exid ? `--exid "${input.exid}"` : '',
@@ -67,7 +67,7 @@ describe('radio.task.push via os.fileops', () => {
         runRadioTaskPush({
           repoDir: testGitRepo.repoDir,
           via: 'os.fileops',
-          repo: `${testRepo.owner}/${testRepo.name}`,
+          into: `${testRepo.owner}/${testRepo.name}`,
           title: 'test task from acceptance',
           description: 'this is a test task',
         }),
@@ -103,7 +103,7 @@ describe('radio.task.push via os.fileops', () => {
         runRadioTaskPush({
           repoDir: testGitRepo.repoDir,
           via: 'os.fileops',
-          repo: `${testRepo.owner}/${testRepo.name}`,
+          into: `${testRepo.owner}/${testRepo.name}`,
           description: 'no title provided',
         }),
       );
@@ -123,7 +123,7 @@ describe('radio.task.push via os.fileops', () => {
         runRadioTaskPush({
           repoDir: testGitRepo.repoDir,
           via: 'os.fileops',
-          repo: `${testRepo.owner}/${testRepo.name}`,
+          into: `${testRepo.owner}/${testRepo.name}`,
           title: 'no description task',
         }),
       );
@@ -164,7 +164,7 @@ describe('radio.task.push via os.fileops', () => {
         runRadioTaskPush({
           repoDir: testGitRepo.repoDir,
           via: 'os.fileops',
-          repo: `${idemRepo.owner}/${idemRepo.name}`,
+          into: `${idemRepo.owner}/${idemRepo.name}`,
           title: 'findsert duplicate task',
           description: 'first push',
           idem: 'findsert',
@@ -180,7 +180,7 @@ describe('radio.task.push via os.fileops', () => {
         const secondResult = runRadioTaskPush({
           repoDir: testGitRepo.repoDir,
           via: 'os.fileops',
-          repo: `${idemRepo.owner}/${idemRepo.name}`,
+          into: `${idemRepo.owner}/${idemRepo.name}`,
           title: 'findsert duplicate task',
           description: 'second push',
           idem: 'findsert',
@@ -195,7 +195,7 @@ describe('radio.task.push via os.fileops', () => {
         runRadioTaskPush({
           repoDir: testGitRepo.repoDir,
           via: 'os.fileops',
-          repo: `${idemRepo.owner}/${idemRepo.name}`,
+          into: `${idemRepo.owner}/${idemRepo.name}`,
           title: 'upsert duplicate task',
           description: 'first version',
           idem: 'upsert',
@@ -210,7 +210,7 @@ describe('radio.task.push via os.fileops', () => {
         const secondResult = runRadioTaskPush({
           repoDir: testGitRepo.repoDir,
           via: 'os.fileops',
-          repo: `${idemRepo.owner}/${idemRepo.name}`,
+          into: `${idemRepo.owner}/${idemRepo.name}`,
           title: 'upsert duplicate task',
           description: 'updated version',
           idem: 'upsert',
@@ -265,7 +265,7 @@ describe('radio.task.push via os.fileops', () => {
         const result = runRadioTaskPush({
           repoDir: consumer.repoDir,
           via: 'os.fileops',
-          repo: `${statusRepo.owner}/${statusRepo.name}`,
+          into: `${statusRepo.owner}/${statusRepo.name}`,
           title: 'task for status test',
           description: 'will be claimed',
         });
@@ -292,7 +292,7 @@ describe('radio.task.push via os.fileops', () => {
         const claimResult = runRadioTaskPush({
           repoDir: consumer.repoDir,
           via: 'os.fileops',
-          repo: `${statusRepo.owner}/${statusRepo.name}`,
+          into: `${statusRepo.owner}/${statusRepo.name}`,
           exid: taskExid,
           status: 'CLAIMED',
         });
@@ -310,7 +310,7 @@ describe('radio.task.push via os.fileops', () => {
         const deliverResult = runRadioTaskPush({
           repoDir: consumer.repoDir,
           via: 'os.fileops',
-          repo: `${statusRepo.owner}/${statusRepo.name}`,
+          into: `${statusRepo.owner}/${statusRepo.name}`,
           exid: taskExid,
           status: 'DELIVERED',
         });
@@ -335,7 +335,7 @@ describe('radio.task.push via os.fileops', () => {
           repo: 'bhuild',
           role: 'dispatcher',
           skill: 'radio.task.push',
-          args: `--title "test" --description "test" --repo "${testRepo.owner}/${testRepo.name}"`,
+          args: `--title "test" --description "test" --into "${testRepo.owner}/${testRepo.name}"`,
           repoDir: testGitRepo.repoDir,
         });
         expect(result.exitCode).not.toBe(0);
@@ -368,7 +368,7 @@ describe('radio.task.push via os.fileops', () => {
         runRadioTaskPush({
           repoDir: testGitRepo.repoDir,
           via: 'os.fileops',
-          repo: `${formatRepo.owner}/${formatRepo.name}`,
+          into: `${formatRepo.owner}/${formatRepo.name}`,
           title: 'format test task',
           description: 'verify file format',
         }),
@@ -432,7 +432,7 @@ describe('radio.task.push via os.fileops', () => {
         runRadioTaskPush({
           repoDir: testGitRepo.repoDir,
           via: 'os.fileops',
-          repo: `${bootstrapRepo.owner}/${bootstrapRepo.name}`,
+          into: `${bootstrapRepo.owner}/${bootstrapRepo.name}`,
           title: 'bootstrap test',
           description: 'triggers bootstrap',
         }),

@@ -23,7 +23,7 @@ import { getAuthFromKeyrack } from './getAuthFromKeyrack';
  *   - BadRequestError when as-human in test environment (tests must use explicit tokens)
  */
 export const getGithubTokenByAuthArg = async (
-  input: { auth: string | undefined },
+  input: { auth: string | null },
   context: {
     env: NodeJS.ProcessEnv;
     shx: (command: string) => Promise<{ stdout: string; stderr: string }>;

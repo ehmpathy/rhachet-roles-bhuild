@@ -1,27 +1,41 @@
 /**
- * .what = pull tasks from a radio channel
- * .how  = TypeScript implementation for radio.task.pull.sh skill
+ * .what = cli entry point for radio.task.pull skill
+ * .why  = enables task retrieval from radio channels via shell
+ *
+ * options:
+ *   --via     channel: gh.issues or os.fileops (required)
+ *   --from    source repo as "owner/name" (default: current git repo)
+ *   --list    list all tasks
+ *   --exid    fetch specific task by external id
+ *   --title   fetch specific task by title
+ *   --status  filter by status: QUEUED, CLAIMED, DELIVERED
+ *   --limit   max number of tasks to return
+ *   --auth    auth mode: "as-human" or "as-robot:ENV_VAR_NAME"
  *
  * usage:
  *   radio.task.pull --via gh.issues --list
+ *   radio.task.pull --via gh.issues --from owner/repo --list
  *   radio.task.pull --via os.fileops --exid 123
  *   radio.task.pull --via gh.issues --list --status QUEUED
  */
 
 import { z } from 'zod';
 
-import type { ContextDispatchRadio } from '@src/access/daos/daoRadioTask';
 import { RadioChannel } from '@src/domain.objects/RadioChannel';
-import { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
 import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
-import { getGithubTokenByAuthArg } from '@src/domain.operations/radio/auth/getGithubTokenByAuthArg';
+import { asPullModeFromArgs } from '@src/domain.operations/radio/cli/asPullModeFromArgs';
+import { asTaskDetailOutput } from '@src/domain.operations/radio/cli/asTaskDetailOutput';
+import { asTaskListOutput } from '@src/domain.operations/radio/cli/asTaskListOutput';
+import { getOneRadioContextFromCliArgs } from '@src/domain.operations/radio/cli/getOneRadioContextFromCliArgs';
+import { getOneRadioTaskRepoFromCliArg } from '@src/domain.operations/radio/cli/getOneRadioTaskRepoFromCliArg';
 import {
   radioTaskPullAll,
   radioTaskPullOne,
 } from '@src/domain.operations/radio/task/pull/radioTaskPull';
 import { getCliArgs } from '@src/infra/cli';
-import { getRepoFromGitContext } from '@src/infra/git/getRepoFromGitContext';
 import { shx } from '@src/infra/shell/shx';
+
+import { outputRadioResult } from './outputRadioResult';
 
 // ────────────────────────────────────────────────────────────────────
 // schema
@@ -36,8 +50,8 @@ const schemaOfArgs = z.object({
     // supports: "as-human" or "as-robot:ENV_VAR_NAME"
     auth: z.string().optional(),
 
-    // optional: target repo
-    repo: z.string().optional(),
+    // optional: source repo (e.g., "owner/name")
+    from: z.string().optional(),
 
     // mode: list or single
     list: z.boolean().optional(),
@@ -49,6 +63,7 @@ const schemaOfArgs = z.object({
     limit: z.coerce.number().optional(),
 
     // rhachet passthrough args (optional, ignored)
+    repo: z.string().optional(),
     role: z.string().optional(),
     skill: z.string().optional(),
     s: z.string().optional(),
@@ -57,129 +72,76 @@ const schemaOfArgs = z.object({
 });
 
 // ────────────────────────────────────────────────────────────────────
-// helpers
-// ────────────────────────────────────────────────────────────────────
-
-/**
- * .what = parse "owner/name" string into RadioTaskRepo
- * .why = cli receives repo as string, domain expects object
- */
-const parseRepo = (repoStr: string): RadioTaskRepo => {
-  const [owner, name] = repoStr.split('/');
-  if (!owner || !name) {
-    throw new Error(
-      `invalid repo format: "${repoStr}" (expected "owner/name")`,
-    );
-  }
-  return new RadioTaskRepo({ owner, name });
-};
-
-// ────────────────────────────────────────────────────────────────────
 // exported CLI entry point
 // ────────────────────────────────────────────────────────────────────
 
 export const cliRadioTaskPull = async (): Promise<void> => {
   const { named } = getCliArgs({ schema: schemaOfArgs });
 
-  // resolve repo from cli arg or git context
-  const repo = named.repo
-    ? parseRepo(named.repo)
-    : await getRepoFromGitContext();
-  if (!repo) {
-    console.error('⛈️  error: --repo required (not in a git repo)');
-    process.exit(1);
-  }
+  // derive repo from --from arg or git context
+  const repo = await getOneRadioTaskRepoFromCliArg({
+    arg: named.from ?? null,
+    argName: '--from',
+    errorContext: {
+      notFoundMessage:
+        '--from required (not in a git repo); specify --from owner/repo or run from a git repository',
+      hint: 'provide --from owner/repo or run from within a git repository',
+    },
+  });
 
-  // build context based on channel
-  const context: ContextDispatchRadio<typeof named.via> =
-    named.via === RadioChannel.GH_ISSUES
-      ? {
-          github: {
-            auth: await getGithubTokenByAuthArg(
-              { auth: named.auth },
-              { env: process.env, shx },
-            ),
-          },
-          git: { repo },
-        }
-      : { git: { repo } };
+  // determine pull mode from args
+  const mode = asPullModeFromArgs({
+    list: named.list ?? null,
+    exid: named.exid ?? null,
+    title: named.title ?? null,
+    status: named.status ?? null,
+    limit: named.limit ?? null,
+  });
 
-  // determine mode: list or single
-  const isListMode = named.list === true;
-  const isSingleMode = named.exid !== undefined || named.title !== undefined;
-
-  if (!isListMode && !isSingleMode) {
-    console.error('⛈️  error: specify --list or --exid/--title');
-    process.exit(1);
-  }
-
-  if (isListMode && isSingleMode) {
-    console.error('⛈️  error: cannot use --list with --exid/--title');
-    process.exit(1);
-  }
+  // assemble context for channel (may involve auth)
+  const context = await getOneRadioContextFromCliArgs(
+    {
+      via: named.via,
+      repo,
+      auth: named.auth ?? null,
+    },
+    { env: process.env, shx },
+  );
 
   // handle list mode
-  if (isListMode) {
+  if (mode.kind === 'list') {
     const result = await radioTaskPullAll(
       {
         via: named.via,
         repo,
-        filter: named.status ? { status: named.status } : undefined,
-        limit: named.limit,
+        ...(mode.filter !== null && { filter: mode.filter }),
+        ...(mode.limit !== null && { limit: mode.limit }),
       },
       context,
     );
 
-    console.log(`🎙️ tasks on ${named.via}:`);
-
-    if (result.tasks.length === 0) {
-      console.log('   └─ (no tasks found)');
-      return;
-    }
-
-    for (let i = 0; i < result.tasks.length; i++) {
-      const task = result.tasks[i]!;
-      const isLast = i === result.tasks.length - 1;
-      const prefix = isLast ? '└─' : '├─';
-      console.log(`   ${prefix} [${task.status}] ${task.exid}: ${task.title}`);
-    }
+    outputRadioResult({
+      message: asTaskListOutput({ tasks: result.tasks, via: named.via }),
+    });
     return;
   }
 
   // handle single mode
-  const ref = named.exid ? { exid: named.exid } : { title: named.title! };
   const result = await radioTaskPullOne(
     {
       via: named.via,
       repo,
-      ref,
+      ref: mode.ref,
     },
     context,
   );
 
-  console.log(`🎙️ task - ${result.task.title}`);
-  console.log(`   ├─ exid: ${result.task.exid}`);
-  console.log(`   ├─ status: ${result.task.status}`);
-  console.log(`   ├─ repo: ${result.task.repo.owner}/${result.task.repo.name}`);
-  console.log(`   ├─ pushedBy: ${result.task.pushedBy}`);
-  console.log(`   ├─ pushedAt: ${result.task.pushedAt}`);
-
-  if (result.task.claimedBy) {
-    console.log(`   ├─ claimedBy: ${result.task.claimedBy}`);
-    console.log(`   ├─ claimedAt: ${result.task.claimedAt}`);
-  }
-
-  if (result.task.branch) {
-    console.log(`   ├─ branch: ${result.task.branch}`);
-  }
-
-  if (result.cached) {
-    console.log(`   └─ 📥 cached to local .radio/`);
-  } else {
-    console.log(`   └─ via: ${named.via}`);
-  }
-
-  console.log('');
-  console.log('description:');
-  console.log(result.task.description);
+  outputRadioResult({
+    message: asTaskDetailOutput({
+      task: result.task,
+      via: named.via,
+      outcome: null,
+      cached: result.cached,
+    }),
+  });
 };
