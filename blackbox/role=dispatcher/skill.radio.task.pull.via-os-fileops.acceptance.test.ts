@@ -12,7 +12,7 @@ import { genConsumerRepo, runRhachetSkill } from '../.test/infra';
 const runRadioTaskPush = (input: {
   repoDir: string;
   via: string;
-  repo: string;
+  into: string;
   title: string;
   description: string;
   exid?: string;
@@ -20,7 +20,7 @@ const runRadioTaskPush = (input: {
 }) => {
   const args = [
     `--via ${input.via}`,
-    `--repo "${input.repo}"`,
+    `--into "${input.into}"`,
     input.title ? `--title "${input.title}"` : '',
     input.description ? `--description "${input.description}"` : '',
     input.exid ? `--exid "${input.exid}"` : '',
@@ -46,7 +46,7 @@ const runRadioTaskPush = (input: {
 const runRadioTaskPull = (input: {
   repoDir: string;
   via: string;
-  repo?: string;
+  from?: string;
   list?: boolean;
   exid?: string;
   title?: string;
@@ -54,7 +54,7 @@ const runRadioTaskPull = (input: {
 }) => {
   const args = [
     `--via ${input.via}`,
-    input.repo ? `--repo "${input.repo}"` : '',
+    input.from ? `--from "${input.from}"` : '',
     input.list ? '--list' : '',
     input.exid ? `--exid "${input.exid}"` : '',
     input.title ? `--title "${input.title}"` : '',
@@ -99,7 +99,7 @@ describe('radio.task.pull via os.fileops', () => {
         runRadioTaskPull({
           repoDir: consumer.repoDir,
           via: 'os.fileops',
-          repo: `${emptyRepo.owner}/${emptyRepo.name}`,
+          from: `${emptyRepo.owner}/${emptyRepo.name}`,
           list: true,
         }),
       );
@@ -139,7 +139,7 @@ describe('radio.task.pull via os.fileops', () => {
       runRadioTaskPush({
         repoDir: consumer.repoDir,
         via: 'os.fileops',
-        repo: `${tasksRepo.owner}/${tasksRepo.name}`,
+        into: `${tasksRepo.owner}/${tasksRepo.name}`,
         title: 'first pull test task',
         description: 'will stay enqueued',
       });
@@ -148,7 +148,7 @@ describe('radio.task.pull via os.fileops', () => {
       runRadioTaskPush({
         repoDir: consumer.repoDir,
         via: 'os.fileops',
-        repo: `${tasksRepo.owner}/${tasksRepo.name}`,
+        into: `${tasksRepo.owner}/${tasksRepo.name}`,
         title: 'second pull test task',
         description: 'will be claimed',
       });
@@ -179,7 +179,7 @@ describe('radio.task.pull via os.fileops', () => {
         runRadioTaskPush({
           repoDir: consumer.repoDir,
           via: 'os.fileops',
-          repo: `${tasksRepo.owner}/${tasksRepo.name}`,
+          into: `${tasksRepo.owner}/${tasksRepo.name}`,
           exid: task2Exid,
           title: '',
           description: '',
@@ -199,7 +199,7 @@ describe('radio.task.pull via os.fileops', () => {
         runRadioTaskPull({
           repoDir: consumer.repoDir,
           via: 'os.fileops',
-          repo: `${tasksRepo.owner}/${tasksRepo.name}`,
+          from: `${tasksRepo.owner}/${tasksRepo.name}`,
           list: true,
         }),
       );
@@ -219,7 +219,7 @@ describe('radio.task.pull via os.fileops', () => {
         runRadioTaskPull({
           repoDir: consumer.repoDir,
           via: 'os.fileops',
-          repo: `${tasksRepo.owner}/${tasksRepo.name}`,
+          from: `${tasksRepo.owner}/${tasksRepo.name}`,
           list: true,
           status: 'QUEUED',
         }),
@@ -236,7 +236,7 @@ describe('radio.task.pull via os.fileops', () => {
         runRadioTaskPull({
           repoDir: consumer.repoDir,
           via: 'os.fileops',
-          repo: `${tasksRepo.owner}/${tasksRepo.name}`,
+          from: `${tasksRepo.owner}/${tasksRepo.name}`,
           list: true,
           status: 'CLAIMED',
         }),
@@ -253,7 +253,7 @@ describe('radio.task.pull via os.fileops', () => {
         const result = runRadioTaskPull({
           repoDir: consumer.repoDir,
           via: 'os.fileops',
-          repo: `${tasksRepo.owner}/${tasksRepo.name}`,
+          from: `${tasksRepo.owner}/${tasksRepo.name}`,
           exid: task1Exid,
         });
         expect(result.exitCode).toBe(0);
@@ -266,7 +266,7 @@ describe('radio.task.pull via os.fileops', () => {
         const result = runRadioTaskPull({
           repoDir: consumer.repoDir,
           via: 'os.fileops',
-          repo: `${tasksRepo.owner}/${tasksRepo.name}`,
+          from: `${tasksRepo.owner}/${tasksRepo.name}`,
           title: 'second pull test task',
         });
         expect(result.exitCode).toBe(0);
@@ -279,7 +279,7 @@ describe('radio.task.pull via os.fileops', () => {
         const result = runRadioTaskPull({
           repoDir: consumer.repoDir,
           via: 'os.fileops',
-          repo: `${tasksRepo.owner}/${tasksRepo.name}`,
+          from: `${tasksRepo.owner}/${tasksRepo.name}`,
           exid: 'nonexistent-exid-12345',
         });
         expect(result.exitCode).not.toBe(0);
@@ -299,7 +299,7 @@ describe('radio.task.pull via os.fileops', () => {
           repo: 'bhuild',
           role: 'dispatcher',
           skill: 'radio.task.pull',
-          args: '--list --repo "test/repo"',
+          args: '--list --from "test/repo"',
           repoDir: consumer.repoDir,
         });
         expect(result.exitCode).not.toBe(0);
@@ -311,7 +311,7 @@ describe('radio.task.pull via os.fileops', () => {
         const result = runRadioTaskPull({
           repoDir: consumer.repoDir,
           via: 'os.fileops',
-          repo: 'test/repo',
+          from: 'test/repo',
         });
         expect(result.exitCode).not.toBe(0);
       });
@@ -344,7 +344,7 @@ describe('radio.task.pull via os.fileops', () => {
         runRadioTaskPush({
           repoDir: consumer.repoDir,
           via: 'os.fileops',
-          repo: `${formatRepo.owner}/${formatRepo.name}`,
+          into: `${formatRepo.owner}/${formatRepo.name}`,
           title: 'format test task',
           description: 'for output format check',
         });
@@ -352,7 +352,7 @@ describe('radio.task.pull via os.fileops', () => {
         return runRadioTaskPull({
           repoDir: consumer.repoDir,
           via: 'os.fileops',
-          repo: `${formatRepo.owner}/${formatRepo.name}`,
+          from: `${formatRepo.owner}/${formatRepo.name}`,
           list: true,
         });
       });

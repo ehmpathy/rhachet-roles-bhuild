@@ -27,7 +27,7 @@ const runRadioTaskPush = (input: {
   repoDir: string;
   via: string;
   auth?: string;
-  repo?: string;
+  into?: string;
   title?: string;
   description?: string;
   exid?: string;
@@ -37,7 +37,7 @@ const runRadioTaskPush = (input: {
   const args = [
     `--via ${input.via}`,
     input.auth ? `--auth "${input.auth}"` : '',
-    input.repo ? `--repo "${input.repo}"` : '',
+    input.into ? `--into "${input.into}"` : '',
     input.title ? `--title "${input.title}"` : '',
     input.description ? `--description "${input.description}"` : '',
     input.exid ? `--exid "${input.exid}"` : '',
@@ -72,7 +72,7 @@ describe('radio.task.push via gh.issues', () => {
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
-          repo: GITHUB_DEMO_REPO,
+          into: GITHUB_DEMO_REPO,
           title: `test task ${Date.now()}`,
           description: 'automated acceptance test task',
         }),
@@ -101,7 +101,7 @@ describe('radio.task.push via gh.issues', () => {
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
-          repo: GITHUB_DEMO_REPO,
+          into: GITHUB_DEMO_REPO,
           description: 'no title',
         }),
       );
@@ -125,7 +125,7 @@ describe('radio.task.push via gh.issues', () => {
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
-          repo: GITHUB_DEMO_REPO,
+          into: GITHUB_DEMO_REPO,
           title: `status test ${Date.now()}`,
           description: 'for status transition test',
         });
@@ -147,7 +147,7 @@ describe('radio.task.push via gh.issues', () => {
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
-          repo: GITHUB_DEMO_REPO,
+          into: GITHUB_DEMO_REPO,
           exid: issueNumber,
           status: 'CLAIMED',
         });
@@ -160,7 +160,7 @@ describe('radio.task.push via gh.issues', () => {
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
-          repo: GITHUB_DEMO_REPO,
+          into: GITHUB_DEMO_REPO,
           exid: issueNumber,
           status: 'DELIVERED',
         });
@@ -179,7 +179,7 @@ describe('radio.task.push via gh.issues', () => {
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
-          repo: GITHUB_DEMO_REPO,
+          into: GITHUB_DEMO_REPO,
           title: uniqueTitle,
           description: 'first push',
           idem: 'findsert',
@@ -199,7 +199,7 @@ describe('radio.task.push via gh.issues', () => {
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
-          repo: GITHUB_DEMO_REPO,
+          into: GITHUB_DEMO_REPO,
           title: uniqueTitle,
           description: 'second push',
           idem: 'findsert',
@@ -217,7 +217,7 @@ describe('radio.task.push via gh.issues', () => {
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
-          repo: GITHUB_DEMO_REPO,
+          into: GITHUB_DEMO_REPO,
           title: `format test ${Date.now()}`,
           description: 'verify issue format',
         }),

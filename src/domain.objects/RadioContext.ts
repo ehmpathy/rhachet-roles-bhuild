@@ -1,3 +1,4 @@
+import type { RadioChannel } from './RadioChannel';
 import type { RadioTaskRepo } from './RadioTaskRepo';
 
 /**
@@ -33,3 +34,14 @@ export const isContextGithubAuth = (
 ): context is ContextGithubAuth & ContextGitRepo => {
   return 'github' in context && context.github?.auth !== undefined;
 };
+
+/**
+ * .what = generic context type that requires auth based on channel
+ * .why = enables type-safe context requirements per channel
+ *
+ * .critical = GH_ISSUES requires ContextGithubAuth; OS_FILEOPS only needs ContextGitRepo
+ */
+export type ContextDispatchRadio<TChannel extends RadioChannel> =
+  TChannel extends RadioChannel.GH_ISSUES
+    ? ContextGithubAuth & ContextGitRepo
+    : ContextGitRepo;
