@@ -1,13 +1,17 @@
 import { BadRequestError } from 'helpful-errors';
 
-import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
+import type { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
 
 /**
  * .what = discriminated union for pull operation mode
  * .why  = enables type-safe branch in orchestrator
  */
 export type PullMode =
-  | { kind: 'list'; filter: { status: RadioTaskStatus } | null; limit: number | null }
+  | {
+      kind: 'list';
+      filter: { status: RadioTaskStatus } | null;
+      limit: number | null;
+    }
   | { kind: 'single'; ref: { exid: string } | { title: string } };
 
 /**

@@ -1,5 +1,5 @@
-import type { ContextDispatchRadio } from '@src/domain.objects/RadioContext';
 import { RadioChannel } from '@src/domain.objects/RadioChannel';
+import type { ContextDispatchRadio } from '@src/domain.objects/RadioContext';
 import type { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
 import { getGithubTokenByAuthArg } from '@src/domain.operations/radio/auth/getGithubTokenByAuthArg';
 

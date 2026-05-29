@@ -18,10 +18,16 @@ export const asTaskDetailOutput = (input: {
 
   // build lines immutably via filter for conditional entries
   const conditionalLines = [
-    task.pushedBy !== undefined ? `   ├─ pushedBy: ${task.pushedBy ?? '(not set)'}` : null,
-    task.pushedAt !== undefined ? `   ├─ pushedAt: ${task.pushedAt ?? '(not set)'}` : null,
+    task.pushedBy !== undefined
+      ? `   ├─ pushedBy: ${task.pushedBy ?? '(not set)'}`
+      : null,
+    task.pushedAt !== undefined
+      ? `   ├─ pushedAt: ${task.pushedAt ?? '(not set)'}`
+      : null,
     task.claimedBy != null ? `   ├─ claimedBy: ${task.claimedBy}` : null,
-    task.claimedBy != null ? `   ├─ claimedAt: ${task.claimedAt ?? '(not set)'}` : null,
+    task.claimedBy != null
+      ? `   ├─ claimedAt: ${task.claimedAt ?? '(not set)'}`
+      : null,
     task.branch != null ? `   ├─ branch: ${task.branch}` : null,
     cached ? `   └─ 📥 cached to local .radio/` : null,
     !cached ? `   └─ via: ${via}` : null,

@@ -28,13 +28,14 @@ import { asTaskDetailOutput } from '@src/domain.operations/radio/cli/asTaskDetai
 import { asTaskListOutput } from '@src/domain.operations/radio/cli/asTaskListOutput';
 import { getOneRadioContextFromCliArgs } from '@src/domain.operations/radio/cli/getOneRadioContextFromCliArgs';
 import { getOneRadioTaskRepoFromCliArg } from '@src/domain.operations/radio/cli/getOneRadioTaskRepoFromCliArg';
-import { outputRadioResult } from './outputRadioResult';
 import {
   radioTaskPullAll,
   radioTaskPullOne,
 } from '@src/domain.operations/radio/task/pull/radioTaskPull';
 import { getCliArgs } from '@src/infra/cli';
 import { shx } from '@src/infra/shell/shx';
+
+import { outputRadioResult } from './outputRadioResult';
 
 // ────────────────────────────────────────────────────────────────────
 // schema

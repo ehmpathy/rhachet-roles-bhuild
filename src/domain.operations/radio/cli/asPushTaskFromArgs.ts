@@ -1,7 +1,7 @@
 import { BadRequestError } from 'helpful-errors';
 
-import { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
-import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
+import type { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
+import type { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
 
 /**
  * .what = task shape for push operation

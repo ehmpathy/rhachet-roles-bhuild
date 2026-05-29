@@ -1,6 +1,6 @@
 import { ConstraintError } from 'helpful-errors';
 
-import { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
+import type { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
 import { getRepoFromGitContext } from '@src/infra/git/getRepoFromGitContext';
 
 import { asRadioTaskRepoFromArg } from './asRadioTaskRepoFromArg';
