@@ -1,0 +1,56 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`radio.uses given: [case5] help output when: [t0] --help is called then: shows usage 1`] = `
+"usage: radio.uses allow
+       radio.uses block
+       radio.uses del
+       radio.uses get
+
+commands:
+  allow  allow radio in this repo
+  block  block radio in this repo
+  del    remove local config, defer to org/global
+  get    check local state
+
+options:
+  --help, -h            show this help
+"
+`;
+
+exports[`radio.uses given: [case5] help output when: [t1] --global --help is called then: shows global usage 1`] = `
+"usage: radio.uses --global block
+       radio.uses --global allow
+       radio.uses --global get
+
+commands:
+  block  pause all radio usage globally
+  allow  lift global blocker, resume org/local behavior
+  get    check global blocker state
+
+options:
+  --help, -h            show this help
+"
+`;
+
+exports[`radio.uses given: [case5] help output when: [t2] --org --help is called then: shows org usage 1`] = `
+"usage: radio.uses --org <org> allow
+       radio.uses --org <org> block
+       radio.uses --org <org> del
+       radio.uses --org <org> get
+       radio.uses --org get                  # show all
+
+commands:
+  allow  allow radio for specified org
+  block  block radio for specified org
+  del    remove org config, defer to @all
+  get    check org config(s)
+
+options:
+  --org <name>          org name (e.g., ehmpathy, ahbode, @all)
+  --help, -h            show this help
+
+examples:
+  radio.uses --org @all block                # block all by default
+  radio.uses --org ehmpathy allow            # allow ehmpathy
+"
+`;

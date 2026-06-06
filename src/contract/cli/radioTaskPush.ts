@@ -27,6 +27,7 @@ import { asPushTaskFromArgs } from '@src/domain.operations/radio/cli/asPushTaskF
 import { asTaskDetailOutput } from '@src/domain.operations/radio/cli/asTaskDetailOutput';
 import { getOneRadioContextFromCliArgs } from '@src/domain.operations/radio/cli/getOneRadioContextFromCliArgs';
 import { getOneRadioTaskRepoFromCliArg } from '@src/domain.operations/radio/cli/getOneRadioTaskRepoFromCliArg';
+import { getOneRadioUsagePermissionDecision } from '@src/domain.operations/radio/permission/getOneRadioUsagePermissionDecision';
 import { radioTaskPush } from '@src/domain.operations/radio/task/push/radioTaskPush';
 import { getCliArgs } from '@src/infra/cli';
 import { shx } from '@src/infra/shell/shx';
@@ -84,6 +85,32 @@ export const cliRadioTaskPush = async (): Promise<void> => {
       hint: 'provide --into owner/repo or run from within a git repository',
     },
   });
+
+  // check permission to push to this repo
+  const permission = await getOneRadioUsagePermissionDecision({
+    targetRepo: `${repo.owner}/${repo.name}`,
+    sourceCwd: process.cwd(),
+  });
+  if (!permission.allowed) {
+    // generate hint based on block level
+    const hintCommand = (() => {
+      if (permission.level === 'global')
+        return 'npx rhachet run --skill radio.uses --global allow';
+      if (permission.level === 'org')
+        return `npx rhachet run --skill radio.uses --org ${repo.owner} allow`;
+      return 'npx rhachet run --skill radio.uses allow';
+    })();
+
+    outputRadioResult({
+      message: `radio.task.push blocked: ${permission.reason}`,
+      isError: true,
+      hint: {
+        ask: 'ask your human to grant:',
+        command: hintCommand,
+      },
+    });
+    process.exit(2);
+  }
 
   // validate and transform task args
   const task = asPushTaskFromArgs({

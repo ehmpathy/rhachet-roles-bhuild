@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+
 import { BadRequestError } from 'helpful-errors';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
@@ -18,6 +21,33 @@ import {
  *   npm run test:acceptance -- skill.radio.task.push.via-gh-issues
  */
 
+/**
+ * .what = invoke radio.uses skill to set up permissions
+ * .why = radio.task.push/pull requires radio.uses permission
+ */
+const runRadioUses = (input: {
+  repoDir: string;
+  args: string;
+  homeDir?: string;
+}): { stdout: string; stderr: string; exitCode: number } => {
+  const result = runRhachetSkill({
+    repo: 'bhuild',
+    role: 'dispatcher',
+    skill: 'radio.uses',
+    args: input.args,
+    repoDir: input.repoDir,
+    env: {
+      __I_AM_HUMAN: 'true',
+      ...(input.homeDir ? { HOME: input.homeDir } : {}),
+    },
+    timeout: 30000,
+  });
+  return {
+    stdout: result.output,
+    stderr: '',
+    exitCode: result.exitCode,
+  };
+};
 
 /**
  * .what = runs radio.task.push via rhachet dispatch
@@ -33,6 +63,7 @@ const runRadioTaskPush = (input: {
   exid?: string;
   status?: string;
   idem?: string;
+  homeDir?: string;
 }) => {
   const args = [
     `--via ${input.via}`,
@@ -53,6 +84,7 @@ const runRadioTaskPush = (input: {
     skill: 'radio.task.push',
     args,
     repoDir: input.repoDir,
+    env: input.homeDir ? { HOME: input.homeDir } : {},
     timeout: 60000, // gh api calls can be slow
   });
 };
@@ -60,16 +92,27 @@ const runRadioTaskPush = (input: {
 describe('radio.task.push via gh.issues', () => {
 
   // shared consumer repo for all test cases (pnpm install is expensive)
-  const sharedRepo = useBeforeAll(async () =>
-    genConsumerRepo({ prefix: 'radio-gh-acpt-' }),
-  );
+  const scene = useBeforeAll(async () => {
+    const consumer = await genConsumerRepo({ prefix: 'radio-gh-acpt-' });
+    const homeDir = path.join(consumer.repoDir, '.home');
+    fs.mkdirSync(homeDir);
+
+    // allow radio usage for @all orgs
+    runRadioUses({
+      repoDir: consumer.repoDir,
+      args: '--org @all allow',
+      homeDir,
+    });
+
+    return { consumer, homeDir };
+  });
 
   given('[case1] push new task to gh.issues (default auth via keyrack)', () => {
 
     when('[t0] push with title and description (no --auth flag)', () => {
       const result = useBeforeAll(async () =>
         runRadioTaskPush({
-          repoDir: sharedRepo.repoDir,
+          repoDir: scene.consumer.repoDir, homeDir: scene.homeDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
           into: GITHUB_DEMO_REPO,
@@ -98,7 +141,7 @@ describe('radio.task.push via gh.issues', () => {
     when('[t1] push without title (no --auth flag)', () => {
       const result = useBeforeAll(async () =>
         runRadioTaskPush({
-          repoDir: sharedRepo.repoDir,
+          repoDir: scene.consumer.repoDir, homeDir: scene.homeDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
           into: GITHUB_DEMO_REPO,
@@ -122,7 +165,7 @@ describe('radio.task.push via gh.issues', () => {
     when('[t0] create then claim task', () => {
       const createResult = useBeforeAll(async () => {
         const result = runRadioTaskPush({
-          repoDir: sharedRepo.repoDir,
+          repoDir: scene.consumer.repoDir, homeDir: scene.homeDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
           into: GITHUB_DEMO_REPO,
@@ -144,7 +187,7 @@ describe('radio.task.push via gh.issues', () => {
 
       then('claim updates status', async () => {
         const claimResult = runRadioTaskPush({
-          repoDir: sharedRepo.repoDir,
+          repoDir: scene.consumer.repoDir, homeDir: scene.homeDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
           into: GITHUB_DEMO_REPO,
@@ -157,7 +200,7 @@ describe('radio.task.push via gh.issues', () => {
 
       then('deliver closes the issue', async () => {
         const deliverResult = runRadioTaskPush({
-          repoDir: sharedRepo.repoDir,
+          repoDir: scene.consumer.repoDir, homeDir: scene.homeDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
           into: GITHUB_DEMO_REPO,
@@ -176,7 +219,7 @@ describe('radio.task.push via gh.issues', () => {
     when('[t0] findsert mode with duplicate title', () => {
       const firstResult = useBeforeAll(async () =>
         runRadioTaskPush({
-          repoDir: sharedRepo.repoDir,
+          repoDir: scene.consumer.repoDir, homeDir: scene.homeDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
           into: GITHUB_DEMO_REPO,
@@ -196,7 +239,7 @@ describe('radio.task.push via gh.issues', () => {
         await new Promise((resolve) => setTimeout(resolve, 5000));
 
         const secondResult = runRadioTaskPush({
-          repoDir: sharedRepo.repoDir,
+          repoDir: scene.consumer.repoDir, homeDir: scene.homeDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
           into: GITHUB_DEMO_REPO,
@@ -214,7 +257,7 @@ describe('radio.task.push via gh.issues', () => {
     when('[t0] task is pushed to gh.issues', () => {
       const result = useBeforeAll(async () =>
         runRadioTaskPush({
-          repoDir: sharedRepo.repoDir,
+          repoDir: scene.consumer.repoDir, homeDir: scene.homeDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
           into: GITHUB_DEMO_REPO,
