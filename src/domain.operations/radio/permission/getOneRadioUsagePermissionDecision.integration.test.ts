@@ -73,7 +73,7 @@ describe('getOneRadioUsagePermissionDecision.integration', () => {
     });
   });
 
-  given('[case3] local override of org block', () => {
+  given('[case3] org block overrides local allow (org > local)', () => {
     const result = useBeforeAll(async () => {
       const cwd = path.join(os.tmpdir(), `radio-decision-local-${Date.now()}`);
       const home = path.join(
@@ -95,7 +95,7 @@ describe('getOneRadioUsagePermissionDecision.integration', () => {
         '{ "orgs": { "ehmpathy": "blocked" } }',
       );
 
-      // local allows
+      // local allows — but org > local, so this should be ignored
       await fs.writeFile(
         path.join(meterDir, 'radio.uses.jsonc'),
         '{ "state": "allowed" }',
@@ -113,9 +113,9 @@ describe('getOneRadioUsagePermissionDecision.integration', () => {
     });
 
     when('[t0] decision is requested', () => {
-      then('allowed due to local override', () => {
-        expect(result.allowed).toBe(true);
-        expect(result.reason).toBe('local allowed');
+      then('blocked due to org (org > local)', () => {
+        expect(result.allowed).toBe(false);
+        expect(result.reason).toBe('org blocked');
       });
     });
   });

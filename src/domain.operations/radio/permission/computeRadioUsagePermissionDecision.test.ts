@@ -55,26 +55,26 @@ const TEST_CASES: Array<{
   {
     row: 3,
     description:
-      'global=allowed, @all=blocked, orgX=unset, local=allowed → allowed',
+      'global=allowed, @all=blocked, orgX=unset, local=allowed → blocked (org > local)',
     given: {
       global: { blocked: false },
       org: { orgs: { '@all': 'blocked' } },
       local: { state: 'allowed' },
       targetOrg: 'ehmpathy',
     },
-    expect: { allowed: true, reason: 'local allowed' },
+    expect: { allowed: false, reason: '@all blocked' },
   },
   {
     row: 4,
     description:
-      'global=allowed, @all=blocked, orgX=unset, local=blocked → blocked',
+      'global=allowed, @all=blocked, orgX=unset, local=blocked → blocked (org > local)',
     given: {
       global: { blocked: false },
       org: { orgs: { '@all': 'blocked' } },
       local: { state: 'blocked' },
       targetOrg: 'ehmpathy',
     },
-    expect: { allowed: false, reason: 'local blocked' },
+    expect: { allowed: false, reason: '@all blocked' },
   },
   {
     row: 5,
@@ -91,26 +91,26 @@ const TEST_CASES: Array<{
   {
     row: 6,
     description:
-      'global=allowed, @all=blocked, orgX=allowed, local=allowed → allowed',
+      'global=allowed, @all=blocked, orgX=allowed, local=allowed → allowed (org > local)',
     given: {
       global: { blocked: false },
       org: { orgs: { '@all': 'blocked', ehmpathy: 'allowed' } },
       local: { state: 'allowed' },
       targetOrg: 'ehmpathy',
     },
-    expect: { allowed: true, reason: 'local allowed' },
+    expect: { allowed: true, reason: 'org allowed' },
   },
   {
     row: 7,
     description:
-      'global=allowed, @all=blocked, orgX=allowed, local=blocked → blocked',
+      'global=allowed, @all=blocked, orgX=allowed, local=blocked → allowed (org > local)',
     given: {
       global: { blocked: false },
       org: { orgs: { '@all': 'blocked', ehmpathy: 'allowed' } },
       local: { state: 'blocked' },
       targetOrg: 'ehmpathy',
     },
-    expect: { allowed: false, reason: 'local blocked' },
+    expect: { allowed: true, reason: 'org allowed' },
   },
   {
     row: 8,
@@ -127,26 +127,26 @@ const TEST_CASES: Array<{
   {
     row: 9,
     description:
-      'global=allowed, @all=blocked, orgX=blocked, local=allowed → allowed',
+      'global=allowed, @all=blocked, orgX=blocked, local=allowed → blocked (org > local)',
     given: {
       global: { blocked: false },
       org: { orgs: { '@all': 'blocked', ehmpathy: 'blocked' } },
       local: { state: 'allowed' },
       targetOrg: 'ehmpathy',
     },
-    expect: { allowed: true, reason: 'local allowed' },
+    expect: { allowed: false, reason: 'org blocked' },
   },
   {
     row: 10,
     description:
-      'global=allowed, @all=blocked, orgX=blocked, local=blocked → blocked',
+      'global=allowed, @all=blocked, orgX=blocked, local=blocked → blocked (org > local)',
     given: {
       global: { blocked: false },
       org: { orgs: { '@all': 'blocked', ehmpathy: 'blocked' } },
       local: { state: 'blocked' },
       targetOrg: 'ehmpathy',
     },
-    expect: { allowed: false, reason: 'local blocked' },
+    expect: { allowed: false, reason: 'org blocked' },
   },
 
   // rows 11-19: global=allowed, @all=allowed variations
@@ -165,26 +165,26 @@ const TEST_CASES: Array<{
   {
     row: 12,
     description:
-      'global=allowed, @all=allowed, orgX=unset, local=allowed → allowed',
+      'global=allowed, @all=allowed, orgX=unset, local=allowed → allowed (org > local)',
     given: {
       global: { blocked: false },
       org: { orgs: { '@all': 'allowed' } },
       local: { state: 'allowed' },
       targetOrg: 'ehmpathy',
     },
-    expect: { allowed: true, reason: 'local allowed' },
+    expect: { allowed: true, reason: '@all allowed' },
   },
   {
     row: 13,
     description:
-      'global=allowed, @all=allowed, orgX=unset, local=blocked → blocked',
+      'global=allowed, @all=allowed, orgX=unset, local=blocked → allowed (org > local)',
     given: {
       global: { blocked: false },
       org: { orgs: { '@all': 'allowed' } },
       local: { state: 'blocked' },
       targetOrg: 'ehmpathy',
     },
-    expect: { allowed: false, reason: 'local blocked' },
+    expect: { allowed: true, reason: '@all allowed' },
   },
   {
     row: 14,
@@ -201,26 +201,26 @@ const TEST_CASES: Array<{
   {
     row: 15,
     description:
-      'global=allowed, @all=allowed, orgX=allowed, local=allowed → allowed',
+      'global=allowed, @all=allowed, orgX=allowed, local=allowed → allowed (org > local)',
     given: {
       global: { blocked: false },
       org: { orgs: { '@all': 'allowed', ehmpathy: 'allowed' } },
       local: { state: 'allowed' },
       targetOrg: 'ehmpathy',
     },
-    expect: { allowed: true, reason: 'local allowed' },
+    expect: { allowed: true, reason: 'org allowed' },
   },
   {
     row: 16,
     description:
-      'global=allowed, @all=allowed, orgX=allowed, local=blocked → blocked',
+      'global=allowed, @all=allowed, orgX=allowed, local=blocked → allowed (org > local)',
     given: {
       global: { blocked: false },
       org: { orgs: { '@all': 'allowed', ehmpathy: 'allowed' } },
       local: { state: 'blocked' },
       targetOrg: 'ehmpathy',
     },
-    expect: { allowed: false, reason: 'local blocked' },
+    expect: { allowed: true, reason: 'org allowed' },
   },
   {
     row: 17,
@@ -237,26 +237,26 @@ const TEST_CASES: Array<{
   {
     row: 18,
     description:
-      'global=allowed, @all=allowed, orgX=blocked, local=allowed → allowed',
+      'global=allowed, @all=allowed, orgX=blocked, local=allowed → blocked (org > local)',
     given: {
       global: { blocked: false },
       org: { orgs: { '@all': 'allowed', ehmpathy: 'blocked' } },
       local: { state: 'allowed' },
       targetOrg: 'ehmpathy',
     },
-    expect: { allowed: true, reason: 'local allowed' },
+    expect: { allowed: false, reason: 'org blocked' },
   },
   {
     row: 19,
     description:
-      'global=allowed, @all=allowed, orgX=blocked, local=blocked → blocked',
+      'global=allowed, @all=allowed, orgX=blocked, local=blocked → blocked (org > local)',
     given: {
       global: { blocked: false },
       org: { orgs: { '@all': 'allowed', ehmpathy: 'blocked' } },
       local: { state: 'blocked' },
       targetOrg: 'ehmpathy',
     },
-    expect: { allowed: false, reason: 'local blocked' },
+    expect: { allowed: false, reason: 'org blocked' },
   },
 
   // rows 20-23: global=allowed, @all=unset variations
