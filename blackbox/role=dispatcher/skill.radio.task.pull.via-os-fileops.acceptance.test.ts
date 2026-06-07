@@ -1,9 +1,36 @@
 import fs from 'fs';
-import os from 'os';
 import path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import { genConsumerRepo, runRhachetSkill } from '../.test/infra';
+
+/**
+ * .what = invoke radio.uses skill to set up permissions
+ * .why = radio.task.push/pull requires radio.uses permission
+ */
+const runRadioUses = (input: {
+  repoDir: string;
+  args: string;
+  homeDir?: string;
+}): { stdout: string; stderr: string; exitCode: number } => {
+  const result = runRhachetSkill({
+    repo: 'bhuild',
+    role: 'dispatcher',
+    skill: 'radio.uses',
+    args: input.args,
+    repoDir: input.repoDir,
+    env: {
+      __I_AM_HUMAN: 'true',
+      ...(input.homeDir ? { HOME: input.homeDir } : {}),
+    },
+    timeout: 30000,
+  });
+  return {
+    stdout: result.output,
+    stderr: '',
+    exitCode: result.exitCode,
+  };
+};
 
 /**
  * .what = runs radio.task.push via rhachet dispatch
@@ -17,6 +44,7 @@ const runRadioTaskPush = (input: {
   description: string;
   exid?: string;
   status?: string;
+  homeDir?: string;
 }) => {
   const args = [
     `--via ${input.via}`,
@@ -35,6 +63,7 @@ const runRadioTaskPush = (input: {
     skill: 'radio.task.push',
     args,
     repoDir: input.repoDir,
+    env: input.homeDir ? { HOME: input.homeDir } : {},
     timeout: 30000,
   });
 };
@@ -51,6 +80,7 @@ const runRadioTaskPull = (input: {
   exid?: string;
   title?: string;
   status?: string;
+  homeDir?: string;
 }) => {
   const args = [
     `--via ${input.via}`,
@@ -69,38 +99,43 @@ const runRadioTaskPull = (input: {
     skill: 'radio.task.pull',
     args,
     repoDir: input.repoDir,
+    env: input.homeDir ? { HOME: input.homeDir } : {},
     timeout: 30000,
   });
 };
 
 describe('radio.task.pull via os.fileops', () => {
   given('[case1] empty radio directory', () => {
-    const consumer = useBeforeAll(async () =>
-      genConsumerRepo({ prefix: 'radio-pull-empty-' }),
-    );
     const emptyRepo = {
       owner: 'test-empty',
       name: `test-repo-empty-${Date.now()}`,
     };
-    const emptyRadioDir = path.join(
-      os.homedir(),
-      'git',
-      '.radio',
-      emptyRepo.owner,
-      emptyRepo.name,
-    );
+    const scene = useBeforeAll(async () => {
+      const consumer = await genConsumerRepo({ prefix: 'radio-pull-empty-' });
+      const homeDir = path.join(consumer.repoDir, '.home');
+      fs.mkdirSync(homeDir);
+      // allow radio usage for @all orgs
+      runRadioUses({
+        repoDir: consumer.repoDir,
+        args: '--org @all allow',
+        homeDir,
+      });
+      const emptyRadioDir = path.join(homeDir, 'git', '.radio', emptyRepo.owner, emptyRepo.name);
+      return { consumer, homeDir, emptyRadioDir };
+    });
 
     afterAll(async () => {
-      await fs.promises.rm(emptyRadioDir, { recursive: true, force: true });
+      await fs.promises.rm(scene.emptyRadioDir, { recursive: true, force: true });
     });
 
     when('[t0] pull --list from empty repo', () => {
       const result = useBeforeAll(async () =>
         runRadioTaskPull({
-          repoDir: consumer.repoDir,
+          repoDir: scene.consumer.repoDir,
           via: 'os.fileops',
           from: `${emptyRepo.owner}/${emptyRepo.name}`,
           list: true,
+          homeDir: scene.homeDir,
         }),
       );
 
@@ -116,25 +151,31 @@ describe('radio.task.pull via os.fileops', () => {
   });
 
   given('[case2] radio directory with tasks', () => {
-    const consumer = useBeforeAll(async () =>
-      genConsumerRepo({ prefix: 'radio-pull-tasks-' }),
-    );
     const tasksRepo = {
       owner: 'test-tasks',
       name: `test-repo-tasks-${Date.now()}`,
     };
-    const tasksRadioDir = path.join(
-      os.homedir(),
-      'git',
-      '.radio',
-      tasksRepo.owner,
-      tasksRepo.name,
-    );
-    let task1Exid: string;
-    let task2Exid: string;
 
-    // create test tasks
     const scene = useBeforeAll(async () => {
+      const consumer = await genConsumerRepo({ prefix: 'radio-pull-tasks-' });
+      const homeDir = path.join(consumer.repoDir, '.home');
+      fs.mkdirSync(homeDir);
+
+      // allow radio usage for @all orgs
+      runRadioUses({
+        repoDir: consumer.repoDir,
+        args: '--org @all allow',
+        homeDir,
+      });
+
+      const tasksRadioDir = path.join(
+        homeDir,
+        'git',
+        '.radio',
+        tasksRepo.owner,
+        tasksRepo.name,
+      );
+
       // create first task (QUEUED)
       runRadioTaskPush({
         repoDir: consumer.repoDir,
@@ -142,6 +183,7 @@ describe('radio.task.pull via os.fileops', () => {
         into: `${tasksRepo.owner}/${tasksRepo.name}`,
         title: 'first pull test task',
         description: 'will stay enqueued',
+        homeDir,
       });
 
       // create second task and claim it
@@ -151,6 +193,7 @@ describe('radio.task.pull via os.fileops', () => {
         into: `${tasksRepo.owner}/${tasksRepo.name}`,
         title: 'second pull test task',
         description: 'will be claimed',
+        homeDir,
       });
 
       // get exids from files
@@ -159,6 +202,8 @@ describe('radio.task.pull via os.fileops', () => {
         .filter((f) => f.startsWith('task.') && f.endsWith('._.md'))
         .sort();
 
+      let task1Exid = '';
+      let task2Exid = '';
       for (const taskFile of taskFiles) {
         const match = taskFile.match(/^task\.([^.]+)\./);
         if (match) {
@@ -184,23 +229,25 @@ describe('radio.task.pull via os.fileops', () => {
           title: '',
           description: '',
           status: 'CLAIMED',
+          homeDir,
         });
       }
 
-      return { task1Exid, task2Exid };
+      return { consumer, homeDir, tasksRadioDir, task1Exid, task2Exid };
     });
 
     afterAll(async () => {
-      await fs.promises.rm(tasksRadioDir, { recursive: true, force: true });
+      await fs.promises.rm(scene.tasksRadioDir, { recursive: true, force: true });
     });
 
     when('[t0] pull --list without filter', () => {
       const result = useBeforeAll(async () =>
         runRadioTaskPull({
-          repoDir: consumer.repoDir,
+          repoDir: scene.consumer.repoDir,
           via: 'os.fileops',
           from: `${tasksRepo.owner}/${tasksRepo.name}`,
           list: true,
+          homeDir: scene.homeDir,
         }),
       );
 
@@ -217,11 +264,12 @@ describe('radio.task.pull via os.fileops', () => {
     when('[t1] pull --list with status=QUEUED filter', () => {
       const result = useBeforeAll(async () =>
         runRadioTaskPull({
-          repoDir: consumer.repoDir,
+          repoDir: scene.consumer.repoDir,
           via: 'os.fileops',
           from: `${tasksRepo.owner}/${tasksRepo.name}`,
           list: true,
           status: 'QUEUED',
+          homeDir: scene.homeDir,
         }),
       );
 
@@ -234,11 +282,12 @@ describe('radio.task.pull via os.fileops', () => {
     when('[t2] pull --list with status=CLAIMED filter', () => {
       const result = useBeforeAll(async () =>
         runRadioTaskPull({
-          repoDir: consumer.repoDir,
+          repoDir: scene.consumer.repoDir,
           via: 'os.fileops',
           from: `${tasksRepo.owner}/${tasksRepo.name}`,
           list: true,
           status: 'CLAIMED',
+          homeDir: scene.homeDir,
         }),
       );
 
@@ -251,10 +300,11 @@ describe('radio.task.pull via os.fileops', () => {
     when('[t3] pull specific task by exid', () => {
       then('returns the task details', () => {
         const result = runRadioTaskPull({
-          repoDir: consumer.repoDir,
+          repoDir: scene.consumer.repoDir,
           via: 'os.fileops',
           from: `${tasksRepo.owner}/${tasksRepo.name}`,
-          exid: task1Exid,
+          exid: scene.task1Exid,
+          homeDir: scene.homeDir,
         });
         expect(result.exitCode).toBe(0);
         expect(result.output).toContain('first pull test task');
@@ -264,10 +314,11 @@ describe('radio.task.pull via os.fileops', () => {
     when('[t4] pull specific task by title', () => {
       then('returns the task details', () => {
         const result = runRadioTaskPull({
-          repoDir: consumer.repoDir,
+          repoDir: scene.consumer.repoDir,
           via: 'os.fileops',
           from: `${tasksRepo.owner}/${tasksRepo.name}`,
           title: 'second pull test task',
+          homeDir: scene.homeDir,
         });
         expect(result.exitCode).toBe(0);
         expect(result.output).toContain('second pull test task');
@@ -277,10 +328,11 @@ describe('radio.task.pull via os.fileops', () => {
     when('[t5] pull task with nonexistent exid', () => {
       then('fails with task not found', () => {
         const result = runRadioTaskPull({
-          repoDir: consumer.repoDir,
+          repoDir: scene.consumer.repoDir,
           via: 'os.fileops',
           from: `${tasksRepo.owner}/${tasksRepo.name}`,
           exid: 'nonexistent-exid-12345',
+          homeDir: scene.homeDir,
         });
         expect(result.exitCode).not.toBe(0);
         expect(result.output.toLowerCase()).toContain('not found');
@@ -289,9 +341,20 @@ describe('radio.task.pull via os.fileops', () => {
   });
 
   given('[case3] channel validation', () => {
-    const consumer = useBeforeAll(async () =>
-      genConsumerRepo({ prefix: 'radio-pull-validate-' }),
-    );
+    const scene = useBeforeAll(async () => {
+      const consumer = await genConsumerRepo({ prefix: 'radio-pull-validate-' });
+      const homeDir = path.join(consumer.repoDir, '.home');
+      fs.mkdirSync(homeDir);
+
+      // allow radio usage for @all orgs
+      runRadioUses({
+        repoDir: consumer.repoDir,
+        args: '--org @all allow',
+        homeDir,
+      });
+
+      return { consumer, homeDir };
+    });
 
     when('[t0] pull without --via', () => {
       then('fails with helpful error', () => {
@@ -300,7 +363,8 @@ describe('radio.task.pull via os.fileops', () => {
           role: 'dispatcher',
           skill: 'radio.task.pull',
           args: '--list --from "test/repo"',
-          repoDir: consumer.repoDir,
+          repoDir: scene.consumer.repoDir,
+          env: { HOME: scene.homeDir },
         });
         expect(result.exitCode).not.toBe(0);
       });
@@ -309,9 +373,10 @@ describe('radio.task.pull via os.fileops', () => {
     when('[t1] pull without --list or --exid or --title', () => {
       then('fails with helpful error', () => {
         const result = runRadioTaskPull({
-          repoDir: consumer.repoDir,
+          repoDir: scene.consumer.repoDir,
           via: 'os.fileops',
           from: 'test/repo',
+          homeDir: scene.homeDir,
         });
         expect(result.exitCode).not.toBe(0);
       });
@@ -319,41 +384,56 @@ describe('radio.task.pull via os.fileops', () => {
   });
 
   given('[case4] output format', () => {
-    const consumer = useBeforeAll(async () =>
-      genConsumerRepo({ prefix: 'radio-pull-format-' }),
-    );
     const formatRepo = {
       owner: 'test-format',
       name: `test-repo-format-${Date.now()}`,
     };
-    const formatRadioDir = path.join(
-      os.homedir(),
-      'git',
-      '.radio',
-      formatRepo.owner,
-      formatRepo.name,
-    );
+
+    const scene = useBeforeAll(async () => {
+      const consumer = await genConsumerRepo({ prefix: 'radio-pull-format-' });
+      const homeDir = path.join(consumer.repoDir, '.home');
+      fs.mkdirSync(homeDir);
+
+      // allow radio usage for @all orgs
+      runRadioUses({
+        repoDir: consumer.repoDir,
+        args: '--org @all allow',
+        homeDir,
+      });
+
+      const formatRadioDir = path.join(
+        homeDir,
+        'git',
+        '.radio',
+        formatRepo.owner,
+        formatRepo.name,
+      );
+
+      return { consumer, homeDir, formatRadioDir };
+    });
 
     afterAll(async () => {
-      await fs.promises.rm(formatRadioDir, { recursive: true, force: true });
+      await fs.promises.rm(scene.formatRadioDir, { recursive: true, force: true });
     });
 
     when('[t0] pull --list shows emoji prefix', () => {
       const result = useBeforeAll(async () => {
         // create a task first
         runRadioTaskPush({
-          repoDir: consumer.repoDir,
+          repoDir: scene.consumer.repoDir,
           via: 'os.fileops',
           into: `${formatRepo.owner}/${formatRepo.name}`,
           title: 'format test task',
           description: 'for output format check',
+          homeDir: scene.homeDir,
         });
 
         return runRadioTaskPull({
-          repoDir: consumer.repoDir,
+          repoDir: scene.consumer.repoDir,
           via: 'os.fileops',
           from: `${formatRepo.owner}/${formatRepo.name}`,
           list: true,
+          homeDir: scene.homeDir,
         });
       });
 

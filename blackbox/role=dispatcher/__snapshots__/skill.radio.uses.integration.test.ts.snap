@@ -1,0 +1,177 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`radio.uses acceptance hint level specificity given: [case9] global block shows global hint when: [t0] radio.task.push is called then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+[0m[31m[0m
+[0m[31m🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push[0m
+[0m[31m   └─ ✋ blocked by constraints[0m
+[0m[31m[0m
+[0m[31mradio.task.push blocked: global blocked
+
+ask your human to grant:
+  $ npx rhachet run --skill radio.uses --global allow[0m"
+`;
+
+exports[`radio.uses acceptance hint level specificity given: [case10] org block shows org hint when: [t0] radio.task.push is called then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+[0m[31m[0m
+[0m[31m🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push[0m
+[0m[31m   └─ ✋ blocked by constraints[0m
+[0m[31m[0m
+[0m[31mradio.task.push blocked: org blocked
+
+ask your human to grant:
+  $ npx rhachet run --skill radio.uses --org ehmpathy allow[0m"
+`;
+
+exports[`radio.uses acceptance hint level specificity given: [case11] default block shows local hint when: [t0] radio.task.push is called then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+[0m[31m[0m
+[0m[31m🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push[0m
+[0m[31m   └─ ✋ blocked by constraints[0m
+[0m[31m[0m
+[0m[31mradio.task.push blocked: safe default (unset)
+
+ask your human to grant:
+  $ npx rhachet run --skill radio.uses allow[0m"
+`;
+
+exports[`radio.uses acceptance precedence matrix given: [case1] all unset (default blocked) when: [t0] radio.uses get is called then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.uses
+
+🐢 lets check the meter...
+
+🐚 radio.uses get
+   ├─ local: unset
+   ├─ org: unset
+   └─ global: not blocked"
+`;
+
+exports[`radio.uses acceptance precedence matrix given: [case2] global blocked when: [t0] radio.uses get is called then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.uses
+
+🐢 lets check the meter...
+
+🐚 radio.uses get
+   ├─ local: unset
+   ├─ org: unset
+   └─ global: blocked"
+`;
+
+exports[`radio.uses acceptance precedence matrix given: [case3] local allowed (explicit) when: [t0] radio.uses get is called then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.uses
+
+🐢 lets check the meter...
+
+🐚 radio.uses get
+   ├─ local: allowed
+   ├─ org: unset
+   └─ global: not blocked"
+`;
+
+exports[`radio.uses acceptance precedence matrix given: [case4] org @all allowed when: [t0] radio.uses get is called then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.uses
+
+🐢 lets check the meter...
+
+🐚 radio.uses get
+   ├─ local: unset
+   ├─ org:
+   │  └─ @all: allowed
+   └─ global: not blocked"
+`;
+
+exports[`radio.uses acceptance precedence matrix given: [case5] org specific overrides @all when: [t0] radio.uses get is called then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.uses
+
+🐢 lets check the meter...
+
+🐚 radio.uses get
+   ├─ local: unset
+   ├─ org:
+   │  └─ @all: blocked
+   │  └─ ehmpathy: allowed
+   └─ global: not blocked"
+`;
+
+exports[`radio.uses acceptance precedence matrix given: [case6] org allowed overrides local blocked (org > local) when: [t0] radio.uses get is called then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.uses
+
+🐢 lets check the meter...
+
+🐚 radio.uses get
+   ├─ local: blocked
+   ├─ org:
+   │  └─ @all: allowed
+   └─ global: not blocked"
+`;
+
+exports[`radio.uses acceptance precedence matrix given: [case7] org blocked overrides local allowed (org > local) when: [t0] radio.uses get is called then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.uses
+
+🐢 lets check the meter...
+
+🐚 radio.uses get
+   ├─ local: allowed
+   ├─ org:
+   │  └─ @all: blocked
+   └─ global: not blocked"
+`;
+
+exports[`radio.uses acceptance precedence matrix given: [case7] org blocked overrides local allowed (org > local) when: [t1] radio.task.push is blocked (org overrides local) then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+[0m[31m[0m
+[0m[31m🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push[0m
+[0m[31m   └─ ✋ blocked by constraints[0m
+[0m[31m[0m
+[0m[31mradio.task.push blocked: @all blocked
+
+ask your human to grant:
+  $ npx rhachet run --skill radio.uses --org ehmpathy allow[0m"
+`;
+
+exports[`radio.uses acceptance precedence matrix given: [case8] specific org overrides local (org > local) when: [t0] push to ehmpathy is blocked (specific org) then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+[0m[31m[0m
+[0m[31m🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push[0m
+[0m[31m   └─ ✋ blocked by constraints[0m
+[0m[31m[0m
+[0m[31mradio.task.push blocked: org blocked
+
+ask your human to grant:
+  $ npx rhachet run --skill radio.uses --org ehmpathy allow[0m"
+`;
+
+exports[`radio.uses acceptance user journey given: [case12] full permission workflow when: [t0] initial push attempt (blocked) then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+[0m[31m[0m
+[0m[31m🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push[0m
+[0m[31m   └─ ✋ blocked by constraints[0m
+[0m[31m[0m
+[0m[31mradio.task.push blocked: safe default (unset)
+
+ask your human to grant:
+  $ npx rhachet run --skill radio.uses allow[0m"
+`;
+
+exports[`radio.uses acceptance user journey given: [case12] full permission workflow when: [t1] user allows locally then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.uses
+
+🐢 lets check the meter...
+
+🐚 radio.uses get
+   ├─ local: allowed
+   ├─ org: unset
+   └─ global: not blocked"
+`;
+
+exports[`radio.uses acceptance user journey given: [case12] full permission workflow when: [t3] user blocks locally then: output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.uses
+
+🐢 lets check the meter...
+
+🐚 radio.uses get
+   ├─ local: blocked
+   ├─ org: unset
+   └─ global: not blocked"
+`;

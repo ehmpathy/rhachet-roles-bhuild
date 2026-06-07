@@ -18,6 +18,7 @@ export const runRhachetSkill = (input: {
   args?: string;
   repoDir: string;
   timeout?: number;
+  env?: Record<string, string | undefined>;
 }): SkillResult => {
   const args = input.args ? `-- ${input.args}` : '';
   const timeout = input.timeout ?? 60000;
@@ -33,6 +34,7 @@ export const runRhachetSkill = (input: {
         env: {
           ...process.env,
           PATH: process.env.PATH,
+          ...input.env,
         },
         stdio: ['pipe', 'pipe', 'pipe'],
       },
