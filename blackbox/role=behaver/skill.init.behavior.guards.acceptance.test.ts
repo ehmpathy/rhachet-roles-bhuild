@@ -9,10 +9,22 @@ import { asSnapshotStable } from './.test/skill.init.behavior.utils';
 /**
  * .what = extract self-review slugs from a guard file
  * .why = dynamically discover reviews instead of hardcoded lists
+ *
+ * .note = only extracts slugs from `reviews: self:` section, not `peer:` section
+ *         because bhrain only creates .triggered files for self-reviews
  */
 const getSlugsFromGuardFile = (guardPath: string): string[] => {
   const content = fs.readFileSync(guardPath, 'utf-8');
-  const slugMatches = content.matchAll(/^\s+-\s+slug:\s+(.+)$/gm);
+
+  // find the self: section and extract only those slugs
+  // self: section ends at peer: or judges: or end of reviews block
+  const selfSectionMatch = content.match(
+    /reviews:\s*\n\s+self:\s*\n([\s\S]*?)(?=\n\s+peer:|\n\s*judges:|\nartifacts:|\n[a-z]+:|\s*$)/,
+  );
+  if (!selfSectionMatch) return [];
+
+  const selfSection = selfSectionMatch[1]!;
+  const slugMatches = selfSection.matchAll(/^\s+-\s+slug:\s+(.+)$/gm);
   return Array.from(slugMatches, (m) => m[1]!.trim());
 };
 
@@ -191,7 +203,7 @@ const genConsumerRepoWithBhrain = (input: {
         version: '1.0.0',
         dependencies: {
           'rhachet-roles-bhuild': `file:${process.cwd()}`,
-          'rhachet-roles-bhrain': '>=0.27.6',
+          'rhachet-roles-bhrain': '>=0.28.0',
           'rhachet-roles-ehmpathy': '>=1.34.0',
           rhachet: '^1.15.0',
         },
