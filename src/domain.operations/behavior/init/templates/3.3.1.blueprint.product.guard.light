@@ -461,33 +461,68 @@ reviews:
         fix all gaps before you continue.
 
   peer:
-    # slug = mech-failhides
-    - $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.{prod,test}/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.mech-failhides.md'
+    # --- level 1: cheap reviewers (run first, in parallel) ---
 
-    # slug = mech-decode-friction
-    - $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=architect/briefs/practices/rule.{forbid.decode-friction-in-orchestrators,require.orchestrators-as-narrative}.md' --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.narrative/rule.{forbid.inline-decode-friction,require.named-transforms}.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/{define.domain-operation-grains,philosophy.transform-orchestrator-separation.[philosophy]}.md' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.mech-decode-friction.md'
+    - slug: mech-failhides
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.{prod,test}/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.mech-failhides.md'
+      budget: 5
+      level: 1
 
-    # --- architect reviews ---
-    # lineage: $rhachet enroll claude --roles behaver,architect,mechanic -p "review the current blueprint for architectural defects and omissions; opports to decompose for recompose, prevent scope leaks, and eliminate maintenance and behavior hazards structurally. emit BLOCKERS and NITPICKS."
-    # slug = arch-opport-decomposition
-    - $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.prefer.decomposable-architecture.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.architecture/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.domain.operations/*.md.min' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.arch-opport-decomposition.md'
-    # slug = arch-smell-scopeleaks
-    - $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.scope-leaks.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.architecture/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.domain.operations/*.md.min' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.arch-smell-scopeleaks.md'
-    # slug = arch-hazards-maintenance
-    - $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.maintenance-hazards.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/rule.require.solve-at-cause.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.errors/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.typedefs/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.narrative/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.comments/*.md.min' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.arch-hazards-maintenance.md'
-    # slug = arch-hazards-behavior
-    - $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.behavior-hazards.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.arch-hazards-behavior.md'
-    # slug = arch-ambiguous-terms
-    - $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.ambiguous-terms.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/ubiqlang.ambiguous-from-overload.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.terms/*.md.min' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.arch-ambiguous-terms.md'
+    - slug: mech-decode-friction
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=architect/briefs/practices/rule.{forbid.decode-friction-in-orchestrators,require.orchestrators-as-narrative}.md' --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.narrative/rule.{forbid.inline-decode-friction,require.named-transforms}.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/{define.domain-operation-grains,philosophy.transform-orchestrator-separation.[philosophy]}.md' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.mech-decode-friction.md'
+      budget: 5
+      level: 1
 
-    # --- ergonomist reviews ---
-    # lineage: $rhachet enroll claude --model sonnet --roles behaver,ergonomist,mechanic -p "review the blueprint for snapshot coverage on contract endpoints and acceptance test user journey coverage. emit BLOCKERS and NITPICKS."
-    # slug = ergo-acceptance-journey-coverage
-    - $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/ergonomist/rule.require.acceptance-journey-coverage.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/frames.behavior/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.ergo-acceptance-journey-coverage.md'
+    # --- architect reviews (level 1) ---
 
-    # lineage: $rhachet enroll claude --model sonnet --roles behaver,ergonomist,mechanic -p "review the blueprint for experiential and visual blemishes in snapshotted acceptance test journeys. emit BLOCKERS and NITPICKS."
-    # slug = ergo-snapshot-visual-blemishes
-    - $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/ergonomist/rule.forbid.snapshot-visual-blemishes.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.tones/*.md.min' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.contract-snapshot-exhaustiveness.md' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.ergo-snapshot-visual-blemishes.md'
+    - slug: arch-opport-decomposition
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.prefer.decomposable-architecture.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.architecture/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.domain.operations/*.md.min' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.arch-opport-decomposition.md'
+      budget: 5
+      level: 1
+
+    - slug: arch-smell-scopeleaks
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.scope-leaks.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.architecture/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.domain.operations/*.md.min' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.arch-smell-scopeleaks.md'
+      budget: 5
+      level: 1
+
+    - slug: arch-hazards-maintenance
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.maintenance-hazards.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/rule.require.solve-at-cause.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.errors/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.typedefs/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.narrative/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.comments/*.md.min' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.arch-hazards-maintenance.md'
+      budget: 5
+      level: 1
+
+    - slug: arch-hazards-behavior
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.behavior-hazards.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.arch-hazards-behavior.md'
+      budget: 5
+      level: 1
+
+    - slug: arch-ambiguous-terms
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.ambiguous-terms.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/ubiqlang.ambiguous-from-overload.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.terms/*.md.min' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.arch-ambiguous-terms.md'
+      budget: 5
+      level: 1
+
+    # --- ergonomist reviews (level 1) ---
+
+    - slug: ergo-acceptance-journey-coverage
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/ergonomist/rule.require.acceptance-journey-coverage.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/frames.behavior/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.ergo-acceptance-journey-coverage.md'
+      budget: 5
+      level: 1
+
+    - slug: ergo-snapshot-visual-blemishes
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/ergonomist/rule.forbid.snapshot-visual-blemishes.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.tones/*.md.min' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.contract-snapshot-exhaustiveness.md' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --output '$route/.reviews/$stone.peer-review.ergo-snapshot-visual-blemishes.md'
+      budget: 5
+      level: 1
+
+    # --- level 3: expensive reviewers (run after level 1 is terminal) ---
+
+    - slug: enroll-blueprint-arch-defects
+      run: $rhx enroll claude --model sonnet --roles behaver,architect,mechanic -p 'review the current blueprint for architectural defects and omissions; opports to decompose for recompose, prevent scope leaks, and eliminate maintenance and behavior hazards structurally'
+      budget: 3
+      level: 3
+
+    - slug: enroll-blueprint-behavior-intent
+      run: $rhx enroll claude --model sonnet --roles behaver,architect,mechanic -p 'review the current blueprint for omissions or divergences from the wished and envisioned behavioral intent. in particular flag any ergonomic friction that is unaddressed or friction hazards that are not clearly covered with acceptance tests and snaps'
+      budget: 3
+      level: 3
 
 judges:
   - $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
