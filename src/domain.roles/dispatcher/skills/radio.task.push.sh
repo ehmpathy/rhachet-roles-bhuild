@@ -13,12 +13,14 @@
 #   radio.task.push.sh --via gh.issues --into owner/repo --title "..." --description "..."
 #   radio.task.push.sh --via os.fileops --exid 123 --status CLAIMED
 #   radio.task.push.sh --via gh.issues --title "..." --idem upsert
+#   echo "detailed task" | radio.task.push.sh --via gh.issues --title "..." --description @stdin
+#   cat spec.md | radio.task.push.sh --via gh.issues --title "feat: add X" --description @stdin
 #
 # options:
 #   --via       channel: gh.issues or os.fileops (required)
 #   --into      target repo as "owner/name" (default: current git repo)
 #   --title     task title (required for new tasks)
-#   --description  task description
+#   --description  task description (use @stdin to read from pipe)
 #   --exid      external id for updates
 #   --status    task status: QUEUED, CLAIMED, DELIVERED
 #   --idem      idempotency mode: findsert or upsert

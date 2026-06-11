@@ -1,3 +1,4 @@
+import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
@@ -87,6 +88,55 @@ const runRadioTaskPush = (input: {
     env: input.homeDir ? { HOME: input.homeDir } : {},
     timeout: 60000, // gh api calls can be slow
   });
+};
+
+/**
+ * .what = runs radio.task.push with stdin for @stdin support
+ * .why = tests piped content via --description @stdin
+ */
+const runRadioTaskPushWithStdin = (input: {
+  repoDir: string;
+  via: string;
+  into: string;
+  title: string;
+  stdin: string;
+  homeDir?: string;
+}): { stdout: string; stderr: string; output: string; exitCode: number } => {
+  const command = `echo "${input.stdin}" | npx rhachet run --repo bhuild --role dispatcher --skill radio.task.push -- --via ${input.via} --into "${input.into}" --title "${input.title}" --description @stdin`;
+
+  try {
+    const stdout = execSync(command, {
+      cwd: input.repoDir,
+      encoding: 'utf-8', // node api requires this key name
+      timeout: 60000,
+      env: {
+        ...process.env,
+        PATH: process.env.PATH,
+        ...(input.homeDir ? { HOME: input.homeDir } : {}),
+      },
+      stdio: ['pipe', 'pipe', 'pipe'],
+    });
+    return {
+      stdout: stdout.trim(),
+      stderr: '',
+      output: stdout.trim(),
+      exitCode: 0,
+    };
+  } catch (error: unknown) {
+    const execError = error as {
+      stdout?: Buffer | string;
+      stderr?: Buffer | string;
+      status?: number;
+    };
+    const stdout = (execError.stdout ?? '').toString().trim();
+    const stderr = (execError.stderr ?? '').toString().trim();
+    return {
+      stdout,
+      stderr,
+      output: [stdout, stderr].filter(Boolean).join('\n'),
+      exitCode: execError.status ?? 1,
+    };
+  }
 };
 
 describe('radio.task.push via gh.issues', () => {
@@ -269,6 +319,81 @@ describe('radio.task.push via gh.issues', () => {
       then('issue title has radio emoji prefix', () => {
         // the gh cli output or the created issue title should contain the emoji
         expect(result.exitCode).toBe(0);
+      });
+    });
+  });
+
+  given('[case5] @stdin reads piped description', () => {
+    const uniqueTitle = `stdin test ${Date.now()}`;
+    const stdinContent = 'this content was piped via stdin';
+
+    when('[t0] push with --description @stdin', () => {
+      const result = useBeforeAll(async () =>
+        runRadioTaskPushWithStdin({
+          repoDir: scene.consumer.repoDir,
+          homeDir: scene.homeDir,
+          via: 'gh.issues',
+          into: GITHUB_DEMO_REPO,
+          title: uniqueTitle,
+          stdin: stdinContent,
+        }),
+      );
+
+      then('exits with code 0', () => {
+        expect(result.exitCode).toBe(0);
+      });
+
+      then('output shows created confirmation', () => {
+        expect(result.output).toContain('created');
+      });
+
+      then('output shows exid (proves issue was created with piped content)', () => {
+        expect(result.output).toMatch(/exid: \d+/);
+      });
+    });
+  });
+
+  given('[case6] findsert searches target repo not cwd repo', () => {
+    const uniqueTitle = `cross-repo findsert ${Date.now()}`;
+
+    when('[t0] findsert from consumer repo to demo repo', () => {
+      // consumer repo != GITHUB_DEMO_REPO
+      // findsert should search GITHUB_DEMO_REPO (--into), not consumer repo (cwd)
+      const firstResult = useBeforeAll(async () =>
+        runRadioTaskPush({
+          repoDir: scene.consumer.repoDir,
+          homeDir: scene.homeDir,
+          via: 'gh.issues',
+          into: GITHUB_DEMO_REPO,
+          title: uniqueTitle,
+          description: 'cross-repo test - first push',
+          idem: 'findsert',
+        }),
+      );
+
+      then('first push creates issue in target repo', () => {
+        expect(firstResult.exitCode).toBe(0);
+        expect(firstResult.output.toLowerCase()).toContain('created');
+        expect(firstResult.output).toContain(GITHUB_DEMO_REPO);
+      });
+
+      then('second push finds extant issue in target repo', async () => {
+        // wait for github search index to update
+        await new Promise((r) => setTimeout(r, 5000));
+
+        const secondResult = runRadioTaskPush({
+          repoDir: scene.consumer.repoDir,
+          homeDir: scene.homeDir,
+          via: 'gh.issues',
+          into: GITHUB_DEMO_REPO,
+          title: uniqueTitle,
+          description: 'cross-repo test - second push',
+          idem: 'findsert',
+        });
+
+        // should find the prior issue, not create a duplicate
+        expect(secondResult.exitCode).toBe(0);
+        expect(secondResult.output.toLowerCase()).toContain('found');
       });
     });
   });

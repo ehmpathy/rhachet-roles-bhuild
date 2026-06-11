@@ -120,8 +120,7 @@ export const daoRadioTaskViaGhIssues = {
         input: { repo: RadioTaskRepo; title: string },
         context: ContextGithubAuth & ContextGitRepo,
       ): Promise<RadioTask | null> => {
-        const { repo } = context.git;
-        const repoSlug = `${repo.owner}/${repo.name}`;
+        const repoSlug = `${input.repo.owner}/${input.repo.name}`;
         const searchTitle = `🎙️ task - ${input.title}`;
 
         const json = await runGhCommand(
@@ -163,8 +162,7 @@ export const daoRadioTaskViaGhIssues = {
       },
       context: ContextGithubAuth & ContextGitRepo,
     ): Promise<RadioTask[]> => {
-      const { repo } = context.git;
-      const repoSlug = `${repo.owner}/${repo.name}`;
+      const repoSlug = `${input.repo.owner}/${input.repo.name}`;
       const limit = input.limit ?? 100;
 
       const stateFlag =
@@ -215,8 +213,7 @@ export const daoRadioTaskViaGhIssues = {
       input: { task: RadioTask },
       context: ContextGithubAuth & ContextGitRepo,
     ): Promise<RadioTask> => {
-      const { repo } = context.git;
-      const repoSlug = `${repo.owner}/${repo.name}`;
+      const repoSlug = `${input.task.repo.owner}/${input.task.repo.name}`;
 
       // check if task already exists
       const taskFound = await daoRadioTaskViaGhIssues.get.one.byUnique(
@@ -259,8 +256,7 @@ export const daoRadioTaskViaGhIssues = {
       input: { task: RadioTask },
       context: ContextGithubAuth & ContextGitRepo,
     ): Promise<RadioTask> => {
-      const { repo } = context.git;
-      const repoSlug = `${repo.owner}/${repo.name}`;
+      const repoSlug = `${input.task.repo.owner}/${input.task.repo.name}`;
 
       // check if task exists
       const taskFound = input.task.exid

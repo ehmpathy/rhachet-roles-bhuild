@@ -6,7 +6,7 @@
  *   --via         channel: gh.issues or os.fileops (required)
  *   --into        target repo as "owner/name" (default: current git repo)
  *   --title       task title (required for new tasks)
- *   --description task description
+ *   --description task description (supports @stdin to read from pipe)
  *   --exid        external id for updates
  *   --status      task status: QUEUED, CLAIMED, DELIVERED
  *   --idem        idempotency mode: findsert or upsert
@@ -16,8 +16,10 @@
  *   radio.task.push --via gh.issues --title "..." --description "..."
  *   radio.task.push --via gh.issues --into owner/repo --title "..."
  *   radio.task.push --via os.fileops --exid 123 --status CLAIMED
+ *   echo "detailed task" | radio.task.push --via gh.issues --title "..." --description @stdin
  */
 
+import { readFileSync } from 'fs';
 import { z } from 'zod';
 
 import { IdempotencyMode } from '@src/domain.objects/IdempotencyMode';
@@ -112,12 +114,19 @@ export const cliRadioTaskPush = async (): Promise<void> => {
     process.exit(2);
   }
 
+  // handle @stdin for description
+  const description: string | null = (() => {
+    const raw = named.description ?? null;
+    if (raw === '@stdin') return readFileSync(0, 'utf-8').trim();
+    return raw;
+  })();
+
   // validate and transform task args
   const task = asPushTaskFromArgs({
     repo,
     exid: named.exid ?? null,
     title: named.title ?? null,
-    description: named.description ?? null,
+    description,
     status: named.status ?? null,
   });
 
