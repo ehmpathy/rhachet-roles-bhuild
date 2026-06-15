@@ -36,7 +36,7 @@ require_git_repo() {
 require_human() {
   local command="$1"
   if [[ ! -t 0 && "${__I_AM_HUMAN:-}" != "true" ]]; then
-    print_turtle_header "bummer dude..."
+    print_beaver_header "hit a snag..."
     print_tree_start "radio.uses $command"
     print_tree_error "only humans can run this command"
     exit 2

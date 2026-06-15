@@ -135,7 +135,7 @@ case "$COMMAND" in
     UPDATED=$(echo "$CURRENT" | jq ".orgs[\"$ORG\"] = \"allowed\"")
     write_org_file "$UPDATED"
 
-    print_turtle_header "shell yeah! org allowed"
+    print_beaver_header "back in the river!"
     print_tree_start "radio.uses allow --org $ORG"
     echo "   └─ $ORG: allowed"
     ;;
@@ -152,7 +152,7 @@ case "$COMMAND" in
     UPDATED=$(echo "$CURRENT" | jq ".orgs[\"$ORG\"] = \"blocked\"")
     write_org_file "$UPDATED"
 
-    print_turtle_header "groovy, org blocked"
+    print_beaver_header "dammed up tight"
     print_tree_start "radio.uses block --org $ORG"
     echo "   └─ $ORG: blocked"
     ;;
@@ -170,13 +170,13 @@ case "$COMMAND" in
       write_org_file "$UPDATED"
     fi
 
-    print_turtle_header "righteous, org config cleared"
+    print_beaver_header "back in the river!"
     print_tree_start "radio.uses del --org $ORG"
     echo "   └─ $ORG config removed, defers to @all"
     ;;
 
   get)
-    print_turtle_header "lets check the org meter..."
+    print_beaver_header "lets check the meter..."
 
     if [[ -n "$ORG" ]]; then
       # show specific org

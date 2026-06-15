@@ -101,7 +101,7 @@ case "$COMMAND" in
 }
 EOF
 
-    print_turtle_header "shell yeah! radio allowed"
+    print_beaver_header "back in the river!"
     print_tree_start "radio.uses allow"
     echo "   └─ local: allowed"
     ;;
@@ -114,7 +114,7 @@ EOF
 }
 EOF
 
-    print_turtle_header "groovy, radio blocked"
+    print_beaver_header "dammed up tight"
     print_tree_start "radio.uses block"
     echo "   └─ local: blocked"
     ;;
@@ -124,13 +124,13 @@ EOF
       rm -f "$LOCAL_STATE_FILE"
     fi
 
-    print_turtle_header "righteous, local config cleared"
+    print_beaver_header "back in the river!"
     print_tree_start "radio.uses del"
     echo "   └─ local config removed, defers to org/global"
     ;;
 
   get)
-    print_turtle_header "lets check the meter..."
+    print_beaver_header "lets check the meter..."
     print_tree_start "radio.uses get"
 
     LOCAL_STATE=$(read_local_state)

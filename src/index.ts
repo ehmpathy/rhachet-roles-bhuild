@@ -2,7 +2,7 @@ export * from './contract/sdk';
 
 // CLI entry points for portable skill dispatch
 import { withEmojiSpaceShim } from 'emoji-space-shim';
-import { ConstraintError } from 'helpful-errors';
+import { BadRequestError, ConstraintError } from 'helpful-errors';
 
 import { bindBehavior } from './contract/cli/bind.behavior';
 import { bootBehavior } from './contract/cli/boot.behavior';
@@ -21,17 +21,19 @@ const asCli =
     try {
       await logic();
     } catch (error) {
-      if (error instanceof ConstraintError) {
+      // handle constraint errors (exit 2 = user must fix)
+      if (
+        error instanceof ConstraintError ||
+        error instanceof BadRequestError
+      ) {
         const metadata = error.metadata as Record<string, unknown> | undefined;
         const hint = metadata?.hint as string | undefined;
-        console.error(
-          `✋ ConstraintError: ${error.message.replace(/^✋ ConstraintError: /, '')}`,
-        );
+        console.error(`✋ ${error.message}`);
         if (hint) {
           console.error('');
           console.error(hint);
         }
-        process.exit(ConstraintError.code.exit);
+        process.exit(2);
       }
       throw error;
     }
