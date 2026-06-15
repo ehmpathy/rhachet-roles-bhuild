@@ -4,26 +4,29 @@
  *
  * options:
  *   --via         channel: gh.issues or os.fileops (required)
- *   --into        target repo as "owner/name" (default: current git repo)
+ *   --into        target repo: @this (current git repo) or owner/name (required)
  *   --title       task title (required for new tasks)
  *   --description task description (supports @stdin to read from pipe)
  *   --exid        external id for updates
  *   --status      task status: QUEUED, CLAIMED, DELIVERED
  *   --idem        idempotency mode: findsert or upsert
  *   --auth        auth mode: "as-human" or "as-robot:ENV_VAR_NAME"
+ *   --help        show usage and exit
  *
  * usage:
- *   radio.task.push --via gh.issues --title "..." --description "..."
+ *   radio.task.push --via gh.issues --into @this --title "..." --description "..."
  *   radio.task.push --via gh.issues --into owner/repo --title "..."
- *   radio.task.push --via os.fileops --exid 123 --status CLAIMED
- *   echo "detailed task" | radio.task.push --via gh.issues --title "..." --description @stdin
+ *   radio.task.push --via os.fileops --into @this --exid 123 --status CLAIMED
+ *   echo "detailed task" | radio.task.push --via gh.issues --into @this --title "..." --description @stdin
  */
 
 import { readFileSync } from 'fs';
+import { BadRequestError } from 'helpful-errors';
 import { z } from 'zod';
 
 import { IdempotencyMode } from '@src/domain.objects/IdempotencyMode';
 import { RadioChannel } from '@src/domain.objects/RadioChannel';
+import type { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
 import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
 import { asPushTaskFromArgs } from '@src/domain.operations/radio/cli/asPushTaskFromArgs';
 import { asTaskDetailOutput } from '@src/domain.operations/radio/cli/asTaskDetailOutput';
@@ -37,19 +40,76 @@ import { shx } from '@src/infra/shell/shx';
 import { outputRadioResult } from './outputRadioResult';
 
 // ────────────────────────────────────────────────────────────────────
+// transformers
+// ────────────────────────────────────────────────────────────────────
+
+/**
+ * .what = derive permission hint command from block level
+ * .why  = extract decode-friction from orchestrator
+ */
+const asPermissionHintCommand = (input: {
+  level: 'global' | 'org' | 'local' | 'default';
+  repoOwner: string;
+}): string => {
+  if (input.level === 'global')
+    return 'npx rhachet run --skill radio.uses --global allow';
+  if (input.level === 'org')
+    return `npx rhachet run --skill radio.uses --org ${input.repoOwner} allow`;
+  // for 'local' or 'default', suggest local permission
+  return 'npx rhachet run --skill radio.uses allow';
+};
+
+/**
+ * .what = derive description from arg, @stdin sentinel becomes stdin content
+ * .why  = extract decode-friction from orchestrator
+ */
+const asDescriptionFromArg = (input: { raw: string | null }): string | null => {
+  if (input.raw === '@stdin') return readFileSync(0, 'utf-8').trim();
+  return input.raw;
+};
+
+/**
+ * .what = build task payload with only non-null fields
+ * .why  = extract conditional spread decode-friction from orchestrator
+ */
+const asTaskPayload = (input: {
+  repo: RadioTaskRepo;
+  exid: string | null;
+  title: string | null;
+  description: string | null;
+  status: RadioTaskStatus | null;
+}): {
+  repo: RadioTaskRepo;
+  exid?: string;
+  title?: string;
+  description?: string;
+  status?: RadioTaskStatus;
+} => ({
+  repo: input.repo,
+  ...(input.exid !== null && { exid: input.exid }),
+  ...(input.title !== null && { title: input.title }),
+  ...(input.description !== null && { description: input.description }),
+  ...(input.status !== null && { status: input.status }),
+});
+
+// ────────────────────────────────────────────────────────────────────
 // schema
 // ────────────────────────────────────────────────────────────────────
 
 const schemaOfArgs = z.object({
   named: z.object({
+    // help flag
+    help: z.boolean().optional(),
+    h: z.boolean().optional(),
+
     // required: channel
-    via: z.nativeEnum(RadioChannel),
+    via: z.nativeEnum(RadioChannel).optional(),
 
     // optional: auth mode (required for gh.issues if GITHUB_TOKEN not set)
     // supports: "as-human" or "as-robot:ENV_VAR_NAME"
     auth: z.string().optional(),
 
-    // optional: target repo (e.g., "owner/name")
+    // required: target repo (@this or owner/name)
     into: z.string().optional(),
     exid: z.string().optional(),
 
@@ -74,17 +134,49 @@ const schemaOfArgs = z.object({
 // exported CLI entry point
 // ────────────────────────────────────────────────────────────────────
 
+const HELP_TEXT = `
+🦫 lets check the meter...
+
+🎙️ radio.task.push --help
+   ├─ usage
+   │  ├─ radio.task.push --via gh.issues --into owner/repo --title "..." --description "..."
+   │  ├─ radio.task.push --via gh.issues --into @this --title "..."
+   │  └─ echo "details" | radio.task.push --via gh.issues --into @this --title "..." --description @stdin
+   │
+   └─ options
+      ├─ --via         channel: gh.issues or os.fileops (required)
+      ├─ --into        target: @this (current repo) or owner/repo (required)
+      ├─ --title       task title (required for new tasks)
+      ├─ --description task description (supports @stdin)
+      ├─ --exid        external id for updates
+      ├─ --status      status: QUEUED, CLAIMED, DELIVERED
+      ├─ --idem        idempotency: findsert or upsert
+      ├─ --auth        auth mode: "as-human" or "as-robot:ENV_VAR_NAME"
+      └─ --help, -h    show this help
+`.trim();
+
 export const cliRadioTaskPush = async (): Promise<void> => {
   const { named } = getCliArgs({ schema: schemaOfArgs });
 
-  // derive repo from --into arg or git context
+  // handle --help flag
+  if (named.help || named.h) {
+    console.log(HELP_TEXT);
+    process.exit(0);
+  }
+
+  // validate required --via arg (not validated by schema to allow --help without it)
+  if (!named.via)
+    throw new BadRequestError('--via is required', {
+      hint: 'specify a channel: --via gh.issues  or  --via os.fileops',
+    });
+
+  // derive repo from --into arg (required)
   const repo = await getOneRadioTaskRepoFromCliArg({
     arg: named.into ?? null,
     argName: '--into',
     errorContext: {
-      notFoundMessage:
-        '--into required (not in a git repo); specify --into owner/repo or run from a git repository',
-      hint: 'provide --into owner/repo or run from within a git repository',
+      notFoundMessage: '--into is required',
+      hint: 'use --into @this (current git repo) or --into owner/name',
     },
   });
 
@@ -94,32 +186,17 @@ export const cliRadioTaskPush = async (): Promise<void> => {
     sourceCwd: process.cwd(),
   });
   if (!permission.allowed) {
-    // generate hint based on block level
-    const hintCommand = (() => {
-      if (permission.level === 'global')
-        return 'npx rhachet run --skill radio.uses --global allow';
-      if (permission.level === 'org')
-        return `npx rhachet run --skill radio.uses --org ${repo.owner} allow`;
-      return 'npx rhachet run --skill radio.uses allow';
-    })();
-
-    outputRadioResult({
-      message: `radio.task.push blocked: ${permission.reason}`,
-      isError: true,
-      hint: {
-        ask: 'ask your human to grant:',
-        command: hintCommand,
-      },
+    const hintCommand = asPermissionHintCommand({
+      level: permission.level,
+      repoOwner: repo.owner,
     });
-    process.exit(2);
+    throw new BadRequestError(`radio.task.push blocked: ${permission.reason}`, {
+      hint: `ask your human to grant:\n  $ ${hintCommand}`,
+    });
   }
 
-  // handle @stdin for description
-  const description: string | null = (() => {
-    const raw = named.description ?? null;
-    if (raw === '@stdin') return readFileSync(0, 'utf-8').trim();
-    return raw;
-  })();
+  // derive description from arg
+  const description = asDescriptionFromArg({ raw: named.description ?? null });
 
   // validate and transform task args
   const task = asPushTaskFromArgs({
@@ -145,18 +222,13 @@ export const cliRadioTaskPush = async (): Promise<void> => {
     {
       via: named.via,
       idem: named.idem,
-      task: {
-        repo: task.repo,
-        ...(task.exid !== null && { exid: task.exid }),
-        ...(task.title !== null && { title: task.title }),
-        ...(task.description !== null && { description: task.description }),
-        ...(task.status !== null && { status: task.status }),
-      },
+      task: asTaskPayload(task),
     },
     context,
   );
 
-  // output result
+  // output result with beaver header
+  console.log('🦫 back in the river!\n');
   outputRadioResult({
     message: asTaskDetailOutput({
       task: result.task,

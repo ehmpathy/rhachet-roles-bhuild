@@ -6,7 +6,7 @@ export const outputRadioResult = (input: {
   message: string;
   isError?: boolean;
   hint?: {
-    ask: string;
+    ask?: string;
     command: string;
   };
 }): void => {
@@ -14,7 +14,7 @@ export const outputRadioResult = (input: {
     console.error(input.message);
     if (input.hint) {
       console.error('');
-      console.error(input.hint.ask);
+      if (input.hint.ask) console.error(input.hint.ask);
       console.error(`  $ ${input.hint.command}`);
     }
   } else {

@@ -97,7 +97,7 @@ case "$COMMAND" in
 }
 EOF
 
-    print_turtle_header "groovy, bond fire time"
+    print_beaver_header "dammed up tight"
     print_tree_start "radio.uses block --global"
     echo "   └─ radio blocked globally"
     ;;
@@ -107,13 +107,13 @@ EOF
       rm -f "$GLOBAL_STATE_FILE"
     fi
 
-    print_turtle_header "shell yeah, back in the water!"
+    print_beaver_header "back in the river!"
     print_tree_start "radio.uses allow --global"
     echo "   └─ radio resumed globally"
     ;;
 
   get)
-    print_turtle_header "lets check the global meter..."
+    print_beaver_header "lets check the meter..."
     print_tree_start "radio.uses get --global"
 
     GLOBAL_BLOCKED=$(read_global_blocked)

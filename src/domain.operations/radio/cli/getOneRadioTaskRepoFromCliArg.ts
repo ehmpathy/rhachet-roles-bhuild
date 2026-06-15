@@ -1,4 +1,4 @@
-import { ConstraintError } from 'helpful-errors';
+import { BadRequestError } from 'helpful-errors';
 
 import type { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
 import { getRepoFromGitContext } from '@src/infra/git/getRepoFromGitContext';
@@ -6,8 +6,9 @@ import { getRepoFromGitContext } from '@src/infra/git/getRepoFromGitContext';
 import { asRadioTaskRepoFromArg } from './asRadioTaskRepoFromArg';
 
 /**
- * .what = derive radio task repo from explicit arg or git context fallback
- * .why  = provides clear narrative for repo derivation in CLI orchestrators
+ * .what = derive radio task repo from explicit arg (required)
+ * .why  = pit of success: explicit is better than implicit, require users to
+ *         specify target repo via @this (current git repo) or owner/name
  */
 export const getOneRadioTaskRepoFromCliArg = async (input: {
   arg: string | null;
@@ -17,16 +18,25 @@ export const getOneRadioTaskRepoFromCliArg = async (input: {
     hint: string;
   };
 }): Promise<RadioTaskRepo> => {
-  // derive from explicit arg if provided
-  if (input.arg !== null)
-    return asRadioTaskRepoFromArg({ arg: input.arg, argName: input.argName });
+  // require explicit arg (no silent fallback)
+  if (input.arg === null)
+    throw new BadRequestError(input.errorContext.notFoundMessage, {
+      hint: input.errorContext.hint,
+    });
 
-  // fallback to git context
-  const repoFromGit = await getRepoFromGitContext();
-  if (repoFromGit) return repoFromGit;
+  // handle @this sentinel: derive from current git repo
+  if (input.arg === '@this') {
+    const repoFromGit = await getRepoFromGitContext();
+    if (!repoFromGit)
+      throw new BadRequestError(
+        `${input.argName}=@this requires a git repository`,
+        {
+          hint: 'run from within a git repository, or specify owner/name explicitly',
+        },
+      );
+    return repoFromGit;
+  }
 
-  // no repo found
-  throw new ConstraintError(input.errorContext.notFoundMessage, {
-    hint: input.errorContext.hint,
-  });
+  // handle owner/name format
+  return asRadioTaskRepoFromArg({ arg: input.arg, argName: input.argName });
 };

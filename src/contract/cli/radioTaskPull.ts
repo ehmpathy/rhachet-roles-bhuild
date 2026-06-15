@@ -4,24 +4,27 @@
  *
  * options:
  *   --via     channel: gh.issues or os.fileops (required)
- *   --from    source repo as "owner/name" (default: current git repo)
+ *   --from    source repo: @this (current git repo) or owner/name (required)
  *   --list    list all tasks
  *   --exid    fetch specific task by external id
  *   --title   fetch specific task by title
  *   --status  filter by status: QUEUED, CLAIMED, DELIVERED
  *   --limit   max number of tasks to return
  *   --auth    auth mode: "as-human" or "as-robot:ENV_VAR_NAME"
+ *   --help    show usage and exit
  *
  * usage:
- *   radio.task.pull --via gh.issues --list
+ *   radio.task.pull --via gh.issues --from @this --list
  *   radio.task.pull --via gh.issues --from owner/repo --list
- *   radio.task.pull --via os.fileops --exid 123
- *   radio.task.pull --via gh.issues --list --status QUEUED
+ *   radio.task.pull --via os.fileops --from @this --exid 123
+ *   radio.task.pull --via gh.issues --from @this --list --status QUEUED
  */
 
+import { BadRequestError } from 'helpful-errors';
 import { z } from 'zod';
 
 import { RadioChannel } from '@src/domain.objects/RadioChannel';
+import type { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
 import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
 import { asPullModeFromArgs } from '@src/domain.operations/radio/cli/asPullModeFromArgs';
 import { asTaskDetailOutput } from '@src/domain.operations/radio/cli/asTaskDetailOutput';
@@ -38,19 +41,48 @@ import { shx } from '@src/infra/shell/shx';
 import { outputRadioResult } from './outputRadioResult';
 
 // ────────────────────────────────────────────────────────────────────
+// transformers
+// ────────────────────────────────────────────────────────────────────
+
+/**
+ * .what = build pull-all request with only non-null filter fields
+ * .why  = extract conditional spread decode-friction from orchestrator
+ */
+const asPullAllRequest = (input: {
+  via: RadioChannel;
+  repo: RadioTaskRepo;
+  filter: { status: RadioTaskStatus } | null;
+  limit: number | null;
+}): {
+  via: RadioChannel;
+  repo: RadioTaskRepo;
+  filter?: { status: RadioTaskStatus };
+  limit?: number;
+} => ({
+  via: input.via,
+  repo: input.repo,
+  ...(input.filter !== null && { filter: input.filter }),
+  ...(input.limit !== null && { limit: input.limit }),
+});
+
+// ────────────────────────────────────────────────────────────────────
 // schema
 // ────────────────────────────────────────────────────────────────────
 
 const schemaOfArgs = z.object({
   named: z.object({
+    // help flag
+    help: z.boolean().optional(),
+    h: z.boolean().optional(),
+
     // required: channel
-    via: z.nativeEnum(RadioChannel),
+    via: z.nativeEnum(RadioChannel).optional(),
 
     // optional: auth mode (required for gh.issues if GITHUB_TOKEN not set)
     // supports: "as-human" or "as-robot:ENV_VAR_NAME"
     auth: z.string().optional(),
 
-    // optional: source repo (e.g., "owner/name")
+    // required: source repo (@this or owner/name)
     from: z.string().optional(),
 
     // mode: list or single
@@ -75,17 +107,50 @@ const schemaOfArgs = z.object({
 // exported CLI entry point
 // ────────────────────────────────────────────────────────────────────
 
+const HELP_TEXT = `
+🦫 lets check the meter...
+
+🎙️ radio.task.pull --help
+   ├─ usage
+   │  ├─ radio.task.pull --via gh.issues --from @this --list
+   │  ├─ radio.task.pull --via gh.issues --from owner/repo --list
+   │  ├─ radio.task.pull --via os.fileops --from @this --exid 123
+   │  └─ radio.task.pull --via gh.issues --from @this --list --status QUEUED
+   │
+   └─ options
+      ├─ --via       channel: gh.issues or os.fileops (required)
+      ├─ --from      source: @this (current repo) or owner/repo (required)
+      ├─ --list      list all tasks
+      ├─ --exid      fetch specific task by external id
+      ├─ --title     fetch specific task by title
+      ├─ --status    filter by status: QUEUED, CLAIMED, DELIVERED
+      ├─ --limit     max number of tasks to return
+      ├─ --auth      auth mode: "as-human" or "as-robot:ENV_VAR_NAME"
+      └─ --help, -h  show this help
+`.trim();
+
 export const cliRadioTaskPull = async (): Promise<void> => {
   const { named } = getCliArgs({ schema: schemaOfArgs });
 
-  // derive repo from --from arg or git context
+  // handle --help flag
+  if (named.help || named.h) {
+    console.log(HELP_TEXT);
+    process.exit(0);
+  }
+
+  // validate required --via arg (not validated by schema to allow --help without it)
+  if (!named.via)
+    throw new BadRequestError('--via is required', {
+      hint: 'specify a channel: --via gh.issues  or  --via os.fileops',
+    });
+
+  // derive repo from --from arg (required)
   const repo = await getOneRadioTaskRepoFromCliArg({
     arg: named.from ?? null,
     argName: '--from',
     errorContext: {
-      notFoundMessage:
-        '--from required (not in a git repo); specify --from owner/repo or run from a git repository',
-      hint: 'provide --from owner/repo or run from within a git repository',
+      notFoundMessage: '--from is required',
+      hint: 'use --from @this (current git repo) or --from owner/name',
     },
   });
 
@@ -111,15 +176,16 @@ export const cliRadioTaskPull = async (): Promise<void> => {
   // handle list mode
   if (mode.kind === 'list') {
     const result = await radioTaskPullAll(
-      {
+      asPullAllRequest({
         via: named.via,
         repo,
-        ...(mode.filter !== null && { filter: mode.filter }),
-        ...(mode.limit !== null && { limit: mode.limit }),
-      },
+        filter: mode.filter,
+        limit: mode.limit,
+      }),
       context,
     );
 
+    console.log('🦫 back in the river!\n');
     outputRadioResult({
       message: asTaskListOutput({ tasks: result.tasks, via: named.via }),
     });
@@ -136,6 +202,7 @@ export const cliRadioTaskPull = async (): Promise<void> => {
     context,
   );
 
+  console.log('🦫 back in the river!\n');
   outputRadioResult({
     message: asTaskDetailOutput({
       task: result.task,

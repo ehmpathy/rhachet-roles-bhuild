@@ -1,30 +1,30 @@
 #!/usr/bin/env bash
 ######################################################################
-# .what = turtle vibes output for radio.uses skills
+# .what = beaver vibes output for radio.uses skills
 #
 # .why  = consistent, fun output format across all radio.uses commands
 #
 # usage:
 #   source output.sh
-#   print_turtle_header "cowabunga!"
+#   print_beaver_header "back in the river!"
 #   print_tree_start "radio.uses"
 #   print_tree_branch "global"
 #   print_tree_leaf "blocked" "true"
 ######################################################################
 
-# print turtle emoji + phrase
-# usage: print_turtle_header "cowabunga!"
-print_turtle_header() {
+# print beaver emoji + phrase
+# usage: print_beaver_header "back in the river!"
+print_beaver_header() {
   local phrase="$1"
-  echo "🐢 $phrase"
+  echo "🦫 $phrase"
   echo ""
 }
 
-# print tree root with shell emoji
+# print tree root with microphone emoji
 # usage: print_tree_start "radio.uses"
 print_tree_start() {
   local command="$1"
-  echo "🐚 $command"
+  echo "🎙️ $command"
 }
 
 # print tree branch (has children)
