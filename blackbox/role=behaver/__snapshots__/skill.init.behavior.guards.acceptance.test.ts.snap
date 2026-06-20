@@ -118,6 +118,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 "🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
+   │
    └─ ✓ judge.1 - allowed [time]
 
 🗿 route.stone.set
@@ -369,18 +370,81 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 "🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
-   ├─ ✓ review.1 - completed [time]
-   ├─ ✓ review.2 - completed [time]
-   ├─ ✓ review.3 - completed [time]
-   ├─ ✓ review.4 - completed [time]
-   ├─ ✓ review.5 - completed [time]
-   ├─ ✓ review.6 - completed [time]
-   ├─ ✓ review.7 - completed [time]
-   ├─ ✓ review.8 - completed [time]
-   ├─ ✓ review.9 - completed [time]
-   ├─ ✓ review.10 - completed [time]
-   ├─ ✓ review.11 - completed [time]
+   │
+   ├─ r1: repo-rules (l1, 1/5)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r1.md
+   │
+   ├─ r2: mech-failhides (l1, 1/5)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r2.md
+   │
+   ├─ r3: mech-decode-friction (l1, 1/5)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r3.md
+   │
+   ├─ r4: arch-opport-decomposition (l1, 1/5)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r4.md
+   │
+   ├─ r5: arch-smell-scopeleaks (l1, 1/5)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r5.md
+   │
+   ├─ r6: arch-hazards-maintenance (l1, 1/5)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r6.md
+   │
+   ├─ r7: arch-hazards-behavior (l1, 1/5)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r7.md
+   │
+   ├─ r8: arch-ambiguous-terms (l1, 1/5)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r8.md
+   │
+   ├─ r9: ergo-acceptance-journey-coverage (l1, 1/5)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r9.md
+   │
+   ├─ r10: ergo-snapshot-visual-blemishes (l1, 1/5)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r10.md
+   │
+   ├─ r11: enroll-blueprint-arch-defects (l3, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r11.md
+   │
+   ├─ r12: enroll-blueprint-behavior-intent (l3, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r12.md
+   │
    ├─ ✓ judge.1 - allowed [time]
+   │
    └─ ✗ judge.2 - blocked [time]
 
 🗿 route.stone.set
@@ -390,39 +454,66 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    └─ guard
       ├─ artifacts
       ├─ reviews
-      │   ├─ r1: mech-failhides (l1, 1/5, approved)
-      │   │   ├─ approved [time] ✓
-      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i{N}.{HASH}.r1.md
-      │   ├─ r2: mech-decode-friction (l1, 1/5, approved)
-      │   │   ├─ approved [time] ✓
-      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i{N}.{HASH}.r2.md
-      │   ├─ r3: arch-opport-decomposition (l1, 1/5, approved)
-      │   │   ├─ approved [time] ✓
-      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i{N}.{HASH}.r3.md
-      │   ├─ r4: arch-smell-scopeleaks (l1, 1/5, approved)
-      │   │   ├─ approved [time] ✓
-      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i{N}.{HASH}.r4.md
-      │   ├─ r5: arch-hazards-maintenance (l1, 1/5, approved)
-      │   │   ├─ approved [time] ✓
-      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i{N}.{HASH}.r5.md
-      │   ├─ r6: arch-hazards-behavior (l1, 1/5, approved)
-      │   │   ├─ approved [time] ✓
-      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i{N}.{HASH}.r6.md
-      │   ├─ r7: arch-ambiguous-terms (l1, 1/5, approved)
-      │   │   ├─ approved [time] ✓
-      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i{N}.{HASH}.r7.md
-      │   ├─ r8: ergo-acceptance-journey-coverage (l1, 1/5, approved)
-      │   │   ├─ approved [time] ✓
-      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i{N}.{HASH}.r8.md
-      │   ├─ r9: ergo-snapshot-visual-blemishes (l1, 1/5, approved)
-      │   │   ├─ approved [time] ✓
-      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i{N}.{HASH}.r9.md
-      │   ├─ r10: enroll-blueprint-arch-defects (l3, 1/3, approved)
-      │   │   ├─ approved [time] ✓
-      │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i{N}.{HASH}.r10.md
-      │   └─ r11: enroll-blueprint-behavior-intent (l3, 1/3, approved)
-      │       ├─ approved [time] ✓
-      │       └─ review: .route/3.3.1.blueprint.product.guard.review.i{N}.{HASH}.r11.md
+      │   ├─ r1: repo-rules (l1, 1/5)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r1.md
+      │   ├─ r2: mech-failhides (l1, 1/5)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r2.md
+      │   ├─ r3: mech-decode-friction (l1, 1/5)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r3.md
+      │   ├─ r4: arch-opport-decomposition (l1, 1/5)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r4.md
+      │   ├─ r5: arch-smell-scopeleaks (l1, 1/5)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r5.md
+      │   ├─ r6: arch-hazards-maintenance (l1, 1/5)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r6.md
+      │   ├─ r7: arch-hazards-behavior (l1, 1/5)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r7.md
+      │   ├─ r8: arch-ambiguous-terms (l1, 1/5)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r8.md
+      │   ├─ r9: ergo-acceptance-journey-coverage (l1, 1/5)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r9.md
+      │   ├─ r10: ergo-snapshot-visual-blemishes (l1, 1/5)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r10.md
+      │   ├─ r11: enroll-blueprint-arch-defects (l3, 1/3)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r11.md
+      │   └─ r12: enroll-blueprint-behavior-intent (l3, 1/3)
+      │       ├─ approved [time]
+      │       ├─ 0 blockers ✓
+      │       ├─ 0 nitpicks ✓
+      │       └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r12.md
       └─ judges
           ├─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
           │   └─ finished [time] ✓
@@ -467,18 +558,81 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 "🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
-   ├─ ✓ review.1 - completed (cached)
-   ├─ ✓ review.2 - completed (cached)
-   ├─ ✓ review.3 - completed (cached)
-   ├─ ✓ review.4 - completed (cached)
-   ├─ ✓ review.5 - completed (cached)
-   ├─ ✓ review.6 - completed (cached)
-   ├─ ✓ review.7 - completed (cached)
-   ├─ ✓ review.8 - completed (cached)
-   ├─ ✓ review.9 - completed (cached)
-   ├─ ✓ review.10 - completed (cached)
-   ├─ ✓ review.11 - completed (cached)
+   │
+   ├─ r1: repo-rules (l1, 1/5)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r1.md
+   │
+   ├─ r2: mech-failhides (l1, 1/5)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r2.md
+   │
+   ├─ r3: mech-decode-friction (l1, 1/5)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r3.md
+   │
+   ├─ r4: arch-opport-decomposition (l1, 1/5)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r4.md
+   │
+   ├─ r5: arch-smell-scopeleaks (l1, 1/5)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r5.md
+   │
+   ├─ r6: arch-hazards-maintenance (l1, 1/5)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r6.md
+   │
+   ├─ r7: arch-hazards-behavior (l1, 1/5)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r7.md
+   │
+   ├─ r8: arch-ambiguous-terms (l1, 1/5)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r8.md
+   │
+   ├─ r9: ergo-acceptance-journey-coverage (l1, 1/5)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r9.md
+   │
+   ├─ r10: ergo-snapshot-visual-blemishes (l1, 1/5)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r10.md
+   │
+   ├─ r11: enroll-blueprint-arch-defects (l3, 1/3)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r11.md
+   │
+   ├─ r12: enroll-blueprint-behavior-intent (l3, 1/3)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r12.md
+   │
    ├─ ✓ judge.1 - allowed [time]
+   │
    └─ ✓ judge.2 - allowed [time]
 
 🗿 route.stone.set
@@ -487,39 +641,66 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ guard
    │  ├─ artifacts
    │  ├─ reviews
-   │  │   ├─ r1: mech-failhides (l1, 1/5, approved)
-   │  │   │   ├─ cached ✓
-   │  │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i{N}.{HASH}.r1.md
-   │  │   ├─ r2: mech-decode-friction (l1, 1/5, approved)
-   │  │   │   ├─ cached ✓
-   │  │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i{N}.{HASH}.r2.md
-   │  │   ├─ r3: arch-opport-decomposition (l1, 1/5, approved)
-   │  │   │   ├─ cached ✓
-   │  │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i{N}.{HASH}.r3.md
-   │  │   ├─ r4: arch-smell-scopeleaks (l1, 1/5, approved)
-   │  │   │   ├─ cached ✓
-   │  │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i{N}.{HASH}.r4.md
-   │  │   ├─ r5: arch-hazards-maintenance (l1, 1/5, approved)
-   │  │   │   ├─ cached ✓
-   │  │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i{N}.{HASH}.r5.md
-   │  │   ├─ r6: arch-hazards-behavior (l1, 1/5, approved)
-   │  │   │   ├─ cached ✓
-   │  │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i{N}.{HASH}.r6.md
-   │  │   ├─ r7: arch-ambiguous-terms (l1, 1/5, approved)
-   │  │   │   ├─ cached ✓
-   │  │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i{N}.{HASH}.r7.md
-   │  │   ├─ r8: ergo-acceptance-journey-coverage (l1, 1/5, approved)
-   │  │   │   ├─ cached ✓
-   │  │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i{N}.{HASH}.r8.md
-   │  │   ├─ r9: ergo-snapshot-visual-blemishes (l1, 1/5, approved)
-   │  │   │   ├─ cached ✓
-   │  │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i{N}.{HASH}.r9.md
-   │  │   ├─ r10: enroll-blueprint-arch-defects (l3, 1/3, approved)
-   │  │   │   ├─ cached ✓
-   │  │   │   └─ review: .route/3.3.1.blueprint.product.guard.review.i{N}.{HASH}.r10.md
-   │  │   └─ r11: enroll-blueprint-behavior-intent (l3, 1/3, approved)
-   │  │       ├─ cached ✓
-   │  │       └─ review: .route/3.3.1.blueprint.product.guard.review.i{N}.{HASH}.r11.md
+   │  │   ├─ r1: repo-rules (l1, 1/5)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r1.md
+   │  │   ├─ r2: mech-failhides (l1, 1/5)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r2.md
+   │  │   ├─ r3: mech-decode-friction (l1, 1/5)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r3.md
+   │  │   ├─ r4: arch-opport-decomposition (l1, 1/5)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r4.md
+   │  │   ├─ r5: arch-smell-scopeleaks (l1, 1/5)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r5.md
+   │  │   ├─ r6: arch-hazards-maintenance (l1, 1/5)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r6.md
+   │  │   ├─ r7: arch-hazards-behavior (l1, 1/5)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r7.md
+   │  │   ├─ r8: arch-ambiguous-terms (l1, 1/5)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r8.md
+   │  │   ├─ r9: ergo-acceptance-journey-coverage (l1, 1/5)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r9.md
+   │  │   ├─ r10: ergo-snapshot-visual-blemishes (l1, 1/5)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r10.md
+   │  │   ├─ r11: enroll-blueprint-arch-defects (l3, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r11.md
+   │  │   └─ r12: enroll-blueprint-behavior-intent (l3, 1/3)
+   │  │       ├─ approved, cached
+   │  │       ├─ 0 blockers ✓
+   │  │       ├─ 0 nitpicks ✓
+   │  │       └─ review: .behavior/v{DATE}.full-journey/.route/3.3.1.blueprint.product.guard.review.i1.b0acb3fb7c0ee92bac.r12.md
    │  └─ judges
    │      ├─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
    │      │   └─ finished [time] ✓
@@ -639,16 +820,73 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 "🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
-   ├─ ✓ review.1 - completed [time]
-   ├─ ✓ review.2 - completed [time]
-   ├─ ✓ review.3 - completed [time]
-   ├─ ✓ review.4 - completed [time]
-   ├─ ✓ review.5 - completed [time]
-   ├─ ✓ review.6 - completed [time]
-   ├─ ✓ review.7 - completed [time]
-   ├─ ✓ review.8 - completed [time]
-   ├─ ✓ review.9 - completed [time]
-   ├─ ✓ review.10 - completed [time]
+   │
+   ├─ r1: repo-rules (l1, 1/5)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/5.1.execution.phase0_to_phaseN.guard.review.i1.ee87c1d4c132ad4050.r1.md
+   │
+   ├─ r2: mech-failhides (l1, 1/5)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/5.1.execution.phase0_to_phaseN.guard.review.i1.ee87c1d4c132ad4050.r2.md
+   │
+   ├─ r3: mech-decode-friction (l1, 1/5)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/5.1.execution.phase0_to_phaseN.guard.review.i1.ee87c1d4c132ad4050.r3.md
+   │
+   ├─ r4: arch-opport-decomposition (l1, 1/5)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/5.1.execution.phase0_to_phaseN.guard.review.i1.ee87c1d4c132ad4050.r4.md
+   │
+   ├─ r5: arch-smell-scopeleaks (l1, 1/5)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/5.1.execution.phase0_to_phaseN.guard.review.i1.ee87c1d4c132ad4050.r5.md
+   │
+   ├─ r6: arch-hazards-maintenance (l1, 1/5)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/5.1.execution.phase0_to_phaseN.guard.review.i1.ee87c1d4c132ad4050.r6.md
+   │
+   ├─ r7: arch-hazards-behavior (l1, 1/5)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/5.1.execution.phase0_to_phaseN.guard.review.i1.ee87c1d4c132ad4050.r7.md
+   │
+   ├─ r8: behavior-intent-coverage (l1, 1/5)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/5.1.execution.phase0_to_phaseN.guard.review.i1.ee87c1d4c132ad4050.r8.md
+   │
+   ├─ r9: ergo-friction-hazards (l1, 1/5)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/5.1.execution.phase0_to_phaseN.guard.review.i1.ee87c1d4c132ad4050.r9.md
+   │
+   ├─ r10: enroll-impl-behavior-intent (l3, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/5.1.execution.phase0_to_phaseN.guard.review.i1.ee87c1d4c132ad4050.r10.md
+   │
+   ├─ r11: enroll-impl-arch-defects (l3, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   └─ review: .behavior/v{DATE}.full-journey/.route/5.1.execution.phase0_to_phaseN.guard.review.i1.ee87c1d4c132ad4050.r11.md
+   │
    └─ ✓ judge.1 - allowed [time]
 
 🗿 route.stone.set
@@ -659,36 +897,61 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │  │   ├─ $route/5.1.execution.phase0_to_phaseN.yield.md
    │  │   └─ src/**/*
    │  ├─ reviews
-   │  │   ├─ r1: mech-failhides (l1, 1/5, approved)
-   │  │   │   ├─ approved [time] ✓
-   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i{N}.{HASH}.r1.md
-   │  │   ├─ r2: mech-decode-friction (l1, 1/5, approved)
-   │  │   │   ├─ approved [time] ✓
-   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i{N}.{HASH}.r2.md
-   │  │   ├─ r3: arch-opport-decomposition (l1, 1/5, approved)
-   │  │   │   ├─ approved [time] ✓
-   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i{N}.{HASH}.r3.md
-   │  │   ├─ r4: arch-smell-scopeleaks (l1, 1/5, approved)
-   │  │   │   ├─ approved [time] ✓
-   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i{N}.{HASH}.r4.md
-   │  │   ├─ r5: arch-hazards-maintenance (l1, 1/5, approved)
-   │  │   │   ├─ approved [time] ✓
-   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i{N}.{HASH}.r5.md
-   │  │   ├─ r6: arch-hazards-behavior (l1, 1/5, approved)
-   │  │   │   ├─ approved [time] ✓
-   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i{N}.{HASH}.r6.md
-   │  │   ├─ r7: behavior-intent-coverage (l1, 1/5, approved)
-   │  │   │   ├─ approved [time] ✓
-   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i{N}.{HASH}.r7.md
-   │  │   ├─ r8: ergo-friction-hazards (l1, 1/5, approved)
-   │  │   │   ├─ approved [time] ✓
-   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i{N}.{HASH}.r8.md
-   │  │   ├─ r9: enroll-impl-behavior-intent (l3, 1/3, approved)
-   │  │   │   ├─ approved [time] ✓
-   │  │   │   └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i{N}.{HASH}.r9.md
-   │  │   └─ r10: enroll-impl-arch-defects (l3, 1/3, approved)
-   │  │       ├─ approved [time] ✓
-   │  │       └─ review: .route/5.1.execution.phase0_to_phaseN.guard.review.i{N}.{HASH}.r10.md
+   │  │   ├─ r1: repo-rules (l1, 1/5)
+   │  │   │   ├─ approved [time]
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v{DATE}.full-journey/.route/5.1.execution.phase0_to_phaseN.guard.review.i1.ee87c1d4c132ad4050.r1.md
+   │  │   ├─ r2: mech-failhides (l1, 1/5)
+   │  │   │   ├─ approved [time]
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v{DATE}.full-journey/.route/5.1.execution.phase0_to_phaseN.guard.review.i1.ee87c1d4c132ad4050.r2.md
+   │  │   ├─ r3: mech-decode-friction (l1, 1/5)
+   │  │   │   ├─ approved [time]
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v{DATE}.full-journey/.route/5.1.execution.phase0_to_phaseN.guard.review.i1.ee87c1d4c132ad4050.r3.md
+   │  │   ├─ r4: arch-opport-decomposition (l1, 1/5)
+   │  │   │   ├─ approved [time]
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v{DATE}.full-journey/.route/5.1.execution.phase0_to_phaseN.guard.review.i1.ee87c1d4c132ad4050.r4.md
+   │  │   ├─ r5: arch-smell-scopeleaks (l1, 1/5)
+   │  │   │   ├─ approved [time]
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v{DATE}.full-journey/.route/5.1.execution.phase0_to_phaseN.guard.review.i1.ee87c1d4c132ad4050.r5.md
+   │  │   ├─ r6: arch-hazards-maintenance (l1, 1/5)
+   │  │   │   ├─ approved [time]
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v{DATE}.full-journey/.route/5.1.execution.phase0_to_phaseN.guard.review.i1.ee87c1d4c132ad4050.r6.md
+   │  │   ├─ r7: arch-hazards-behavior (l1, 1/5)
+   │  │   │   ├─ approved [time]
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v{DATE}.full-journey/.route/5.1.execution.phase0_to_phaseN.guard.review.i1.ee87c1d4c132ad4050.r7.md
+   │  │   ├─ r8: behavior-intent-coverage (l1, 1/5)
+   │  │   │   ├─ approved [time]
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v{DATE}.full-journey/.route/5.1.execution.phase0_to_phaseN.guard.review.i1.ee87c1d4c132ad4050.r8.md
+   │  │   ├─ r9: ergo-friction-hazards (l1, 1/5)
+   │  │   │   ├─ approved [time]
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v{DATE}.full-journey/.route/5.1.execution.phase0_to_phaseN.guard.review.i1.ee87c1d4c132ad4050.r9.md
+   │  │   ├─ r10: enroll-impl-behavior-intent (l3, 1/3)
+   │  │   │   ├─ approved [time]
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   └─ review: .behavior/v{DATE}.full-journey/.route/5.1.execution.phase0_to_phaseN.guard.review.i1.ee87c1d4c132ad4050.r10.md
+   │  │   └─ r11: enroll-impl-arch-defects (l3, 1/3)
+   │  │       ├─ approved [time]
+   │  │       ├─ 0 blockers ✓
+   │  │       ├─ 0 nitpicks ✓
+   │  │       └─ review: .behavior/v{DATE}.full-journey/.route/5.1.execution.phase0_to_phaseN.guard.review.i1.ee87c1d4c132ad4050.r11.md
    │  └─ judges
    │      └─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
    │          └─ finished [time] ✓
