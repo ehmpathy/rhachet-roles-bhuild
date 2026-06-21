@@ -29,7 +29,9 @@ const asCli =
         const metadata = error.metadata as Record<string, unknown> | undefined;
         const hint = metadata?.hint as string | undefined;
         // check if helpful-errors already added the class prefix (avoids unicode emoji comparison issues)
-        const alreadyHasPrefix = error.message.includes(`${error.constructor.name}:`);
+        const alreadyHasPrefix = error.message.includes(
+          `${error.constructor.name}:`,
+        );
         const prefix = alreadyHasPrefix ? '' : '✋ ';
         console.error(`${prefix}${error.message}`);
         if (hint) {
