@@ -28,7 +28,8 @@ const asCli =
       ) {
         const metadata = error.metadata as Record<string, unknown> | undefined;
         const hint = metadata?.hint as string | undefined;
-        console.error(`✋ ${error.message}`);
+        const prefix = error.message.startsWith('✋') ? '' : '✋ ';
+        console.error(`${prefix}${error.message}`);
         if (hint) {
           console.error('');
           console.error(hint);
