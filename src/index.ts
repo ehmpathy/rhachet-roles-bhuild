@@ -28,7 +28,10 @@ const asCli =
       ) {
         const metadata = error.metadata as Record<string, unknown> | undefined;
         const hint = metadata?.hint as string | undefined;
-        console.error(`✋ ${error.message}`);
+        // check if helpful-errors already added the emoji prefix
+        const alreadyHasEmoji = error.message.includes('✋');
+        const prefix = alreadyHasEmoji ? '' : '✋ ';
+        console.error(`${prefix}${error.message}`);
         if (hint) {
           console.error('');
           console.error(hint);

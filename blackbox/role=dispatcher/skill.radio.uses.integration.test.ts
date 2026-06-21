@@ -9,7 +9,7 @@ import * as path from 'path';
 
 import { given, then, useBeforeAll, useThen, when } from 'test-fns';
 
-import { genConsumerRepo, runRhachetSkill } from '../.test/infra';
+import { genConsumerRepo, runRhachetSkill, sanitizeOutput } from '../.test/infra';
 
 /**
  * .what = invoke radio.uses skill
@@ -88,7 +88,7 @@ describe('radio.uses acceptance', () => {
         });
 
         then('output matches snapshot', () => {
-          expect(result.stdout).toMatchSnapshot();
+          expect(sanitizeOutput(result.stdout)).toMatchSnapshot();
         });
       });
 
@@ -144,7 +144,7 @@ describe('radio.uses acceptance', () => {
         });
 
         then('output matches snapshot', () => {
-          expect(result.stdout).toMatchSnapshot();
+          expect(sanitizeOutput(result.stdout)).toMatchSnapshot();
         });
       });
 
@@ -218,7 +218,7 @@ describe('radio.uses acceptance', () => {
         });
 
         then('output matches snapshot', () => {
-          expect(result.stdout).toMatchSnapshot();
+          expect(sanitizeOutput(result.stdout)).toMatchSnapshot();
         });
       });
 
@@ -284,7 +284,7 @@ describe('radio.uses acceptance', () => {
         });
 
         then('output matches snapshot', () => {
-          expect(result.stdout).toMatchSnapshot();
+          expect(sanitizeOutput(result.stdout)).toMatchSnapshot();
         });
       });
 
@@ -364,7 +364,7 @@ describe('radio.uses acceptance', () => {
         });
 
         then('output matches snapshot', () => {
-          expect(result.stdout).toMatchSnapshot();
+          expect(sanitizeOutput(result.stdout)).toMatchSnapshot();
         });
       });
 
@@ -455,7 +455,7 @@ describe('radio.uses acceptance', () => {
         });
 
         then('output matches snapshot', () => {
-          expect(result.stdout).toMatchSnapshot();
+          expect(sanitizeOutput(result.stdout)).toMatchSnapshot();
         });
       });
 
@@ -515,7 +515,7 @@ describe('radio.uses acceptance', () => {
         });
 
         then('output matches snapshot', () => {
-          expect(result.stdout).toMatchSnapshot();
+          expect(sanitizeOutput(result.stdout)).toMatchSnapshot();
         });
       });
 
@@ -541,7 +541,7 @@ describe('radio.uses acceptance', () => {
         });
 
         then('output matches snapshot', () => {
-          expect(result.stdout).toMatchSnapshot();
+          expect(sanitizeOutput(result.stdout)).toMatchSnapshot();
         });
       });
     });
@@ -592,7 +592,7 @@ describe('radio.uses acceptance', () => {
         });
 
         then('output matches snapshot', () => {
-          expect(result.stdout).toMatchSnapshot();
+          expect(sanitizeOutput(result.stdout)).toMatchSnapshot();
         });
       });
 
@@ -665,7 +665,7 @@ describe('radio.uses acceptance', () => {
         });
 
         then('output matches snapshot', () => {
-          expect(result.stdout).toMatchSnapshot();
+          expect(sanitizeOutput(result.stdout)).toMatchSnapshot();
         });
       });
     });
@@ -709,7 +709,7 @@ describe('radio.uses acceptance', () => {
         });
 
         then('output matches snapshot', () => {
-          expect(result.stdout).toMatchSnapshot();
+          expect(sanitizeOutput(result.stdout)).toMatchSnapshot();
         });
       });
     });
@@ -749,7 +749,7 @@ describe('radio.uses acceptance', () => {
         });
 
         then('output matches snapshot', () => {
-          expect(result.stdout).toMatchSnapshot();
+          expect(sanitizeOutput(result.stdout)).toMatchSnapshot();
         });
       });
     });
@@ -796,7 +796,7 @@ describe('radio.uses acceptance', () => {
         });
 
         then('output matches snapshot', () => {
-          expect(result.stdout).toMatchSnapshot();
+          expect(sanitizeOutput(result.stdout)).toMatchSnapshot();
         });
       });
 
@@ -819,7 +819,7 @@ describe('radio.uses acceptance', () => {
         });
 
         then('output matches snapshot', () => {
-          expect(result.stdout).toMatchSnapshot();
+          expect(sanitizeOutput(result.stdout)).toMatchSnapshot();
         });
       });
 
@@ -859,7 +859,7 @@ describe('radio.uses acceptance', () => {
         });
 
         then('output matches snapshot', () => {
-          expect(result.stdout).toMatchSnapshot();
+          expect(sanitizeOutput(result.stdout)).toMatchSnapshot();
         });
       });
 

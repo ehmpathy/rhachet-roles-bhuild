@@ -160,49 +160,49 @@ reviews:
     # --- level 1: cheap reviewers (run first, in parallel) ---
 
     - slug: repo-rules
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=.this/**/rule.*.md' --diffs since-main --paths-with '**/*.ts' --join intersect --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=.this/**/rule.*.md' --diffs since-main --paths-with '**/*.{ts,sh}' --join intersect --output "$output"
       budget: 5
       level: 1
 
     - slug: mech-failhides
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.{prod,test}/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with '**/*.ts' --join intersect --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.{prod,test}/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with '**/*.{ts,sh}' --join intersect --output "$output"
       budget: 5
       level: 1
 
     - slug: mech-decode-friction
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=architect/briefs/practices/rule.{forbid.decode-friction-in-orchestrators,require.orchestrators-as-narrative}.md' --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.narrative/rule.{forbid.inline-decode-friction,require.named-transforms}.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/{define.domain-operation-grains,philosophy.transform-orchestrator-separation.[philosophy]}.md' --diffs since-main --paths-with '**/*.ts' --paths-without '**/*.test.ts' --join intersect --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=architect/briefs/practices/rule.{forbid.decode-friction-in-orchestrators,require.orchestrators-as-narrative}.md' --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.narrative/rule.{forbid.inline-decode-friction,require.named-transforms}.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/{define.domain-operation-grains,philosophy.transform-orchestrator-separation.[philosophy]}.md' --diffs since-main --paths-with '**/*.{ts,sh}' --paths-without '**/*.test.ts' --join intersect --output "$output"
       budget: 5
       level: 1
 
     # --- architect reviews (level 1) ---
 
     - slug: arch-opport-decomposition
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.prefer.decomposable-architecture.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.architecture/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.domain.operations/*.md.min' --diffs since-main --paths-with '**/*.ts' --join intersect --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.prefer.decomposable-architecture.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.architecture/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.domain.operations/*.md.min' --diffs since-main --paths-with '**/*.{ts,sh}' --join intersect --output "$output"
       budget: 5
       level: 1
 
     - slug: arch-smell-scopeleaks
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.scope-leaks.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.architecture/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.domain.operations/*.md.min' --diffs since-main --paths-with '**/*.ts' --join intersect --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.scope-leaks.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.architecture/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.domain.operations/*.md.min' --diffs since-main --paths-with '**/*.{ts,sh}' --join intersect --output "$output"
       budget: 5
       level: 1
 
     - slug: arch-hazards-maintenance
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.maintenance-hazards.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/rule.require.solve-at-cause.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.errors/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.typedefs/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.narrative/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.comments/*.md.min' --diffs since-main --paths-with '**/*.ts' --join intersect --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.maintenance-hazards.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/rule.require.solve-at-cause.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.errors/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.typedefs/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.narrative/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.comments/*.md.min' --diffs since-main --paths-with '**/*.{ts,sh}' --join intersect --output "$output"
       budget: 5
       level: 1
 
     - slug: arch-hazards-behavior
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.behavior-hazards.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --diffs since-main --paths-with '**/*.ts' --join intersect --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.behavior-hazards.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --diffs since-main --paths-with '**/*.{ts,sh}' --join intersect --output "$output"
       budget: 5
       level: 1
 
     - slug: behavior-intent-coverage
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.require.behavior-intent-coverage.md' --refs '$route/0.wish.md' --refs '$route/1.vision.yield.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.criteria/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --diffs since-main --paths-with '**/*.ts' --join intersect --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.require.behavior-intent-coverage.md' --refs '$route/0.wish.md' --refs '$route/1.vision.yield.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.criteria/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --diffs since-main --paths-with '**/*.{ts,sh}' --join intersect --output "$output"
       budget: 5
       level: 1
 
     - slug: ergo-friction-hazards
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.friction-hazards.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.tones/*.md.min' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --diffs since-main --paths-with '**/*.ts' --join intersect --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.friction-hazards.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.tones/*.md.min' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --diffs since-main --paths-with '**/*.{ts,sh}' --join intersect --output "$output"
       budget: 5
       level: 1
 
