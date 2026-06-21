@@ -23,7 +23,7 @@ describe('init.behavior.consumer', () => {
           repoDir: scene.repoDir,
         });
 
-        expect(result.exitCode).toBe(1);
+        expect(result.exitCode).toBe(2); // constraint error: user must checkout feature branch
         expect(result.output).toContain('can not bind');
         expect(result.output).toContain('main');
       });
