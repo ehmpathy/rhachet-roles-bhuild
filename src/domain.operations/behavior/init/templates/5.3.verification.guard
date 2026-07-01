@@ -231,42 +231,42 @@ reviews:
 
     - slug: repo-rules
       run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=.this/**/rule.*.md' --diffs since-main --paths-with '**/*.{ts,sh}' --join intersect --output "$output"
-      budget: 5
+      budget: 3
       level: 1
 
     - slug: ergo-contract-snapshots
       run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.contract-snapshot-exhaustiveness.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --diffs since-main --paths-with '**/*.{ts,sh}' --paths-with '**/*.snap' --join intersect --output "$output"
-      budget: 5
+      budget: 3
       level: 1
 
     - slug: mech-external-contracts
       run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.external-contract-integration-tests.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.unit/rule.forbid.remote-boundaries.md' --diffs since-main --paths-with '**/*.{ts,sh}' --paths-with '**/*.snap' --join intersect --output "$output"
-      budget: 5
+      budget: 3
       level: 1
 
     - slug: ergo-acceptance-journey-coverage
       run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/ergonomist/rule.require.acceptance-journey-coverage.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/frames.behavior/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --diffs since-main --paths-with '**/*.{ts,sh}' --paths-with '**/*.snap' --join intersect --output "$output"
-      budget: 5
+      budget: 3
       level: 1
 
     - slug: ergo-snapshot-visual-blemishes
       run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/ergonomist/rule.forbid.snapshot-visual-blemishes.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.tones/*.md.min' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.contract-snapshot-exhaustiveness.md' --diffs since-main --paths-with '**/*.{ts,sh}' --paths-with '**/*.snap' --join intersect --output "$output"
-      budget: 5
+      budget: 3
       level: 1
 
     - slug: mech-given-when-then
       run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/frames.behavior/rule.require.given-when-then.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/criteria.given_when_then.[seed].v3.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/frames.behavior/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/lessons.howto/*.md.min' --diffs since-main --paths-with '**/*.test.ts' --paths-with '**/*.snap' --join intersect --output "$output"
-      budget: 5
+      budget: 3
       level: 1
 
     - slug: mech-test-intent
       run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.forbid.test-intent-violations.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/work.flow/refactor/rule.require.review-test-changes.md.min' --diffs since-main --paths-with '**/*.test.ts' --paths-with '**/*.snap' --join intersect --output "$output"
-      budget: 5
+      budget: 3
       level: 1
 
     - slug: mech-test-scope-purity
       run: $rhachet run --repo bhrain --skill review --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/rule.require.test-coverage-by-grain.md,.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.unit/rule.forbid.unit.remote-boundaries.md,.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.integration/rule.forbid.integration.mocks.md,.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.acceptance/rule.forbid.acceptance.mocks.md,.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.acceptance/rule.require.acceptance.blackbox.md' --diffs since-main --paths-with '{src,blackbox}/**/*.test.ts' --join intersect --output "$output" --mode hard
-      budget: 5
+      budget: 3
       level: 1
 
     # --- level 3: expensive reviewers (run after level 1 is terminal) ---
