@@ -108,7 +108,7 @@ const schemaOfArgs = z.object({
 // ────────────────────────────────────────────────────────────────────
 
 const HELP_TEXT = `
-🦫 lets check the meter...
+🦫 let's check the meter...
 
 🎙️ radio.task.pull --help
    ├─ usage
@@ -125,7 +125,7 @@ const HELP_TEXT = `
       ├─ --title     fetch specific task by title
       ├─ --status    filter by status: QUEUED, CLAIMED, DELIVERED
       ├─ --limit     max number of tasks to return
-      ├─ --auth      auth mode: "as-human" or "as-robot:ENV_VAR_NAME"
+      ├─ --auth      mode: as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd) | as-human
       └─ --help, -h  show this help
 `.trim();
 
