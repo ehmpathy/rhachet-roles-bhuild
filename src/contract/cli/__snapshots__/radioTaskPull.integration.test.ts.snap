@@ -1,0 +1,83 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`radio.task.pull.integration — CLI contract given: [case1] --auth as-robot:env(MY_TOKEN) with the var unset when: [t0] the pull skill runs then: fails with a ConstraintError that names the var + fix 1`] = `
+"✋ ConstraintError: --auth as-robot:env(MY_TOKEN) specified but MY_TOKEN is not set
+
+{
+  "envVar": "MY_TOKEN",
+  "hint": "set MY_TOKEN in the environment"
+}"
+`;
+
+exports[`radio.task.pull.integration — CLI contract given: [case2] --auth as-human inside the test environment when: [t0] the pull skill runs then: fails with a ConstraintError that names the robot alternatives 1`] = `
+"✋ ConstraintError: --auth as-human is forbidden in test environment. use --auth as-robot:env(TOKEN_VAR) or --auth as-robot:shx(command) instead.
+
+{
+  "auth": "as-human"
+}"
+`;
+
+exports[`radio.task.pull.integration — CLI contract given: [case3] --auth as-robot:shx(command) that exits non-zero when: [t0] the pull skill runs the real shell command then: fails with a ConstraintError that wraps the shell failure 1`] = `
+"✋ ConstraintError: --auth as-robot:shx(...) command failed: exit 1
+
+{
+  "command": "exit 1",
+  "hint": "check the command runs and prints a token to stdout"
+}"
+`;
+
+exports[`radio.task.pull.integration — CLI contract given: [case4] --auth as-robot:shx(command) that prints no output when: [t0] the pull skill runs the real shell command then: fails with a ConstraintError that names the empty output 1`] = `
+"✋ ConstraintError: --auth as-robot:shx(...) command produced no output. stderr: (empty)
+
+{
+  "command": "printf \\"\\"",
+  "stderr": ""
+}"
+`;
+
+exports[`radio.task.pull.integration — CLI contract given: [case5] --auth with an unrecognized mode when: [t0] the pull skill runs then: fails with a ConstraintError that lists every supported mode 1`] = `
+"✋ ConstraintError: unrecognized --auth mode: some-unknown-mode
+
+supported modes:
+├─ as-robot:via-keyrack(owner)
+│     use token from keyrack (default owner: ehmpath)
+├─ as-robot:shx(command)
+│     execute shell command to retrieve token
+├─ as-robot:env(VAR)
+│     use token from environment variable
+└─ as-human
+      use gh cli logged-in session (interactive)
+
+{
+  "auth": "some-unknown-mode"
+}"
+`;
+
+exports[`radio.task.pull.integration — CLI contract given: [case6] --help (the positive contract output) when: [t0] the pull skill runs then: prints the usage + options help text 1`] = `
+"🦫 let's check the meter...
+
+🎙️ radio.task.pull --help
+   ├─ usage
+   │  ├─ radio.task.pull --via gh.issues --from @this --list
+   │  ├─ radio.task.pull --via gh.issues --from owner/repo --list
+   │  ├─ radio.task.pull --via os.fileops --from @this --exid 123
+   │  └─ radio.task.pull --via gh.issues --from @this --list --status QUEUED
+   │
+   └─ options
+      ├─ --via       channel: gh.issues or os.fileops (required)
+      ├─ --from      source: @this (current repo) or owner/repo (required)
+      ├─ --list      list all tasks
+      ├─ --exid      fetch specific task by external id
+      ├─ --title     fetch specific task by title
+      ├─ --status    filter by status: QUEUED, CLAIMED, DELIVERED
+      ├─ --limit     max number of tasks to return
+      ├─ --auth      mode: as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd) | as-human
+      └─ --help, -h  show this help"
+`;
+
+exports[`radio.task.pull.integration — CLI contract given: [case7] --via os.fileops --list with a seeded local task (the positive success contract) when: [t0] the pull skill runs the real filesystem read then: prints the rendered task list a human sees 1`] = `
+"🦫 back in the river!
+
+🎙️ tasks on os.fileops:
+   └─ [QUEUED] pull-cli-001: first cli pull task"
+`;

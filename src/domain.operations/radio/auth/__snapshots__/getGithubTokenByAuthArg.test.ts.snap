@@ -1,0 +1,54 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`getGithubTokenByAuthArg given: [case1] --auth as-robot:env(ENV_VAR) when: [t1] env var is not set then: error message mentions the env var name 1`] = `
+"✋ ConstraintError: --auth as-robot:env(MY_TOKEN) specified but MY_TOKEN is not set
+
+{
+  "envVar": "MY_TOKEN",
+  "hint": "set MY_TOKEN in the environment"
+}"
+`;
+
+exports[`getGithubTokenByAuthArg given: [case2] --auth as-robot:shx(command) when: [t1] shell command produces empty output then: error message includes stderr 1`] = `
+"✋ ConstraintError: --auth as-robot:shx(...) command produced no output. stderr: command not found
+
+{
+  "command": "bad-command",
+  "stderr": "command not found"
+}"
+`;
+
+exports[`getGithubTokenByAuthArg given: [case2] --auth as-robot:shx(command) when: [t2] shell command throws then: wraps the failure in a ConstraintError with command + cause 1`] = `
+"✋ ConstraintError: --auth as-robot:shx(...) command failed: exec failed
+
+{
+  "command": "bad-command",
+  "hint": "check the command runs and prints a token to stdout"
+}"
+`;
+
+exports[`getGithubTokenByAuthArg given: [case5] --auth as-human when: [t2] as-human in test env (NODE_ENV=test) then: error message suggests as-robot:env and as-robot:shx 1`] = `
+"✋ ConstraintError: --auth as-human is forbidden in test environment. use --auth as-robot:env(TOKEN_VAR) or --auth as-robot:shx(command) instead.
+
+{
+  "auth": "as-human"
+}"
+`;
+
+exports[`getGithubTokenByAuthArg given: [case6] unrecognized auth mode when: [t0] --auth with invalid mode then: error message lists supported modes 1`] = `
+"✋ ConstraintError: unrecognized --auth mode: some-unknown-mode
+
+supported modes:
+├─ as-robot:via-keyrack(owner)
+│     use token from keyrack (default owner: ehmpath)
+├─ as-robot:shx(command)
+│     execute shell command to retrieve token
+├─ as-robot:env(VAR)
+│     use token from environment variable
+└─ as-human
+      use gh cli logged-in session (interactive)
+
+{
+  "auth": "some-unknown-mode"
+}"
+`;

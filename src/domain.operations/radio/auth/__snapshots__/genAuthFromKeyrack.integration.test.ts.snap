@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`genAuthFromKeyrack.integration given: [case2] a key that was never set when: [t0] get a bogus key name (real keyrack returns absent) then: throws a ConstraintError that names the set-key fix 1`] = `
+"✋ ConstraintError: key is not set: EHMPATH_BOGUS_KEY_THAT_DOES_NOT_EXIST
+  • set the github token: rhx keyrack set --owner ehmpath --key EHMPATH_BOGUS_KEY_THAT_DOES_NOT_EXIST --env test
+  • or re-run as human: --auth as-human
+
+{
+  "owner": "ehmpath",
+  "env": "test",
+  "key": "EHMPATH_BOGUS_KEY_THAT_DOES_NOT_EXIST"
+}"
+`;

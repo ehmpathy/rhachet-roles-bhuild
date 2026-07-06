@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`getGithubTokenByAuthArg.integration given: [case2] --auth as-robot:shx(command) with failures when: [t0] shell command fails then: wraps the failure in a ConstraintError with command + hint 1`] = `
+"✋ ConstraintError: --auth as-robot:shx(...) command failed: exit 1
+
+{
+  "command": "exit 1",
+  "hint": "check the command runs and prints a token to stdout"
+}"
+`;
+
+exports[`getGithubTokenByAuthArg.integration given: [case2] --auth as-robot:shx(command) with failures when: [t1] shell command produces empty output then: throws ConstraintError that names the empty output 1`] = `
+"✋ ConstraintError: --auth as-robot:shx(...) command produced no output. stderr: (empty)
+
+{
+  "command": "printf \\"\\"",
+  "stderr": ""
+}"
+`;
