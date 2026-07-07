@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`getAllBehaviorContextArtifacts given: [case1] a fully-driven behavior with current \`.yield.md\` artifacts when: [t0] the boot context artifacts are computed then: the surfaced set matches snapshot 1`] = `
+[
+  {
+    "file": "0.wish.md",
+    "required": true,
+    "scope": "wish",
+  },
+  {
+    "file": "1.vision.yield.md",
+    "required": false,
+    "scope": "vision",
+  },
+  {
+    "file": "2.1.criteria.blackbox.yield.md",
+    "required": false,
+    "scope": "criteria-blackbox",
+  },
+  {
+    "file": "2.3.criteria.blueprint.yield.md",
+    "required": false,
+    "scope": "criteria-blueprint",
+  },
+  {
+    "file": "3.3.0.blueprint.factory.yield.md",
+    "required": false,
+    "scope": "blueprint-factory",
+  },
+  {
+    "file": "3.3.1.blueprint.product.yield.md",
+    "required": false,
+    "scope": "blueprint",
+  },
+]
+`;

@@ -1,0 +1,46 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`bootBehavior (integration) given: [case1] a branch bound to a behavior with \`.yield.md\` artifacts when: [t0] the boot hook runs on that branch then: the full stdout matches snapshot (locks the emitted contract) 1`] = `
+"==================================================
+BOUND BEHAVIOR: v2026_07_05.boot-e2e
+==================================================
+
+<behavior scope="wish" path=".behavior/v2026_07_05.boot-e2e/0.wish.md">
+wish = boot e2e
+</behavior>
+
+<behavior scope="vision" path=".behavior/v2026_07_05.boot-e2e/1.vision.yield.md">
+# vision yield content
+</behavior>
+
+<behavior scope="criteria-blackbox" path=".behavior/v2026_07_05.boot-e2e/2.1.criteria.blackbox.yield.md">
+# criteria blackbox yield content
+</behavior>
+
+<behavior scope="criteria-blueprint" path=".behavior/v2026_07_05.boot-e2e/2.3.criteria.blueprint.yield.md">
+# criteria blueprint yield content
+</behavior>
+
+<behavior scope="blueprint-factory" path=".behavior/v2026_07_05.boot-e2e/3.3.0.blueprint.factory.yield.md">
+# factory blueprint yield content
+</behavior>
+
+<behavior scope="blueprint" path=".behavior/v2026_07_05.boot-e2e/3.3.1.blueprint.product.yield.md">
+# product blueprint yield content
+</behavior>
+
+=================================================="
+`;
+
+exports[`bootBehavior (integration) given: [case2] a bound behavior whose required \`0.wish.md\` is absent when: [t0] the boot hook runs on that branch then: the stderr warn matches snapshot (locks the error contract) 1`] = `
+"⚠️  required file not found: .behavior/v2026_07_05.boot-nowish-e2e/0.wish.md
+   to fix: create the wish file, or unbind this behavior via 'bind.behavior.sh --del'"
+`;
+
+exports[`bootBehavior (integration) given: [case3] a branch bound to MORE THAN ONE behavior (a bind clash) when: [t0] the boot hook runs on that branch then: the stderr warn matches snapshot (locks the clash contract) 1`] = `
+"⚠️  warning: branch 'feat/boot-multibind-e2e' has conflicting binds:
+  - v2026_07_05.boot-multibind-a
+  - v2026_07_05.boot-multibind-b
+no behavior context will load until the conflict is fixed:
+use 'bind.behavior.sh --del' to unbind and 'bind.behavior.sh --set' to rebind"
+`;
