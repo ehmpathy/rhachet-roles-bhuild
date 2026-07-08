@@ -123,8 +123,14 @@ export const daoRadioTaskViaGhIssues = {
         const repoSlug = `${input.repo.owner}/${input.repo.name}`;
         const searchTitle = `🎙️ task - ${input.title}`;
 
+        // list issues directly (REST list endpoint), then match by exact title
+        // in code. we deliberately AVOID `--search "... in:title"`: that routes
+        // through github's search index, which is eventually consistent — a
+        // just-created issue can take seconds-to-minutes to appear, so findsert
+        // would miss it and create a duplicate. the direct list is strongly
+        // consistent, so a prior task is found the instant it exists.
         const json = await runGhCommand(
-          `gh issue list --repo ${repoSlug} --search "${searchTitle} in:title" --state all --json number,title,body,state,assignees,createdAt,author --limit 10`,
+          `gh issue list --repo ${repoSlug} --state all --json number,title,body,state,assignees,createdAt,author --limit 100`,
           context,
         );
         const issues = JSON.parse(json) as Array<{
@@ -170,8 +176,13 @@ export const daoRadioTaskViaGhIssues = {
           ? '--state closed'
           : '--state all';
 
+      // list issues directly (REST list endpoint), then keep only the radio
+      // tasks by their title prefix in code. we deliberately AVOID `--search
+      // "... in:title"`: that routes through github's eventually-consistent
+      // search index, so a just-created task can be absent for seconds-to-
+      // minutes. the direct list is strongly consistent.
       const json = await runGhCommand(
-        `gh issue list --repo ${repoSlug} --search "🎙️ task - in:title" ${stateFlag} --json number,title,body,state,assignees,createdAt,author --limit ${limit}`,
+        `gh issue list --repo ${repoSlug} ${stateFlag} --json number,title,body,state,assignees,createdAt,author --limit ${limit}`,
         context,
       );
       const issues = JSON.parse(json) as Array<{

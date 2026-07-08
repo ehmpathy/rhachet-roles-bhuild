@@ -6,12 +6,13 @@
  */
 
 import { existsSync, readFileSync } from 'fs';
+import { MalfunctionError } from 'helpful-errors';
 import { basename, relative } from 'path';
 
 import {
+  getAllBehaviorContextArtifacts,
   getBranchBehaviorBind,
   getCurrentBranch,
-  getLatestBlueprintByBehavior,
 } from '@src/domain.operations/behavior/bind';
 
 // ────────────────────────────────────────────────────────────────────
@@ -19,18 +20,61 @@ import {
 // ────────────────────────────────────────────────────────────────────
 
 const outputBehaviorFile = (
-  tag: string,
+  scope: string,
   filepath: string,
   isRequired: boolean,
 ): void => {
+  // path shown to the human, relative to cwd (stable + readable in both blocks)
+  const relpath = relative(process.cwd(), filepath);
+
+  // emit the block when the file is present, then stop
   if (existsSync(filepath)) {
-    const relpath = relative(process.cwd(), filepath);
-    console.log(`<behavior-${tag} path="${relpath}">`);
+    console.log(`<behavior scope="${scope}" path="${relpath}">`);
     console.log(readFileSync(filepath, 'utf-8'));
-    console.log(`</behavior-${tag}>`);
+    console.log('</behavior>');
     console.log('');
-  } else if (isRequired) {
-    console.error(`⚠️  required file not found: ${filepath}`);
+    return;
+  }
+
+  // an absent required file warns loud + actionable (optionals stay silent).
+  // .why = this is a SessionStart hook: it MUST NOT throw or exit non-zero, or
+  //        it blocks the human's session. so a constraint (absent wish) is
+  //        surfaced via a loud, actionable stderr warn rather than a
+  //        ConstraintError/exit-2 — deliberate, not a failhide.
+  if (isRequired)
+    console.error(
+      `⚠️  required file not found: ${relpath}\n` +
+        `   to fix: create the wish file, or unbind this behavior via ` +
+        `'bind.behavior.sh --del'`,
+    );
+};
+
+/**
+ * .what = get the current git branch, or exit 0 when there is no branch to boot
+ * .why = a SessionStart hook must never block session start. two conditions are
+ *        valid no-ops that warrant a clean exit 0: (a) not inside a git repo, and
+ *        (b) an empty branch (rare). ANY other error (git absent, permission
+ *        denied) is a real malfunction that fails loud with context.
+ *
+ * .note = extracted from bootBehavior so the orchestrator reads as narrative and
+ *         the malfunction path carries diagnostic context for the on-call human.
+ */
+const getCurrentBranchOrExit = (context: { cwd: string }): string => {
+  try {
+    const branch = getCurrentBranch({}, context);
+    if (!branch) process.exit(0);
+    return branch;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+
+    // a non-git directory is a valid no-op: exit 0, never block the session
+    if (/not a git repository/i.test(message)) process.exit(0);
+
+    // any other failure is a real malfunction: fail loud with full context
+    throw new MalfunctionError(
+      'boot.behavior: could not get the current git branch',
+      { operation: 'getCurrentBranch', cwd: context.cwd, reason: message },
+    );
   }
 };
 
@@ -41,17 +85,8 @@ const outputBehaviorFile = (
 export const bootBehavior = (): void => {
   const context = { cwd: process.cwd() };
 
-  // get current branch (exit silently if not in git repo)
-  let currentBranch: string;
-  try {
-    currentBranch = getCurrentBranch({}, context);
-  } catch {
-    process.exit(0);
-  }
-
-  if (!currentBranch) {
-    process.exit(0);
-  }
+  // get the current branch (exits 0 for the valid no-op conditions)
+  const currentBranch = getCurrentBranchOrExit(context);
 
   // check if bound
   const bindResult = getBranchBehaviorBind(
@@ -63,7 +98,9 @@ export const bootBehavior = (): void => {
 
   // if not bound, exit silently
   if (!behaviorDir) {
-    // check for multiple binds (conflict)
+    // a multi-bind clash is a constraint the human must fix. but this is a
+    // SessionStart hook, so it MUST exit 0 (never block the session): the
+    // clash is surfaced via a loud, actionable stderr warn, then exit 0.
     if (bindsCount > 1) {
       console.error(
         `⚠️  warning: branch '${currentBranch}' has conflicting binds:`,
@@ -71,6 +108,9 @@ export const bootBehavior = (): void => {
       bindResult.binds.forEach((bind) => {
         console.error(`  - ${basename(bind)}`);
       });
+      console.error(
+        'no behavior context will load until the conflict is fixed:',
+      );
       console.error(
         "use 'bind.behavior.sh --del' to unbind and 'bind.behavior.sh --set' to rebind",
       );
@@ -87,45 +127,10 @@ export const bootBehavior = (): void => {
   console.log('==================================================');
   console.log('');
 
-  // output wish (required)
-  outputBehaviorFile('wish', `${behaviorDir}/0.wish.md`, true);
-
-  // output vision (optional)
-  outputBehaviorFile('vision', `${behaviorDir}/1.vision.md`, false);
-
-  // output criteria (optional - check for both new and legacy formats)
-  if (existsSync(`${behaviorDir}/2.1.criteria.blackbox.md`)) {
-    outputBehaviorFile(
-      'criteria-blackbox',
-      `${behaviorDir}/2.1.criteria.blackbox.md`,
-      false,
-    );
-    outputBehaviorFile(
-      'criteria-blueprint',
-      `${behaviorDir}/2.3.criteria.blueprint.md`,
-      false,
-    );
-  } else {
-    // fallback to legacy single criteria file
-    outputBehaviorFile('criteria', `${behaviorDir}/2.criteria.md`, false);
-  }
-
-  // output latest factory blueprint (optional - the machine that builds the machine)
-  const latestFactoryBlueprint = getLatestBlueprintByBehavior({
-    behaviorDir,
-    which: 'factory',
-  });
-  if (latestFactoryBlueprint && existsSync(latestFactoryBlueprint)) {
-    outputBehaviorFile('blueprint-factory', latestFactoryBlueprint, false);
-  }
-
-  // output latest product blueprint (optional - the deliverable)
-  const latestProductBlueprint = getLatestBlueprintByBehavior({
-    behaviorDir,
-    which: 'product',
-  });
-  if (latestProductBlueprint && existsSync(latestProductBlueprint)) {
-    outputBehaviorFile('blueprint', latestProductBlueprint, false);
+  // emit each found behavior artifact (wish, vision, criteria, blueprint)
+  const artifacts = getAllBehaviorContextArtifacts({ behaviorDir });
+  for (const artifact of artifacts) {
+    outputBehaviorFile(artifact.scope, artifact.path, artifact.required);
   }
 
   console.log('==================================================');

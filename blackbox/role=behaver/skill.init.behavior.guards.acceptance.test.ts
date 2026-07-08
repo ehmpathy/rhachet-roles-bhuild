@@ -254,9 +254,12 @@ const genConsumerRepoWithBhrain = (input: {
     path.join(binDir, 'claude'),
     `#!/usr/bin/env bash
 # stub claude for tests - outputs success without API call
+# .note = bhrain parses "N blockers" + "N nitpicks" numeric tokens to derive
+#         the review verdict; prose like "no blockers found" is a malfunction.
 echo "# arch review (stub)"
 echo ""
-echo "no blockers found."
+echo "0 blockers"
+echo "0 nitpicks"
 exit 0
 `,
   );
@@ -285,12 +288,17 @@ while [[ $# -gt 0 ]]; do
     *) shift ;;
   esac
 done
+# .note = bhrain parses "N blockers" + "N nitpicks" numeric tokens to derive
+#         the review verdict; prose like "no blockers found" is a malfunction.
 if [[ -n "$OUTPUT" ]]; then
   mkdir -p "$(dirname "$OUTPUT")"
   echo "# peer review (stub)" > "$OUTPUT"
   echo "" >> "$OUTPUT"
-  echo "no blockers found." >> "$OUTPUT"
+  echo "0 blockers" >> "$OUTPUT"
+  echo "0 nitpicks" >> "$OUTPUT"
 fi
+echo "0 blockers"
+echo "0 nitpicks"
 exit 0
 `,
   );
@@ -327,9 +335,12 @@ exit 0
     path.join(enrollSkillDir, 'enroll.sh'),
     `#!/usr/bin/env bash
 # stub enroll skill for tests - outputs success without active claude
+# .note = bhrain parses "N blockers" + "N nitpicks" numeric tokens to derive
+#         the review verdict; prose like "no blockers found" is a malfunction.
 echo "# arch review (stub)"
 echo ""
-echo "no blockers found."
+echo "0 blockers"
+echo "0 nitpicks"
 exit 0
 `,
   );
