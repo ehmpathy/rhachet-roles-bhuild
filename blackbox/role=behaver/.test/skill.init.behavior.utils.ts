@@ -33,7 +33,12 @@ export const asSnapshotStable = (stdout: string): string =>
     // mask stack trace paths (local vs CI): /home/.../dist/ -> {DIST}/
     .replace(/\/home\/[^/]+\/[^\s]+\/dist\//g, '{DIST}/')
     // mask guard review hashes: .guard.review.i1.<64-hex>.r1.md -> .guard.review.i1.{HASH}.r1.md
-    .replace(/\.guard\.review\.i\d+\.[a-f0-9]{64}/g, '.guard.review.i{N}.{HASH}');
+    .replace(/\.guard\.review\.i\d+\.[a-f0-9]{64}/g, '.guard.review.i{N}.{HASH}')
+    // mask peer review hashes: ._.review.i1.<hash>.r1. -> ._.review.i1.{HASH}.r1.
+    // the hash is a bhrain-internal content id; this test asserts the review
+    // filename structure, not the hash itself, so mask it to stay decoupled
+    // from bhrain template/version changes.
+    .replace(/(\._\.review\.i\d+\.)[a-f0-9]+(\.r\d+)/g, '$1{HASH}$2');
 
 export const SCRIPT_PATH = path.join(
   __dirname,

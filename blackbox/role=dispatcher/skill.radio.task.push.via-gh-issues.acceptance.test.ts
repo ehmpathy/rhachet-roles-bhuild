@@ -377,10 +377,10 @@ describe('radio.task.push via gh.issues', () => {
         expect(firstResult.output).toContain(GITHUB_DEMO_REPO);
       });
 
-      then('second push finds extant issue in target repo', async () => {
-        // wait for github search index to update
-        await new Promise((r) => setTimeout(r, 5000));
-
+      then('second push finds extant issue in target repo', () => {
+        // no wait needed: findsert lists issues directly (strongly consistent),
+        // not via the eventually-consistent search index, so the just-created
+        // issue is found immediately.
         const secondResult = runRadioTaskPush({
           repoDir: scene.consumer.repoDir,
           homeDir: scene.homeDir,
