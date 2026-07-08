@@ -92,7 +92,7 @@ reviews:
         double-check: did you implement each journey sketched in repros?
 
         look back at the repros artifact:
-        - $BEHAVIOR_DIR_REL/3.2.distill.repros.experience.*.md
+        - .behavior/v2026_07_06.fix-enrolled-reviewers/3.2.distill.repros.experience.*.md
 
         for each journey test sketch in repros:
         - is there a test file for it?
@@ -166,7 +166,7 @@ reviews:
         double-check: are the critical paths frictionless in practice?
 
         look back at the repros artifact for critical paths:
-        - $BEHAVIOR_DIR_REL/3.2.distill.repros.experience.*.md
+        - .behavior/v2026_07_06.fix-enrolled-reviewers/3.2.distill.repros.experience.*.md
 
         for each critical path:
         - run through it manually — is it smooth?
@@ -251,7 +251,7 @@ reviews:
 
     - slug: ergo-snapshot-visual-blemishes
       run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/ergonomist/rule.forbid.snapshot-visual-blemishes.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.tones/*.md.min' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.contract-snapshot-exhaustiveness.md' --diffs since-main --paths-with '**/*.{ts,sh}' --paths-with '**/*.snap' --join intersect --output "$output"
-      budget: 3
+      budget: 4
       level: 1
 
     - slug: mech-given-when-then
@@ -273,7 +273,7 @@ reviews:
 
     - slug: enroll-verif-snapshot-coverage
       run: $rhx enroll claude --model 'claude-sonnet-5[1m]' --roles reviewer,behaver,ergonomist,mechanic -p 'review the diff for snapshot coverage on contract endpoints and acceptance test user journey coverage'
-      budget: 3
+      budget: 4
       level: 3
 
     - slug: enroll-verif-snapshot-blemishes

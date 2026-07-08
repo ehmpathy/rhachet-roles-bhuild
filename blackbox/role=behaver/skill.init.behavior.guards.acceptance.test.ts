@@ -7,14 +7,23 @@ import { given, then, when } from 'test-fns';
 import { asSnapshotStable } from './.test/skill.init.behavior.utils';
 
 /**
+ * .what = type-predicate guard for the execSync error shape
+ * .why = narrows an unknown thrown value without an as-cast (rule.forbid.as-cast)
+ */
+const isExecErrorShape = (
+  value: unknown,
+): value is { stdout?: Buffer; stderr?: Buffer; status?: number } =>
+  typeof value === 'object' && value !== null;
+
+/**
  * .what = extract self-review slugs from a guard file
  * .why = dynamically discover reviews instead of hardcoded lists
  *
  * .note = only extracts slugs from `reviews: self:` section, not `peer:` section
  *         because bhrain only creates .triggered files for self-reviews
  */
-const getSlugsFromGuardFile = (guardPath: string): string[] => {
-  const content = fs.readFileSync(guardPath, 'utf-8');
+const getSlugsFromGuardFile = (input: { guardPath: string }): string[] => {
+  const content = fs.readFileSync(input.guardPath, 'utf-8');
 
   // find the self: section and extract only those slugs
   // self: section ends at peer: or judges: or end of reviews block
@@ -75,8 +84,19 @@ const promiseAllSelfReviews = (input: {
           `npx rhachet run --repo bhrain --skill route.stone.set -- --stone ${input.stone} --route ${input.routeRel} --as passed`,
           { cwd: input.repoDir, stdio: ['pipe', 'pipe', 'pipe'] },
         );
-      } catch {
-        // expected — blocked by self-review
+      } catch (error: unknown) {
+        // allowlist the expected blockage; rethrow all else (else failhide)
+        if (!isExecErrorShape(error)) throw error;
+        // exit code 2 = constraint: the self-review gate halted the pass (expected)
+        const wasBlockedBySelfReview =
+          error.status === 2 &&
+          error.stdout?.toString().includes('review.self');
+        if (!wasBlockedBySelfReview) {
+          console.error(
+            `[${i}] pass call FAILED unexpectedly: status=${error.status}, stdout=${error.stdout?.toString()}, stderr=${error.stderr?.toString()}`,
+          );
+          throw error;
+        }
       }
     }
 
@@ -118,14 +138,10 @@ const promiseAllSelfReviews = (input: {
       );
     } catch (error: unknown) {
       // unexpected — log to aid debug before re-throw
-      const execError = error as {
-        stdout?: Buffer;
-        stderr?: Buffer;
-        status?: number;
-      };
-      console.error(
-        `[${i}] promise call FAILED: status=${execError.status}, stdout=${execError.stdout?.toString()}, stderr=${execError.stderr?.toString()}`,
-      );
+      if (isExecErrorShape(error))
+        console.error(
+          `[${i}] promise call FAILED: status=${error.status}, stdout=${error.stdout?.toString()}, stderr=${error.stderr?.toString()}`,
+        );
       throw error;
     }
 
@@ -168,15 +184,11 @@ const runSkill = (input: {
     );
     return { code: 0, stdout: stdout.trim(), stderr: '' };
   } catch (error: unknown) {
-    const execError = error as {
-      stdout?: Buffer | string;
-      stderr?: Buffer | string;
-      status?: number;
-    };
+    if (!isExecErrorShape(error)) throw error;
     return {
-      code: execError.status ?? 1,
-      stdout: (execError.stdout ?? '').toString().trim(),
-      stderr: (execError.stderr ?? '').toString().trim(),
+      code: error.status ?? 1,
+      stdout: (error.stdout ?? '').toString().trim(),
+      stderr: (error.stderr ?? '').toString().trim(),
     };
   }
 };
@@ -281,6 +293,7 @@ exit 0
     path.join(reviewSkillDir, 'review.sh'),
     `#!/usr/bin/env bash
 # stub review skill for tests - outputs success with no blockers
+# emits numeric counts to stdout per contract.reviewer-output (guard parses stdout)
 OUTPUT=""
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -326,6 +339,18 @@ exit 0
   fs.writeFileSync(
     path.join(ergonomistRoleDir, 'readme.md'),
     '# ergonomist (stub)\nstub role for tests\n',
+  );
+
+  // create stub reviewer role — REQUIRED: rhachet resolves every role in
+  // `enroll claude --roles reviewer,...` at dispatch (before the enroll stub
+  // runs), so this dir must exist or blueprint/execution stones fail to enroll.
+  // .note = this dir supports role resolution, not coverage — the reviewer
+  //         role's presence in the guards is asserted directly in [t10].
+  const reviewerRoleDir = path.join(repoDir, '.agent', 'repo=bhrain', 'role=reviewer');
+  fs.mkdirSync(reviewerRoleDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(reviewerRoleDir, 'readme.md'),
+    '# reviewer (stub)\nstub role for tests\n',
   );
 
   // create stub enroll skill (peer reviews use rhachet enroll claude, must succeed in tests)
@@ -480,9 +505,9 @@ describe('skill.init.behavior.guards.journey', () => {
       });
 
       // promise all vision self-reviews via bhrain test pattern
-      const visionSlugs = getSlugsFromGuardFile(
-        path.join(behaviorDir, '1.vision.guard'),
-      );
+      const visionSlugs = getSlugsFromGuardFile({
+        guardPath: path.join(behaviorDir, '1.vision.guard'),
+      });
       if (visionSlugs.length === 0)
         throw new Error('no self-review slugs found in 1.vision.guard');
       promiseAllSelfReviews({
@@ -524,9 +549,9 @@ describe('skill.init.behavior.guards.journey', () => {
       });
 
       // promise all criteria self-reviews via bhrain test pattern
-      const criteriaSlugs = getSlugsFromGuardFile(
-        path.join(behaviorDir, '2.1.criteria.blackbox.guard'),
-      );
+      const criteriaSlugs = getSlugsFromGuardFile({
+        guardPath: path.join(behaviorDir, '2.1.criteria.blackbox.guard'),
+      });
       if (criteriaSlugs.length === 0)
         throw new Error('no self-review slugs found in 2.1.criteria.blackbox.guard');
       promiseAllSelfReviews({
@@ -562,9 +587,9 @@ describe('skill.init.behavior.guards.journey', () => {
       });
 
       // promise all blueprint self-reviews via bhrain test pattern
-      const blueprintSlugs = getSlugsFromGuardFile(
-        path.join(behaviorDir, '3.3.1.blueprint.product.guard'),
-      );
+      const blueprintSlugs = getSlugsFromGuardFile({
+        guardPath: path.join(behaviorDir, '3.3.1.blueprint.product.guard'),
+      });
       if (blueprintSlugs.length === 0)
         throw new Error('no self-review slugs found in 3.3.1.blueprint.product.guard');
       promiseAllSelfReviews({
@@ -583,7 +608,7 @@ describe('skill.init.behavior.guards.journey', () => {
           blueprintReviewsDir,
           '3.3.1.blueprint.product.peer-review.failhides.md',
         ),
-        '# peer review\n\nno blockers found.\n',
+        '# peer review\n\n0 blockers\n0 nitpicks\n',
       );
 
       // try pass with promises but no approval → blocked by judge
@@ -653,9 +678,9 @@ describe('skill.init.behavior.guards.journey', () => {
       });
 
       // promise all execution self-reviews via bhrain test pattern
-      const executionSlugs = getSlugsFromGuardFile(
-        path.join(behaviorDir, '5.1.execution.phase0_to_phaseN.guard'),
-      );
+      const executionSlugs = getSlugsFromGuardFile({
+        guardPath: path.join(behaviorDir, '5.1.execution.phase0_to_phaseN.guard'),
+      });
       if (executionSlugs.length === 0)
         throw new Error(
           'no self-review slugs found in 5.1.execution.phase0_to_phaseN.guard',
@@ -675,7 +700,7 @@ describe('skill.init.behavior.guards.journey', () => {
           '.reviews',
           '5.1.execution.phase0_to_phaseN.peer-review.failhides.md',
         ),
-        '# peer review\n\nno blockers found.\n',
+        '# peer review\n\n0 blockers\n0 nitpicks\n',
       );
 
       checkpoints.executionPassAfterPromises = runSkill({
@@ -829,6 +854,92 @@ describe('skill.init.behavior.guards.journey', () => {
         expect(passedStones).toContain('3.3.1.blueprint.product');
         expect(passedStones).toContain('4.1.roadmap');
         expect(passedStones).toContain('5.1.execution.phase0_to_phaseN');
+      });
+    });
+
+    // ═══════════════════════════════════════════════════════════════
+    // ENROLLED REVIEWER CONTRACT (the wish's actual payload)
+    // ═══════════════════════════════════════════════════════════════
+    when('[t10] every guard-template variant embeds the enrolled-reviewer fix', () => {
+      // read the SOURCE guard templates directly so EVERY variant a caller
+      // could select is verified — not just the ones the heavy full-journey
+      // fixture happens to generate. covers: light | heavy blueprint,
+      // from_vision (--size nano) | phase0_to_phaseN execution, verification.
+      // .why = the templates are the artifact this wish edits; a per-variant
+      //        read locks in the fix so a silent revert of ANY variant fails
+      //        (rule.require.contract-snapshot-exhaustiveness — the variant you
+      //        skip is the one that breaks in prod)
+      const templatesDir = path.join(
+        __dirname,
+        '../../src/domain.operations/behavior/init/templates',
+      );
+
+      const getEnrollLinesFromTemplates = (): {
+        template: string;
+        model: string | null;
+        roles: string | null;
+      }[] => {
+        const templateFiles = fs
+          .readdirSync(templatesDir)
+          .filter((f) => f.includes('.guard'));
+        return templateFiles.flatMap((template) => {
+          const content = fs.readFileSync(
+            path.join(templatesDir, template),
+            'utf-8',
+          );
+          const enrollLines = content
+            .split('\n')
+            .filter((line) => line.includes('enroll claude'));
+          return enrollLines.map((line) => ({
+            template,
+            model: line.match(/--model '([^']+)'/)?.[1] ?? null,
+            roles: line.match(/--roles (\S+)/)?.[1] ?? null,
+          }));
+        });
+      };
+
+      then('every enrolled reviewer across all variants uses the sonnet-5 model', () => {
+        const enrollLines = getEnrollLinesFromTemplates();
+
+        // guard against a false pass if the extraction matched no lines
+        expect(enrollLines.length).toBeGreaterThan(0);
+
+        // every enroll line must carry the sonnet-5 model
+        for (const enroll of enrollLines)
+          expect(enroll.model).toEqual('claude-sonnet-5[1m]');
+      });
+
+      then('every enrolled reviewer across all variants lists the reviewer role first', () => {
+        const enrollLines = getEnrollLinesFromTemplates();
+
+        expect(enrollLines.length).toBeGreaterThan(0);
+
+        // reviewer must lead the --roles list so its output contract
+        // is never buried (else the judge cannot parse blocker counts)
+        for (const enroll of enrollLines) {
+          expect(enroll.roles).not.toBeNull();
+          expect(enroll.roles!.startsWith('reviewer,')).toBe(true);
+        }
+      });
+
+      then('every selectable guard variant is covered by the roster', () => {
+        const enrollLines = getEnrollLinesFromTemplates();
+
+        // explicit lock-in that BOTH blueprint variants (light is the default),
+        // BOTH execution paths (from_vision is --size nano), and verification
+        // each carry enroll lines the two assertions above verified. an
+        // assertion (not a snapshot) so the literal model id
+        // `claude-sonnet-5[1m]` is never misread as ANSI residue.
+        const templatesWithEnroll = [
+          ...new Set(enrollLines.map((e) => e.template)),
+        ].sort();
+        expect(templatesWithEnroll).toEqual([
+          '3.3.1.blueprint.product.guard.heavy',
+          '3.3.1.blueprint.product.guard.light',
+          '5.1.execution.from_vision.guard',
+          '5.1.execution.phase0_to_phaseN.guard',
+          '5.3.verification.guard',
+        ]);
       });
     });
   });
