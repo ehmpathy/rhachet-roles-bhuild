@@ -1,0 +1,347 @@
+# vision: fix-enrolled-reviewers
+
+## the outcome world
+
+### before
+
+a guard spawns a peer reviewer via:
+
+```yaml
+run: $rhx enroll claude --model sonnet --roles behaver,ergonomist,mechanic -p 'review the diff for snapshot coverage on contract endpoints and acceptance test user journey coverage'
+```
+
+the enrolled clone reads the diff, thinks hard, and writes a review like:
+
+```
+looks solid overall. i didn't find any real blockers, though there's a
+minor nitpick around naming in the new helper.
+```
+
+bhrain's judge (`route.stone.judge --mechanism reviewed?`) tries to parse this stdout for
+a numeric blocker/nitpick count per `contract.reviewer-output.md`. it finds none. per
+`rule.forbid.failhide`, an unreadable review is **not** treated as "0 blockers" — it's
+treated as a `💥 malfunction`. the stone blocks. the driver (also an enrolled clone, per
+`rule.always.drive-autonomously`) has no idea why — from its seat, the review "looked
+fine" but the gate won't open. it either stalls, or a human gets pulled in to
+manually eyeball a review that was never structured to be machine-read in the first
+place.
+
+worse: the enrolled clone never saw the contract. it wasn't enrolled with the `reviewer`
+role, so it never received `contract.reviewer-output.md`, `rules101.*`, or
+`review.tactics.md` at session start. it had no idea a numeric contract was expected —
+it just wrote a review like a human would, in prose.
+
+### after
+
+the same guard line becomes:
+
+```yaml
+run: $rhx enroll claude --model 'claude-sonnet-5[1m]' --roles behaver,ergonomist,mechanic,reviewer -p 'review the diff for snapshot coverage on contract endpoints and acceptance test user journey coverage'
+```
+
+two things changed, and both matter:
+
+1. **`reviewer` joins the enrolled roles.** at session start, the enrolled clone now
+   receives the bhrain reviewer role's briefs — most importantly
+   `contract.reviewer-output.md`, which spells out *exactly* what stdout must contain:
+   a numeric `N blockers` and `N nitpicks` (or the guard treats the review as a
+   `💥 malfunction`).
+2. **the model bumps to `claude-sonnet-5[1m]`.** stronger reasoning, same contract.
+
+now the enrolled clone writes:
+
+```
+   └─ summary
+      ├─ 0 blockers ✓
+      └─ 1 nitpicks 🟠
+```
+
+the judge parses it cleanly. the gate resolves — pass or block — based on real signal,
+not on whether the reviewer happened to phrase things parseably. the driver keeps moving
+without a human circuit-breaker in the loop.
+
+### the aha moment
+
+the aha moment isn't visual — it's the absence of a stall. a human doesn't notice
+"the review is now correctly formatted." they notice that a route which used to get
+stuck at a peer-review gate (with a review artifact that reads fine to a human but
+means nothing to the judge) now just... passes through, or blocks with a real, countable
+reason. the friction disappears because the contract that was already true for the
+`review` skill (`rhx review`) is now also true for every ad-hoc `enroll claude`
+one-off reviewer.
+
+## user experience
+
+### who leverages this
+
+nobody invokes this directly as a "feature." it's infrastructure two audiences touch
+indirectly:
+
+- **behavior-route authors** (mechanics/behavers who write `.guard` files) — they write
+  the `$rhx enroll claude ...` line once, in a template, and every route generated from
+  that template inherits the fix.
+- **the driver clone** — traverses the route and depends on the peer-review gate
+  resolving to a real pass/block, not a malfunction.
+
+### usecases fulfilled
+
+1. **a mechanic writes a new guard with a peer review.** they copy the pattern from
+   `5.3.verification.guard` or `3.3.1.blueprint.product.guard.*`. they get the `reviewer`
+   role and `sonnet-5` model for free, without having to remember to add them by hand.
+2. **an existing route (already `.behavior/`-init'd before this fix) hits a peer-review
+   gate.** the fix lives in the `templates/` used by `initBehaviorDir` at init time — it
+   does **not** retroactively rewrite already-generated `.guard` files in extant routes
+   (e.g. this very repo's `.behavior/v2026_06_07.fix-peer-reviews/5.3.verification.guard`
+   still has the old `--model sonnet` and no `reviewer` role, per
+   `rule.require.guard-variant-consistency`'s "findsert" note: re-init does not
+   overwrite). new routes init'd after this fix get the corrected lines.
+3. **a judge (`route.stone.judge --mechanism reviewed?`) evaluates the peer review
+   artifact.** it now reliably finds a numeric blocker/nitpick count to threshold
+   against (`--allow-blockers 0 --allow-nitpicks 2`), because the reviewer clone was
+   enrolled with the contract that tells it to emit one.
+
+### contract inputs & outputs
+
+**input** — the `$rhx enroll claude` invocation line inside a `.guard` file's
+`reviews.peer` list:
+
+```yaml
+run: $rhx enroll claude --model sonnet --roles behaver,ergonomist,mechanic -p '<review prompt>'
+```
+
+**output (fixed)**:
+
+```yaml
+run: $rhx enroll claude --model 'claude-sonnet-5[1m]' --roles behaver,ergonomist,mechanic,reviewer -p '<review prompt>'
+```
+
+only two tokens change per line: `sonnet` → `'claude-sonnet-5[1m]'`, and `reviewer` is
+appended to the `--roles` csv. the `-p` review prompt text is untouched.
+
+### timeline
+
+1. mechanic (this session) edits the 5 template files under
+   `src/domain.operations/behavior/init/templates/` that contain
+   `$rhx enroll claude --model sonnet --roles ...` (10 lines total).
+2. `npm run build` compiles src → dist.
+3. next `rhx init.behavior` (or equivalent) run for a **new** route copies the updated
+   templates into `.route/.../*.guard`.
+4. when that route reaches a stone with a peer review, the guard spawns
+   `$rhx enroll claude --model 'claude-sonnet-5[1m]' --roles ...,reviewer -p '...'`.
+5. the enrolled clone's session start hook loads the bhrain `reviewer` role's briefs
+   (confirmed present at `.agent/repo=bhrain/role=reviewer/` and referenced by
+   `author: "repo=bhrain/role=reviewer"` hooks in `.claude/settings.json`).
+6. the clone reviews the diff and emits a numeric blocker/nitpick count.
+7. the judge parses it and the gate resolves without a `💥 malfunction`.
+
+## mental model
+
+### how a user would describe it
+
+"we told the one-off peer reviewers the same rules the built-in `rhx review` skill
+already follows, so their reviews stop looking like malfunctions to the robot judging
+them."
+
+### analogies
+
+- **giving a substitute teacher the grading rubric.** the enrolled clone is a
+  "substitute" reviewer (spun up fresh, per-invocation, via `enroll claude`) — unlike
+  the permanent `rhx review` skill, it doesn't inherently know the grading format
+  unless it's handed the rubric (`contract.reviewer-output.md`) at the door.
+- **speaking the same protocol.** two services can both be "correct" individually and
+  still fail to integrate if they don't share a wire format. the reviewer clone was
+  "correct" (a well-reasoned review) but not integrated (unparseable by the judge).
+  enrolling the `reviewer` role hands it the wire format.
+
+### terms: user vs us
+
+| what a human says | what we call it |
+|---|---|
+| "the review looked fine but the check still failed" | `💥 malfunction` (undetected numeric count) |
+| "the one-off reviewer" | an `rhx enroll claude` peer reviewer, spawned per guard invocation |
+| "give it the rules" | enroll the `reviewer` role (adds its briefs to session-start context) |
+| "the better model" | bump `--model sonnet` → `--model 'claude-sonnet-5[1m]'` |
+
+## evaluation
+
+### how well it solves the goal
+
+fully solves the immediate, stated problem: enrolled peer reviewers will now receive
+`contract.reviewer-output.md` (and the rest of the bhrain `reviewer` role's briefs) at
+session start, and will run on a stronger model. this directly targets the root cause
+named in the wish — "the judge couldn't parse blocker counts from enrolled brain
+reviews" — by giving the enrolled brain the contract it was missing, rather than by
+patching the judge's parser (which would just paper over brains that don't know the
+contract).
+
+### pros
+
+- **root-cause fix, not a parser workaround.** teaches the brain the contract instead
+  of trying to make the judge more lenient/fuzzy about extracting counts from prose.
+  aligns with `rule.require.solve-at-cause`.
+- **small, mechanical diff.** 10 lines across 5 template files, each a one-token swap
+  (`sonnet` → `'claude-sonnet-5[1m]'`) plus one CSV append (`,reviewer`). low risk,
+  easy to review.
+- **consistent going forward.** every future route generated from these templates
+  inherits the fix automatically — no per-route manual correction needed.
+- **`reviewer` role is already linked in this repo** (`.agent/repo=bhrain/role=reviewer/`
+  exists, confirmed via the settings.json hook authors) — no new role-linking step
+  required, just referencing it in the `--roles` csv.
+
+### cons / tradeoffs
+
+- **does not retroactively fix already-generated routes.** any `.guard` file already
+  materialized in an extant `.behavior/` or `.route/` directory (before this fix ships)
+  keeps its old `--model sonnet` / missing-`reviewer` lines, per the findsert semantics
+  of route init (`rule.require.guard-variant-consistency`'s "re-init does not replace").
+  those routes will keep hitting the same malfunction until manually patched or
+  re-init'd.
+- **model cost/latency.** `claude-sonnet-5[1m]` is presumably priced/latent differently
+  than the prior default `sonnet` alias. this is a deliberate tradeoff per the wish
+  ("upgrade to sonnet 5"), not an unstated cost, but worth surfacing.
+- **`--roles` value grows unbounded over time** if every future fix appends another
+  role. today it's `behaver,ergonomist,mechanic,reviewer` or
+  `behaver,architect,mechanic,reviewer` — still readable, but there's no current
+  mechanism to bundle "the reviewer contract" as an always-on default the way
+  `enrollBrainCli`'s "delta mode" (`+role`) could, if wished for.
+
+### edgecases & pit-of-success
+
+- **`3.3.1.blueprint.product.guard` (no `.light`/`.heavy` suffix)** — grep found it
+  referenced in an older behavior route
+  (`.behavior/v2026_06_01.fix-radio-privs/3.3.1.blueprint.product.guard`) but the
+  **current** templates only have `.light` and `.heavy` variants. per
+  `rule.require.guard-variant-consistency`, both variants must be updated together —
+  confirmed both `3.3.1.blueprint.product.guard.light` and
+  `3.3.1.blueprint.product.guard.heavy` contain the same 2 enroll lines each, so both
+  get fixed in lockstep.
+- **role validation is fail-fast.** `computeBrainCliEnrollment`'s
+  `validateRoleExists` throws a `BadRequestError` (with a levenshtein-based "did you
+  mean" suggestion) if `reviewer` weren't a linked role. since it's already linked in
+  this repo, this isn't a live risk here — but it's the pit-of-success mechanism that
+  would catch a typo (e.g. `reveiwer`) at invocation time rather than silently
+  no-op'ing.
+- **role matching is by substring on hook `author`, not by exact repo.** `reviewer`
+  matches any hook whose `author` field contains `role=reviewer` — currently only
+  `repo=bhrain/role=reviewer`. if another repo ever ships a role also literally named
+  `reviewer`, both would be pulled in together. not a concern today (no naming
+  collision exists), but worth flagging as a latent constraint of the enrollment
+  mechanism itself (out of scope to fix here — this wish only touches guard templates).
+
+## open questions & assumptions
+
+### assumptions
+
+- **assumed:** `'claude-sonnet-5[1m]'` (quoted, with the `[1m]` context-window suffix)
+  is the exact string the wisher wants passed to `--model`, per their explicit
+  correction: `claude --model 'claude-sonnet-5[1m]'`. this matches this very session's
+  own model identity (per the environment header: "you are powered by the model
+  claude-sonnet-5[1m]"), so it's a live, valid model string — not a guess.
+- **assumed:** "all the `rx enroll claude` peer reviewers" means every occurrence of
+  the `$rhx enroll claude --model sonnet --roles ... -p '...'` pattern inside the
+  **template** files under `src/domain.operations/behavior/init/templates/` (10 lines
+  across 5 files: `3.3.1.blueprint.product.guard.{light,heavy}`,
+  `5.1.execution.{from_vision,phase0_to_phaseN}.guard`, `5.3.verification.guard`) —
+  **not** a retroactive rewrite of already-materialized `.guard` files sitting in this
+  repo's own `.behavior/v20XX_XX_XX.*/` directories (those are generated artifacts,
+  findsert-protected from re-init, and rewriting them directly wouldn't propagate to
+  future routes anyway).
+- **assumed:** "add that role" means append `reviewer` to each line's existing
+  `--roles` csv (e.g. `behaver,ergonomist,mechanic` → `behaver,ergonomist,mechanic,reviewer`),
+  preserving the existing roles rather than replacing them — since `computeBrainCliEnrollment`'s
+  "replace mode" (bare, comma-separated names) means the final `--roles` list **is**
+  exactly what's listed; dropping an existing role would silently withhold its briefs
+  from the reviewer.
+
+### open questions
+
+- should this fix also touch the **current session's own bound route** —
+  i.e. `.behavior/v2026_07_06.fix-enrolled-reviewers/5.1.execution.from_vision.guard`
+  and `5.3.verification.guard` (already materialized when this route was init'd,
+  visible in `git status` as newly-added files) — so that *this very route's own*
+  peer-review gates benefit from the fix while driving it? or should those stay as
+  copies-at-time-of-init, with the template fix landing only for future routes? (leaning:
+  fix them too, since they're new/uncommitted and it costs nothing extra — but flagging
+  since the wish's literal ask is about "the `rx enroll claude` peer reviewers"
+  generically, not this specific route.)
+- does "upgrade to sonnet 5" apply **only** to the `enroll claude` peer-review lines, or
+  should any other `--model sonnet` reference in this codebase (if any exist outside
+  the 10 identified guard-template lines) also be bumped? groundwork search found no
+  other `claude --model` occurrences outside these guard templates and historical
+  `.behavior/` snapshots, so scope appears fully contained — but flagging in case a
+  non-guard invocation exists elsewhere that grep didn't surface under the searched
+  patterns.
+
+## groundwork
+
+### external research
+
+none — no external APIs, services, or docs referenced by the wish. the one seemingly
+"external" fact (the exact `--model` string) was directly supplied by the wisher
+(`claude --model 'claude-sonnet-5[1m]'`) rather than needing verification against
+anthropic's docs, and it self-corroborates against this session's own declared model
+identity in the environment header.
+
+### internal research
+
+verified against the current repo state:
+
+- **the pattern to fix** — confirmed via `grep` across
+  `src/domain.operations/behavior/init/templates/`: 10 occurrences of
+  `$rhx enroll claude --model sonnet --roles ... -p '...'` across exactly 5 files:
+  - `3.3.1.blueprint.product.guard.heavy` (lines 575, 580)
+  - `3.3.1.blueprint.product.guard.light` (lines 523, 528)
+  - `5.1.execution.from_vision.guard` (lines 208, 213)
+  - `5.1.execution.phase0_to_phaseN.guard` (lines 212, 217)
+  - `5.3.verification.guard` (lines 275, 280, 285)
+- **the `reviewer` role is already linked in this repo** — confirmed
+  `.agent/repo=bhrain/role=reviewer/` briefs are loaded into this very session's
+  context (readme + `contract.reviewer-output.md` + `rules101.*` + `review.tactics.md`),
+  and `.claude/settings.json` contains hooks with `"author": "repo=bhrain/role=reviewer"`
+  — so `--roles ...,reviewer` will resolve without a `BadRequestError`.
+- **the enrollment mechanism itself** — read
+  `rhachet`'s `src/domain.operations/enroll/{parseBrainCliEnrollmentSpec,
+  computeBrainCliEnrollment,genBrainCliConfigArtifact,enrollBrainCli}.ts` (via
+  `rhx git.repo.get lines --in ehmpathy/rhachet`). confirmed:
+  - `--roles a,b,c` (no `+`/`-` prefix) is "replace mode" — the final role list is
+    exactly what's listed, so appending `reviewer` must preserve the existing roles.
+  - role validation is fail-fast with a levenshtein "did you mean" suggestion
+    (`computeBrainCliEnrollment.validateRoleExists`).
+  - role → briefs resolution happens by filtering `.claude/settings.json` hooks whose
+    `author` field contains `role=<name>` as a substring — independent of which repo
+    namespace (`repo=bhrain/role=reviewer` still matches `role=reviewer`).
+- **the exact contract being taught** — `contract.reviewer-output.md` (bhrain reviewer
+  role brief, already in this session's context) spells out: stdout must contain a
+  numeric `N blockers` and `N nitpicks`; anything else (`blockers: none`, omitted
+  counts, prose) is treated as `💥 malfunction`, per `rule.forbid.failhide` reasoning —
+  this is precisely the failure mode described in the wish.
+- **prior precedent for this exact `.guard` line pattern** — an earlier route,
+  `.behavior/v2026_06_07.fix-peer-reviews/`, already introduced the
+  `$rhx enroll claude --model sonnet --roles ... -p '...'` pattern (its `0.wish.md` and
+  `1.vision.yield.md` document the original design). this confirms the pattern is a
+  stable, intentional convention we're extending, not something to redesign.
+
+## what is awkward?
+
+- **the `--model` value needs quoting** (`'claude-sonnet-5[1m]'`) because of the `[1m]`
+  suffix and its bracket characters — inside a YAML `run:` string that's itself
+  wrapped in single quotes for the `-p` prompt, this nests single-quote-in-single-quote
+  awkwardly in shell. the guard's `run:` lines are already single-quoted around the
+  `-p` prompt text, so the model flag's value needs a quoting strategy that survives
+  both YAML and shell parsing without escaping hell. this is worth explicit care
+  during execution, not just a find-and-replace.
+- **this fixes symptom-adjacent infrastructure, not the underlying tension**: an
+  `enroll claude`-spawned reviewer is fundamentally a "guest" that only knows what
+  it's enrolled with, at the moment it's enrolled. every future new contract or rule
+  bhrain's `reviewer` role gains will need to already be part of the `reviewer` role's
+  briefs for these one-off enrollments to inherit it "for free" — there's no live
+  mechanism (that this fix introduces) to keep one-off enrollments in permanent sync
+  with the reviewer role's evolution beyond "the role is enrolled, so whatever's in it
+  today gets pulled in." that's actually fine (roles are living, versioned units per
+  `philosophy.roles.[philosophy].md`), but it means this fix's durability depends on
+  the `reviewer` role brief itself staying accurate — not on anything this wish adds.
+- **findsert semantics mean old routes are stuck** — flagged already above as a con,
+  but it bears repeating here: there is no proposed backfill/migration step for
+  extant `.guard` files sitting in already-init'd routes. if the wisher wants those
+  fixed too, that's a distinct, larger scope (rewriting N historical `.guard` files)
+  that this vision does not currently include.
