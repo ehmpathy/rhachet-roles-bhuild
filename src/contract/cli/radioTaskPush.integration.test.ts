@@ -37,9 +37,10 @@ import { cliRadioTaskPush } from './radioTaskPush';
  *         re-verify the shared forwarded contract.
  */
 describe('radio.task.push.integration — CLI contract', () => {
-  // invoke the CLI contract with --help, capture the stdout it prints
-  // (--help calls process.exit(0), so stub exit to a sentinel and catch it)
-  const runHelp = async (): Promise<string> => {
+  // invoke the CLI contract with a help flag, capture the stdout it prints
+  // (--help / -h call process.exit(0), so stub exit to a sentinel and catch it)
+  const runHelp = async (input?: { flag?: string }): Promise<string> => {
+    const flag = input?.flag ?? '--help';
     const argvBefore = process.argv;
     const lines: string[] = [];
     const logSpy = jest
@@ -50,7 +51,7 @@ describe('radio.task.push.integration — CLI contract', () => {
     const exitSpy = jest.spyOn(process, 'exit').mockImplementation((() => {
       throw new Error('__exit__');
     }) as unknown as typeof process.exit);
-    process.argv = ['node', '--help'];
+    process.argv = ['node', flag];
     try {
       await getError(cliRadioTaskPush());
       return lines.join('\n');
@@ -250,4 +251,16 @@ describe('radio.task.push.integration — CLI contract', () => {
       });
     },
   );
+
+  given('[case5] -h (the short-flag alias)', () => {
+    when('[t0] the push skill runs', () => {
+      then('prints the same usage + options help text', async () => {
+        const stdout = await runHelp({ flag: '-h' });
+        expect(stdout).toContain('radio.task.push --help');
+        expect(stdout).toContain('--via');
+        expect(stdout).toContain('--into');
+        expect(stdout).toMatchSnapshot();
+      });
+    });
+  });
 });
