@@ -249,7 +249,7 @@ describe('radio.task.pull.integration — CLI contract', () => {
       when('[t0] the pull skill runs the real filesystem read', () => {
         then('prints the rendered task list a human sees', async () => {
           const stdout = await runListViaOsFileops({ repo });
-          expect(stdout).toContain('back in the river');
+          expect(stdout).toContain("what's on the water");
           expect(stdout).toContain('pull-cli-001');
           expect(stdout).toContain('first cli pull task');
           expect(stdout).toMatchSnapshot();
