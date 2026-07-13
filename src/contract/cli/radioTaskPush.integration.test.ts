@@ -159,7 +159,9 @@ describe('radio.task.push.integration — CLI contract', () => {
     () => {
       // isolate HOME + cwd to a fresh temp dir: no global/org config and no local
       // radio.uses → the decision resolves to the safe default (blocked)
-      const home = mkdtempSync(path.join(os.tmpdir(), 'radio-push-cli-blocked-'));
+      const home = mkdtempSync(
+        path.join(os.tmpdir(), 'radio-push-cli-blocked-'),
+      );
 
       afterAll(async () => {
         await fs.rm(home, { recursive: true, force: true });
@@ -202,7 +204,9 @@ describe('radio.task.push.integration — CLI contract', () => {
         name: 'test-repo-push-cli',
       });
 
-      const home = mkdtempSync(path.join(os.tmpdir(), 'radio-push-cli-success-'));
+      const home = mkdtempSync(
+        path.join(os.tmpdir(), 'radio-push-cli-success-'),
+      );
 
       afterAll(async () => {
         await fs.rm(home, { recursive: true, force: true });
