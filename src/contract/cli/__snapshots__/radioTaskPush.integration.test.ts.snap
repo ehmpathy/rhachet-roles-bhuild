@@ -1,0 +1,50 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`radio.task.push.integration — CLI contract given: [case1] --help (the positive usage contract) when: [t0] the push skill runs then: prints the usage + options help text 1`] = `
+"🦫 lets check the meter...
+
+🎙️ radio.task.push --help
+   ├─ usage
+   │  ├─ radio.task.push --via gh.issues --into owner/repo --title "..." --description "..."
+   │  ├─ radio.task.push --via gh.issues --into @this --title "..."
+   │  └─ echo "details" | radio.task.push --via gh.issues --into @this --title "..." --description @stdin
+   │
+   └─ options
+      ├─ --via         channel: gh.issues or os.fileops (required)
+      ├─ --into        target: @this (current repo) or owner/repo (required)
+      ├─ --title       task title (required for new tasks)
+      ├─ --description task description (supports @stdin)
+      ├─ --exid        external id for updates
+      ├─ --status      status: QUEUED, CLAIMED, DELIVERED
+      ├─ --idem        idempotency: findsert or upsert
+      ├─ --auth        auth mode: "as-human" or "as-robot:ENV_VAR_NAME"
+      └─ --help, -h    show this help"
+`;
+
+exports[`radio.task.push.integration — CLI contract given: [case2] no --via arg when: [t0] the push skill runs then: fails with a BadRequestError that names the channels 1`] = `
+"BadRequestError: --via is required
+
+{
+  "hint": "specify a channel: --via gh.issues  or  --via os.fileops"
+}"
+`;
+
+exports[`radio.task.push.integration — CLI contract given: [case3] permission unset (the safe-default blocked gate, push-specific) when: [t0] the push skill runs against an ungranted repo then: fails with a BadRequestError that names the grant command 1`] = `
+"BadRequestError: radio.task.push blocked: safe default (unset)
+
+{
+  "hint": "ask your human to grant:\\n  $ npx rhachet run --skill radio.uses allow"
+}"
+`;
+
+exports[`radio.task.push.integration — CLI contract given: [case4] --via os.fileops update with a seeded task (the positive success contract) when: [t0] the push skill runs the real filesystem update then: prints the rendered task detail a human sees 1`] = `
+"🦫 onto the pile!
+
+🎙️ updated: updated cli push task
+   ├─ exid: push-cli-001
+   ├─ status: QUEUED
+   ├─ repo: test-owner/test-repo-push-cli
+   ├─ pushedBy: tester
+   ├─ pushedAt: 2026-01-30
+   └─ via: os.fileops"
+`;

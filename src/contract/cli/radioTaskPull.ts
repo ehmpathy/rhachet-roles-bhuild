@@ -185,7 +185,7 @@ export const cliRadioTaskPull = async (): Promise<void> => {
       context,
     );
 
-    console.log('🦫 back in the river!\n');
+    console.log("🦫 what's on the water?\n");
     outputRadioResult({
       message: asTaskListOutput({ tasks: result.tasks, via: named.via }),
     });
@@ -202,7 +202,7 @@ export const cliRadioTaskPull = async (): Promise<void> => {
     context,
   );
 
-  console.log('🦫 back in the river!\n');
+  console.log("🦫 what's on the water?\n");
   outputRadioResult({
     message: asTaskDetailOutput({
       task: result.task,

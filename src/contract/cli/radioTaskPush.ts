@@ -228,7 +228,7 @@ export const cliRadioTaskPush = async (): Promise<void> => {
   );
 
   // output result with beaver header
-  console.log('🦫 back in the river!\n');
+  console.log('🦫 onto the pile!\n');
   outputRadioResult({
     message: asTaskDetailOutput({
       task: result.task,

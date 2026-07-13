@@ -76,7 +76,7 @@ exports[`radio.task.pull.integration — CLI contract given: [case6] --help (the
 `;
 
 exports[`radio.task.pull.integration — CLI contract given: [case7] --via os.fileops --list with a seeded local task (the positive success contract) when: [t0] the pull skill runs the real filesystem read then: prints the rendered task list a human sees 1`] = `
-"🦫 back in the river!
+"🦫 what's on the water?
 
 🎙️ tasks on os.fileops:
    └─ [QUEUED] pull-cli-001: first cli pull task"
