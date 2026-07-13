@@ -230,59 +230,59 @@ reviews:
     # --- level 1: cheap reviewers (run first, in parallel) ---
 
     - slug: repo-rules
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=.this/**/rule.*.md' --diffs since-main --paths-with '**/*.{ts,sh}' --join intersect --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=.this/**/rule.*.md' --diffs since-main --paths-with '**/*.{ts,sh}' --join intersect --conversation $conversation --output "$output"
       budget: 3
       level: 1
 
     - slug: ergo-contract-snapshots
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.contract-snapshot-exhaustiveness.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --diffs since-main --paths-with '**/*.{ts,sh}' --paths-with '**/*.snap' --join intersect --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.contract-snapshot-exhaustiveness.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --diffs since-main --paths-with '**/*.{ts,sh}' --paths-with '**/*.snap' --join intersect --conversation $conversation --output "$output"
       budget: 3
       level: 1
 
     - slug: mech-external-contracts
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.external-contract-integration-tests.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.unit/rule.forbid.remote-boundaries.md' --diffs since-main --paths-with '**/*.{ts,sh}' --paths-with '**/*.snap' --join intersect --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.external-contract-integration-tests.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.unit/rule.forbid.remote-boundaries.md' --diffs since-main --paths-with '**/*.{ts,sh}' --paths-with '**/*.snap' --join intersect --conversation $conversation --output "$output"
       budget: 3
       level: 1
 
     - slug: ergo-acceptance-journey-coverage
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/ergonomist/rule.require.acceptance-journey-coverage.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/frames.behavior/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --diffs since-main --paths-with '**/*.{ts,sh}' --paths-with '**/*.snap' --join intersect --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/ergonomist/rule.require.acceptance-journey-coverage.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/frames.behavior/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --diffs since-main --paths-with '**/*.{ts,sh}' --paths-with '**/*.snap' --join intersect --conversation $conversation --output "$output"
       budget: 3
       level: 1
 
     - slug: ergo-snapshot-visual-blemishes
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/ergonomist/rule.forbid.snapshot-visual-blemishes.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.tones/*.md.min' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.contract-snapshot-exhaustiveness.md' --diffs since-main --paths-with '**/*.{ts,sh}' --paths-with '**/*.snap' --join intersect --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/ergonomist/rule.forbid.snapshot-visual-blemishes.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.tones/*.md.min' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.contract-snapshot-exhaustiveness.md' --diffs since-main --paths-with '**/*.{ts,sh}' --paths-with '**/*.snap' --join intersect --conversation $conversation --output "$output"
       budget: 3
       level: 1
 
     - slug: mech-given-when-then
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/frames.behavior/rule.require.given-when-then.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/criteria.given_when_then.[seed].v3.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/frames.behavior/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/lessons.howto/*.md.min' --diffs since-main --paths-with '**/*.test.ts' --paths-with '**/*.snap' --join intersect --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/frames.behavior/rule.require.given-when-then.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/criteria.given_when_then.[seed].v3.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/frames.behavior/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/lessons.howto/*.md.min' --diffs since-main --paths-with '**/*.test.ts' --paths-with '**/*.snap' --join intersect --conversation $conversation --output "$output"
       budget: 3
       level: 1
 
     - slug: mech-test-intent
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.forbid.test-intent-violations.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/work.flow/refactor/rule.require.review-test-changes.md.min' --diffs since-main --paths-with '**/*.test.ts' --paths-with '**/*.snap' --join intersect --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.forbid.test-intent-violations.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/work.flow/refactor/rule.require.review-test-changes.md.min' --diffs since-main --paths-with '**/*.test.ts' --paths-with '**/*.snap' --join intersect --conversation $conversation --output "$output"
       budget: 3
       level: 1
 
     - slug: mech-test-scope-purity
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.*/rule.*.md' --diffs since-main --paths-with '{src,blackbox}/**/*.test.ts' --join intersect --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.*/rule.*.md' --diffs since-main --paths-with '{src,blackbox}/**/*.test.ts' --join intersect --conversation $conversation --output "$output"
       budget: 3
       level: 1
 
     # --- level 3: expensive reviewers (run after level 1 is terminal) ---
 
     - slug: enroll-verif-snapshot-coverage
-      run: $rhx enroll claude --model 'claude-sonnet-5[1m]' --roles reviewer,behaver,ergonomist,mechanic -p 'review the diff for snapshot coverage on contract endpoints and acceptance test user journey coverage'
+      run: $rhx enroll claude --model 'claude-sonnet-5[1m]' --roles reviewer,behaver,ergonomist,mechanic -p 'review the diff for snapshot coverage on contract endpoints and acceptance test user journey coverage. read the prior peer-review conversation at $conversation to catch up on context.'
       budget: 3
       level: 3
 
     - slug: enroll-verif-snapshot-blemishes
-      run: $rhx enroll claude --model 'claude-sonnet-5[1m]' --roles reviewer,behaver,ergonomist,mechanic -p 'review the diff for experiential and visual blemishes in snapshotted acceptance test journeys'
+      run: $rhx enroll claude --model 'claude-sonnet-5[1m]' --roles reviewer,behaver,ergonomist,mechanic -p 'review the diff for experiential and visual blemishes in snapshotted acceptance test journeys. read the prior peer-review conversation at $conversation to catch up on context.'
       budget: 3
       level: 3
 
     - slug: enroll-verif-test-intent
-      run: $rhx enroll claude --model 'claude-sonnet-5[1m]' --roles reviewer,behaver,architect,mechanic -p 'review the current implementation for test intent violation diffs. if any of the diffs related to tests loosened assertions or changed the criteria, this is a blocker. tests were added for a reason. we have to maintain the behavior they locked in'
+      run: $rhx enroll claude --model 'claude-sonnet-5[1m]' --roles reviewer,behaver,architect,mechanic -p 'review the current implementation for test intent violation diffs. if any of the diffs related to tests loosened assertions or changed the criteria, this is a blocker. tests were added for a reason. we have to maintain the behavior they locked in. read the prior peer-review conversation at $conversation to catch up on context.'
       budget: 3
       level: 3
 
