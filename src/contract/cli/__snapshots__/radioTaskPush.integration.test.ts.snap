@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`radio.task.push.integration — CLI contract given: [case1] --help (the positive usage contract) when: [t0] the push skill runs then: prints the usage + options help text 1`] = `
-"🦫 lets check the meter...
+"🦫 let's check the meter...
 
 🎙️ radio.task.push --help
    ├─ usage
@@ -47,4 +47,25 @@ exports[`radio.task.push.integration — CLI contract given: [case4] --via os.fi
    ├─ pushedBy: tester
    ├─ pushedAt: 2026-01-30
    └─ via: os.fileops"
+`;
+
+exports[`radio.task.push.integration — CLI contract given: [case5] -h (the short-flag alias) when: [t0] the push skill runs then: prints the same usage + options help text 1`] = `
+"🦫 let's check the meter...
+
+🎙️ radio.task.push --help
+   ├─ usage
+   │  ├─ radio.task.push --via gh.issues --into owner/repo --title "..." --description "..."
+   │  ├─ radio.task.push --via gh.issues --into @this --title "..."
+   │  └─ echo "details" | radio.task.push --via gh.issues --into @this --title "..." --description @stdin
+   │
+   └─ options
+      ├─ --via         channel: gh.issues or os.fileops (required)
+      ├─ --into        target: @this (current repo) or owner/repo (required)
+      ├─ --title       task title (required for new tasks)
+      ├─ --description task description (supports @stdin)
+      ├─ --exid        external id for updates
+      ├─ --status      status: QUEUED, CLAIMED, DELIVERED
+      ├─ --idem        idempotency: findsert or upsert
+      ├─ --auth        auth mode: "as-human" or "as-robot:ENV_VAR_NAME"
+      └─ --help, -h    show this help"
 `;

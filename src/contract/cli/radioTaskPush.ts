@@ -135,7 +135,7 @@ const schemaOfArgs = z.object({
 // ────────────────────────────────────────────────────────────────────
 
 const HELP_TEXT = `
-🦫 lets check the meter...
+🦫 let's check the meter...
 
 🎙️ radio.task.push --help
    ├─ usage
