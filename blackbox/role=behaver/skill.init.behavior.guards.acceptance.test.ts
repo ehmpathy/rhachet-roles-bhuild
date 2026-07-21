@@ -942,5 +942,74 @@ describe('skill.init.behavior.guards.journey', () => {
         ]);
       });
     });
+
+    // ═══════════════════════════════════════════════════════════════
+    // REPO-RULES OPTIONAL-SKIP CONTRACT (the wish's actual payload)
+    // ═══════════════════════════════════════════════════════════════
+    when('[t11] every guard-template variant makes its repo-rules reviewer optional', () => {
+      // read the SOURCE guard templates directly so EVERY variant a caller
+      // could select is verified — not just the ones the heavy full-journey
+      // fixture happens to generate.
+      // .why = the repo-local ruleset (.agent/repo=.this/**/rule.*.md) is
+      //        legitimately empty in a fresh repo. absent --optional rules the
+      //        reviewer exits 2 and false-blocks the stone, which demands a
+      //        human overrule of an empty-by-design ruleset. a per-variant read
+      //        locks in the fix so a silent revert of ANY variant fails
+      //        (rule.require.contract-snapshot-exhaustiveness — the variant you
+      //        skip is the one that breaks in prod)
+      const templatesDir = path.join(
+        __dirname,
+        '../../src/domain.operations/behavior/init/templates',
+      );
+
+      const getRepoRulesLinesFromTemplates = (): {
+        template: string;
+        run: string;
+      }[] => {
+        const templateFiles = fs
+          .readdirSync(templatesDir)
+          .filter((f) => f.includes('.guard'));
+        return templateFiles.flatMap((template) => {
+          const content = fs.readFileSync(
+            path.join(templatesDir, template),
+            'utf-8',
+          );
+          // the repo-rules reviewer points --rules at the repo-local ruleset
+          const runLines = content
+            .split('\n')
+            .filter((line) => line.includes("--rules '.agent/repo=.this/"));
+          return runLines.map((run) => ({ template, run }));
+        });
+      };
+
+      then('every repo-rules reviewer across all variants passes --optional rules', () => {
+        const runLines = getRepoRulesLinesFromTemplates();
+
+        // guard against a false pass if the extraction matched no lines
+        expect(runLines.length).toBeGreaterThan(0);
+
+        // every repo-local ruleset reviewer must opt into the empty-rules skip
+        for (const line of runLines)
+          expect(line.run).toContain('--optional rules');
+      });
+
+      then('every selectable guard variant is covered by the roster', () => {
+        const runLines = getRepoRulesLinesFromTemplates();
+
+        // explicit lock-in that BOTH blueprint variants (light is the default),
+        // BOTH execution paths (from_vision is --size nano), and verification
+        // each carry a repo-rules reviewer the assertion above verified.
+        const templatesWithRepoRules = [
+          ...new Set(runLines.map((l) => l.template)),
+        ].sort();
+        expect(templatesWithRepoRules).toEqual([
+          '3.3.1.blueprint.product.guard.heavy',
+          '3.3.1.blueprint.product.guard.light',
+          '5.1.execution.from_vision.guard',
+          '5.1.execution.phase0_to_phaseN.guard',
+          '5.3.verification.guard',
+        ]);
+      });
+    });
   });
 });
