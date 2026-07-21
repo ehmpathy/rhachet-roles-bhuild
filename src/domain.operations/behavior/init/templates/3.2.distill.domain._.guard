@@ -1,3 +1,7 @@
+# provenance = self-referential source template; enables `rhx route.guard.upgrade` idempotency
+provenance:
+  uri: node_modules/rhachet-roles-bhuild/dist/domain.operations/behavior/init/templates/3.2.distill.domain._.guard
+
 reviews:
   self:
     - slug: has-ubiquitous-language

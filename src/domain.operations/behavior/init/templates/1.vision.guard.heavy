@@ -1,3 +1,7 @@
+# provenance = self-referential source template; enables `rhx route.guard.upgrade` idempotency
+provenance:
+  uri: node_modules/rhachet-roles-bhuild/dist/domain.operations/behavior/init/templates/1.vision.guard.heavy
+
 # guard for vision stone
 #
 # requires human approval before stone can be marked as passed

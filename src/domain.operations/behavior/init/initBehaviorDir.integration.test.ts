@@ -590,5 +590,65 @@ describe('initBehaviorDir.integration', () => {
         expect(guardContent).toContain('rationale');
       });
     });
+
+    given('[case5] guards carry self-referential provenance', () => {
+      const templatesUriBase =
+        'node_modules/rhachet-roles-bhuild/dist/domain.operations/behavior/init/templates';
+
+      when('[t0] inited with guard=heavy', () => {
+        then('variant guard uri points at its .heavy source template', () => {
+          initBehaviorDir({
+            behaviorDir,
+            behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+            guard: 'heavy',
+          });
+
+          // the route guard drops the .heavy suffix, but its provenance uri
+          // must point back at the .heavy source so upgrade re-reads the same file
+          const visionGuard = fs.readFileSync(
+            path.join(behaviorDir, '1.vision.guard'),
+            'utf-8',
+          );
+          expect(visionGuard).toContain('provenance:');
+          expect(visionGuard).toContain(
+            `uri: ${templatesUriBase}/1.vision.guard.heavy`,
+          );
+        });
+      });
+
+      when('[t1] inited with guard=light (default)', () => {
+        then('variant guard uri points at its .light source template', () => {
+          initBehaviorDir({
+            behaviorDir,
+            behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+          });
+
+          const blueprintGuard = fs.readFileSync(
+            path.join(behaviorDir, '3.3.1.blueprint.product.guard'),
+            'utf-8',
+          );
+          expect(blueprintGuard).toContain('provenance:');
+          expect(blueprintGuard).toContain(
+            `uri: ${templatesUriBase}/3.3.1.blueprint.product.guard.light`,
+          );
+        });
+
+        then('non-variant guard uri points at its own source template', () => {
+          initBehaviorDir({
+            behaviorDir,
+            behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+          });
+
+          const evaluationGuard = fs.readFileSync(
+            path.join(behaviorDir, '5.2.evaluation.guard'),
+            'utf-8',
+          );
+          expect(evaluationGuard).toContain('provenance:');
+          expect(evaluationGuard).toContain(
+            `uri: ${templatesUriBase}/5.2.evaluation.guard`,
+          );
+        });
+      });
+    });
   });
 });
