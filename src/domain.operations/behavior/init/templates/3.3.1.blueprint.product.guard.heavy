@@ -516,7 +516,7 @@ reviews:
     # --- level 1: cheap reviewers (run first, in parallel) ---
 
     - slug: repo-rules
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=.this/**/rule.*.md' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --conversation $conversation --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=.this/**/rule.*.md' --optional rules --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --conversation $conversation --output "$output"
       budget: 3
       level: 1
 
