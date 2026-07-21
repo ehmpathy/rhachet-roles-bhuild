@@ -1,3 +1,7 @@
+# provenance = self-referential source template; enables `rhx route.guard.upgrade` idempotency
+provenance:
+  uri: node_modules/rhachet-roles-bhuild/dist/domain.operations/behavior/init/templates/5.3.verification.guard
+
 artifacts:
   # track verification progress
   - "$route/5.3.verification.yield.md"

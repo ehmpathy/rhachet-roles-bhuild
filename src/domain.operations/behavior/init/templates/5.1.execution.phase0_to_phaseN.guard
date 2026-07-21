@@ -1,3 +1,7 @@
+# provenance = self-referential source template; enables `rhx route.guard.upgrade` idempotency
+provenance:
+  uri: node_modules/rhachet-roles-bhuild/dist/domain.operations/behavior/init/templates/5.1.execution.phase0_to_phaseN.guard
+
 # guard for execution stone
 # includes standardized self-review frame
 

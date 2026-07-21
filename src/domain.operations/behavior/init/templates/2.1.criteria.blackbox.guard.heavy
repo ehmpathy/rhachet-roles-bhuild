@@ -1,3 +1,7 @@
+# provenance = self-referential source template; enables `rhx route.guard.upgrade` idempotency
+provenance:
+  uri: node_modules/rhachet-roles-bhuild/dist/domain.operations/behavior/init/templates/2.1.criteria.blackbox.guard.heavy
+
 # guard for criteria stone
 #
 # self-review prompts to ensure criteria quality
