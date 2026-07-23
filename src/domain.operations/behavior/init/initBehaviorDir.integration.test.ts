@@ -486,7 +486,9 @@ describe('initBehaviorDir.integration', () => {
 
         // the cut slugs must NOT reappear
         expect(guardContent).not.toContain('has-journey-tests-from-repros');
-        expect(guardContent).not.toContain('has-contract-output-variants-snapped');
+        expect(guardContent).not.toContain(
+          'has-contract-output-variants-snapped',
+        );
         expect(guardContent).not.toContain('has-play-test-convention');
       });
     });
