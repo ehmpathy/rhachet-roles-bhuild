@@ -478,7 +478,7 @@ reviews:
       level: 1
 
     - slug: mech-decode-friction
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=architect/briefs/practices/rule.{forbid.decode-friction-in-orchestrators,require.orchestrators-as-narrative}.md' --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.narrative/rule.{forbid.inline-decode-friction,require.named-transforms}.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/{define.domain-operation-grains,philosophy.transform-orchestrator-separation.[philosophy]}.md' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --conversation $conversation --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=architect/briefs/practices/domain.operations/rule.{forbid.decode-friction-in-orchestrators,require.orchestrators-as-narrative}.md' --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.narrative/rule.{forbid.inline-decode-friction,require.named-transformers}.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/domain.operations/{define.domain-operation-grains,philosophy.transformer-orchestrator-separation.[philosophy]}.md' --diffs since-main --paths-with '$route/3.3.*.blueprint.*.md' --join intersect --conversation $conversation --output "$output"
       budget: 3
       level: 1
 
