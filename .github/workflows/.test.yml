@@ -12,16 +12,6 @@ on:
         required: false
         type: string
         default: "us-east-1"
-    secrets:
-      ANTHROPIC_API_KEY:
-        description: "api key for claude code cli, used in integration tests"
-        required: false
-      BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN:
-        description: "github token for bhuild demo repo, used in gh.issues acceptance tests"
-        required: false
-      EHMPATH_BEAVER_GITHUB_TOKEN:
-        description: "github app token for ehmpath beaver, used in radio skill tests"
-        required: false
 
 permissions:
   id-token: write # required for oidc
@@ -208,6 +198,21 @@ jobs:
           path: ./node_modules
           key: ${{ needs.install.outputs.node-modules-cache-key }}
 
+      # .why = keyrack.yml can extend other manifests via symlinks (e.g., .agent/repo=ehmpathy/role=mechanic/keyrack.yml)
+      #        prepare:rhachet creates these symlinks so keyrack.source() can hydrate extended keys
+      - name: prepare:rhachet
+        run: npx rhachet init --roles mechanic behaver driver reviewer librarian ergonomist architect dispatcher
+
+      # .why = keyrack firewall translates and validates secrets before tests run
+      #        - filters to declared keys in keyrack.yml
+      #        - translates mechanisms (e.g., GitHub App → ghs_* token)
+      #        - blocks dangerous patterns (ghp_*, AKIA*, etc.)
+      #        - exports to $GITHUB_ENV with mask applied
+      - name: keyrack firewall
+        run: npx rhachet keyrack firewall --env test --from 'json(env://SECRETS_JSON)' --into github.actions
+        env:
+          SECRETS_JSON: ${{ toJSON(secrets) }}
+
       - name: get aws auth, if creds supplied
         if: ${{ inputs.creds-aws-role-arn }}
         uses: aws-actions/configure-aws-credentials@v4
@@ -224,18 +229,11 @@ jobs:
       - name: build
         run: npm run build
 
-      - name: prepare:rhachet
-        run: npx rhachet init --roles mechanic behaver driver reviewer librarian ergonomist architect dispatcher
-
       - name: test:integration (explicit ${{ matrix.shard.index }})
         if: matrix.shard.type == 'explicit'
         run: |
           patterns='${{ join(matrix.shard.patterns, '|') }}'
           THOROUGH=true npm run test:integration -- --testPathPatterns="$patterns" --json --outputFile=jest-results.json
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}
-          EHMPATH_BEAVER_GITHUB_TOKEN: ${{ secrets.EHMPATH_BEAVER_GITHUB_TOKEN }}
 
       - name: test:integration (dynamic ${{ matrix.shard.shard }}/${{ matrix.shard.total }})
         if: matrix.shard.type == 'dynamic'
@@ -246,10 +244,6 @@ jobs:
           else
             THOROUGH=true npm run test:integration -- --shard=${{ matrix.shard.shard }}/${{ matrix.shard.total }} --json --outputFile=jest-results.json
           fi
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}
-          EHMPATH_BEAVER_GITHUB_TOKEN: ${{ secrets.EHMPATH_BEAVER_GITHUB_TOKEN }}
 
       - name: report slow tests
         if: always() && hashFiles('jest-results.json') != ''
@@ -285,6 +279,21 @@ jobs:
           path: ./node_modules
           key: ${{ needs.install.outputs.node-modules-cache-key }}
 
+      # .why = keyrack.yml can extend other manifests via symlinks (e.g., .agent/repo=ehmpathy/role=mechanic/keyrack.yml)
+      #        prepare:rhachet creates these symlinks so keyrack.source() can hydrate extended keys
+      - name: prepare:rhachet
+        run: npx rhachet init --roles mechanic behaver driver reviewer librarian ergonomist architect dispatcher
+
+      # .why = keyrack firewall translates and validates secrets before tests run
+      #        - filters to declared keys in keyrack.yml
+      #        - translates mechanisms (e.g., GitHub App → ghs_* token)
+      #        - blocks dangerous patterns (ghp_*, AKIA*, etc.)
+      #        - exports to $GITHUB_ENV with mask applied
+      - name: keyrack firewall
+        run: npx rhachet keyrack firewall --env test --from 'json(env://SECRETS_JSON)' --into github.actions
+        env:
+          SECRETS_JSON: ${{ toJSON(secrets) }}
+
       - name: get aws auth, if creds supplied
         if: ${{ inputs.creds-aws-role-arn }}
         uses: aws-actions/configure-aws-credentials@v4
@@ -301,18 +310,11 @@ jobs:
       - name: build
         run: npm run build
 
-      - name: prepare:rhachet
-        run: npx rhachet init --roles mechanic behaver driver reviewer librarian ergonomist architect dispatcher
-
       - name: test:acceptance (explicit ${{ matrix.shard.index }})
         if: matrix.shard.type == 'explicit'
         run: |
           patterns='${{ join(matrix.shard.patterns, '|') }}'
           THOROUGH=true npm run test:acceptance -- --testPathPatterns="$patterns" --json --outputFile=jest-results.json
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}
-          EHMPATH_BEAVER_GITHUB_TOKEN: ${{ secrets.EHMPATH_BEAVER_GITHUB_TOKEN }}
 
       - name: test:acceptance (dynamic ${{ matrix.shard.shard }}/${{ matrix.shard.total }})
         if: matrix.shard.type == 'dynamic'
@@ -323,10 +325,6 @@ jobs:
           else
             THOROUGH=true npm run test:acceptance -- --shard=${{ matrix.shard.shard }}/${{ matrix.shard.total }} --json --outputFile=jest-results.json
           fi
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}
-          EHMPATH_BEAVER_GITHUB_TOKEN: ${{ secrets.EHMPATH_BEAVER_GITHUB_TOKEN }}
 
       - name: report slow tests
         if: always() && hashFiles('jest-results.json') != ''
