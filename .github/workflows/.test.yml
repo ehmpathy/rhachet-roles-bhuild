@@ -179,6 +179,10 @@ jobs:
   test-shards-integration:
     runs-on: ubuntu-24.04
     needs: [install, enshard]
+    # .why = BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN is a classic PAT (ghp_*) which the keyrack
+    #        firewall rejects by design; pass it directly until it is rotated to a github-app token
+    env:
+      BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}
     strategy:
       fail-fast: false
       matrix:
@@ -263,6 +267,10 @@ jobs:
   test-shards-acceptance:
     runs-on: ubuntu-24.04
     needs: [install, enshard]
+    # .why = BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN is a classic PAT (ghp_*) which the keyrack
+    #        firewall rejects by design; pass it directly until it is rotated to a github-app token
+    env:
+      BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}
     strategy:
       fail-fast: false
       matrix:
