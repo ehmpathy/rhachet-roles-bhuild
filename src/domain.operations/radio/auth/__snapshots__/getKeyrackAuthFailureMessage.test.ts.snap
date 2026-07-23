@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`getKeyrackAuthFailureMessage given: [case1] a locked keyrack key when: [t0] the message is built then: matches snapshot 1`] = `
+"github auth via keyrack failed: EHMPATH_BEAVER_GITHUB_TOKEN (status: locked)
+  • unblock now — re-run as human: --auth as-human
+  • or unlock the robot token: rhx keyrack unlock --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep"
+`;
+
+exports[`getKeyrackAuthFailureMessage given: [case2] an absent keyrack key when: [t0] the message is built then: matches snapshot 1`] = `
+"github auth via keyrack failed: EHMPATH_BEAVER_GITHUB_TOKEN (status: absent)
+  • unblock now — re-run as human: --auth as-human
+  • or set the robot token: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep"
+`;
+
+exports[`getKeyrackAuthFailureMessage given: [case3] a blocked keyrack key when: [t0] the message is built then: matches snapshot 1`] = `
+"github auth via keyrack failed: EHMPATH_BEAVER_GITHUB_TOKEN (status: blocked)
+  • unblock now — re-run as human: --auth as-human
+  • or inspect the block: rhx keyrack status --owner ehmpath"
+`;

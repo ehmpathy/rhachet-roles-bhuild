@@ -32,7 +32,12 @@ const asCli =
         const alreadyHasEmoji = error.message.includes('✋');
         const prefix = alreadyHasEmoji ? '' : '✋ ';
         console.error(`${prefix}${error.message}`);
-        if (hint) {
+        // surface the hint as a friendly closing line ONLY when the message
+        // does not already carry it. helpful-errors embeds metadata (incl. the
+        // hint) into error.message, so an unconditional closing print would
+        // duplicate the hint (blemish). the guard keeps the hint visible when
+        // absent from the message, without a duplicate when already present.
+        if (hint && !error.message.includes(hint)) {
           console.error('');
           console.error(hint);
         }

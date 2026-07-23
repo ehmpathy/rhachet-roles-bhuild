@@ -9,6 +9,7 @@ import {
   genConsumerRepo,
   GITHUB_DEMO_REPO,
   runRhachetSkill,
+  sanitizeOutput,
 } from '../.test/infra';
 
 /**
@@ -65,6 +66,7 @@ const runRadioTaskPush = (input: {
   status?: string;
   idem?: string;
   homeDir?: string;
+  env?: Record<string, string>;
 }) => {
   const args = [
     `--via ${input.via}`,
@@ -85,7 +87,10 @@ const runRadioTaskPush = (input: {
     skill: 'radio.task.push',
     args,
     repoDir: input.repoDir,
-    env: input.homeDir ? { HOME: input.homeDir } : {},
+    env: {
+      ...(input.homeDir ? { HOME: input.homeDir } : {}),
+      ...(input.env ?? {}),
+    },
     timeout: 60000, // gh api calls can be slow
   });
 };
@@ -394,6 +399,134 @@ describe('radio.task.push via gh.issues', () => {
         // should find the prior issue, not create a duplicate
         expect(secondResult.exitCode).toBe(0);
         expect(secondResult.output.toLowerCase()).toContain('found');
+      });
+    });
+  });
+
+  // ────────────────────────────────────────────────────────────────
+  // the wish's PRIMARY behavior, proven at the acceptance tier: a human
+  // runs the skill, an auth failure occurs, and they see a graceful ✋
+  // (a caller-fixable ConstraintError), NOT a raw crash or 💥.
+  // ────────────────────────────────────────────────────────────────
+
+  given('[case7] auth misconfig surfaces a graceful ✋ (unset env token)', () => {
+    when('[t0] push with --auth as-robot:env(VAR) where VAR is not set', () => {
+      // fully deterministic: the token is derived from an env var that is not
+      // set, so the skill fails fast BEFORE any gh call — no network, no creds.
+      const result = useBeforeAll(async () =>
+        runRadioTaskPush({
+          repoDir: scene.consumer.repoDir,
+          homeDir: scene.homeDir,
+          via: 'gh.issues',
+          auth: 'as-robot:env(RADIO_ACCEPT_UNSET_TOKEN)',
+          into: GITHUB_DEMO_REPO,
+          title: `auth-fail env test ${Date.now()}`,
+          description: 'should never be created',
+        }),
+      );
+
+      then('exits with code 2 (✋ caller-fixable ConstraintError, not 💥 exit 1)', () => {
+        // the vision's central reclassification: a caller-fixable auth failure
+        // is a ConstraintError (exit 2), never a MalfunctionError (exit 1).
+        expect(result.exitCode).toBe(2);
+      });
+
+      then('names the unset env var in a graceful ✋ (not a raw crash)', () => {
+        expect(result.output).toContain('RADIO_ACCEPT_UNSET_TOKEN');
+        expect(result.output).toContain('not set');
+      });
+
+      then('does NOT leak a raw stack trace or unhandled crash', () => {
+        expect(result.output).not.toContain('    at ');
+        expect(result.output).not.toContain('UnhandledPromiseRejection');
+      });
+
+      then('the human-readable output matches snapshot', () => {
+        expect(sanitizeOutput(result.output)).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case8] rejected robot token surfaces the as-human nudge (gh 401)', () => {
+    when('[t0] push with an env token that github rejects (401)', () => {
+      // a deliberately bogus token — github answers HTTP 401. no real
+      // credential needed: the case under test IS a rejected token.
+      const result = useBeforeAll(async () =>
+        runRadioTaskPush({
+          repoDir: scene.consumer.repoDir,
+          homeDir: scene.homeDir,
+          via: 'gh.issues',
+          auth: 'as-robot:env(RADIO_ACCEPT_BOGUS_TOKEN)',
+          env: {
+            RADIO_ACCEPT_BOGUS_TOKEN: 'ghp_bogusInvalidToken0000000000000000000000',
+          },
+          into: GITHUB_DEMO_REPO,
+          title: `auth-fail 401 test ${Date.now()}`,
+          description: 'should never be created',
+        }),
+      );
+
+      then('exits with code 2 (✋ caller-fixable ConstraintError, not 💥 exit 1)', () => {
+        // same central reclassification, proven for the PRIMARY (gh 401) case.
+        expect(result.exitCode).toBe(2);
+      });
+
+      then('names the as-human unblock as the primary move', () => {
+        expect(result.output).toContain('--auth as-human');
+      });
+
+      then('does NOT leak the raw `Command failed` bubble', () => {
+        expect(result.output).not.toContain('Command failed');
+      });
+
+      // .note = deliberately NOT snapshotted (unlike [case7]). the rendered
+      //   ConstraintError metadata embeds the live gh command, which carries a
+      //   Date.now()-based title and a per-run tempfile path, plus gh's own
+      //   version-volatile 401 stderr in metadata.detail — all non-deterministic.
+      //   a raw snapshot would flake on every run. the stable, human-facing
+      //   contract (exit 2, the --auth as-human nudge, no `Command failed` leak)
+      //   is asserted explicitly above; the deterministic message SHAPE is
+      //   snapshot-locked at the unit tier in getGithubAuthFailureMessage.test.
+    });
+  });
+});
+
+// ────────────────────────────────────────────────────────────────
+// the positive/usage contract at the acceptance (subprocess) tier. the
+// live happy path (a real push) has non-deterministic output (Date.now()
+// titles, live issue exids) so it is asserted in the credential-gated cases
+// above, not snapshotted. --help is the one FULLY-deterministic caller-faced
+// output, so it is snapshotted here for a subprocess-tier vibecheck.
+// ────────────────────────────────────────────────────────────────
+describe('radio.task.push via gh.issues — usage contract', () => {
+  const helpScene = useBeforeAll(async () =>
+    genConsumerRepo({ prefix: 'radio-gh-push-help-' }),
+  );
+
+  given('[case9] --help renders the usage contract (deterministic)', () => {
+    when('[t0] push is invoked with --help', () => {
+      const result = useBeforeAll(async () =>
+        runRhachetSkill({
+          repo: 'bhuild',
+          role: 'dispatcher',
+          skill: 'radio.task.push',
+          args: '--help',
+          repoDir: helpScene.repoDir,
+          timeout: 30000,
+        }),
+      );
+
+      then('exits with code 0', () => {
+        expect(result.exitCode).toBe(0);
+      });
+
+      then('names the required --via and --into options', () => {
+        expect(result.output).toContain('--via');
+        expect(result.output).toContain('--into');
+      });
+
+      then('the human-readable usage output matches snapshot', () => {
+        expect(sanitizeOutput(result.output)).toMatchSnapshot();
       });
     });
   });

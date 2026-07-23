@@ -118,15 +118,15 @@ const HELP_TEXT = `
    │  └─ radio.task.pull --via gh.issues --from @this --list --status QUEUED
    │
    └─ options
-      ├─ --via       channel: gh.issues or os.fileops (required)
-      ├─ --from      source: @this (current repo) or owner/repo (required)
-      ├─ --list      list all tasks
-      ├─ --exid      fetch specific task by external id
-      ├─ --title     fetch specific task by title
-      ├─ --status    filter by status: QUEUED, CLAIMED, DELIVERED
-      ├─ --limit     max number of tasks to return
-      ├─ --auth      mode: as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd) | as-human
-      └─ --help, -h  show this help
+      ├─ --via         channel: gh.issues or os.fileops (required)
+      ├─ --from        source: @this (current repo) or owner/repo (required)
+      ├─ --list        list all tasks
+      ├─ --exid        fetch specific task by external id
+      ├─ --title       fetch specific task by title
+      ├─ --status      filter by status: QUEUED, CLAIMED, DELIVERED
+      ├─ --limit       max number of tasks to return
+      ├─ --auth        mode: as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd) | as-human
+      └─ --help, -h    show this help
 `.trim();
 
 export const cliRadioTaskPull = async (): Promise<void> => {

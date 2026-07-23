@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`radio.task.pull via gh.issues — github auth failure nudge given: [case5] auth misconfig surfaces a graceful ✋ (unset env token) when: [t0] pull with --auth as-robot:env(VAR) where VAR is not set then: the human-readable output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.pull
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.pull
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --auth as-robot:env(RADIO_ACCEPT_UNSET_TOKEN) specified but RADIO_ACCEPT_UNSET_TOKEN is not set
+
+{
+  "envVar": "RADIO_ACCEPT_UNSET_TOKEN",
+  "hint": "set RADIO_ACCEPT_UNSET_TOKEN in the environment"
+}"
+`;
+
+exports[`radio.task.pull via gh.issues — usage contract given: [case7] --help renders the usage contract (deterministic) when: [t0] pull is invoked with --help then: the human-readable usage output matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.pull
+
+🦫 let's check the meter...
+
+🎙️ radio.task.pull --help
+   ├─ usage
+   │  ├─ radio.task.pull --via gh.issues --from @this --list
+   │  ├─ radio.task.pull --via gh.issues --from owner/repo --list
+   │  ├─ radio.task.pull --via os.fileops --from @this --exid 123
+   │  └─ radio.task.pull --via gh.issues --from @this --list --status QUEUED
+   │
+   └─ options
+      ├─ --via         channel: gh.issues or os.fileops (required)
+      ├─ --from        source: @this (current repo) or owner/repo (required)
+      ├─ --list        list all tasks
+      ├─ --exid        fetch specific task by external id
+      ├─ --title       fetch specific task by title
+      ├─ --status      filter by status: QUEUED, CLAIMED, DELIVERED
+      ├─ --limit       max number of tasks to return
+      ├─ --auth        mode: as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd) | as-human
+      └─ --help, -h    show this help"
+`;

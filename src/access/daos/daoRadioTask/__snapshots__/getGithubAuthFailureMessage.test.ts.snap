@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`getGithubAuthFailureMessage given: [case1] role = as-robot (robot token rejected) when: [t0] the message is built then: matches snapshot 1`] = `
+"github auth failed: the robot token was rejected by github (401)
+  • unblock now — re-run as human: --auth as-human
+  • or fix the robot token: check its scopes and expiry at its source"
+`;
+
+exports[`getGithubAuthFailureMessage given: [case2] role = as-human (gh session unauthenticated) when: [t0] the message is built then: matches snapshot 1`] = `
+"github auth failed: your gh cli session is not authenticated
+  • log in to github: gh auth login"
+`;

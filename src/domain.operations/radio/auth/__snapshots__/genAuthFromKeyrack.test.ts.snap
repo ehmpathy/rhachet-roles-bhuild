@@ -1,21 +1,23 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`genAuthFromKeyrack given: [case3] keyrack stays locked even after auto-unlock when: [t0] unlock does not clear the lock then: throws MalfunctionError with keyrack output 1`] = `
-"💥 MalfunctionError: keyrack:
-🔒 locked: credential is locked
+exports[`genAuthFromKeyrack given: [case3] keyrack stays locked even after auto-unlock when: [t0] unlock does not clear the lock then: throws ConstraintError with the as-human nudge 1`] = `
+"✋ ConstraintError: github auth via keyrack failed: EHMPATH_BEAVER_GITHUB_TOKEN (status: locked)
+  • unblock now — re-run as human: --auth as-human
+  • or unlock the robot token: rhx keyrack unlock --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
 
 {
   "status": "locked",
   "owner": "ehmpath",
   "env": "prep",
-  "key": "EHMPATH_BEAVER_GITHUB_TOKEN"
+  "key": "EHMPATH_BEAVER_GITHUB_TOKEN",
+  "keyrack": "🔒 locked: credential is locked"
 }"
 `;
 
 exports[`genAuthFromKeyrack given: [case4] keyrack returns absent status when: [t0] key was never set then: throws ConstraintError with a two-path nudge 1`] = `
-"✋ ConstraintError: key is not set: EHMPATH_BEAVER_GITHUB_TOKEN
-  • set the github token: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
-  • or re-run as human: --auth as-human
+"✋ ConstraintError: github auth via keyrack failed: EHMPATH_BEAVER_GITHUB_TOKEN (status: absent)
+  • unblock now — re-run as human: --auth as-human
+  • or set the robot token: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
 
 {
   "owner": "ehmpath",
@@ -24,14 +26,16 @@ exports[`genAuthFromKeyrack given: [case4] keyrack returns absent status when: [
 }"
 `;
 
-exports[`genAuthFromKeyrack given: [case5] keyrack returns blocked status when: [t0] value blocked by mechanism firewall then: throws MalfunctionError with keyrack output 1`] = `
-"💥 MalfunctionError: keyrack:
-🚫 blocked: credential blocked by mechanism firewall
+exports[`genAuthFromKeyrack given: [case5] keyrack returns blocked status when: [t0] value blocked by mechanism firewall then: throws ConstraintError with the as-human nudge 1`] = `
+"✋ ConstraintError: github auth via keyrack failed: EHMPATH_BEAVER_GITHUB_TOKEN (status: blocked)
+  • unblock now — re-run as human: --auth as-human
+  • or inspect the block: rhx keyrack status --owner ehmpath
 
 {
   "status": "blocked",
   "owner": "ehmpath",
   "env": "prep",
-  "key": "EHMPATH_BEAVER_GITHUB_TOKEN"
+  "key": "EHMPATH_BEAVER_GITHUB_TOKEN",
+  "keyrack": "🚫 blocked: credential blocked by mechanism firewall"
 }"
 `;

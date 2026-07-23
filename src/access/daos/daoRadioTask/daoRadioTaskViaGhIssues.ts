@@ -1,6 +1,10 @@
 import { exec } from 'child_process';
 import * as fs from 'fs';
-import { BadRequestError, UnexpectedCodePathError } from 'helpful-errors';
+import {
+  BadRequestError,
+  ConstraintError,
+  UnexpectedCodePathError,
+} from 'helpful-errors';
 import type { IsoDateStamp } from 'iso-time';
 import * as os from 'os';
 import * as path from 'path';
@@ -15,6 +19,9 @@ import type { RadioTaskRepo } from '../../../domain.objects/RadioTaskRepo';
 import { RadioTaskStatus } from '../../../domain.objects/RadioTaskStatus';
 import { composeTaskIntoGhIssues } from '../../../domain.operations/radio/task/format/composeTaskIntoGhIssues';
 import { extractTaskFromGhIssues } from '../../../domain.operations/radio/task/format/extractTaskFromGhIssues';
+import { asExecErrorMessage } from '../../../infra/shell/asExecErrorMessage';
+import { getGithubAuthFailureMessage } from './getGithubAuthFailureMessage';
+import { isGithubAuthFailure } from './isGithubAuthFailure';
 
 const execAsync = promisify(exec);
 const writeFileAsync = promisify(fs.writeFile);
@@ -51,8 +58,30 @@ const runGhCommand = async (
       ? { ...envWithoutToken, GH_TOKEN: context.github.auth.token }
       : envWithoutToken; // as-human: no GH_TOKEN, use gh cli session
 
-  const { stdout } = await execAsync(command, { env });
-  return stdout.trim();
+  try {
+    const { stdout } = await execAsync(command, { env });
+    return stdout.trim();
+  } catch (error: unknown) {
+    // decode the cross-realm exec cause one way (shared infra transformer);
+    // `.stderr` is a separate exec field, read inline below
+    const message = asExecErrorMessage({ error });
+    const stderr = (error as { stderr?: string })?.stderr ?? '';
+    const text = `${message}\n${stderr}`;
+
+    // graceful nudge on a github auth rejection (401), branched by auth role
+    if (isGithubAuthFailure({ text }))
+      throw new ConstraintError(
+        getGithubAuthFailureMessage({ role: context.github.auth.role }),
+        {
+          command,
+          role: context.github.auth.role,
+          detail: stderr.trim() || message, // keep the raw cause for debug
+        },
+      );
+
+    // otherwise, let the original error bubble (callers like byPrimary inspect it)
+    throw error;
+  }
 };
 
 /**
