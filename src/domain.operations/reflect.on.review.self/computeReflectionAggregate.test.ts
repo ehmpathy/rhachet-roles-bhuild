@@ -18,7 +18,10 @@ const EMPTY_EXPERIENCE = new ReflectOnReviewSelfExperience({
 /**
  * .what = build a window with the given slug and edit count
  */
-const asWindow = (input: { slug: string; edits: number }): ReflectOnReviewSelfWindow =>
+const asWindow = (input: {
+  slug: string;
+  edits: number;
+}): ReflectOnReviewSelfWindow =>
   new ReflectOnReviewSelfWindow({
     slug: input.slug,
     stone: '1.vision',

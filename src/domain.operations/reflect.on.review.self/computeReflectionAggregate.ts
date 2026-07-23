@@ -107,7 +107,9 @@ const compareByWorstOffender = (
  * .what = the share of a slug's firings labeled feigned-noop (0 when unlabeled)
  * .why = the primary worst-offender rank key
  */
-const asFeignedShare = (input: { stat: ReflectOnReviewSelfSlugStat }): number => {
+const asFeignedShare = (input: {
+  stat: ReflectOnReviewSelfSlugStat;
+}): number => {
   const labeled =
     input.stat.verdicts.genuineGain +
     input.stat.verdicts.genuineNoop +

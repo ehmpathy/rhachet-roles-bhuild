@@ -109,7 +109,9 @@ const asSlugLine = (input: {
  *        is the plurality bucket (>= gain AND >= noop, and non-zero), so a
  *        mostly-genuine-noop slug reads green, consistent with its low rank
  */
-const isFeignedDominant = (input: { stat: ReflectOnReviewSelfSlugStat }): boolean => {
+const isFeignedDominant = (input: {
+  stat: ReflectOnReviewSelfSlugStat;
+}): boolean => {
   const { feignedNoop, genuineNoop, genuineGain } = input.stat.verdicts;
   return (
     feignedNoop > 0 && feignedNoop >= genuineGain && feignedNoop >= genuineNoop

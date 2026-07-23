@@ -38,7 +38,10 @@ const asWindow = (input: {
     }),
     experience: EMPTY_EXPERIENCE,
     verdict: input.verdict
-      ? new ReflectOnReviewSelfVerdict({ label: input.verdict, reason: 'because' })
+      ? new ReflectOnReviewSelfVerdict({
+          label: input.verdict,
+          reason: 'because',
+        })
       : null,
   });
 

@@ -42,7 +42,10 @@ export const imagineReviewSelfVerdict = async (
     schema: { output: schemaOfVerdict },
   });
 
-  return new ReflectOnReviewSelfVerdict({ label: output.label, reason: output.reason });
+  return new ReflectOnReviewSelfVerdict({
+    label: output.label,
+    reason: output.reason,
+  });
 };
 
 /**
@@ -52,7 +55,9 @@ export const imagineReviewSelfVerdict = async (
  *        the articulation text is the single most decisive piece of evidence for
  *        whether the review was real or a rubber-stamp
  */
-const asVerdictPrompt = (input: { window: ReflectOnReviewSelfWindow }): string => {
+const asVerdictPrompt = (input: {
+  window: ReflectOnReviewSelfWindow;
+}): string => {
   const { window } = input;
   const { experience } = window;
   return [
@@ -85,7 +90,9 @@ const asVerdictPrompt = (input: { window: ReflectOnReviewSelfWindow }): string =
  * .why = the per-file mode + diff shows the brain WHAT changed; the list is capped
  *        so a review that touched many files does not overrun the budget
  */
-const asFileLines = (input: { files: ReflectOnReviewSelfFileTouch[] }): string[] => {
+const asFileLines = (input: {
+  files: ReflectOnReviewSelfFileTouch[];
+}): string[] => {
   if (input.files.length === 0) return ['- (no artifact files touched)'];
 
   const shown = input.files.slice(0, MAX_FILES_SHOWN);

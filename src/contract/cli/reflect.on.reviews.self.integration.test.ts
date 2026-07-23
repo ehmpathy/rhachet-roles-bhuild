@@ -164,7 +164,9 @@ describe('reflectOnReviewsSelf CLI (integration)', () => {
 
       then('it emits the treestruct summary to stdout', () => {
         expect(result.stdout).toContain('🦫 heres the reflection');
-        expect(result.stdout).toContain('🌲 reflect.on.reviews.self --mode plan');
+        expect(result.stdout).toContain(
+          '🌲 reflect.on.reviews.self --mode plan',
+        );
         expect(result.stdout).toContain('has-questioned-assumptions');
       });
 

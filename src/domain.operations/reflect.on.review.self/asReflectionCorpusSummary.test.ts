@@ -14,7 +14,8 @@ const asAggregate = (input: {
   transcriptsRead: number;
   transcriptsSkipped: number;
   reviewsTotal: number;
-}): ReflectOnReflectionAggregate => new ReflectOnReflectionAggregate({ ...input, slugs: [] });
+}): ReflectOnReflectionAggregate =>
+  new ReflectOnReflectionAggregate({ ...input, slugs: [] });
 
 describe('asReflectionCorpusSummary', () => {
   given('[case1] a multi-count corpus (every field plural)', () => {
