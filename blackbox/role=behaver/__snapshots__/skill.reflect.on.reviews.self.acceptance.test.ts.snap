@@ -1,0 +1,117 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`reflect.on.reviews.self (acceptance) given: [case1] a corpus with one behavior self-review when: [t0] the skill is dispatched in plan mode with an --into path then: the json aggregate matches its snapshot 1`] = `
+"{
+  "transcriptsRead": 1,
+  "transcriptsSkipped": 0,
+  "projectsSwept": 1,
+  "routesFound": 1,
+  "reviewsTotal": 1,
+  "slugs": [
+    {
+      "slug": "has-questioned-assumptions",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    }
+  ]
+}"
+`;
+
+exports[`reflect.on.reviews.self (acceptance) given: [case1] a corpus with one behavior self-review when: [t0] the skill is dispatched in plan mode with an --into path then: the markdown report matches its snapshot 1`] = `
+"# reflection: self-reviews
+
+- mode: plan
+- corpus: 1 route run · 1 project · 1 transcript read · 0 skipped
+- reviews: 1 review promised
+
+## per-slug aggregate
+
+| slug | firings | edited | genuine-gain | genuine-noop | feigned-noop |
+|------|--------:|-------:|-------------:|-------------:|-------------:|
+| has-questioned-assumptions | 1 | 1 | 0 | 0 | 0 |
+
+## per-review detail
+
+| route | slug | stone | edits | read | bash | chars | verdict | reason |
+|-------|------|-------|------:|:----:|-----:|------:|---------|--------|
+| .behavior/acceptance-route | has-questioned-assumptions | 1.vision | 1 | · | 0 | 18 | — | — |
+"
+`;
+
+exports[`reflect.on.reviews.self (acceptance) given: [case1] a corpus with one behavior self-review when: [t0] the skill is dispatched in plan mode with an --into path then: the stdout summary matches its snapshot 1`] = `
+"🦫 heres the reflection
+
+🌲 reflect.on.reviews.self --mode plan
+   ├─ corpus  = 1 route run · 1 project · 1 transcript read · 0 skipped
+   ├─ reviews = 1 review promised
+   ├─ per-slug (worst offenders)
+   │  └─ — has-questioned-assumptions         1/1 edited
+   └─ wrote
+      ├─ report = <path>
+      └─ json   = <path>"
+`;
+
+exports[`reflect.on.reviews.self (acceptance) given: [case2] a corpus with no behavior routes when: [t0] the skill is dispatched with no filters then: the no-route error block matches its snapshot 1`] = `
+"✋ ConstraintError: no init.behavior self-review windows found in the transcript corpus
+
+{
+  "filters": null,
+  "corpus": "~/.claude/projects/*/*.jsonl",
+  "transcriptsRead": 1,
+  "transcriptsSkipped": 0,
+  "hint": "confirm the init.behavior route has run here — its route.stone.set commands must appear in a transcript"
+}"
+`;
+
+exports[`reflect.on.reviews.self (acceptance) given: [case3] a caller who asks for --help when: [t0] the skill is dispatched with --help then: the usage guide matches its snapshot 1`] = `
+"🌲 reflect.on.reviews.self — diagnose which init.behavior self-reviews earn their keep
+
+usage:
+  rhx reflect.on.reviews.self [--mode plan|apply] [--route <dir>] [--project <slug>]
+                          [--stone <name>] [--brain <choice>] [--into <path>]
+
+options:
+  --mode     plan (signals only) | apply (+ brain verdicts)  [default: plan]
+  --route    filter to windows of one route dir              [default: all routes]
+  --project  filter to one project slug                      [default: all projects]
+  --stone    filter to one stone (e.g. 1.vision)             [default: all stones]
+  --brain    cheap brain choice for apply mode               [default: fireworks/deepseek/v4-flash]
+  --into     report output path                              [default: ~/.rhachet/reflect, or into --route dir]
+  --help     show this guide
+
+with no flags, the skill sweeps every transcript in every project on the machine.
+plan mode needs no brain; apply mode judges each window with the cheap brain."
+`;
+
+exports[`reflect.on.reviews.self (acceptance) given: [case4] a filter that matches no transcript when: [t0] the skill is dispatched with a project filter that misses then: the filter-miss error block matches its snapshot 1`] = `
+"✋ ConstraintError: no self-review windows matched the given filters
+
+{
+  "filters": [
+    "project=no-such-project"
+  ],
+  "corpus": "~/.claude/projects/*/*.jsonl",
+  "transcriptsRead": 0,
+  "transcriptsSkipped": 0,
+  "hint": "loosen or remove the filters, or confirm that route ran on this machine"
+}"
+`;
+
+exports[`reflect.on.reviews.self (acceptance) given: [case5] apply mode with an unreachable brain when: [t0] the skill is dispatched in apply mode with a bad brain then: the brain-failure error block matches its snapshot 1`] = `
+"✋ ConstraintError: could not reach the brain "nonesuch/does-not-exist"
+
+{
+  "brain": "nonesuch/does-not-exist",
+  "hint": "confirm the rhachet-brains supplier is installed and its credential is on the keyrack (owner ehmpath), or rerun with --mode plan"
+}"
+`;
+
+exports[`reflect.on.reviews.self (acceptance) given: [case6] a caller who passes an unsupported --mode when: [t0] the skill is dispatched with --mode set to a bad value then: the invalid-input validation block matches its snapshot 1`] = `
+"⛈️  error: input invalid
+   └─ --mode invalid option: expected one of "plan"|"apply""
+`;

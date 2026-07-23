@@ -1,0 +1,46 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`genReflectionStdout given: [case1] an aggregate with a clear worst offender when: [t0] rendered in plan mode then: it matches the plan-mode snapshot 1`] = `
+"🦫 heres the reflection
+
+🌲 reflect.on.reviews.self --mode plan
+   ├─ corpus  = 2 route runs · 2 projects · 3 transcripts read · 1 skipped
+   ├─ reviews = 4 reviews promised
+   ├─ per-slug (worst offenders)
+   │  ├─ — has-questioned-questions           0/2 edited
+   │  └─ — has-questioned-assumptions         2/2 edited
+   └─ wrote
+      ├─ report = ~/.rhachet/reflect/report.md
+      └─ json   = ~/.rhachet/reflect/report.v1.json"
+`;
+
+exports[`genReflectionStdout given: [case1] an aggregate with a clear worst offender when: [t1] rendered in apply mode then: it matches the apply-mode snapshot 1`] = `
+"🦫 heres the reflection
+
+🌲 reflect.on.reviews.self --mode apply
+   ├─ corpus  = 2 route runs · 2 projects · 3 transcripts read · 1 skipped
+   ├─ reviews = 4 reviews promised
+   ├─ verdict
+   │  ├─ 🟢 genuine-gain     1  (25%)
+   │  ├─ 🟡 genuine-noop     1  (25%)
+   │  └─ 🔴 feigned-noop     2  (50%)
+   ├─ per-slug (worst offenders)
+   │  ├─ 🔴 has-questioned-questions           0/2 edited · 2/2 feigned-noop
+   │  └─ 🟢 has-questioned-assumptions         2/2 edited · 0/2 feigned-noop
+   └─ wrote
+      ├─ report = ~/.rhachet/reflect/report.md
+      └─ json   = ~/.rhachet/reflect/report.v1.json"
+`;
+
+exports[`genReflectionStdout given: [case2] an empty aggregate when: [t0] rendered in plan mode then: the empty-state render matches its snapshot 1`] = `
+"🦫 heres the reflection
+
+🌲 reflect.on.reviews.self --mode plan
+   ├─ corpus  = 0 route runs · 0 projects · 0 transcripts read · 0 skipped
+   ├─ reviews = 0 reviews promised
+   ├─ per-slug (worst offenders)
+   │  └─ (no self-review windows found)
+   └─ wrote
+      ├─ report = ~/.rhachet/reflect/report.md
+      └─ json   = ~/.rhachet/reflect/report.v1.json"
+`;

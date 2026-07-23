@@ -14,6 +14,7 @@ import { feedbackTakeSet } from './contract/cli/feedback.take.set';
 import { initBehavior } from './contract/cli/init.behavior';
 import { cliRadioTaskPull } from './contract/cli/radioTaskPull';
 import { cliRadioTaskPush } from './contract/cli/radioTaskPush';
+import { reflectOnReviewsSelf } from './contract/cli/reflect.on.reviews.self';
 import { reviewBehavior } from './contract/cli/review.behavior';
 
 const asCli =
@@ -60,5 +61,7 @@ export const cli = {
   initBehavior: () => withEmojiSpaceShim({ logic: asCli(initBehavior) }),
   radioTaskPull: () => withEmojiSpaceShim({ logic: asCli(cliRadioTaskPull) }),
   radioTaskPush: () => withEmojiSpaceShim({ logic: asCli(cliRadioTaskPush) }),
+  reflectOnReviewsSelf: () =>
+    withEmojiSpaceShim({ logic: asCli(reflectOnReviewsSelf) }),
   reviewBehavior: () => withEmojiSpaceShim({ logic: asCli(reviewBehavior) }),
 };

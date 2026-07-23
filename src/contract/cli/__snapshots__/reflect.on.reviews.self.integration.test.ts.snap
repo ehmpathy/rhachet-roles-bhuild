@@ -1,0 +1,190 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`reflectOnReviewsSelf CLI (integration) given: [case1] a corpus with one behavior transcript when: [t0] run in plan mode with an explicit --into path then: the treestruct summary matches its snapshot 1`] = `
+"🦫 heres the reflection
+
+🌲 reflect.on.reviews.self --mode plan
+   ├─ corpus  = 1 route run · 1 project · 1 transcript read · 0 skipped
+   ├─ reviews = 1 review promised
+   ├─ per-slug (worst offenders)
+   │  └─ — has-questioned-assumptions         1/1 edited
+   └─ wrote
+      ├─ report = <path>
+      └─ json   = <path>"
+`;
+
+exports[`reflectOnReviewsSelf CLI (integration) given: [case1] a corpus with one behavior transcript when: [t1] run with a project filter that matches no transcript then: the filter-miss error message matches its snapshot 1`] = `
+"✋ ConstraintError: no self-review windows matched the given filters
+
+{
+  "filters": [
+    "project=no-such-project"
+  ],
+  "corpus": "~/.claude/projects/*/*.jsonl",
+  "transcriptsRead": 0,
+  "transcriptsSkipped": 0,
+  "hint": "loosen or remove the filters, or confirm that route ran on this machine"
+}"
+`;
+
+exports[`reflectOnReviewsSelf CLI (integration) given: [case1] a corpus with one behavior transcript when: [t2] run in apply mode with a deterministic injected judge then: the apply-mode json aggregate matches its raw-bytes snapshot 1`] = `
+"{
+  "transcriptsRead": 1,
+  "transcriptsSkipped": 0,
+  "projectsSwept": 1,
+  "routesFound": 1,
+  "reviewsTotal": 1,
+  "slugs": [
+    {
+      "slug": "has-questioned-assumptions",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 1,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    }
+  ]
+}"
+`;
+
+exports[`reflectOnReviewsSelf CLI (integration) given: [case1] a corpus with one behavior transcript when: [t2] run in apply mode with a deterministic injected judge then: the apply-mode treestruct summary matches its snapshot 1`] = `
+"🦫 heres the reflection
+
+🌲 reflect.on.reviews.self --mode apply
+   ├─ corpus  = 1 route run · 1 project · 1 transcript read · 0 skipped
+   ├─ reviews = 1 review promised
+   ├─ verdict
+   │  ├─ 🟢 genuine-gain     1  (100%)
+   │  ├─ 🟡 genuine-noop     0  (0%)
+   │  └─ 🔴 feigned-noop     0  (0%)
+   ├─ per-slug (worst offenders)
+   │  └─ 🟢 has-questioned-assumptions         1/1 edited · 0/1 feigned-noop
+   └─ wrote
+      ├─ report = <path>
+      └─ json   = <path>"
+`;
+
+exports[`reflectOnReviewsSelf CLI (integration) given: [case2] a corpus with no behavior routes at all when: [t0] run with no filters then: the no-route error message matches its snapshot 1`] = `
+"✋ ConstraintError: no init.behavior self-review windows found in the transcript corpus
+
+{
+  "filters": null,
+  "corpus": "~/.claude/projects/*/*.jsonl",
+  "transcriptsRead": 1,
+  "transcriptsSkipped": 0,
+  "hint": "confirm the init.behavior route has run here — its route.stone.set commands must appear in a transcript"
+}"
+`;
+
+exports[`reflectOnReviewsSelf CLI (integration) given: [case3] a caller who asks for --help when: [t0] run with --help then: the usage guide matches its snapshot 1`] = `
+"🌲 reflect.on.reviews.self — diagnose which init.behavior self-reviews earn their keep
+
+usage:
+  rhx reflect.on.reviews.self [--mode plan|apply] [--route <dir>] [--project <slug>]
+                          [--stone <name>] [--brain <choice>] [--into <path>]
+
+options:
+  --mode     plan (signals only) | apply (+ brain verdicts)  [default: plan]
+  --route    filter to windows of one route dir              [default: all routes]
+  --project  filter to one project slug                      [default: all projects]
+  --stone    filter to one stone (e.g. 1.vision)             [default: all stones]
+  --brain    cheap brain choice for apply mode               [default: fireworks/deepseek/v4-flash]
+  --into     report output path                              [default: ~/.rhachet/reflect, or into --route dir]
+  --help     show this guide
+
+with no flags, the skill sweeps every transcript in every project on the machine.
+plan mode needs no brain; apply mode judges each window with the cheap brain."
+`;
+
+exports[`reflectOnReviewsSelf CLI (integration) given: [case4] apply mode with an unreachable brain when: [t0] run in apply mode with a brain slug that matches no brain then: the apply-mode brain-failure error matches its snapshot 1`] = `
+"✋ ConstraintError: could not reach the brain "nonesuch/does-not-exist"
+
+{
+  "brain": "nonesuch/does-not-exist",
+  "hint": "confirm the rhachet-brains supplier is installed and its credential is on the keyrack (owner ehmpath), or rerun with --mode plan"
+}"
+`;
+
+exports[`reflectOnReviewsSelf CLI (integration) given: [case5] a corpus with multiple reviews across slugs when: [t0] run in plan mode with an explicit --into path then: the multi-review json aggregate matches its snapshot 1`] = `
+"{
+  "transcriptsRead": 1,
+  "transcriptsSkipped": 0,
+  "projectsSwept": 1,
+  "routesFound": 1,
+  "reviewsTotal": 3,
+  "slugs": [
+    {
+      "slug": "has-questioned-questions",
+      "firings": 1,
+      "firingsWithEdit": 0,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "has-questioned-assumptions",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "has-behavior-declaration-coverage",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    }
+  ]
+}"
+`;
+
+exports[`reflectOnReviewsSelf CLI (integration) given: [case5] a corpus with multiple reviews across slugs when: [t0] run in plan mode with an explicit --into path then: the multi-review markdown report matches its snapshot 1`] = `
+"# reflection: self-reviews
+
+- mode: plan
+- corpus: 1 route run · 1 project · 1 transcript read · 0 skipped
+- reviews: 3 reviews promised
+
+## per-slug aggregate
+
+| slug | firings | edited | genuine-gain | genuine-noop | feigned-noop |
+|------|--------:|-------:|-------------:|-------------:|-------------:|
+| has-questioned-questions | 1 | 0 | 0 | 0 | 0 |
+| has-questioned-assumptions | 1 | 1 | 0 | 0 | 0 |
+| has-behavior-declaration-coverage | 1 | 1 | 0 | 0 | 0 |
+
+## per-review detail
+
+| route | slug | stone | edits | read | bash | chars | verdict | reason |
+|-------|------|-------|------:|:----:|-----:|------:|---------|--------|
+| .behavior/test-route | has-questioned-assumptions | 1.vision | 1 | · | 0 | 18 | — | — |
+| .behavior/test-route | has-questioned-questions | 1.vision | 0 | · | 0 | 23 | — | — |
+| .behavior/test-route | has-behavior-declaration-coverage | 1.vision | 1 | · | 0 | 0 | — | — |
+"
+`;
+
+exports[`reflectOnReviewsSelf CLI (integration) given: [case5] a corpus with multiple reviews across slugs when: [t0] run in plan mode with an explicit --into path then: the multi-review treestruct summary matches its snapshot 1`] = `
+"🦫 heres the reflection
+
+🌲 reflect.on.reviews.self --mode plan
+   ├─ corpus  = 1 route run · 1 project · 1 transcript read · 0 skipped
+   ├─ reviews = 3 reviews promised
+   ├─ per-slug (worst offenders)
+   │  ├─ — has-questioned-questions           0/1 edited
+   │  ├─ — has-questioned-assumptions         1/1 edited
+   │  └─ — has-behavior-declaration-coverage  1/1 edited
+   └─ wrote
+      ├─ report = <path>
+      └─ json   = <path>"
+`;

@@ -7,6 +7,11 @@ env.prod:
   - EHMPATHY_SEATURTLE_PROD_GITHUB_TOKEN
 env.test:
   - EHMPATH_BEAVER_GITHUB_TOKEN
+  - ANTHROPIC_API_KEY
+  - FIREWORKS_API_KEY
+  # note: BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN is a classic PAT (ghp_*) which the firewall
+  #       rejects by design; it is passed directly in .github/workflows/.test.yml until it is
+  #       rotated to a github-app token, at which point it can move under the firewall here
 env.all: null
 env.prep:
   - EHMPATH_BEAVER_GITHUB_TOKEN

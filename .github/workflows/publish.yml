@@ -15,10 +15,7 @@ jobs:
     with:
       creds-aws-region: us-east-1
       creds-aws-role-arn: ${{ vars.CREDS_CICD_AWS_DEV_OIDC_ROLE_ARN }} # use aws auth via oidc, if this repo supplies it
-    secrets:
-      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-      BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}
-      EHMPATH_BEAVER_GITHUB_TOKEN: ${{ secrets.EHMPATH_BEAVER_GITHUB_TOKEN }}
+    secrets: inherit # firewall reads toJSON(secrets); inherit passes all repo/org secrets to the reusable workflow
 
   publish:
     uses: ./.github/workflows/.publish-npm.yml

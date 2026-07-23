@@ -67,7 +67,7 @@ const backdateTriggeredFile = (input: {
  *   t2: --as passed (triggers review 2) + backdate + promise
  *   tN: --as passed (triggers review N) + backdate + promise
  */
-const promiseAllSelfReviews = (input: {
+const promiseAllReviewSelfs = (input: {
   repoDir: string;
   routeDir: string;
   routeRel: string;
@@ -88,10 +88,10 @@ const promiseAllSelfReviews = (input: {
         // allowlist the expected blockage; rethrow all else (else failhide)
         if (!isExecErrorShape(error)) throw error;
         // exit code 2 = constraint: the self-review gate halted the pass (expected)
-        const wasBlockedBySelfReview =
+        const wasBlockedByReviewSelf =
           error.status === 2 &&
           error.stdout?.toString().includes('review.self');
-        if (!wasBlockedBySelfReview) {
+        if (!wasBlockedByReviewSelf) {
           console.error(
             `[${i}] pass call FAILED unexpectedly: status=${error.status}, stdout=${error.stdout?.toString()}, stderr=${error.stderr?.toString()}`,
           );
@@ -510,7 +510,7 @@ describe('skill.init.behavior.guards.journey', () => {
       });
       if (visionSlugs.length === 0)
         throw new Error('no self-review slugs found in 1.vision.guard');
-      promiseAllSelfReviews({
+      promiseAllReviewSelfs({
         repoDir,
         routeDir,
         routeRel: behaviorDirRel,
@@ -554,7 +554,7 @@ describe('skill.init.behavior.guards.journey', () => {
       });
       if (criteriaSlugs.length === 0)
         throw new Error('no self-review slugs found in 2.1.criteria.blackbox.guard');
-      promiseAllSelfReviews({
+      promiseAllReviewSelfs({
         repoDir,
         routeDir,
         routeRel: behaviorDirRel,
@@ -592,7 +592,7 @@ describe('skill.init.behavior.guards.journey', () => {
       });
       if (blueprintSlugs.length === 0)
         throw new Error('no self-review slugs found in 3.3.1.blueprint.product.guard');
-      promiseAllSelfReviews({
+      promiseAllReviewSelfs({
         repoDir,
         routeDir,
         routeRel: behaviorDirRel,
@@ -685,7 +685,7 @@ describe('skill.init.behavior.guards.journey', () => {
         throw new Error(
           'no self-review slugs found in 5.1.execution.phase0_to_phaseN.guard',
         );
-      promiseAllSelfReviews({
+      promiseAllReviewSelfs({
         repoDir,
         routeDir,
         routeRel: behaviorDirRel,

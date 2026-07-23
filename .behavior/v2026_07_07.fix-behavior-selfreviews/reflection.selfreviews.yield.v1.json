@@ -1,0 +1,239 @@
+{
+  "transcriptsRead": 946,
+  "transcriptsSkipped": 0,
+  "projectsSwept": 173,
+  "routesFound": 1,
+  "reviewsTotal": 23,
+  "slugs": [
+    {
+      "slug": "has-grounded-in-reality",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "has-questioned-requirements",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "has-questioned-assumptions",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "has-questioned-questions",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "has-pruned-yagni",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "has-pruned-backcompat",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "has-consistent-mechanisms",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "has-consistent-conventions",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "behavior-declaration-coverage",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "behavior-declaration-adherance",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "role-standards-adherance",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "role-standards-coverage",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "has-behavior-coverage",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "has-zero-test-skips",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "has-snap-changes-rationalized",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "has-critical-paths-frictionless",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "has-ergonomics-validated",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "has-play-test-convention",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "has-fixed-all-gaps",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "has-all-tests-passed",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "has-preserved-test-intentions",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "has-journey-tests-from-repros",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    },
+    {
+      "slug": "has-contract-output-variants-snapped",
+      "firings": 1,
+      "firingsWithEdit": 1,
+      "verdicts": {
+        "genuineGain": 0,
+        "genuineNoop": 0,
+        "feignedNoop": 0
+      }
+    }
+  ]
+}

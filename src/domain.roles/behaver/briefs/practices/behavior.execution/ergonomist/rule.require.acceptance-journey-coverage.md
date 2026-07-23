@@ -69,6 +69,14 @@ jest.mock('stripe'); // forbidden
 
 real stripe api must be called in integration tests.
 
+### mask non-deterministic journey output, then snap it live
+
+a journey whose output holds a non-deterministic field (a live-model verdict, a timestamp, a network value) is NOT exempt from a live snapshot. MASK the volatile field — replace it with a stable placeholder before the snapshot (a sampled verdict → `<verdict>`, a timestamp → `<ts>`) — and snap the live journey with only those bytes neutralized. the deterministic shape around the field (the journey's steps, static output, error states) is still proven end-to-end against the real source.
+
+do NOT settle for a snapshot only at an injected or mocked layer and call the live journey covered. the injected layer proves the exact value against a stub; the masked live snapshot proves the real caller journey. exhaustive coverage wants the live journey snapped with the volatile bytes masked — not skipped, not pushed one layer down.
+
+note: a live external api (stripe, a database) is deterministic ENOUGH — the same call yields the same shape — so it needs no mask; the integration rule above holds as-is. a mask is only for a field that varies run-to-run for identical input (a sampled model verdict, a clock, a random id).
+
 ## .test structure
 
 ```ts

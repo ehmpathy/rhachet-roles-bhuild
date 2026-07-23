@@ -34,23 +34,30 @@ reviews:
 
     - slug: has-all-tests-passed
       say: |
-        double-check: did all tests pass? prove it.
+        double-check: did all tests pass? prove it with a VERBATIM terminal block.
 
-        **zero unproven claims.** you must cite the exact command and output.
+        **zero unproven claims. a claim is not proof — only pasted output is.**
 
-        for each test suite:
-        - what command did you run?
-        - what was the exit code?
-        - how many tests passed?
+        for EACH test suite you must paste, verbatim from your terminal:
+        - the exact command you ran
+        - the final summary line (counts)
+        - the exit code
 
-        example proof:
+        required proof shape — paste your real run, not this template:
         ```
         $ npm run test:unit
+        > 47 passed, 0 failed, 0 skipped
         > exit 0
-        > 47 tests passed
         ```
 
-        if you cannot cite the command and output, you did not prove it.
+        the articulation is REJECTED if it:
+        - says "all tests pass" without a pasted block
+        - paraphrases the result instead of a verbatim paste
+        - pastes a partial run (one suite) and claims the rest
+        - shows any non-zero exit, any failure, or any skip
+
+        if you did not paste the command AND its output AND the exit code, you did
+        not prove it — and an unproven pass is a feigned review.
 
         zero tolerance for extant failures:
         - "it was already broken" is not an excuse — fix it
@@ -58,9 +65,18 @@ reviews:
         - flaky tests must be stabilized, not tolerated
         - every failure is your responsibility now
 
+        zero tolerance for flakes — when a test flakes, deflake it:
+        - a test that passes on re-run is not "fine" — it is a live defect
+        - do NOT retry until green and move on; that hides the flake for the next run
+        - run the structured deflake workflow: rhx cicd.deflake init
+        - diagnose the root cause (race, shared state, clock, unmasked volatile output),
+          repair it, and prove the fix holds across re-runs
+        - a masked volatile output (see the snapshot rules) is the usual fix for an
+          output-driven flake
+
         zero tolerance for fake tests:
         - tests that always pass are fraud
-        - tests that mock the system under test prove nothingness
+        - tests that mock the system under test prove no behavior
         - tests must verify real behavior
 
         zero tolerance for credential excuses:
@@ -91,57 +107,6 @@ reviews:
         to "fix tests" via changed intent is not a fix — it is at worst
         malicious deception, at best reckless negligence. unacceptable.
 
-    - slug: has-journey-tests-from-repros
-      say: |
-        double-check: did you implement each journey sketched in repros?
-
-        look back at the repros artifact:
-        - $BEHAVIOR_DIR_REL/3.2.distill.repros.experience.*.md
-
-        for each journey test sketch in repros:
-        - is there a test file for it?
-        - does the test follow the BDD given/when/then structure?
-        - does each `when([tN])` step exist?
-
-        **if any journey was planned but not implemented, go back and add it NOW.**
-
-        this is buttonup. absent journey tests = incomplete implementation.
-        test coverage proves prod coverage. no test = no proof = not done.
-
-    - slug: has-contract-output-variants-snapped
-      say: |
-        double-check: does each public contract have EXHAUSTIVE snapshots?
-
-        **zero gaps in caller experience.** every contract must snap every output variant.
-
-        for each new or modified public contract:
-
-        | contract type | what to snap | required variants |
-        |---------------|--------------|-------------------|
-        | cli command | stdout + stderr | success, error, --help, edge cases |
-        | api endpoint | response body | 2xx, 4xx, 5xx, edge cases |
-        | sdk method | return value | success, error, edge cases |
-
-        checklist per contract:
-        - [ ] positive path (success) is snapped
-        - [ ] negative path (error) is snapped
-        - [ ] help/usage is snapped (for cli)
-        - [ ] edge cases are snapped (empty, invalid, boundary)
-        - [ ] snapshot shows actual output, not placeholder
-
-        why this matters:
-        - snapshots enable vibecheck in prs — reviewers see actual output without execute
-        - snapshots detect drift over time — output changes surface in diffs
-        - absent variants mean blind spots in review
-        - exhaustive coverage proves the contract works for all callers
-
-        **zero leniency.** if a contract lacks any variant, add the test case NOW.
-
-        if you find yourself about to say "this variant isn't worth a snapshot" — stop.
-        that is the variant that will break in prod. snap it.
-
-        this is buttonup. absent snapshots = absent proof. add them or fail this gate.
-
     - slug: has-snap-changes-rationalized
       say: |
         double-check: is every `.snap` file change intentional and justified?
@@ -167,44 +132,63 @@ reviews:
 
     - slug: has-critical-paths-frictionless
       say: |
-        double-check: are the critical paths frictionless in practice?
+        double-check: are the critical paths frictionless in practice? prove it with a
+        pasted runthrough, not a claim of "smooth".
 
-        look back at the repros artifact for critical paths:
+        "frictionless" is not a vibe — it is a concrete rubric. read the ergonomist
+        brief `def.frictionless` (in your booted ergonomist briefs) and score against it.
+
+        find the critical paths. if a repros artifact exists, take them from it:
         - $BEHAVIOR_DIR_REL/3.2.distill.repros.experience.*.md
+        if no repros artifact exists, take the critical paths straight from the
+        wish + vision (the primary usecases a human runs) — absence of repros is
+        NOT an excuse to skip this review.
 
-        for each critical path:
-        - run through it manually — is it smooth?
-        - are there unexpected errors?
-        - does it feel effortless to the user?
+        for EACH critical path, paste verbatim from your terminal:
+        - the exact command(s) you ran to walk the path
+        - the real output they produced
 
-        critical paths must "just work." if there's friction, fix it now.
+        then score that pasted output against every criterion in def.frictionless,
+        one line each.
+
+        the articulation is REJECTED if it:
+        - claims "smooth" or "frictionless" without a pasted runthrough
+        - paraphrases the outcome instead of a verbatim paste
+        - walks only one path and claims the rest
+        - skips the review because repros is absent
+
+        a claim of frictionless is not proof — a pasted session scored against
+        def.frictionless is. if the paste shows friction, fix it NOW; do not note it.
 
     - slug: has-ergonomics-validated
       say: |
-        double-check: does the actual input/output match what felt right at repros?
+        double-check: is the actual input/output ergonomic? prove it with a pasted
+        capture of the real i/o, not a claim of "matches".
 
-        compare the implemented input/output to what was sketched in repros:
-        - does the actual input match the planned input?
-        - does the actual output match the planned output?
-        - did the design change between repros and implementation?
+        "ergonomics" is not a vibe — it is a concrete rubric. read the ergonomist
+        brief `def.ergonomic` (in your booted ergonomist briefs) and score against it.
 
-        if the ergonomics drifted, either:
-        - update repros to reflect the better design, or
-        - fix the implementation to match the planned ergonomics
+        for EACH critical path, capture the real i/o verbatim from the built
+        artifact's run and paste it.
 
-    - slug: has-play-test-convention
-      say: |
-        double-check: are journey test files named correctly?
+        then choose ONE frame:
+        - if a repros artifact exists ($BEHAVIOR_DIR_REL/3.2.distill.repros.experience.*.md),
+          paste a two-column comparison — planned i/o (from repros) vs actual i/o
+          (captured) — and flag any drift between them.
+        - if no repros artifact exists, score the captured i/o directly against every
+          criterion in def.ergonomic, one line each. absence of repros is NOT an
+          excuse to skip this review.
 
-        journey tests should use `.play.test.ts` suffix:
-        - `feature.play.test.ts` — journey test
-        - `feature.play.integration.test.ts` — if repo requires integration runner
-        - `feature.play.acceptance.test.ts` — if repo requires acceptance runner
+        the articulation is REJECTED if it:
+        - claims "matches" or "ergonomic" without the pasted capture
+        - fills the actual/captured column with a paraphrase instead of real output
+        - skips the review because repros is absent
 
-        verify:
-        - are journey tests in the right location?
-        - do they have the `.play.` suffix?
-        - if not supported, is the fallback convention used?
+        if the ergonomics fall short, either:
+        - update repros to reflect the better design (when repros exists), or
+        - fix the implementation to meet the def.ergonomic rubric
+
+        drift you cannot see in a paste is drift you did not check.
 
     - slug: has-fixed-all-gaps
       say: |
@@ -225,10 +209,23 @@ reviews:
         - is there any item marked "todo" or "later"? (forbidden)
         - is there any coverage marked incomplete? (forbidden)
 
-        **if you detected it, you fixed it.** prove it with citations.
+        **if you detected it, you fixed it.** prove it — a bare "all fixed" is a feigned review.
+
+        this review is the closer. the articulation must ENUMERATE, not summarize.
+        for EACH gap any review above surfaced, write one line:
+
+        - the gap (which review found it, what it was)
+        - the fix (the exact file + what changed, or the commit/diff reference)
+
+        if a review above found no gap, say so per review — do not skip it silently.
+
+        the articulation is REJECTED if it:
+        - says "all gaps fixed" without the per-gap enumeration
+        - references a fix with no file/diff pointer
+        - leaves any surfaced gap unaddressed
 
         this is the final self-review. you are about to hand off to peer review.
-        prove that all items above were addressed — not deferred.
+        prove every item above was addressed — with a pointer — not deferred.
 
   peer:
     # --- level 1: cheap reviewers (run first, in parallel) ---
