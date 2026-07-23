@@ -7,10 +7,17 @@ import { ReflectOnReviewSelfWindow } from '@src/domain.objects/reflect.on.review
 
 import {
   getReflectBrainContext,
-  REFLECT_BRAIN_KEYRACK,
   REFLECT_BRAIN_SLUG,
 } from './getReflectBrainContext';
 import { imagineReviewSelfVerdict } from './imagineReviewSelfVerdict';
+
+/**
+ * .what = the keyrack location the real-brain test targets
+ * .why = tests must read the same env the CI firewall exports (`--env test`);
+ *        production stays on ehmpath/prep (the dev vault), so the test overrides
+ *        the keyrack env to test — mirroring the prod-prep / test-test split
+ */
+const TEST_BRAIN_KEYRACK = { owner: 'ehmpath', env: 'test' } as const;
 
 /**
  * .what = build a real brain context bound to the cheap judge atom
@@ -22,7 +29,8 @@ const getRealBrainContext = async () =>
   getReflectBrainContext(
     { brainSlug: REFLECT_BRAIN_SLUG },
     {
-      onFailureHint: `unlock the fireworks key: rhx keyrack unlock --owner ${REFLECT_BRAIN_KEYRACK.owner} --env ${REFLECT_BRAIN_KEYRACK.env}`,
+      keyrack: TEST_BRAIN_KEYRACK,
+      onFailureHint: `unlock the fireworks key: rhx keyrack unlock --owner ${TEST_BRAIN_KEYRACK.owner} --env ${TEST_BRAIN_KEYRACK.env}`,
     },
   );
 

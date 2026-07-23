@@ -30,18 +30,26 @@ export const REFLECT_BRAIN_KEYRACK = { owner: 'ehmpath', env: 'prep' } as const;
  *
  * @param brainSlug - the brain-atom choice slug to bind the context to
  * @param onFailureHint - the caller-specific fix hint for the loud failure
+ * @param keyrack - override the keyrack location of the credential; production
+ *        uses the default (ehmpath/prep), but the real-brain integration test
+ *        overrides to ehmpath/test so it resolves the CI firewall's `--env test`
+ *        export while local prod stays on the prep dev vault
  */
 export const getReflectBrainContext = async (
   input: { brainSlug: string },
-  options?: { onFailureHint?: string },
+  options?: {
+    onFailureHint?: string;
+    keyrack?: { owner: string; env: string };
+  },
 ): Promise<ContextBrain<BrainAtom>> => {
+  const keyrack = options?.keyrack ?? REFLECT_BRAIN_KEYRACK;
   try {
     // discovery mode: finds the installed rhachet-brains-* supplier for the slug;
     // creds point the supplier at the keyrack location of its api key
     const { genContextBrain } = await import('rhachet/brains');
     return await genContextBrain({
       choice: { atom: input.brainSlug },
-      creds: { keyrack: REFLECT_BRAIN_KEYRACK },
+      creds: { keyrack },
     });
   } catch (error) {
     throw new ConstraintError(
@@ -51,7 +59,7 @@ export const getReflectBrainContext = async (
         cause: error instanceof Error ? error : new Error(String(error)),
         hint:
           options?.onFailureHint ??
-          `confirm the rhachet-brains supplier is installed and its credential is on the keyrack (owner ${REFLECT_BRAIN_KEYRACK.owner})`,
+          `confirm the rhachet-brains supplier is installed and its credential is on the keyrack (owner ${keyrack.owner})`,
       },
     );
   }
