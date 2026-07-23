@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`genReflectionReport given: [case1] a corpus with two reviews across two routes when: [t0] rendered in apply mode then: it matches the markdown snapshot 1`] = `
+"# reflection: self-reviews
+
+- mode: apply
+- corpus: 2 route runs · 2 projects · 2 transcripts read · 0 skipped
+- reviews: 2 reviews promised
+
+## per-slug aggregate
+
+| slug | firings | edited | genuine-gain | genuine-noop | feigned-noop |
+|------|--------:|-------:|-------------:|-------------:|-------------:|
+| has-questioned-questions | 1 | 0 | 0 | 0 | 1 |
+| has-questioned-assumptions | 1 | 1 | 1 | 0 | 0 |
+
+## per-review detail
+
+| route | slug | stone | edits | read | bash | chars | verdict | reason |
+|-------|------|-------|------:|:----:|-----:|------:|---------|--------|
+| .behavior/a | has-questioned-questions | 1.vision | 0 | · | 1 | 320 | feigned-noop | the clone restated the questions and promised without triage |
+| .behavior/b | has-questioned-assumptions | 1.vision | 2 | ✓ | 1 | 320 | genuine-gain | the clone surfaced a real gap and edited the artifact after a read |
+"
+`;
+
+exports[`genReflectionReport given: [case1] a corpus with two reviews across two routes when: [t1] rendered in plan mode (windows carry no verdict) then: it matches the plan-mode markdown snapshot 1`] = `
+"# reflection: self-reviews
+
+- mode: plan
+- corpus: 2 route runs · 2 projects · 2 transcripts read · 0 skipped
+- reviews: 2 reviews promised
+
+## per-slug aggregate
+
+| slug | firings | edited | genuine-gain | genuine-noop | feigned-noop |
+|------|--------:|-------:|-------------:|-------------:|-------------:|
+| has-questioned-questions | 1 | 0 | 0 | 0 | 0 |
+| has-questioned-assumptions | 1 | 1 | 0 | 0 | 0 |
+
+## per-review detail
+
+| route | slug | stone | edits | read | bash | chars | verdict | reason |
+|-------|------|-------|------:|:----:|-----:|------:|---------|--------|
+| .behavior/a | has-questioned-questions | 1.vision | 0 | · | 1 | 320 | — | — |
+| .behavior/b | has-questioned-assumptions | 1.vision | 2 | ✓ | 1 | 320 | — | — |
+"
+`;
