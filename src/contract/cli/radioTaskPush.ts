@@ -151,7 +151,7 @@ const HELP_TEXT = `
       ├─ --exid        external id for updates
       ├─ --status      status: QUEUED, CLAIMED, DELIVERED
       ├─ --idem        idempotency: findsert or upsert
-      ├─ --auth        auth mode: "as-human" or "as-robot:ENV_VAR_NAME"
+      ├─ --auth        mode: as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd) | as-human
       └─ --help, -h    show this help
 `.trim();
 
@@ -180,11 +180,18 @@ export const cliRadioTaskPush = async (): Promise<void> => {
     },
   });
 
-  // check permission to push to this repo
-  const permission = await getOneRadioUsagePermissionDecision({
-    targetRepo: `${repo.owner}/${repo.name}`,
-    sourceCwd: process.cwd(),
-  });
+  // check permission to push to this repo.
+  // honor $HOME for the global-meter lookup (standard CLI convention): the op
+  // otherwise falls back to os.homedir(), which reads the OS passwd entry and so
+  // cannot be isolated in-process. a threaded process.env.HOME keeps the gate
+  // deterministic and lets callers (and tests) scope the radio config cleanly.
+  const permission = await getOneRadioUsagePermissionDecision(
+    {
+      targetRepo: `${repo.owner}/${repo.name}`,
+      sourceCwd: process.cwd(),
+    },
+    { homeDir: process.env.HOME },
+  );
   if (!permission.allowed) {
     const hintCommand = asPermissionHintCommand({
       level: permission.level,

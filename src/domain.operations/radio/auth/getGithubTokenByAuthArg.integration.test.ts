@@ -102,4 +102,104 @@ describe('getGithubTokenByAuthArg.integration', () => {
       });
     },
   );
+
+  // ────────────────────────────────────────────────────────────────
+  // the wish's PRIMARY behavior at the shared-auth contract: a default
+  // keyrack failure (locked / absent / blocked) surfaces the graceful ✋
+  // nudge through getGithubTokenByAuthArg — the one entry BOTH the pull and
+  // push CLIs funnel through. real keyrack holds a valid beaver token, so a
+  // failure cannot be forced with the real vault; a fake keyrackGet is
+  // injected via the context seam (the same dependency-injection pattern the
+  // unit tier uses — never a module mock). a no-op fake shx stands in for the
+  // auto-unlock command so no real `rhx keyrack unlock` runs. the rendered
+  // ConstraintError (✋ + status-specific fix) is snapshotted so reviewers
+  // vibecheck the exact caller-faced nudge for each status.
+  // ────────────────────────────────────────────────────────────────
+  const fakeShxNoop = async () => ({ stdout: '', stderr: '' });
+
+  given('[case4] via-keyrack fails: locked (sealed after auto-unlock)', () => {
+    when('[t0] keyrack stays locked', () => {
+      then('surfaces the ✋ nudge with the keyrack-unlock fix', async () => {
+        const keyrackGet = jest.fn();
+        keyrackGet.mockResolvedValue({
+          attempt: {
+            status: 'locked',
+            slug: 'ehmpath.prep.EHMPATH_BEAVER_GITHUB_TOKEN',
+          },
+          emit: { stdout: '🔒 locked: credential is locked' },
+        });
+
+        const error = await getError(
+          getGithubTokenByAuthArg(
+            { auth: 'as-robot:via-keyrack(ehmpath)' },
+            { env: {}, shx: fakeShxNoop, keyrackGet },
+          ),
+        );
+
+        expect(error).toBeInstanceOf(ConstraintError);
+        expect(error.message).toContain('--auth as-human');
+        expect(error.message).toContain('rhx keyrack unlock');
+        expect(error.message).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case5] via-keyrack fails: absent (never stored)', () => {
+    when('[t0] keyrack returns absent', () => {
+      then('surfaces the ✋ nudge with the keyrack-set fix', async () => {
+        const keyrackGet = jest.fn();
+        keyrackGet.mockResolvedValue({
+          attempt: {
+            status: 'absent',
+            slug: 'ehmpath.prep.EHMPATH_BEAVER_GITHUB_TOKEN',
+          },
+          emit: { stdout: '❌ absent: does not exist' },
+        });
+
+        const error = await getError(
+          getGithubTokenByAuthArg(
+            { auth: 'as-robot:via-keyrack(ehmpath)' },
+            { env: {}, shx: fakeShxNoop, keyrackGet },
+          ),
+        );
+
+        expect(error).toBeInstanceOf(ConstraintError);
+        expect(error.message).toContain('--auth as-human');
+        expect(error.message).toContain('rhx keyrack set');
+        expect(error.message).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case6] via-keyrack fails: blocked (firewall/policy)', () => {
+    when('[t0] keyrack returns blocked', () => {
+      then(
+        'surfaces the ✋ nudge with the keyrack-status inspect',
+        async () => {
+          const keyrackGet = jest.fn();
+          keyrackGet.mockResolvedValue({
+            attempt: {
+              status: 'blocked',
+              slug: 'ehmpath.prep.EHMPATH_BEAVER_GITHUB_TOKEN',
+            },
+            emit: {
+              stdout: '🚫 blocked: credential blocked by mechanism firewall',
+            },
+          });
+
+          const error = await getError(
+            getGithubTokenByAuthArg(
+              { auth: 'as-robot:via-keyrack(ehmpath)' },
+              { env: {}, shx: fakeShxNoop, keyrackGet },
+            ),
+          );
+
+          expect(error).toBeInstanceOf(ConstraintError);
+          expect(error.message).toContain('--auth as-human');
+          expect(error.message).toContain('rhx keyrack status');
+          expect(error.message).toMatchSnapshot();
+        },
+      );
+    });
+  });
 });

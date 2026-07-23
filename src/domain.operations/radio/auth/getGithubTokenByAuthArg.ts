@@ -1,5 +1,7 @@
 import { ConstraintError } from 'helpful-errors';
+import type { keyrack } from 'rhachet/keyrack';
 
+import { asExecErrorMessage } from '../../../infra/shell/asExecErrorMessage';
 import { asGithubAuthMode } from './asGithubAuthMode';
 import { genAuthFromKeyrack } from './genAuthFromKeyrack';
 
@@ -22,7 +24,7 @@ import { genAuthFromKeyrack } from './genAuthFromKeyrack';
  *   - ConstraintError when as-robot:shx(...) command fails or has no output
  *   - ConstraintError when as-human in test environment (tests must use explicit tokens)
  *   - ConstraintError when the --auth mode is unrecognized
- *   - (via-keyrack delegates to genAuthFromKeyrack: ConstraintError when absent, MalfunctionError when set-but-ungrantable)
+ *   - (via-keyrack delegates to genAuthFromKeyrack: ConstraintError on any non-granted status — absent, locked, blocked)
  *
  * .note = every caller-fix failure throws ConstraintError (renders ✋), so the
  *   whole auth flow speaks one visual language: ✋ = fix your config, 💥 = server fault.
@@ -32,6 +34,10 @@ export const getGithubTokenByAuthArg = async (
   context: {
     env: NodeJS.ProcessEnv;
     shx: (command: string) => Promise<{ stdout: string; stderr: string }>;
+    // optional keyrack seam — forwarded to genAuthFromKeyrack. prod leaves it
+    // unset (the real keyrack.get is used); tests inject a fake to exercise the
+    // keyrack-failure nudge deterministically without a real vault.
+    keyrackGet?: typeof keyrack.get;
   },
 ): Promise<
   { token: string; role: 'as-robot' } | { token: null; role: 'as-human' }
@@ -47,6 +53,10 @@ export const getGithubTokenByAuthArg = async (
   const mode = asGithubAuthMode({ auth });
 
   // via-keyrack — token from keyrack (auto-unlock handled downstream)
+  // .note = only `owner` is caller-configurable (via `--auth via-keyrack(owner)`).
+  //   `env` and `key` are intentionally fixed: the beaver robot token lives at one
+  //   well-known coordinate (env=prep, key=EHMPATH_BEAVER_GITHUB_TOKEN) across all
+  //   owners, so a knob for them would invite misconfiguration for no usecase.
   if (mode.kind === 'via-keyrack') {
     const { token } = await genAuthFromKeyrack(
       {
@@ -54,7 +64,7 @@ export const getGithubTokenByAuthArg = async (
         env: 'prep',
         key: 'EHMPATH_BEAVER_GITHUB_TOKEN',
       },
-      { shx: context.shx },
+      { shx: context.shx, keyrackGet: context.keyrackGet },
     );
     return { token, role: 'as-robot' };
   }
@@ -67,12 +77,8 @@ export const getGithubTokenByAuthArg = async (
     // execAsync rejection is a cross-realm Error, so `instanceof` would miss it
     // and leak the raw "Command failed" bubble the reviewer flagged.
     const result = await context.shx(mode.command).catch((error: unknown) => {
-      // read `.message` directly (not `instanceof Error`, which misses the
-      // cross-realm exec Error and would fall back to a noisy `Error: ...` cast)
-      const rawCause =
-        typeof (error as { message?: unknown } | null)?.message === 'string'
-          ? (error as { message: string }).message
-          : String(error);
+      // decode the cross-realm exec cause one way (shared infra transformer)
+      const rawCause = asExecErrorMessage({ error });
       // strip the exec library's own `Command failed:` prefix so the rendered
       // message reads `command failed: exit 1`, not `command failed: Command failed: exit 1`
       const cause = rawCause.trim().replace(/^Command failed:\s*/i, '');

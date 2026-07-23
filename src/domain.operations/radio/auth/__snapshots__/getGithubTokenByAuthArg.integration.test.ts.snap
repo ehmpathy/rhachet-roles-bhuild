@@ -17,3 +17,43 @@ exports[`getGithubTokenByAuthArg.integration given: [case2] --auth as-robot:shx(
   "stderr": ""
 }"
 `;
+
+exports[`getGithubTokenByAuthArg.integration given: [case4] via-keyrack fails: locked (sealed after auto-unlock) when: [t0] keyrack stays locked then: surfaces the ✋ nudge with the keyrack-unlock fix 1`] = `
+"✋ ConstraintError: github auth via keyrack failed: EHMPATH_BEAVER_GITHUB_TOKEN (status: locked)
+  • unblock now — re-run as human: --auth as-human
+  • or unlock the robot token: rhx keyrack unlock --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
+
+{
+  "status": "locked",
+  "owner": "ehmpath",
+  "env": "prep",
+  "key": "EHMPATH_BEAVER_GITHUB_TOKEN",
+  "keyrack": "🔒 locked: credential is locked"
+}"
+`;
+
+exports[`getGithubTokenByAuthArg.integration given: [case5] via-keyrack fails: absent (never stored) when: [t0] keyrack returns absent then: surfaces the ✋ nudge with the keyrack-set fix 1`] = `
+"✋ ConstraintError: github auth via keyrack failed: EHMPATH_BEAVER_GITHUB_TOKEN (status: absent)
+  • unblock now — re-run as human: --auth as-human
+  • or set the robot token: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
+
+{
+  "owner": "ehmpath",
+  "env": "prep",
+  "key": "EHMPATH_BEAVER_GITHUB_TOKEN"
+}"
+`;
+
+exports[`getGithubTokenByAuthArg.integration given: [case6] via-keyrack fails: blocked (firewall/policy) when: [t0] keyrack returns blocked then: surfaces the ✋ nudge with the keyrack-status inspect 1`] = `
+"✋ ConstraintError: github auth via keyrack failed: EHMPATH_BEAVER_GITHUB_TOKEN (status: blocked)
+  • unblock now — re-run as human: --auth as-human
+  • or inspect the block: rhx keyrack status --owner ehmpath
+
+{
+  "status": "blocked",
+  "owner": "ehmpath",
+  "env": "prep",
+  "key": "EHMPATH_BEAVER_GITHUB_TOKEN",
+  "keyrack": "🚫 blocked: credential blocked by mechanism firewall"
+}"
+`;

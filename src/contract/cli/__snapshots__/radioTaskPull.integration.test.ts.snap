@@ -64,15 +64,15 @@ exports[`radio.task.pull.integration — CLI contract given: [case6] --help (the
    │  └─ radio.task.pull --via gh.issues --from @this --list --status QUEUED
    │
    └─ options
-      ├─ --via       channel: gh.issues or os.fileops (required)
-      ├─ --from      source: @this (current repo) or owner/repo (required)
-      ├─ --list      list all tasks
-      ├─ --exid      fetch specific task by external id
-      ├─ --title     fetch specific task by title
-      ├─ --status    filter by status: QUEUED, CLAIMED, DELIVERED
-      ├─ --limit     max number of tasks to return
-      ├─ --auth      mode: as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd) | as-human
-      └─ --help, -h  show this help"
+      ├─ --via         channel: gh.issues or os.fileops (required)
+      ├─ --from        source: @this (current repo) or owner/repo (required)
+      ├─ --list        list all tasks
+      ├─ --exid        fetch specific task by external id
+      ├─ --title       fetch specific task by title
+      ├─ --status      filter by status: QUEUED, CLAIMED, DELIVERED
+      ├─ --limit       max number of tasks to return
+      ├─ --auth        mode: as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd) | as-human
+      └─ --help, -h    show this help"
 `;
 
 exports[`radio.task.pull.integration — CLI contract given: [case7] --via os.fileops --list with a seeded local task (the positive success contract) when: [t0] the pull skill runs the real filesystem read then: prints the rendered task list a human sees 1`] = `

@@ -1,0 +1,55 @@
+{"stone":"1.vision","status":"blocked","blocker":"review.self","reason":"review.self required: has-grounded-in-reality"}
+{"stone":"1.vision","status":"blocked","blocker":"approval","reason":"wait for human approval"}
+{"stone":"1.vision","status":"approved"}
+{"stone":"1.vision","status":"passed"}
+{"stone":"1.vision","status":"passed"}
+{"stone":"5.1.execution.from_vision","status":"blocked","blocker":"review.self","reason":"review.self required: has-pruned-yagni"}
+{"stone":"5.1.execution.from_vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (3 > 0)"}
+{"stone":"5.1.execution.from_vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (4 > 0)"}
+{"stone":"5.1.execution.from_vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (2 > 0)"}
+{"stone":"5.1.execution.from_vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (2 > 0)"}
+{"stone":"5.1.execution.from_vision","status":"blocked","blocker":"review.peer","reason":"no review files found for hash c43dfb4f"}
+{"stone":"5.1.execution.from_vision","status":"blocked","blocker":"review.peer","reason":"no review files found for hash b3b161d3"}
+{"stone":"5.1.execution.from_vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (2 > 0)"}
+{"stone":"5.1.execution.from_vision","status":"blocked","blocker":"review.peer.exhausted","reason":"peer reviewer budget exhausted: enroll-impl-behavior-intent, enroll-impl-arch-defects"}
+{"stone":"5.1.execution.from_vision","status":"blocked","blocker":"review.peer.exhausted","reason":"peer reviewer budget exhausted: enroll-impl-behavior-intent, enroll-impl-arch-defects"}
+{"stone":"5.1.execution.from_vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (3 > 0)"}
+{"stone":"5.1.execution.from_vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (1 > 0)"}
+{"stone":"5.1.execution.from_vision","status":"blocked"}
+{"stone":"5.1.execution.from_vision","status":"passed"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.self","reason":"review.self required: has-behavior-coverage"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.self","reason":"review.self required: has-zero-test-skips"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.self","reason":"review.self required: has-preserved-test-intentions"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.self","reason":"review.self required: has-preserved-test-intentions"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.self","reason":"review.self required: has-preserved-test-intentions"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.self","reason":"review.self required: has-journey-tests-from-repros"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.self","reason":"review.self required: has-journey-tests-from-repros"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.self","reason":"review.self required: has-journey-tests-from-repros"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.self","reason":"review.self required: has-contract-output-variants-snapped"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.self","reason":"review.self required: has-contract-output-variants-snapped"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.self","reason":"review.self required: has-contract-output-variants-snapped"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.self","reason":"review.self required: has-contract-output-variants-snapped"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.self","reason":"review.self required: has-contract-output-variants-snapped"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.self","reason":"review.self required: has-snap-changes-rationalized"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.self","reason":"review.self required: has-snap-changes-rationalized"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.self","reason":"review.self required: has-critical-paths-frictionless"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.self","reason":"review.self required: has-critical-paths-frictionless"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.self","reason":"review.self required: has-ergonomics-validated"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.self","reason":"review.self required: has-ergonomics-validated"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.self","reason":"review.self required: has-play-test-convention"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.self","reason":"review.self required: has-play-test-convention"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.self","reason":"review.self required: has-fixed-all-gaps"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.self","reason":"review.self required: has-fixed-all-gaps"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (7 > 0)"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (6 > 0)"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.peer.uncontemplated","reason":"peer review awaits contemplation: enroll-verif-snapshot-blemishes"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (1 > 0)"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (1 > 0)"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (1 > 0)"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.peer","reason":"no review files found for hash 4e160e34"}
+{"stone":"5.3.verification","status":"malfunction"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (7 > 0)"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (1 > 0)"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (2 > 0)"}
+{"stone":"5.3.verification","status":"blocked","blocker":"review.peer.exhausted","reason":"peer reviewer budget exhausted: ergo-contract-snapshots, ergo-acceptance-journey-coverage"}
+{"stone":"5.3.verification","status":"passed"}

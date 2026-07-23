@@ -258,13 +258,16 @@ describe('radio.task.pull.integration — CLI contract', () => {
     },
   );
 
-  // .note = the via-keyrack "key is not set" guidance (the wish's primary
+  // .note = the via-keyrack keyrack-failure guidance (the wish's primary
   //   behavior) is authoritatively snapshotted at the layer that produces it —
-  //   genAuthFromKeyrack.test case4 (two-path, with --auth as-human) + case6
-  //   (one-path, test env) + genAuthFromKeyrack.integration case2 (real absent
-  //   via a bogus key name). getGithubTokenByAuthArg's via-keyrack branch
-  //   forwards that ConstraintError verbatim (no transform), so the CLI output
-  //   is byte-identical to those locks. a CLI-level absent case is not
+  //   the message shape lives in getKeyrackAuthFailureMessage.test (unit: locked,
+  //   absent, blocked variants, each with a --auth as-human + rhx keyrack set
+  //   assertion + snapshot); the throw contract lives in genAuthFromKeyrack.test
+  //   case4 (absent) + case5 (blocked), which assert a ConstraintError with that
+  //   message + metadata; and genAuthFromKeyrack.integration exercises the real
+  //   absent path via a bogus key name. getGithubTokenByAuthArg's via-keyrack
+  //   branch forwards that ConstraintError verbatim (no transform), so the CLI
+  //   output is byte-identical to those locks. a CLI-level absent case is not
   //   deterministic: the CLI hardcodes a *present* key (EHMPATH_BEAVER_GITHUB_TOKEN,
   //   env prep), so via-keyrack(ehmpath) grants successfully, and a bogus owner
   //   yields a host-manifest MalfunctionError rather than the clean absent path.

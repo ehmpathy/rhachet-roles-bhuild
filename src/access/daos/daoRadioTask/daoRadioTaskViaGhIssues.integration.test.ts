@@ -1,6 +1,6 @@
-import { BadRequestError } from 'helpful-errors';
+import { BadRequestError, ConstraintError } from 'helpful-errors';
 import type { IsoDateStamp } from 'iso-time';
-import { given, then, useBeforeAll, when } from 'test-fns';
+import { getError, given, then, useBeforeAll, when } from 'test-fns';
 
 import type {
   ContextGithubAuth,
@@ -224,6 +224,90 @@ describe.skip('daoRadioTaskViaGhIssues', () => {
         for (const task of result) {
           expect(task).toBeInstanceOf(RadioTask);
         }
+      });
+    });
+  });
+});
+
+/**
+ * .what = integration test for the github auth failure nudge (the 401 path)
+ * .why = the vision's PRIMARY case: a rejected robot token must land on a
+ *        graceful ✋ ConstraintError that names the `--auth as-human` unblock,
+ *        NOT a raw `Command failed` bubble.
+ *
+ * .note = this suite is NOT skipped — it needs an *invalid* token, which is
+ *   exactly what triggers the 401. so it requires no real credential, only a
+ *   real gh cli + network to verify the contract against the live github api.
+ *
+ * .usage:
+ *   npm run test:integration -- daoRadioTaskViaGhIssues
+ */
+describe('daoRadioTaskViaGhIssues — github auth failure nudge', () => {
+  /**
+   * .what = context with a deliberately bogus as-robot token
+   * .why = a bad token forces github to answer 401 (the case under test)
+   */
+  const getContextWithBogusToken = (): ContextGithubAuth & ContextGitRepo => ({
+    github: {
+      auth: {
+        // an invalid token — github will reject this with HTTP 401
+        token: 'ghp_bogusInvalidToken0000000000000000000000',
+        role: 'as-robot',
+      },
+    },
+    git: { repo: GITHUB_DEMO_REPO },
+  });
+
+  given('[case1] as-robot token is rejected by github (401)', () => {
+    when('[t0] a gh-backed read is attempted with the bad token', () => {
+      // run the gh call ONCE, capture the thrown error into a holder.
+      // .note = a holder object is used (not the useThen/useBeforeAll proxy
+      //   directly) so `instanceof`, `.message`, and `.metadata` reach the
+      //   real error, not the deferred proxy.
+      const scene = useBeforeAll(async () => {
+        const error = await getError(
+          daoRadioTaskViaGhIssues.get.one.byPrimary(
+            { exid: '1' },
+            getContextWithBogusToken(),
+          ),
+        );
+        return { error };
+      });
+
+      then('it is a ConstraintError (caller-fixable ✋, not a 💥)', () => {
+        expect(scene.error).toBeInstanceOf(ConstraintError);
+      });
+
+      then(
+        'it carries exit code 2 (✋), not 1 (💥) — the reclassification',
+        () => {
+          // the vision's central claim: a rejected robot token is caller-fixable,
+          // so it must exit 2 (ConstraintError), never 1 (MalfunctionError). this
+          // locks the reclassification against a silent regression to 💥.
+          const code = (scene.error as ConstraintError).code as {
+            exit?: number;
+          };
+          expect(code.exit).toEqual(2);
+        },
+      );
+
+      then('it names the as-human unblock as the primary move', () => {
+        expect((scene.error as Error).message).toContain('--auth as-human');
+      });
+
+      then('it does NOT leak the raw `Command failed` bubble', () => {
+        expect((scene.error as Error).message).not.toContain('Command failed');
+      });
+
+      then('it preserves the raw cause in metadata for debug', () => {
+        const metadata = (scene.error as ConstraintError).metadata as {
+          role?: string;
+          detail?: string;
+        };
+        expect(metadata.role).toEqual('as-robot');
+        // the raw gh cause survives for debug (demoted out of the headline)
+        expect(typeof metadata.detail).toEqual('string');
+        expect((metadata.detail ?? '').length).toBeGreaterThan(0);
       });
     });
   });

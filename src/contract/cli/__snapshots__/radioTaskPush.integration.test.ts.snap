@@ -17,7 +17,7 @@ exports[`radio.task.push.integration — CLI contract given: [case1] --help (the
       ├─ --exid        external id for updates
       ├─ --status      status: QUEUED, CLAIMED, DELIVERED
       ├─ --idem        idempotency: findsert or upsert
-      ├─ --auth        auth mode: "as-human" or "as-robot:ENV_VAR_NAME"
+      ├─ --auth        mode: as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd) | as-human
       └─ --help, -h    show this help"
 `;
 
@@ -66,6 +66,59 @@ exports[`radio.task.push.integration — CLI contract given: [case5] -h (the sho
       ├─ --exid        external id for updates
       ├─ --status      status: QUEUED, CLAIMED, DELIVERED
       ├─ --idem        idempotency: findsert or upsert
-      ├─ --auth        auth mode: "as-human" or "as-robot:ENV_VAR_NAME"
+      ├─ --auth        mode: as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd) | as-human
       └─ --help, -h    show this help"
+`;
+
+exports[`radio.task.push.integration — CLI contract given: [case6] --auth as-robot:env(MY_TOKEN) with the var unset when: [t0] the push skill runs then: fails with a ConstraintError that names the var + fix 1`] = `
+"✋ ConstraintError: --auth as-robot:env(MY_TOKEN) specified but MY_TOKEN is not set
+
+{
+  "envVar": "MY_TOKEN",
+  "hint": "set MY_TOKEN in the environment"
+}"
+`;
+
+exports[`radio.task.push.integration — CLI contract given: [case7] --auth as-human inside the test environment when: [t0] the push skill runs then: fails with a ConstraintError that names the robot alternatives 1`] = `
+"✋ ConstraintError: --auth as-human is forbidden in test environment. use --auth as-robot:env(TOKEN_VAR) or --auth as-robot:shx(command) instead.
+
+{
+  "auth": "as-human"
+}"
+`;
+
+exports[`radio.task.push.integration — CLI contract given: [case8] --auth as-robot:shx(command) that exits non-zero when: [t0] the push skill runs the real shell command then: fails with a ConstraintError that wraps the shell failure 1`] = `
+"✋ ConstraintError: --auth as-robot:shx(...) command failed: exit 1
+
+{
+  "command": "exit 1",
+  "hint": "check the command runs and prints a token to stdout"
+}"
+`;
+
+exports[`radio.task.push.integration — CLI contract given: [case9] --auth as-robot:shx(command) that prints no output when: [t0] the push skill runs the real shell command then: fails with a ConstraintError that names the empty output 1`] = `
+"✋ ConstraintError: --auth as-robot:shx(...) command produced no output. stderr: (empty)
+
+{
+  "command": "printf \\"\\"",
+  "stderr": ""
+}"
+`;
+
+exports[`radio.task.push.integration — CLI contract given: [case10] --auth with an unrecognized mode when: [t0] the push skill runs then: fails with a ConstraintError that lists every supported mode 1`] = `
+"✋ ConstraintError: unrecognized --auth mode: some-unknown-mode
+
+supported modes:
+├─ as-robot:via-keyrack(owner)
+│     use token from keyrack (default owner: ehmpath)
+├─ as-robot:shx(command)
+│     execute shell command to retrieve token
+├─ as-robot:env(VAR)
+│     use token from environment variable
+└─ as-human
+      use gh cli logged-in session (interactive)
+
+{
+  "auth": "some-unknown-mode"
+}"
 `;
