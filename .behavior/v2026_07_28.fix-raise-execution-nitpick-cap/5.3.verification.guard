@@ -139,7 +139,7 @@ reviews:
         brief `def.frictionless` (in your booted ergonomist briefs) and score against it.
 
         find the critical paths. if a repros artifact exists, take them from it:
-        - $BEHAVIOR_DIR_REL/3.2.distill.repros.experience.*.md
+        - .behavior/v2026_07_28.fix-raise-execution-nitpick-cap/3.2.distill.repros.experience.*.md
         if no repros artifact exists, take the critical paths straight from the
         wish + vision (the primary usecases a human runs) — absence of repros is
         NOT an excuse to skip this review.
@@ -172,7 +172,7 @@ reviews:
         artifact's run and paste it.
 
         then choose ONE frame:
-        - if a repros artifact exists ($BEHAVIOR_DIR_REL/3.2.distill.repros.experience.*.md),
+        - if a repros artifact exists (.behavior/v2026_07_28.fix-raise-execution-nitpick-cap/3.2.distill.repros.experience.*.md),
           paste a two-column comparison — planned i/o (from repros) vs actual i/o
           (captured) — and flag any drift between them.
         - if no repros artifact exists, score the captured i/o directly against every
@@ -289,4 +289,4 @@ reviews:
 
 judges:
   # enforce peer reviews pass with zero blockers
-  - $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 7
+  - $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 0
