@@ -1,13 +1,13 @@
 # provenance = self-referential source template; enables `rhx route.guard.upgrade` idempotency
 provenance:
-  uri: node_modules/rhachet-roles-bhuild/dist/domain.operations/behavior/init/templates/5.1.execution.phase0_to_phaseN.guard
+  uri: node_modules/rhachet-roles-bhuild/dist/domain.operations/behavior/init/templates/5.1.execution.from_vision.guard
 
-# guard for execution stone
+# guard for execution stone (from vision - nano size)
 # includes standardized self-review frame
 
 artifacts:
   # track execution progress
-  - "$route/5.1.execution.phase0_to_phaseN.yield.md"
+  - "$route/5.1.execution.from_vision.yield.md"
   # track actual implementation in src/
   - "src/**/*"
 
@@ -53,11 +53,11 @@ reviews:
         unless the ask was to refactor, be consistent with extant mechanisms.
 
         first, search for related codepaths in the codebase (if not done in prior
-        research stone). look for extant utilities, helpers, and patterns.
+        research stone). look for extant utilities and patterns.
 
         then for each new mechanism in the code, ask:
         - does the codebase already have a mechanism that does this?
-        - do we duplicate extant utilities, helpers, or patterns?
+        - do we duplicate extant utilities or patterns?
         - could we reuse an extant component instead of a new one?
 
         if a new mechanism duplicates extant functionality:
@@ -93,11 +93,9 @@ reviews:
         last changes. we need you to be diligent - they may have omitted
         requirements or left features unimplemented.
 
-        go through the behavior's vision, criteria, and blueprint, then check
+        go through the behavior's vision and wish, then check
         each requirement against the code line by line:
         - is every requirement from the vision addressed?
-        - is every criterion from the criteria satisfied?
-        - is every component from the blueprint implemented?
         - did the junior skip or forget any part of the spec?
 
         fix all gaps before you continue.
@@ -112,10 +110,8 @@ reviews:
         from the spec or implemented items incorrectly.
 
         go through each file changed in this pr, line by line, and check
-        against the behavior's vision, criteria, and blueprint:
+        against the behavior's vision:
         - does the implementation match what the vision describes?
-        - does the implementation satisfy the criteria correctly?
-        - does the implementation follow the blueprint accurately?
         - did the junior misinterpret or deviate from the spec?
 
         fix all gaps before you continue.
@@ -223,4 +219,4 @@ reviews:
       level: 3
 
 judges:
-  - $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 7
+  - $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3

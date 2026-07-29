@@ -586,5 +586,5 @@ reviews:
       level: 3
 
 judges:
-  - $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
+  - $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 7
   - $rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route

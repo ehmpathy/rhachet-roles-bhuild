@@ -542,7 +542,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
       │       ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r012._.given.by_peer.enroll-blueprint-behavior-intent.md
       │       └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r012._.taken.by_self.enroll-blueprint-behavior-intent.md
       └─ judges
-          ├─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
+          ├─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 7
           │   └─ finished [time] ✓
           └─ j2: $rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
               ├─ finished [time] ✗
@@ -753,7 +753,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │  │       ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r012._.given.by_peer.enroll-blueprint-behavior-intent.md
    │  │       └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r012._.taken.by_self.enroll-blueprint-behavior-intent.md
    │  └─ judges
-   │      ├─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
+   │      ├─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 7
    │      │   └─ finished [time] ✓
    │      └─ j2: $rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
    │          └─ finished [time] ✓
@@ -1027,7 +1027,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │  │       ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r011._.given.by_peer.enroll-impl-arch-defects.md
    │  │       └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r011._.taken.by_self.enroll-impl-arch-defects.md
    │  └─ judges
-   │      └─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 3
+   │      └─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 7
    │          └─ finished [time] ✓
    │
    └─ the way continues, run
