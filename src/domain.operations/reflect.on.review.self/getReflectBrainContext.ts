@@ -25,10 +25,7 @@ export const REFLECT_BRAIN_KEYRACK = { owner: 'ehmpath', env: 'prep' } as const;
  *
  * .note = communicator grain — a raw i/o boundary to the rhachet brain supplier;
  *         an absent supplier, package, or credential surfaces as a hinted
- *         ConstraintError, never a raw stack trace. the fireworks brain atoms are
- *         registered explicitly (not via rhachet's runtime package discovery, which
- *         loads supplier packages through a native dynamic import() that jest cannot
- *         run — so under jest discovery silently finds zero brains); the imports stay
+ *         ConstraintError, never a raw stack trace. the `rhachet/brains` import is
  *         dynamic so plan mode (which never calls this) needs no brain at all.
  *
  * @param brainSlug - the brain-atom choice slug to bind the context to
@@ -47,19 +44,11 @@ export const getReflectBrainContext = async (
 ): Promise<ContextBrain<BrainAtom>> => {
   const keyrack = options?.keyrack ?? REFLECT_BRAIN_KEYRACK;
   try {
-    // explicit registration: register the fireworks brain atoms directly rather than
-    // rely on rhachet's runtime package discovery. discovery loads supplier packages
-    // via a native dynamic import() that jest cannot run, so under jest it silently
-    // finds zero brains; an explicit `brains` input puts genContextBrain in explicit
-    // mode, which skips discovery entirely and works in cli, jest, and ci alike.
-    // creds point the supplier at the keyrack location of its api key.
+    // discovery mode: finds the installed rhachet-brains-* supplier for the slug;
+    // creds point the supplier at the keyrack location of its api key
     const { genContextBrain } = await import('rhachet/brains');
-    const { getBrainAtomsByFireworksAI } = await import(
-      'rhachet-brains-fireworksai'
-    );
     return await genContextBrain({
       choice: { atom: input.brainSlug },
-      brains: { atoms: getBrainAtomsByFireworksAI() },
       creds: { keyrack },
     });
   } catch (error) {

@@ -1,3 +1,5 @@
+import { genContextBrain } from 'rhachet/brains';
+import { getBrainAtomsByFireworksAI } from 'rhachet-brains-fireworksai';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import { ReflectOnReviewSelfExperience } from '@src/domain.objects/reflect.on.review.self/ReflectOnReviewSelfExperience';
@@ -5,10 +7,7 @@ import { ReflectOnReviewSelfFileTouch } from '@src/domain.objects/reflect.on.rev
 import { ReflectOnReviewSelfSignals } from '@src/domain.objects/reflect.on.review.self/ReflectOnReviewSelfSignals';
 import { ReflectOnReviewSelfWindow } from '@src/domain.objects/reflect.on.review.self/ReflectOnReviewSelfWindow';
 
-import {
-  getReflectBrainContext,
-  REFLECT_BRAIN_SLUG,
-} from './getReflectBrainContext';
+import { REFLECT_BRAIN_SLUG } from './getReflectBrainContext';
 import { imagineReviewSelfVerdict } from './imagineReviewSelfVerdict';
 
 /**
@@ -20,19 +19,24 @@ import { imagineReviewSelfVerdict } from './imagineReviewSelfVerdict';
 const TEST_BRAIN_KEYRACK = { owner: 'ehmpath', env: 'test' } as const;
 
 /**
- * .what = build a real brain context bound to the cheap judge atom
- * .why = this integration test exercises the true fireworks call — the external
- *        contract — not a fake judge; it consumes the same shared communicator
- *        the CLI uses, so production and test never re-derive the brain setup
+ * .what = build a real brain context bound to the cheap judge atom, via explicit
+ *         atom registration
+ * .why = the production communicator getReflectBrainContext reaches the brain through
+ *        rhachet's runtime package discovery, which loads supplier packages via a
+ *        native dynamic import() that jest cannot run — so a discovery call under jest
+ *        finds zero brains. this test registers the fireworks atoms explicitly (a
+ *        static import resolves to a require under jest) and hands them to
+ *        genContextBrain's explicit mode, which skips discovery. it still makes the
+ *        same real fireworks call the production path makes, so the external contract
+ *        is exercised for real. mirrors rhachet-roles-bhrain's genTestBrainContext —
+ *        the established pattern for a real-brain jest test.
  */
-const getRealBrainContext = async () =>
-  getReflectBrainContext(
-    { brainSlug: REFLECT_BRAIN_SLUG },
-    {
-      keyrack: TEST_BRAIN_KEYRACK,
-      onFailureHint: `unlock the fireworks key: rhx keyrack unlock --owner ${TEST_BRAIN_KEYRACK.owner} --env ${TEST_BRAIN_KEYRACK.env}`,
-    },
-  );
+const getRealBrainContext = () =>
+  genContextBrain({
+    brains: { atoms: getBrainAtomsByFireworksAI() },
+    choice: { atom: REFLECT_BRAIN_SLUG },
+    creds: { keyrack: TEST_BRAIN_KEYRACK },
+  });
 
 /**
  * .what = a window with a strong genuine-gain experience — a substantive critique
@@ -90,7 +94,7 @@ describe('imagineReviewSelfVerdict (integration)', () => {
     '[case1] a real fireworks brain context + a genuine-gain window',
     () => {
       const scene = useBeforeAll(async () => {
-        const context = await getRealBrainContext();
+        const context = getRealBrainContext();
         return { context };
       });
 
