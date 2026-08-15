@@ -2,7 +2,7 @@
   "name": "rhachet-roles-bhuild",
   "author": "ehmpathy",
   "description": "roles for building resilient systems, via rhachet",
-  "version": "0.21.34",
+  "version": "0.21.35",
   "repository": "ehmpathy/rhachet-roles-bhuild",
   "homepage": "https://github.com/ehmpathy/rhachet-roles-bhuild",
   "keywords": [
