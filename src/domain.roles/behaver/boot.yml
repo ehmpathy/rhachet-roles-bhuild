@@ -4,6 +4,9 @@ always:
       # philosophy
       - briefs/practices/behavior.verification/philosophy.verification-strictness.md
 
+      # cross-stage: keep the experience coverage contract current at every stage
+      - briefs/practices/behavior.vision/rule.require.experience-catalog-evolution.md
+
     ref:
       # definitions
       - briefs/practices/behavior.criteria/define.behavior-thoughtroute-hierarchy.md

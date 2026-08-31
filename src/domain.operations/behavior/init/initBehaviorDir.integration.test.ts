@@ -86,7 +86,7 @@ describe('initBehaviorDir.integration', () => {
         ).toBe(false);
       });
 
-      then('vision guard has light self-reviews (3 reviews)', () => {
+      then('vision guard has light self-reviews (5 reviews)', () => {
         initBehaviorDir({
           behaviorDir,
           behaviorDirRel: '.behavior/v2025_01_01.test-feature',
@@ -97,10 +97,23 @@ describe('initBehaviorDir.integration', () => {
           'utf-8',
         );
 
-        // light has: requirements, assumptions, questions
+        // light has 5 self-reviews: grounded-in-reality, experience-coverage,
+        // requirements, assumptions, questions
+        expect(visionGuard).toContain('has-grounded-in-reality');
+        expect(visionGuard).toContain('has-experience-coverage');
         expect(visionGuard).toContain('has-questioned-requirements');
         expect(visionGuard).toContain('has-questioned-assumptions');
         expect(visionGuard).toContain('has-questioned-questions');
+
+        // light also carries the experience-coverage peer review + a reviewed? judge,
+        // wired against the widened glob that self-anchors on the vision yield — a
+        // zero-case-file vision must still match at least that one file, never zero
+        expect(visionGuard).toContain('slug: experience-coverage');
+        expect(visionGuard).toContain("--paths-with '$route/1.vision.*.md'");
+        expect(visionGuard).not.toContain(
+          "--paths-with '$route/1.vision.experience.case=*.md'",
+        );
+        expect(visionGuard).toContain('reviewed?');
 
         // light does NOT have: fundamentals, inverse, devils-advocate, premortem, 5whys
         expect(visionGuard).not.toContain('has-questioned-fundamentals');
@@ -152,7 +165,7 @@ describe('initBehaviorDir.integration', () => {
         expect(result.created).not.toContain('1.vision.guard.heavy');
       });
 
-      then('vision guard has heavy self-reviews (8 reviews)', () => {
+      then('vision guard has heavy self-reviews (10 reviews)', () => {
         initBehaviorDir({
           behaviorDir,
           behaviorDirRel: '.behavior/v2025_01_01.test-feature',
@@ -164,7 +177,9 @@ describe('initBehaviorDir.integration', () => {
           'utf-8',
         );
 
-        // heavy has all reviews, research-based ones too
+        // heavy has all 10 self-reviews, research-based ones too
+        expect(visionGuard).toContain('has-grounded-in-reality');
+        expect(visionGuard).toContain('has-experience-coverage');
         expect(visionGuard).toContain('has-questioned-fundamentals');
         expect(visionGuard).toContain('has-questioned-requirements');
         expect(visionGuard).toContain('has-questioned-assumptions');
@@ -173,6 +188,15 @@ describe('initBehaviorDir.integration', () => {
         expect(visionGuard).toContain('has-questioned-premortem');
         expect(visionGuard).toContain('has-questioned-5whys');
         expect(visionGuard).toContain('has-questioned-questions');
+
+        // heavy also carries the experience-coverage peer review + a reviewed? judge,
+        // wired against the same widened glob as light (guard-variant-consistency)
+        expect(visionGuard).toContain('slug: experience-coverage');
+        expect(visionGuard).toContain("--paths-with '$route/1.vision.*.md'");
+        expect(visionGuard).not.toContain(
+          "--paths-with '$route/1.vision.experience.case=*.md'",
+        );
+        expect(visionGuard).toContain('reviewed?');
       });
 
       then('criteria guard has heavy self-reviews (4 reviews)', () => {

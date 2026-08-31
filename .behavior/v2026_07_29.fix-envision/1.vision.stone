@@ -1,6 +1,6 @@
-illustrate the vision implied in the wish $BEHAVIOR_DIR_REL/0.wish.md
+illustrate the vision implied in the wish .behavior/v2026_07_29.fix-envision/0.wish.md
 
-emit into $BEHAVIOR_DIR_REL/1.vision.yield.md
+emit into .behavior/v2026_07_29.fix-envision/1.vision.yield.md
 
 ---
 
@@ -16,15 +16,12 @@ specifically,
 - what's the before/after contrast?
 - what's the "aha" moment where the value clicks?
 
-## the experiences
+## user experience
 
-**demonstrate every critipath the wish implies** — discover them first, do not free-list:
-
-- **decompose** — factor the experience space into orthogonal dimensions, walk the product
-- **itemize** — verdict every cell into the inventory; name each real experience's feel × care
-- **demonstrate** — a narrative + bdd `[tn]` sketch per critipath (+ chosen alterpaths)
-
-→ see `howto.experience.demonstrate` (the method, the artifacts to emit, why `[tn]` is a sketch)
+- what usecases do folks fulfill? what goals?
+- what contract inputs & outputs do they leverage?
+- what would it look like to leverage them?
+- what timelines do they go through?
 
 ## mental model
 
@@ -47,11 +44,11 @@ specifically,
 
 ## groundwork
 
-sanity check the vision against reality. not exhaustive research — just enough to know the vision isn't built on false assumptions.
+sanity check the vision against reality. NOT exhaustive research — just enough to know the vision isn't built on false assumptions.
 
 ### external research
 
-if the wish references external apis, services, or docs:
+if the wish references external APIs, services, or docs:
 - did you verify they exist and work the way you assume?
 - cite what you checked (links, key constraints noted)
 - if none referenced, say "none — no external dependencies"
@@ -62,7 +59,7 @@ if the wish references extant behavior, patterns, or code:
 - did you verify what that behavior actually is?
 - contracts: interfaces, types, signatures to conform to
 - vocab: domain terms, name patterns to reuse
-- stdouts: cli output patterns, error formats to match
+- stdouts: CLI output patterns, error formats to match
 - cite what you checked (file paths, line numbers)
 - if none referenced, say "none — no extant behavior extended"
 
