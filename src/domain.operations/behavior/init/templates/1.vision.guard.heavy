@@ -9,6 +9,8 @@ provenance:
 # the process needs to halt here for human review
 
 judges:
+  # peer reviews must clear (0 blockers) before the human approves
+  - $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 7
   - $rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
 
 reviews:
@@ -31,12 +33,46 @@ reviews:
         - did they actually verify what that behavior is?
         - did they verify extant contracts to conform to? (interfaces, types, signatures)
         - did they verify extant vocab to reuse? (domain terms, name patterns)
-        - did they verify extant stdouts to match? (CLI output patterns, error formats)
+        - did they verify extant stdouts to match? (cli output patterns, error formats)
         - did they cite specific files/lines?
         - or did they assume the code works a certain way without verification?
 
-        this is NOT about exhaustive research — just sanity checks.
+        this is not about exhaustive research — just sanity checks.
         the question is: is this vision coherent with reality, or built on assumptions?
+
+    - slug: has-experience-coverage
+      say: |
+        a junior recently modified files in this repo. we need to carefully
+        review the vision due to this.
+
+        did the junior demonstrate the experiences the wish implies, or only narrate them?
+
+        an experience is an actor's lived encounter with the behavior. one behavior has many
+        experiences — different actors encounter it differently. each sits on two axes: feel
+        (happy vs sharp) and care (critipath vs alterpath). read `define.experience`,
+        `define.experience._.metric=boundary-density`, `howto.experience.enumerate`, and the worked
+        `define.experience._.demo.surf-school` before you grade.
+
+        walk the wish through the same three steps the stone asked of the junior:
+
+        1. enumerate — for each actor that matters, walk their happy and sharp paths. list
+           every experience the wish implies, then name each one's feel (happy / sharp)
+           and care (critipath / alterpath). do not enumerate only critipaths — enumerate all,
+           then let the care decide severity.
+        2. demonstrate — is there a `1.vision.experience.case=N.$slug.md` per experience,
+           rendered both as a narrative (actor's pov) and a bdd `[tn]` timeline? does each
+           sharp critipath prove it fails safe (fast, loud, teaches the fix) — not just that
+           the edge exists?
+        3. catalog — does `1.vision.experience.case=_.md` list them all, name each cell's feel and care,
+           and link to its case file? did the junior hunt out and center the densest experiences
+           — the ones that cross the most boundaries in one walk (highest value and highest
+           risk)? a vision of only sterile single-boundary demos is thin.
+
+        an absent critipath is a blocker. a sharp critipath shown unhandled (no fail-safe) is a
+        blocker — write or repair the case now, before you continue. an absent alterpath, or
+        thin bonus coverage, is a nitpick — flag it.
+
+        a wish with no user-visible experience declares "no experiences — internal only".
 
     - slug: has-questioned-fundamentals
       say: |
@@ -150,4 +186,19 @@ reviews:
 
         ensure they're enumerated within the vision under "open questions & assumptions"
 
-  peer: []
+  peer:
+    # dimensional decomposition — light-enrolled, scoped to one concern:
+    # are the experience dimensions orthogonal + exhaustive, and is the product fully walked?
+    # this is the discovery check — it grades the space, not the demos. it catches the
+    # critipaths a free-list would miss, and closes the self-authored-yardstick gap.
+    - slug: dimensional-decomposition
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/rule.require.dimensional-decomposition.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/howto.experience.decompose.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.axis=care.path=criti-vs-alter.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/domain.discovery/howto.dimensional-decomposition.md' --refs '$route/0.wish.md' --diffs since-main --paths-with '$route/1.vision.*.md' --join intersect --conversation $conversation --output "$output"
+      budget: 3
+      level: 1
+
+    # experience coverage — light-enrolled, scoped to one concern:
+    # are the critipaths (happy + sharp) each demonstrated, and do sharp ones fail safe?
+    - slug: experience-coverage
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/rule.require.experience-coverage.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.axis=feel.path=happy-vs-sharp.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.axis=care.path=criti-vs-alter.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.metric=boundary-density.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/howto.experience.enumerate.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.demo.surf-school.md' --refs '$route/0.wish.md' --diffs since-main --paths-with '$route/1.vision.*.md' --join intersect --conversation $conversation --output "$output"
+      budget: 3
+      level: 1
