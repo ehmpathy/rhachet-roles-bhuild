@@ -209,6 +209,7 @@ export const cliRadioTaskPull = async (): Promise<void> => {
       via: named.via,
       outcome: null,
       cached: result.cached,
+      recorded: null,
     }),
   });
 };

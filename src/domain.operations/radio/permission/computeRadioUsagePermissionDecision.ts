@@ -7,7 +7,7 @@ import type {
 
 /**
  * .what = compute radio usage permission decision from state hierarchy
- * .why = precedence rules: global > local > org > @all > default blocked
+ * .why = precedence rules: global > org > @all > local > default blocked
  */
 export const computeRadioUsagePermissionDecision = (input: {
   global: RadioGlobalState | null;

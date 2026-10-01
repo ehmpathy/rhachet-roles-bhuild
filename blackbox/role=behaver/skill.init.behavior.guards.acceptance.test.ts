@@ -259,6 +259,19 @@ const genConsumerRepoWithBhrain = (input: {
     stdio: 'pipe',
   });
 
+  /**
+   * .mock = the peer-review brain: the `claude` cli, the bhrain `review` skill, the rhachet
+   *         `enroll` skill, and the `use.apikeys` credential source they read
+   * .why = the subject here is bhuild's guard templates — that `init.behavior` emits guards
+   *        whose stones, self-reviews, and judges drive a route to passage. a real reviewer
+   *        is a paid llm call per guard with a non-deterministic verdict, so a real one would
+   *        make each guard's passage a coin flip, not a check of the template. the stubs return
+   *        a fixed, contract-valid verdict (`0 blockers` / `0 nitpicks`) so only the guard
+   *        wire is under test
+   * .real = the review boundary itself is proven where it lives: rhachet-roles-bhrain's own
+   *         `review` acceptance suite, and every live route drive (this route's peer rounds
+   *         run the real guards these templates emit)
+   */
   // create stub claude binary (peer reviews use rhachet enroll claude, which calls claude CLI)
   const binDir = path.join(repoDir, 'node_modules', '.bin');
   fs.mkdirSync(binDir, { recursive: true });
@@ -266,6 +279,13 @@ const genConsumerRepoWithBhrain = (input: {
     path.join(binDir, 'claude'),
     `#!/usr/bin/env bash
 # stub claude for tests - outputs success without API call
+# .note = rhachet enroll probes 'claude --version' against a version floor before
+#         it spawns; the stub answers with a clean x.y.z far above any real floor,
+#         so a raised floor never re-breaks it.
+if [[ "\${1:-}" == "--version" ]]; then
+  echo "99.0.0 (Claude Code stub)"
+  exit 0
+fi
 # .note = bhrain parses "N blockers" + "N nitpicks" numeric tokens to derive
 #         the review verdict; prose like "no blockers found" is a malfunction.
 echo "# arch review (stub)"

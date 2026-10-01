@@ -3,7 +3,7 @@
 # .what = manage radio usage permissions for dispatcher
 #
 # .why  = humans control whether radio can push tasks to repos
-#         across three levels: global > org > local
+#         across four levels: global > org > @all > local
 #
 # usage:
 #   radio.uses allow                         # allow in this repo (local)
@@ -16,10 +16,13 @@
 #
 # precedence (highest to lowest):
 #   1. global blocked = always blocked
-#   2. local set = local wins
-#   3. org specific = wins over @all
-#   4. @all = default for all orgs
+#   2. org specific = wins over @all and local
+#   3. @all = default for all orgs; wins over local
+#   4. local set = applies only when no org or @all is set
 #   5. unset = blocked (safe default)
+#
+#   a blocked push is held, not lost: the next push that gets through
+#   delivers it (see radio.task.held)
 #
 # guarantee:
 #   - local state stored in .meter/radio.uses.jsonc

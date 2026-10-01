@@ -24,6 +24,17 @@ import {
  */
 
 /**
+ * .what = mask the bytes of a 401 held output that vary per run
+ * .why = the title carries Date.now() and the gh command names a per-run tempfile;
+ *        only those bytes are masked. gh's raw stderr is NOT masked — the held output
+ *        shows the headline, never the stderr, so a leak must surface as a snap diff
+ */
+const asStable401Output = (input: { output: string }): string =>
+  sanitizeOutput(input.output)
+    .replace(/auth-fail 401 test \d+/g, 'auth-fail 401 test <ts>')
+    .replace(/\S*radio-task-\d+\.md/g, '<tempfile>');
+
+/**
  * .what = invoke radio.uses skill to set up permissions
  * .why = radio.task.push/pull requires radio.uses permission
  */
@@ -210,6 +221,16 @@ describe('radio.task.push via gh.issues', () => {
 
       then('output mentions title required', () => {
         expect(result.output.toLowerCase()).toContain('title');
+      });
+
+      then('output names the fix, as snapped', () => {
+        expect(result.output).toContain('--exid');
+        // snap each stream apart: rhachet frames each with its own banner, so a merged capture reads it twice
+        expect(result.stderr).toContain('ConstraintError');
+        expect({
+          stdout: sanitizeOutput(result.stdout).trim(),
+          stderr: sanitizeOutput(result.stderr).trim(),
+        }).toMatchSnapshot();
       });
     });
   });
@@ -410,13 +431,27 @@ describe('radio.task.push via gh.issues', () => {
   // ────────────────────────────────────────────────────────────────
 
   given('[case7] auth misconfig surfaces a graceful ✋ (unset env token)', () => {
+    // .note = its own consumer repo: the push is held, and a shared repo would
+    //   list every other case's held task beside it, so the snapshot would drift
+    const sceneOwn = useBeforeAll(async () => {
+      const consumer = await genConsumerRepo({ prefix: 'radio-gh-acpt-authfail-' });
+      const homeDir = path.join(consumer.repoDir, '.home');
+      fs.mkdirSync(homeDir);
+      runRadioUses({
+        repoDir: consumer.repoDir,
+        args: '--org @all allow',
+        homeDir,
+      });
+      return { consumer, homeDir };
+    });
+
     when('[t0] push with --auth as-robot:env(VAR) where VAR is not set', () => {
       // fully deterministic: the token is derived from an env var that is not
       // set, so the skill fails fast BEFORE any gh call — no network, no creds.
       const result = useBeforeAll(async () =>
         runRadioTaskPush({
-          repoDir: scene.consumer.repoDir,
-          homeDir: scene.homeDir,
+          repoDir: sceneOwn.consumer.repoDir,
+          homeDir: sceneOwn.homeDir,
           via: 'gh.issues',
           auth: 'as-robot:env(RADIO_ACCEPT_UNSET_TOKEN)',
           into: GITHUB_DEMO_REPO,
@@ -441,20 +476,46 @@ describe('radio.task.push via gh.issues', () => {
         expect(result.output).not.toContain('UnhandledPromiseRejection');
       });
 
+      then('the push is held, not lost', () => {
+        expect(result.output).toContain('🦫 held for the radio');
+        expect(result.output).toContain('QUEUED (upstream:auth)');
+      });
+
       then('the human-readable output matches snapshot', () => {
-        expect(sanitizeOutput(result.output)).toMatchSnapshot();
+        // snap the skill's own stream: rhachet frames stdout and stderr each with a banner
+        expect(result.stdout).toContain('🦫 held for the radio');
+        expect(
+          sanitizeOutput(result.stdout).replace(
+            /auth-fail env test \d+/g,
+            'auth-fail env test <ts>',
+          ),
+        ).toMatchSnapshot();
       });
     });
   });
 
   given('[case8] rejected robot token surfaces the as-human nudge (gh 401)', () => {
+    // .note = its own consumer repo, as [case7]: the push is held, and a shared
+    //   repo would list every other case's held task beside it
+    const sceneOwn = useBeforeAll(async () => {
+      const consumer = await genConsumerRepo({ prefix: 'radio-gh-acpt-auth401-' });
+      const homeDir = path.join(consumer.repoDir, '.home');
+      fs.mkdirSync(homeDir);
+      runRadioUses({
+        repoDir: consumer.repoDir,
+        args: '--org @all allow',
+        homeDir,
+      });
+      return { consumer, homeDir };
+    });
+
     when('[t0] push with an env token that github rejects (401)', () => {
       // a deliberately bogus token — github answers HTTP 401. no real
       // credential needed: the case under test IS a rejected token.
       const result = useBeforeAll(async () =>
         runRadioTaskPush({
-          repoDir: scene.consumer.repoDir,
-          homeDir: scene.homeDir,
+          repoDir: sceneOwn.consumer.repoDir,
+          homeDir: sceneOwn.homeDir,
           via: 'gh.issues',
           auth: 'as-robot:env(RADIO_ACCEPT_BOGUS_TOKEN)',
           env: {
@@ -479,14 +540,16 @@ describe('radio.task.push via gh.issues', () => {
         expect(result.output).not.toContain('Command failed');
       });
 
-      // .note = deliberately NOT snapshotted (unlike [case7]). the rendered
-      //   ConstraintError metadata embeds the live gh command, which carries a
-      //   Date.now()-based title and a per-run tempfile path, plus gh's own
-      //   version-volatile 401 stderr in metadata.detail — all non-deterministic.
-      //   a raw snapshot would flake on every run. the stable, human-facing
-      //   contract (exit 2, the --auth as-human nudge, no `Command failed` leak)
-      //   is asserted explicitly above; the deterministic message SHAPE is
-      //   snapshot-locked at the unit tier in getGithubAuthFailureMessage.test.
+      then('the push is held, not lost', () => {
+        expect(result.output).toContain('🦫 held for the radio');
+        expect(result.output).toContain('QUEUED (upstream:401)');
+      });
+
+      then('the human-readable held output matches snapshot, volatile bytes masked', () => {
+        // snap the skill's own stream: rhachet frames stdout and stderr each with a banner
+        expect(result.stdout).toContain('🦫 held for the radio');
+        expect(asStable401Output({ output: result.stdout })).toMatchSnapshot();
+      });
     });
   });
 });

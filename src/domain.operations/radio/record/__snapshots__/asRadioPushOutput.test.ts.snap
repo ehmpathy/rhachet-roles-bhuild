@@ -1,0 +1,116 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asRadioPushOutput given: [case1] an open push with no backlog (C1) when: [t0] the push is delivered then: it reads as today, plus where it was recorded 1`] = `
+"🦫 onto the pile!
+
+🎙️ created: fix flaky keyrack test
+   ├─ exid: 414
+   ├─ status: QUEUED
+   ├─ repo: ehmpathy/rhachet
+   ├─ pushedBy: seaturtle
+   ├─ pushedAt: 2026-09-29
+   ├─ via: gh.issues
+   └─ recorded: .behavior/v2026_09_28.fix-radio-recorder/.radio/"
+`;
+
+exports[`asRadioPushOutput given: [case2] a push blocked by radio.uses (C10) when: [t0] the push is held with one other held then: it leads with held, the reason, the backlog, and the lift 1`] = `
+"🦫 held for the radio
+   ├─ task    = fix flaky keyrack test
+   ├─ into    = ehmpathy/rhachet
+   ├─ status  = QUEUED (radio.uses:blocked — global)
+   ├─ held at = .behavior/v2026_09_28.fix-radio-recorder/.radio/
+   ├─ backlog = 2 await the radio
+   └─ lift it (human): rhx radio.uses --global allow
+      └─ then the next push delivers the backlog first"
+`;
+
+exports[`asRadioPushOutput given: [case3] an unbound push held by an upstream fault (R2, C13) when: [t0] the token was rejected then: it names the place and the fix 1`] = `
+"🦫 held for the radio
+   ├─ task    = fix flaky keyrack test
+   ├─ into    = ehmpathy/rhachet
+   ├─ status  = QUEUED (upstream:401)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ backlog = 1 await the radio
+   └─ fix it: github auth failed: the robot token was rejected by github (401)
+      ├─ unblock now — re-run as human: --auth as-human
+      └─ then the next push delivers the backlog first"
+`;
+
+exports[`asRadioPushOutput given: [case3] an unbound push held by an upstream fault (R2, C13) when: [t1] the branch is bound to two routes (R3) then: it names the place and both binds 1`] = `
+"🦫 held for the radio
+   ├─ task    = fix flaky keyrack test
+   ├─ into    = ehmpathy/rhachet
+   ├─ status  = QUEUED (radio.uses:blocked — default)
+   ├─ held at = .behavior/.radio/ (branch bound to 2 routes: .behavior/v2026_01_01.alpha, .behavior/v2026_01_02.beta)
+   ├─ backlog = 1 await the radio
+   └─ lift it (human): rhx radio.uses allow
+      └─ then the next push delivers the backlog first"
+`;
+
+exports[`asRadioPushOutput given: [case3] an unbound push held by an upstream fault (R2, C13) when: [t2] the fault hint carries its own tree then: the inner tree nests under its header, with no second glyph per line 1`] = `
+"🦫 held for the radio
+   ├─ task    = fix flaky keyrack test
+   ├─ into    = ehmpathy/rhachet
+   ├─ status  = QUEUED (upstream:auth)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ backlog = 1 await the radio
+   └─ fix it: unrecognized --auth mode: some-unknown-mode
+      ├─ supported modes:
+      │  ├─ as-robot:env(VAR)
+      │  │     use token from environment variable
+      │  └─ as-human
+      │        use gh cli logged-in session (interactive)
+      └─ then the next push delivers the backlog first"
+`;
+
+exports[`asRadioPushOutput given: [case4] an open push that drains a backlog (C4, C20, U3) when: [t0] one drains, one is refused, one stays held behind a shut org then: it lists drained, pushed, refused, still held, and the backlog 1`] = `
+"🦫 back in the river! part of the backlog is delivered
+   ├─ drained
+   │  └─ #412 fix flaky keyrack test (held since 2026-09-29T09:14Z)
+   ├─ pushed
+   │  └─ #415 retry race in route.bounce (created)
+   ├─ refused — closed, never retried
+   │  └─ claim #411 — task already claimed by different branch
+   ├─ still held
+   │  ├─ guard gateway → ahbode/svc-gateway (radio.uses:blocked — org)
+   │  └─ lift it (human): rhx radio.uses --org ahbode allow
+   └─ backlog = 1 await the radio"
+`;
+
+exports[`asRadioPushOutput given: [case5] a delivered push re-pushed while the gate is shut (C9) when: [t0] the record already landed then: it says already delivered, with the exid 1`] = `
+"🦫 already delivered
+   ├─ task    = fix flaky keyrack test
+   ├─ into    = ehmpathy/rhachet
+   └─ exid    = #412"
+`;
+
+exports[`asRadioPushOutput given: [case6] a held claim replays onto a task claimed elsewhere (U3) when: [t0] the push itself is refused then: it reads refused, closed, never retried 1`] = `
+"🦫 refused upstream
+   ├─ task    = claim #412
+   ├─ into    = ehmpathy/rhachet
+   ├─ status  = REFUSED (task already claimed by different branch) — closed, never retried
+   └─ backlog = 0"
+`;
+
+exports[`asRadioPushOutput given: [case7] a delivered push re-pushed through an open gate, with a backlog (C3, C6, case=4 t0) when: [t0] the backlog drains; one record had lost its mark then: it says already delivered, and lists the drained backlog, the lost mark named 1`] = `
+"🦫 already delivered
+   ├─ task    = fix flaky keyrack test
+   ├─ into    = ehmpathy/rhachet
+   ├─ exid    = #412
+   ├─ drained
+   │  └─ #413 guard absent sponsor (held since 2026-09-29T09:14Z; already upstream — marked delivered)
+   └─ backlog = 0"
+`;
+
+exports[`asRadioPushOutput given: [case8] a refused push through an open gate, with a backlog behind it (U3, C4) when: [t0] the push is refused; one drains, one stays held then: it reads refused, and lists the drained, the still held, and the backlog 1`] = `
+"🦫 refused upstream
+   ├─ task    = claim #411
+   ├─ into    = ehmpathy/rhachet
+   ├─ status  = REFUSED (task already claimed by different branch) — closed, never retried
+   ├─ drained
+   │  └─ #412 fix flaky keyrack test (held since 2026-09-29T09:14Z)
+   ├─ still held
+   │  ├─ guard gateway → ahbode/svc-gateway (radio.uses:blocked — org)
+   │  └─ lift it (human): rhx radio.uses --org ahbode allow
+   └─ backlog = 1 await the radio"
+`;

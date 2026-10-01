@@ -3,49 +3,40 @@
 exports[`radio.uses acceptance hint level specificity given: [case9] global block shows global hint when: [t0] radio.task.push is called then: output matches snapshot 1`] = `
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
 
-🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
-   └─ ✋ blocked by constraints
-
-✋ BadRequestError: radio.task.push blocked: global blocked
-
-{
-  "hint": "ask your human to grant:\\n  $ npx rhachet run --skill radio.uses --global allow"
-}
-
-ask your human to grant:
-  $ npx rhachet run --skill radio.uses --global allow"
+🦫 held for the radio
+   ├─ task    = global hint test
+   ├─ into    = ehmpathy/test-repo
+   ├─ status  = QUEUED (radio.uses:blocked — global)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ backlog = 1 await the radio
+   └─ lift it (human): rhx radio.uses --global allow
+      └─ then the next push delivers the backlog first"
 `;
 
 exports[`radio.uses acceptance hint level specificity given: [case10] org block shows org hint when: [t0] radio.task.push is called then: output matches snapshot 1`] = `
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
 
-🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
-   └─ ✋ blocked by constraints
-
-✋ BadRequestError: radio.task.push blocked: org blocked
-
-{
-  "hint": "ask your human to grant:\\n  $ npx rhachet run --skill radio.uses --org ehmpathy allow"
-}
-
-ask your human to grant:
-  $ npx rhachet run --skill radio.uses --org ehmpathy allow"
+🦫 held for the radio
+   ├─ task    = org hint test
+   ├─ into    = ehmpathy/test-repo
+   ├─ status  = QUEUED (radio.uses:blocked — org)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ backlog = 1 await the radio
+   └─ lift it (human): rhx radio.uses --org ehmpathy allow
+      └─ then the next push delivers the backlog first"
 `;
 
 exports[`radio.uses acceptance hint level specificity given: [case11] default block shows local hint when: [t0] radio.task.push is called then: output matches snapshot 1`] = `
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
 
-🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
-   └─ ✋ blocked by constraints
-
-✋ BadRequestError: radio.task.push blocked: safe default (unset)
-
-{
-  "hint": "ask your human to grant:\\n  $ npx rhachet run --skill radio.uses allow"
-}
-
-ask your human to grant:
-  $ npx rhachet run --skill radio.uses allow"
+🦫 held for the radio
+   ├─ task    = default hint test
+   ├─ into    = ehmpathy/test-repo
+   ├─ status  = QUEUED (radio.uses:blocked — default)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ backlog = 1 await the radio
+   └─ lift it (human): rhx radio.uses allow
+      └─ then the next push delivers the backlog first"
 `;
 
 exports[`radio.uses acceptance precedence matrix given: [case1] all unset (default blocked) when: [t0] radio.uses get is called then: output matches snapshot 1`] = `
@@ -133,49 +124,40 @@ exports[`radio.uses acceptance precedence matrix given: [case7] org blocked over
 exports[`radio.uses acceptance precedence matrix given: [case7] org blocked overrides local allowed (org > local) when: [t1] radio.task.push is blocked (org overrides local) then: output matches snapshot 1`] = `
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
 
-🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
-   └─ ✋ blocked by constraints
-
-✋ BadRequestError: radio.task.push blocked: @all blocked
-
-{
-  "hint": "ask your human to grant:\\n  $ npx rhachet run --skill radio.uses --org ehmpathy allow"
-}
-
-ask your human to grant:
-  $ npx rhachet run --skill radio.uses --org ehmpathy allow"
+🦫 held for the radio
+   ├─ task    = org block over local test
+   ├─ into    = ehmpathy/test-repo
+   ├─ status  = QUEUED (radio.uses:blocked — @all)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ backlog = 1 await the radio
+   └─ lift it (human): rhx radio.uses --org ehmpathy allow
+      └─ then the next push delivers the backlog first"
 `;
 
 exports[`radio.uses acceptance precedence matrix given: [case8] specific org overrides local (org > local) when: [t0] push to ehmpathy is blocked (specific org) then: output matches snapshot 1`] = `
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
 
-🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
-   └─ ✋ blocked by constraints
-
-✋ BadRequestError: radio.task.push blocked: org blocked
-
-{
-  "hint": "ask your human to grant:\\n  $ npx rhachet run --skill radio.uses --org ehmpathy allow"
-}
-
-ask your human to grant:
-  $ npx rhachet run --skill radio.uses --org ehmpathy allow"
+🦫 held for the radio
+   ├─ task    = specific org block test
+   ├─ into    = ehmpathy/test-repo
+   ├─ status  = QUEUED (radio.uses:blocked — org)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ backlog = 1 await the radio
+   └─ lift it (human): rhx radio.uses --org ehmpathy allow
+      └─ then the next push delivers the backlog first"
 `;
 
 exports[`radio.uses acceptance user journey given: [case12] full permission workflow when: [t0] initial push attempt (blocked) then: output matches snapshot 1`] = `
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
 
-🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
-   └─ ✋ blocked by constraints
-
-✋ BadRequestError: radio.task.push blocked: safe default (unset)
-
-{
-  "hint": "ask your human to grant:\\n  $ npx rhachet run --skill radio.uses allow"
-}
-
-ask your human to grant:
-  $ npx rhachet run --skill radio.uses allow"
+🦫 held for the radio
+   ├─ task    = journey step 1
+   ├─ into    = ehmpathy/test-repo-journey
+   ├─ status  = QUEUED (radio.uses:blocked — default)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ backlog = 1 await the radio
+   └─ lift it (human): rhx radio.uses allow
+      └─ then the next push delivers the backlog first"
 `;
 
 exports[`radio.uses acceptance user journey given: [case12] full permission workflow when: [t1] user allows locally then: output matches snapshot 1`] = `
