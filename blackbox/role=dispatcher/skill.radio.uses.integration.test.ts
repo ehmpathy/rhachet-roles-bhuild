@@ -50,7 +50,7 @@ const runRadioTaskPush = (input: {
   title: string;
   description: string;
   homeDir?: string;
-}): { stdout: string; exitCode: number } => {
+}): { stdout: string; stderr: string; exitCode: number } => {
   const args = `--via ${input.via} --into "${input.into}" --title "${input.title}" --description "${input.description}"`;
   const result = runRhachetSkill({
     repo: 'bhuild',
@@ -61,7 +61,12 @@ const runRadioTaskPush = (input: {
     env: input.homeDir ? { HOME: input.homeDir } : {},
     timeout: 30000,
   });
-  return { stdout: result.output, exitCode: result.exitCode };
+  // keep the streams apart: rhachet frames each with its own banner, so a merged capture reads it twice
+  return {
+    stdout: result.stdout,
+    stderr: result.stderr,
+    exitCode: result.exitCode,
+  };
 };
 
 describe('radio.uses acceptance', () => {
@@ -110,6 +115,15 @@ describe('radio.uses acceptance', () => {
 
         then('output mentions blocked', () => {
           expect(result.stdout.toLowerCase()).toContain('blocked');
+        });
+
+        then('the push is held, not lost', () => {
+          expect(result.stdout).toContain('held for the radio');
+          expect(
+            fs.readdirSync(
+              path.join(scene.consumer.repoDir, '.behavior', '.radio'),
+            ),
+          ).toHaveLength(1);
         });
       });
     });
@@ -837,6 +851,12 @@ describe('radio.uses acceptance', () => {
 
         then('push succeeds', () => {
           expect(result.exitCode).toBe(0);
+        });
+
+        then('the held step 1 is delivered first — no task was lost', () => {
+          expect(result.stdout).toContain('back in the river');
+          expect(result.stdout).toContain('journey step 1');
+          expect(result.stdout).toContain('backlog = 0');
         });
       });
 

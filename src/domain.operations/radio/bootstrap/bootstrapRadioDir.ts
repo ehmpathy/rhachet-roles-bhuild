@@ -81,38 +81,71 @@ this directory stores tasks for the ${input.repo.owner}/${input.repo.name} repos
 };
 
 /**
+ * .what = the fs error code of a caught value, if it carries one
+ * .why = the symlink converge tolerates exactly the codes a concurrent writer causes
+ * .note = a structural read, not `instanceof Error`: an fs error from another realm
+ *         (a jest vm context) fails that check yet still carries its code
+ */
+const asFsErrorCode = (input: { error: unknown }): string | null =>
+  typeof input.error === 'object' &&
+  input.error !== null &&
+  'code' in input.error &&
+  typeof input.error.code === 'string'
+    ? input.error.code
+    : null;
+
+/**
+ * .what = the current state of the local .radio path
+ * .why = decide whether the link is correct, stale, foreign, or absent
+ */
+const getOneLocalRadioLinkState = async (input: {
+  localPath: string;
+  globalPath: string;
+}): Promise<'correct' | 'stale' | 'foreign' | 'absent'> => {
+  try {
+    const stat = await fs.lstat(input.localPath);
+    if (!stat.isSymbolicLink()) return 'foreign';
+    const target = await fs.readlink(input.localPath);
+    return target === input.globalPath ? 'correct' : 'stale';
+  } catch (error) {
+    if (asFsErrorCode({ error }) === 'ENOENT') return 'absent';
+    throw error;
+  }
+};
+
+/**
  * .what = ensure local .radio symlink exists
  * .why = provide local access to global radio directory
+ * .note = converges under concurrent callers: a link another caller created between the
+ *         read and the write (EEXIST), or removed first (ENOENT), is read again, not fatal
  */
 const ensureLocalSymlink = async (input: {
   repo: RadioTaskRepo;
   cwd: string;
+  attemptsLeft: number;
 }): Promise<string> => {
   const localPath = path.join(input.cwd, '.radio');
   const globalPath = getRadioPath({
     repo: input.repo,
     variant: 'global',
   }).radioDir;
+  const { attemptsLeft } = input;
 
+  // leave a correct link, and a path that is not a link, alone
+  const state = await getOneLocalRadioLinkState({ localPath, globalPath });
+  if (state === 'correct' || state === 'foreign') return localPath;
+
+  // replace a stale link, then create; a concurrent writer sends us back to the read
   try {
-    const stat = await fs.lstat(localPath);
-    if (stat.isSymbolicLink()) {
-      const target = await fs.readlink(localPath);
-      if (target === globalPath) {
-        return localPath; // already correct
-      }
-      // wrong target, remove and recreate
-      await fs.rm(localPath);
-    } else {
-      // not a symlink, leave it alone
-      return localPath;
-    }
-  } catch {
-    // doesn't exist, create it
+    if (state === 'stale') await fs.rm(localPath, { force: true });
+    await fs.symlink(globalPath, localPath, 'dir');
+    return localPath;
+  } catch (error) {
+    const code = asFsErrorCode({ error });
+    const isRaceLost = code === 'EEXIST' || code === 'ENOENT';
+    if (!isRaceLost || attemptsLeft <= 1) throw error;
+    return ensureLocalSymlink({ ...input, attemptsLeft: attemptsLeft - 1 });
   }
-
-  await fs.symlink(globalPath, localPath, 'dir');
-  return localPath;
 };
 
 /**
@@ -133,6 +166,7 @@ export const bootstrapRadioDir = async (input: {
   const localSymlink = await ensureLocalSymlink({
     repo: input.repo,
     cwd: input.cwd,
+    attemptsLeft: 3,
   });
 
   return { globalDir, localSymlink };

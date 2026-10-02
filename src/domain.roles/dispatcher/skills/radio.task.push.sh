@@ -12,7 +12,7 @@
 #   radio.task.push.sh --via gh.issues --into @this --title "..." --description "..."
 #   radio.task.push.sh --via gh.issues --into owner/repo --title "..." --description "..."
 #   radio.task.push.sh --via os.fileops --into @this --exid 123 --status CLAIMED
-#   radio.task.push.sh --via gh.issues --into @this --title "..." --idem upsert
+#   radio.task.push.sh --via gh.issues --into @this --title "..." --description "..." --idem upsert
 #   echo "detailed task" | radio.task.push.sh --via gh.issues --into @this --title "..." --description @stdin
 #   cat spec.md | radio.task.push.sh --via gh.issues --into @this --title "feat: add X" --description @stdin
 #
@@ -20,13 +20,16 @@
 #   --via       channel: gh.issues or os.fileops (required)
 #   --into      target repo: @this (current git repo) or owner/name (required)
 #   --title     task title (required for new tasks)
-#   --description  task description (use @stdin to read from pipe)
+#   --description  task description (required for new tasks; use @stdin to read from pipe)
 #   --exid      external id for updates
 #   --status    task status: QUEUED, CLAIMED, DELIVERED
 #   --idem      idempotency mode: findsert or upsert
 #   --help, -h  show usage and exit
 #
 # guarantee:
+#   - records every push first, into $route/.radio/ (or .behavior/.radio/ if unbound)
+#   - a push that radio.uses blocks is held QUEUED (exit 2), never lost
+#   - the next push that gets through delivers the held backlog first, oldest first
 #   - validates required args (--via, --into, --title/--description or --exid)
 #   - enforces lifecycle order on status transitions
 #   - creates backups on edit

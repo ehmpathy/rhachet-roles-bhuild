@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`radio.task.push via os.fileops given: [case1] inside a git repo when: [t1] push without title then: output names the fix, as snapped 1`] = `
+{
+  "stderr": "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --title required for new tasks; add --title "..." or use --exid to update an extant task",
+  "stdout": "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push",
+}
+`;
+
+exports[`radio.task.push via os.fileops given: [case1] inside a git repo when: [t2] push without description then: output names the fix, as snapped 1`] = `
+{
+  "stderr": "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --description required for new task; add --description "..." or pipe it via --description @stdin",
+  "stdout": "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push",
+}
+`;

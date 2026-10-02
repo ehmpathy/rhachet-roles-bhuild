@@ -116,4 +116,64 @@ describe('bootstrapRadioDir', () => {
       });
     });
   });
+
+  given('[case3] concurrent first bootstraps in a fresh cwd', () => {
+    // .note = clamps a race: two callers both read the link absent, and the second
+    //         symlink write threw EEXIST, so a concurrent os.fileops push was held
+    const cwdFresh = path.join(os.tmpdir(), `radio-test-race-${Date.now()}`);
+    const repoFresh = new RadioTaskRepo({
+      owner: 'bootstrap-test',
+      name: `repo-race-${Date.now()}`,
+    });
+    const globalDirFresh = getRadioPath({
+      repo: repoFresh,
+      variant: 'global',
+    }).radioDir;
+    afterAll(async () => {
+      await fs.rm(cwdFresh, { recursive: true, force: true });
+      await fs.rm(globalDirFresh, { recursive: true, force: true });
+    });
+
+    when('[t0] eight bootstraps run at once', () => {
+      then(
+        'each one succeeds, and the link points to the repo dir',
+        async () => {
+          await fs.mkdir(cwdFresh, { recursive: true });
+          const results = await Promise.all(
+            Array.from({ length: 8 }, () =>
+              bootstrapRadioDir({ repo: repoFresh, cwd: cwdFresh }),
+            ),
+          );
+          expect(results.map(({ localSymlink }) => localSymlink)).toEqual(
+            Array.from({ length: 8 }, () => path.join(cwdFresh, '.radio')),
+          );
+          expect(await fs.readlink(path.join(cwdFresh, '.radio'))).toEqual(
+            globalDirFresh,
+          );
+        },
+      );
+    });
+  });
+
+  given('[case4] a stale link from another repo', () => {
+    const cwdStale = path.join(os.tmpdir(), `radio-test-stale-${Date.now()}`);
+    afterAll(async () => {
+      await fs.rm(cwdStale, { recursive: true, force: true });
+    });
+
+    when('[t0] bootstrap runs where .radio points elsewhere', () => {
+      then('the link is repointed to this repo dir', async () => {
+        await fs.mkdir(cwdStale, { recursive: true });
+        await fs.symlink(
+          '/tmp/elsewhere',
+          path.join(cwdStale, '.radio'),
+          'dir',
+        );
+        await bootstrapRadioDir({ repo: testRepo, cwd: cwdStale });
+        expect(await fs.readlink(path.join(cwdStale, '.radio'))).toEqual(
+          globalDir,
+        );
+      });
+    });
+  });
 });

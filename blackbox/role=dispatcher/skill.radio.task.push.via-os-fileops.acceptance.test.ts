@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
-import { genConsumerRepo, runRhachetSkill } from '../.test/infra';
+import { genConsumerRepo, runRhachetSkill, sanitizeOutput } from '../.test/infra';
 
 /**
  * .what = invoke radio.uses skill to set up permissions
@@ -147,6 +147,16 @@ describe('radio.task.push via os.fileops', () => {
         expect(result.output.toLowerCase()).toContain('title');
         expect(result.output.toLowerCase()).toContain('required');
       });
+
+      then('output names the fix, as snapped', () => {
+        expect(result.output).toContain('--exid');
+        // snap each stream apart: rhachet frames each with its own banner, so a merged capture reads it twice
+        expect(result.stderr).toContain('ConstraintError');
+        expect({
+          stdout: sanitizeOutput(result.stdout).trim(),
+          stderr: sanitizeOutput(result.stderr).trim(),
+        }).toMatchSnapshot();
+      });
     });
 
     when('[t2] push without description', () => {
@@ -167,6 +177,16 @@ describe('radio.task.push via os.fileops', () => {
       then('output mentions description required', () => {
         expect(result.output.toLowerCase()).toContain('description');
         expect(result.output.toLowerCase()).toContain('required');
+      });
+
+      then('output names the fix, as snapped', () => {
+        expect(result.output).toContain('--description @stdin');
+        // snap each stream apart: rhachet frames each with its own banner, so a merged capture reads it twice
+        expect(result.stderr).toContain('ConstraintError');
+        expect({
+          stdout: sanitizeOutput(result.stdout).trim(),
+          stderr: sanitizeOutput(result.stderr).trim(),
+        }).toMatchSnapshot();
       });
     });
   });

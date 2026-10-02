@@ -12,6 +12,10 @@ commands:
   del    remove local config, defer to org/global
   get    check local state
 
+scopes (precedence: global > org > @all > local):
+  radio.uses --org <org> allow|block|del|get   one org, or @all for every org
+  radio.uses --global allow|block|get          every repo; a global block wins
+
 options:
   --help, -h            show this help
 "

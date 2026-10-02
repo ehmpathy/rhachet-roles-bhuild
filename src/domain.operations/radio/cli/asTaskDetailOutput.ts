@@ -9,8 +9,9 @@ export const asTaskDetailOutput = (input: {
   via: string;
   outcome: string | null;
   cached: boolean | null;
+  recorded: string | null;
 }): string => {
-  const { task, via, outcome, cached } = input;
+  const { task, via, outcome, cached, recorded } = input;
 
   const header = outcome
     ? `🎙️ ${outcome}: ${task.title}`
@@ -30,7 +31,9 @@ export const asTaskDetailOutput = (input: {
       : null,
     task.branch != null ? `   ├─ branch: ${task.branch}` : null,
     cached ? `   └─ 📥 cached to local .radio/` : null,
-    !cached ? `   └─ via: ${via}` : null,
+    !cached && !recorded ? `   └─ via: ${via}` : null,
+    !cached && recorded ? `   ├─ via: ${via}` : null,
+    !cached && recorded ? `   └─ recorded: ${recorded}` : null,
   ].filter((line): line is string => line !== null);
 
   // build description lines for pull operations (no outcome means pull)

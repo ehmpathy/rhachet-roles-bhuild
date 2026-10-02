@@ -21,3 +21,4 @@ node_modules
 *.bak.*
 z.plan.*.json
 .radio
+!.agent/.actors/actor.via.slug=.default/

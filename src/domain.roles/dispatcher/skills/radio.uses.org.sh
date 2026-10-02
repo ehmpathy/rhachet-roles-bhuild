@@ -17,7 +17,7 @@
 # guarantee:
 #   - state stored at ~/.rhachet/storage/repo=bhuild/role=dispatcher/.meter/radio.uses.org.jsonc
 #   - specific org config overrides @all
-#   - org config is overridden by local repo config
+#   - org and @all config override local repo config
 ######################################################################
 set -euo pipefail
 

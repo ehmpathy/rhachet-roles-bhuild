@@ -2,7 +2,7 @@ export * from './contract/sdk';
 
 // CLI entry points for portable skill dispatch
 import { withEmojiSpaceShim } from 'emoji-space-shim';
-import { BadRequestError, ConstraintError } from 'helpful-errors';
+import { BadRequestError, ConstraintError, HelpfulError } from 'helpful-errors';
 
 import { bindBehavior } from './contract/cli/bind.behavior';
 import { bootBehavior } from './contract/cli/boot.behavior';
@@ -12,10 +12,13 @@ import { feedbackGive } from './contract/cli/feedback.give';
 import { feedbackTakeGet } from './contract/cli/feedback.take.get';
 import { feedbackTakeSet } from './contract/cli/feedback.take.set';
 import { initBehavior } from './contract/cli/init.behavior';
+import { cliRadioTaskHeld } from './contract/cli/radioTaskHeld';
 import { cliRadioTaskPull } from './contract/cli/radioTaskPull';
 import { cliRadioTaskPush } from './contract/cli/radioTaskPush';
 import { reflectOnReviewsSelf } from './contract/cli/reflect.on.reviews.self';
 import { reviewBehavior } from './contract/cli/review.behavior';
+import { asCliMalfunctionOutput } from './infra/cli/asCliMalfunctionOutput';
+import { isHintInErrorMessage } from './infra/cli/isHintInErrorMessage';
 
 const asCli =
   (logic: () => void | Promise<void>) => async (): Promise<void> => {
@@ -38,11 +41,17 @@ const asCli =
         // hint) into error.message, so an unconditional closing print would
         // duplicate the hint (blemish). the guard keeps the hint visible when
         // absent from the message, without a duplicate when already present.
-        if (hint && !error.message.includes(hint)) {
+        if (hint && !isHintInErrorMessage({ message: error.message, hint })) {
           console.error('');
           console.error(hint);
         }
         process.exit(2);
+      }
+
+      // handle helpful malfunctions (exit 1 = system must fix): message once, then frames
+      if (error instanceof HelpfulError) {
+        console.error(asCliMalfunctionOutput({ error }));
+        process.exit(1);
       }
       throw error;
     }
@@ -59,6 +68,7 @@ export const cli = {
   feedbackTakeSet: () => withEmojiSpaceShim({ logic: asCli(feedbackTakeSet) }),
   giveFeedback: () => withEmojiSpaceShim({ logic: asCli(feedbackGive) }), // backwards compat
   initBehavior: () => withEmojiSpaceShim({ logic: asCli(initBehavior) }),
+  radioTaskHeld: () => withEmojiSpaceShim({ logic: asCli(cliRadioTaskHeld) }),
   radioTaskPull: () => withEmojiSpaceShim({ logic: asCli(cliRadioTaskPull) }),
   radioTaskPush: () => withEmojiSpaceShim({ logic: asCli(cliRadioTaskPush) }),
   reflectOnReviewsSelf: () =>

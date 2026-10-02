@@ -3,7 +3,7 @@
 # .what = manage local radio usage permission for this repo
 #
 # .why  = humans control whether radio is allowed in this specific
-#         repository, with local config overrides global and org
+#         repository, where no org or @all config is set
 #
 # usage:
 #   radio.uses.local allow     # allow radio in this repo
@@ -13,7 +13,7 @@
 #
 # guarantee:
 #   - state stored in .meter/radio.uses.jsonc
-#   - local state overrides org and global settings
+#   - local state applies only when no global block, org, or @all config is set
 ######################################################################
 set -euo pipefail
 
@@ -50,6 +50,10 @@ while [[ $# -gt 0 ]]; do
       echo "  block  block radio in this repo"
       echo "  del    remove local config, defer to org/global"
       echo "  get    check local state"
+      echo ""
+      echo "scopes (precedence: global > org > @all > local):"
+      echo "  radio.uses --org <org> allow|block|del|get   one org, or @all for every org"
+      echo "  radio.uses --global allow|block|get          every repo; a global block wins"
       echo ""
       echo "options:"
       echo "  --help, -h            show this help"

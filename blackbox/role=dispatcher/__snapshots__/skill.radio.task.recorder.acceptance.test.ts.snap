@@ -1,0 +1,141 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t0] the clone pushes a task (C7) then: the output says held, with the lift 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 held for the radio
+   ├─ task    = fix flaky test
+   ├─ into    = recorder-acpt/repo-<run>
+   ├─ status  = QUEUED (radio.uses:blocked — default)
+   ├─ held at = .behavior/v2026_09_29.demo/.radio/
+   ├─ backlog = 1 await the radio
+   └─ lift it (human): rhx radio.uses allow
+      └─ then the next push delivers the backlog first"
+`;
+
+exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t2.1] the dispatcher onStop hook command runs, as claude runs it then: its whole stdout is the json claude parses 1`] = `"{"systemMessage":"🦫 2 tasks held for the radio · lift: rhx radio.uses allow · next push delivers them"}"`;
+
+exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t2] the clone stops (S2) then: it prints one systemMessage line with the count and the lift 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.held
+
+{"systemMessage":"🦫 2 tasks held for the radio · lift: rhx radio.uses allow · next push delivers them"}"
+`;
+
+exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t3.1] the human opens the radio, then the clone stops before any push (S3) then: it prints one line: both still held, the radio open, no lift 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.held
+
+{"systemMessage":"🦫 2 tasks held, the radio is open · next push delivers them"}"
+`;
+
+exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t3] a human lists the held tasks then: it lists both held tasks 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.held
+
+🦫 held for the radio
+   ├─ fix flaky test → recorder-acpt/repo-<run> (radio.uses:blocked — default)
+   ├─ guard absent sponsor → recorder-acpt/repo-<run> (radio.uses:blocked — default)
+   ├─ lift it (human): rhx radio.uses allow
+   └─ then the next push delivers the backlog first"
+`;
+
+exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t4] the clone pushes a third task through the open radio (C4) then: the backlog drains first, oldest first, then the new task 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 back in the river! the backlog is delivered
+   ├─ drained
+   │  ├─ #<exid> fix flaky test (held since <stamp>)
+   │  └─ #<exid> guard absent sponsor (held since <stamp>)
+   ├─ pushed
+   │  └─ #<exid> retry race (created)
+   └─ backlog = 0"
+`;
+
+exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t5.0] a human lists the held tasks, the backlog drained then: it reads naught held, and exits 0 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.held
+
+🦫 naught held for the radio"
+`;
+
+exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t5.1] the clone pushes a fresh task, the radio open, naught held (C1) then: exit code is 0, and naught else is delivered with it 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 onto the pile!
+
+🎙️ created: trim stale log
+   ├─ exid: <exid>
+   ├─ status: QUEUED
+   ├─ repo: recorder-acpt/repo-<run>
+   ├─ pushedBy: test-fns
+   ├─ pushedAt: <date>
+   ├─ via: os.fileops
+   └─ recorded: .behavior/v2026_09_29.demo/.radio/"
+`;
+
+exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t5.2] the clone re-pushes the task just delivered (C3, case=4) then: exit code is 0, and it reads already delivered 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 already delivered
+   ├─ task    = trim stale log
+   ├─ into    = recorder-acpt/repo-<run>
+   └─ exid    = #<exid>"
+`;
+
+exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t5] the clone stops again (S1) then: the skill prints naught beyond the rhachet frame banner, and exits 0 1`] = `"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.held"`;
+
+exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t6] the clone claims a task upstream does not hold (U3) then: exit code is 2, and the record reads refused, closed 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 refused upstream
+   ├─ task    = claim #<exid>
+   ├─ into    = recorder-acpt/repo-<run>
+   ├─ status  = REFUSED (BadRequestError: task not found) — closed, never retried
+   └─ backlog = 0"
+`;
+
+exports[`radio.task.push — the radio.recorder given: [case2] a record file on disk that is not valid json when: [t0] the dispatcher onStop hook command runs, as claude runs it then: stderr names the fault, the file, and the fix — whole, with no json block 1`] = `
+"💥 MalfunctionError: radio task record could not be read
+   ├─ where: <dir>/record.bad.json
+   ├─ why:   <json parse fault>
+   └─ fix:   repair the json of the record file, or remove it
+    at <stack>"
+`;
+
+exports[`radio.task.push — the radio.recorder given: [case2] a record file on disk that is not valid json when: [t1] a human asks radio.task.held for help then: it shows usage and options, exit 0, and reads no records 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.held
+
+🦫 let's check the meter...
+
+🎙️ radio.task.held --help
+   ├─ usage
+   │  ├─ radio.task.held                       list the tasks held for the radio
+   │  └─ radio.task.held --when hook.onStop    one-line stop reminder (naught when none)
+   │
+   └─ options
+      ├─ --when      hook.onStop
+      └─ --help, -h  show this help"
+`;
+
+exports[`radio.task.push — the radio.recorder given: [case3] a clone claims an extant task while the radio is shut (U2, case=7) when: [t0] the clone claims task 412 then: the output says held, names the claim, and the lift 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 held for the radio
+   ├─ task    = claim #<exid>
+   ├─ into    = recorder-acpt-claim/repo-<run>
+   ├─ status  = QUEUED (radio.uses:blocked — default)
+   ├─ held at = .behavior/v2026_09_29.claim/.radio/
+   ├─ backlog = 1 await the radio
+   └─ lift it (human): rhx radio.uses allow
+      └─ then the next push delivers the backlog first"
+`;
+
+exports[`radio.task.push — the radio.recorder given: [case4] a blocked push pipes its body via --description @stdin when: [t0] the clone pipes a multi-line body into a push at a shut gate then: exit code is 2 — held, not delivered 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 held for the radio
+   ├─ task    = piped task
+   ├─ into    = recorder-acpt-stdin/repo-<run>
+   ├─ status  = QUEUED (radio.uses:blocked — default)
+   ├─ held at = .behavior/v2026_09_29.stdin/.radio/
+   ├─ backlog = 1 await the radio
+   └─ lift it (human): rhx radio.uses allow
+      └─ then the next push delivers the backlog first"
+`;

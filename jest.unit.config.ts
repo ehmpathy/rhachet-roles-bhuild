@@ -30,6 +30,7 @@ const config: Config = {
     '!**/*.acceptance.test.ts',
     '!**/*.integration.test.ts',
     '!**/.yalc/**',
+    '!**/.agent/**', // linked role and actor dirs: not this repo's tests
   ],
   setupFilesAfterEnv: ['./jest.unit.env.ts'],
 

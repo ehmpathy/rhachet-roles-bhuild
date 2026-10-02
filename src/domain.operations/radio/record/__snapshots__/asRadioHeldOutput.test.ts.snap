@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asRadioHeldOutput given: [case1] three tasks held, the gate shut (S2) when: [t0] the stop reminder renders then: it is one line with the count and the lift 1`] = `"🦫 3 tasks held for the radio · lift: rhx radio.uses --global allow · next push delivers them"`;
+
+exports[`asRadioHeldOutput given: [case1] three tasks held, the gate shut (S2) when: [t1] the list renders then: it lists each held task and the lift 1`] = `
+"🦫 held for the radio
+   ├─ a → ehmpathy/rhachet (radio.uses:blocked — global)
+   ├─ b → ehmpathy/rhachet (radio.uses:blocked — global)
+   ├─ c → ehmpathy/rhachet (radio.uses:blocked — global)
+   ├─ lift it (human): rhx radio.uses --global allow
+   └─ then the next push delivers the backlog first"
+`;
+
+exports[`asRadioHeldOutput given: [case2.1] tasks held on an upstream fault, the gate open when: [t0] the stop reminder renders then: it names the fault once beside the lift, never "the radio is open" 1`] = `"🦫 3 tasks held for the radio · lift: rhx radio.uses --global allow · fix: upstream:auth · next push delivers them"`;
+
+exports[`asRadioHeldOutput given: [case2.1] tasks held on an upstream fault, the gate open when: [t1] the list renders then: it names the fault to fix beside the lift 1`] = `
+"🦫 held for the radio
+   ├─ a → ehmpathy/rhachet (upstream:auth)
+   ├─ b → ehmpathy/rhachet (upstream:auth)
+   ├─ c → ehmpathy/rhachet (radio.uses:blocked — global)
+   ├─ lift it (human): rhx radio.uses --global allow
+   ├─ fix it: upstream:auth
+   └─ then the next push delivers the backlog first"
+`;
+
+exports[`asRadioHeldOutput given: [case2] one task held, the gate open (S3) when: [t0] the stop reminder renders then: it says the radio is open and the next push delivers it 1`] = `"🦫 1 task held, the radio is open · next push delivers it"`;
+
+exports[`asRadioHeldOutput given: [case2] one task held, the gate open (S3) when: [t1] the list renders (L3) then: it lists the task with no lift, and says the radio is open 1`] = `
+"🦫 held for the radio
+   ├─ a → ehmpathy/rhachet (radio.uses:blocked — global)
+   └─ the radio is open, so the next push delivers the backlog first"
+`;
+
+exports[`asRadioHeldOutput given: [case3] no task held (S1) when: [t1] the list renders then: it says naught is held 1`] = `"🦫 naught held for the radio"`;

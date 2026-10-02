@@ -1,3 +1,5 @@
+ignore-patterns:
+  - .agent # linked role and actor dirs: their deps are not this repo's
 ignores:
   - depcheck
   - declapract
