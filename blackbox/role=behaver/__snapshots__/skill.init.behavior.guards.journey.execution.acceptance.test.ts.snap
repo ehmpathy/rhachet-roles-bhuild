@@ -1,0 +1,261 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`skill.init.behavior.guards.journey.execution given: [case1] a heavy-guard behavior at its execution stone when: [t0] execution pass attempted without promises then: blocked by unpromised self-review 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+
+🦉 the way speaks for itself
+
+🗿 route.stone.set
+   ├─ stone = 5.1.execution.phase0_to_phaseN
+   └─ passage = blocked (review.self required)
+
+🌕 lets reflect
+   │
+   ├─ review.self 1/1
+   │  ├─ slug = has-stub-review
+   │  ├─ question all, especially yourself
+   │  └─ see the guide below
+   │
+   ├─ stillness 🪷
+   │  ├─
+   │  │
+   │  │  so it is. a chance to slow down, breathe, and see clearly.
+   │  │
+   │  │  self review time is a sanctuary. a gift. a luxury not always available.
+   │  │
+   │  │  it is not every day one has a quiet moment to take a slow,
+   │  │  methodical, patient, and thorough review.
+   │  │
+   │  │  tea first. then, we proceed 🍵
+   │  │
+   │  └─
+   │
+   ├─ before you begin 🪷
+   │  ├─
+   │  │
+   │  │  - clear your mind. this is dedicated review time.
+   │  │  - open each artifact mentioned in the guide
+   │  │  - read through them slowly, line by line
+   │  │  - question every assumption made
+   │  │  - look with fresh eyes, as if for the first time
+   │  │
+   │  └─
+   │
+   ├─ here's the guide
+   │  ├─
+   │  │
+   │  │  stub self-review; the real roster is read in isolation.
+   │  │
+   │  └─
+   │
+   ├─ be here now 🪷
+   │  ├─
+   │  │
+   │  │  refocus.
+   │  │
+   │  │  the review is the work.
+   │  │  not a step to complete.
+   │  │  not a gate to pass.
+   │  │  not a checkbox to check.
+   │  │
+   │  │  it is the work itself.
+   │  │
+   │  │  you do not care about the stone.
+   │  │  you only care about the review.
+   │  │
+   │  └─
+   │
+   ├─ walk the way 🪷
+   │  │
+   │  ├─ articulate into
+   │  │  ├─ /review/self/for.5.1.execution.phase0_to_phaseN._.r1.has-stub-review.md
+   │  │  └─ the guard looks precisely here, write exactly to this path
+   │  │
+   │  ├─ for each found issue 🪘
+   │  │  ├─
+   │  │  │
+   │  │  │  articulate how it was fixed
+   │  │  │  so you remember for next time
+   │  │  │
+   │  │  └─
+   │  │
+   │  └─ for each non issue 🪘
+   │     ├─
+   │     │
+   │     │  articulate why it holds
+   │     │  so others can learn from it
+   │     │
+   │     └─
+   │
+   └─ when you've truly reflected, run
+      └─ rhx route.stone.set --stone 5.1.execution.phase0_to_phaseN --as promised --that has-stub-review
+🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+   └─ ✋ blocked by constraints
+"
+`;
+
+exports[`skill.init.behavior.guards.journey.execution given: [case1] a heavy-guard behavior at its execution stone when: [t1] execution pass attempted after promises then: allowed (no judges) 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+
+🦉 the way speaks for itself
+   │
+   ├─ r1: repo-rules (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r001._.given.by_peer.repo-rules.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r001._.taken.by_self.repo-rules.md
+   │
+   ├─ r2: mech-failhides (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r002._.given.by_peer.mech-failhides.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r002._.taken.by_self.mech-failhides.md
+   │
+   ├─ r3: mech-decode-friction (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r003._.given.by_peer.mech-decode-friction.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r003._.taken.by_self.mech-decode-friction.md
+   │
+   ├─ r4: arch-opport-decomposition (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r004._.given.by_peer.arch-opport-decomposition.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r004._.taken.by_self.arch-opport-decomposition.md
+   │
+   ├─ r5: arch-smell-scopeleaks (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r005._.given.by_peer.arch-smell-scopeleaks.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r005._.taken.by_self.arch-smell-scopeleaks.md
+   │
+   ├─ r6: arch-hazards-maintenance (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r006._.given.by_peer.arch-hazards-maintenance.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r006._.taken.by_self.arch-hazards-maintenance.md
+   │
+   ├─ r7: arch-hazards-behavior (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r007._.given.by_peer.arch-hazards-behavior.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r007._.taken.by_self.arch-hazards-behavior.md
+   │
+   ├─ r8: behavior-intent-coverage (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r008._.given.by_peer.behavior-intent-coverage.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r008._.taken.by_self.behavior-intent-coverage.md
+   │
+   ├─ r9: ergo-friction-hazards (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r009._.given.by_peer.ergo-friction-hazards.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r009._.taken.by_self.ergo-friction-hazards.md
+   │
+   ├─ r10: enroll-impl-behavior-intent (l3, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r010._.given.by_peer.enroll-impl-behavior-intent.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r010._.taken.by_self.enroll-impl-behavior-intent.md
+   │
+   ├─ r11: enroll-impl-arch-defects (l3, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r011._.given.by_peer.enroll-impl-arch-defects.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r011._.taken.by_self.enroll-impl-arch-defects.md
+   │
+   └─ ✓ judge.1 - allowed [time]
+
+🗿 route.stone.set
+   ├─ stone = 5.1.execution.phase0_to_phaseN
+   ├─ passage = allowed
+   ├─ guard
+   │  ├─ artifacts
+   │  │   ├─ $route/5.1.execution.phase0_to_phaseN.yield.md
+   │  │   └─ src/**/*
+   │  ├─ reviews
+   │  │   ├─ r1: repo-rules (l1, 1/3)
+   │  │   │   ├─ approved [time]
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r001._.given.by_peer.repo-rules.md
+   │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r001._.taken.by_self.repo-rules.md
+   │  │   ├─ r2: mech-failhides (l1, 1/3)
+   │  │   │   ├─ approved [time]
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r002._.given.by_peer.mech-failhides.md
+   │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r002._.taken.by_self.mech-failhides.md
+   │  │   ├─ r3: mech-decode-friction (l1, 1/3)
+   │  │   │   ├─ approved [time]
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r003._.given.by_peer.mech-decode-friction.md
+   │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r003._.taken.by_self.mech-decode-friction.md
+   │  │   ├─ r4: arch-opport-decomposition (l1, 1/3)
+   │  │   │   ├─ approved [time]
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r004._.given.by_peer.arch-opport-decomposition.md
+   │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r004._.taken.by_self.arch-opport-decomposition.md
+   │  │   ├─ r5: arch-smell-scopeleaks (l1, 1/3)
+   │  │   │   ├─ approved [time]
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r005._.given.by_peer.arch-smell-scopeleaks.md
+   │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r005._.taken.by_self.arch-smell-scopeleaks.md
+   │  │   ├─ r6: arch-hazards-maintenance (l1, 1/3)
+   │  │   │   ├─ approved [time]
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r006._.given.by_peer.arch-hazards-maintenance.md
+   │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r006._.taken.by_self.arch-hazards-maintenance.md
+   │  │   ├─ r7: arch-hazards-behavior (l1, 1/3)
+   │  │   │   ├─ approved [time]
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r007._.given.by_peer.arch-hazards-behavior.md
+   │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r007._.taken.by_self.arch-hazards-behavior.md
+   │  │   ├─ r8: behavior-intent-coverage (l1, 1/3)
+   │  │   │   ├─ approved [time]
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r008._.given.by_peer.behavior-intent-coverage.md
+   │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r008._.taken.by_self.behavior-intent-coverage.md
+   │  │   ├─ r9: ergo-friction-hazards (l1, 1/3)
+   │  │   │   ├─ approved [time]
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r009._.given.by_peer.ergo-friction-hazards.md
+   │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r009._.taken.by_self.ergo-friction-hazards.md
+   │  │   ├─ r10: enroll-impl-behavior-intent (l3, 1/3)
+   │  │   │   ├─ approved [time]
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r010._.given.by_peer.enroll-impl-behavior-intent.md
+   │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r010._.taken.by_self.enroll-impl-behavior-intent.md
+   │  │   └─ r11: enroll-impl-arch-defects (l3, 1/3)
+   │  │       ├─ approved [time]
+   │  │       ├─ 0 blockers ✓
+   │  │       ├─ 0 nitpicks ✓
+   │  │       ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r011._.given.by_peer.enroll-impl-arch-defects.md
+   │  │       └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/5.1.execution.phase0_to_phaseN._.review.i001.{HASH}.r011._.taken.by_self.enroll-impl-arch-defects.md
+   │  └─ judges
+   │      └─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 7
+   │          └─ finished [time] ✓
+   │
+   └─ the way continues, run
+      └─ rhx route.drive"
+`;

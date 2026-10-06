@@ -1,0 +1,33 @@
+
+🪨 run solid skill repo=.this/role=any/skill=git.crew.read
+
+  - [1m[97m.review/[39m removed[0m[39m[49m — 4 stray hand-run [97mrhx review[39m outputs at repo root, which
+  [97mrule.forbid.hand-run-reviews[39m forbids and which aren't the route's review dir. The two docs
+  that cited them now record the verdicts as prose rather than point at deleted paths
+
+  [1m⚠️  one thing you should know about that release[0m[39m[49m
+
+  [97mgit.release[39m reported [1m"👌 all checks passed"[0m[39m[49m — and it's vacuous:
+
+  gh pr checks 38  → no checks reported
+  gh workflow list → (empty)
+  gh run list      → (empty)
+
+  [1mThis repo has no CI workflows.[0m[39m[49m So [97mrule.require.git-release-confidence[39m's "the gates absorb
+  the risk" doesn't hold here — there are no gates. What stands behind this merge is the
+  local verification instead: types green, reach suites 6/6 against live AWS, unit 121/122.
+
+  ⇒ and that also explains why the [1mF6 red didn't block[0m[39m[49m — nothing ran it in CI.
+  [97moidc-condition-permadrift [case1][39m is still red on main, still the upstream
+  [97mdeclastruct-aws@1.10.4[39m gap, still dispatched as a reseed dream.
+
+  I stopped at main, as you asked — [97mrhx git.release --into prod --mode apply[39m is the next step
+   if you want it, though for an infra repo with no deploy pipeline that may be a no-op.
+
+[37m✻[39m [37mCogitated for 5m 21s[39m
+
+[37m─────────────────────────────────────────────────────────────────────────────────────────────
+[39m❯ 
+[37m─────────────────────────────────────────────────────────────────────────────────────────────
+[39m  [37m🗿 route complete 🌴🤙[39m                               [37mnew task? [97m/clear[37m to save [97m1.5M tokens[39m
+  [97m⏵⏵ accept edits on[37m (shift+tab to cycle)[39m

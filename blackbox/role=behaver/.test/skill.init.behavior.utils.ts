@@ -5,7 +5,7 @@ import {
 } from 'emoji-space-shim';
 import path from 'path';
 
-import { runRhachetSkill } from '../../.test/infra';
+import { runRhachetSkill, stripAnsi } from '../../.test/infra';
 
 /**
  * .what = shim a string with emoji space adjustments
@@ -19,7 +19,7 @@ export const shim = (message: string) =>
  * .why = dates and some paths vary per run, mask them for stable snapshots
  */
 export const asSnapshotStable = (stdout: string): string =>
-  stdout
+  stripAnsi(stdout)
     // mask iso dates in behavior dir names: v2026_02_23 -> v{DATE}
     .replace(/v\d{4}_\d{2}_\d{2}/g, 'v{DATE}')
     // mask branch-specific bind flags: .bind.feature.foo.flag -> .bind.{BRANCH}.flag

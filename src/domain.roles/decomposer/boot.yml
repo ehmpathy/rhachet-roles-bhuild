@@ -13,3 +13,10 @@ always:
       # review rules
       - briefs/review/rule.require.context.threshold.md
       - briefs/review/rule.require.domain.bounded.md
+
+      # the seam with the prioritizer — landed by the supervisor/prioritizer lift,
+      # per ehmpathy/rhachet-roles-bhuild#385 deliverable 1, which names THIS role
+      # as its home. it is a `ref` rather than a `say` because a decomposer needs it
+      # only once it meets a goal tree, and a reader who suspects it exists can fetch
+      # it by name — the boot manifest's own test for ref-level legitimacy.
+      - briefs/define.decomposer-prioritizer-intersection.md

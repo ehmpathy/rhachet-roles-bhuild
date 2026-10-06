@@ -217,6 +217,32 @@ OUTPUT_FILE_REL=$(realpath --relative-to="$TARGET_DIR" "$OUTPUT_FILE")
 
 # feedback template path (relative to TARGET_DIR where claude runs)
 TEMPLATE_FILE="$BEHAVIOR_DIR/refs/template.[feedback].v1.[given].by_human.md"
+
+# 🔴 fail LOUD when the template is absent, never silently.
+#
+#   `realpath` below exits non-zero on an absent path, and under `set -e`
+#   that killed the skill with exit 1 and no message a reader could act on
+#   — the worst shape a failure can take (rule.require.failfast,
+#   rule.require.errors-name-the-fix). measured 2026-09-28: four acceptance
+#   cases died here in ~60ms each, and the skip that hid them named a
+#   brain credential as the cause.
+#
+# ⚠️ every behavior dir that `init.behavior` scaffolds carries this file,
+#   so an absent one means the dir was hand-built or partly copied — which
+#   the fix line below says outright.
+if [[ ! -f "$TEMPLATE_FILE" ]]; then
+  echo "✋ ConstraintError: feedback template not found for '$BEHAVIOR_NAME'" >&2
+  echo "" >&2
+  echo "  expected: $TEMPLATE_FILE" >&2
+  echo "" >&2
+  echo "  why: every behavior dir scaffolded by init.behavior carries this" >&2
+  echo "       template; an absent one means the dir was hand-built or only" >&2
+  echo "       partly copied" >&2
+  echo "" >&2
+  echo "  fix: rhx init.behavior --name $BEHAVIOR_NAME --dir $TARGET_DIR" >&2
+  exit 2
+fi
+
 TEMPLATE_FILE_REL=$(realpath --relative-to="$TARGET_DIR" "$TEMPLATE_FILE")
 
 # build prompt (asks claude to output review to stdout, script writes to file)
@@ -305,24 +331,54 @@ else
   echo ""
 
   # show spinner while claude runs
-  echo -n "⏳ reviewing "
-  (cd "$TARGET_DIR" && echo "$PROMPT" | "$CLAUDE_BIN" --print 2>&1) > "$LOG_DIR/output.response.md" &
+  echo -n "⏳ review "
+  # 🔴 the prompt goes as an ARGUMENT, never down a pipe. the tty branch
+  #   above always passed it as an argument; this branch piped it, and the
+  #   two disagreed in a way that only showed in a hook-laden repo:
+  #
+  #     Error: Input must be provided either through stdin or as a prompt
+  #            argument when using --print
+  #
+  #   a SessionStart hook in the target repo consumes the child's stdin, so
+  #   the piped prompt never reaches claude — and a real consumer repo is
+  #   hook-laden by construction, since a link of the roles is how they got
+  #   this skill. measured 2026-09-28, the moment the fixture was made
+  #   faithful enough to carry `.agent/`.
+  (cd "$TARGET_DIR" && "$CLAUDE_BIN" --print "$PROMPT" 2>&1) > "$LOG_DIR/output.response.md" &
   CLAUDE_PID=$!
 
-  # spinner animation
+  # 🔴 the spinner draws with `\r`, which OVERWRITES on a terminal and
+  #   ACCUMULATES in a captured stream — a pipe, a CI log, a test's stdout.
+  #   a 60s review emits ~600 frames into a file a human then has to read
+  #   past to reach the real output (rule.forbid.snapshot-visual-blemishes).
+  #
+  # ⇒ so the animation runs only where it can erase itself. off a tty the
+  #   wait is silent, and the one-line verdict below still prints — status
+  #   stays visible either way (rule.require.status-feedback).
   SPINNER="⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
   ELAPSED=0
   while kill -0 $CLAUDE_PID 2>/dev/null; do
     for (( i=0; i<${#SPINNER}; i++ )); do
       if ! kill -0 $CLAUDE_PID 2>/dev/null; then break; fi
-      echo -ne "\r⏳ reviewing ${SPINNER:$i:1} ${ELAPSED}s"
+      if [[ -t 1 ]]; then echo -ne "\r⏳ review ${SPINNER:$i:1} ${ELAPSED}s"; fi
       sleep 0.1
     done
     ELAPSED=$((ELAPSED + 1))
   done
 
-  wait $CLAUDE_PID
-  CLAUDE_EXIT=$?
+  # 🔴 `wait` yields the child's exit status, and under `set -e` a non-zero
+  #   one kills this procedure HERE — one line before `$?` could be captured.
+  #
+  #   that made the whole "⛈️ review failed (exit code: N)" branch below
+  #   unreachable by construction: a reader saw a bare
+  #   "review.deliverable.sh failed at line NNN" and never the log path that
+  #   holds claude's own words. a carefully written error branch that can
+  #   never run is a failhide (rule.forbid.failhide).
+  #
+  # ⇒ `|| CLAUDE_EXIT=$?` makes the non-zero case non-fatal, so the branch
+  #   below can report it properly. measured 2026-09-28.
+  CLAUDE_EXIT=0
+  wait $CLAUDE_PID || CLAUDE_EXIT=$?
 
   # read output
   CLAUDE_OUTPUT=$(cat "$LOG_DIR/output.response.md")
@@ -337,8 +393,15 @@ else
     echo "└── $OUTPUT_FILE_REL"
   else
     echo ""
-    echo "⛈️ review failed (exit code: $CLAUDE_EXIT)"
-    echo "└── see: $LOG_DIR_REL/output.response.md"
+    echo "💥 MalfunctionError: review failed (claude exit code: $CLAUDE_EXIT)" >&2
+    echo "" >&2
+    echo "  claude said:" >&2
+    tail -n 40 "$LOG_DIR/output.response.md" | sed 's/^/    /' >&2
+    echo "" >&2
+    echo "  full log: $LOG_DIR_REL/output.response.md" >&2
+    # ⚠️ the path alone is not a fix line when the run happens inside a temp
+    #   dir a caller deletes on teardown — so claude's own words are echoed
+    #   above, never merely pointed at (rule.require.errors-name-the-fix)
     exit $CLAUDE_EXIT
   fi
 fi

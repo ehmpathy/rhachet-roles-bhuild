@@ -1,0 +1,34 @@
+
+🪨 run solid skill repo=.this/role=any/skill=git.crew.read
+
+🔭 duct://grove-sandpine-v20260901/rhachet-roles-ehmpathy.beav.feat-auto-review-permission-responses/mechanic (cloud)
+       3 1 blocker + 2 nitpicks, all `[REPAIR]`.
+       4
+       5 ## blocker.1 — skill stdout contract omits `remediation`, so the hook cannot render the coconut tail — [REPAIR]
+       6
+       7 correct, and a real dead-field defect my own r11-i011.b2 introduced. the orchestrator computes
+       8 `remediation` and returns it, and the hook's decline branch renders it as the coconut's LAST line — but
+       9 the SKILL's stdout format (the ONLY channel the hook reads) was pinned as `{verdict, reason, evidence,
+      10 branch?, guide?}` with no `remediation`. so the concrete command could never cross the skill→hook
+     … +34 lines (ctrl+o to expand)
+
+● Now the r7 taken.
+
+✻ Tinkering… (27m 50s · ↓ 26.4k tokens)
+  ⎿  Tip: Use /btw to ask a quick side question without interrupting Claude's current work
+
+● How is Claude doing this session? (optional)
+  1: Bad    2: Fine   3: Good   0: Dismiss
+
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯ 
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  🗿 3.3.1.blueprint.product, review.peer, l3@i004 🔍                                                                                                                 2% until auto-compact
+  ⏵⏵ accept edits on (shift+tab to cycle)
+
+Resume this session with:
+claude --resume "mechanic"
+
+camper in rhachet-roles-ehmpathy.beav.feat-auto-review-permission-responses 🌐 ip-10-20-2-103 in on beav/feat-auto-review-permission-responses:main [✘!+?] is v1.38.12 via  v24.20.0 took 5d
+12h33m36s at 20:31:40
+💥143 ➜

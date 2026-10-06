@@ -1,0 +1,76 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`supervisor.surface acceptance (as consumer) given: [case1] a consumer repo that links the published supervisor then: 🔴 and the delivered manifest is the one on record 1`] = `
+[
+  "duct.audit.sh",
+  "duct.list.sh",
+  "duct.open.sh",
+  "duct.poll.sh",
+  "duct.read.sh",
+  "duct.reboot.sh",
+  "duct.refresh.sh",
+  "duct.send.sh",
+  "duct.stop.sh",
+  "git.checkout.sh",
+  "git.crew.boot.sh",
+  "git.crew.fell.sh",
+  "git.crew.heal.sh",
+  "git.crew.hide.sh",
+  "git.crew.ledger.sh",
+  "git.crew.list.sh",
+  "git.crew.modal.sh",
+  "git.crew.open.sh",
+  "git.crew.poll.sh",
+  "git.crew.read.sh",
+  "git.crew.reboot.sh",
+  "git.crew.refresh.sh",
+  "git.crew.send.sh",
+  "git.crew.show.sh",
+  "git.crew.stop.sh",
+  "git.grove.auth.sh",
+  "git.grove.keyrack.sh",
+  "git.grove.list.sh",
+  "git.grove.prune.sh",
+  "git.grove.saturation.sh",
+  "git.grove.saturation.spend.sh",
+  "git.grove.send.sh",
+  "git.grove.wake.sh",
+  "git.release.poll.sh",
+  "git.tree.achievement.sh",
+  "git.tree.behavior.sh",
+  "git.tree.declapract.upgrade.sh",
+  "git.tree.del.sh",
+  "git.tree.duct.sh",
+  "git.tree.set.sh",
+  "git.tree.supervise.sh",
+  "git.tree.sync.sh",
+  "term.audit.sh",
+  "term.list.sh",
+  "term.open.sh",
+]
+`;
+
+exports[`supervisor.surface acceptance (as consumer) given: [case2] a verb invoked by name, from a repo with no source when: [t0] \`rhx git.crew.list --help\` is run then: 🔴 and the whole help surface holds its shape 1`] = `
+"🪨 run solid skill repo=bhuild/role=supervisor/skill=git.crew.list
+
+.what = list every CREW — one line per tree, with the roles that are up
+
+.why  = \`duct.list\` prints one duct per line, so a 26-duct fleet reads
+        as 26 rows a human must pair up by eye. but a crew is the unit
+        we actually act on: we open a crew, we close a crew, we send a
+        crew a message. so it should be the unit we can read.
+
+        it also surfaces a HALF crew at a glance — a tree with only a
+        mechanic and no foreman is a supervisor with no way to observe
+        without an interrupt of the worker (howto.supervise-routes).
+
+usage:
+  rhx git.crew.list
+
+guarantee:
+  - read-only: never opens, closes, or sends to any duct
+  - derived LIVE from tmux sessions, never from a cached list
+  - a one-segment duct (duct:///65 — a human's own shell) is never
+    counted as a crew (see term=duct._.choice._.md)
+  - exit 0 = listed, 1 = malfunction"
+`;

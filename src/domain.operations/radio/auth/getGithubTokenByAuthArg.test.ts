@@ -8,7 +8,11 @@ jest.mock('./genAuthFromKeyrack', () => ({
   genAuthFromKeyrack: jest.fn(),
 }));
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+// .note = a `require`, deliberately: `jest.mock` is hoisted above the imports,
+//   so a top-level `import` would bind the real module before the mock lands.
+//   this line once carried an `eslint-disable` directive; the repo lints with
+//   biome and holds no eslint config, so that directive read as a guardrail and
+//   held naught (rule.forbid.failhide). the reason it documented lives here now.
 const { genAuthFromKeyrack } = require('./genAuthFromKeyrack');
 
 /**
@@ -321,4 +325,10 @@ describe('getGithubTokenByAuthArg', () => {
       });
     });
   });
+
+  // .note = the keyrack FAILURE paths (locked / absent / blocked) live in
+  // getGithubTokenByAuthArg.keyrackfail.test.ts, NOT here. this file mocks
+  // the ./genAuthFromKeyrack module wholesale, which would intercept the very
+  // seam those cases exercise — they would assert against the mock rather
+  // than against the render logic, and pass while they prove naught.
 });

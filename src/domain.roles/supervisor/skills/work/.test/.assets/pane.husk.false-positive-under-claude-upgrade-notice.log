@@ -1,0 +1,43 @@
+
+🪨 run solid skill repo=.this/role=any/skill=git.crew.read
+
+  [38;5;246mRead[39m [1m[38;5;246m1[0m[38;5;246m[49m file[39m [38;5;246m(ctrl+o[39m [38;5;246mto[39m [38;5;246mexpand)[39m
+
+[38;5;231m●[39m Given the size of the full 377-site rename, I'll do this the safe way: record the term supersession cleanly in the glossary first (the brief anchor per "briefs first"), rather than start
+  a code rename I can't finish in one pass without risking a broken build. Marking [38;5;153mstance[39m superseded by [38;5;153mabsorption[39m.
+
+[38;5;114m●[39m [1mUpdate[0m[39m[49m(.agent/repo=.this/role=any/briefs/domain.terms/term=route.guard.review.stance._.choice._.md)
+[38;5;246m [39m [38;5;246m⎿[39m [38;5;246m [39mAdded [1m10[0m[39m[49m lines, removed [1m4[0m[39m[49m lines
+     [38;5;167m[48;5;52m  1 -[38;5;231m# domain.term: stance                                                                                                                                                       [39m[49m
+     [38;5;77m[48;5;22m  1 +[38;5;231m# domain.term: absorption (was: stance — SUPERSEDED 2026-09-15)                                                                                                             [39m[49m
+     [2m[38;5;231m [0m[39m[49m [2m[38;5;231m2[0m[39m[49m [38;5;231m [39m
+     [38;5;167m[48;5;52m  3 -[38;5;231mterm.chosen   = stance                                                                                                                                                      [39m[49m
+     [38;5;77m[48;5;22m  3 +[38;5;231mterm.chosen   = [48;5;28mabsorption[48;5;22m                                                                                                                                                  [39m[49m
+     [2m[38;5;231m [0m[39m[49m [2m[38;5;231m4[0m[39m[49m [38;5;231m term.kind[39m     [38;5;231m=[39m [38;5;231mnoun[39m                 [38;5;231m#[39m [38;5;231mnoun[39m [38;5;231m|[39m [38;5;231mverb[39m [38;5;231m|[39m [38;5;231madj[39m [38;5;231m—[39m [38;5;231mreused[39m [38;5;231macross[39m [38;5;231mobjects[39m [38;5;231m&[39m [38;5;231moperations[39m
+     [2m[38;5;231m [0m[39m[49m [2m[38;5;231m5[0m[39m[49m [38;5;231m term.boundary[39m [38;5;231m=[39m [38;5;231mreview[39m
+     [2m[38;5;231m [0m[39m[49m [2m[38;5;231m6[0m[39m[49m [38;5;231m term.synonyms.forbidden:[39m
+     [38;5;77m[48;5;22m  7 +[38;5;231m- stance          # ⛔ SUPERSEDED — the driver ABSORBS a concern; the recorded disposition is an absorption                                                                 [39m[49m
+     [2m[38;5;231m [0m[39m[49m [2m[38;5;231m8[0m[39m[49m [38;5;231m -[39m [38;5;231mposition[39m
+     [38;5;167m[48;5;52m  8 -[38;5;231m- verdict         # ⛔ a verdict is what the JUDGE renders; a stance is what the DRIVER declares                                                                            [39m[49m
+     [38;5;77m[48;5;22m  9 +[38;5;231m- verdict         # ⛔ a verdict is what the JUDGE renders; [48;5;28man[48;5;22m [48;5;28mabsorption[48;5;22m is what the DRIVER declares                                                                       [39m[49m
+     [2m[38;5;231m 10[0m[39m[49m [38;5;231m -[39m [38;5;231mdecision[39m
+     [2m[38;5;231m 11[0m[39m[49m [38;5;231m -[39m [38;5;231mresponse[39m
+     [2m[38;5;231m 12[0m[39m[49m [38;5;231m -[39m [38;5;231mreply[39m
+     [2m[38;5;231m 13[0m[39m[49m [38;5;231m [39m
+     [38;5;77m[48;5;22m 14 +[38;5;231m🔴 **`stance` is FORBIDDEN, superseded by `absorption` (S20).** the verb is `absorb` / `absorbConcern`;                                                                     [39m[49m
+     [38;5;77m[48;5;22m 15 +[38;5;231mthe noun for the recorded disposition is `absorption`; its two kinds are `disputed` | `conceded`. the                                                                       [39m[49m
+     [38;5;77m[48;5;22m 16 +[38;5;231mcluster keeps its `stance` filename until the code rename lands, then it too moves to `absorption`.                                                                         [39m[49m
+     [38;5;77m[48;5;22m 17 +[38;5;231m                                                                                                                                                                            [39m[49m
+     [2m[38;5;231m 18[0m[39m[49m [38;5;231m ##[39m [38;5;231m.what[39m
+     [2m[38;5;231m 19[0m[39m[49m [38;5;231m [39m
+     [38;5;167m[48;5;52m 15 -[38;5;231m**the driver's declared posture toward ONE concern: `dispute` or `concede`.**                                                                                               [39m[49m
+     [38;5;77m[48;5;22m 20 +[38;5;231m**the driver's declared [48;5;28mABSORPTION[48;5;22m [48;5;28mof[48;5;22m ONE concern: `dispute` or `concede`.**[48;5;28m to absorb a concern is to[48;5;22m                                                                      [39m[49m
+     [38;5;77m[48;5;22m 21 +[38;5;231mtake it up and render its disposition; the recorded disposition is an *absorption*.                                                                                         [39m[49m
+     [2m[38;5;231m 22[0m[39m[49m [38;5;231m [39m
+     [2m[38;5;231m 23[0m[39m[49m [38;5;231m it[39m [38;5;231mis[39m [38;5;231mthe[39m [38;5;231mgenus;[39m [38;5;231m`dispute`[39m [38;5;231mand[39m [38;5;231m`concede`[39m [38;5;231mare[39m [38;5;231mits[39m [38;5;231monly[39m [38;5;231mtwo[39m [38;5;231mpositions,[39m [38;5;231mand[39m [38;5;231mthe[39m [38;5;231mset[39m [38;5;231mis[39m [38;5;231mclosed[39m [38;5;231mby[39m
+     [2m[38;5;231m 24[0m[39m[49m [38;5;231m design[39m [38;5;231m—[39m [38;5;231ma[39m [38;5;231mthird[39m [38;5;231mwould[39m [38;5;231mbe[39m [38;5;231ma[39m [38;5;231mdriver[39m [38;5;231mwho[39m [38;5;231mneither[39m [38;5;231margues[39m [38;5;231mnor[39m [38;5;231magrees,[39m [38;5;231mwhich[39m [38;5;231mis[39m [38;5;231msilence,[39m [38;5;231mand[39m [38;5;231msilence[39m [38;5;231mis[39m
+
+[38;5;244m─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[39m❯ 
+[38;5;244m─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[39m  [38;5;246m🗿[39m [38;5;246m5.1.execution.from_vision,[39m [38;5;246myield[39m [38;5;246m🌾[39m

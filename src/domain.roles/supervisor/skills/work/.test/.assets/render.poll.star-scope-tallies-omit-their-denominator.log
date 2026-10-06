@@ -1,0 +1,58 @@
+
+🪨 run solid skill repo=.this/role=any/skill=git.crew.poll
+
+🦫 chew on it
+
+🪵 git.crew.poll
+   ├─ derived from: crew ledger ∪ duct registry ∪ live tmux (every host)
+   ├─ scope: crews only — every tree is `git tree status --repo @all`
+   ├─ ⭐ scope: SPONSORED stars (the default) — 4 shown, 37 non-star crew(s) hidden (pass --all to widen)
+   ├─ ⚠️  ANOMALY: 24 unsponsored tree(s) are INFLIGHT — a grove slot spent off-budget
+   │   ├─ declastruct-aws.beav.feat-demo-trusts-sandpine-grove — sponsor it, or fell it: rhx git.crew.fell --tree declastruct-aws.beav.feat-demo-trusts-sandpine-grove
+   │   ├─ declastruct-aws.beav.feat-s3-backup-store-properties — sponsor it, or fell it: rhx git.crew.fell --tree declastruct-aws.beav.feat-s3-backup-store-properties
+   │   ├─ infrastructure.beav.feat-camp-git-backup-bucket — sponsor it, or fell it: rhx git.crew.fell --tree infrastructure.beav.feat-camp-git-backup-bucket
+   │   ├─ infrastructure.beav.feat-grove-reach-ehmpathy-demo — sponsor it, or fell it: rhx git.crew.fell --tree infrastructure.beav.feat-grove-reach-ehmpathy-demo
+   │   ├─ rhachet.beav.feat-boot-manifest-and-budget — sponsor it, or fell it: rhx git.crew.fell --tree rhachet.beav.feat-boot-manifest-and-budget
+   │   └─ … 19 more — rhx git.crew.poll --all to read every one
+   ├─ ⚠️  UNREACHED: grove-sandpine-v20260811.ground grove-sandpine-v20260811
+   │   └─ registered, no answer — crews there render 😴 asleep, NOT down — rhx git.grove.wake <grove>
+   ├─ ⚠️  RETIRED: grove-sandpine-v20260810 grove-sandpine-v20260810.ground
+   │   └─ NOT in the forest — a wake exits 2 here. crews named on it are ORPHANS on a box that is gone — rhx git.grove.list
+   └─ read: parallel, read-only
+
+   ├─ 🧊 frozen — rhachet-roles-bhrain.beav.feat-acceptance-under-5min · still 38m · 🙋plea
+   │    🗿 foreman: relic — no live clone in this pane; a stale 🗿 line sits in scrollback, not current route state
+   │    🗿 reflector: relic — no live clone in this pane; a stale 🗿 line sits in scrollback, not current route state
+   │    🗿 reviewer.give: relic — no live clone in this pane; a stale 🗿 line sits in scrollback, not current route state
+   │    🗿 reviewer.take: relic — no live clone in this pane; a stale 🗿 line sits in scrollback, not current route state
+   ├─ 🚧 blocked:on-supervisor — rhachet-roles-bhrain.beav.feat-prescribed-brain-per-stone
+   │    🗿 foreman: relic — no live clone in this pane; a stale 🗿 line sits in scrollback, not current route state
+   │    🗿 reflector: relic — no live clone in this pane; a stale 🗿 line sits in scrollback, not current route state
+   │    🗿 reviewer.give: relic — no live clone in this pane; a stale 🗿 line sits in scrollback, not current route state
+   │    🗿 reviewer.take: relic — no live clone in this pane; a stale 🗿 line sits in scrollback, not current route state
+   │    🚧 foreman:shell mechanic:🚧prompt reflector:shell reviewer:🪦absent reviewer.give:shell reviewer.take:shell
+   ├─ 😶 inflight — rhachet-roles-bhrain.beav.fix-budget-grant-needs-urgent-concession
+   │    🗿 foreman: relic — no live clone in this pane; a stale 🗿 line sits in scrollback, not current route state
+   │    🗿 mechanic: 1.vision, review.self, r1/r5 🔍
+   │    🗿 reflector: relic — no live clone in this pane; a stale 🗿 line sits in scrollback, not current route state
+   │    🗿 reviewer.give: relic — no live clone in this pane; a stale 🗿 line sits in scrollback, not current route state
+   │    🗿 reviewer.take: relic — no live clone in this pane; a stale 🗿 line sits in scrollback, not current route state
+
+🦫 4 crew(s) — 3 at work, 0 down, 1 phantom
+   ├─ 🌲 trees — 1 unpushed, 2 in flight, 1 unknown
+   ├─ 🚦 status — 1 inflight · 1 blocked:on-supervisor · 1 frozen
+   ├─ ✂️  0 of the 4 shown cut — 0 with no live clone, 0 still > 24h — rhx git.crew.poll --all
+   ├─ 🌊 ducts moved — 6 changed, 138 unchanged (since the prior poll)
+   ├─ 🗿 stones — 🙋 0 await approval · ✋ 0 blocked (read to see who) · 🔍 1 in review · 🌴 0 complete · ✂️ 0 clipped  (+12 seat(s) hold no clone)
+   ├─ 🪦absent × 1 — a non-`empty` box; each row below carries its own move
+   │     └─ rhachet-roles-bhrain.beav.feat-prescribed-brain-per-stone / reviewer — the host holds no such session; a read cannot settle it — rhx git.crew.boot --tree rhachet-roles-bhrain.beav.feat-prescribed-brain-per-stone
+   ├─ 🙋ask × 1 — a non-`empty` box; each row below carries its own move
+   │     └─ rhachet-roles-bhrain.beav.feat-acceptance-under-5min / mechanic — rhx git.crew.read --tree rhachet-roles-bhrain.beav.feat-acceptance-under-5min --who mechanic
+   ├─ 🚧prompt × 1 — a non-`empty` box; each row below carries its own move
+   │     └─ rhachet-roles-bhrain.beav.feat-prescribed-brain-per-stone / mechanic — rhx git.crew.read --tree rhachet-roles-bhrain.beav.feat-prescribed-brain-per-stone --who mechanic
+   ├─ 🚧 MODAL — rhachet-roles-bhrain_beav_feat-prescribed-brain-per-stone/mechanic is stopped at a prompt nobody answered — read it, COUNT its options, then answer: rhx git.crew.read --tree rhachet-roles-bhrain_beav_feat-prescribed-brain-per-stone --who mechanic --lines 40
+   ├─ 🛑 TURN ENDED — rhachet-roles-bhrain_beav_feat-acceptance-under-5min/mechanic finished its turn ("Worked for 19m 26s · 1 shell still running") and a message still sits in its box. no turn runs, so no turn will drain it — this clone is STOPPED, not busy. read it FIRST (the box may hold a ghost, never a typed message): rhx git.crew.read --tree rhachet-roles-bhrain_beav_feat-acceptance-under-5min --who mechanic --raw --lines 60
+   ├─ 🙋 PLEA SEEN — rhachet-roles-bhrain_beav_feat-acceptance-under-5min/mechanic printed a HUMAN-only grant: "route.stone.set --stone 1.vision --as approved" — check its --stone against the stone rendered above, then relay. never self-grant
+   ├─ ✋ BOX UNMOVED — duct://grove-sandpine-v20260901/rhachet-roles-bhrain.beav.feat-acceptance-under-5min/mechanic 🙋ask, still 38m — read it: rhx git.crew.read --tree rhachet-roles-bhrain.beav.feat-acceptance-under-5min --who mechanic --raw --lines 20
+   ├─ 👻 1 phantom    — felled trees whose registry rows remain — the fell is safe: the tree is already gone
+   └─ 👻 STALE ROWS — rhachet-roles-bhrain.beav.feat-dispute-or-concede-review-budget — drop the record: rhx git.crew.fell --tree rhachet-roles-bhrain.beav.feat-dispute-or-concede-review-budget

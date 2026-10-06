@@ -6,7 +6,7 @@ import { extractOrgFromRepo } from './extractOrgFromRepo';
 const VALID_CASES = [
   {
     description: 'extracts org from standard owner/repo',
-    given: { repo: 'ehmpathy/svc-quotes' },
+    given: { repo: 'ehmpathy/svc-rentals' },
     expect: { output: 'ehmpathy' },
   },
   {

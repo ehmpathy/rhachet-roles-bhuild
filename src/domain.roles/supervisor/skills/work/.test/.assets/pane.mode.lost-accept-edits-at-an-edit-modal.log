@@ -1,0 +1,53 @@
+
+🪨 run solid skill repo=.this/role=any/skill=git.crew.read
+
+     [2m[38;5;231m 233 [0m[38;5;231m[49m       then([38;5;186m'the emit is SILENT — byte-identical to today'[38;5;231m, () => {[39m
+     [2m[38;5;231m 234 [0m[38;5;231m[49m         expect(res.stdout.trim()).toEqual([38;5;186m''[38;5;231m);[39m
+     [2m[38;5;231m 235 [0m[38;5;231m[49m       });[39m
+     [38;5;77m[48;5;22m 236 +[38;5;231m                                                                                                                                                                           [39m[49m
+     [38;5;77m[48;5;22m 237 +[38;5;231m      [38;5;242m// .why = a snapshot of an EMPTY emit is the regression guard's sharpest[38;5;231m                                                                                             [39m[49m
+     [38;5;77m[48;5;22m 238 +[38;5;231m      [38;5;242m//        artifact: the day a `stack = 0 deep` line leaks onto a linear[38;5;231m                                                                                              [39m[49m
+     [38;5;77m[48;5;22m 239 +[38;5;231m      [38;5;242m//        route, this snapshot is what goes red in the diff[38;5;231m                                                                                                          [39m[49m
+     [38;5;77m[48;5;22m 240 +[38;5;231m      then([38;5;186m'it matches the snapshot'[38;5;231m, () => {                                                                                                                              [39m[49m
+     [38;5;77m[48;5;22m 241 +[38;5;231m        expect(sanitizeTimeForSnapshot(res.stdout)).toMatchSnapshot();                                                                                                     [39m[49m
+     [38;5;77m[48;5;22m 242 +[38;5;231m      });                                                                                                                                                                  [39m[49m
+     [2m[38;5;231m 243[0m[39m[49m [38;5;231m [39m    [38;5;231m});[39m
+     [2m[38;5;231m 244[0m[39m[49m [38;5;231m [39m
+     [2m[38;5;231m 245[0m[39m[49m [38;5;231m [39m    [38;5;231mwhen([38;5;186m'[t1][39m [38;5;186mroute.stack.cutback,[39m [38;5;186mwith[39m [38;5;186mnaught[39m [38;5;186mbeneath'[38;5;231m,[39m [38;5;231m()[39m [38;5;231m=>[39m [38;5;231m{[39m
+
+[32m●[39m [1mUpdate[0m[39m[49m(blackbox/driver.route.stack.acceptance.test.ts)
+[37m  ⎿  [39mAdded [1m4[0m[39m[49m lines
+     [2m[38;5;231m 255 [0m[38;5;231m[49m         expect(res.code).toEqual([38;5;141m0[38;5;231m);[39m
+     [2m[38;5;231m 256 [0m[38;5;231m[49m         expect(res.stdout).toContain([38;5;186m'no parent waits'[38;5;231m);[39m
+     [2m[38;5;231m 257 [0m[38;5;231m[49m       });[39m
+     [38;5;77m[48;5;22m 258 +[38;5;231m                                                                                                                                                                           [39m[49m
+     [38;5;77m[48;5;22m 259 +[38;5;231m      then([38;5;186m'it matches the snapshot'[38;5;231m, () => {                                                                                                                              [39m[49m
+     [38;5;77m[48;5;22m 260 +[38;5;231m        expect(sanitizeTimeForSnapshot(res.stdout)).toMatchSnapshot();                                                                                                     [39m[49m
+     [38;5;77m[48;5;22m 261 +[38;5;231m      });                                                                                                                                                                  [39m[49m
+     [2m[38;5;231m 262[0m[39m[49m [38;5;231m [39m    [38;5;231m});[39m
+     [2m[38;5;231m 263[0m[39m[49m [38;5;231m [39m  [38;5;231m});[39m
+     [2m[38;5;231m 264[0m[39m[49m [38;5;231m [39m
+
+[37m●[39m [1mUpdate[0m[39m[49m(blackbox/driver.route.stack.acceptance.test.ts)
+
+[97m─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[39m [1m[97mEdit file[0m[39m[49m
+ [37mblackbox/driver.route.stack.acceptance.test.ts[39m
+[30m╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+[2m[38;5;231m 338 [0m[38;5;231m[49m         expect(res.stdout).toContain([38;5;186m'dropped parent-route'[38;5;231m);[39m
+[2m[38;5;231m 339 [0m[38;5;231m[49m         expect(res.stdout).toContain([38;5;186m'you are at the root'[38;5;231m);[39m
+[2m[38;5;231m 340 [0m[38;5;231m[49m       });[39m
+[38;5;77m[48;5;22m 341 +[38;5;231m
+[38;5;77m 342 +[38;5;231m      then([38;5;186m'it matches the snapshot'[38;5;231m, () => {
+[38;5;77m 343 +[38;5;231m        expect(sanitizeTimeForSnapshot(res.stdout)).toMatchSnapshot();
+[38;5;77m 344 +[38;5;231m      });
+[2m[49m 345 [0m[38;5;231m[49m     });[39m
+[2m[38;5;231m 346[0m[39m[49m [38;5;231m [39m
+[2m[38;5;231m 347[0m[39m[49m [38;5;231m [39m    [38;5;231mwhen([38;5;186m'[t2][39m [38;5;186mthe[39m [38;5;186mstop[39m [38;5;186mhook[39m [38;5;186mfires[39m [38;5;186magain,[39m [38;5;186mledger[39m [38;5;186mnow[39m [38;5;186mrepaired'[38;5;231m,[39m [38;5;231m()[39m [38;5;231m=>[39m [38;5;231m{[39m
+[30m╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+[39m Do you want to make this edit to [1mdriver.route.stack.acceptance.test.ts[0m[39m[49m?
+ [97m❯[39m [37m1.[39m [97mYes[39m
+   [37m2.[39m Yes, allow all edits during this session [1m(shift+tab)[0m[39m[49m
+   [37m3.[39m No
+
+ [37mEsc[39m [37mto[39m [37mcancel · Tab to amend[39m

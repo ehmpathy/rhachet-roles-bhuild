@@ -4,7 +4,8 @@ import * as os from 'os';
 import * as path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
-import { genTestGitRepo } from '../.test/infra';
+import { genTestGitRepo, setConsumerLinks } from '../.test/infra';
+import { expectSkillPassed } from './.test/utils';
 
 const SKILL_PATH = path.join(
   __dirname,
@@ -26,7 +27,7 @@ const findFeedbackFile = (input: {
 
 /**
  * .what = creates a temp copy of fixture with real git history
- * .why = avoids git-within-git issues by isolating in /tmp
+ * .why = avoids git-within-git issues via isolation in /tmp
  */
 const prepareFixtureWithGit = (input: { fixturePath: string }): string => {
   // fail fast if fixture doesn't exist
@@ -50,11 +51,18 @@ const prepareFixtureWithGit = (input: { fixturePath: string }): string => {
     execSync('git commit -m "feat: add implementation"', { cwd: repoDir });
   }
 
+  // 🔴 the skill shells `claude` with cwd = this repo, so this repo boots
+  //   rhachet's hooks. a repo with no `.agent/` refuses outright —
+  //   "✋ ConstraintError: no .agent/ found in this repo" — and a fixture
+  //   that cannot host the skill is not a fixture, it is a false negative.
+  //   a real consumer linked the roles to obtain the skill at all, so the
+  //   faithful fixture carries `.agent/` too
+  setConsumerLinks({ repoDir });
+
   return repoDir;
 };
 
-// .note = deprecated: anthropic api key disabled, queued for xai brain integration
-describe.skip('review.deliverable', () => {
+describe('review.deliverable', () => {
   given('[case1] valid behavior with complete deliverable', () => {
     const scene = useBeforeAll(async () => {
       const fixture = path.join(FIXTURES_PATH, 'valid-behavior');
@@ -82,7 +90,7 @@ describe.skip('review.deliverable', () => {
           { timeout: 180000 },
         ); // 2 min timeout for claude
 
-        expect(result.status).toBe(0);
+        expectSkillPassed(result);
 
         const behaviorDir = path.join(
           scene.gitRepo,
@@ -135,7 +143,7 @@ describe.skip('review.deliverable', () => {
           { timeout: 180000 },
         );
 
-        expect(result.status).toBe(0);
+        expectSkillPassed(result);
 
         const behaviorDir = path.join(
           scene.gitRepo,
@@ -166,7 +174,7 @@ describe.skip('review.deliverable', () => {
           { timeout: 180000 },
         );
 
-        expect(result.status).toBe(0);
+        expectSkillPassed(result);
 
         const behaviorDir = path.join(
           scene.gitRepo,
@@ -358,7 +366,7 @@ describe.skip('review.deliverable', () => {
           { timeout: 180000 },
         );
 
-        expect(result.status).toBe(0);
+        expectSkillPassed(result);
 
         const behaviorDir = path.join(
           scene.gitRepo,

@@ -34,12 +34,12 @@ exports[`init.behavior.scaffold given: [case3] direct: unbound branch when: [t0]
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.auto-bind-test/0.wish.md
-   └─ [2mtip: use --open to open the wish automatically[0m
+   └─ tip: use --open to open the wish automatically
 
 🍄 we'll remember,
    ├─ branch feature/auto-bind <-> behavior v{DATE}.auto-bind-test
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ branch bound to behavior, to boot via hooks
+   └─ branch bound to route, to drive via hooks"
 `;
 
 exports[`init.behavior.scaffold given: [case3] direct: unbound branch when: [t0] init.behavior executed then: auto-binds current branch to created behavior 2`] = `""`;
@@ -78,12 +78,12 @@ exports[`init.behavior.scaffold given: [case3] direct: unbound branch when: [t0]
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.test-behavior/0.wish.md
-   └─ [2mtip: use --open to open the wish automatically[0m
+   └─ tip: use --open to open the wish automatically
 
 🍄 we'll remember,
    ├─ branch feature/new-behavior-test <-> behavior v{DATE}.test-behavior
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ branch bound to behavior, to boot via hooks
+   └─ branch bound to route, to drive via hooks"
 `;
 
 exports[`init.behavior.scaffold given: [case3] direct: unbound branch when: [t0] init.behavior executed then: creates behavior directory with all scaffold files 2`] = `""`;

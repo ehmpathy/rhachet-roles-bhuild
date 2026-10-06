@@ -1,5 +1,13 @@
+# .what = paths depcheck must not scan (gitignore syntax)
+# .why  = `.agent/` holds linked role artifacts and per-actor runtime scratch —
+#         `.agent/.actors/<actor>/brain/.claude/plugins/**` caches claude-code
+#         plugin marketplaces, whose own test files import packages this repo
+#         does not depend on. depcheck reported one as a MISSING dependency
+#         (`claude-code`), so `test:lint` failed on a file that is gitignored
+#         and is not this package's source. none of `.agent/` ever is.
 ignore-patterns:
-  - .agent # linked role and actor dirs: their deps are not this repo's
+  - .agent
+
 ignores:
   - depcheck
   - declapract

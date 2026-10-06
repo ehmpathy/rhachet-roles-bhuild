@@ -1,0 +1,63 @@
+
+🪨 run solid skill repo=.this/role=any/skill=git.crew.read
+
+     │     the extant ones, and pave the path for any new ones. the steps are below
+     │
+     ├─ the why
+     │  └─ the repo vocabulary compiles hour by hour; a term touched but not tended
+     │     is a lesson lost — the next traveler re-derives it, or drifts to a
+  synonym.
+     │     an hour has passed, so the moment to tend it is now
+     │
+     ├─ do this now — review + redistill the terms this round touched
+     │  ├─ 1. recall — which domain objects & operations did you declare or engage?
+     │  │        split each name into its terms (getStone → verb `get` + noun
+  `stone`)
+     │  ├─ 2. conform-or-dispute each EXTANT term (already in the glossary):
+     │  │     ├─ your contract uses the canonical word → conform, you are done
+     │  │     └─ you reached for a synonym → rename to the canonical word,
+     │  │           or open a dispute in its `.reason` (adhere, or argue — never
+  drift)
+     │  ├─ 3. pave the path for each NEW term (born this round, not yet in the
+  glossary):
+     │  │     ├─ write its `term=<x>._.choice.*` cluster:
+     │  │     │     ├─ term=<x>._.choice._.md              (say: chosen word, kind,
+  forbidden synonyms)
+     │  │     │     ├─ term=<x>._.choice.reason.md         (ref: etymology, disputes,
+   evidence — required)
+     │  │     │     └─ term=<x>._.choice.example=<abc>.md  (ref: one per notable
+  example — optional)
+     │  │     └─ or cite it — point to the extant declaration you reused
+     │  └─ 4. articulate TODAY's progress file — REQUIRED, the last step every round:
+     │        ├─ what you conformed, disputed, and paved this round — and why
+     │        ├─ a term the round SETTLED (declared dobj/dop, judged synonym) →
+  capture it NOW
+     │        ├─ defer ONLY a term you truly cannot finish (needs discovery, dispute
+  still open)
+     │        ├─ 🟡 ONE FILE PER DAY — append within today, never across days
+     │        └─ sentinel =
+  .agent/.cache/repo=bhrain/role=learner/skill=learn.domain.terms/progress.$date.md
+     │
+     ├─ the canon — what a term is + why it is kept
+     │  ├─ why  · im_an.obsessive_learner.for.domain.terms.md (the trait)
+     │  ├─ rule · rule.require.domain-term-itemization (itemize each declared term)
+     │  ├─ rule · rule.forbid.domain-term-synonyms (canonical term, or dispute)
+     │  ├─ how  · template.domain-term.md + howto.domain-term-disputes.[guide].md
+     │  └─ glos · .agent/repo=.this/role=any/briefs/domain.terms/.readme.md
+     │
+     ├─ the time to capture is now
+     │  └─ your distillation went stale (> 1 hour) — tend it before you rest
+     │
+     └─ 🪷 distill, then rest — the glossary grows, the floor rises for all who
+  follow
+
+
+[38;5;131m✽[39m [38;5;131mCultivating…[39m [38;5;246m(1h[39m [38;5;246m10m[39m [38;5;246m38s[39m [38;5;246m·[39m [38;5;246m↑[39m [38;5;246m3.1k[39m [38;5;246mtokens)[39m
+[38;5;246m [39m [38;5;246m⎿[39m [38;5;246m Tip:[39m [38;5;246mUse[39m [38;5;246m/clear[39m [38;5;246mto[39m [38;5;246mstart[39m [38;5;246mfresh[39m [38;5;246mwhen[39m [38;5;246mswitching[39m [38;5;246mtopics[39m [38;5;246mand[39m [38;5;246mfree[39m [38;5;246mup[39m [38;5;246mcontext[39m
+
+[38;5;244m─────────────────────────────────────────────────────────────────────────────────────────────
+[38;5;246m❯ [1;7m[39m%[0m
+
+[38;2;186;225;255minfrastructure.beav.feat-camp-git-backup-bucket[39m on [38;2;224;187;228mbeav/feat-camp-git-backup-bucket[39m [38;2;224;187;228m[$!?][39m too
+k [38;2;255;255;186m1h11m10s[39m at [38;2;255;255;186m16:15:22[39m
+[1m[38;2;186;255;201m➜[0m

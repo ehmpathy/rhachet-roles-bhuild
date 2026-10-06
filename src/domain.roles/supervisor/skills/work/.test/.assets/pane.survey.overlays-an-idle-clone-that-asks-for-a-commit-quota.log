@@ -1,0 +1,43 @@
+
+🪨 run solid skill repo=.this/role=any/skill=git.crew.read
+
+  ├──────────────────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ [38;5;153m.gitignore[39m                                                       │ dropped [38;5;153mbin/*.bc[39m                                                                                                │
+  ├──────────────────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ 3 fixtures                                                       │ dropped the [38;5;153mbin[39m symlinks and [38;5;153mACCEPTANCE_ROUTE_BIN[39m                                                               │
+  ├──────────────────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ [38;5;153mbench.acceptance[39m                                                 │ dropped the bun probe and [38;5;153m--route-bin-off[39m                                                                       │
+  ├──────────────────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ stale bind flag                                                  │ [38;5;153m.bind.beav.feat-bun-for-speed.flag[39m named a branch you've since renamed                                          │
+  └──────────────────────────────────────────────────────────────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+  Swept [38;5;153msrc/[39m and [38;5;153mblackbox/[39m for [38;5;153mbun|bin/route|route.dispatch|invoke.entry.route[39m — remaining hits are all the word "bundle" in unrelated prose.
+
+  [1mVerified:[0m[39m[49m [38;5;153mnpm run build[39m green · [38;5;153mtest:types[39m · [38;5;153mtest:format[39m · [38;5;153mtest:lint[39m all green · route skills answer correctly through the restored [38;5;153mnode -e[39m path.
+
+  [1mKept — two findings, not bun code[0m[39m[49m
+
+  - [1m[38;5;153mbuild:complete:xbit[0m[39m[49m — reworked to drop the [38;5;153mbin/route*[39m chmod, keeping the [38;5;153mfind[39m-based heal. This is what makes the 15 shebang-carrying skill files executable; rhachet's own [38;5;153mrepo [39m
+  [38;5;153mintrospect[39m enforces that bit.
+  - [1m[38;5;153m--workers[39m promoted to a named switch[0m[39m[49m in the instrument, with the mechanism written down: [38;5;153maggregate ÷ wall[39m recovers a run's effective parallelism, and two runs that differ there aren't
+  comparable on wall clock. That's the defect that produced my false "29% slower".
+
+  Also kept the bun [3mrecord[0m[39m[49m ([38;5;153m.route/…goal=bun-the-route-cli/[39m) — it's both the refutation and the demo that [38;5;153minit.goal[39m works.
+
+  [1mTwo things I can't finish[0m[39m[49m
+
+  1. [1m[38;5;153mpnpm-lock.yaml[39m still has [38;5;153mbun@1.3.5[0m[39m[49m at lines 2610 and 8124. [38;5;153mpnpm install[39m isn't permitted, and hand-editing a lockfile is the one edit that risks silent inconsistency — so I left it
+  correct-but-stale rather than guess.
+  2. [1mVersion drift:[0m[39m[49m [38;5;153mpackage.json[39m says [38;5;153m0.34.1[39m, main is [38;5;153m0.35.0[39m. The branch predates the release and needs a rebase; that fixes it for free.
+
+  Both want: [38;5;153mpnpm install[39m (after a rebase), plus [38;5;153mrhx git.commit.uses allow --global[39m and a quota so I can stage and commit.
+
+[38;5;246m✻[39m [38;5;246mChurned for 10m 14s[39m
+
+[36m● [1m[39mHow is Claude doing this session? (optional)[0m[39m[49m
+  [36m1[39m: Bad    [36m2[39m: Fine   [36m3[39m: Good   [36m0[39m: Dismiss
+
+[38;5;244m─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[39m❯ 
+[38;5;244m─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[39m  [38;5;147m⏵⏵ accept edits on[38;5;246m (shift+tab to cycle)[39m

@@ -1,0 +1,43 @@
+
+🪨 run solid skill repo=.this/role=any/skill=git.crew.read
+
+  ├───────────────────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┼───────────────────────┤
+  │ [97minvokeRolesBoot.budget[39m [97m[case4][39m [3m"renders exactly as it does today"[0m[39m[49m │ [97mexpect(errSpy).not.toHaveBeenCalled()[39m pinned [1mpre-F9[0m[39m[49m behavior │ 🔴 [1mreal defect — mine[0m[39m[49m │
+  ├───────────────────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┼───────────────────────┤
+  │ [97massertRepoBootSpecsWithinBudget[39m [97mstderr-halt[39m                       │ payload [97m450 → 464[39m                                            │ stale snapshot        │
+  ├───────────────────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┼───────────────────────┤
+  │ [97minvokeRolesBoot.budget[39m [97mstderr-halt-subject[39m                        │ payload [97m998 → 1030[39m                                           │ stale snapshot        │
+  └───────────────────────────────────────────────────────────────────┴──────────────────────────────────────────────────────────────┴───────────────────────┘
+
+  🔴 [1mThe first one is the one that matters.[0m[39m[49m When I built F9 (task #34) I shipped its three [3macceptance[0m[39m[49m clamps and never carried this [3mintegration[0m[39m[49m clamp with them — so a deliberate behavior
+  change went red on the next full run instead of at the moment I made it. F9's own fulcrum lists exactly three clamp sites; this file is not among them. That's the gap. I've inverted the
+  assertion rather than deleted it — it now pins the warn on stderr [1mand[0m[39m[49m asserts it stays off stdout, which is the half requirement 4 actually governs.
+
+  The two snapshots are stale from the budget line added to [97m<stats>[39m — which the payload counts, per F15's fixed-point. Both received values check out arithmetically ([97m464−20=444[39m,
+  [97m464/20=2320%[39m; [97m1030−20=1010[39m, [97m1030/20=5150%[39m), so a resnap is legitimate rather than a blanket accept — but I want to see it go green on its own run before I claim that.
+
+  I also landed F17's disclosure on [97mroles cost[39m — the reviewer's sharpest ergonomic point, and one I'd previously deferred onto a fulcrum for [3mscope[0m[39m[49m, which is not one of the two questions
+  scouts-honor asks. No snapshot pins that readout, only [97mstringContaining[39m, so it was safe and clean:
+
+  ⚠️   tokens here are ESTIMATED (chars / 4), never counted.
+     the budget gate counts for real (o200k_base), and this estimate reads LOW —
+     up to 26% low on one file, which is enough to misorder the list below.
+
+  [1mI'm blocked on one thing:[0m[39m[49m my shell's working directory is stuck in [97m.reviews/peer/[39m from an earlier [97mcd[39m, and every route back ([97mcd ..[39m, [97mcd <abs>[39m) is refused — so [97mrhx git.repo.test[39m can't
+  resolve [97m.agent/[39m and I can't run the resnap or verify the [97m[case4][39m fix. Everything above is from reading the log and the source.
+
+  If you drop me back at the worktree root I'll verify those three and then finish the convergence: r010's taken, stripping the false [97m13 > 0[39m paragraph from the yield, the per-concern
+  absorbs, and the re-arrive.
+
+● Ran [1m1[0m[39m[49m stop hook [37m(ctrl+o to expand)[39m
+  [37m⎿  [39mStop hook error: Failed with non-blocking status code: /bin/sh: 1: ./node_modules/.bin/rhx: not found
+
+[37m✻[39m [37mChurned for 2m 30s[39m
+
+[36m● [1m[39mHow is Claude doing this session? (optional)[0m[39m[49m
+  [36m1[39m: Bad    [36m2[39m: Fine   [36m3[39m: Good   [36m0[39m: Dismiss
+
+[37m─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[39m❯ [7m [0m[39m[49m
+[37m─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[39m  [97m⏵⏵[39m [97maccept[39m [97medits[39m [97mon[37m (shift+tab[39m [37mto[39m [37mcycle)[39m

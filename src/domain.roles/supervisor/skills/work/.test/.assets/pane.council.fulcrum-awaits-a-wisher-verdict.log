@@ -1,0 +1,37 @@
+
+🪨 run solid skill repo=.this/role=any/skill=git.crew.read
+
+
+[32m●[39m [1mBash[0m[39m[49m(npx rhachet run --skill route.drive)
+[37m  ⎿  [39m🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
+
+     🦉 where were we?
+     [2m… +8 lines (ctrl+o to expand)[0m[39m[49m
+
+[97m●[39m [1mThe halt stands.[0m[39m[49m [97mroute.drive[39m reports [97mhalted, stone marked blocked[39m, pointing at the blocker artifact — the stale i014 background write did not lift it.
+
+  The round is closed. The stone waits on four wisher calls, F10 first:
+
+  ┌─────┬────────────┬───────────────┬────────────────────────────────────────────────────────┐
+  │  #  │  fulcrum   │     class     │                      the question                      │
+  ├─────┼────────────┼───────────────┼────────────────────────────────────────────────────────┤
+  │ [1m1[0m[39m[49m   │ [1mF10[0m[39m[49m        │ 🔴 [1mSAFETY[0m[39m[49m     │ should [97mprotect:[39m survive a descent?                     │
+  ├─────┼────────────┼───────────────┼────────────────────────────────────────────────────────┤
+  │ 2   │ F7         │ 91% dirty     │ is the pinned raw-dump snapshot an acceptable interim? │
+  ├─────┼────────────┼───────────────┼────────────────────────────────────────────────────────┤
+  │ 3   │ F8         │ disclosed cut │ is resume-command-only acceptable against [97mcase=3[39m?      │
+  ├─────┼────────────┼───────────────┼────────────────────────────────────────────────────────┤
+  │ 4   │ F14 + rest │ cosmetic      │ staged, no action                                      │
+  └─────┴────────────┴───────────────┴────────────────────────────────────────────────────────┘
+
+  cat .behavior/v2026_09_16.route-stack-cutover/blocker/5.1.execution.from_vision.md
+
+  When you rule, I reprobe [1mF10's own gate[0m[39m[49m — not a neighbour's. A halt is retired by its own remedy.
+
+[37m✻[39m [37mChurned for 40s[39m
+
+[37m─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[39m❯ 
+[37m─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[39m  [37m🗿 5.1.execution.from_vision, review.peer, l3@i007, blocked ✋[39m                                                                                       [37mnew task? [97m/clear[37m to save [97m623K tokens[39m
+  [97m⏵⏵ accept edits on[37m (shift+tab[39m [37mto cycle)[39m

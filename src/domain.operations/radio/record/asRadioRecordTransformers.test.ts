@@ -71,18 +71,19 @@ const TEST_CASES = [
   {
     description: 'lift: a global block lifts globally',
     when: (): unknown =>
-      asRadioLiftCommand({ level: 'global', owner: 'ahbode' }),
+      asRadioLiftCommand({ level: 'global', owner: 'sandpine' }),
     expect: 'rhx radio.uses --global allow',
   },
   {
     description: 'lift: an org block lifts via the target org',
-    when: (): unknown => asRadioLiftCommand({ level: 'org', owner: 'ahbode' }),
-    expect: 'rhx radio.uses --org ahbode allow',
+    when: (): unknown =>
+      asRadioLiftCommand({ level: 'org', owner: 'sandpine' }),
+    expect: 'rhx radio.uses --org sandpine allow',
   },
   {
     description: 'lift: a local or default block lifts locally',
     when: (): unknown =>
-      asRadioLiftCommand({ level: 'default', owner: 'ahbode' }),
+      asRadioLiftCommand({ level: 'default', owner: 'sandpine' }),
     expect: 'rhx radio.uses allow',
   },
   {

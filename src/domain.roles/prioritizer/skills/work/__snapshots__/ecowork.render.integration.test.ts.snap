@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`ecowork.db given: [case12] the rootstruct view — decomposition rolled up by root then: [t4] the whole render matches snapshot 1`] = `
+"🦫 chew on it
+
+🔦 eco.priority get --output rootstruct
+   ├─ from: <db>
+   └─ the decomposition — goals rolled up by root
+
+   ├─ 🏔️ acme — p1·1m
+   │  └─ 🪨 ensell — p1·1m
+   │     └─ 🪨 product — p1·1d  USD 240.00/h
+   │        ├─ 🪨 alpha — p1·1d  ↑ USD 240.00/h (whole)
+   │        └─ 🪨 beta — p1·1d  USD 600.00/h
+   └─ ⛰️ tools — p2·1m
+      └─ 🪨 entool — p2·1m
+         └─ 🪨 helper — p2·1w
+
+🦫 dam fine! the rootstruct
+
+   └─ [2mtip: paste this render verbatim into your reply. summarize after it, never instead of it[0m
+"
+`;
+
+exports[`ecowork.db given: [case12b] the one-glyph lifecycle mark across the whole lifecycle then: [t6] the whole render matches snapshot 1`] = `
+"🦫 chew on it
+
+🔦 eco.priority get --output rootstruct
+   ├─ from: <db>
+   └─ the decomposition — goals rolled up by root
+
+   └─ 🏔️ root — p1·1m
+      ├─ 💧 gater — p1·1d
+      ├─ 🌊 repo.beav.done — p1·1d
+      ├─ 💤 repo.beav.parked — p1·1d
+      ├─ 🌾 repo.beav.underway — p1·1d
+      ├─ 🪨 rock-row — p1·1d
+      ├─ 💧 seed-gated — p1·1d
+      └─ 💧 seed-ready — p1·1d
+
+🦫 dam fine! the rootstruct
+
+   └─ [2mtip: paste this render verbatim into your reply. summarize after it, never instead of it[0m
+"
+`;

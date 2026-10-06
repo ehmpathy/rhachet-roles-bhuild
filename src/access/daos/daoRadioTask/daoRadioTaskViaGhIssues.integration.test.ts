@@ -43,8 +43,18 @@ const BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN =
  *   source .agent/repo=.this/role=any/skills/use.apikeys.sh
  *   npm run test:integration -- daoRadioTaskViaGhIssues
  */
-// TODO: unskip once keyrack provides BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN
-describe.skip('daoRadioTaskViaGhIssues', () => {
+// 🔴 unskipped 2026-09-28. the prior note read "unskip once keyrack provides
+//   BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN" — but keyrack is not the path this
+//   token ever takes. `.github/workflows/.test.yml` passes it DIRECTLY on the
+//   integration and acceptance shard jobs:
+//
+//     env:
+//       BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN: ${{ secrets.BHUILD_… }}
+//
+//   and the `.why` on that very line states that keyrack's firewall rejects
+//   it by design, since it is a classic `ghp_*` PAT. so the stated
+//   precondition can never be met, and the skip would have been permanent.
+describe('daoRadioTaskViaGhIssues', () => {
   // use the demo repo for tests (NEVER this repo)
   const testRepo = GITHUB_DEMO_REPO;
 

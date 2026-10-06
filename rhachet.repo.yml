@@ -34,3 +34,17 @@ roles:
       dirs: []
     skills:
       dirs: dist/domain.roles/dreamer/skills
+  - slug: prioritizer
+    readme: dist/domain.roles/prioritizer/readme.md
+    briefs:
+      dirs: dist/domain.roles/prioritizer/briefs
+    skills:
+      dirs: dist/domain.roles/prioritizer/skills
+    boot: dist/domain.roles/prioritizer/boot.yml
+  - slug: supervisor
+    readme: dist/domain.roles/supervisor/readme.md
+    briefs:
+      dirs: dist/domain.roles/supervisor/briefs
+    skills:
+      dirs: dist/domain.roles/supervisor/skills
+    boot: dist/domain.roles/supervisor/boot.yml

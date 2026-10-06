@@ -1,0 +1,23 @@
+
+🪨 run solid skill repo=.this/role=any/skill=git.crew.read
+
+
+  1. resolve the fireworks billing at https://fireworks.ai/account/billing — the reviewer brain cannot run until then
+  2. once lanes run: [97m--as overruled --level 1[39m on the phantom-blocker judge miscount, then [97m--as approved[39m
+
+  resume command after gate 1 (foreground only — [97mroute.foreground.guard[39m blocks background):
+
+  rhx route.stone.set --stone 1.vision --route .behavior/v2026_09_04.feat-behavior-route-upgrades --as arrived
+
+● Ran [1m2[0m[39m[49m stop hooks [37m(ctrl+o to expand)[39m
+  [37m⎿  [39mStop hook error: Failed with non-blocking status code: 🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
+     └─ 💥 failed with an error
+
+  reviewer or judge malfunctioned on stone 1.vision. a human must fix the malfunction before the route can proceed.
+
+[37m✻[39m [37mSautéed for 6m 20s[39m
+
+[37m─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[39m❯ 
+[37m─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[39m  [37m🗿[39m [37m1.vision,[39m [37mreview.peer,[39m [37ml1@i023,[39m [37mmalfunction[39m [37m💥[39m                                                                                                    [37mnew task? [97m/clear[37m to save [97m773K tokens[39m

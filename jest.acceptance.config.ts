@@ -24,10 +24,15 @@ const config: Config = {
     // here's an example of how to ignore esm module transformation, when needed
     // 'node_modules/(?!(@octokit|universal-user-agent|before-after-hook)/)',
   ],
+  // `.temp/` is gitignored scratch — a suite in there is not this repo's
   testMatch: [
     '**/*.acceptance.test.ts',
     '!**/.yalc/**',
     '!**/node_modules/**',
+    '!**/.temp/**',
+    // 🔴 `.agent/` is the same class — linked role artifacts plus per-actor
+    //    runtime scratch, none of it this repo's source. the integration config
+    //    already carried this line; unit and acceptance had drifted without it.
     '!**/.agent/**',
   ],
   setupFilesAfterEnv: ['./jest.acceptance.env.ts'],

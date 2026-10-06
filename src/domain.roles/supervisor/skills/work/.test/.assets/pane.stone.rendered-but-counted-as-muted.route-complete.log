@@ -1,0 +1,43 @@
+
+🪨 run solid skill repo=.this/role=any/skill=git.crew.read
+
+     [2m[38;5;231m 699 [0m[38;5;231m[49m [39m
+     [2m[38;5;231m 700 [0m[38;5;231m[49m   [38;5;242m/**[39m
+     [38;5;167m[48;5;52m 701 -[38;5;231m   * 🔴 the migration clamp.                                                                                                                                               [39m[49m
+     [38;5;77m[48;5;22m 701 +[38;5;231m   * 🔴 the migration clamp. [38;5;148mthis[38;5;231m wish moves [38;5;141m318[38;5;231m call sites onto [38;5;148mthis[38;5;231m operation,                                                                                           [39m[49m
+     [38;5;77m[48;5;22m 702 +[38;5;231m   * and the likeliest slip is the IMPORT — a wrong [38;5;197mexport[38;5;231m name binds [38;5;186m`handler`[38;5;231m                                                                                            [39m[49m
+     [38;5;77m[48;5;22m 703 +[38;5;231m   * to [38;5;186m`undefined`[38;5;231m, and the bare [38;5;186m`TypeError`[38;5;231m names neither [38;5;148mthis[38;5;231m util nor the fix.                                                                                         [39m[49m
+     [2m[38;5;231m 704 [0m[38;5;231m[49m    *[39m
+     [38;5;167m[48;5;52m 703 -[38;5;231m   * this wish moves 318 call sites onto this operation, and the likeliest slip in                                                                                         [39m[49m
+     [38;5;167m[48;5;52m 704 -[38;5;231m   * that move is the IMPORT — a wrong export name binds `handler` to `undefined`.                                                                                         [39m[49m
+     [38;5;167m[48;5;52m 705 -[38;5;231m   *                                                                                                                                                                       [39m[49m
+     [38;5;167m[48;5;52m 706 -[38;5;231m   * without the guard the author gets `TypeError: input.handler is not a                                                                                                  [39m[49m
+     [38;5;167m[48;5;52m 707 -[38;5;231m   * function`, which names neither this util nor the fix. both boundaries owe                                                                                             [39m[49m
+     [38;5;167m[48;5;52m 708 -[38;5;231m   * the same named answer to this fault.                                                                                                                                  [39m[49m
+     [38;5;167m[48;5;52m 709 -[38;5;231m   *                                                                                                                                                                       [39m[49m
+     [38;5;167m[48;5;52m 710 -[38;5;231m   * 🔴 **`[case9]` is NOT this cell's number.** the vision's `case=9` is *"the                                                                                            [39m[49m
+     [38;5;167m[48;5;52m 711 -[38;5;231m   *    invoke hangs for ninety seconds"* — the highest-care cell in the 176-cell                                                                                          [39m[49m
+     [38;5;167m[48;5;52m 712 -[38;5;231m   *    product — and it is pinned at                                                                                                                                      [39m[49m
+     [38;5;167m[48;5;52m 713 -[38;5;231m   *    `runLambdaEndpoint.credentialchain.integration.test.ts`. two `[case9]`                                                                                             [39m[49m
+     [38;5;167m[48;5;52m 714 -[38;5;231m   *    blocks in one suite make the catalog audit read garbage.                                                                                                           [39m[49m
+     [38;5;167m[48;5;52m 715 -[38;5;231m   *                                                                                                                                                                       [39m[49m
+     [38;5;167m[48;5;52m 716 -[38;5;231m   *    ⇒ this and `[case13]` below are **discovered experiences**, named at                                                                                               [39m[49m
+     [38;5;167m[48;5;52m 717 -[38;5;231m   *      execution rather than at the vision, so they take the next free numbers                                                                                          [39m[49m
+     [38;5;167m[48;5;52m 718 -[38;5;231m   *      and owe inventory rows (`rule.require.experience-catalog-evolution`).                                                                                            [39m[49m
+     [38;5;167m[48;5;52m 719 -[38;5;231m   *      both are alterpaths — a slip in the swap, never a path a sound                                                                                                   [39m[49m
+     [38;5;167m[48;5;52m 720 -[38;5;231m   *      migration walks — so neither owes a `case=N` demo file.                                                                                                          [39m[49m
+     [38;5;77m[48;5;22m 705 +[38;5;231m   * 🟡 [38;5;186m`[case12]`[38;5;231m and [38;5;186m`[case13]`[38;5;231m are DISCOVERED experiences, so they take the                                                                                             [39m[49m
+     [38;5;77m[48;5;22m 706 +[38;5;231m   *    next free numbers rather than the vision[38;5;186m's. both are alterpaths — a slip[38;5;231m                                                                                           [39m[49m
+     [38;5;77m[48;5;22m 707 +[38;5;231m   *    [38;5;197min[38;5;231m the swap — so neither owes a [38;5;186m`case=N`[38;5;231m demo file.                                                                                                                [39m[49m
+     [2m[38;5;231m 708[0m[39m[49m [38;5;231m [39m   [38;5;231m*/[39m
+     [2m[38;5;231m 709[0m[39m[49m [38;5;231m [39m  [38;5;231mgiven([38;5;186m'[case12][39m [38;5;186mthe[39m [38;5;186mhandler[39m [38;5;186mis[39m [38;5;186mnot[39m [38;5;186ma[39m [38;5;186mfunction[39m [38;5;186m—[39m [38;5;186ma[39m [38;5;186mbad[39m [38;5;186mimport'[38;5;231m,[39m [38;5;231m()[39m [38;5;231m=>[39m [38;5;231m{[39m
+     [2m[38;5;231m 710[0m[39m[49m [38;5;231m [39m    [38;5;231mwhen([38;5;186m'[t0][39m [38;5;186mthe[39m [38;5;186mhandler[39m [38;5;186mis[39m [38;5;186mundefined'[38;5;231m,[39m [38;5;231m()[39m [38;5;231m=>[39m [38;5;231m{[39m
+
+[31m✻[39m [31mPontificating… [37m(8m[39m [37m49s[39m [37m·[39m [37m↑[39m [37m8.4k[39m [37mtokens[39m [37m·[39m [37mthought[39m [37mfor[39m [37m1s)[39m
+[37m [39m [37m⎿[39m [37m Tip:[39m [37mUse[39m [37m/btw[39m [37mto[39m [37mask[39m [37ma[39m [37mquick[39m [37mside[39m [37mquestion[39m [37mwithout[39m [37minterrupting[39m [37mClaude's[39m [37mcurrent[39m [37mwork[39m
+
+[37m─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯ [39m
+[37m─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[39m  [37m🗿[39m [37mroute[39m [37mcomplete[39m [37m🌴🤙[39m
+  [97m⏵⏵[39m [97maccept[39m [97medits[39m [97mon[37m (shift+tab[39m [37mto[39m [37mcycle)[39m

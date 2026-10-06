@@ -7,7 +7,7 @@ import { asRadioTaskRecordKey } from './asRadioTaskRecordKey';
 
 describe('asRadioTaskRecordKey', () => {
   const repo = new RadioTaskRepo({ owner: 'ehmpathy', name: 'rhachet' });
-  const repoOther = new RadioTaskRepo({ owner: 'ahbode', name: 'rhachet' });
+  const repoOther = new RadioTaskRepo({ owner: 'sandpine', name: 'rhachet' });
 
   given('[case1] a create', () => {
     when('[t0] the same repo and title are keyed twice', () => {

@@ -1,0 +1,19 @@
+
+🪨 run solid skill repo=.this/role=any/skill=git.crew.read
+
+     [38;5;114m✔ [9m[38;5;246mBuild ip→region derivation via cloudfront viewer-geo headers (F4)[0m[39m[49m
+     [38;5;114m✔ [9m[38;5;246mBuild getCallerRegion query handler + register[0m[39m[49m
+     [38;5;114m✔[39m [9m[38;5;246mGeneralize getStaticMapOfRegion to full by-selector + {image,region}[0m[39m[49m
+     [38;5;114m✔[39m [9m[38;5;246mDiagnose why by.ip still returns null at the edge[0m[39m[49m
+     [38;5;114m✔ [9m[38;5;246mEnskill the edge-route probe instead of raw curl[0m[39m[49m
+     [38;5;114m✔ [9m[38;5;246mDispatch the ten queued radio dreams once the global gate lifts[0m[39m[49m
+     [38;5;246m … +19 completed[39m
+
+[38;5;244m───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[38;5;246m❯ [39malso, shouldnt we use DomainObject.contract() ?
+
+
+  [7m [0m[39m[49m
+[38;5;244m───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[39m  [38;5;246m🗿[39m [38;5;246m5.3.verification,[39m [38;5;246mreview.peer,[39m [38;5;246ml3@i007[39m [38;5;246m🔍[39m                                                                                                                          [38;5;246mctrl+g[39m [38;5;246mto[39m [38;5;246medit[39m [38;5;246min[39m [38;5;246mVim[39m
+  [38;5;147m⏵⏵[39m [38;5;147maccept[39m [38;5;147medits[39m [38;5;147mon[38;5;246m (shift+tab[39m [38;5;246mto[39m [38;5;246mcycle)[39m

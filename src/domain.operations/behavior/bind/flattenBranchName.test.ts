@@ -3,8 +3,8 @@ import { flattenBranchName } from './flattenBranchName';
 const TEST_CASES = [
   {
     description: 'replaces forward slashes with dots',
-    given: { branchName: 'vlad/dispatch-behavior-hooks' },
-    expect: { output: 'vlad.dispatch-behavior-hooks' },
+    given: { branchName: 'bert/dispatch-behavior-hooks' },
+    expect: { output: 'bert.dispatch-behavior-hooks' },
   },
   {
     description: 'handles multiple nested slashes',

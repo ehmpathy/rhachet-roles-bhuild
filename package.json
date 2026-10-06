@@ -17,6 +17,7 @@
   "main": "dist/index.js",
   "exports": {
     ".": "./dist/index.js",
+    "./cli": "./dist/contract/cli/index.js",
     "./package.json": "./package.json"
   },
   "engines": {
@@ -35,7 +36,7 @@
     "fix": "npm run fix:format && npm run fix:lint",
     "build:clean": "chmod -R u+w dist 2>/dev/null; rm -rf dist/",
     "build:compile": "tsc -p ./tsconfig.build.json && tsc-alias -p ./tsconfig.build.json",
-    "build:complete:dist": "rsync -a --prune-empty-dirs --include='*/' --exclude='**/.route/**' --exclude='**/.scratch/**' --exclude='**/.behavior/**' --exclude='**/*.test.sh' --include='**/readme.md' --include='**/*.template.md' --include='**/boot.yml' --include='**/briefs/**/*.md' --include='**/briefs/**/*.md.min' --include='**/briefs/*.md' --include='**/briefs/*.md.min' --include='**/skills/**/*.sh' --include='**/skills/*.sh' --include='**/skills/**/*.jsonc' --include='**/skills/*.jsonc' --include='**/inits/**/*.sh' --include='**/inits/*.sh' --include='**/inits/**/*.jsonc' --include='**/inits/*.jsonc' --include='**/templates/**/*.md' --include='**/templates/*.md' --include='**/templates/*.stone' --include='**/templates/*.guard' --include='**/templates/*.guard.*' --include='**/keyrack.yml' --exclude='*' src/ dist/",
+    "build:complete:dist": "rsync -a --prune-empty-dirs --include='*/' --exclude='**/.route/**' --exclude='**/.scratch/**' --exclude='**/.behavior/**' --exclude='**/*.test.sh' --include='**/readme.md' --include='**/*.template.md' --include='**/boot.yml' --include='**/briefs/**/*.md' --include='**/briefs/**/*.md.min' --include='**/briefs/*.md' --include='**/briefs/*.md.min' --include='**/skills/**/*.sh' --include='**/skills/*.sh' --include='**/skills/**/*.mjs' --include='**/skills/*.mjs' --include='**/skills/**/*.jsonc' --include='**/skills/*.jsonc' --include='**/inits/**/*.sh' --include='**/inits/*.sh' --include='**/inits/**/*.jsonc' --include='**/inits/*.jsonc' --include='**/templates/**/*.md' --include='**/templates/*.md' --include='**/templates/*.stone' --include='**/templates/*.guard' --include='**/templates/*.guard.*' --include='**/keyrack.yml' --exclude='*' src/ dist/",
     "build:complete:permissions": "find dist -name '*.sh' -type f -exec chmod +x {} \\;",
     "build:complete:repo": "npx rhachet repo introspect",
     "build:complete": "npm run build:complete:dist && npm run build:complete:permissions && npm run build:complete:repo",
@@ -49,9 +50,9 @@
     "test:lint": "npm run test:lint:biome && npm run test:lint:deps",
     "test:unit": "jest -c ./jest.unit.config.ts --forceExit --verbose --passWithNoTests $([ -n \"${CI:-}\" ] && echo '--ci') $([ -z \"${THOROUGH:-}\" ] && echo '--changedSince=main') $([ -n \"${RESNAP:-}\" ] && echo '--updateSnapshot')",
     "test:integration": "jest -c ./jest.integration.config.ts --forceExit --verbose --passWithNoTests $([ -n \"${CI:-}\" ] && echo '--ci') $([ -z \"${THOROUGH:-}\" ] && echo '--changedSince=main') $([ -n \"${RESNAP:-}\" ] && echo '--updateSnapshot')",
-    "test:acceptance:locally": "npm run build && LOCALLY=true jest -c ./jest.acceptance.config.ts --forceExit --verbose --runInBand --passWithNoTests $([ -n \"${CI:-}\" ] && echo '--ci') $([ -n \"${RESNAP:-}\" ] && echo '--updateSnapshot')",
+    "test:acceptance:locally": "npm run build && LOCALLY=true jest -c ./jest.acceptance.config.ts --forceExit --verbose --passWithNoTests $([ -n \"${CI:-}\" ] && echo '--ci') $([ -n \"${RESNAP:-}\" ] && echo '--updateSnapshot')",
     "test": "npm run test:commits && npm run test:types && npm run test:format && npm run test:lint && npm run test:unit && npm run test:integration && npm run test:acceptance:locally",
-    "test:acceptance": "npm run build && jest -c ./jest.acceptance.config.ts --forceExit --verbose --runInBand --passWithNoTests $([ -n \"${CI:-}\" ] && echo '--ci') $([ -n \"${RESNAP:-}\" ] && echo '--updateSnapshot')",
+    "test:acceptance": "npm run build && jest -c ./jest.acceptance.config.ts --forceExit --verbose --passWithNoTests $([ -n \"${CI:-}\" ] && echo '--ci') $([ -n \"${RESNAP:-}\" ] && echo '--updateSnapshot')",
     "prepush": "npm run test && npm run build",
     "prepublish": "npm run build",
     "preversion": "npm run prepush",
@@ -67,7 +68,7 @@
     "helpful-errors": "1.7.3",
     "iso-time": "1.11.3",
     "simple-on-disk-cache": "1.8.1",
-    "test-fns": "1.15.0",
+    "test-fns": "1.15.7",
     "with-simple-mutex": "0.1.1",
     "zod": "4.3.4"
   },

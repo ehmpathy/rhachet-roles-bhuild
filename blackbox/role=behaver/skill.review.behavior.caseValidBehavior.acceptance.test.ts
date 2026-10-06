@@ -4,14 +4,14 @@ import * as path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
+  expectSkillPassed,
   FIXTURES_PATH,
   findFeedbackFile,
   prepareFixtureWithGit,
   SKILL_PATH,
 } from './.test/utils';
 
-// .note = deprecated: anthropic api key disabled, queued for xai brain integration
-describe.skip('review.behavior', () => {
+describe('review.behavior', () => {
   given('[case1] valid behavior with all artifacts', () => {
     const scene = useBeforeAll(async () => {
       const fixture = path.join(FIXTURES_PATH, 'valid-behavior');
@@ -39,7 +39,7 @@ describe.skip('review.behavior', () => {
           { timeout: 180000 },
         );
 
-        expect(result.status).toBe(0);
+        expectSkillPassed(result);
 
         const behaviorDir = path.join(
           scene.gitRepo,
@@ -69,7 +69,7 @@ describe.skip('review.behavior', () => {
           { timeout: 180000 },
         );
 
-        expect(result.status).toBe(0);
+        expectSkillPassed(result);
 
         const behaviorDir = path.join(
           scene.gitRepo,
@@ -99,7 +99,7 @@ describe.skip('review.behavior', () => {
           { timeout: 180000 },
         );
 
-        expect(result.status).toBe(0);
+        expectSkillPassed(result);
 
         const behaviorDir = path.join(
           scene.gitRepo,
@@ -129,7 +129,7 @@ describe.skip('review.behavior', () => {
           { timeout: 180000 },
         );
 
-        expect(result.status).toBe(0);
+        expectSkillPassed(result);
 
         const behaviorDir = path.join(
           scene.gitRepo,

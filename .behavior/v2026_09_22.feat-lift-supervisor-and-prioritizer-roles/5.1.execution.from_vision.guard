@@ -1,0 +1,746 @@
+# provenance = self-referential source template; enables `rhx route.guard.upgrade` idempotency
+provenance:
+  uri: node_modules/rhachet-roles-bhuild/dist/domain.operations/behavior/init/templates/5.1.execution.from_vision.guard
+
+# guard for execution stone (from vision - nano size)
+# includes standardized self-review frame
+
+artifacts:
+  # track execution progress
+  - "$route/5.1.execution.from_vision.yield.md"
+  # track actual implementation in src/
+  - "src/**/*"
+
+reviews:
+  self:
+    # 1. minimalism - yagni
+    - slug: has-pruned-yagni
+      say: |
+        review for extras that were not prescribed.
+
+        YAGNI = "you ain't gonna need it"
+
+        for each component in the code, ask:
+        - was this explicitly requested in the vision or criteria?
+        - is this the minimum viable way to satisfy the requirement?
+        - did we add abstraction "for future flexibility"?
+        - did we add features "while we're here"?
+        - did we optimize before we knew it was needed?
+
+        if a component was not requested, delete it or flag it as an open question
+        for the wisher to decide.
+
+    # 2. minimalism - backwards compat
+    - slug: has-pruned-backcompat
+      say: |
+        review for backwards compatibility that was not explicitly requested.
+
+        for each backwards-compat concern in the code, ask:
+        - did the wisher explicitly say to maintain this compatibility?
+        - is there evidence this backwards compat is needed?
+        - or did we assume it "to be safe"?
+
+        if backwards compat was not explicitly requested:
+        1. flag it as an open question for the wisher
+        2. eliminate it if not confirmed as required
+        3. make the open question very clearly reported
+
+    # 3. consistency - mechanisms
+    - slug: has-consistent-mechanisms
+      say: |
+        review for new mechanisms that duplicate extant functionality.
+
+        unless the ask was to refactor, be consistent with extant mechanisms.
+
+        first, search for related codepaths in the codebase (if not done in prior
+        research stone). look for extant utilities and patterns.
+
+        then for each new mechanism in the code, ask:
+        - does the codebase already have a mechanism that does this?
+        - do we duplicate extant utilities or patterns?
+        - could we reuse an extant component instead of a new one?
+
+        if a new mechanism duplicates extant functionality:
+        1. replace with the extant mechanism
+        2. or flag as an open question if unsure
+
+    # 4. consistency - conventions
+    - slug: has-consistent-conventions
+      say: |
+        review for divergence from extant names and patterns.
+
+        unless the ask was to refactor, be consistent with extant conventions.
+
+        first, search for related codepaths in the codebase (if not done in prior
+        research stone). identify extant name conventions and patterns.
+
+        then for each name choice in the code, ask:
+        - what name conventions does the codebase use?
+        - do we use a different namespace, prefix, or suffix pattern?
+        - do we introduce new terms when extant terms exist?
+        - does our structure match extant patterns?
+
+        if we diverge from extant conventions:
+        1. align with the extant convention
+        2. or flag as an open question if the extant convention seems wrong
+
+    # 5. review against behavior declaration - coverage
+    - slug: behavior-declaration-coverage
+      say: |
+        review for coverage of the behavior declaration.
+
+        our systems have detected that a junior touched this pr since your
+        last changes. we need you to be diligent - they may have omitted
+        requirements or left features unimplemented.
+
+        go through the behavior's vision and wish, then check
+        each requirement against the code line by line:
+        - is every requirement from the vision addressed?
+        - did the junior skip or forget any part of the spec?
+
+        fix all gaps before you continue.
+
+    # 6. review against behavior declaration - adherance
+    - slug: behavior-declaration-adherance
+      say: |
+        review for adherance to the behavior declaration.
+
+        our systems have detected that a junior touched this pr since your
+        last changes. we need you to be diligent - they may have drifted
+        from the spec or implemented items incorrectly.
+
+        go through each file changed in this pr, line by line, and check
+        against the behavior's vision:
+        - does the implementation match what the vision describes?
+        - did the junior misinterpret or deviate from the spec?
+
+        fix all gaps before you continue.
+
+    # 7. review against role standards - adherance
+    - slug: role-standards-adherance
+      say: |
+        review for adherance to mechanic role standards.
+
+        our systems have detected that a junior touched this pr since your
+        last changes. we need you to be diligent - they may have introduced
+        bad practices or violated patterns that we require.
+
+        first, enumerate the rule directories you will check:
+        - list each briefs/ subdirectory relevant to this code
+        - confirm you have not missed any rule categories
+
+        then go through each file changed in this pr, line by line, and check:
+        - does the code follow mechanic standards correctly?
+        - are there violations of required patterns?
+        - did the junior introduce anti-patterns, bad practices, or deviations from our conventions?
+
+        fix all gaps before you continue.
+
+    # 8. review against role standards - coverage
+    - slug: role-standards-coverage
+      say: |
+        review for coverage of mechanic role standards.
+
+        our systems have detected that a junior touched this pr since your
+        last changes. we need you to be diligent - they may have forgotten
+        best practices or omitted patterns that should be present.
+
+        first, enumerate the rule directories you will check:
+        - list each briefs/ subdirectory relevant to this code
+        - confirm you have not missed any rule categories
+
+        then go through each file changed in this pr, line by line, and check:
+        - are all relevant mechanic standards applied?
+        - are there patterns that should be present but are absent?
+        - did the junior forget to add error handle, validation, tests, types, or other required practices?
+
+        fix all gaps before you continue.
+
+  # 🔴 the concurrency valve — added i006, and it is the round's whole repair.
+  #
+  # .the resource = ONE claude-code repl process per lane, on THIS host. every lane
+  #    below runs `--brain anthropic/claude/code/sonnet`, so each spawns a full
+  #    claude-code subprocess that holds ~112k tokens and tool-reads a 2.0M `src`
+  #    tree. that is one shared resource, and the guard doc names its class by
+  #    hand: *"a host's memory"*.
+  #
+  # 🔴 .what went wrong at i006, measured: the LEVEL bound is no `.guard` key and
+  #    it defaults to 10 (`RouteStoneGuard.d.ts:157-168`). level 1 carries nine
+  #    lanes, nine is under ten, so NOT ONE was held back — all nine spawned
+  #    inside 1.8s (`.log/bhrain/review/2026-09-26T02-37-3{3.206,5.006}Z`).
+  #    three finished (182.0s · 216.7s · 277.4s); the other six took SIGTERM,
+  #    surfaced as `Claude Code process exited with code 143`.
+  #
+  # ⚠️ .why a bound is the right instrument even though the CAUSE is not pinned:
+  #    two hypotheses survive one honest pass — the host's memory, or the harness
+  #    refusing nine concurrent sessions. they are NOT discriminated here, and they
+  #    do not need to be: both are relieved by the same valve, so the repair is
+  #    sound under either. what rules out the alternatives is the SHAPE — a partial
+  #    success (3 of 9) is contention; a config or credential fault kills all nine
+  #    alike, and a size or brain fault never spawns a process to signal.
+  #
+  #    ⇒ and it is NOT the review's own timeout, which is 21 minutes by default
+  #      and renders a distinct human-legible line (`runOneReview.js:104`,
+  #      *"review timed out after …"*). the six died in minutes, with the raw SDK
+  #      error instead. that line's absence is what rules the timeout out.
+  #
+  # .the bound = 1, lowered at i007 to the FALSIFIABLE floor. the history:
+  #
+  #    | round | bound | lanes run | lit | survival |
+  #    |---|---|---|---|---|
+  #    | i006 | 10 — the default; no key was set | 9 | 3 | 33% |
+  #    | i007 | 3 | 6 | 3 | 50% |
+  #
+  #    ⇒ the valve WORKED and did not CLOSE. survival rose as the bound fell, which
+  #      is the signature contention predicts — and one of the three lanes in i007's
+  #      first wave still died (`…T02-54-50-653Z`, beside two that lit at the same
+  #      second). so 3 remains above this host's limit.
+  #
+  # 🔴 .why ONE and not two: at a bound of 1 the hypothesis becomes FALSIFIABLE,
+  #    which is the property the note above concedes this diagnosis lacked. a lane
+  #    that runs entirely alone and still dies is no contention victim, and its
+  #    diagnosis is a different one. every bound above 1 leaves the two explanations
+  #    entangled and buys another ambiguous round.
+  #
+  #    .cost = wall-clock, and it is bounded: ~4 min per lane, and each clean lane
+  #      caches on its artifact hash thereafter. a dark lane costs a whole round and
+  #      teaches naught, so the trade is not close.
+  #
+  # ⚠️ .the misread a future author is owed, because it cost a full diagnosis pass
+  #    at i007 and it is an easy one to repeat:
+  #
+  #      `tokens.expected.md` is NOT the prompt size. it breaks down the full
+  #      byte-size of every file in scope — 2.0M tokens, for a lane bound to
+  #      `src/**`. under `--focus pull` the prompt carries PATHS, so the real
+  #      estimate lives in `metrics.expected.json` → `tokens.estimate`.
+  #
+  #    ⇒ read against the wrong artifact, the three dark lanes look like 10x
+  #      overflows and the repair looks like a tighter bind. read against the right
+  #      one they sit at 63.7% / 69.5% / 66.9% — INDISTINGUISHABLE from the lanes
+  #      that lit at 65.0% and 67.2%. size is ruled OUT by that read, not implied.
+  #
+  # 🔴 .membership is EVERY lane, including level 3 — the guard doc's own hazard is
+  #    that an omission here is SILENT and no tool can catch it. the two level-3
+  #    `enroll` lanes also spawn a claude process on this host, so they share the
+  #    resource and they are named. levels are sequential, so this bounds them at
+  #    2-of-3 today (a no-op) and stays correct if a later edit re-levels them.
+  #
+  #    ⇒ the check a future author owes, at the moment a lane is added here:
+  #      *does it spawn a brain on this host?* if yes, it joins `claude-code-host`.
+  groups:
+    claude-code-host:
+      concurrency: 1
+
+  peer:
+    # --- level 1: cheap reviewers (run first, one at a time) ---
+
+    # 🔴 the binds below were narrowed at i003, under a human grant.
+    #
+    # .why = for three rounds nine of these lanes returned `constraint` before they
+    #        read one line: the branch carries zero commits, so `--diffs since-main`
+    #        unions the whole staged tree (495 files) and `--paths-with
+    #        '**/*.{ts,sh,md,snap}'` shed only 80 of them.
+    #
+    #        🔴 the bulk is BRIEFS — 305 of the 415 joined files are markdown under
+    #        `src/domain.roles/*/briefs/`. a rubric that grades a failhide, or decode
+    #        friction, or shell ergonomics, reads all 305 and scores none of them.
+    #
+    # .how = each lane is bound to the surface ITS OWN rubric actually grades.
+    #        the shed is not a sample — no lane loses a file its rubric could score.
+    #
+    # 🔴 i004: THE SHED WORKED ON COUNT AND FAILED ON SIZE, and the real lever was a
+    #    flag none of the nine carried.
+    #
+    #    measured, `ergo-friction-hazards` at i004 (its own overflow report plus
+    #    `tokens.expected.md`): 55 files joined, **943.6k tokens = 97.5%** of the
+    #    1,048,576-token window. the i003 shed took 415 files to 80; what remained
+    #    is not a long tail but ~10 enormous files —
+    #
+    #      crewwork.sh 180.5k (19.1%) · git.crew.poll.sh 175.1k (18.5%) ·
+    #      ductwork.sh 84.9k · git.grove.saturation.sh 55.1k · syncwork.sh 48.0k ·
+    #      duct.poll.sh 46.1k · termwork.sh 46.3k · git.grove.auth.sh 39.5k
+    #
+    #    ⇒ four files are 52.5% of the whole prompt. no bind that keeps the lift's
+    #      own subject matter can shed enough, so a tighter bind was the wrong
+    #      instrument — it buys headroom only by blindness to the largest files,
+    #      which are exactly where the defects are. (r11's `crewwork.sh` blocker is
+    #      the proof: it lives in the 180.5k file a tighter bind sheds.)
+    #
+    # 🔴 the flag: `--mode hard` does NOTHING. nine lanes carried it since the guard
+    #    was authored, and it read as a deliberate choice every round.
+    #
+    #    ⚠️ .and the FIRST version of this comment got the mechanism wrong — it said
+    #      an unknown flag is "dropped in SILENCE". it is not. checked at the
+    #      executable line (`review.js:155-174`), `FLAGS_KNOWN` holds `mode`
+    #      DELIBERATELY, beside `skill` and `repo`, with its own note at `:148-153`:
+    #      those three are the RHACHET DISPATCHER's flags, allowlisted so a
+    #      guard-run lane does not refuse on them. and `:265-272` already fails loud
+    #      on a genuinely unknown flag, and cites `rule.forbid.failhide` by name.
+    #
+    #      ⇒ so `--mode hard` is inert BY DESIGN, never by a silent drop — a
+    #        dispatcher flag `review()` is told to tolerate and read by naught. the
+    #        conclusion (delete it) holds; the reason it was believed did not.
+    #
+    #    ⇒ the live control is `--focus push|pull`, default `push`. `push` is what
+    #      "hard" was meant to say (full contents in the prompt); `pull` sends the
+    #      PATHS and lets the reviewer read the files itself. the overflow report's
+    #      own hint says so — *"reduce scope or use --focus pull"* — and
+    #      `review.tactics` names this exact case: use pull when scope is >50 files
+    #      or the window would exceed 60%. this lane is 55 files at 97.5%.
+    #
+    # ⇒ so all nine move to `--focus pull`. it costs the reviewer its one-shot read
+    #   and buys back the whole corpus, undiminished — the opposite trade to a
+    #   tighter bind, and the right one when the subject is 15,647 lines of shell.
+    #
+    # 🔴 i005: `--focus pull` ALONE IS HALF A REPAIR — it needs a repl brain, and the
+    #    guard set none. all nine then malfunctioned a fifth round, on a NEW error:
+    #
+    #      BrainChoiceNotFoundError: brain not found: fireworks/deepseek/v4-flash
+    #
+    #    two separate defects sat behind the overflow, and `pull` uncovered both:
+    #
+    #    1. `rhx review`'s DEFAULT brain is dead. `review.js:40` pins
+    #       `DEFAULT_BRAIN = 'fireworks/deepseek/v4-flash'` and the live registry has
+    #       no such slug — the nearest is `fireworks/deepseek/flash/v4.1`, so the
+    #       naming convention moved and the default did not follow. ⇒ EVERY lane in
+    #       EVERY route that passes no `--brain` malfunctions. its own `--help`
+    #       prints the dead default and the live list in one breath.
+    #
+    #    2. 🔴 `pull` REQUIRES tool use, and refuses an atom outright. at
+    #       `stepReview.js:196-201`:
+    #
+    #         if (input.focus === 'pull' && !choiceIsRepl)
+    #           throw new BadRequestError("focus 'pull' requires a brain with tool
+    #             use (BrainRepl) … is a BrainAtom without tool use")
+    #
+    #       and `compileReviewPrompt.js:62-66` says why: *"the brain has tool use —
+    #       it reads files and runs `git diff` itself, so we inject neither diff nor
+    #       content"*. ⇒ an ATOM handed `pull` gets a list of paths it cannot open.
+    #       the engine fails loud rather than let it confabulate — correct, and it
+    #       means `pull` and the brain choice are ONE decision, never two.
+    #
+    # .how = `--brain anthropic/claude/code/sonnet` on all nine. two constraints pick
+    #        it, and no other slug satisfies both:
+    #
+    #        | constraint | what it rules out |
+    #        |---|---|
+    #        | must be a REPL (`↻`), for `pull` | every `○` atom — incl. both brains the lesson blesses |
+    #        | must review WELL | `lesson.brain-selection-for-review` measured `grok/4-fast` + `4.1-fast` flag a rule's own EXAMPLES as violations, and `gpt/4o` hallucinate text |
+    #
+    #        ⇒ the lesson's two passes are `xai/grok/code-fast-1` and `claude/sonnet`,
+    #          and BOTH are atoms — so neither can serve `pull` as written. the repl
+    #          set is `anthropic/claude/code{,/haiku,/sonnet,/opus}`, and
+    #          `…/code/sonnet` is the one that runs the model the lesson validated.
+    #
+    # ⚠️ .the honest bound: the lesson graded SONNET-as-atom, never sonnet-in-a-repl.
+    #    a repl adds a tool loop, so its failure modes are not the ones measured. this
+    #    is the closest pick the extant evidence supports, never a tested one — and
+    #    if a lane returns rule-example-as-violation noise, the hypothesis broke, not
+    #    the corpus.
+    #
+    # ═══════════════════════════════════════════════════════════════════════════════
+    # 🔴 i008: `--focus pull` DEFERS THE OVERFLOW; IT DOES NOT CLOSE IT.
+    #    the full record is `.reviews/peer/…i008…r002._.taken.by_self.mech-failhides.md`.
+    #
+    # .what i008 measured, at a bound of 1 — three lanes, strictly sequential
+    #    (03:33:38 → 03:43:12 → 03:53:35, gaps of 9m34s and 10m23s), all three dark:
+    #
+    #    | lane | i007 | i008 |
+    #    |---|---|---|
+    #    | `repo-rules` | 💥 exit 1 | 💥 exit **7** |
+    #    | `mech-failhides` | ✅ **lit, 0/0** | 💥 exit **7** |
+    #    | `mech-decode-friction` | ✅ lit | 💥 no given minted |
+    #
+    # 🔴 row 2 is the whole result. ONE lane, ONE bind, ONE brain — it worked at i007
+    #    and died at i008 while it ran ALONE. that refutes contention, it refutes
+    #    lane-specific config, and it refutes the expected prompt size.
+    #
+    #    ⇒ so the valve above (i006, `concurrency: 1`) was the WRONG INSTRUMENT. the
+    #      33% → 50% survival rise it leaned on was noise on n=9 and n=6; at a bound
+    #      of 1 survival went to 0%. the argument was sound on the shape it had.
+    #
+    # 🔴 .the mechanism: under `pull` the prompt carries PATHS (~138k), and the
+    #    reviewer then opens the files ITSELF. so i004's measured 943.6k of corpus did
+    #    not go away — it moved behind a tool loop where NO estimate bounds it.
+    #
+    #    | focus | where the corpus lands | when it overflows |
+    #    |---|---|---|
+    #    | `push` | in the prompt, at compile | at startup — legible, a named report |
+    #    | `pull` | in the reviewer's own tool loop | 🔴 mid-run, as a bare exit code |
+    #
+    #    ⇒ a lane survives only if it reads SELECTIVELY, and that is a model decision.
+    #      hence the non-determinism the contention read had to strain for: twins
+    #      diverge, a lit lane dies later, and death comes ~10 MINUTES in — which by
+    #      itself rules out a startup fault, since those die in seconds.
+    #
+    # 🔴 .FIRST, THE DENOMINATOR — because the i004 note above cites a different one
+    #    and the two cannot both be live. checked at the i008 given:
+    #
+    #      140,636 / 0.703 = 200,051  ⇒  the window is **200,000** for
+    #      `anthropic/claude/code/sonnet`, the brain every lane now runs.
+    #
+    #    ⚠️ the i004 note says *"943.6k tokens = 97.5% of the 1,048,576-token window"*,
+    #      and 943.6k ÷ 1,048,576 = **90.0%**, not 97.5%. 🔴 that note's own arithmetic
+    #      does not close, so at most one of its two figures is right and neither is
+    #      re-derivable now.
+    #
+    #    ⇒ and it does not matter, because THE DENOMINATOR IS BRAIN-DEPENDENT. i004 ran
+    #      the pre-i005 default; i005 moved every lane to sonnet, so i004's window
+    #      belongs to a brain no lane uses. **every ratio below is against 200,000**,
+    #      re-derived from the live given rather than carried forward.
+    #
+    # 🔴 .the single-file killers, from `tokens.expected.md`, against that 200k window:
+    #
+    #      work.surface.integration.test.ts  278.7k = 139% — exceeds the window ALONE
+    #      crewwork.integration.test.ts      234.0k = 117% — exceeds the window ALONE
+    #      crewwork.sh                       181.5k =  91%
+    #      git.crew.poll.sh                  175.1k =  88%
+    #
+    #    ⚠️ and the two shell files are UNREVIEWABLE BY `rhx review` AT ANY SETTING:
+    #      `push` refuses them at 91%/88% (over its 75% failfast), and `pull` kills the
+    #      child mid-read. that is not a config problem, and no bind or brain repairs
+    #      it — the repl set holds no larger window.
+    #
+    # .the edit taken = ONE variable, the binds. it is a two-tier shed:
+    #
+    #    | tier | lanes | glob |
+    #    |---|---|---|
+    #    | tests shed whole | the 5 whose rubric grades PROD code only | `**/*.test.ts` |
+    #    | only the oversized | `mech-failhides` + `behavior-intent-coverage`, which DO grade tests | the two >100% files |
+    #
+    #    ⇒ tier 2's justification is airtight and worth a plain statement: a file
+    #      LARGER than the window is unreviewable, so its presence in scope is pure
+    #      risk at zero possible lens. to shed it loses no lens anyone could have had.
+    #
+    #    ⇒ tier 1 costs no lens either: BOTH of i007's real blockers lived in
+    #      `crewwork.sh`, a PRODUCTION file, which every tier keeps.
+    #
+    # ✅ .two lanes are left UNTOUCHED, deliberately, as CONTROLS:
+    #      `mech-decode-friction` — already sheds `**/*.test.ts` since i004
+    #      `ergo-friction-hazards` — its bind carries no integration test at all
+    #
+    #    ⇒ if the 7 treated lanes light and these 2 stay dark, the read-overflow
+    #      diagnosis is CONFIRMED and the residue is exactly the two giant shell
+    #      files. that is a free experiment and it discriminates the next round.
+    #
+    # 🔴 .the bound STAYS AT 1 even though it is now known to be the wrong dial. to
+    #    move the bound AND the binds in one round destroys the experiment. the bound
+    #    is a separate, cheap follow-on once this read is settled. ONE VARIABLE.
+    # ═══════════════════════════════════════════════════════════════════════════════
+
+    # ═══════════════════════════════════════════════════════════════════════════════
+    # 🔴 i010 — THE CAUSE IS MEASURED, AND THE SHED WAS NEVER THE LEVER
+    #
+    # ⚠️ READ THIS BEFORE THE i004 AND i008 BLOCKS ABOVE. both reasoned over outcomes.
+    #    i009 emitted a NUMBER, and the number settles what three rounds of experiment
+    #    could not. where a block above conflicts with this one, this one holds.
+    #
+    # .the measurement, from i009 r002 `mech-failhides`:
+    #
+    #      metrics.expected → estimate: 148,416   context: 74.2%
+    #      148,416 / 0.742  = 200,022             ⇒ the window is 200,000, confirmed
+    #                                               a SECOND time, independently
+    #
+    #    and `input.prompt.md` (609kB) decomposes by its own line ranges:
+    #
+    #      | section          | lines         | share of the prompt |
+    #      |---|---|---|
+    #      | <rules>          | 40 –    675   |   635 lines,  4.9% |
+    #      | 🔴 <conversation> | 679 – 12,936  | 12,257 lines, 94.1% |
+    #      | <target>         | 12,940–13,025 |    85 lines — the PATH LIST, as `pull` intends |
+    #
+    # 🔴 .so the prompt is 74.2% of the window BEFORE ONE TARGET IS OPENED, and ~140k
+    #    of those 148k tokens are the peer CONVERSATION. measured on disk:
+    #
+    #      wc -c $route/.reviews/peer/*.md  →  817,736 total
+    #
+    #    ⇒ headroom left for the reviewer's own reads = 200,000 − 148,416 = **51,584**.
+    #      the corpus it must read into that headroom = **1.5M tokens** (and the figures
+    #      in `tokens.expected.md` are TOKENS — its own header says so — never bytes).
+    #
+    #      1,500,000 / 51,584  =  29× over.
+    #
+    # ✅ .WHY THE TWO SHEDS WERE BOTH CORRECT AND BOTH INSUFFICIENT — no reader should
+    #    revert them, and no reader should expect more of them:
+    #
+    #      tier 2 removed exactly the two files it named (278.7k + 234.0k = 512.7k),
+    #      so the corpus went 2.0M → 1.5M and targets 82 → 80. it worked.
+    #      tier 1 removed 23 test files, so its corpus went 2.0M → 961.6k. it worked.
+    #
+    #    ⇒ a shed from 10× to 7.5× is a real cut at an irrelevant scale. the sheds were
+    #      aimed at the corpus while the CONVERSATION held the budget at ~51k.
+    #
+    # 🔴 .THE EDIT — drop `--conversation` on the 7 treated lanes. ONE VARIABLE.
+    #
+    #    `rule.always.spend-own-levers-before-escalation` names this lever explicitly as
+    #    DRIVER-owned, beside `--paths-with`. nine rounds in, it had never been touched.
+    #
+    #    | what | before | after |
+    #    |---|---|---|
+    #    | prompt | 148,416 (74.2%) | ~8k (≈4%) |
+    #    | headroom for reads | 51,584 | **~192,000** — a 3.7× gain |
+    #
+    #    ⇒ and under `pull` the reviewer CHOOSES what to open, so 192k of headroom lets
+    #      it self-limit and finish. it does not have to read all 1.5M; it has to not
+    #      die before it writes a verdict.
+    #
+    # ⚠️ .the COST, stated plainly: the reviewer loses the `.taken` record, so it may
+    #    re-raise a concern already absorbed. that cost is near zero TODAY and would not
+    #    be at another time — the conversation has bought ZERO convergence across five
+    #    consecutive dark rounds, because no lane has read it far enough to emit a
+    #    verdict. a 140k prompt section that has never once produced a verdict is
+    #    140k spent on naught.
+    #
+    #    ⇒ if a lane lights and re-raises an absorbed concern, the repair is one `.taken`
+    #      that re-points at the prior one. that is cheap. a dark lane is not.
+    #
+    # ✅ .the TWO CONTROLS KEEP their `--conversation`, deliberately:
+    #      `mech-decode-friction` and `ergo-friction-hazards` stay exactly as they are.
+    #    ⇒ if the 7 light and these 2 stay dark, the conversation is confirmed as the
+    #      dominant term and the experiment cost naught.
+    #
+    # 🔴 .the residue, already inventoried at `F13` — six files no bind can reach:
+    #
+    #      crewwork.sh                                181.5k =  91% of the window
+    #      git.crew.poll.sh                           175.1k =  88%
+    #      ecowork.integration.test.ts                172.2k =  86%
+    #      ductwork.integration.test.ts               102.9k =  51%
+    #      git.grove.saturation.integration.test.ts    93.8k =  47%
+    #      ductwork.sh                                 86.3k =  43%
+    #
+    #    812k tokens across six files = 54% of the corpus, and no two fit in one window
+    #    together. a reviewer with 192k of headroom will open the other 74 and skip
+    #    these — which is PARTIAL COVERAGE, honestly bounded, and named in `F13`.
+    #
+    # ⚠️ .and the lesson for whoever edits this guard next: the figure that settled this
+    #    sat in `metrics.expected.json` in the log dir of EVERY dark lane, from i005 on.
+    #    three rounds of outcome-experiments were built over a number that was already
+    #    written down. **read the quantity before you design a discriminator over it.**
+    #
+    # ✅ .CONFIRMED, mid-round, on the first two lanes of i010:
+    #
+    #      | lane | prompt | context | time | verdict |
+    #      |---|---|---|---|---|
+    #      | repo-rules    | 3,419 | 1.7% | 1m53s | ✅ 0 blockers, 0 nitpicks |
+    #      | mech-failhides| ~4.9k | ~2.5%| 4m48s | ✅ 0 blockers, 0 nitpicks |
+    #
+    #    the prediction was `rules + refs + paths` and `repo-rules` measured **3,419**
+    #    against a predicted ~3.4k. the model is exact.
+    #
+    # 🔴 .EXPECTED, NOT AN OVERSIGHT — the 2 controls WILL malfunction this round.
+    #    they keep `--conversation`, so their prompt stays ~147k and their headroom
+    #    ~53k. that is the experiment, and their death is the half that confirms it.
+    #
+    #    ⇒ so i010 CANNOT go terminal by design, and the follow-on is already decided:
+    #      **i011 drops `--conversation` on both controls too**, once i010 has recorded
+    #      the contrast. do not read their i010 malfunction as an unrepaired defect —
+    #      read it as the control arm, then retire the arm.
+    #
+    # ═══════════════════════════════════════════════════════════════════════════════
+    # ✅ i011 — THE ARM IS RETIRED. both controls had `--conversation` dropped.
+    #
+    #    i010 delivered the contrast in full and the record is closed:
+    #
+    #      | lane                      | conv | prompt   | %     | verdict          |
+    #      |---------------------------|------|----------|-------|------------------|
+    #      | repo-rules                | drop |    3,419 |  1.7% | ✅ 0 blockers    |
+    #      | mech-failhides            | drop |   ~4,900 |  2.5% | ✅ 0 blockers    |
+    #      | arch-opport-decomposition | drop |   15,120 |  7.6% | 🔴 2B/1N — REAL  |
+    #      | arch-smell-scopeleaks     | drop |        — |     — | ✅ 0 blockers    |
+    #      | arch-hazards-maintenance  | drop |        — |     — | ✅ 0B, 4 nitpick |
+    #      | arch-hazards-behavior     | drop |        — |     — | ✅ clear         |
+    #      | behavior-intent-coverage  | drop |        — |     — | ✅ clear         |
+    #      | 🔴 mech-decode-friction   | KEEP |  159,889 | 79.9% | 💥 malfunction   |
+    #      | 🔴 ergo-friction-hazards  | KEEP |  167,747 | 83.9% | 💥 malfunction   |
+    #
+    #    ⇒ 7 of 7 treated lanes LIT. 2 of 2 controls DIED. the experiment is unambiguous,
+    #      and `arch-opport-decomposition` produced the first substantive architecture
+    #      verdict in six rounds (2 blockers, 1 nitpick — 2 repaired, 1 → `F14`).
+    #
+    #    🔴 and the controls delivered MORE than a contrast — see the `mech-decode-friction`
+    #      block below for the controlled before/after that turns the ~143k conversation
+    #      residual from a fitted estimate into a measured constant with a growth rate.
+    # ═══════════════════════════════════════════════════════════════════════════════
+    #
+    # 🔴 .and one caution on how to read a LIT lane's verdict — `cache.set`, never `total`:
+    #
+    #      mech-failhides realized: cache.set 363,385 · cache.get 1,223,966 · total 1,601,900
+    #
+    #    `total` exceeds the 1.5M corpus and proves naught — `cache.get` is a cached
+    #    prefix re-charged across turns. **`cache.set` is the distinct ingest**, so the
+    #    lane read ~363k of 1.5M ≈ 24% and reported 0/0 under `--goal exhaustive`.
+    #
+    #    ⇒ a lit lane and an exhaustive lane are two different claims. the gap is
+    #      inventoried at `F13`, whose own "unreviewable at any option" claim is now
+    #      corrected: the window bounds one CONTEXT, never the agentic LOOP.
+    # ═══════════════════════════════════════════════════════════════════════════════
+
+    - slug: repo-rules
+      run: $rhx review --repo bhrain --focus pull --brain anthropic/claude/code/sonnet --rules '.agent/repo=.this/**/rule.*.md' --optional rules --diffs since-main --paths-with 'src/**/*.ts' --paths-with 'src/**/*.sh' --paths-with 'src/**/*.mjs' --paths-with 'blackbox/**/*.ts' --paths-without '**/*.test.ts' --join intersect --output "$output"
+      budget: 3
+      level: 1
+      group: claude-code-host
+
+    # 🟡 TIER 2 of the i008 shed: this lane's rules are `code.{prod,test}/…`, so it
+    #    GRADES TEST CODE and a blanket `**/*.test.ts` shed would cost it a real lens.
+    #    it sheds only the two files LARGER than its own window — unreviewable by
+    #    construction, so no lens is lost that it could ever have had.
+    - slug: mech-failhides
+      run: $rhx review --repo bhrain --focus pull --brain anthropic/claude/code/sonnet --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.{prod,test}/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with 'src/**/*.ts' --paths-with 'src/**/*.sh' --paths-with 'src/**/*.mjs' --paths-with 'blackbox/**/*.ts' --paths-without '**/work.surface.integration.test.ts' --paths-without '**/crewwork.integration.test.ts' --join intersect --output "$output"
+      budget: 3
+      level: 1
+      group: claude-code-host
+
+    # ✅ was the CONTROL LANE at i009 and i010. its service is COMPLETE, and at i011 its
+    #    `--conversation` is dropped like every peer's.
+    #
+    #    🔴 .WHAT THE CONTROL PROVED — a controlled before/after, one variable
+    #
+    #    its bind did not change between i009 and i010. rules 859 · refs 2 · targets 59 ·
+    #    corpus `src (961.6k, 100%)` — every declared term identical. yet:
+    #
+    #      i009 prompt = 146,973  (73.5%)
+    #      i010 prompt = 159,889  (79.9%)        +12,916 tokens
+    #
+    #    ⇒ the ONLY term that can have moved is `<conversation>`, and what moved it is
+    #      known: the 8 `.taken` files authored at i009. so the ~143k residual fitted
+    #      across three lanes at i009 is no longer an artifact of a fit — it is a
+    #      measured constant with a measured growth rate.
+    #
+    #        residual = 159,889 − (859 + ~1,000 refs + ~1,000 paths) = ~157,030
+    #        vs i009's ~143,000                    →  +14,030 in ONE round
+    #
+    #    🔴 .AND IT DATES THE REPAIR. at +14k/round the conversation ALONE crosses the
+    #      200,000 window in ~3 more rounds. i010 was the last round in which any lane
+    #      could have been rescued by this lever at all.
+    #
+    #      ⇒ `rule.always.raise-a-blocker-a-taken-cannot-close` names the loop —
+    #        "every artifact written to ANSWER a reviewer enlarges the diff again" —
+    #        and the `.taken` files ARE the `<conversation>`. a driver who converged
+    #        harder died faster. ⇒ NO lane on this route carries `--conversation` again.
+    #
+    #    ✅ .the window, now confirmed SIX ways inside a 175-token band
+    #         159,889/0.799=200,111 · 167,747/0.839=199,937 · 158,374/0.792=199,967
+    #         148,416/0.742=200,022 · 146,973/0.735=199,964 · 140,636/0.703=200,051
+    - slug: mech-decode-friction
+      run: $rhx review --repo bhrain --focus pull --brain anthropic/claude/code/sonnet --rules '.agent/repo=ehmpathy/role=architect/briefs/practices/domain.operations/rule.{forbid.decode-friction-in-orchestrators,require.orchestrators-as-narrative}.md' --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.narrative/rule.{forbid.inline-decode-friction,require.named-transformers}.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/domain.operations/{define.domain-operation-grains,philosophy.transformer-orchestrator-separation.[philosophy]}.md' --diffs since-main --paths-with 'src/**/*.ts' --paths-with 'src/**/*.sh' --paths-with 'src/**/*.mjs' --paths-with 'blackbox/**/*.ts' --paths-without '**/*.test.ts' --join intersect --output "$output"
+      budget: 3
+      level: 1
+      group: claude-code-host
+
+    # --- architect reviews (level 1) ---
+
+    - slug: arch-opport-decomposition
+      run: $rhx review --repo bhrain --focus pull --brain anthropic/claude/code/sonnet --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.prefer.decomposable-architecture.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.architecture/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.domain.operations/*.md.min' --diffs since-main --paths-with 'src/**/*.ts' --paths-with 'src/**/*.sh' --paths-with 'src/**/*.mjs' --paths-with 'blackbox/**/*.ts' --paths-without '**/*.test.ts' --join intersect --output "$output"
+      budget: 3
+      level: 1
+      group: claude-code-host
+
+    - slug: arch-smell-scopeleaks
+      run: $rhx review --repo bhrain --focus pull --brain anthropic/claude/code/sonnet --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.scope-leaks.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.architecture/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.domain.operations/*.md.min' --diffs since-main --paths-with 'src/**/*.ts' --paths-with 'src/**/*.sh' --paths-with 'src/**/*.mjs' --paths-with 'blackbox/**/*.ts' --paths-without '**/*.test.ts' --join intersect --output "$output"
+      budget: 3
+      level: 1
+      group: claude-code-host
+
+    - slug: arch-hazards-maintenance
+      run: $rhx review --repo bhrain --focus pull --brain anthropic/claude/code/sonnet --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.maintenance-hazards.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/rule.require.solve-at-cause.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.errors/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.typedefs/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.narrative/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/readable.comments/*.md.min' --diffs since-main --paths-with 'src/**/*.ts' --paths-with 'src/**/*.sh' --paths-with 'src/**/*.mjs' --paths-with 'blackbox/**/*.ts' --paths-without '**/*.test.ts' --join intersect --output "$output"
+      budget: 5
+      level: 1
+      group: claude-code-host
+
+    - slug: arch-hazards-behavior
+      run: $rhx review --repo bhrain --focus pull --brain anthropic/claude/code/sonnet --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.behavior-hazards.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --diffs since-main --paths-with 'src/**/*.ts' --paths-with 'src/**/*.sh' --paths-with 'src/**/*.mjs' --paths-with 'blackbox/**/*.ts' --paths-without '**/*.test.ts' --join intersect --output "$output"
+      budget: 3
+      level: 1
+      group: claude-code-host
+
+    # 🟡 TIER 2 of the i008 shed: this lane grades whether a behavior IS COVERED, so
+    #    the tests ARE its subject and a blanket shed would blind it to its own rubric.
+    #    it sheds only the two files larger than its window. ⚠️ and that shed is not
+    #    free HERE, unlike elsewhere: the two are coverage artifacts this lane would
+    #    have wanted. it loses them only because no reviewer can read them at all.
+    - slug: behavior-intent-coverage
+      run: $rhx review --repo bhrain --focus pull --brain anthropic/claude/code/sonnet --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.require.behavior-intent-coverage.md' --refs '$route/0.wish.md' --refs '$route/1.vision.yield.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.criteria/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --diffs since-main --paths-with 'src/**/*.ts' --paths-with 'src/**/*.sh' --paths-with 'src/**/*.mjs' --paths-with 'blackbox/**/*.ts' --paths-without '**/work.surface.integration.test.ts' --paths-without '**/crewwork.integration.test.ts' --join intersect --output "$output"
+      budget: 3
+      level: 1
+      group: claude-code-host
+
+    # 🔴 the tightest bind of the nine, and deliberately so. a friction hazard is met
+    #    by a HUMAN at a surface, so this lane reads the 46 skill entrypoints and the
+    #    acceptance walkthroughs — never the TS internals behind them.
+    #
+    # 🔴 i004: the bind CONTRADICTED that comment. `skills/**/*.sh` also pulled the
+    #    four `skills/work/*.sh` LIBS, which the entrypoints source and no human
+    #    ever meets. so it is now `skills/*.sh` — the bind at last made to fit the
+    #    rubric the comment above already declared. a lib has no surface to be
+    #    frictional at.
+    #
+    # ⚠️ .and the REASON is the rubric, never the window. the libs carried ~360k of
+    #    the lane's 943.6k, so this shed reads like an overflow repair — and it is
+    #    not, because `--focus pull` (see the block above) already closes the
+    #    overflow for all nine lanes without a file shed.
+    #
+    #    ⇒ put plainly so a later reader does not revert this bind once the window
+    #      pressure is gone: it would still be right at 5% of the window.
+    #
+    # ✅ .the SECOND CONTROL LANE for the i008 shed — do NOT edit its bind either.
+    #    its bind names no integration test at all, so the shed is a no-op here. and
+    #    its `skills/*.sh` bind already excludes `skills/work/`, so it never sees
+    #    `crewwork.sh` (181.5k) — yet it STILL holds `git.crew.poll.sh` at 175.1k,
+    #    88% of the window on one file.
+    #
+    #    ⇒ that made it the sharpest control of the nine: the ONE lane whose death
+    #      could be pinned to a SINGLE named file.
+    #
+    # ✅ i011 — ITS SERVICE IS COMPLETE and `--conversation` is dropped.
+    #
+    #    🔴 .the hypothesis above was REFUTED by its own i010 measurement. it predicted
+    #      `git.crew.poll.sh` as the killer by elimination. what it measured:
+    #
+    #        rules 601 · refs 15 files · targets 50 · prompt 167,747 = 83.9%
+    #        accounted = 601 + 15×~543 + ~800 paths          ≈   9,546
+    #        residual  = 167,747 − 9,546                     = 158,201  ← the conversation
+    #
+    #      ⇒ 158,201 against the other control's 157,030 — a spread of **0.7%**, on two
+    #        lanes with different rubrics, refs, and corpora. so its death was the SAME
+    #        conversation term as every peer's, and no single target file enters into it.
+    #
+    #    🟡 .and after the drop it is STILL bounded — say so rather than claim a fix:
+    #         i010: prompt 167,747, headroom  32,253
+    #         i011: prompt  ~9,546, headroom ~190,000   (a 5.9× gain)
+    #      ~190k against a **546.4k** shell corpus is 2.9× over, and `crewwork.sh`
+    #      (181.5k) alone would eat 95% of it. ⇒ expect LIT, never EXHAUSTIVE. that
+    #      residue is `F13`'s, inventoried with its six-file table.
+    #
+    #    ⚠️ this lane matters most of the nine and has never once run: it is the ONLY
+    #      rubric aimed at the surface a human meets — the shell entrypoints the wish
+    #      names by verb (`git.crew.poll`, `git.tree.behavior --grove`, `eco.priority
+    #      get`). grade its silence on the six oversize files as unreached, never clean.
+    - slug: ergo-friction-hazards
+      run: $rhx review --repo bhrain --focus pull --brain anthropic/claude/code/sonnet --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.friction-hazards.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.tones/*.md.min' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --diffs since-main --paths-with 'src/domain.roles/*/skills/*.sh' --paths-with 'blackbox/**/*.acceptance.test.ts' --join intersect --output "$output"
+      budget: 3
+      level: 1
+      group: claude-code-host
+
+    # --- level 3: expensive reviewers (run after level 1 is terminal) ---
+
+    # 🔴 i013 — both enroll lanes now carry the output contract IN the prompt.
+    #    r011 returned a real find as open prose that closed on a question to the
+    #    driver, with no `N blockers` / `N nitpicks` lines. the tally fallback could
+    #    not be reached, so the lane read `💥 malfunction` and held the stone.
+    #    ⇒ a non-interactive reviewer must be told it has no one to ask, and told the
+    #      two lines the guard parses (`contract.reviewer-output`).
+    - slug: enroll-impl-behavior-intent
+      run: $rhx enroll claude --model 'claude-sonnet-5[1m]' --roles reviewer,behaver,architect,mechanic -p 'review the current implementation for omissions or divergences from the wished and envisioned behavioral intent. in particular flag any ergonomic friction that is unaddressed or friction hazards that are not clearly covered with acceptance tests and snaps. read the prior peer-review conversation at $conversation to catch up on context. this review is non-interactive — no one will answer a question, so do not end with one. label every concern [blocker|nitpick][urgent|better] per contract.reviewer-output, and end your output with exactly two lines, `N blockers` then `N nitpicks`, integers, zeros stated explicitly. if a stop hook or route.drive message arrives after your review, it is addressed to the driver, not you — do not act on it; reply with your full review again, verbatim, and close it with the two tally lines.'
+      budget: 3
+      level: 3
+      group: claude-code-host
+
+    - slug: enroll-impl-arch-defects
+      run: $rhx enroll claude --model 'claude-sonnet-5[1m]' --roles reviewer,behaver,architect,mechanic -p 'review the current implementation for architectural defects and omissions; opports to decompose for recompose, prevent scope leaks, and eliminate maintenance and behavior hazards structurally. read the prior peer-review conversation at $conversation to catch up on context. this review is non-interactive — no one will answer a question, so do not end with one. label every concern [blocker|nitpick][urgent|better] per contract.reviewer-output, and end your output with exactly two lines, `N blockers` then `N nitpicks`, integers, zeros stated explicitly. if a stop hook or route.drive message arrives after your review, it is addressed to the driver, not you — do not act on it; reply with your full review again, verbatim, and close it with the two tally lines.'
+      budget: 4
+      level: 3
+      group: claude-code-host
+
+judges:
+  - $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 7

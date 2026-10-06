@@ -1,0 +1,49 @@
+
+🪨 run solid skill repo=.this/role=any/skill=git.crew.read
+
+🔭 duct://grove-sandpine-v20260901/rhachet-roles-bhrain.beav.feat-dispute-or-concede-review-budget/foreman (cloud)
+│ │ ├  inventory.of=fulcrums.case=F031-the-severity-cluster-already-ships.   --route <path>     path      --route <path>     path to route directory (required)
+│ │ └  inventory.of=fulcrums.case=F038-absorb-composes-contemplate-and-sta   --as <status>      statu     --as <status>      status to set (required):
+│ ├  .route                                                                                       pas                          passed   - work complete, proceed
+│ │ └  passage.jsonl                                                    M                         arr                          arrived  - work complete, get reviews
+│ ├  .seeds                                                                                       app                          approved - human approval granted (human only)
+│ │ ├  inventory.of=seeds._.md                                          M                         pro                          promised - review.self promise made
+│ │ ├  inventory.of=seeds.case=S16-only-urgent-concessions-earn-budget-bet                        con                          contemplated - peer review response articulated
+│ │ ├  inventory.of=seeds.case=S17-severity-is-always-required-no-default. ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱ ┃                        conceded - the reviewer is right on ONE concern; you will fix
+│ │ ├  inventory.of=seeds.case=S18-a-concede-may-carry-an-optional-why.md? ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱ ┃                        disputed - ONE concern is fine to continue; a council will ru
+│ │ ├  inventory.of=seeds.case=S19-absorb-the-feedback-is-absorbing-each-c                        blo                          blocked  - stuck, need help
+│ │ ├  inventory.of=seeds.case=S19-feedback-absorbed-iff-each-concern-abso                        rew                          rewound  - clear validation state
+│ │ └  inventory.of=seeds.case=S20-stance-is-forbidden-absorb-supersedes-i                        ove                          overruled - bypass review thresholds (human only)
+│ ├  dreams                                                                                       for                          forced   - approve AND overrule (human only)
+│ │ └  v2026_09_15.fix.the-better-concession-drive-render-still-names-a-bu   --that <slug>      revie     --that <slug>      reviewer slug (required for --as promised / --as contemplated)
+│ ├  1.vision.yield.md                                                  M                         for                          for --as contemplated, use the slug exactly as shown in the
+│ ├  5.1.execution.from_vision.guard                                    M                         rev                          reviewers-await-reply prompt (path-sanitized: slashes → dashe
+│ ├  5.1.execution.from_vision.yield.md                                 M  ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱ ┃   --with <slug>      the reviewer a stance is taken WITH
+│ └  5.3.verification.stamp                                            ??  ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱ ┃                        (required for --as disputed / --as conceded)
+├  .dream                                                                  ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱ ┃   --about <concern>  the ONE concern a stance answers, by severity + 1-based ordinal
+│ └  v2026_09_15.fix.the-better-concession-drive-render-still-names-a-budg ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱ ┃                        within that reviewer's latest report: blocker.1, nitpick.4
+├  .route                                                                  ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱ ┃                        (required for --as disputed / --as conceded)
+│ └ 󰈙 last-passage.txt                                                   D  ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱ ┃   --why <path>       path to a fulcrum/justification entry
+├  blackbox                                                                ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱ ┃                        (required for --as disputed — the argument a council reads;
+│ ├  .test                                                                 ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱ ┃                         optional for --as conceded — an extant path that records why
+│ │ ├  answerEveryPeerGiven.ts                                          M  ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱ ┃   --severity <sev>   the harm grade of a concession: urgent | better
+│ │ └  concedeEveryPeerConcern.ts                                       M  ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱ ┃                        (REQUIRED for --as conceded — no ungraded concede; not for --
+│ ├  __snapshots__                                                         ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱ ┃                        urgent = a shipped harm (security | safety | monetary |
+│ │ ├  driver.route.absorption.acceptance.test.ts.snap                 ??  ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱ ┃                        reputation | behavioral) — earns more budget, warns the human
+│ │ ├  driver.route.blocked.acceptance.test.ts.snap                     M  ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱ ┃                        better = code idealism / maintenance — the floor, never earns
+│ │ ├  driver.route.contemplated-help.acceptance.test.ts.snap           M    --help             show      --help             show this help message
+│ │ ├  driver.route.force.multilevel.acceptance.test.ts.snap            M                               
+│ │ ├  driver.route.overrule-exhaust-approve.acceptance.test.ts.snap    M  note:                        note:
+│ │ ├  driver.route.overrule.acceptance.test.ts.snap                    M    --as overruled bypasses      --as overruled bypasses reviewed? judge thresholds for overzealous reviewers
+│ │ ├  driver.route.peer-budget-all-terminal-halt.acceptance.test.ts.snapM   --as forced is shorthand     --as forced is shorthand for --as approved + --as overruled
+│ │ ├  driver.route.peer-budget-approval-unification.acceptance.test.ts.sn ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱ ┃   --as conceded is the DEFAULT answer to a critique: fix it, then re-arrive.
+│ │ ├  driver.route.peer-budget-exhausted-hash-change.acceptance.test.ts.s ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱ ┃     --as disputed is an escalation — it asks a human council to rule at the close.
+│ │ ├  driver.route.peer-budget-isolation.acceptance.test.ts.snap       M                               
+│ │ ├  driver.route.peer-budget-levels.journey.acceptance.test.ts.snap  M  examples:                    examples:
+│ │ ├  driver.route.peer-budget-malfunction.acceptance.test.ts.snap     M    route.stone.set --stone      route.stone.set --stone 1.vision --as arrived
+│ │ ├  driver.route.peer-budget-multilevel.journey.acceptance.test.ts.snap   route.stone.set --stone      route.stone.set --stone 1.vision --as passed
+│ │ ├  driver.route.peer-budget-rewound.acceptance.test.ts.snap         M    route.stone.set --stone      route.stone.set --stone 1.vision --as approved
+│ │ ├  driver.route.peer-budget.acceptance.test.ts.snap                 M    route.stone.set --stone      route.stone.set --stone 1.vision --as promised --that all-done
+│ │ ├  driver.route.peer-exhaustion-boundary.acceptance.test.ts.snap    M    route.stone.set --stone      route.stone.set --stone 1.execute --as contemplated --that architect
+│ │ ├  driver.route.peer-mixed-verdict-halt.acceptance.test.ts.snap     M  ╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱ ┃   route.stone.set --stone 1.execute --as conceded --with architect --about nitpick.4
+ normal   beav/feat-dispute-or-concede-review-budget │ +21 ~1  blackbox/__snapshots__/driver.route.contemplated-help.acceptance.test.ts.snap                                      4:1    6%

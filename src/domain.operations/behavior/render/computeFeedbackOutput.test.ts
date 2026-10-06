@@ -2,6 +2,20 @@ import { given, then, when } from 'test-fns';
 
 import { computeFeedbackOutput } from './computeFeedbackOutput';
 
+/**
+ * .what = the two bytes that open EVERY ansi escape — `ESC` then `[`
+ *
+ * .why  = one probe catches the whole family (`[2m`, `[0m`, `[31m`, …), so a
+ *         clamp against it cannot be dodged by a color nobody listed.
+ *
+ * .note = a plain string, deliberately, never a regex. biome's
+ *         `lint/suspicious/noControlCharactersInRegex` forbids a control char
+ *         inside a regex literal, and the suppression for it would be a
+ *         comment that reads as a guardrail and holds naught. `toContain` is
+ *         exactly as strong here and needs no suppression at all.
+ */
+const ANSI_CSI = '\x1b[';
+
 describe('computeFeedbackOutput', () => {
   given('[case1] feedback filename without opener', () => {
     when('[t0] computeFeedbackOutput is called', () => {
@@ -120,6 +134,59 @@ describe('computeFeedbackOutput', () => {
 
       then('open tip line is dimmed', () => {
         expect(lines[5]).toContain(dim);
+      });
+    });
+  });
+
+  // 🔴 the clamp for the blemish a peer reviewer caught at 5.3.verification:
+  //   the dim escapes are readable on a terminal and become literal `[2m` /
+  //   `[0m` noise in a captured stream — a pipe, a ci log, a jest snapshot.
+  //   a snapshot exists so a human can vibecheck a render, so a control code
+  //   baked into one is exactly what rule.forbid.snapshot-visual-blemishes
+  //   forbids. the cli passes `process.stdout.isTTY`, so the captured render
+  //   is clean and the human render keeps its dim.
+  given('[case4] a captured stream — color is off', () => {
+    when('[t0] computeFeedbackOutput is called with color false', () => {
+      const result = computeFeedbackOutput(
+        {
+          feedbackFilename: '0.wish.md.[feedback].v1.[given].by_human.md',
+          artifact: 'wish',
+        },
+        { color: false },
+      );
+
+      then('🔴 it carries NO ansi escape of any kind', () => {
+        expect(result).not.toContain(ANSI_CSI);
+      });
+
+      then('the version tip still renders, undimmed', () => {
+        const lines = result.split('\n');
+        expect(lines[4]).toEqual(
+          '   ├─ tip: use --version ++ to create a new version',
+        );
+      });
+
+      then('the open tip still renders, undimmed', () => {
+        const lines = result.split('\n');
+        expect(lines[5]).toEqual(
+          '   └─ tip: use --open nvim to open automatically',
+        );
+      });
+    });
+
+    when('[t1] an opener is supplied with color false', () => {
+      const result = computeFeedbackOutput(
+        {
+          feedbackFilename: '0.wish.md.[feedback].v2.[given].by_human.md',
+          artifact: 'wish',
+          opener: 'codium',
+        },
+        { color: false },
+      );
+
+      then('the opener line renders clean', () => {
+        const lines = result.split('\n');
+        expect(lines[5]).toEqual('   └─ opened in codium');
       });
     });
   });

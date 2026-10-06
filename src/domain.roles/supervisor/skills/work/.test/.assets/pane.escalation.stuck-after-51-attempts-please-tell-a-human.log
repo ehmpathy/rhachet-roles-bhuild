@@ -1,0 +1,43 @@
+
+🪨 run solid skill repo=.this/role=any/skill=git.crew.read
+
+  - [97mbyIpRegionLabelSource[39m moved to [97mblackbox/[39m
+  - [97mrefuse.region-shape[39m moved to [97minfra/[39m
+  - National zoom 3→4
+  - Stale temp patches deleted
+  - All snapshots resnapped
+
+  [1mRules written (this pass, 4 new):[0m[39m[49m
+  - [97mrule.forbid.synonymous-codepaths[39m
+  - [97mrule.forbid.paranoid-backwards-compat[39m
+  - [97mrule.forbid.dependency-injection-of-internal-imports[39m
+  - [97mrule.require.contract-snapshots-on-handler-outputs[39m
+
+  [1mAll gates green:[0m[39m[49m types pass, 588/0/0 unit tests
+
+  [1mBlocked dispatches queued in dream[0m[39m[49m (4 rules awaiting radio unblock)
+
+● Ran [1m1[0m[39m[49m stop hook [37m(ctrl+o to expand)[39m
+  [37m⎿  [39mStop hook error: Failed with non-blocking status code: 🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
+     └─ 💥 failed with an error
+
+  stuck on stone 5.3.verification after 51 attempts. please tell a human what you saw, where you got stuck, and what you tried.
+
+  [1m[37m20[0m[37m[49m tasks ([1m17[0m[37m[49m done, [1m1[0m[37m[49m in progress, [1m2[0m[37m[49m open)[39m
+  [31m◼ [1m[39mConverge the i035 review ladder to terminal[0m[39m[49m
+  ◻ Lift the origin-verify secret off terraform into declastruct-aws
+  ◻ Dispatch the ten queued radio dreams once the global gate lifts
+  [32m✔ [9m[37mFinalize contract from vision cases + infra read[0m[39m[49m
+  [32m✔ [9m[37mBuild geo→region derivation (F3)[0m[39m[49m
+  [32m✔ [9m[37mBuild ip→region derivation via cloudfront viewer-geo headers (F4)[0m[39m[49m
+  [32m✔ [9m[37mBuild getCallerRegion query handler + register[0m[39m[49m
+  [32m✔ [9m[37mGeneralize getStaticMapOfRegion to full by-selector + {image,region}[0m[39m[49m
+  [32m✔ [9m[37mDiagnose why by.ip still returns null at the edge[0m[39m[49m
+  [32m✔ [9m[37mEnskill the edge-route probe instead of raw curl[0m[39m[49m
+  [37m … +10 completed[39m
+
+[37m───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[39m❯ [2mcommit and push[0m[39m[49m
+[37m───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[39m  [37m🗿[39m [37m5.3.verification,[39m [37mreview.peer,[39m [37ml3@i007[39m [37m🔍[39m
+  [97m⏵⏵[39m [97maccept[39m [97medits[39m [97mon[37m (shift+tab[39m [37mto[39m [37mcycle)[39m
