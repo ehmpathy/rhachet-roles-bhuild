@@ -3,15 +3,15 @@ import type { BrainAtom, ContextBrain } from 'rhachet/brains';
 
 /**
  * .what = the brain-atom slug for the cheap judge model
- * .why = the default cheap brain for utility verdicts (fireworks deepseek flash);
+ * .why = the default cheap brain for utility verdicts (deepseek flash, via openrouter);
  *        owned here by the communicator that reaches the brain, not the leaf that
  *        only shapes the prompt — the leaf should not know where its context came from
  */
-export const REFLECT_BRAIN_SLUG = 'fireworks/deepseek/v4-flash';
+export const REFLECT_BRAIN_SLUG = 'openrouter/deepseek/flash';
 
 /**
- * .what = the keyrack location of the brain's FIREWORKS_API_KEY credential
- * .why = the fireworks supplier fetches its key from the keyrack (owner + env);
+ * .what = the keyrack location of the brain's OPENROUTER_API_KEY credential
+ * .why = the openrouter supplier fetches its key from the keyrack (owner + env);
  *        the credential is provisioned under the ehmpath owner, prep env
  */
 export const REFLECT_BRAIN_KEYRACK = { owner: 'ehmpath', env: 'prep' } as const;

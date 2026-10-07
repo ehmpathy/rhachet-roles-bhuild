@@ -319,7 +319,7 @@ describe('reflect.on.reviews.self (acceptance)', () => {
   //        flakiness. the success path is instead proven where it can be
   //        deterministic or real without those costs:
   //          - real-brain correctness: imagineReviewSelfVerdict.integration.test.ts
-  //            (calls the real fireworks brain, no mock)
+  //            (calls the real openrouter brain, no mock)
   //          - full CLI path for apply success: the CLI integration [case1 t2]
   //            (deterministic injected judge → snapshot-stable verdict rollup)
   //          - shell → CLI dispatch: every acceptance case here (plan success,

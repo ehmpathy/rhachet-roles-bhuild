@@ -54,6 +54,7 @@ describe('getAllTemplatesBySize', () => {
         const templates = getAllTemplatesBySize({ size: 'nano' });
         expect(templates).not.toContain('3.3.1.blueprint.product.stone');
         expect(templates).not.toContain('4.1.roadmap.stone');
+        expect(templates).not.toContain('4.1.roadmap.guard');
       });
 
       then('includes verification (tests should never be forgotten)', () => {
@@ -100,6 +101,7 @@ describe('getAllTemplatesBySize', () => {
         expect(templates).toContain('3.3.1.blueprint.product.stone');
         expect(templates).toContain('3.3.1.blueprint.product.guard');
         expect(templates).toContain('4.1.roadmap.stone');
+        expect(templates).toContain('4.1.roadmap.guard'); // carries the switch to the build brain
       });
 
       then('includes flagged research (for blueprint support)', () => {

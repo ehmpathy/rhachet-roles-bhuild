@@ -1,0 +1,12 @@
+# provenance = self-referential source template; enables `rhx route.guard.upgrade` idempotency
+provenance:
+  uri: node_modules/rhachet-roles-bhuild/dist/domain.operations/behavior/init/templates/4.1.roadmap.guard
+
+# brain = the brain the driver runs on for this stone; build stones (prefix 4.–5.) drive on sonnet
+brain: claude-sonnet-5-5[1m]
+
+# guard for roadmap stone
+#
+# carries only the brain. the roadmap is the first build stone, so the switch from opus to
+# sonnet lands here; without this guard the roadmap would inherit opus from the blueprint.
+# no reviews and no judges, so the stone passes once its artifact is present.

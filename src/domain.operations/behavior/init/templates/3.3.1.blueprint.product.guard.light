@@ -2,6 +2,9 @@
 provenance:
   uri: node_modules/rhachet-roles-bhuild/dist/domain.operations/behavior/init/templates/3.3.1.blueprint.product.guard.light
 
+# brain = the brain the driver runs on for this stone; design stones (prefix 1.–3.) drive on opus
+brain: claude-opus-5-5[1m]
+
 # guard for blueprint stone
 # includes standardized self-review frame + human approval
 
@@ -524,12 +527,12 @@ reviews:
     # --- level 3: expensive reviewers (run after level 1 is terminal) ---
 
     - slug: enroll-blueprint-arch-defects
-      run: $rhx enroll claude --model 'claude-sonnet-5[1m]' --roles reviewer,behaver,architect,mechanic -p 'review the current blueprint for architectural defects and omissions; opports to decompose for recompose, prevent scope leaks, and eliminate maintenance and behavior hazards structurally. read the prior peer-review conversation at $conversation to catch up on context.'
+      run: $rhx enroll claude --model 'claude-sonnet-5-5[1m]' --roles reviewer,behaver,architect,mechanic -p 'review the current blueprint for architectural defects and omissions; opports to decompose for recompose, prevent scope leaks, and eliminate maintenance and behavior hazards structurally. read the prior peer-review conversation at $conversation to catch up on context.'
       budget: 3
       level: 3
 
     - slug: enroll-blueprint-behavior-intent
-      run: $rhx enroll claude --model 'claude-sonnet-5[1m]' --roles reviewer,behaver,architect,mechanic -p 'review the current blueprint for omissions or divergences from the wished and envisioned behavioral intent. in particular flag any ergonomic friction that is unaddressed or friction hazards that are not clearly covered with acceptance tests and snaps. read the prior peer-review conversation at $conversation to catch up on context.'
+      run: $rhx enroll claude --model 'claude-sonnet-5-5[1m]' --roles reviewer,behaver,architect,mechanic -p 'review the current blueprint for omissions or divergences from the wished and envisioned behavioral intent. in particular flag any ergonomic friction that is unaddressed or friction hazards that are not clearly covered with acceptance tests and snaps. read the prior peer-review conversation at $conversation to catch up on context.'
       budget: 3
       level: 3
 

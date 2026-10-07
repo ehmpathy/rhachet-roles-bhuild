@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { given, then, useBeforeAll, when } from 'test-fns';
+import { given, then, useBeforeAll, useThen, when } from 'test-fns';
 
 import { genConsumerRepo } from '../.test/infra';
 
@@ -114,107 +114,90 @@ describe('init.behavior.flags', () => {
     });
   });
 
-  given('[case7] --help flag (currently errors - no help support)', () => {
+  given('[case8] --help flag (currently errors - no help support)', () => {
     when('[t0] init.behavior executed with --help', () => {
       const scene = useBeforeAll(async () =>
         genConsumerRepo({ branchName: 'feature/help-test' }),
       );
 
-      then('exit code is non-zero (--help not supported)', () => {
-        const result = runInitBehaviorSkillDirect({
+      const result = useThen('skill executes', () =>
+        runInitBehaviorSkillDirect({
           args: '--help',
           repoDir: scene.repoDir,
-        });
+        }),
+      );
 
+      then('exit code is non-zero (--help not supported)', () => {
         expect(result.exitCode).not.toBe(0);
       });
 
       then('stdout matches snapshot', () => {
-        const result = runInitBehaviorSkillDirect({
-          args: '--help',
-          repoDir: scene.repoDir,
-        });
-
         expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
       });
 
       then('stderr matches snapshot', () => {
-        const result = runInitBehaviorSkillDirect({
-          args: '--help',
-          repoDir: scene.repoDir,
-        });
-
         expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
       });
     });
   });
 
-  given('[case8] absent required --name flag', () => {
+  given('[case9] absent required --name flag', () => {
     when('[t0] init.behavior executed without --name', () => {
       const scene = useBeforeAll(async () =>
         genConsumerRepo({ branchName: 'feature/no-name-test' }),
       );
 
-      then('exit code is non-zero', () => {
-        const result = runInitBehaviorSkillDirect({
+      const result = useThen('skill executes', () =>
+        runInitBehaviorSkillDirect({
           args: '',
           repoDir: scene.repoDir,
-        });
+        }),
+      );
 
+      then('exit code is non-zero', () => {
         expect(result.exitCode).not.toBe(0);
       });
 
       then('stdout matches snapshot', () => {
-        const result = runInitBehaviorSkillDirect({
-          args: '',
-          repoDir: scene.repoDir,
-        });
-
         expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
       });
 
       then('stderr matches snapshot', () => {
-        const result = runInitBehaviorSkillDirect({
-          args: '',
-          repoDir: scene.repoDir,
-        });
-
         expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
       });
     });
   });
 
-  given('[case9] unknown flag (silently ignored)', () => {
+  given('[case10] unknown flag (silently ignored)', () => {
     when('[t0] init.behavior executed with --unknown flag', () => {
       const scene = useBeforeAll(async () =>
         genConsumerRepo({ branchName: 'feature/unknown-flag-test' }),
       );
 
-      then('exit code is 0 (unknown flags ignored)', () => {
-        const result = runInitBehaviorSkillDirect({
+      // the first run inits the route; the second run re-inits it, so its snaps show the ✓ rows
+      const resultFirst = useThen('skill executes', () =>
+        runInitBehaviorSkillDirect({
           args: '--name test --unknown-flag xyz',
           repoDir: scene.repoDir,
-        });
+        }),
+      );
+      const resultSecond = useThen('skill executes again', () =>
+        runInitBehaviorSkillDirect({
+          args: '--name test --unknown-flag xyz',
+          repoDir: scene.repoDir,
+        }),
+      );
 
-        expect(result.exitCode).toBe(0);
+      then('exit code is 0 (unknown flags ignored)', () => {
+        expect(resultFirst.exitCode).toBe(0);
       });
 
       then('stdout matches snapshot', () => {
-        const result = runInitBehaviorSkillDirect({
-          args: '--name test --unknown-flag xyz',
-          repoDir: scene.repoDir,
-        });
-
-        expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
+        expect(asSnapshotStable(resultSecond.stdout)).toMatchSnapshot();
       });
 
       then('stderr matches snapshot', () => {
-        const result = runInitBehaviorSkillDirect({
-          args: '--name test --unknown-flag xyz',
-          repoDir: scene.repoDir,
-        });
-
-        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
+        expect(asSnapshotStable(resultSecond.stderr)).toMatchSnapshot();
       });
     });
   });

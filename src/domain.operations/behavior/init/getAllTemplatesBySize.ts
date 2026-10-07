@@ -43,6 +43,9 @@ const BEHAVIOR_SIZE_CONFIG = {
       '3.3.1.blueprint.product.stone',
       '3.3.1.blueprint.product.guard', // .light or .heavy variant
       '4.1.roadmap.stone',
+      // brain only: the switch from design (opus) to build (sonnet). no light/heavy variants,
+      // since variants differ only in their reviews and this guard declares none
+      '4.1.roadmap.guard',
       '5.1.execution.phase0_to_phaseN.stone', // roadmap → phased execution
       '5.1.execution.phase0_to_phaseN.guard',
       '5.5.playtest.stone', // playtest for mini and above

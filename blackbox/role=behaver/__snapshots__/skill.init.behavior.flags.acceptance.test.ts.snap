@@ -20,6 +20,7 @@ exports[`init.behavior.flags given: [case6] direct: --open flag with cat command
    ├─ + 3.2.distill.repros.experience._.stone
    ├─ + 3.3.1.blueprint.product.guard
    ├─ + 3.3.1.blueprint.product.stone
+   ├─ + 4.1.roadmap.guard
    ├─ + 4.1.roadmap.stone
    ├─ + 5.1.execution.phase0_to_phaseN.guard
    ├─ + 5.1.execution.phase0_to_phaseN.stone
@@ -65,6 +66,7 @@ exports[`init.behavior.flags given: [case6] direct: --open flag with cat command
    ├─ + 3.2.distill.repros.experience._.stone
    ├─ + 3.3.1.blueprint.product.guard
    ├─ + 3.3.1.blueprint.product.stone
+   ├─ + 4.1.roadmap.guard
    ├─ + 4.1.roadmap.stone
    ├─ + 5.1.execution.phase0_to_phaseN.guard
    ├─ + 5.1.execution.phase0_to_phaseN.stone
@@ -110,6 +112,7 @@ exports[`init.behavior.flags given: [case6] direct: --open flag with cat command
    ├─ + 3.2.distill.repros.experience._.stone
    ├─ + 3.3.1.blueprint.product.guard
    ├─ + 3.3.1.blueprint.product.stone
+   ├─ + 4.1.roadmap.guard
    ├─ + 4.1.roadmap.stone
    ├─ + 5.1.execution.phase0_to_phaseN.guard
    ├─ + 5.1.execution.phase0_to_phaseN.stone
@@ -133,13 +136,6 @@ exports[`init.behavior.flags given: [case6] direct: --open flag with cat command
 
 exports[`init.behavior.flags given: [case6] direct: --open flag with cat command when: [t0] init.behavior executed with --open cat then: output contains footer with relative wish path 2`] = `""`;
 
-exports[`init.behavior.flags given: [case7] --help flag (currently errors - no help support) when: [t0] init.behavior executed with --help then: stderr matches snapshot 1`] = `
-"⛈️  error: input invalid
-   └─ --name must be a string, got undefined"
-`;
-
-exports[`init.behavior.flags given: [case7] --help flag (currently errors - no help support) when: [t0] init.behavior executed with --help then: stdout matches snapshot 1`] = `""`;
-
 exports[`init.behavior.flags given: [case7] direct: --open flag with unavailable command when: [t0] init.behavior executed with --open nonexistent-xyz then: behavior files are still created 1`] = `
 "🦫 oh, behave!
    ├─ + 0.wish.md
@@ -160,6 +156,7 @@ exports[`init.behavior.flags given: [case7] direct: --open flag with unavailable
    ├─ + 3.2.distill.repros.experience._.stone
    ├─ + 3.3.1.blueprint.product.guard
    ├─ + 3.3.1.blueprint.product.stone
+   ├─ + 4.1.roadmap.guard
    ├─ + 4.1.roadmap.stone
    ├─ + 5.1.execution.phase0_to_phaseN.guard
    ├─ + 5.1.execution.phase0_to_phaseN.stone
@@ -188,16 +185,23 @@ exports[`init.behavior.flags given: [case7] direct: --open flag with unavailable
     behavior created, open manually: .behavior/v{DATE}.warn-test/0.wish.md"
 `;
 
-exports[`init.behavior.flags given: [case8] absent required --name flag when: [t0] init.behavior executed without --name then: stderr matches snapshot 1`] = `
+exports[`init.behavior.flags given: [case8] --help flag (currently errors - no help support) when: [t0] init.behavior executed with --help then: stderr matches snapshot 1`] = `
 "⛈️  error: input invalid
    └─ --name must be a string, got undefined"
 `;
 
-exports[`init.behavior.flags given: [case8] absent required --name flag when: [t0] init.behavior executed without --name then: stdout matches snapshot 1`] = `""`;
+exports[`init.behavior.flags given: [case8] --help flag (currently errors - no help support) when: [t0] init.behavior executed with --help then: stdout matches snapshot 1`] = `""`;
 
-exports[`init.behavior.flags given: [case9] unknown flag (silently ignored) when: [t0] init.behavior executed with --unknown flag then: stderr matches snapshot 1`] = `""`;
+exports[`init.behavior.flags given: [case9] absent required --name flag when: [t0] init.behavior executed without --name then: stderr matches snapshot 1`] = `
+"⛈️  error: input invalid
+   └─ --name must be a string, got undefined"
+`;
 
-exports[`init.behavior.flags given: [case9] unknown flag (silently ignored) when: [t0] init.behavior executed with --unknown flag then: stdout matches snapshot 1`] = `
+exports[`init.behavior.flags given: [case9] absent required --name flag when: [t0] init.behavior executed without --name then: stdout matches snapshot 1`] = `""`;
+
+exports[`init.behavior.flags given: [case10] unknown flag (silently ignored) when: [t0] init.behavior executed with --unknown flag then: stderr matches snapshot 1`] = `""`;
+
+exports[`init.behavior.flags given: [case10] unknown flag (silently ignored) when: [t0] init.behavior executed with --unknown flag then: stdout matches snapshot 1`] = `
 "🦫 oh, behave!
    ├─ ✓ 0.wish.md
    ├─ ✓ 1.vision.guard
@@ -217,6 +221,7 @@ exports[`init.behavior.flags given: [case9] unknown flag (silently ignored) when
    ├─ ✓ 3.2.distill.repros.experience._.stone
    ├─ ✓ 3.3.1.blueprint.product.guard
    ├─ ✓ 3.3.1.blueprint.product.stone
+   ├─ ✓ 4.1.roadmap.guard
    ├─ ✓ 4.1.roadmap.stone
    ├─ ✓ 5.1.execution.phase0_to_phaseN.guard
    ├─ ✓ 5.1.execution.phase0_to_phaseN.stone

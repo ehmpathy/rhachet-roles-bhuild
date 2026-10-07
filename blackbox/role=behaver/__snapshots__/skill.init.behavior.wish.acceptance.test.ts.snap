@@ -22,6 +22,7 @@ exports[`init.behavior.wish given: [case1] --wish with inline content when: [t0]
    ├─ + 3.2.distill.repros.experience._.stone
    ├─ + 3.3.1.blueprint.product.guard
    ├─ + 3.3.1.blueprint.product.stone
+   ├─ + 4.1.roadmap.guard
    ├─ + 4.1.roadmap.stone
    ├─ + 5.1.execution.phase0_to_phaseN.guard
    ├─ + 5.1.execution.phase0_to_phaseN.stone
@@ -65,6 +66,7 @@ exports[`init.behavior.wish given: [case2] --wish @stdin with piped content when
    ├─ + 3.2.distill.repros.experience._.stone
    ├─ + 3.3.1.blueprint.product.guard
    ├─ + 3.3.1.blueprint.product.stone
+   ├─ + 4.1.roadmap.guard
    ├─ + 4.1.roadmap.stone
    ├─ + 5.1.execution.phase0_to_phaseN.guard
    ├─ + 5.1.execution.phase0_to_phaseN.stone
@@ -128,6 +130,7 @@ exports[`init.behavior.wish given: [case5] --wish idempotent with same content w
    ├─ ✓ 3.2.distill.repros.experience._.stone
    ├─ ✓ 3.3.1.blueprint.product.guard
    ├─ ✓ 3.3.1.blueprint.product.stone
+   ├─ ✓ 4.1.roadmap.guard
    ├─ ✓ 4.1.roadmap.stone
    ├─ ✓ 5.1.execution.phase0_to_phaseN.guard
    ├─ ✓ 5.1.execution.phase0_to_phaseN.stone
@@ -171,6 +174,7 @@ exports[`init.behavior.wish given: [case6] --wish combined with --open when: [t0
    ├─ + 3.2.distill.repros.experience._.stone
    ├─ + 3.3.1.blueprint.product.guard
    ├─ + 3.3.1.blueprint.product.stone
+   ├─ + 4.1.roadmap.guard
    ├─ + 4.1.roadmap.stone
    ├─ + 5.1.execution.phase0_to_phaseN.guard
    ├─ + 5.1.execution.phase0_to_phaseN.stone

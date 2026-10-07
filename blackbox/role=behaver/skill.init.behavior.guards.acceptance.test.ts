@@ -38,34 +38,34 @@ const getSlugsFromGuardFile = (input: { guardPath: string }): string[] => {
 };
 
 /**
- * .what = backdate specific triggered file to bypass bhrain stillness check
- * .why = bhrain checks mtime of triggered files; backdate specific slug per bhrain test pattern
+ * .what = the ask marker bhrain writes when it hands out one self-review
+ * .why = bhrain (>=0.39) dates the ask by this file's mtime: a promise inside 30s of it is
+ *        refused once as rushed, and an articulation older than it is refused as stale
  */
-const backdateTriggeredFile = (input: {
+const asAskMarkerFilename = (input: { stone: string; slug: string }): string =>
+  `${input.stone}.guard.selfreview.${input.slug}.triggered.since`;
+
+/**
+ * .what = backdate one slug's ask marker past bhrain's haste window
+ * .why = the journey promises at once; a real driver reads first. a backdate stands in for
+ *        that read time, so the promise clears the haste cue on its first attempt
+ */
+const backdateAskMarker = (input: {
   routeDir: string;
   stone: string;
   slug: string;
 }): void => {
-  const files = fs.readdirSync(input.routeDir);
-  const triggeredFile = files.find(
-    (f) =>
-      f.includes(`${input.stone}.guard.selfreview.${input.slug}`) &&
-      f.includes('.triggered'),
-  );
-  if (triggeredFile) {
-    const filePath = path.join(input.routeDir, triggeredFile);
-    const mtimePast = new Date(Date.now() - 91 * 1000);
-    fs.utimesSync(filePath, mtimePast, mtimePast);
-  }
+  const filePath = path.join(input.routeDir, asAskMarkerFilename(input));
+  const mtimePast = new Date(Date.now() - 91 * 1000);
+  fs.utimesSync(filePath, mtimePast, mtimePast);
 };
 
 /**
- * .what = promise all self-reviews for a stone via bhrain test pattern
- * .why = follows bhrain pattern exactly:
- *   t0: --as passed (triggers review 1, blocked) ← done by caller
- *   t1: backdate review 1 + promise (NO pass call)
- *   t2: --as passed (triggers review 2) + backdate + promise
- *   tN: --as passed (triggers review N) + backdate + promise
+ * .what = promise all self-reviews for a stone via bhrain's one-at-a-time ask
+ * .why = follows bhrain's (>=0.39) promise contract exactly:
+ *   t0: --as passed (asks review 1, blocked) ← done by caller
+ *   t1: backdate ask 1 + write articulation + promise --into (NO pass call)
+ *   tN: --as passed (asks review N) + backdate + write articulation + promise --into
  */
 const promiseAllReviewSelfs = (input: {
   repoDir: string;
@@ -100,40 +100,32 @@ const promiseAllReviewSelfs = (input: {
       }
     }
 
-    // 2. verify triggered file exists for this slug
+    // 2. verify bhrain asked this slug (its ask marker exists)
     const filesBefore = fs.readdirSync(input.routeDir);
-    const triggeredFile = filesBefore.find(
-      (f) =>
-        f.includes(`${input.stone}.guard.selfreview.${slug}`) &&
-        f.includes('.triggered'),
-    );
-    if (!triggeredFile) {
+    const askMarker = asAskMarkerFilename({ stone: input.stone, slug });
+    if (!filesBefore.includes(askMarker)) {
       throw new Error(
-        `[${i}] no triggered file for slug=${slug}. files: ${filesBefore.join(', ')}`,
+        `[${i}] no ask marker ${askMarker} for slug=${slug}. files: ${filesBefore.join(', ')}`,
       );
     }
 
-    // 3. backdate the triggered file (same as bhrain's backdateTriggeredReport)
-    backdateTriggeredFile({
-      routeDir: input.routeDir,
-      stone: input.stone,
-      slug,
-    });
+    // 3. backdate the ask, so the promise clears the haste cue
+    backdateAskMarker({ routeDir: input.routeDir, stone: input.stone, slug });
 
-    // 3.5. create articulation file (bhrain requires content before promise)
-    // bhrain expects pattern: for.{stone}._.r{N}.{slug}.md
-    const behaviorDir = path.dirname(input.routeDir); // routeDir is .behavior/{name}/.route
-    const reviewDir = path.join(behaviorDir, 'review', 'self');
-    fs.mkdirSync(reviewDir, { recursive: true });
+    // 4. write the articulation AFTER the backdate, so it post-dates the ask (never stale)
+    // bhrain owes it at: $route/review/self/for.{stone}._.{slug}.md
+    const articulationRel = `${input.routeRel}/review/self/for.${input.stone}._.${slug}.md`;
+    const articulationPath = path.join(input.repoDir, articulationRel);
+    fs.mkdirSync(path.dirname(articulationPath), { recursive: true });
     fs.writeFileSync(
-      path.join(reviewDir, `for.${input.stone}._.r${i + 1}.${slug}.md`),
+      articulationPath,
       `# ${slug}\n\nTest articulation for ${slug}.`,
     );
 
-    // 4. promise this review
+    // 5. promise this review, named by the path it was written to
     try {
       execSync(
-        `npx rhachet run --repo bhrain --skill route.stone.set -- --stone ${input.stone} --route ${input.routeRel} --as promised --that ${slug}`,
+        `npx rhachet run --repo bhrain --skill route.stone.set -- --stone ${input.stone} --route ${input.routeRel} --as promised --that ${slug} --into ${articulationRel}`,
         { cwd: input.repoDir, stdio: ['pipe', 'pipe', 'pipe'] },
       );
     } catch (error: unknown) {
@@ -145,7 +137,7 @@ const promiseAllReviewSelfs = (input: {
       throw error;
     }
 
-    // 5. verify promise file was created
+    // 6. verify promise file was created (a challenged promise writes none)
     const filesAfter = fs.readdirSync(input.routeDir);
     const promiseFile = filesAfter.find(
       (f) =>
@@ -161,6 +153,20 @@ const promiseAllReviewSelfs = (input: {
 };
 
 import { genTestGitRepo } from '../.test/infra';
+
+/**
+ * .what = this process's env, minus every `RHACHET_CLONE_*` key
+ * .why = the journey drives as a human-typed session (an unenrolled driver). a run launched
+ *        from inside an enrolled clone would leak that clone's serial, and bhrain's
+ *        `clone whoami` probe would then fail on a serial the temp repo does not hold — a halt
+ *        that only the run host produces, never ci
+ */
+const getEnvOfUnenrolledSession = (): NodeJS.ProcessEnv =>
+  Object.fromEntries(
+    Object.entries(process.env).filter(
+      ([key]) => !key.startsWith('RHACHET_CLONE_'),
+    ),
+  );
 
 /**
  * .what = helper to run rhachet skill and capture output
@@ -180,6 +186,7 @@ const runSkill = (input: {
         cwd: input.cwd,
         encoding: 'utf-8',
         stdio: ['pipe', 'pipe', 'pipe'],
+        env: getEnvOfUnenrolledSession(),
       },
     );
     return { code: 0, stdout: stdout.trim(), stderr: '' };
@@ -215,7 +222,7 @@ const genConsumerRepoWithBhrain = (input: {
         version: '1.0.0',
         dependencies: {
           'rhachet-roles-bhuild': `file:${process.cwd()}`,
-          'rhachet-roles-bhrain': '0.30.1',
+          'rhachet-roles-bhrain': '0.39.2', // at the peer floor (>=0.39.0), so `brain:` is parsed for real
           'rhachet-roles-ehmpathy': '>=1.34.0',
           rhachet: '^1.15.0',
         },
@@ -365,7 +372,7 @@ exit 0
   // `enroll claude --roles reviewer,...` at dispatch (before the enroll stub
   // runs), so this dir must exist or blueprint/execution stones fail to enroll.
   // .note = this dir supports role resolution, not coverage — the reviewer
-  //         role's presence in the guards is asserted directly in [t10].
+  //         role's presence in the guards is asserted directly in [t11].
   const reviewerRoleDir = path.join(repoDir, '.agent', 'repo=bhrain', 'role=reviewer');
   fs.mkdirSync(reviewerRoleDir, { recursive: true });
   fs.writeFileSync(
@@ -414,6 +421,23 @@ describe('skill.init.behavior.guards.journey', () => {
 
     // journey checkpoints
     const checkpoints = {
+      // stone entries: where bhrain applies a stone's `brain:` (route.drive, never route.stone.set)
+      visionDrive: null as {
+        code: number;
+        stdout: string;
+        stderr: string;
+      } | null,
+      roadmapDrive: null as {
+        code: number;
+        stdout: string;
+        stderr: string;
+      } | null,
+      executionDrive: null as {
+        code: number;
+        stdout: string;
+        stderr: string;
+      } | null,
+
       // vision
       visionPassWithoutApproval: null as {
         code: number;
@@ -450,6 +474,13 @@ describe('skill.init.behavior.guards.journey', () => {
         stderr: string;
       } | null,
       blueprintPassAfterApproval: null as {
+        code: number;
+        stdout: string;
+        stderr: string;
+      } | null,
+
+      // roadmap (brain-only guard: no reviews, no judges)
+      roadmapPass: null as {
         code: number;
         stdout: string;
         stderr: string;
@@ -515,6 +546,14 @@ describe('skill.init.behavior.guards.journey', () => {
       );
 
       const routeDir = path.join(behaviorDir, '.route');
+
+      // enter the vision: bhrain applies its `brain:` (case=1, case=6)
+      checkpoints.visionDrive = runSkill({
+        repo: 'bhrain',
+        skill: 'route.drive',
+        args: `--route ${behaviorDirRel}`,
+        cwd: repoDir,
+      });
 
       // try pass without approval → blocked
       checkpoints.visionPassWithoutApproval = runSkill({
@@ -654,13 +693,34 @@ describe('skill.init.behavior.guards.journey', () => {
       });
 
       // ═══════════════════════════════════════════════════════════════
-      // ROADMAP STONE: quick pass (no guards in template)
+      // ROADMAP STONE: brain-only guard (no reviews, no judges) → passes at once
       // ═══════════════════════════════════════════════════════════════
+      // drop the design stones this journey never walks, so the drive's frontier is the roadmap
+      // (route.drive enters the first unpassed stone, as a real driver who deleted them would)
+      const stonesDeleted = runSkill({
+        repo: 'bhrain',
+        skill: 'route.stone.del',
+        args: `--stone '2.2.*' --stone '2.3.*' --stone '3.1.*' --stone '3.2.*' --route ${behaviorDirRel} --mode apply`,
+        cwd: repoDir,
+      });
+      if (stonesDeleted.code !== 0)
+        throw new Error(
+          `route.stone.del failed: ${stonesDeleted.stdout} ${stonesDeleted.stderr}`,
+        );
+
+      // enter the roadmap: the blueprint boundary, where bhrain switches to sonnet (case=2)
+      checkpoints.roadmapDrive = runSkill({
+        repo: 'bhrain',
+        skill: 'route.drive',
+        args: `--route ${behaviorDirRel}`,
+        cwd: repoDir,
+      });
+
       fs.writeFileSync(
         path.join(behaviorDir, '4.1.roadmap.yield.md'),
         '# Roadmap\n\nTest roadmap.',
       );
-      runSkill({
+      checkpoints.roadmapPass = runSkill({
         repo: 'bhrain',
         skill: 'route.stone.set',
         args: `--stone 4.1.roadmap --route ${behaviorDirRel} --as passed`,
@@ -670,6 +730,14 @@ describe('skill.init.behavior.guards.journey', () => {
       // ═══════════════════════════════════════════════════════════════
       // EXECUTION STONE: self-reviews, no human approval
       // ═══════════════════════════════════════════════════════════════
+
+      // enter the execution: a build stone, which stays on sonnet
+      checkpoints.executionDrive = runSkill({
+        repo: 'bhrain',
+        skill: 'route.drive',
+        args: `--route ${behaviorDirRel}`,
+        cwd: repoDir,
+      });
 
       // modify src/ to create artifact diff (execution guard requires src/**/* artifacts)
       // src/index.ts was created earlier, now we modify it to simulate implementation work
@@ -824,9 +892,25 @@ describe('skill.init.behavior.guards.journey', () => {
     });
 
     // ═══════════════════════════════════════════════════════════════
+    // ROADMAP STONE
+    // ═══════════════════════════════════════════════════════════════
+    when('[t7] roadmap pass attempted', () => {
+      then('allowed at once, with the note `artifacts only`', () => {
+        // the brain-only guard has no reviews and no judges (case=2 [t2])
+        expect(checkpoints.roadmapPass!.code).toEqual(0);
+        const output =
+          checkpoints.roadmapPass!.stdout + checkpoints.roadmapPass!.stderr;
+        expect(asSnapshotStable(output)).toMatchSnapshot();
+        expect(output).toContain('passage = allowed');
+        expect(output).toContain('artifacts only');
+        expect(output).not.toContain('unguarded');
+      });
+    });
+
+    // ═══════════════════════════════════════════════════════════════
     // EXECUTION STONE
     // ═══════════════════════════════════════════════════════════════
-    when('[t7] execution pass attempted without promises', () => {
+    when('[t8] execution pass attempted without promises', () => {
       then('blocked by unpromised self-review', () => {
         expect(checkpoints.executionPassWithoutPromises!.code).not.toEqual(0);
         const output =
@@ -837,7 +921,7 @@ describe('skill.init.behavior.guards.journey', () => {
       });
     });
 
-    when('[t8] execution pass attempted after promises', () => {
+    when('[t9] execution pass attempted after promises', () => {
       then('allowed (no judges)', () => {
         expect(checkpoints.executionPassAfterPromises!.code).toEqual(0);
         const output =
@@ -851,7 +935,7 @@ describe('skill.init.behavior.guards.journey', () => {
     // ═══════════════════════════════════════════════════════════════
     // FINAL STATE
     // ═══════════════════════════════════════════════════════════════
-    when('[t9] journey complete', () => {
+    when('[t10] journey complete', () => {
       then('all stones have passage markers in passage.jsonl', () => {
         const routeDir = path.join(behaviorDir, '.route');
         const passageFile = path.join(routeDir, 'passage.jsonl');
@@ -880,7 +964,7 @@ describe('skill.init.behavior.guards.journey', () => {
     // ═══════════════════════════════════════════════════════════════
     // ENROLLED REVIEWER CONTRACT (the wish's actual payload)
     // ═══════════════════════════════════════════════════════════════
-    when('[t10] every guard-template variant embeds the enrolled-reviewer fix', () => {
+    when('[t11] every guard-template variant embeds the enrolled-reviewer fix', () => {
       // read the SOURCE guard templates directly so EVERY variant a caller
       // could select is verified — not just the ones the heavy full-journey
       // fixture happens to generate. covers: light | heavy blueprint,
@@ -918,15 +1002,21 @@ describe('skill.init.behavior.guards.journey', () => {
         });
       };
 
-      then('every enrolled reviewer across all variants uses the sonnet-5 model', () => {
+      then('every enrolled reviewer across all variants uses the sonnet-5-5 model', () => {
         const enrollLines = getEnrollLinesFromTemplates();
 
         // guard against a false pass if the extraction matched no lines
         expect(enrollLines.length).toBeGreaterThan(0);
 
-        // every enroll line must carry the sonnet-5 model
-        for (const enroll of enrollLines)
-          expect(enroll.model).toEqual('claude-sonnet-5[1m]');
+        // the behavior wish moves every sonnet reviewer from claude-sonnet-5[1m] to the current
+        // sonnet (.behavior/v2026_10_05.feat-brain-per-stage/0.wish.md, ".the outcome")
+        // every enroll line must carry the current sonnet, 1M context; a mismatch names its
+        // template. this locks the string in the template; that the claude cli accepts it is
+        // proven by initBehaviorDir.brain.claude.integration.test.ts
+        const offSonnet = enrollLines
+          .filter((enroll) => enroll.model !== 'claude-sonnet-5-5[1m]')
+          .map((enroll) => `${enroll.template} → ${enroll.model}`);
+        expect(offSonnet).toEqual([]);
       });
 
       then('every enrolled reviewer across all variants lists the reviewer role first', () => {
@@ -949,7 +1039,7 @@ describe('skill.init.behavior.guards.journey', () => {
         // BOTH execution paths (from_vision is --size nano), and verification
         // each carry enroll lines the two assertions above verified. an
         // assertion (not a snapshot) so the literal model id
-        // `claude-sonnet-5[1m]` is never misread as ANSI residue.
+        // `claude-sonnet-5-5[1m]` is never misread as ANSI residue.
         const templatesWithEnroll = [
           ...new Set(enrollLines.map((e) => e.template)),
         ].sort();
@@ -966,7 +1056,7 @@ describe('skill.init.behavior.guards.journey', () => {
     // ═══════════════════════════════════════════════════════════════
     // REPO-RULES OPTIONAL-SKIP CONTRACT (the wish's actual payload)
     // ═══════════════════════════════════════════════════════════════
-    when('[t11] every guard-template variant makes its repo-rules reviewer optional', () => {
+    when('[t12] every guard-template variant makes its repo-rules reviewer optional', () => {
       // read the SOURCE guard templates directly so EVERY variant a caller
       // could select is verified — not just the ones the heavy full-journey
       // fixture happens to generate.
@@ -1029,6 +1119,55 @@ describe('skill.init.behavior.guards.journey', () => {
           '5.1.execution.phase0_to_phaseN.guard',
           '5.3.verification.guard',
         ]);
+      });
+    });
+
+    // ═══════════════════════════════════════════════════════════════
+    // STONE ENTRIES: the brain bhrain applies, read by a real installed bhrain
+    // ═══════════════════════════════════════════════════════════════
+    // the journey drives as an unenrolled session (see getEnvOfUnenrolledSession), so at each
+    // `brain:` stone bhrain names the prescribed brain, then halts with the `unenrolled` cause
+    // and the enroll fix (catalog cell c16)
+    when('[t13] the unenrolled driver enters the vision', () => {
+      then('bhrain names opus, the design brain, and halts with the enroll fix', () => {
+        const output =
+          checkpoints.visionDrive!.stdout + checkpoints.visionDrive!.stderr;
+        expect(asSnapshotStable(output)).toMatchSnapshot();
+        expect(output).toContain('stone = 1.vision');
+        expect(output).toContain('brain = claude-opus-5-5[1m]');
+        expect(output).not.toContain('claude-sonnet-5-5[1m]');
+        expect(output).toContain('halted, brain switch could not land');
+        expect(output).toContain('no clone address was confirmed');
+        expect(output).toContain('rhx enroll claude --as @:driver --roles driver');
+      });
+    });
+
+    when('[t14] the unenrolled driver enters the roadmap, past the blueprint', () => {
+      then('bhrain names sonnet, the build brain, and halts with the enroll fix', () => {
+        const output =
+          checkpoints.roadmapDrive!.stdout + checkpoints.roadmapDrive!.stderr;
+        expect(asSnapshotStable(output)).toMatchSnapshot();
+        expect(output).toContain('stone = 4.1.roadmap');
+        expect(output).toContain('brain = claude-sonnet-5-5[1m]');
+        expect(output).not.toContain('claude-opus-5-5[1m]');
+        expect(output).toContain('halted, brain switch could not land');
+        expect(output).toContain('no clone address was confirmed');
+        expect(output).toContain('rhx enroll claude --as @:driver --roles driver');
+      });
+    });
+
+    when('[t15] the unenrolled driver enters the execution', () => {
+      then('bhrain names sonnet, the build brain, and halts with the enroll fix', () => {
+        const output =
+          checkpoints.executionDrive!.stdout +
+          checkpoints.executionDrive!.stderr;
+        expect(asSnapshotStable(output)).toMatchSnapshot();
+        expect(output).toContain('stone = 5.1.execution.phase0_to_phaseN');
+        expect(output).toContain('brain = claude-sonnet-5-5[1m]');
+        expect(output).not.toContain('claude-opus-5-5[1m]');
+        expect(output).toContain('halted, brain switch could not land');
+        expect(output).toContain('no clone address was confirmed');
+        expect(output).toContain('rhx enroll claude --as @:driver --roles driver');
       });
     });
   });

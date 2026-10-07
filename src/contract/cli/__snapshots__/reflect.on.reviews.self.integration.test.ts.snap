@@ -90,7 +90,7 @@ options:
   --route    filter to windows of one route dir              [default: all routes]
   --project  filter to one project slug                      [default: all projects]
   --stone    filter to one stone (e.g. 1.vision)             [default: all stones]
-  --brain    cheap brain choice for apply mode               [default: fireworks/deepseek/v4-flash]
+  --brain    cheap brain choice for apply mode               [default: openrouter/deepseek/flash]
   --into     report output path                              [default: ~/.rhachet/reflect, or into --route dir]
   --help     show this guide
 

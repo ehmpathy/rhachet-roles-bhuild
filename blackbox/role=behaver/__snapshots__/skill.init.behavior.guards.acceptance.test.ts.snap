@@ -89,7 +89,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ walk the way 🪷
    │  │
    │  ├─ articulate into
-   │  │  ├─ /review/self/for.1.vision._.r1.has-grounded-in-reality.md
+   │  │  ├─ .behavior/v{DATE}.full-journey/review/self/for.1.vision._.has-grounded-in-reality.md
    │  │  └─ the guard looks precisely here, write exactly to this path
    │  │
    │  ├─ for each found issue 🪘
@@ -109,7 +109,8 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │     └─
    │
    └─ when you've truly reflected, run
-      └─ rhx route.stone.set --stone 1.vision --as promised --that has-grounded-in-reality[0m[31m[0m
+      └─ rhx route.stone.set --stone 1.vision --as promised --that has-grounded-in-reality \\
+         --into .behavior/v{DATE}.full-journey/review/self/for.1.vision._.has-grounded-in-reality.md[0m[31m[0m
 [0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set[0m
 [0m[31m   └─ ✋ blocked by constraints[0m
 [0m[31m[0m"
@@ -242,7 +243,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ walk the way 🪷
    │  │
    │  ├─ articulate into
-   │  │  ├─ /review/self/for.2.1.criteria.blackbox._.r1.has-questioned-requirements.md
+   │  │  ├─ .behavior/v{DATE}.full-journey/review/self/for.2.1.criteria.blackbox._.has-questioned-requirements.md
    │  │  └─ the guard looks precisely here, write exactly to this path
    │  │
    │  ├─ for each found issue 🪘
@@ -262,7 +263,8 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │     └─
    │
    └─ when you've truly reflected, run
-      └─ rhx route.stone.set --stone 2.1.criteria.blackbox --as promised --that has-questioned-requirements[0m[31m[0m
+      └─ rhx route.stone.set --stone 2.1.criteria.blackbox --as promised --that has-questioned-requirements \\
+         --into .behavior/v{DATE}.full-journey/review/self/for.2.1.criteria.blackbox._.has-questioned-requirements.md[0m[31m[0m
 [0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set[0m
 [0m[31m   └─ ✋ blocked by constraints[0m
 [0m[31m[0m"
@@ -374,7 +376,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ walk the way 🪷
    │  │
    │  ├─ articulate into
-   │  │  ├─ /review/self/for.3.3.1.blueprint.product._.r1.has-research-citations.md
+   │  │  ├─ .behavior/v{DATE}.full-journey/review/self/for.3.3.1.blueprint.product._.has-research-citations.md
    │  │  └─ the guard looks precisely here, write exactly to this path
    │  │
    │  ├─ for each found issue 🪘
@@ -394,7 +396,8 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │     └─
    │
    └─ when you've truly reflected, run
-      └─ rhx route.stone.set --stone 3.3.1.blueprint.product --as promised --that has-research-citations[0m[31m[0m
+      └─ rhx route.stone.set --stone 3.3.1.blueprint.product --as promised --that has-research-citations \\
+         --into .behavior/v{DATE}.full-journey/review/self/for.3.3.1.blueprint.product._.has-research-citations.md[0m[31m[0m
 [0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set[0m
 [0m[31m   └─ ✋ blocked by constraints[0m
 [0m[31m[0m"
@@ -581,7 +584,22 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
 [0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set[0m
 [0m[31m   └─ ✋ blocked by constraints[0m
 [0m[31m[0m
-[0m[31m🪶 judge 2
+[0m[31m🦉 l1 pours 10 lanes
+   ├─ r1:repo-rules
+   ├─ r2:mech-failhides
+   ├─ r3:mech-decode-friction
+   ├─ r4:arch-opport-decomposition
+   ├─ r5:arch-smell-scopeleaks
+   ├─ r6:arch-hazards-maintenance
+   ├─ r7:arch-hazards-behavior
+   ├─ r8:arch-ambiguous-terms
+   ├─ r9:ergo-acceptance-journey-coverage
+   └─ r10:ergo-snapshot-visual-blemishes
+🦉 l3 pours 2 lanes
+   ├─ r11:enroll-blueprint-arch-defects
+   └─ r12:enroll-blueprint-behavior-intent
+
+🪶 judge 2
    ├─ stdout
    │  ├─
    │  │
@@ -793,7 +811,20 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
       └─ rhx route.drive"
 `;
 
-exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t7] execution pass attempted without promises then: blocked by unpromised self-review 1`] = `
+exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t7] roadmap pass attempted then: allowed at once, with the note \`artifacts only\` 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+
+🦉 the way speaks for itself
+
+🗿 route.stone.set
+   ├─ stone = 4.1.roadmap
+   ├─ passage = allowed (artifacts only)
+   │
+   └─ the way continues, run
+      └─ rhx route.drive"
+`;
+
+exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t8] execution pass attempted without promises then: blocked by unpromised self-review 1`] = `
 "🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
@@ -873,7 +904,7 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    ├─ walk the way 🪷
    │  │
    │  ├─ articulate into
-   │  │  ├─ /review/self/for.5.1.execution.phase0_to_phaseN._.r1.has-pruned-yagni.md
+   │  │  ├─ .behavior/v{DATE}.full-journey/review/self/for.5.1.execution.phase0_to_phaseN._.has-pruned-yagni.md
    │  │  └─ the guard looks precisely here, write exactly to this path
    │  │
    │  ├─ for each found issue 🪘
@@ -893,13 +924,14 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │     └─
    │
    └─ when you've truly reflected, run
-      └─ rhx route.stone.set --stone 5.1.execution.phase0_to_phaseN --as promised --that has-pruned-yagni[0m[31m[0m
+      └─ rhx route.stone.set --stone 5.1.execution.phase0_to_phaseN --as promised --that has-pruned-yagni \\
+         --into .behavior/v{DATE}.full-journey/review/self/for.5.1.execution.phase0_to_phaseN._.has-pruned-yagni.md[0m[31m[0m
 [0m[31m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set[0m
 [0m[31m   └─ ✋ blocked by constraints[0m
 [0m[31m[0m"
 `;
 
-exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t8] execution pass attempted after promises then: allowed (no judges) 1`] = `
+exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t9] execution pass attempted after promises then: allowed (no judges) 1`] = `
 "🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
@@ -1063,4 +1095,79 @@ exports[`skill.init.behavior.guards.journey given: [case1] full behavior route w
    │
    └─ the way continues, run
       └─ rhx route.drive"
+`;
+
+exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t13] the unenrolled driver enters the vision then: bhrain names opus, the design brain, and halts with the enroll fix 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
+
+🦉 where were we?
+
+🗿 route.drive
+   ├─ where do we go?
+   │  ├─ route = .behavior/v{DATE}.full-journey
+   │  ├─ stone = 1.vision
+   │  └─ brain = claude-opus-5-5[1m]
+   │
+   └─ ✋ halted, brain switch could not land
+      ├─ this driver runs = unknown — no clone address was confirmed
+      │
+      ├─ why
+      │  ├─ this driver is not an enrolled clone, so \`clone say\` has naught to address
+      │  └─ the usual cause is a driver launched directly rather than by \`rhx enroll\`
+      │
+      ├─ fix: re-enroll the driver with a slug, then re-enter the stone
+      │  └─ rhx enroll claude --as @:driver --roles driver
+      │
+      └─ or: remove \`brain:\` from the stone's guard, and inherit the brain deliberately
+         └─ .behavior/v{DATE}.full-journey/1.vision.guard"
+`;
+
+exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t14] the unenrolled driver enters the roadmap, past the blueprint then: bhrain names sonnet, the build brain, and halts with the enroll fix 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
+
+🦉 where were we?
+
+🗿 route.drive
+   ├─ where do we go?
+   │  ├─ route = .behavior/v{DATE}.full-journey
+   │  ├─ stone = 4.1.roadmap
+   │  └─ brain = claude-sonnet-5-5[1m]
+   │
+   └─ ✋ halted, brain switch could not land
+      ├─ this driver runs = unknown — no clone address was confirmed
+      │
+      ├─ why
+      │  ├─ this driver is not an enrolled clone, so \`clone say\` has naught to address
+      │  └─ the usual cause is a driver launched directly rather than by \`rhx enroll\`
+      │
+      ├─ fix: re-enroll the driver with a slug, then re-enter the stone
+      │  └─ rhx enroll claude --as @:driver --roles driver
+      │
+      └─ or: remove \`brain:\` from the stone's guard, and inherit the brain deliberately
+         └─ .behavior/v{DATE}.full-journey/4.1.roadmap.guard"
+`;
+
+exports[`skill.init.behavior.guards.journey given: [case1] full behavior route with guards when: [t15] the unenrolled driver enters the execution then: bhrain names sonnet, the build brain, and halts with the enroll fix 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
+
+🦉 where were we?
+
+🗿 route.drive
+   ├─ where do we go?
+   │  ├─ route = .behavior/v{DATE}.full-journey
+   │  ├─ stone = 5.1.execution.phase0_to_phaseN
+   │  └─ brain = claude-sonnet-5-5[1m]
+   │
+   └─ ✋ halted, brain switch could not land
+      ├─ this driver runs = unknown — no clone address was confirmed
+      │
+      ├─ why
+      │  ├─ this driver is not an enrolled clone, so \`clone say\` has naught to address
+      │  └─ the usual cause is a driver launched directly rather than by \`rhx enroll\`
+      │
+      ├─ fix: re-enroll the driver with a slug, then re-enter the stone
+      │  └─ rhx enroll claude --as @:driver --roles driver
+      │
+      └─ or: remove \`brain:\` from the stone's guard, and inherit the brain deliberately
+         └─ .behavior/v{DATE}.full-journey/5.1.execution.phase0_to_phaseN.guard"
 `;

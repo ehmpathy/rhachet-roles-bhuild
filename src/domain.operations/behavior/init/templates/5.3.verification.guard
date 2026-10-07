@@ -2,6 +2,9 @@
 provenance:
   uri: node_modules/rhachet-roles-bhuild/dist/domain.operations/behavior/init/templates/5.3.verification.guard
 
+# brain = the brain the driver runs on for this stone; build stones (prefix 4.–5.) drive on sonnet
+brain: claude-sonnet-5-5[1m]
+
 artifacts:
   # track verification progress
   - "$route/5.3.verification.yield.md"
@@ -278,17 +281,17 @@ reviews:
     # --- level 3: expensive reviewers (run after level 1 is terminal) ---
 
     - slug: enroll-verif-snapshot-coverage
-      run: $rhx enroll claude --model 'claude-sonnet-5[1m]' --roles reviewer,behaver,ergonomist,mechanic -p 'review the diff for snapshot coverage on contract endpoints and acceptance test user journey coverage. read the prior peer-review conversation at $conversation to catch up on context.'
+      run: $rhx enroll claude --model 'claude-sonnet-5-5[1m]' --roles reviewer,behaver,ergonomist,mechanic -p 'review the diff for snapshot coverage on contract endpoints and acceptance test user journey coverage. read the prior peer-review conversation at $conversation to catch up on context.'
       budget: 3
       level: 3
 
     - slug: enroll-verif-snapshot-blemishes
-      run: $rhx enroll claude --model 'claude-sonnet-5[1m]' --roles reviewer,behaver,ergonomist,mechanic -p 'review the diff for experiential and visual blemishes in snapshotted acceptance test journeys. read the prior peer-review conversation at $conversation to catch up on context.'
+      run: $rhx enroll claude --model 'claude-sonnet-5-5[1m]' --roles reviewer,behaver,ergonomist,mechanic -p 'review the diff for experiential and visual blemishes in snapshotted acceptance test journeys. read the prior peer-review conversation at $conversation to catch up on context.'
       budget: 3
       level: 3
 
     - slug: enroll-verif-test-intent
-      run: $rhx enroll claude --model 'claude-sonnet-5[1m]' --roles reviewer,behaver,architect,mechanic -p 'review the current implementation for test intent violation diffs. if any of the diffs related to tests loosened assertions or changed the criteria, this is a blocker. tests were added for a reason. we have to maintain the behavior they locked in. read the prior peer-review conversation at $conversation to catch up on context.'
+      run: $rhx enroll claude --model 'claude-sonnet-5-5[1m]' --roles reviewer,behaver,architect,mechanic -p 'review the current implementation for test intent violation diffs. if any of the diffs related to tests loosened assertions or changed the criteria, this is a blocker. tests were added for a reason. we have to maintain the behavior they locked in. read the prior peer-review conversation at $conversation to catch up on context.'
       budget: 3
       level: 3
 

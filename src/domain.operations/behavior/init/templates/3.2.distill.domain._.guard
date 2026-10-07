@@ -2,6 +2,9 @@
 provenance:
   uri: node_modules/rhachet-roles-bhuild/dist/domain.operations/behavior/init/templates/3.2.distill.domain._.guard
 
+# brain = the brain the driver runs on for this stone; design stones (prefix 1.–3.) drive on opus
+brain: claude-opus-5-5[1m]
+
 reviews:
   self:
     - slug: has-ubiquitous-language

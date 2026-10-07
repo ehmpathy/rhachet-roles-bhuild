@@ -20,6 +20,7 @@ exports[`init.behavior.idempotent given: [case5] direct: idempotent rerun on sam
    ├─ + 3.2.distill.repros.experience._.stone
    ├─ + 3.3.1.blueprint.product.guard
    ├─ + 3.3.1.blueprint.product.stone
+   ├─ + 4.1.roadmap.guard
    ├─ + 4.1.roadmap.stone
    ├─ + 5.1.execution.phase0_to_phaseN.guard
    ├─ + 5.1.execution.phase0_to_phaseN.stone
@@ -61,6 +62,7 @@ exports[`init.behavior.idempotent given: [case5] direct: idempotent rerun on sam
    ├─ ✓ 3.2.distill.repros.experience._.stone
    ├─ ✓ 3.3.1.blueprint.product.guard
    ├─ ✓ 3.3.1.blueprint.product.stone
+   ├─ ✓ 4.1.roadmap.guard
    ├─ ✓ 4.1.roadmap.stone
    ├─ ✓ 5.1.execution.phase0_to_phaseN.guard
    ├─ ✓ 5.1.execution.phase0_to_phaseN.stone
@@ -102,6 +104,7 @@ exports[`init.behavior.idempotent given: [case9] direct: idempotent reruns prese
    ├─ + 3.2.distill.repros.experience._.stone
    ├─ + 3.3.1.blueprint.product.guard
    ├─ + 3.3.1.blueprint.product.stone
+   ├─ + 4.1.roadmap.guard
    ├─ + 4.1.roadmap.stone
    ├─ + 5.1.execution.phase0_to_phaseN.guard
    ├─ + 5.1.execution.phase0_to_phaseN.stone

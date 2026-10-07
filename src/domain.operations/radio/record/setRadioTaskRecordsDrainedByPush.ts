@@ -7,6 +7,7 @@ import { asRadioPushedFate } from './asRadioPushedFate';
 import { asRadioTaskRepoSlug } from './asRadioTaskRepoSlug';
 import type { RadioTaskRecordFate } from './RadioTaskRecordFate';
 import type { ShellExecutor } from './ShellExecutor';
+import { setRadioPushSettledAfterDrain } from './setRadioPushSettledAfterDrain';
 import { setRadioTaskRecordHeldAtGate } from './setRadioTaskRecordHeldAtGate';
 import { setRadioTaskRecordsDrained } from './setRadioTaskRecordsDrained';
 
@@ -57,7 +58,13 @@ export const setRadioTaskRecordsDrainedByPush = async (
     };
 
   // gate open: drain the backlog; a landed push is not in it, and stays landed (C3, C6)
-  const { fates } = await setRadioTaskRecordsDrained({}, context);
+  const drained = await setRadioTaskRecordsDrained({}, context);
+
+  // a concurrent drain may have carried this push ahead of its own drain (C19, X2)
+  const fates = await setRadioPushSettledAfterDrain(
+    { fates: drained.fates, ...input },
+    context,
+  );
   return {
     pushed: asRadioPushedFate({ fates, record: input.record }),
     others: asRadioOtherFates({ fates, record: input.record }),

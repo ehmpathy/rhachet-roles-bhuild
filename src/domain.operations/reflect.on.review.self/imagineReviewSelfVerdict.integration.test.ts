@@ -1,5 +1,5 @@
 import { genContextBrain } from 'rhachet/brains';
-import { getBrainAtomsByFireworksAI } from 'rhachet-brains-fireworksai';
+import { getBrainAtomsByOpenRouter } from 'rhachet-brains-openrouter';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import { ReflectOnReviewSelfExperience } from '@src/domain.objects/reflect.on.review.self/ReflectOnReviewSelfExperience';
@@ -24,16 +24,16 @@ const TEST_BRAIN_KEYRACK = { owner: 'ehmpath', env: 'test' } as const;
  * .why = the production communicator getReflectBrainContext reaches the brain through
  *        rhachet's runtime package discovery, which loads supplier packages via a
  *        native dynamic import() that jest cannot run — so a discovery call under jest
- *        finds zero brains. this test registers the fireworks atoms explicitly (a
+ *        finds zero brains. this test registers the openrouter atoms explicitly (a
  *        static import resolves to a require under jest) and hands them to
  *        genContextBrain's explicit mode, which skips discovery. it still makes the
- *        same real fireworks call the production path makes, so the external contract
+ *        same real openrouter call the production path makes, so the external contract
  *        is exercised for real. mirrors rhachet-roles-bhrain's genTestBrainContext —
  *        the established pattern for a real-brain jest test.
  */
 const getRealBrainContext = () =>
   genContextBrain({
-    brains: { atoms: getBrainAtomsByFireworksAI() },
+    brains: { atoms: getBrainAtomsByOpenRouter() },
     choice: { atom: REFLECT_BRAIN_SLUG },
     creds: { keyrack: TEST_BRAIN_KEYRACK },
   });
@@ -91,7 +91,7 @@ const asGainWindow = (): ReflectOnReviewSelfWindow =>
 
 describe('imagineReviewSelfVerdict (integration)', () => {
   given(
-    '[case1] a real fireworks brain context + a genuine-gain window',
+    '[case1] a real openrouter brain context + a genuine-gain window',
     () => {
       const scene = useBeforeAll(async () => {
         const context = getRealBrainContext();
