@@ -68,7 +68,7 @@ exports[`skill.init.behavior.guards.journey.vision given: [case1] a heavy-guard 
    ├─ walk the way 🪷
    │  │
    │  ├─ articulate into
-   │  │  ├─ /review/self/for.1.vision._.r1.has-stub-review.md
+   │  │  ├─ .behavior/v{DATE}.full-journey/review/self/for.1.vision._.has-stub-review.md
    │  │  └─ the guard looks precisely here, write exactly to this path
    │  │
    │  ├─ for each found issue 🪘
@@ -88,7 +88,8 @@ exports[`skill.init.behavior.guards.journey.vision given: [case1] a heavy-guard 
    │     └─
    │
    └─ when you've truly reflected, run
-      └─ rhx route.stone.set --stone 1.vision --as promised --that has-stub-review
+      └─ rhx route.stone.set --stone 1.vision --as promised --that has-stub-review \\
+         --into .behavior/v{DATE}.full-journey/review/self/for.1.vision._.has-stub-review.md
 🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
    └─ ✋ blocked by constraints
 "
@@ -213,7 +214,7 @@ exports[`skill.init.behavior.guards.journey.vision given: [case1] a heavy-guard 
    ├─ walk the way 🪷
    │  │
    │  ├─ articulate into
-   │  │  ├─ /review/self/for.2.1.criteria.blackbox._.r1.has-stub-review.md
+   │  │  ├─ .behavior/v{DATE}.full-journey/review/self/for.2.1.criteria.blackbox._.has-stub-review.md
    │  │  └─ the guard looks precisely here, write exactly to this path
    │  │
    │  ├─ for each found issue 🪘
@@ -233,7 +234,8 @@ exports[`skill.init.behavior.guards.journey.vision given: [case1] a heavy-guard 
    │     └─
    │
    └─ when you've truly reflected, run
-      └─ rhx route.stone.set --stone 2.1.criteria.blackbox --as promised --that has-stub-review
+      └─ rhx route.stone.set --stone 2.1.criteria.blackbox --as promised --that has-stub-review \\
+         --into .behavior/v{DATE}.full-journey/review/self/for.2.1.criteria.blackbox._.has-stub-review.md
 🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
    └─ ✋ blocked by constraints
 "
@@ -250,4 +252,29 @@ exports[`skill.init.behavior.guards.journey.vision given: [case1] a heavy-guard 
    │
    └─ the way continues, run
       └─ rhx route.drive"
+`;
+
+exports[`skill.init.behavior.guards.journey.vision given: [case1] a heavy-guard behavior at its vision stone when: [t4] the unenrolled driver enters the vision then: bhrain names opus, the design brain, and halts with the enroll fix 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
+
+🦉 where were we?
+
+🗿 route.drive
+   ├─ where do we go?
+   │  ├─ route = .behavior/v{DATE}.full-journey
+   │  ├─ stone = 1.vision
+   │  └─ brain = claude-opus-5-5[1m]
+   │
+   └─ ✋ halted, brain switch could not land
+      ├─ this driver runs = unknown — no clone address was confirmed
+      │
+      ├─ why
+      │  ├─ this driver is not an enrolled clone, so \`clone say\` has naught to address
+      │  └─ the usual cause is a driver launched directly rather than by \`rhx enroll\`
+      │
+      ├─ fix: re-enroll the driver with a slug, then re-enter the stone
+      │  └─ rhx enroll claude --as @:driver --roles driver
+      │
+      └─ or: remove \`brain:\` from the stone's guard, and inherit the brain deliberately
+         └─ .behavior/v{DATE}.full-journey/1.vision.guard"
 `;

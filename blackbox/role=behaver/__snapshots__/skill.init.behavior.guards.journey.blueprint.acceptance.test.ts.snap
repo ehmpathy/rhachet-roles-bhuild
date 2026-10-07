@@ -68,7 +68,7 @@ exports[`skill.init.behavior.guards.journey.blueprint given: [case1] a heavy-gua
    ├─ walk the way 🪷
    │  │
    │  ├─ articulate into
-   │  │  ├─ /review/self/for.3.3.1.blueprint.product._.r1.has-stub-review.md
+   │  │  ├─ .behavior/v{DATE}.full-journey/review/self/for.3.3.1.blueprint.product._.has-stub-review.md
    │  │  └─ the guard looks precisely here, write exactly to this path
    │  │
    │  ├─ for each found issue 🪘
@@ -88,7 +88,8 @@ exports[`skill.init.behavior.guards.journey.blueprint given: [case1] a heavy-gua
    │     └─
    │
    └─ when you've truly reflected, run
-      └─ rhx route.stone.set --stone 3.3.1.blueprint.product --as promised --that has-stub-review
+      └─ rhx route.stone.set --stone 3.3.1.blueprint.product --as promised --that has-stub-review \\
+         --into .behavior/v{DATE}.full-journey/review/self/for.3.3.1.blueprint.product._.has-stub-review.md
 🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
    └─ ✋ blocked by constraints
 "
@@ -274,6 +275,21 @@ exports[`skill.init.behavior.guards.journey.blueprint given: [case1] a heavy-gua
               └─ reason: wait for human approval
 🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
    └─ ✋ blocked by constraints
+
+🦉 l1 pours 10 lanes
+   ├─ r1:repo-rules
+   ├─ r2:mech-failhides
+   ├─ r3:mech-decode-friction
+   ├─ r4:arch-opport-decomposition
+   ├─ r5:arch-smell-scopeleaks
+   ├─ r6:arch-hazards-maintenance
+   ├─ r7:arch-hazards-behavior
+   ├─ r8:arch-ambiguous-terms
+   ├─ r9:ergo-acceptance-journey-coverage
+   └─ r10:ergo-snapshot-visual-blemishes
+🦉 l3 pours 2 lanes
+   ├─ r11:enroll-blueprint-arch-defects
+   └─ r12:enroll-blueprint-behavior-intent
 
 🪶 judge 2
    ├─ stdout
@@ -485,4 +501,42 @@ exports[`skill.init.behavior.guards.journey.blueprint given: [case1] a heavy-gua
    │
    └─ the way continues, run
       └─ rhx route.drive"
+`;
+
+exports[`skill.init.behavior.guards.journey.blueprint given: [case1] a heavy-guard behavior at its blueprint stone when: [t3] roadmap pass attempted after the blueprint then: allowed at once, with the note \`artifacts only\` 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+
+🦉 the way speaks for itself
+
+🗿 route.stone.set
+   ├─ stone = 4.1.roadmap
+   ├─ passage = allowed (artifacts only)
+   │
+   └─ the way continues, run
+      └─ rhx route.drive"
+`;
+
+exports[`skill.init.behavior.guards.journey.blueprint given: [case1] a heavy-guard behavior at its blueprint stone when: [t4] the unenrolled driver enters the roadmap, past the blueprint then: bhrain names sonnet, the build brain, and halts with the enroll fix 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
+
+🦉 where were we?
+
+🗿 route.drive
+   ├─ where do we go?
+   │  ├─ route = .behavior/v{DATE}.full-journey
+   │  ├─ stone = 4.1.roadmap
+   │  └─ brain = claude-sonnet-5-5[1m]
+   │
+   └─ ✋ halted, brain switch could not land
+      ├─ this driver runs = unknown — no clone address was confirmed
+      │
+      ├─ why
+      │  ├─ this driver is not an enrolled clone, so \`clone say\` has naught to address
+      │  └─ the usual cause is a driver launched directly rather than by \`rhx enroll\`
+      │
+      ├─ fix: re-enroll the driver with a slug, then re-enter the stone
+      │  └─ rhx enroll claude --as @:driver --roles driver
+      │
+      └─ or: remove \`brain:\` from the stone's guard, and inherit the brain deliberately
+         └─ .behavior/v{DATE}.full-journey/4.1.roadmap.guard"
 `;
