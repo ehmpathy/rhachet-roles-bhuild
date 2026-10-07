@@ -11,6 +11,11 @@
   "exclude": [
     "**/*.test.ts", // all explicitly .test files are dev only assets too
     "**/*.test.js",
+    // a *.harness.ts is a dev-only asset by construction — it holds the temp-dir,
+    // teardown, and runner helpers a suite imports. it carries no `.test` in its
+    // name (jest would then try to run it as a suite), so it matches no rule above
+    // and would otherwise compile into dist/ as a shipped dev asset
+    "**/*.harness.ts",
     "**/.test/**/*",
     "**/.scratch/**/*",
     "**/__test*__/**/*", // todo: deprecate this pattern in favor of .test

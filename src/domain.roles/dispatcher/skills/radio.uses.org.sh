@@ -7,7 +7,7 @@
 #
 # usage:
 #   radio.uses.org allow --org ehmpathy   # allow radio for ehmpathy
-#   radio.uses.org block --org ahbode     # block radio for ahbode
+#   radio.uses.org block --org sandpine     # block radio for sandpine
 #   radio.uses.org allow --org @all       # allow radio for all orgs by default
 #   radio.uses.org block --org @all       # block radio for all orgs by default
 #   radio.uses.org del --org ehmpathy    # remove org config, defer to @all
@@ -61,7 +61,7 @@ while [[ $# -gt 0 ]]; do
       echo "  get    check org config(s)"
       echo ""
       echo "options:"
-      echo "  --org <name>          org name (e.g., ehmpathy, ahbode, @all)"
+      echo "  --org <name>          org name (e.g., ehmpathy, sandpine, @all)"
       echo "  --help, -h            show this help"
       echo ""
       echo "examples:"

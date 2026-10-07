@@ -1,0 +1,104 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`prioritizer.eco.priority acceptance (as consumer) given: [case1] a consumer repo that holds the package and no source when: [t0] the skill is invoked through the built package then: and the whole empty-rank surface holds its shape 1`] = `
+"🪨 run solid skill repo=bhuild/role=prioritizer/skill=eco.priority
+
+🦫 chew on it
+
+🔦 eco.priority get
+   ├─ from: .eco/priority.db
+   ├─ found: 0
+   └─ the rank is empty
+
+🦫 crickets... set one:
+   ├─ rhx eco.priority set --slug <slug> --what '<what>' \\
+   │       --sev <p0|p1|p2|p3|p5> --urg <1d|3d|1w|1m>
+   └─ ⚖️ both are YOUR call — no default is offered on purpose"
+`;
+
+exports[`prioritizer.eco.priority acceptance (as consumer) given: [case1] a consumer repo that holds the package and no source when: [t1] a priority is recorded, then read back then: 🔴 and the csv it writes holds its exact shape 1`] = `
+"slug,kind,what,why,opine_sev,opine_urg,quant_gain_cash,quant_gain_per,quant_gain_duration,quant_gain_time,quant_cost_cash,quant_cost_per,quant_cost_duration,quant_cost_time,quant_asks,status,ref_task,ref_tree,ref_pull,seen_tree_at,seen_at,set_at
+bigrock://sandpine,,fix the nullability defect,,p2,1m,,once,1y,,,once,1y,,1,enqueued,[],[],[],,{TIME},{TIME}
+"
+`;
+
+exports[`prioritizer.eco.priority acceptance (as consumer) given: [case1] a consumer repo that holds the package and no source when: [t1] a priority is recorded, then read back then: 🔴 and the treestruct it renders holds its exact shape 1`] = `
+"🪨 run solid skill repo=bhuild/role=prioritizer/skill=eco.priority
+
+🦫 chew on it
+
+🔦 eco.priority get
+   ├─ from: .eco/priority.db
+   ├─ found: 1
+   ├─ ranked by OPINE — severity, then how soon it expires
+   │
+   └─ p2 · 1m · bigrock://sandpine  🪨 mainquest ❔
+         ├─ what: fix the nullability defect
+         ├─ why:  —
+         ├─ state: enqueued  👋 ready
+         ├─ opine ─ sev p2 · urg 1m
+         ├─ quant ─ asks 1 (rung 1)
+         │         gain  —
+         │         cost  —
+         │         work  —
+         │         ⇒ ❔ no cash measured — this row cannot earn a ⚖️
+         ├─ task: —
+         └─ tree: —
+
+🔦 the quants have a word — they inform your opine, never overrule it
+   ├─ ❔  1 row(s) carry NO cash figure, so they can never
+   │     earn a ⚖️. a quiet flag there is an absence of measurement,
+   │     never a verdict of agreement
+   └─ re-judge, or leave it — the call is yours
+
+🦫 dam fine! 1 in the rank
+
+   └─ tip: this is the rank, not the board. for a human, run --output rootstruct and paste it verbatim"
+`;
+
+exports[`prioritizer.eco.priority acceptance (as consumer) given: [case1] a consumer repo that holds the package and no source when: [t2] a second priority joins the rank then: 🔴 and the two-row treestruct holds its exact shape 1`] = `
+"🪨 run solid skill repo=bhuild/role=prioritizer/skill=eco.priority
+
+🦫 chew on it
+
+🔦 eco.priority get
+   ├─ from: .eco/priority.db
+   ├─ found: 2
+   ├─ ranked by OPINE — severity, then how soon it expires
+   │
+   ├─ p2 · 1m · bigrock://sandpine  🪨 mainquest ❔
+   │     ├─ what: fix the nullability defect
+   │     ├─ why:  —
+   │     ├─ state: enqueued  🪵 gated
+   │     ├─ opine ─ sev p2 · urg 1m
+   │     ├─ quant ─ asks 1 (rung 1)
+   │     │         gain  —
+   │     │         cost  —
+   │     │         work  —
+   │     │         ⇒ ❔ no cash measured — this row cannot earn a ⚖️
+   │     ├─ parts: altrock://sandpine/tidy-the-docs  🧩 unfinished
+   │     ├─ task: —
+   │     └─ tree: —
+   └─ p3 · 1w · altrock://sandpine/tidy-the-docs  🪶 sidequest ❔
+         ├─ what: tidy the readme
+         ├─ why:  —
+         ├─ state: enqueued  👋 ready
+         ├─ opine ─ sev p3 · urg 1w
+         ├─ quant ─ asks 1 (rung 1)
+         │         gain  —
+         │         cost  —
+         │         work  —
+         │         ⇒ ❔ no cash measured — this row cannot earn a ⚖️
+         ├─ task: —
+         └─ tree: —
+
+🔦 the quants have a word — they inform your opine, never overrule it
+   ├─ ❔  2 row(s) carry NO cash figure, so they can never
+   │     earn a ⚖️. a quiet flag there is an absence of measurement,
+   │     never a verdict of agreement
+   └─ re-judge, or leave it — the call is yours
+
+🦫 dam fine! 2 in the rank
+
+   └─ tip: this is the rank, not the board. for a human, run --output rootstruct and paste it verbatim"
+`;

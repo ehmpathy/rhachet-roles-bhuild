@@ -30,7 +30,16 @@ const config: Config = {
     '!**/*.acceptance.test.ts',
     '!**/*.integration.test.ts',
     '!**/.yalc/**',
-    '!**/.agent/**', // linked role and actor dirs: not this repo's tests
+    // `.temp/` is gitignored scratch — a suite in there is not this repo's
+    '!**/.temp/**',
+    // 🔴 `.agent/` is the same class — linked role artifacts plus per-actor
+    //    runtime scratch. `.agent/.actors/<actor>/brain/.claude/plugins/**`
+    //    caches claude-code plugin marketplaces, whose own `*.test.ts` files
+    //    import packages this repo lacks — so jest collected 6 such suites and
+    //    all 6 died at module lookup, while every one of this repo's 521 tests
+    //    passed. the integration config already carried this line; unit and
+    //    acceptance had drifted without it.
+    '!**/.agent/**',
   ],
   setupFilesAfterEnv: ['./jest.unit.env.ts'],
 

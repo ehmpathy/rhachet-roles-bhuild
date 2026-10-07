@@ -1,0 +1,48 @@
+
+🪨 run solid skill repo=.this/role=any/skill=git.crew.read
+
+     [2m…[0m[39m[49m [2m+4[0m[39m[49m [2mlines[0m[39m[49m [2m(ctrl+o[0m[39m[49m [2mto[0m[39m[49m [2mexpand)[0m[39m[49m
+
+[32m●[39m [1mBash[0m[39m[49m(sleep 60 && npx rhx route.stone.set --stone 1.vision --as promised --that
+      has-questioned-assumptions | head -16)
+[37m [39m [37m⎿[39m [37m [39m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+
+     🦉 the way speaks for itself
+     [2m…[0m[39m[49m [2m+4[0m[39m[49m [2mlines[0m[39m[49m [2m(ctrl+o[0m[39m[49m [2mto[0m[39m[49m [2mexpand)[0m[39m[49m
+
+[97m●[39m 5/5 promised. Arriving.
+
+[30m[40m❯ [97mcont[39m
+[37m[49m [39m [37m⎿[39m [37m [95mAPI[39m [95mError:[39m [95m400[39m [95m{"type":"error","error":{"type":"invalid_request_error","message":"messag
+[39m     [95mes.7.content.297:[39m [95m`thinking`[39m [95mor[39m [95m`redacted_thinking`[39m [95mblocks[39m [95min[39m [95mthe[39m [95mlatest[39m [95massistant[39m
+     [95mmessage[39m [95mcannot[39m [95mbe[39m [95mmodified.[39m [95mThese[39m [95mblocks[39m [95mmust[39m [95mremain[39m [95mas[39m [95mthey[39m [95mwere[39m [95min[39m [95mthe[39m [95moriginal[39m
+     [95mresponse."},"request_id":"req_011CfFVKVbtQuLfZ34XkGDpW"}[39m
+
+[30m[40m❯ [97mcont[39m
+[37m[49m [39m [37m⎿[39m [37m [95mAPI[39m [95mError:[39m [95m400[39m [95m{"type":"error","error":{"type":"invalid_request_error","message":"messag
+[39m     [95mes.7.content.297:[39m [95m`thinking`[39m [95mor[39m [95m`redacted_thinking`[39m [95mblocks[39m [95min[39m [95mthe[39m [95mlatest[39m [95massistant[39m
+     [95mmessage[39m [95mcannot[39m [95mbe[39m [95mmodified.[39m [95mThese[39m [95mblocks[39m [95mmust[39m [95mremain[39m [95mas[39m [95mthey[39m [95mwere[39m [95min[39m [95mthe[39m [95moriginal[39m
+     [95mresponse."},"request_id":"req_011CfFVRZceo5tC181C1xQe9"}[39m
+
+[30m[40m❯ [97mcontinue[39m
+[37m[49m [39m [37m⎿[39m [37m [95mAPI[39m [95mError:[39m [95m400[39m [95m{"type":"error","error":{"type":"invalid_request_error","message":"messag
+[39m     [95mes.7.content.297:[39m [95m`thinking`[39m [95mor[39m [95m`redacted_thinking`[39m [95mblocks[39m [95min[39m [95mthe[39m [95mlatest[39m [95massistant[39m
+     [95mmessage[39m [95mcannot[39m [95mbe[39m [95mmodified.[39m [95mThese[39m [95mblocks[39m [95mmust[39m [95mremain[39m [95mas[39m [95mthey[39m [95mwere[39m [95min[39m [95mthe[39m [95moriginal[39m
+     [95mresponse."},"request_id":"req_011CfG6aBB7LHaVJXbc8BHrP"}[39m
+
+[30m[40m❯ [97mcont[39m
+[37m[49m [39m [37m⎿[39m [37m [95mAPI[39m [95mError:[39m [95m400[39m [95m{"type":"error","error":{"type":"invalid_request_error","message":"messag
+[39m     [95mes.7.content.297:[39m [95m`thinking`[39m [95mor[39m [95m`redacted_thinking`[39m [95mblocks[39m [95min[39m [95mthe[39m [95mlatest[39m [95massistant[39m
+     [95mmessage[39m [95mcannot[39m [95mbe[39m [95mmodified.[39m [95mThese[39m [95mblocks[39m [95mmust[39m [95mremain[39m [95mas[39m [95mthey[39m [95mwere[39m [95min[39m [95mthe[39m [95moriginal[39m
+     [95mresponse."},"request_id":"req_011CfGdXkzs7u4wJNNmo9N6N"}[39m
+
+[30m[40m❯ [97mcontinue[39m
+[37m[49m  ⎿  [95mAPI Error: 400 {"type":"error","error":{"type":"invalid_request_error","message":"messag
+[39m     [95mes.7.content.297: `thinking` or `redacted_thinking` blocks in the latest assistant [39m
+     [95mmessage cannot be modified. These blocks must remain as they were in the original [39m
+     [95mresponse."},"request_id":"req_011CfHBS4QRkQnMvyrwvJn1A"}[39m
+
+[37m─────────────────────────────────────────────────────────────────────────────────────────────
+[39m❯ [7m [0m[39m[49m
+[37m─────────────────────────────────────────────────────────────────────────────────────────────
+[39m  [37m🗿[39m [37m5.1.execution.from_vision,[39m [37mreview.peer[93mYou've[39m [93mused[39m                [37m0% until auto-compact[39m

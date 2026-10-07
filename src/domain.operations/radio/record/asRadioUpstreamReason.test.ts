@@ -49,8 +49,8 @@ const LIFT_CASES = [
   },
   {
     description: 'an org block lifts via the target org',
-    given: { level: 'org' as const, owner: 'ahbode' },
-    expect: { output: 'rhx radio.uses --org ahbode allow' },
+    given: { level: 'org' as const, owner: 'sandpine' },
+    expect: { output: 'rhx radio.uses --org sandpine allow' },
   },
   {
     description: 'a local block lifts locally',

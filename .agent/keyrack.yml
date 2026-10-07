@@ -15,3 +15,4 @@ env.test:
 env.all: null
 env.prep:
   - EHMPATH_BEAVER_GITHUB_TOKEN
+  - OPENROUTER_API_KEY

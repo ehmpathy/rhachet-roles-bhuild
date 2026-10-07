@@ -1,0 +1,43 @@
+
+🪨 run solid skill repo=.this/role=any/skill=git.crew.read
+
+[37m  ⎿  [39m🪨 run solid skill repo=ehmpathy/role=mechanic/skill=git.repo.test
+
+     🐢 lets ride...
+     [2m… +19 lines (ctrl+o to expand)[0m[39m[49m
+
+  [37mRead [1m1[0m[37m[49m file (ctrl+o to expand)[39m
+
+[32m●[39m [1mBash[0m[39m[49m(npx rhx git.repo.test --what types | tail -12)
+[37m  ⎿  Running in the background (↓ to manage)[39m
+
+[32m●[39m [1mBash[0m[39m[49m(sleep 45; tail -14 /tmp/claude-1002/-home-camper-git-ehmpathy--worktrees-rhachet-roles
+      -bhrain-beav-feat-review-cost-meter/20a37138-bd0d-4886-8dd7-eeff7c1ddf03/t…)
+[37m  ⎿  [39m   │  ├─ 💤 inflight (75s)
+        │  ├─ 💤 inflight (90s)
+        │  ├─ 💤 inflight (105s)
+     [2m… +9 lines (ctrl+o to expand)[0m[39m[49m
+
+[97m●[39m Types green, 22 tests pass, snapshot written. Arriving at the vision stone.
+
+[95m●[39m [1mBash[0m[39m[49m(npx rhx route.stone.set --stone 1.vision --as arrived)
+[37m  ⎿  [95mError: Exit code 2[39m
+
+     [95m🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set[39m
+
+     [95m🦉 the way speaks for itself[39m
+
+     [95m🗿 route.stone.set[39m
+     [95m   ├─ stone = 1.vision[39m
+     [95m   └─ passage = blocked (review.self required)[39m
+
+     [37m… +104 lines ([1mctrl+o[0m[39m[49m [37mto see all)[39m
+
+[31m·[39m [31mHullaballooing… [37m(22m[39m [37m21s · ↓[39m [37m18.0k tokens · thinking)[39m
+[37m [39m [37m⎿[39m [37m Tip:[39m [37mUse[39m [37m/btw[39m [37mto[39m [37mask[39m [37ma[39m [37mquick[39m [37mside[39m [37mquestion[39m [37mwithout[39m [37minterrupting[39m [37mClaude's[39m [37mcurrent[39m [37mwork[39m
+
+[37m─────────────────────────────────────────────────────────────────────────────────────────────
+❯ [39m
+[37m─────────────────────────────────────────────────────────────────────────────────────────────
+[39m  [37m🗿[39m [37m1.vision,[39m [37myield[39m [37m🌾
+[39m  [97m⏵⏵[39m [97maccept[39m [97medits[39m [97mon[37m ·[39m [36m1[39m [36mshell[39m

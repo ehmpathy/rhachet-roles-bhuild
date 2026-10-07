@@ -50,7 +50,7 @@ commands:
   get    check org config(s)
 
 options:
-  --org <name>          org name (e.g., ehmpathy, ahbode, @all)
+  --org <name>          org name (e.g., ehmpathy, sandpine, @all)
   --help, -h            show this help
 
 examples:

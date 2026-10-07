@@ -227,6 +227,12 @@ NITPICKS=()
 REVIEWED_COUNT=0
 SKIPPED_COUNT=0
 
+# 🔴 a review that could not run must not report success. without this the
+#   skill printed "✨ complete" and exited 0 while it had produced no feedback
+#   file at all, so a caller saw a clean exit beside an absent artifact
+#   (rule.forbid.failhide). the tally below carries the truth to the exit code.
+FAILED_COUNT=0
+
 for target in "${TARGETS[@]}"; do
   target=$(echo "$target" | tr -d ' ')  # trim whitespace
 
@@ -262,7 +268,7 @@ for target in "${TARGETS[@]}"; do
   # get relative path for display
   rules_dir_rel=$(realpath --relative-to="$TARGET_DIR" "$rules_dir")
 
-  echo "├── reviewing $target..."
+  echo "├── review $target..."
   echo "│   ├── artifact: $artifact_file_rel"
   echo "│   ├── rules: $rules_dir_rel/rule.*.md"
   echo "│   └── output: $output_file_rel"
@@ -323,27 +329,56 @@ EOF
   else
     # non-interactive: run with spinner
     echo -n "│   ⏳ "
-    (cd "$TARGET_DIR" && echo "$PROMPT" | "$CLAUDE_BIN" --print 2>&1) > "$LOG_DIR/output.$target.md" &
+    # 🔴 the prompt goes as an ARGUMENT, never down a pipe. the tty branch
+    #   above always passed it as an argument; this branch piped it, and the
+    #   two disagreed in a way that only showed in a hook-laden repo:
+    #
+    #     Error: Input must be provided either through stdin or as a prompt
+    #            argument when using --print
+    #
+    #   a SessionStart hook in the target repo consumes the child's stdin, so
+    #   the piped prompt never reaches claude — and a real consumer repo is
+    #   hook-laden by construction, since a link of the roles is how they got
+    #   this skill. measured 2026-09-28, in the peer review.deliverable;
+    #   repaired in both per rule.require.guard-variant-consistency.
+    (cd "$TARGET_DIR" && "$CLAUDE_BIN" --print "$PROMPT" 2>&1) > "$LOG_DIR/output.$target.md" &
     CLAUDE_PID=$!
 
-    # spinner animation
+    # 🔴 the spinner draws with `\r`, which OVERWRITES on a terminal and
+    #   ACCUMULATES in a captured stream — a pipe, a CI log, a test's stdout.
+    #   a 60s review emits ~600 frames into a file a human then has to read
+    #   past to reach the real output (rule.forbid.snapshot-visual-blemishes).
+    #
+    # ⇒ so the animation runs only where it can erase itself. off a tty the
+    #   wait is silent, and the one-line verdict below still prints — status
+    #   stays visible either way (rule.require.status-feedback).
     SPINNER="⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
     ELAPSED=0
     while kill -0 $CLAUDE_PID 2>/dev/null; do
       for (( i=0; i<${#SPINNER}; i++ )); do
         if ! kill -0 $CLAUDE_PID 2>/dev/null; then break; fi
-        echo -ne "\r│   ⏳ ${SPINNER:$i:1} ${ELAPSED}s"
+        if [[ -t 1 ]]; then echo -ne "\r│   ⏳ ${SPINNER:$i:1} ${ELAPSED}s"; fi
         sleep 0.1
       done
       ELAPSED=$((ELAPSED + 1))
     done
 
-    wait $CLAUDE_PID
-    CLAUDE_EXIT=$?
-
-    echo -e "\r│   ✓ complete (${ELAPSED}s)   "
+    # 🔴 `wait` yields the child's exit status, and under `set -e` a non-zero
+    #   one kills this procedure HERE — one line before `$?` could be
+    #   captured, so the error branch below is unreachable by construction
+    #   and a reader gets a bare "failed at line NNN" rather than the log
+    #   path that holds claude's own words (rule.forbid.failhide).
+    #
+    # ⚠️ latent here rather than observed: this suite's claude calls pass
+    #   today. the identical defect DID fire in review.deliverable.sh on
+    #   2026-09-28, and the two are fixed together per
+    #   rule.require.guard-variant-consistency.
+    CLAUDE_EXIT=0
+    wait $CLAUDE_PID || CLAUDE_EXIT=$?
 
     if [[ $CLAUDE_EXIT -eq 0 ]]; then
+      echo -e "\r│   ✓ complete (${ELAPSED}s)   "
+
       # copy output to feedback file
       cp "$LOG_DIR/output.$target.md" "$output_file"
 
@@ -356,7 +391,21 @@ EOF
         NITPICKS+=("[$target] $line")
       done < <(grep -i "^# nitpick" "$output_file" 2>/dev/null || true)
     else
-      echo "│   ⛈️ review failed (exit code: $CLAUDE_EXIT)"
+      echo -e "\r│   ⛈️ failed (${ELAPSED}s)          "
+
+      # 🔴 echo claude's OWN words, not just our exit code. the cause lives in
+      #   its output — an exhausted credit balance, a bad flag, a prompt that
+      #   blew the window — and a bare number makes the reader hunt for a log
+      #   they were never told to open.
+      echo "" >&2
+      echo "💥 MalfunctionError: review of '$target' failed (claude exit code: $CLAUDE_EXIT)" >&2
+      echo "" >&2
+      echo "  claude said:" >&2
+      tail -n 40 "$LOG_DIR/output.$target.md" | sed 's/^/    /' >&2
+      echo "" >&2
+      echo "  full log: $LOG_DIR_REL/output.$target.md" >&2
+
+      FAILED_COUNT=$((FAILED_COUNT + 1))
     fi
   fi
 
@@ -369,9 +418,10 @@ done
 
 echo ""
 echo "────────────────────────────────────────"
-echo "🌿 summary"
+echo "🌲 summary"
 echo "├── reviewed: $REVIEWED_COUNT"
 echo "├── skipped: $SKIPPED_COUNT"
+echo "├── failed: $FAILED_COUNT"
 echo "├── blockers: ${#BLOCKERS[@]}"
 echo "└── nitpicks: ${#NITPICKS[@]}"
 
@@ -389,6 +439,16 @@ if [[ ${#NITPICKS[@]} -gt 0 ]]; then
   for n in "${NITPICKS[@]}"; do
     echo "  - $n"
   done
+fi
+
+# 🔴 a failed review is NOT a complete one. exit 1 (MalfunctionError — the
+#   system could not run claude) so a caller reads the truth from the exit
+#   code rather than from an artifact that was never written.
+if [[ $FAILED_COUNT -gt 0 ]]; then
+  echo ""
+  echo "💥 MalfunctionError: $FAILED_COUNT of $REVIEWED_COUNT review(s) failed to run" >&2
+  echo "└── log: $LOG_DIR_REL" >&2
+  exit 1
 fi
 
 echo ""

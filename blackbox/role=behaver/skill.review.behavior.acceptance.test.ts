@@ -10,7 +10,8 @@ import {
   SKILL_PATH,
 } from './.test/utils';
 
-// .note = deprecated: anthropic api key disabled, queued for xai brain integration
+// .note = skipped: the skill shells the real `claude` binary, which ci does
+//   not install. un-skip once ci provisions claude (a seeded follow-up)
 describe.skip('review.behavior', () => {
   given('ambiguous behavior name', () => {
     const scene = useBeforeAll(async () => {

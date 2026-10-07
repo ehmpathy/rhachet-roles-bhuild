@@ -1,0 +1,176 @@
+
+🪨 run solid skill repo=.this/role=any/skill=git.crew.poll
+
+🦫 chew on it
+
+🪵 git.crew.poll
+   ├─ derived from: crew ledger ∪ duct registry ∪ live tmux (every host)
+   ├─ scope: crews only — every tree is `git tree status --repo @all`
+   ├─ ⚠️  RETIRED: grove-sandpine-v20260810 grove-sandpine-v20260810.ground
+   │   └─ NOT in the forest — a wake exits 2 here. crews named on it are ORPHANS on a box that is gone — rhx git.grove.list
+   └─ read: parallel, read-only
+
+   ├─ declastruct-aws.beav.feat-demo-trusts-sandpine-grove
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/declastruct-aws@beav/feat-demo-trusts-sandpine-grove
+   ├─ declastruct-aws.beav.feat-ehmpathy-camp-grove
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/declastruct-aws@beav/feat-ehmpathy-camp-grove
+   ├─ declastruct-aws.beav.feat-s3-backup-store-properties
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/declastruct-aws@beav/feat-s3-backup-store-properties
+   ├─ declastruct-aws.beav.feat-ssm-document
+   │  ├─ 💀 crew: down — no live duct — rhx git.crew.boot
+   │  ├─ 🌐 tree: on grove — grove-sandpine-v20260901 — not read from here
+   │  └─ -
+   ├─ infrastructure.beav.feat-camp-git-backup-bucket
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ sandpine/infrastructure@beav/feat-camp-git-backup-bucket
+   ├─ infrastructure.beav.fix-prod-deploy-bucket-access
+   │  ├─ 💀 crew: down — no live duct — rhx git.crew.boot
+   │  ├─ 🌐 tree: on grove — grove-sandpine-v20260901 — not read from here
+   │  └─ -
+   ├─ rhachet.beav.feat-boot-manifest-and-budget
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/rhachet@beav/feat-boot-manifest-and-budget
+   ├─ rhachet.beav.fix-keyrack-daemon-orphan
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/rhachet@beav/fix-keyrack-daemon-orphan
+   ├─ rhachet.beav.fix-test-tempdir-leak
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/rhachet@beav/fix-test-tempdir-leak
+   ├─ rhachet-roles-bhrain.beav.feat-absorb-librarian-role
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/rhachet-roles-bhrain@beav/feat-absorb-librarian-role
+   ├─ rhachet-roles-bhrain.beav.feat-acceptance-under-5min
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ ✋ tree: unpushed — 4 local commit(s), no remote branch ✋ dirty: 40 file(s) — .agent/repo=.this/role=any/briefs/domain.terms/term=route.bind._.choice._.md, +39
+   │  └─ ehmpathy/rhachet-roles-bhrain@bert/feat-goal-init
+   ├─ rhachet-roles-bhrain.beav.feat-prescribed-brain-per-stone
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/rhachet-roles-bhrain@beav/feat-prescribed-brain-per-stone
+   ├─ rhachet-roles-bhrain.beav.feat-review-cost-meter
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/rhachet-roles-bhrain@beav/feat-review-cost-meter
+   ├─ rhachet-roles-bhrain.beav.feat-subconscious-term-distill ⚠️ WORK ORPHANED
+   │  ├─ 💀 crew: down — no live duct — rhx git.crew.boot
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/rhachet-roles-bhrain@beav/feat-subconscious-term-distill
+   ├─ rhachet-roles-bhrain.beav.feat-telepath-role
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ ✋ tree: unpushed — 2 local commit(s), no remote branch ✋ dirty: 40 file(s) — .agent/repo=.this/role=any/briefs/domain.glyphs/catalog.of=glyph._.md, +39
+   │  └─ ehmpathy/rhachet-roles-bhrain@beav/fix-telepath-role
+   ├─ rhachet-roles-bhrain.beav.feat-thinker-notes-overflow
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/rhachet-roles-bhrain@beav/feat-thinker-notes-overflow
+   ├─ rhachet-roles-bhrain.beav.feat-toggle-term-learner-hook
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/rhachet-roles-bhrain@beav/feat-toggle-term-learner-hook
+   ├─ rhachet-roles-bhrain.beav.fix-budget-grant-needs-urgent-concession
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/rhachet-roles-bhrain@beav/fix-budget-grant-needs-urgent-concession
+   ├─ rhachet-roles-bhrain.beav.fix-contemplation-gate-on-entrance
+   │  ├─ 💀 crew: down — no live duct — rhx git.crew.boot
+   │  ├─ 🌐 tree: on grove — grove-sandpine-v20260901 — not read from here
+   │  └─ -
+   ├─ rhachet-roles-bhrain.beav.fix-exhausted-level-unlocks-next
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/rhachet-roles-bhrain@beav/fix-exhausted-level-unlocks-next
+   ├─ rhachet-roles-bhrain.beav.fix-self-review-min-duration
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/rhachet-roles-bhrain@beav/fix-self-review-min-duration
+   ├─ rhachet-roles-bhuild.beav.feat-adopt-seeded-briefs
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/rhachet-roles-bhuild@beav/feat-adopt-seeded-briefs
+   ├─ rhachet-roles-bhuild.beav.feat-behavior-route-upgrades
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ 🌐 tree: on grove — grove-sandpine-v20260901 — not read from here
+   │  └─ -
+   ├─ rhachet-roles-bhuild.beav.feat-factory-upgrade-collection
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/rhachet-roles-bhuild@beav/feat-factory-upgrade-collection
+   ├─ rhachet-roles-ehmpathy.beav.demo-grove-dispatch
+   │  ├─ 💀 crew: down — no live duct — rhx git.crew.boot
+   │  ├─ 🌐 tree: on grove — grove-sandpine-v20260901 — not read from here
+   │  └─ -
+   ├─ rhachet-roles-ehmpathy.beav.feat-auto-review-permission-responses
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/rhachet-roles-ehmpathy@beav/feat-auto-review-permission-responses
+   ├─ rhachet-roles-ehmpathy.beav.feat-require-commit-sponsor
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/rhachet-roles-ehmpathy@beav/feat-require-commit-sponsor
+   ├─ rhachet-roles-ehmpathy.beav.fix-grepsafe-slashed-glob
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer reviewer.give reviewer.take
+   │  ├─ 🌐 tree: on grove — grove-sandpine-v20260901 — not read from here
+   │  └─ -
+   ├─ rhachet-roles-ehmpathy.beav.fix-hook-fork-storm
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/rhachet-roles-ehmpathy@beav/fix-hook-fork-storm
+   ├─ sdk-aws-lambda.beav.feat-absorb-handler-invoke-test-util
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ 🌐 tree: on grove — grove-sandpine-v20260901 — not read from here
+   │  └─ -
+   ├─ sdk-aws-lambda.beav.feat-for-sqs-visibility-heartbeat
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/sdk-aws-lambda@beav/feat-for-sqs-visibility-heartbeat
+   ├─ sdk-aws-lambda.beav.feat-input-only-validation-and-hydration
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/sdk-aws-lambda@beav/feat-input-only-validation-and-hydration
+   ├─ sdk-aws-lambda.beav.feat-invoke-headers-event-payload
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/sdk-aws-lambda@beav/feat-invoke-headers-event-payload
+   ├─ sdk-config.beav.feat-org-scoped-param-derive
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/sdk-config@beav/feat-org-scoped-param-derive
+   ├─ sql-dao-generator.beav.fix-truthful-runtime-types
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ ehmpathy/sql-dao-generator@beav/fix-truthful-runtime-types
+   ├─ svc-lessons.beav.feat-declapract-upgrade
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ 🌐 tree: on grove — grove-sandpine-v20260901 — not read from here
+   │  └─ -
+   ├─ svc-reminders.beav.feat-declapract-upgrade
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ sandpine/svc-reminders@beav/feat-declapract-upgrade
+   ├─ svc-coachbook.bert.wt-1.1-cert-ingest
+   │  ├─ 😶 crew: at work — foreman mechanic reflector reviewer.give reviewer.take
+   │  ├─ ✋ tree: in flight — work uncommitted, no commit yet
+   │  └─ sandpine/svc-coachbook@bert/wt-1.1-cert-ingest
+
+🦫 38 crew(s) — 33 at work, 5 down, 0 phantom
+   ├─ 🌲 trees — 2 unpushed, 28 in flight, 8 on grove
+   ├─ 🚦 status — 5 frozen · 33 unread
+   ├─ ⚠️  1 WORK ORPHANED — a crew with no clone, on a dirty tree. boot it or set the work aside
+   ├─ ⚠️  ORPHANED — rhachet-roles-bhrain.beav.feat-subconscious-term-distill — work with nobody on it; boot a crew back onto it: rhx git.crew.boot --tree rhachet-roles-bhrain.beav.feat-subconscious-term-distill
+   ├─ 💀 5 down       — no live duct. each takes its OWN boot — one row per tree below
+   ├─ 💀 NO DUCT — declastruct-aws.beav.feat-ssm-document — boot it: rhx git.crew.boot --tree declastruct-aws.beav.feat-ssm-document
+   ├─ 💀 NO DUCT — infrastructure.beav.fix-prod-deploy-bucket-access — boot it: rhx git.crew.boot --tree infrastructure.beav.fix-prod-deploy-bucket-access
+   ├─ 💀 NO DUCT — rhachet-roles-bhrain.beav.feat-subconscious-term-distill — boot it: rhx git.crew.boot --tree rhachet-roles-bhrain.beav.feat-subconscious-term-distill
+   ├─ 💀 NO DUCT — rhachet-roles-bhrain.beav.fix-contemplation-gate-on-entrance — boot it: rhx git.crew.boot --tree rhachet-roles-bhrain.beav.fix-contemplation-gate-on-entrance
+   └─ 💀 NO DUCT — rhachet-roles-ehmpathy.beav.demo-grove-dispatch — boot it: rhx git.crew.boot --tree rhachet-roles-ehmpathy.beav.demo-grove-dispatch

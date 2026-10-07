@@ -3,17 +3,33 @@ import type { FeedbackTakeGetResult } from '../feedback/feedbackTakeGet';
 /**
  * .what = compute feedback.take.get output with tree format
  * .why = friendly output for feedback.take.get skill
+ *
+ * .note = `options.color` gates the ansi escapes.
+ *
+ *   🔴 they color a status on a terminal and become literal `[31m` / `[0m`
+ *   noise the moment stdout is captured — a pipe, a ci log, a jest snapshot.
+ *   a snapshot is read by a human to vibecheck a render, so a control code
+ *   baked into one is a visual blemish
+ *   (ergonomist `rule.forbid.snapshot-visual-blemishes`).
+ *
+ *   the caller owns the signal, because this stays a pure compute*: the cli
+ *   passes `process.stdout.isTTY`. the default is `true`, so a caller that
+ *   renders for a human may omit it.
  */
-export const computeFeedbackTakeGetOutput = (input: {
-  result: FeedbackTakeGetResult;
-  mode: 'list' | 'hook.onStop';
-  behavior: string;
-}): string | null => {
-  const dim = '\x1b[2m';
-  const reset = '\x1b[0m';
-  const red = '\x1b[31m';
-  const green = '\x1b[32m';
-  const yellow = '\x1b[33m';
+export const computeFeedbackTakeGetOutput = (
+  input: {
+    result: FeedbackTakeGetResult;
+    mode: 'list' | 'hook.onStop';
+    behavior: string;
+  },
+  options?: { color?: boolean },
+): string | null => {
+  const color = options?.color ?? true;
+  const dim = color ? '\x1b[2m' : '';
+  const reset = color ? '\x1b[0m' : '';
+  const red = color ? '\x1b[31m' : '';
+  const green = color ? '\x1b[32m' : '';
+  const yellow = color ? '\x1b[33m' : '';
 
   // hook.onStop with no open feedback = silent (no output per vision)
   const openCount = input.result.unresponded + input.result.stale;

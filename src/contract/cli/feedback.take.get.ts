@@ -65,7 +65,13 @@ export const feedbackTakeGet = (): void => {
 
   // render output (null = silent per vision for hook.onStop passed)
   const behavior = basename(result.behaviorDir);
-  const output = computeFeedbackTakeGetOutput({ result, mode, behavior });
+  // .note = color only when a human is on the other end. a captured stream —
+  //   a pipe, a ci log, a jest snapshot — gets the escapes as literal `[31m`
+  //   noise, which is exactly what rule.forbid.snapshot-visual-blemishes names
+  const output = computeFeedbackTakeGetOutput(
+    { result, mode, behavior },
+    { color: Boolean(process.stdout.isTTY) },
+  );
   if (output !== null) {
     console.log(output);
   }

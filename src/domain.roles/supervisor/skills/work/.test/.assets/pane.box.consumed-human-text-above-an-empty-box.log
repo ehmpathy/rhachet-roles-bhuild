@@ -1,0 +1,43 @@
+
+🪨 run solid skill repo=.this/role=any/skill=git.crew.read
+
+     [38;5;246m…[39m [38;5;246m+11[39m [38;5;246mlines[39m [38;5;246m([1mctrl+o[0m [38;5;246mto[39m [38;5;246msee[39m [38;5;246mall)[39m
+
+[38;5;114m●[39m [1mWrite[0m(.dream/v2026_09_21.feat.cast-json-nested-values-to-text-in-the-generated-sql.md)
+[38;5;246m  ⎿  [39mWrote [1m128[0m lines to [1m.dream/v2026_09_21.feat.cast-json-nested-values-to-text-in-the-generated-sql.md[0m
+     [2m[38;5;231m  1 [0m[38;5;231m# 🌙 dream: cast json-nested values to `::text` in the generated select expression[39m
+     [2m[38;5;231m  2 [0m
+     [2m[38;5;231m  3 [0m[38;5;231mkind  = feat[39m
+     [2m[38;5;231m  4 [0m[38;5;231mowner = ehmpathy/sql-dao-generator[39m
+     [2m[38;5;231m  5 [0m[38;5;231mcaught 2026-09-21[39m
+     [2m[38;5;231m  6 [0m
+     [2m[38;5;231m  7 [0m[38;5;231m## .the cue that fired[39m
+     [2m[38;5;231m [0m [2m[38;5;231m8[0m
+     [2m[38;5;231m [0m [2m[38;5;231m9[0m [38;5;231mthe[39m [38;5;231mwisher[39m [38;5;231masked[39m [38;5;231mwhat[39m [38;5;231mother[39m [38;5;231mprojects[39m [38;5;231mdid[39m [38;5;231mabout[39m [38;5;231mthis[39m [38;5;231mdefect.[39m [38;5;231mthe[39m [38;5;231mresearch[39m [38;5;231mfound[39m [38;5;231mthat[39m [38;5;231m**drizzle-orm[39m [38;5;231mhit[39m
+     [2m[38;5;231m 10[0m [38;5;231mthe[39m [38;5;231midentical[39m [38;5;231mdivergence[39m [38;5;231mand[39m [38;5;231mshipped[39m [38;5;231mthe[39m [38;5;231midentical[39m [38;5;231marchitecture**[39m [38;5;231m—[39m [38;5;231mand[39m [38;5;231mthat[39m [38;5;231mtheir[39m [38;5;231mversion[39m [38;5;231mdoes[39m [38;5;231mone[39m
+     [38;5;246m…[39m [38;5;246m+118[39m [38;5;246mlines[39m [38;5;246m(ctrl+o[39m [38;5;246mto[39m [38;5;246mexpand)[39m
+
+[38;5;114m●[39m [1mBash[0m(rhx symlink --at ".behavior/v2026_08_02.fix-truthful-runtime-types/dreams/v2026_09_21.feat.cast-json-nested-values-to-text-in-the-generated-sql.md" --to ".dream…)
+[38;5;246m  ⎿  [39m🪨 run solid skill repo=ehmpathy/role=mechanic/skill=symlink
+
+     created symlink: .behavior/v2026_08_02.fix-truthful-runtime-types/dreams/v2026_09_21.feat.cast-json-nested-values-to-text-in-the-generated-sql.md -> ../../../.dream/v2026_09_21.fe
+     at.cast-json-nested-values-to-text-in-the-generated-sql.md (mode: relative)
+
+[38;5;231m●[39m Caught: [38;5;153m.dream/v2026_09_21.feat.cast-json-nested-values-to-text-in-the-generated-sql.md[39m, symlinked into the route.
+
+  It carries the convergence table (drizzle / postgrest / us), the [38;5;153mdrizzle-orm#4380[39m corroboration, the honest one-of-four scope, the shape of the fix, and two things worth calling out:
+
+  [1ma hazard the research surfaced[0m — [38;5;153mtimestamptz::text[39m renders per session [38;5;153mDateStyle[39m, a runtime config, where json's serializer is fixed ISO-8601. So a bare [38;5;153m::text[39m on a DATE is a step
+  sideways unless pinned. [38;5;153mto_json(col)#>>'{}'[39m is the candidate. The NUMBER half has no such problem.
+
+  [1ma refusal that should be re-argued, not inherited[0m — the vision yield already rejected a [3mwider[0m version of this (text on both paths). Drizzle's is narrower — json only, raw untouched —
+  which is a smaller change than the yield costed. The raw path never lost precision, so it never needed the cast. Whoever picks this up should re-weigh it on that basis rather than read
+  the yield's "no" as settled.
+
+[38;5;246m✻[39m [38;5;246mCrunched for 1m 11s[39m
+
+[38;5;244m─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[39m❯ 
+[38;5;244m─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[39m  [38;5;246m🗿[39m [38;5;246mroute[39m [38;5;246mcomplete[39m [38;5;246m🌴🤙[39m
+  [38;5;147m⏵⏵[39m [38;5;147maccept[39m [38;5;147medits[39m [38;5;147mon[38;5;246m (shift+tab[39m [38;5;246mto[39m [38;5;246mcycle)[39m

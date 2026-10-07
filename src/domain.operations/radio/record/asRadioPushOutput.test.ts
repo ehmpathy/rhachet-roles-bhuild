@@ -11,7 +11,10 @@ import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
 import { asRadioPushOutput } from './asRadioPushOutput';
 
 const repo = new RadioTaskRepo({ owner: 'ehmpathy', name: 'rhachet' });
-const repoShut = new RadioTaskRepo({ owner: 'ahbode', name: 'svc-gateway' });
+const repoShut = new RadioTaskRepo({
+  owner: 'sandpine',
+  name: 'svc-reservations',
+});
 
 const genRecord = (input: Partial<RadioTaskRecord>): RadioTaskRecord =>
   new RadioTaskRecord({
@@ -261,7 +264,7 @@ describe('asRadioPushOutput', () => {
                 title: 'guard gateway',
                 reason: 'radio.uses:blocked — org',
               }),
-              lift: 'rhx radio.uses --org ahbode allow',
+              lift: 'rhx radio.uses --org sandpine allow',
               detail: null,
               halt: false,
             },
@@ -287,7 +290,7 @@ describe('asRadioPushOutput', () => {
               'claim #411 — task already claimed by different branch',
             );
             expect(output).toContain(
-              'guard gateway → ahbode/svc-gateway (radio.uses:blocked — org)',
+              'guard gateway → sandpine/svc-reservations (radio.uses:blocked — org)',
             );
             expect(output).toMatchSnapshot();
           },
@@ -432,7 +435,7 @@ describe('asRadioPushOutput', () => {
                 title: 'guard gateway',
                 reason: 'radio.uses:blocked — org',
               }),
-              lift: 'rhx radio.uses --org ahbode allow',
+              lift: 'rhx radio.uses --org sandpine allow',
               detail: null,
               halt: false,
             },
@@ -450,7 +453,7 @@ describe('asRadioPushOutput', () => {
               '#412 fix flaky keyrack test (held since 2026-09-29T09:14Z)',
             );
             expect(output).toContain(
-              'guard gateway → ahbode/svc-gateway (radio.uses:blocked — org)',
+              'guard gateway → sandpine/svc-reservations (radio.uses:blocked — org)',
             );
             expect(output).toContain('backlog = 1');
             expect(output).toMatchSnapshot();

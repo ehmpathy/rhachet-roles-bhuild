@@ -1,0 +1,44 @@
+# .what = curates which of this role's briefs and skills load in FULL at session start
+#
+# .why  = absent this file, rhachet says ALL of them, and most sessions never touch a
+#         priority. an enrolled brain should meet the seat, the vocabulary, and the
+#         two silent failures — and fetch the store's design record when it misbehaves.
+#
+# .mode = SUBJECT (the `always:` key). it honors a say allowlist and a ref claim at
+#         once; simple mode drops `ref` whenever `say` is non-empty.
+#
+# .the default = a brief matched by neither list lands in `also` as a path. the say
+#         list is an ALLOWLIST on purpose: a brief added later defaults to cheap.
+#
+# .the test = say a brief only if it governs a REFLEX — an act taken with no prior
+#         look, whose misread does not announce itself. the skill prints most of this
+#         role's rules at the moment of use, which is why the say list is short.
+#
+# .terms = one terse `glossary.of=prioritizer.md` ships with the role. the full term clusters and
+#         the dated evidence live in this repo's `.agent/repo=.this/role=any/briefs/`
+#         and are NOT published.
+
+always:
+  briefs:
+    ref:
+      # the store's design record — consulted when the store misbehaves, and a failed
+      # guard in ecowork.commit.integration.test.ts names the fix at that moment
+      - briefs/store/**
+      - briefs/**/*.reason.md
+
+    say:
+      # the vocabulary — one row per word
+      - briefs/glossary.of=prioritizer.md
+
+      # the seat — this role ranks work and never runs it
+      - briefs/seat/rule.always.prioritize-never-supervise.md
+
+      # never author a human's sev or urg — an invented opine is indistinguishable
+      # from a relayed one once it is in the store
+      - briefs/seat/rule.forbid.fabricated-opines.md
+
+      # hunt the serialization at every rank — the loss is wall-clock, and no column holds it
+      - briefs/rank/rule.always.hunt-the-serialization-when-you-rank.md
+
+  skills:
+    say: []

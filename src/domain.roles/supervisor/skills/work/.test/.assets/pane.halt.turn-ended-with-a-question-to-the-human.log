@@ -1,0 +1,33 @@
+
+🪨 run solid skill repo=.this/role=any/skill=git.crew.read
+
+     [38;5;211m🐚[39m [38;5;211mgit.repo.test[39m [38;5;211m--what[39m [38;5;211mintegration[39m [38;5;211m--scope[39m [38;5;211mpath://src/domain.operations/review/stepReview.caseGoalExhaustive.integration.test.ts[39m [38;5;211m--mode[39m [38;5;211mapply[39m
+     [38;5;211m [39m  [38;5;211m├─[39m [38;5;211mkeyrack:[39m [38;5;211munlocked[39m [38;5;211mehmpath/test[39m
+     [38;5;211m [39m  [38;5;211m├─[39m [38;5;211mscope:[39m [38;5;211mpath://src/domain.operations/review/stepReview.caseGoalExhaustive.integration.test.ts[39m
+     [38;5;211m [39m  [38;5;211m│[39m  [38;5;211m└─[39m [38;5;211mmatched:[39m [38;5;211m1[39m [38;5;211mfiles[39m
+     [38;5;246m…[39m [38;5;246m+36[39m [38;5;246mlines[39m [38;5;246m([1mctrl+o[0m[39m[49m [38;5;246mto[39m [38;5;246msee[39m [38;5;246mall)[39m
+
+  [38;5;246mRead[39m [1m[38;5;246m1[0m[38;5;246m[49m file[39m [38;5;246m(ctrl+o[39m [38;5;246mto[39m [38;5;246mexpand)[39m
+
+[38;5;114m●[39m [1mBash[0m[39m[49m(rhx keyrack status --owner ehmpath)
+[38;5;246m [39m [38;5;246m⎿[39m [38;5;246m [39m🔐 keyrack status
+        ├─ owner: ehmpath
+        ├─ recipients:
+     [2m…[0m[39m[49m [2m+46[0m[39m[49m [2mlines[0m[39m[49m [2m(ctrl+o[0m[39m[49m [2mto[0m[39m[49m [2mexpand)[0m[39m[49m
+
+[38;5;231m●[39m The suspension error persists [1mverbatim[0m[39m[49m, immediately after the restore — same account ([38;5;153mbert[39m), same 412, on both a full run and a single isolated test.
+
+  One likely cause: this repo has [1mtwo[0m[39m[49m [1mseparate[0m[39m[49m [1mFireworks[0m[39m[49m [1mkeys[0m[39m[49m — [38;5;153mehmpathy.test.FIREWORKS_API_KEY[39m (used by these integration tests) and [38;5;153mehmpathy.prep.FIREWORKS_API_KEY[39m (used by the real guard
+   reviews, which is why [38;5;153m5.1[39m's peer reviews worked fine all session). If you restored billing on one account, the other may still be the one these tests hit.
+
+  ⭐ can you confirm: did the billing restore apply to the account behind the [1m[38;5;153mtest[0m[39m[49m-env Fireworks key specifically (the one named [38;5;153mbert[39m in the error), or a different one? If it's the
+  right account, this may just be provider-side propagation delay — I can retry in a few minutes rather than burn more test rounds against a still-suspended account right now.
+
+[38;5;246m✻[39m [38;5;246mBrewed[39m [38;5;246mfor[39m [38;5;246m6m[39m [38;5;246m15s[39m
+
+[38;5;239m[48;5;237m❯ [38;5;231mfireworks is back now[39m
+
+[38;5;244m[49m─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[39m❯ 
+[38;5;244m─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[39m  [38;5;246m🗿 5.3.verification, yield, blocked [39m [38;5;220mC[39m

@@ -1,0 +1,46 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`termwork given: [case6] the tab LABEL, as every site that titles a tab derives it when: [t0] a label is derived for each end of the host axis then: the tab bar reads as a human sorts it 1`] = `
+[
+  {
+    "host": "cloud://grove-x",
+    "label": "☁️ main",
+    "slug": "main",
+  },
+  {
+    "host": "cloud://grove-x",
+    "label": "☁️ mechanic",
+    "slug": "mechanic",
+  },
+  {
+    "host": "cloud://grove-x",
+    "label": "☁️ foreman",
+    "slug": "foreman",
+  },
+  {
+    "host": "cloud://grove-x",
+    "label": "☁️ reflector",
+    "slug": "reflector",
+  },
+  {
+    "host": "(local)",
+    "label": "☘️ reviewer",
+    "slug": "reviewer",
+  },
+  {
+    "host": "(local)",
+    "label": "☘️ main",
+    "slug": "main",
+  },
+  {
+    "host": "(local)",
+    "label": "☘️ mechanic",
+    "slug": "mechanic",
+  },
+  {
+    "host": "(local)",
+    "label": "☘️ reviewer",
+    "slug": "reviewer",
+  },
+]
+`;

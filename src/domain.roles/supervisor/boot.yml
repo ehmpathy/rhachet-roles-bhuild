@@ -1,0 +1,72 @@
+# .what = curates which of this role's briefs and skills load in FULL at session start
+#
+# .why  = absent this file, rhachet says ALL of them — ~150 briefs, far more than a
+#         session needs up front. an enrolled brain should meet the reflexes and the
+#         vocabulary, and fetch the rest when a moment calls for it.
+#
+# .mode = SUBJECT (the `always:` key). it honors a say allowlist and a ref claim at
+#         once; simple mode drops `ref` whenever `say` is non-empty.
+#
+# .the default = a brief matched by neither list lands in `also` as a path. the say
+#         list is an ALLOWLIST on purpose: a brief added later defaults to cheap.
+#
+# .the test = say a brief only if it governs a REFLEX — an act taken with no prior
+#         look, whose misread does not announce itself. whatever a said brief points
+#         at by filename is safe to leave unclaimed.
+#
+# .terms = one terse `glossary.of=supervisor.md` ships with the role. the full term clusters and
+#         the dated evidence live in this repo's `.agent/repo=.this/role=any/briefs/`
+#         and are NOT published — an enrolled brain gets the word, not the record.
+
+always:
+  briefs:
+    ref:
+      # dated evidence halves, if any brief grows one again
+      - briefs/**/*.reason.md
+
+    say:
+      # the vocabulary — one row per word
+      - briefs/glossary.of=supervisor.md
+
+      # persona + voice. the two layer rules sit together: one governs SPEECH, one
+      # governs OPERATION. adopt only the first and you report in crews and act in ducts.
+      - briefs/persona/im_a.bhuild_supervisor.md
+      - briefs/persona/define.camp-mythology.md
+      - briefs/persona/rule.require.speak-at-the-supervisor-layer.md
+      - briefs/tools/rule.always.entool-the-layer-you-drop-below.md
+      - briefs/persona/rule.always.forward-a-skill-render-verbatim.md
+      - briefs/persona/rule.require.co-author-signature.md
+
+      # surgoals — targets with no trigger, so they must already be loaded
+      - briefs/grove/surgoal.squeeze-the-grove.md
+      - briefs/tools/surgoal.polish-the-supervisor-and-prioritizer-tools.md
+      - briefs/tools/rule.always.clamp-the-production-defect-you-just-saw.md
+      - briefs/tools/rule.always.capture-clamp-then-verify-in-prod.md
+
+      # sponsorship — the human's word "stars", and the default poll scope
+      - briefs/sponsor/rule.always.read-stars-as-sponsored-priorities.md
+      - briefs/sponsor/define.invariant.crew.inflight-implies-sponsored.md
+
+      # the tick — its cron prompt names each subordinate rule by filename
+      - briefs/tick/rule.require.babysit-cron-per-dispatch-fleet.md
+      - briefs/tick/rule.always.read-both-crew-halves.md
+      - briefs/tick/rule.require.list-ducts-before-decisions.md
+      - briefs/steer/rule.require.verify-after-send.md
+
+      # human-only gates — a gate you must look up first is a gate you walk through
+      - briefs/gates/rule.forbid.self-grant-human-gates.md
+
+      # dispatch — one word decides whether a tree boots, and a boot is costly to undo
+      - briefs/dispatch/define.sprout-vs-seed.md
+      - briefs/dispatch/rule.require.behaviors-over-adhoc.md
+      - briefs/dispatch/rule.require.confirm-behavior-size-above-nano.md
+      - briefs/dispatch/rule.require.one-pr-per-worktree.md
+
+      # close — the fell is a safety gate on a destructive act
+      - briefs/close/rule.require.tree-del-before-duct-close.md
+
+  skills:
+    say:
+      # the one instrument whose flag contract (--what vs --keys vs --anyway) cannot be
+      # recovered from a failure: a wrong pick fabricates an approval and reports success
+      - skills/git.crew.send.sh

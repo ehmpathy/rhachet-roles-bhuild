@@ -36,12 +36,12 @@ exports[`init.behavior --name @branch given: [case1] feature branch with author 
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.add-user-auth/0.wish.md
-   └─ [2mtip: use --open to open the wish automatically[0m
+   └─ tip: use --open to open the wish automatically
 
 🍄 we'll remember,
    ├─ branch casey/add-user-auth <-> behavior v{DATE}.add-user-auth
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ branch bound to behavior, to boot via hooks
+   └─ branch bound to route, to drive via hooks"
 `;
 
 exports[`init.behavior --name @branch given: [case2] bare branch without slashes when: [t0] user runs init.behavior --name @branch then: stderr matches snapshot 1`] = `""`;
@@ -80,12 +80,12 @@ exports[`init.behavior --name @branch given: [case2] bare branch without slashes
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.fix-urgent-bug/0.wish.md
-   └─ [2mtip: use --open to open the wish automatically[0m
+   └─ tip: use --open to open the wish automatically
 
 🍄 we'll remember,
    ├─ branch fix-urgent-bug <-> behavior v{DATE}.fix-urgent-bug
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ branch bound to behavior, to boot via hooks
+   └─ branch bound to route, to drive via hooks"
 `;
 
 exports[`init.behavior --name @branch given: [case3] on main branch when: [t0] user runs init.behavior --name @branch then: stderr matches snapshot 1`] = `"✋ BadRequestError: cannot init behavior on protected branch: main"`;
@@ -136,10 +136,10 @@ exports[`init.behavior --name @branch given: [case6] explicit name (regression t
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.my-explicit-name/0.wish.md
-   └─ [2mtip: use --open to open the wish automatically[0m
+   └─ tip: use --open to open the wish automatically
 
 🍄 we'll remember,
    ├─ branch casey/some-branch <-> behavior v{DATE}.my-explicit-name
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ branch bound to behavior, to boot via hooks
+   └─ branch bound to route, to drive via hooks"
 `;

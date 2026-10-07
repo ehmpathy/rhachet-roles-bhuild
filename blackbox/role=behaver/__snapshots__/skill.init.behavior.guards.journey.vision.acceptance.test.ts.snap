@@ -1,0 +1,280 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`skill.init.behavior.guards.journey.vision given: [case1] a heavy-guard behavior at its vision stone when: [t0] vision pass attempted without promises then: blocked by unpromised self-review 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+
+🦉 the way speaks for itself
+
+🗿 route.stone.set
+   ├─ stone = 1.vision
+   └─ passage = blocked (review.self required)
+
+🌕 lets reflect
+   │
+   ├─ review.self 1/1
+   │  ├─ slug = has-stub-review
+   │  ├─ question all, especially yourself
+   │  └─ see the guide below
+   │
+   ├─ stillness 🪷
+   │  ├─
+   │  │
+   │  │  so it is. a chance to slow down, breathe, and see clearly.
+   │  │
+   │  │  self review time is a sanctuary. a gift. a luxury not always available.
+   │  │
+   │  │  it is not every day one has a quiet moment to take a slow,
+   │  │  methodical, patient, and thorough review.
+   │  │
+   │  │  tea first. then, we proceed 🍵
+   │  │
+   │  └─
+   │
+   ├─ before you begin 🪷
+   │  ├─
+   │  │
+   │  │  - clear your mind. this is dedicated review time.
+   │  │  - open each artifact mentioned in the guide
+   │  │  - read through them slowly, line by line
+   │  │  - question every assumption made
+   │  │  - look with fresh eyes, as if for the first time
+   │  │
+   │  └─
+   │
+   ├─ here's the guide
+   │  ├─
+   │  │
+   │  │  stub self-review; the real roster is read in isolation.
+   │  │
+   │  └─
+   │
+   ├─ be here now 🪷
+   │  ├─
+   │  │
+   │  │  refocus.
+   │  │
+   │  │  the review is the work.
+   │  │  not a step to complete.
+   │  │  not a gate to pass.
+   │  │  not a checkbox to check.
+   │  │
+   │  │  it is the work itself.
+   │  │
+   │  │  you do not care about the stone.
+   │  │  you only care about the review.
+   │  │
+   │  └─
+   │
+   ├─ walk the way 🪷
+   │  │
+   │  ├─ articulate into
+   │  │  ├─ .behavior/v{DATE}.full-journey/review/self/for.1.vision._.has-stub-review.md
+   │  │  └─ the guard looks precisely here, write exactly to this path
+   │  │
+   │  ├─ for each found issue 🪘
+   │  │  ├─
+   │  │  │
+   │  │  │  articulate how it was fixed
+   │  │  │  so you remember for next time
+   │  │  │
+   │  │  └─
+   │  │
+   │  └─ for each non issue 🪘
+   │     ├─
+   │     │
+   │     │  articulate why it holds
+   │     │  so others can learn from it
+   │     │
+   │     └─
+   │
+   └─ when you've truly reflected, run
+      └─ rhx route.stone.set --stone 1.vision --as promised --that has-stub-review \\
+         --into .behavior/v{DATE}.full-journey/review/self/for.1.vision._.has-stub-review.md
+🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+   └─ ✋ blocked by constraints
+"
+`;
+
+exports[`skill.init.behavior.guards.journey.vision given: [case1] a heavy-guard behavior at its vision stone when: [t1] vision pass attempted after promises and approval then: allowed 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+
+🦉 the way speaks for itself
+   │
+   ├─ r1: dimensional-decomposition (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r001._.given.by_peer.dimensional-decomposition.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r001._.taken.by_self.dimensional-decomposition.md
+   │
+   ├─ r2: experience-coverage (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r002._.given.by_peer.experience-coverage.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r002._.taken.by_self.experience-coverage.md
+   │
+   ├─ ✓ judge.1 - allowed [time]
+   │
+   └─ ✓ judge.2 - allowed [time]
+
+🗿 route.stone.set
+   ├─ stone = 1.vision
+   ├─ passage = allowed
+   ├─ guard
+   │  ├─ artifacts
+   │  ├─ reviews
+   │  │   ├─ r1: dimensional-decomposition (l1, 1/3)
+   │  │   │   ├─ approved [time]
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r001._.given.by_peer.dimensional-decomposition.md
+   │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r001._.taken.by_self.dimensional-decomposition.md
+   │  │   └─ r2: experience-coverage (l1, 1/3)
+   │  │       ├─ approved [time]
+   │  │       ├─ 0 blockers ✓
+   │  │       ├─ 0 nitpicks ✓
+   │  │       ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r002._.given.by_peer.experience-coverage.md
+   │  │       └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r002._.taken.by_self.experience-coverage.md
+   │  └─ judges
+   │      ├─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 7
+   │      │   └─ finished [time] ✓
+   │      └─ j2: $rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
+   │          └─ finished [time] ✓
+   │
+   └─ the way continues, run
+      └─ rhx route.drive"
+`;
+
+exports[`skill.init.behavior.guards.journey.vision given: [case1] a heavy-guard behavior at its vision stone when: [t2] criteria pass attempted without promise then: blocked by unpromised self-review 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+
+🦉 the way speaks for itself
+
+🗿 route.stone.set
+   ├─ stone = 2.1.criteria.blackbox
+   └─ passage = blocked (review.self required)
+
+🌕 lets reflect
+   │
+   ├─ review.self 1/1
+   │  ├─ slug = has-stub-review
+   │  ├─ question all, especially yourself
+   │  └─ see the guide below
+   │
+   ├─ stillness 🪷
+   │  ├─
+   │  │
+   │  │  so it is. a chance to slow down, breathe, and see clearly.
+   │  │
+   │  │  self review time is a sanctuary. a gift. a luxury not always available.
+   │  │
+   │  │  it is not every day one has a quiet moment to take a slow,
+   │  │  methodical, patient, and thorough review.
+   │  │
+   │  │  tea first. then, we proceed 🍵
+   │  │
+   │  └─
+   │
+   ├─ before you begin 🪷
+   │  ├─
+   │  │
+   │  │  - clear your mind. this is dedicated review time.
+   │  │  - open each artifact mentioned in the guide
+   │  │  - read through them slowly, line by line
+   │  │  - question every assumption made
+   │  │  - look with fresh eyes, as if for the first time
+   │  │
+   │  └─
+   │
+   ├─ here's the guide
+   │  ├─
+   │  │
+   │  │  stub self-review; the real roster is read in isolation.
+   │  │
+   │  └─
+   │
+   ├─ be here now 🪷
+   │  ├─
+   │  │
+   │  │  refocus.
+   │  │
+   │  │  the review is the work.
+   │  │  not a step to complete.
+   │  │  not a gate to pass.
+   │  │  not a checkbox to check.
+   │  │
+   │  │  it is the work itself.
+   │  │
+   │  │  you do not care about the stone.
+   │  │  you only care about the review.
+   │  │
+   │  └─
+   │
+   ├─ walk the way 🪷
+   │  │
+   │  ├─ articulate into
+   │  │  ├─ .behavior/v{DATE}.full-journey/review/self/for.2.1.criteria.blackbox._.has-stub-review.md
+   │  │  └─ the guard looks precisely here, write exactly to this path
+   │  │
+   │  ├─ for each found issue 🪘
+   │  │  ├─
+   │  │  │
+   │  │  │  articulate how it was fixed
+   │  │  │  so you remember for next time
+   │  │  │
+   │  │  └─
+   │  │
+   │  └─ for each non issue 🪘
+   │     ├─
+   │     │
+   │     │  articulate why it holds
+   │     │  so others can learn from it
+   │     │
+   │     └─
+   │
+   └─ when you've truly reflected, run
+      └─ rhx route.stone.set --stone 2.1.criteria.blackbox --as promised --that has-stub-review \\
+         --into .behavior/v{DATE}.full-journey/review/self/for.2.1.criteria.blackbox._.has-stub-review.md
+🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+   └─ ✋ blocked by constraints
+"
+`;
+
+exports[`skill.init.behavior.guards.journey.vision given: [case1] a heavy-guard behavior at its vision stone when: [t3] criteria pass attempted after promises then: allowed (no judges) 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+
+🦉 the way speaks for itself
+
+🗿 route.stone.set
+   ├─ stone = 2.1.criteria.blackbox
+   ├─ passage = allowed (artifacts only)
+   │
+   └─ the way continues, run
+      └─ rhx route.drive"
+`;
+
+exports[`skill.init.behavior.guards.journey.vision given: [case1] a heavy-guard behavior at its vision stone when: [t4] the unenrolled driver enters the vision then: bhrain names opus, the design brain, and halts with the enroll fix 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
+
+🦉 where were we?
+
+🗿 route.drive
+   ├─ where do we go?
+   │  ├─ route = .behavior/v{DATE}.full-journey
+   │  ├─ stone = 1.vision
+   │  └─ brain = claude-opus-5-5[1m]
+   │
+   └─ ✋ halted, brain switch could not land
+      ├─ this driver runs = unknown — no clone address was confirmed
+      │
+      ├─ why
+      │  ├─ this driver is not an enrolled clone, so \`clone say\` has naught to address
+      │  └─ the usual cause is a driver launched directly rather than by \`rhx enroll\`
+      │
+      ├─ fix: re-enroll the driver with a slug, then re-enter the stone
+      │  └─ rhx enroll claude --as @:driver --roles driver
+      │
+      └─ or: remove \`brain:\` from the stone's guard, and inherit the brain deliberately
+         └─ .behavior/v{DATE}.full-journey/1.vision.guard"
+`;

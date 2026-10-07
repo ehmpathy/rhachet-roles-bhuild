@@ -22,4 +22,4 @@
 
 set -euo pipefail
 
-exec node -e "import('rhachet-roles-bhuild').then(m => m.cli.catchDream())" -- "$@"
+exec node -e "import('rhachet-roles-bhuild/cli').then(m => m.cli.catchDream())" -- "$@"

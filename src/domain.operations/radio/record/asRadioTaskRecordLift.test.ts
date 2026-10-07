@@ -63,19 +63,19 @@ const TEST_CASES: {
   {
     description: 'an org block lifts via the target org',
     given: {
-      owner: 'ahbode',
+      owner: 'sandpine',
       states: {
         global: null,
         org: {
           orgs: {
             ehmpathy: 'allowed' as const,
-            ahbode: 'blocked' as const,
+            sandpine: 'blocked' as const,
           },
         },
         local: null,
       },
     },
-    expect: { lift: 'rhx radio.uses --org ahbode allow' },
+    expect: { lift: 'rhx radio.uses --org sandpine allow' },
   },
   {
     description: 'one loaded state set gives each target its own lift',
@@ -86,7 +86,7 @@ const TEST_CASES: {
         org: {
           orgs: {
             ehmpathy: 'allowed' as const,
-            ahbode: 'blocked' as const,
+            sandpine: 'blocked' as const,
           },
         },
         local: null,

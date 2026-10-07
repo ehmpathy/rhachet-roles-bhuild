@@ -64,9 +64,13 @@ export const feedbackTakeSet = (): void => {
   });
 
   // render output
-  const dim = '\x1b[2m';
-  const reset = '\x1b[0m';
-  const green = '\x1b[32m';
+  // .note = color only when a human is on the other end. a captured stream —
+  //   a pipe, a ci log, a jest snapshot — gets the escapes as literal `[32m`
+  //   noise, which is exactly what rule.forbid.snapshot-visual-blemishes names
+  const color = Boolean(process.stdout.isTTY);
+  const dim = color ? '\x1b[2m' : '';
+  const reset = color ? '\x1b[0m' : '';
+  const green = color ? '\x1b[32m' : '';
 
   const givenFilename = basename(named.from);
   const takenFilename = basename(result.takenPath);

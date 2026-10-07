@@ -221,7 +221,7 @@ describe('getAllRadioUsagePermissions.integration', () => {
       // write org state
       await fs.writeFile(
         path.join(storage, 'radio.uses.org.jsonc'),
-        '{ "orgs": { "@all": "allowed", "ahbode": "blocked" } }',
+        '{ "orgs": { "@all": "allowed", "sandpine": "blocked" } }',
       );
 
       const res = await getAllRadioUsagePermissions({ cwd }, { homeDir: home });
@@ -238,7 +238,7 @@ describe('getAllRadioUsagePermissions.integration', () => {
         expect(result.local).toEqual({ state: 'blocked' });
         expect(result.global).toEqual({ blocked: false });
         expect(result.org).toEqual({
-          orgs: { '@all': 'allowed', ahbode: 'blocked' },
+          orgs: { '@all': 'allowed', sandpine: 'blocked' },
         });
       });
     });

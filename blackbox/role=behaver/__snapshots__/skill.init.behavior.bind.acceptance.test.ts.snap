@@ -34,10 +34,10 @@ exports[`init.behavior.bind given: [case8] direct: route bind output when: [t0] 
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.route-output-test/0.wish.md
-   └─ [2mtip: use --open to open the wish automatically[0m
+   └─ tip: use --open to open the wish automatically
 
 🍄 we'll remember,
    ├─ branch feature/route-output-test <-> behavior v{DATE}.route-output-test
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ branch bound to behavior, to boot via hooks
+   └─ branch bound to route, to drive via hooks"
 `;

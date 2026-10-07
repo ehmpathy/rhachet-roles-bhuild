@@ -4,13 +4,15 @@ import * as path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
+  expectSkillPassed,
   FIXTURES_PATH,
   findFeedbackFile,
   prepareFixtureWithGit,
   SKILL_PATH,
 } from './.test/utils';
 
-// .note = deprecated: anthropic api key disabled, queued for xai brain integration
+// .note = skipped: the skill shells the real `claude` binary, which ci does
+//   not install. un-skip once ci provisions claude (a seeded follow-up)
 describe.skip('review.behavior', () => {
   given('[case8] behavior with intentional rule violations', () => {
     const scene = useBeforeAll(async () => {
@@ -39,7 +41,7 @@ describe.skip('review.behavior', () => {
           { timeout: 180000 },
         );
 
-        expect(result.status).toBe(0);
+        expectSkillPassed(result);
 
         const behaviorDir = path.join(
           scene.gitRepo,
@@ -75,7 +77,7 @@ describe.skip('review.behavior', () => {
           { timeout: 180000 },
         );
 
-        expect(result.status).toBe(0);
+        expectSkillPassed(result);
 
         const behaviorDir = path.join(
           scene.gitRepo,

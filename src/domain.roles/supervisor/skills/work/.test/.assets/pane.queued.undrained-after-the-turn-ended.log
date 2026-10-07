@@ -1,0 +1,17 @@
+
+🪨 run solid skill repo=.this/role=any/skill=git.crew.read
+
+  One likely cause: this repo has [1mtwo[0m[39m[49m [1mseparate[0m[39m[49m [1mFireworks[0m[39m[49m [1mkeys[0m[39m[49m — [38;5;153mehmpathy.test.FIREWORKS_API_KEY[39m (used by these integration tests) and [38;5;153mehmpathy.prep.FIREWORKS_API_KEY[39m (used by the real guard
+   reviews, which is why [38;5;153m5.1[39m's peer reviews worked fine all session). If you restored billing on one account, the other may still be the one these tests hit.
+
+  ⭐ can you confirm: did the billing restore apply to the account behind the [1m[38;5;153mtest[0m[39m[49m-env Fireworks key specifically (the one named [38;5;153mbert[39m in the error), or a different one? If it's the
+  right account, this may just be provider-side propagation delay — I can retry in a few minutes rather than burn more test rounds against a still-suspended account right now.
+
+[38;5;246m✻[39m [38;5;246mBrewed[39m [38;5;246mfor[39m [38;5;246m6m[39m [38;5;246m15s[39m
+
+[38;5;239m[48;5;237m❯ [38;5;231mfireworks is back now[39m
+
+[38;5;244m[49m─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[39m❯ 
+[38;5;244m─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[39m  [38;5;246m🗿 5.3.verification, yield, blocked ✋[39m

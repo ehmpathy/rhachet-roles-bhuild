@@ -1,0 +1,27 @@
+
+🪨 run solid skill repo=.this/role=any/skill=git.crew.read
+
+Using Node [36mv22.21.0[39m
+rhx enroll claude --resume "mechanic" continue
+
+[38;2;186;225;255mrhachet.beav.fix-keyrack-daemon-orphan[39m on [38;2;224;187;228mbeav/fix-keyrack-daemon-orphan[39m [38;2;224;187;228m[$!?][39m is [38;2;255;255;186mv1.47.3[39m via
+ [38;2;186;255;201m v22.21.0 [39mat [38;2;255;255;186m18:33:29[39m
+[1m[38;2;186;255;201m➜[0m rhx enroll claude --resume "mechanic" continue
+
+😶 clone enrolled
+   ├─ 🎙️  rhx clone say @:1f0c7c93 --what "…"
+   └─ 🎧 rhx clone get @:1f0c7c93 --tail 50
+
+[38;5;153m─────────────────────────────────────────────────────────────────────────────────────────────
+
+[1mResume[0m [1m[38;5;153mSession[0m
+[2m╭───────────────────────────────────────────────────────────────────────────────────────────╮
+│[0m [38;5;246m⌕[39m [38;5;246mmechanic[39m                                                                                [2m│
+╰───────────────────────────────────────────────────────────────────────────────────────────╯
+[0m  [38;5;246mcurrent worktree[39m
+
+[38;5;153m❯[39m [38;5;153mmechanic[39m
+  [38;5;246m2 weeks ago · beav/fix-keyrack-daemon-orphan · 5.1MB[39m
+
+  [38;5;246mCtrl+A to show all projects · Ctrl+B to toggle branch · Ctrl+W to show all worktrees · [39m
+  [38;5;246mCtrl+V to preview · Ctrl+R to rename · Type to search · Esc to cancel · [39m

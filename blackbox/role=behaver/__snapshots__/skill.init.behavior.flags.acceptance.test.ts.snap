@@ -36,12 +36,12 @@ wish =
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.open-test/0.wish.md
-   └─ [2mopened in cat[0m
+   └─ opened in cat
 
 🍄 we'll remember,
    ├─ branch feature/open-cat-test <-> behavior v{DATE}.open-test
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ branch bound to behavior, to boot via hooks
+   └─ branch bound to route, to drive via hooks"
 `;
 
 exports[`init.behavior.flags given: [case6] direct: --open flag with cat command when: [t0] init.behavior executed with --open cat then: cat command outputs wish file content 2`] = `""`;
@@ -82,12 +82,12 @@ wish =
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.opened-in-test/0.wish.md
-   └─ [2mopened in cat[0m
+   └─ opened in cat
 
 🍄 we'll remember,
    ├─ branch feature/opened-in-test <-> behavior v{DATE}.opened-in-test
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ branch bound to behavior, to boot via hooks
+   └─ branch bound to route, to drive via hooks"
 `;
 
 exports[`init.behavior.flags given: [case6] direct: --open flag with cat command when: [t0] init.behavior executed with --open cat then: footer shows "opened in cat" 2`] = `""`;
@@ -126,12 +126,12 @@ exports[`init.behavior.flags given: [case6] direct: --open flag with cat command
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.footer-test/0.wish.md
-   └─ [2mtip: use --open to open the wish automatically[0m
+   └─ tip: use --open to open the wish automatically
 
 🍄 we'll remember,
    ├─ branch feature/footer-test <-> behavior v{DATE}.footer-test
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ branch bound to behavior, to boot via hooks
+   └─ branch bound to route, to drive via hooks"
 `;
 
 exports[`init.behavior.flags given: [case6] direct: --open flag with cat command when: [t0] init.behavior executed with --open cat then: output contains footer with relative wish path 2`] = `""`;
@@ -170,12 +170,12 @@ exports[`init.behavior.flags given: [case7] direct: --open flag with unavailable
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.open-fail-test/0.wish.md
-   └─ [2mtip: use --open to open the wish automatically[0m
+   └─ tip: use --open to open the wish automatically
 
 🍄 we'll remember,
    ├─ branch feature/open-fail-test <-> behavior v{DATE}.open-fail-test
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ branch bound to behavior, to boot via hooks
+   └─ branch bound to route, to drive via hooks"
 `;
 
 exports[`init.behavior.flags given: [case7] direct: --open flag with unavailable command when: [t0] init.behavior executed with --open nonexistent-xyz then: warn is shown about opener unavailable 1`] = `
@@ -235,10 +235,10 @@ exports[`init.behavior.flags given: [case10] unknown flag (silently ignored) whe
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.test/0.wish.md
-   └─ [2mtip: use --open to open the wish automatically[0m
+   └─ tip: use --open to open the wish automatically
 
 🍄 we'll remember,
    ├─ branch feature/unknown-flag-test <-> behavior v{DATE}.test
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ branch bound to behavior, to boot via hooks
+   └─ branch bound to route, to drive via hooks"
 `;

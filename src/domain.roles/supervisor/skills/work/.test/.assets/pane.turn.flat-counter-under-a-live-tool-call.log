@@ -1,0 +1,19 @@
+
+🪨 run solid skill repo=.this/role=any/skill=git.crew.read
+
+[37m●[39m [1mBash[0m[39m[49m(npx rhx git.repo.test --what acceptance --against local --env test --mode apply --thorough)
+[37m  ⎿  │  ├─ 💤 inflight (2025s)[39m
+     [37m   │  ├─ 💤 inflight (2040s)[39m
+     [37m   │  ├─ 💤 inflight (2055s)[39m
+     [37m   │  ├─ 💤 inflight (2070s)[39m
+     [37m~148 lines[39m [37m(34m 42s · timeout 40m)[39m [37m5.2KB[39m
+     [37m(ctrl+b ctrl+b (twice) to run in background)[39m
+
+[31m✻[39m [31mBlanching… [37m(4h 19m 19s · ↓[39m [37m8.0k tokens)[39m
+[37m  ⎿  Tip: Use /clear to start fresh[39m [37mwhen switching topics and free up context[39m
+
+[37m─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯ [39m
+[37m─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+[39m  [37m🗿[39m [37m5.3.verification,[39m [37mreview.peer,[39m [37ml3@i005[39m [37m🔍[39m                                                                                                                        [37m2%[39m [37muntil[39m [37mauto-compact[39m
+  [97m⏵⏵[39m [97maccept[39m [97medits[39m [97mon[37m (shift+tab[39m [37mto[39m [37mcycle)[39m

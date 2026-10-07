@@ -101,10 +101,16 @@ export const feedbackGive = (): void => {
   }
 
   // render output
-  const output = computeFeedbackOutput({
-    feedbackFilename,
-    artifact: named.against,
-    opener: openerUsed,
-  });
+  // .note = color only when a human is on the other end. a captured stream —
+  //   a pipe, a ci log, a jest snapshot — gets the escapes as literal `[2m`
+  //   noise, which is exactly what rule.forbid.snapshot-visual-blemishes names
+  const output = computeFeedbackOutput(
+    {
+      feedbackFilename,
+      artifact: named.against,
+      opener: openerUsed,
+    },
+    { color: Boolean(process.stdout.isTTY) },
+  );
   console.log(output);
 };

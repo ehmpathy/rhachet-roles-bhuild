@@ -1,0 +1,21 @@
+# .what = curates which of this repo's own briefs load in FULL at session start
+#
+# .why  = `briefs/domain.terms/` and `briefs/evidence/` hold the full term clusters and
+#         the dated incident records behind the supervisor + prioritizer roles. they are
+#         kept here, unpublished, so an enrolled brain meets only each role's terse
+#         `glossary.md`. they are REFERENCE — fetched when a verdict needs the record —
+#         and at several hundred K chars they would dwarf every other brief if said.
+#
+# .mode = SUBJECT (the `always:` key): the say glob and the ref globs apply together.
+
+always:
+  briefs:
+    say:
+      # the repo's own top-level lessons and rules — unchanged from before this file
+      - briefs/*.md
+    ref:
+      - briefs/domain.terms/**
+      - briefs/evidence/**
+  skills:
+    say:
+      - skills/**

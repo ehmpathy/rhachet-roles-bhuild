@@ -36,12 +36,12 @@ exports[`init.behavior.wish given: [case1] --wish with inline content when: [t0]
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.wish-inline-test/0.wish.md
-   └─ [2mtip: use --open to open the wish automatically[0m
+   └─ tip: use --open to open the wish automatically
 
 🍄 we'll remember,
    ├─ branch feature/wish-inline-test <-> behavior v{DATE}.wish-inline-test
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ branch bound to behavior, to boot via hooks
+   └─ branch bound to route, to drive via hooks"
 `;
 
 exports[`init.behavior.wish given: [case2] --wish @stdin with piped content when: [t0] init.behavior executed with piped stdin then: stderr matches snapshot 1`] = `""`;
@@ -80,12 +80,12 @@ exports[`init.behavior.wish given: [case2] --wish @stdin with piped content when
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.wish-stdin-test/0.wish.md
-   └─ [2mtip: use --open to open the wish automatically[0m
+   └─ tip: use --open to open the wish automatically
 
 🍄 we'll remember,
    ├─ branch feature/wish-stdin-test <-> behavior v{DATE}.wish-stdin-test
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ branch bound to behavior, to boot via hooks
+   └─ branch bound to route, to drive via hooks"
 `;
 
 exports[`init.behavior.wish given: [case3] --wish @stdin with empty stdin when: [t0] init.behavior executed with empty piped stdin then: stderr matches snapshot 1`] = `"error: --wish requires content"`;
@@ -144,12 +144,12 @@ exports[`init.behavior.wish given: [case5] --wish idempotent with same content w
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.wish-idempotent-test/0.wish.md
-   └─ [2mtip: use --open to open the wish automatically[0m
+   └─ tip: use --open to open the wish automatically
 
 🍄 we'll remember,
    ├─ branch feature/wish-idempotent-test <-> behavior v{DATE}.wish-idempotent-test
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ branch bound to behavior, to boot via hooks
+   └─ branch bound to route, to drive via hooks"
 `;
 
 exports[`init.behavior.wish given: [case6] --wish combined with --open when: [t0] init.behavior executed with --wish and --open cat then: stderr matches snapshot 1`] = `""`;
@@ -191,10 +191,10 @@ wish before open
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.wish-open-test/0.wish.md
-   └─ [2mopened in cat[0m
+   └─ opened in cat
 
 🍄 we'll remember,
    ├─ branch feature/wish-open-test <-> behavior v{DATE}.wish-open-test
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ branch bound to behavior, to boot via hooks
+   └─ branch bound to route, to drive via hooks"
 `;

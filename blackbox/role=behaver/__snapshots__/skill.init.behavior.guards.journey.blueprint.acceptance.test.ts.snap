@@ -1,0 +1,542 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`skill.init.behavior.guards.journey.blueprint given: [case1] a heavy-guard behavior at its blueprint stone when: [t0] blueprint pass attempted without promises then: blocked by unpromised self-review 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+
+🦉 the way speaks for itself
+
+🗿 route.stone.set
+   ├─ stone = 3.3.1.blueprint.product
+   └─ passage = blocked (review.self required)
+
+🌕 lets reflect
+   │
+   ├─ review.self 1/1
+   │  ├─ slug = has-stub-review
+   │  ├─ question all, especially yourself
+   │  └─ see the guide below
+   │
+   ├─ stillness 🪷
+   │  ├─
+   │  │
+   │  │  so it is. a chance to slow down, breathe, and see clearly.
+   │  │
+   │  │  self review time is a sanctuary. a gift. a luxury not always available.
+   │  │
+   │  │  it is not every day one has a quiet moment to take a slow,
+   │  │  methodical, patient, and thorough review.
+   │  │
+   │  │  tea first. then, we proceed 🍵
+   │  │
+   │  └─
+   │
+   ├─ before you begin 🪷
+   │  ├─
+   │  │
+   │  │  - clear your mind. this is dedicated review time.
+   │  │  - open each artifact mentioned in the guide
+   │  │  - read through them slowly, line by line
+   │  │  - question every assumption made
+   │  │  - look with fresh eyes, as if for the first time
+   │  │
+   │  └─
+   │
+   ├─ here's the guide
+   │  ├─
+   │  │
+   │  │  stub self-review; the real roster is read in isolation.
+   │  │
+   │  └─
+   │
+   ├─ be here now 🪷
+   │  ├─
+   │  │
+   │  │  refocus.
+   │  │
+   │  │  the review is the work.
+   │  │  not a step to complete.
+   │  │  not a gate to pass.
+   │  │  not a checkbox to check.
+   │  │
+   │  │  it is the work itself.
+   │  │
+   │  │  you do not care about the stone.
+   │  │  you only care about the review.
+   │  │
+   │  └─
+   │
+   ├─ walk the way 🪷
+   │  │
+   │  ├─ articulate into
+   │  │  ├─ .behavior/v{DATE}.full-journey/review/self/for.3.3.1.blueprint.product._.has-stub-review.md
+   │  │  └─ the guard looks precisely here, write exactly to this path
+   │  │
+   │  ├─ for each found issue 🪘
+   │  │  ├─
+   │  │  │
+   │  │  │  articulate how it was fixed
+   │  │  │  so you remember for next time
+   │  │  │
+   │  │  └─
+   │  │
+   │  └─ for each non issue 🪘
+   │     ├─
+   │     │
+   │     │  articulate why it holds
+   │     │  so others can learn from it
+   │     │
+   │     └─
+   │
+   └─ when you've truly reflected, run
+      └─ rhx route.stone.set --stone 3.3.1.blueprint.product --as promised --that has-stub-review \\
+         --into .behavior/v{DATE}.full-journey/review/self/for.3.3.1.blueprint.product._.has-stub-review.md
+🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+   └─ ✋ blocked by constraints
+"
+`;
+
+exports[`skill.init.behavior.guards.journey.blueprint given: [case1] a heavy-guard behavior at its blueprint stone when: [t1] blueprint pass attempted with promises but no approval then: blocked by judge 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+
+🦉 the way speaks for itself
+   │
+   ├─ r1: repo-rules (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r001._.given.by_peer.repo-rules.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r001._.taken.by_self.repo-rules.md
+   │
+   ├─ r2: mech-failhides (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r002._.given.by_peer.mech-failhides.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r002._.taken.by_self.mech-failhides.md
+   │
+   ├─ r3: mech-decode-friction (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r003._.given.by_peer.mech-decode-friction.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r003._.taken.by_self.mech-decode-friction.md
+   │
+   ├─ r4: arch-opport-decomposition (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r004._.given.by_peer.arch-opport-decomposition.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r004._.taken.by_self.arch-opport-decomposition.md
+   │
+   ├─ r5: arch-smell-scopeleaks (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r005._.given.by_peer.arch-smell-scopeleaks.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r005._.taken.by_self.arch-smell-scopeleaks.md
+   │
+   ├─ r6: arch-hazards-maintenance (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r006._.given.by_peer.arch-hazards-maintenance.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r006._.taken.by_self.arch-hazards-maintenance.md
+   │
+   ├─ r7: arch-hazards-behavior (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r007._.given.by_peer.arch-hazards-behavior.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r007._.taken.by_self.arch-hazards-behavior.md
+   │
+   ├─ r8: arch-ambiguous-terms (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r008._.given.by_peer.arch-ambiguous-terms.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r008._.taken.by_self.arch-ambiguous-terms.md
+   │
+   ├─ r9: ergo-acceptance-journey-coverage (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r009._.given.by_peer.ergo-acceptance-journey-coverage.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r009._.taken.by_self.ergo-acceptance-journey-coverage.md
+   │
+   ├─ r10: ergo-snapshot-visual-blemishes (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r010._.given.by_peer.ergo-snapshot-visual-blemishes.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r010._.taken.by_self.ergo-snapshot-visual-blemishes.md
+   │
+   ├─ r11: enroll-blueprint-arch-defects (l3, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r011._.given.by_peer.enroll-blueprint-arch-defects.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r011._.taken.by_self.enroll-blueprint-arch-defects.md
+   │
+   ├─ r12: enroll-blueprint-behavior-intent (l3, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r012._.given.by_peer.enroll-blueprint-behavior-intent.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r012._.taken.by_self.enroll-blueprint-behavior-intent.md
+   │
+   ├─ ✓ judge.1 - allowed [time]
+   │
+   └─ ✗ judge.2 - blocked [time]
+
+🗿 route.stone.set
+   ├─ stone = 3.3.1.blueprint.product
+   ├─ passage = blocked
+   ├─ reason = wait for human approval
+   └─ guard
+      ├─ artifacts
+      ├─ reviews
+      │   ├─ r1: repo-rules (l1, 1/3)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r001._.given.by_peer.repo-rules.md
+      │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r001._.taken.by_self.repo-rules.md
+      │   ├─ r2: mech-failhides (l1, 1/3)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r002._.given.by_peer.mech-failhides.md
+      │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r002._.taken.by_self.mech-failhides.md
+      │   ├─ r3: mech-decode-friction (l1, 1/3)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r003._.given.by_peer.mech-decode-friction.md
+      │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r003._.taken.by_self.mech-decode-friction.md
+      │   ├─ r4: arch-opport-decomposition (l1, 1/3)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r004._.given.by_peer.arch-opport-decomposition.md
+      │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r004._.taken.by_self.arch-opport-decomposition.md
+      │   ├─ r5: arch-smell-scopeleaks (l1, 1/3)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r005._.given.by_peer.arch-smell-scopeleaks.md
+      │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r005._.taken.by_self.arch-smell-scopeleaks.md
+      │   ├─ r6: arch-hazards-maintenance (l1, 1/3)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r006._.given.by_peer.arch-hazards-maintenance.md
+      │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r006._.taken.by_self.arch-hazards-maintenance.md
+      │   ├─ r7: arch-hazards-behavior (l1, 1/3)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r007._.given.by_peer.arch-hazards-behavior.md
+      │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r007._.taken.by_self.arch-hazards-behavior.md
+      │   ├─ r8: arch-ambiguous-terms (l1, 1/3)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r008._.given.by_peer.arch-ambiguous-terms.md
+      │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r008._.taken.by_self.arch-ambiguous-terms.md
+      │   ├─ r9: ergo-acceptance-journey-coverage (l1, 1/3)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r009._.given.by_peer.ergo-acceptance-journey-coverage.md
+      │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r009._.taken.by_self.ergo-acceptance-journey-coverage.md
+      │   ├─ r10: ergo-snapshot-visual-blemishes (l1, 1/3)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r010._.given.by_peer.ergo-snapshot-visual-blemishes.md
+      │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r010._.taken.by_self.ergo-snapshot-visual-blemishes.md
+      │   ├─ r11: enroll-blueprint-arch-defects (l3, 1/3)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r011._.given.by_peer.enroll-blueprint-arch-defects.md
+      │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r011._.taken.by_self.enroll-blueprint-arch-defects.md
+      │   └─ r12: enroll-blueprint-behavior-intent (l3, 1/3)
+      │       ├─ approved [time]
+      │       ├─ 0 blockers ✓
+      │       ├─ 0 nitpicks ✓
+      │       ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r012._.given.by_peer.enroll-blueprint-behavior-intent.md
+      │       └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r012._.taken.by_self.enroll-blueprint-behavior-intent.md
+      └─ judges
+          ├─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 7
+          │   └─ finished [time] ✓
+          └─ j2: $rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
+              ├─ finished [time] ✗
+              └─ reason: wait for human approval
+🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+   └─ ✋ blocked by constraints
+
+🦉 l1 pours 10 lanes
+   ├─ r1:repo-rules
+   ├─ r2:mech-failhides
+   ├─ r3:mech-decode-friction
+   ├─ r4:arch-opport-decomposition
+   ├─ r5:arch-smell-scopeleaks
+   ├─ r6:arch-hazards-maintenance
+   ├─ r7:arch-hazards-behavior
+   ├─ r8:arch-ambiguous-terms
+   ├─ r9:ergo-acceptance-journey-coverage
+   └─ r10:ergo-snapshot-visual-blemishes
+🦉 l3 pours 2 lanes
+   ├─ r11:enroll-blueprint-arch-defects
+   └─ r12:enroll-blueprint-behavior-intent
+
+🪶 judge 2
+   ├─ stdout
+   │  ├─
+   │  │
+   │  │  🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.judge
+   │  │  
+   │  │  passed: false
+   │  │  reason: wait for human approval
+   │  │  
+   │  │  ✋ halted, human approval required
+   │  │     ├─ please ask your human to
+   │  │     │  └─ rhx route.stone.set --stone 3.3.1.blueprint.product --as approved
+   │  │     │
+   │  │     └─ after human approves, run
+   │  │        └─ rhx route.stone.set --stone 3.3.1.blueprint.product --as passed
+   │  │
+   │  └─
+   ├─ stderr
+   │  ├─
+   │  │
+   │  │  
+   │  │  🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.judge
+   │  │     └─ ✋ blocked by constraints
+   │  │  
+   │  │
+   │  └─
+   └─ passage blocked
+      ├─ blocked by constraints
+      └─ exit code: 2 ✋"
+`;
+
+exports[`skill.init.behavior.guards.journey.blueprint given: [case1] a heavy-guard behavior at its blueprint stone when: [t2] blueprint pass attempted after approval then: allowed 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+
+🦉 the way speaks for itself
+   │
+   ├─ r1: repo-rules (l1, 1/3)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r001._.given.by_peer.repo-rules.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r001._.taken.by_self.repo-rules.md
+   │
+   ├─ r2: mech-failhides (l1, 1/3)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r002._.given.by_peer.mech-failhides.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r002._.taken.by_self.mech-failhides.md
+   │
+   ├─ r3: mech-decode-friction (l1, 1/3)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r003._.given.by_peer.mech-decode-friction.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r003._.taken.by_self.mech-decode-friction.md
+   │
+   ├─ r4: arch-opport-decomposition (l1, 1/3)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r004._.given.by_peer.arch-opport-decomposition.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r004._.taken.by_self.arch-opport-decomposition.md
+   │
+   ├─ r5: arch-smell-scopeleaks (l1, 1/3)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r005._.given.by_peer.arch-smell-scopeleaks.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r005._.taken.by_self.arch-smell-scopeleaks.md
+   │
+   ├─ r6: arch-hazards-maintenance (l1, 1/3)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r006._.given.by_peer.arch-hazards-maintenance.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r006._.taken.by_self.arch-hazards-maintenance.md
+   │
+   ├─ r7: arch-hazards-behavior (l1, 1/3)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r007._.given.by_peer.arch-hazards-behavior.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r007._.taken.by_self.arch-hazards-behavior.md
+   │
+   ├─ r8: arch-ambiguous-terms (l1, 1/3)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r008._.given.by_peer.arch-ambiguous-terms.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r008._.taken.by_self.arch-ambiguous-terms.md
+   │
+   ├─ r9: ergo-acceptance-journey-coverage (l1, 1/3)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r009._.given.by_peer.ergo-acceptance-journey-coverage.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r009._.taken.by_self.ergo-acceptance-journey-coverage.md
+   │
+   ├─ r10: ergo-snapshot-visual-blemishes (l1, 1/3)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r010._.given.by_peer.ergo-snapshot-visual-blemishes.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r010._.taken.by_self.ergo-snapshot-visual-blemishes.md
+   │
+   ├─ r11: enroll-blueprint-arch-defects (l3, 1/3)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r011._.given.by_peer.enroll-blueprint-arch-defects.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r011._.taken.by_self.enroll-blueprint-arch-defects.md
+   │
+   ├─ r12: enroll-blueprint-behavior-intent (l3, 1/3)
+   │   ├─ approved, cached
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r012._.given.by_peer.enroll-blueprint-behavior-intent.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r012._.taken.by_self.enroll-blueprint-behavior-intent.md
+   │
+   ├─ ✓ judge.1 - allowed [time]
+   │
+   └─ ✓ judge.2 - allowed [time]
+
+🗿 route.stone.set
+   ├─ stone = 3.3.1.blueprint.product
+   ├─ passage = allowed
+   ├─ guard
+   │  ├─ artifacts
+   │  ├─ reviews
+   │  │   ├─ r1: repo-rules (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r001._.given.by_peer.repo-rules.md
+   │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r001._.taken.by_self.repo-rules.md
+   │  │   ├─ r2: mech-failhides (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r002._.given.by_peer.mech-failhides.md
+   │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r002._.taken.by_self.mech-failhides.md
+   │  │   ├─ r3: mech-decode-friction (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r003._.given.by_peer.mech-decode-friction.md
+   │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r003._.taken.by_self.mech-decode-friction.md
+   │  │   ├─ r4: arch-opport-decomposition (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r004._.given.by_peer.arch-opport-decomposition.md
+   │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r004._.taken.by_self.arch-opport-decomposition.md
+   │  │   ├─ r5: arch-smell-scopeleaks (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r005._.given.by_peer.arch-smell-scopeleaks.md
+   │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r005._.taken.by_self.arch-smell-scopeleaks.md
+   │  │   ├─ r6: arch-hazards-maintenance (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r006._.given.by_peer.arch-hazards-maintenance.md
+   │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r006._.taken.by_self.arch-hazards-maintenance.md
+   │  │   ├─ r7: arch-hazards-behavior (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r007._.given.by_peer.arch-hazards-behavior.md
+   │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r007._.taken.by_self.arch-hazards-behavior.md
+   │  │   ├─ r8: arch-ambiguous-terms (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r008._.given.by_peer.arch-ambiguous-terms.md
+   │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r008._.taken.by_self.arch-ambiguous-terms.md
+   │  │   ├─ r9: ergo-acceptance-journey-coverage (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r009._.given.by_peer.ergo-acceptance-journey-coverage.md
+   │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r009._.taken.by_self.ergo-acceptance-journey-coverage.md
+   │  │   ├─ r10: ergo-snapshot-visual-blemishes (l1, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r010._.given.by_peer.ergo-snapshot-visual-blemishes.md
+   │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r010._.taken.by_self.ergo-snapshot-visual-blemishes.md
+   │  │   ├─ r11: enroll-blueprint-arch-defects (l3, 1/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r011._.given.by_peer.enroll-blueprint-arch-defects.md
+   │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r011._.taken.by_self.enroll-blueprint-arch-defects.md
+   │  │   └─ r12: enroll-blueprint-behavior-intent (l3, 1/3)
+   │  │       ├─ approved, cached
+   │  │       ├─ 0 blockers ✓
+   │  │       ├─ 0 nitpicks ✓
+   │  │       ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r012._.given.by_peer.enroll-blueprint-behavior-intent.md
+   │  │       └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/3.3.1.blueprint.product._.review.i001.{HASH}.r012._.taken.by_self.enroll-blueprint-behavior-intent.md
+   │  └─ judges
+   │      ├─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 7
+   │      │   └─ finished [time] ✓
+   │      └─ j2: $rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
+   │          └─ finished [time] ✓
+   │
+   └─ the way continues, run
+      └─ rhx route.drive"
+`;
+
+exports[`skill.init.behavior.guards.journey.blueprint given: [case1] a heavy-guard behavior at its blueprint stone when: [t3] roadmap pass attempted after the blueprint then: allowed at once, with the note \`artifacts only\` 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+
+🦉 the way speaks for itself
+
+🗿 route.stone.set
+   ├─ stone = 4.1.roadmap
+   ├─ passage = allowed (artifacts only)
+   │
+   └─ the way continues, run
+      └─ rhx route.drive"
+`;
+
+exports[`skill.init.behavior.guards.journey.blueprint given: [case1] a heavy-guard behavior at its blueprint stone when: [t4] the unenrolled driver enters the roadmap, past the blueprint then: bhrain names sonnet, the build brain, and halts with the enroll fix 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
+
+🦉 where were we?
+
+🗿 route.drive
+   ├─ where do we go?
+   │  ├─ route = .behavior/v{DATE}.full-journey
+   │  ├─ stone = 4.1.roadmap
+   │  └─ brain = claude-sonnet-5-5[1m]
+   │
+   └─ ✋ halted, brain switch could not land
+      ├─ this driver runs = unknown — no clone address was confirmed
+      │
+      ├─ why
+      │  ├─ this driver is not an enrolled clone, so \`clone say\` has naught to address
+      │  └─ the usual cause is a driver launched directly rather than by \`rhx enroll\`
+      │
+      ├─ fix: re-enroll the driver with a slug, then re-enter the stone
+      │  └─ rhx enroll claude --as @:driver --roles driver
+      │
+      └─ or: remove \`brain:\` from the stone's guard, and inherit the brain deliberately
+         └─ .behavior/v{DATE}.full-journey/4.1.roadmap.guard"
+`;

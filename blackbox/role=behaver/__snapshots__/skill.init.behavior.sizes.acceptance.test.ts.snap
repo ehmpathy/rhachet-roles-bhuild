@@ -26,12 +26,12 @@ exports[`init.behavior.sizes given: [case1] --size nano when: [t0] init.behavior
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.nano-test/0.wish.md
-   └─ [2mtip: use --open to open the wish automatically[0m
+   └─ tip: use --open to open the wish automatically
 
 🍄 we'll remember,
    ├─ branch feature/size-nano-test <-> behavior v{DATE}.nano-test
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ branch bound to behavior, to boot via hooks
+   └─ branch bound to route, to drive via hooks"
 `;
 
 exports[`init.behavior.sizes given: [case1] --size nano when: [t0] init.behavior executed with --size nano then: stderr matches snapshot 1`] = `""`;
@@ -84,12 +84,12 @@ exports[`init.behavior.sizes given: [case2] --size mini when: [t0] init.behavior
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.mini-test/0.wish.md
-   └─ [2mtip: use --open to open the wish automatically[0m
+   └─ tip: use --open to open the wish automatically
 
 🍄 we'll remember,
    ├─ branch feature/size-mini-test <-> behavior v{DATE}.mini-test
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ branch bound to behavior, to boot via hooks
+   └─ branch bound to route, to drive via hooks"
 `;
 
 exports[`init.behavior.sizes given: [case2] --size mini when: [t0] init.behavior executed with --size mini then: stderr matches snapshot 1`] = `""`;
@@ -162,12 +162,12 @@ exports[`init.behavior.sizes given: [case3] --size medi (default) when: [t0] ini
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.medi-default-test/0.wish.md
-   └─ [2mtip: use --open to open the wish automatically[0m
+   └─ tip: use --open to open the wish automatically
 
 🍄 we'll remember,
    ├─ branch feature/size-medi-default-test <-> behavior v{DATE}.medi-default-test
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ branch bound to behavior, to boot via hooks
+   └─ branch bound to route, to drive via hooks"
 `;
 
 exports[`init.behavior.sizes given: [case3] --size medi (default) when: [t0] init.behavior executed without --size flag then: stderr matches snapshot 1`] = `""`;
@@ -264,12 +264,12 @@ exports[`init.behavior.sizes given: [case4] --size mega when: [t0] init.behavior
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.mega-test/0.wish.md
-   └─ [2mtip: use --open to open the wish automatically[0m
+   └─ tip: use --open to open the wish automatically
 
 🍄 we'll remember,
    ├─ branch feature/size-mega-test <-> behavior v{DATE}.mega-test
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ branch bound to behavior, to boot via hooks
+   └─ branch bound to route, to drive via hooks"
 `;
 
 exports[`init.behavior.sizes given: [case4] --size mega when: [t0] init.behavior executed with --size mega then: stderr matches snapshot 1`] = `""`;
@@ -322,12 +322,12 @@ exports[`init.behavior.sizes given: [case5] --size giga when: [t0] init.behavior
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.giga-test/0.wish.md
-   └─ [2mtip: use --open to open the wish automatically[0m
+   └─ tip: use --open to open the wish automatically
 
 🍄 we'll remember,
    ├─ branch feature/size-giga-test <-> behavior v{DATE}.giga-test
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ branch bound to behavior, to boot via hooks
+   └─ branch bound to route, to drive via hooks"
 `;
 
 exports[`init.behavior.sizes given: [case6] --size composes with --guard when: [t0] init.behavior executed with --size mini --guard heavy then: output matches snapshot 1`] = `
@@ -355,12 +355,12 @@ exports[`init.behavior.sizes given: [case6] --size composes with --guard when: [
 
 🌲 go on then,
    ├─ .behavior/v{DATE}.compose-test/0.wish.md
-   └─ [2mtip: use --open to open the wish automatically[0m
+   └─ tip: use --open to open the wish automatically
 
 🍄 we'll remember,
    ├─ branch feature/size-guard-compose-test <-> behavior v{DATE}.compose-test
-   ├─ [2mbranch bound to behavior, to boot via hooks[0m
-   └─ [2mbranch bound to route, to drive via hooks[0m"
+   ├─ branch bound to behavior, to boot via hooks
+   └─ branch bound to route, to drive via hooks"
 `;
 
 exports[`init.behavior.sizes given: [case6] --size composes with --guard when: [t0] init.behavior executed with --size mini --guard heavy then: stderr matches snapshot 1`] = `""`;

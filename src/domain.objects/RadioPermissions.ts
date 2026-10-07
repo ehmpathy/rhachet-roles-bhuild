@@ -17,7 +17,7 @@ interface RadioGlobalState {
  *
  * orgs map includes:
  * - @all: default fallback for orgs not explicitly set
- * - specific org names: e.g., "ehmpathy", "ahbode"
+ * - specific org names: e.g., "ehmpathy", "sandpine"
  */
 interface RadioOrgState {
   orgs: Record<string, 'allowed' | 'blocked'>;

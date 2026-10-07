@@ -1,6 +1,11 @@
 *.local.json
 !**/.test/assets/**/*.local.json
 *.log
+# a captured pane is a test FIXTURE, never a log. it wears .log because that is
+# what `tmux capture-pane` writes, and each one is a bug that already shipped.
+# without this negation the whole corpus lands on disk, passes locally, and is
+# absent from the commit — the failure is silent in every direction.
+!**/.test/.assets/**/*.log
 
 # claude settings: local overrides ignored, repo-level tracked
 .claude/settings.local.json
@@ -21,4 +26,8 @@ node_modules
 *.bak.*
 z.plan.*.json
 .radio
+
+# a duct registry is machine-global ($HOME/.ductwork). a `registry/` at the repo
+# root is test litter from a run that wrote under $PWD — never source.
+/registry/
 !.agent/.actors/actor.via.slug=.default/

@@ -7,8 +7,8 @@ exports[`give.feedback given: [case1] consumer: behavior with execution artifact
 
 🌲 feedback.give --against execution
    ├─ ✓ 5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md
-   ├─ [2mtip: use --version ++ to create a new version[0m
-   └─ [2mtip: use --open nvim to open automatically[0m"
+   ├─ tip: use --version ++ to create a new version
+   └─ tip: use --open nvim to open automatically"
 `;
 
 exports[`give.feedback given: [case2] consumer: feedback file already exists (findsert) when: [t0] give.feedback invoked again for same artifact then: output matches snapshot 1`] = `
@@ -18,8 +18,8 @@ exports[`give.feedback given: [case2] consumer: feedback file already exists (fi
 
 🌲 feedback.give --against execution
    ├─ ✓ 5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md
-   ├─ [2mtip: use --version ++ to create a new version[0m
-   └─ [2mtip: use --open nvim to open automatically[0m"
+   ├─ tip: use --version ++ to create a new version
+   └─ tip: use --open nvim to open automatically"
 `;
 
 exports[`give.feedback given: [case3] consumer: version flag creates v2 feedback when: [t0] give.feedback --version 2 is invoked then: output matches snapshot 1`] = `
@@ -29,8 +29,8 @@ exports[`give.feedback given: [case3] consumer: version flag creates v2 feedback
 
 🌲 feedback.give --against execution
    ├─ ✓ 5.1.execution.v1.i1.md.[feedback].v2.[given].by_human.md
-   ├─ [2mtip: use --version ++ to create a new version[0m
-   └─ [2mtip: use --open nvim to open automatically[0m"
+   ├─ tip: use --version ++ to create a new version
+   └─ tip: use --open nvim to open automatically"
 `;
 
 exports[`give.feedback given: [case4] consumer: artifact not found when: [t0] give.feedback for absent artifact then: output matches snapshot 1`] = `
@@ -67,8 +67,8 @@ exports[`give.feedback given: [case6] consumer: --force overrides behavior bind 
 
 🌲 feedback.give --against execution
    ├─ ✓ 5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md
-   ├─ [2mtip: use --version ++ to create a new version[0m
-   └─ [2mtip: use --open nvim to open automatically[0m"
+   ├─ tip: use --version ++ to create a new version
+   └─ tip: use --open nvim to open automatically"
 `;
 
 exports[`give.feedback given: [case7] consumer: custom template via --template flag when: [t0] give.feedback --template with full path is invoked then: output matches snapshot 1`] = `
@@ -78,6 +78,6 @@ exports[`give.feedback given: [case7] consumer: custom template via --template f
 
 🌲 feedback.give --against execution
    ├─ ✓ 5.1.execution.v1.i1.md.[feedback].v1.[given].by_human.md
-   ├─ [2mtip: use --version ++ to create a new version[0m
-   └─ [2mtip: use --open nvim to open automatically[0m"
+   ├─ tip: use --version ++ to create a new version
+   └─ tip: use --open nvim to open automatically"
 `;
