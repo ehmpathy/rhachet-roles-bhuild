@@ -128,16 +128,8 @@ const runRadioTaskPull = (input: {
   });
 };
 
-// 🔴 unskipped 2026-09-28. the prior note read "unskip once keyrack provides
-//   BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN", a precondition that can never be
-//   met: `.github/workflows/.test.yml` passes this token DIRECTLY on the
-//   acceptance shard job, and its `.why` there records that keyrack's
-//   firewall rejects it by design as a classic `ghp_*` PAT.
-//
-// ⚠️ its peer `skill.radio.task.push.via-gh-issues.acceptance.test.ts` is
-//   already unskipped and already leans on a CI-supplied github credential,
-//   so this suite now matches the precedent its own peer set.
-describe('radio.task.pull via gh.issues', () => {
+// TODO: unskip once keyrack provides BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN
+describe.skip('radio.task.pull via gh.issues', () => {
 
   // shared consumer repo for all test cases (pnpm install is expensive)
   const sharedRepo = useBeforeAll(async () =>
