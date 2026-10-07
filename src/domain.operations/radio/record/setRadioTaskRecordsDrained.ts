@@ -5,6 +5,7 @@ import type { RadioTaskRecordFate } from './RadioTaskRecordFate';
 import type { ShellExecutor } from './ShellExecutor';
 import { setRadioTaskRecordHeldBehindHalt } from './setRadioTaskRecordHeldBehindHalt';
 import { setRadioTaskRecordUpstream } from './setRadioTaskRecordUpstream';
+import { withRadioDrainLock } from './withRadioDrainLock';
 
 type DrainContext = {
   cwd: string;
@@ -71,7 +72,7 @@ const setRadioTaskRecordsInLine = async (
  *         so a fault that likely hits them all is reported once, never reordered around.
  *         a record already DELIVERED is never re-sent: its local mark answers first (C3)
  */
-export const setRadioTaskRecordsDrained = async (
+const _setRadioTaskRecordsDrained = async (
   input: Record<string, never>,
   context: DrainContext,
 ): Promise<{ fates: RadioTaskRecordFate[] }> => {
@@ -79,3 +80,11 @@ export const setRadioTaskRecordsDrained = async (
   const fates = await setRadioTaskRecordsInLine({ line }, context);
   return { fates };
 };
+
+/**
+ * .note = one drain at a time per worktree: the held line is read under the lock, so a
+ *         concurrent drain waits, then finds the first drain's records delivered (X2, C19)
+ */
+export const setRadioTaskRecordsDrained = withRadioDrainLock(
+  _setRadioTaskRecordsDrained,
+);

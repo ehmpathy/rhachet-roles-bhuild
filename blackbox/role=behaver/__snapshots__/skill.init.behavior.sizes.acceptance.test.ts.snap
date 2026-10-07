@@ -48,6 +48,7 @@ exports[`init.behavior.sizes given: [case2] --size mini when: [t0] init.behavior
   "3.1.3.research.internal.product.code.test._.stone",
   "3.3.1.blueprint.product.guard",
   "3.3.1.blueprint.product.stone",
+  "4.1.roadmap.guard",
   "4.1.roadmap.stone",
   "5.1.execution.phase0_to_phaseN.guard",
   "5.1.execution.phase0_to_phaseN.stone",
@@ -71,6 +72,7 @@ exports[`init.behavior.sizes given: [case2] --size mini when: [t0] init.behavior
    ├─ + 3.1.3.research.internal.product.code.test._.stone
    ├─ + 3.3.1.blueprint.product.guard
    ├─ + 3.3.1.blueprint.product.stone
+   ├─ + 4.1.roadmap.guard
    ├─ + 4.1.roadmap.stone
    ├─ + 5.1.execution.phase0_to_phaseN.guard
    ├─ + 5.1.execution.phase0_to_phaseN.stone
@@ -112,6 +114,7 @@ exports[`init.behavior.sizes given: [case3] --size medi (default) when: [t0] ini
   "3.2.distill.repros.experience._.stone",
   "3.3.1.blueprint.product.guard",
   "3.3.1.blueprint.product.stone",
+  "4.1.roadmap.guard",
   "4.1.roadmap.stone",
   "5.1.execution.phase0_to_phaseN.guard",
   "5.1.execution.phase0_to_phaseN.stone",
@@ -145,6 +148,7 @@ exports[`init.behavior.sizes given: [case3] --size medi (default) when: [t0] ini
    ├─ + 3.2.distill.repros.experience._.stone
    ├─ + 3.3.1.blueprint.product.guard
    ├─ + 3.3.1.blueprint.product.stone
+   ├─ + 4.1.roadmap.guard
    ├─ + 4.1.roadmap.stone
    ├─ + 5.1.execution.phase0_to_phaseN.guard
    ├─ + 5.1.execution.phase0_to_phaseN.stone
@@ -200,6 +204,7 @@ exports[`init.behavior.sizes given: [case4] --size mega when: [t0] init.behavior
   "3.3.0.blueprint.factory.stone",
   "3.3.1.blueprint.product.guard",
   "3.3.1.blueprint.product.stone",
+  "4.1.roadmap.guard",
   "4.1.roadmap.stone",
   "5.1.execution.phase0_to_phaseN.guard",
   "5.1.execution.phase0_to_phaseN.stone",
@@ -245,6 +250,7 @@ exports[`init.behavior.sizes given: [case4] --size mega when: [t0] init.behavior
    ├─ + 3.3.0.blueprint.factory.stone
    ├─ + 3.3.1.blueprint.product.guard
    ├─ + 3.3.1.blueprint.product.stone
+   ├─ + 4.1.roadmap.guard
    ├─ + 4.1.roadmap.stone
    ├─ + 5.1.execution.phase0_to_phaseN.guard
    ├─ + 5.1.execution.phase0_to_phaseN.stone
@@ -302,6 +308,7 @@ exports[`init.behavior.sizes given: [case5] --size giga when: [t0] init.behavior
    ├─ + 3.3.0.blueprint.factory.stone
    ├─ + 3.3.1.blueprint.product.guard
    ├─ + 3.3.1.blueprint.product.stone
+   ├─ + 4.1.roadmap.guard
    ├─ + 4.1.roadmap.stone
    ├─ + 5.1.execution.phase0_to_phaseN.guard
    ├─ + 5.1.execution.phase0_to_phaseN.stone
@@ -336,6 +343,7 @@ exports[`init.behavior.sizes given: [case6] --size composes with --guard when: [
    ├─ + 3.1.3.research.internal.product.code.test._.stone
    ├─ + 3.3.1.blueprint.product.guard
    ├─ + 3.3.1.blueprint.product.stone
+   ├─ + 4.1.roadmap.guard
    ├─ + 4.1.roadmap.stone
    ├─ + 5.1.execution.phase0_to_phaseN.guard
    ├─ + 5.1.execution.phase0_to_phaseN.stone

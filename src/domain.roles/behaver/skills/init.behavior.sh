@@ -19,6 +19,8 @@
 #                     - light: minimal self-reviews (3 vision, 0 criteria, 5 blueprint)
 #                     - heavy: comprehensive self-reviews (8 vision, 4 criteria, 11 blueprint)
 #   --open <editor>   open wish file in editor after init
+#   --size <size>     nano | mini | medi (default) | mega | giga
+#   --wish <text>     wish content, inline or @stdin
 #
 # guarantee:
 #   - creates .behavior/ if not found

@@ -678,6 +678,24 @@ describe('initBehaviorDir.integration', () => {
           );
         });
       });
+
+      when('[t2] every guard template is read from source', () => {
+        then('each guard template uri points at its own file', () => {
+          // exhaustive, not sampled: a hand-typed uri on a new guard must not drift
+          const templatesDir = path.join(__dirname, 'templates');
+          const guardTemplateNames = fs
+            .readdirSync(templatesDir)
+            .filter((name) => /\.guard(\.(light|heavy))?$/.test(name));
+          expect(guardTemplateNames.length).toBeGreaterThan(0);
+          const uriMismatches = guardTemplateNames.filter(
+            (name) =>
+              !fs
+                .readFileSync(path.join(templatesDir, name), 'utf-8')
+                .includes(`uri: ${templatesUriBase}/${name}\n`),
+          );
+          expect(uriMismatches).toEqual([]);
+        });
+      });
     });
   });
 });
