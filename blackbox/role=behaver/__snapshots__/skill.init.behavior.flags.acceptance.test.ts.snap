@@ -185,12 +185,24 @@ exports[`init.behavior.flags given: [case7] direct: --open flag with unavailable
     behavior created, open manually: .behavior/v{DATE}.warn-test/0.wish.md"
 `;
 
-exports[`init.behavior.flags given: [case8] --help flag (currently errors - no help support) when: [t0] init.behavior executed with --help then: stderr matches snapshot 1`] = `
-"⛈️  error: input invalid
-   └─ --name must be a string, got undefined"
-`;
+exports[`init.behavior.flags given: [case8] --help flag when: [t0] init.behavior executed with --help then: stdout matches snapshot 1`] = `
+"🦫 oh, behave!
 
-exports[`init.behavior.flags given: [case8] --help flag (currently errors - no help support) when: [t0] init.behavior executed with --help then: stdout matches snapshot 1`] = `""`;
+🌲 init.behavior --help
+   ├─ usage
+   │  ├─ init.behavior --name <name>                    init a behavior route, bound to this branch
+   │  ├─ init.behavior --name <name> --size mini        init a smaller route
+   │  └─ init.behavior --name <name> --wish @stdin      init with the wish piped in
+   │
+   └─ options
+      ├─ --name <name>     behavior name; @branch expands to the branch name    (required)
+      ├─ --dir <dir>       directory that holds .behavior/                      (default: .)
+      ├─ --size <size>     nano | mini | medi | mega | giga                     (default: medi)
+      ├─ --guard <level>   light | heavy self-reviews                           (default: light)
+      ├─ --wish <text>     wish content, inline or @stdin
+      ├─ --open <editor>   open the wish in an editor after init, e.g. codium
+      └─ --help, -h        show this help"
+`;
 
 exports[`init.behavior.flags given: [case9] absent required --name flag when: [t0] init.behavior executed without --name then: stderr matches snapshot 1`] = `
 "⛈️  error: input invalid

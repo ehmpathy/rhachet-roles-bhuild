@@ -53,11 +53,58 @@ const schemaOfArgs = z.object({
   ordered: z.array(z.string()).default([]),
 });
 
+/**
+ * .what = the args read before validation, to detect a help ask
+ * .why = --help must answer even when required args like --name are absent,
+ *        so it is read through a schema where every arg is optional
+ */
+const schemaOfHelpArgs = z.object({
+  named: z.object({
+    help: z.boolean().optional(),
+    h: z.boolean().optional(),
+    // rhachet passthrough args (optional, ignored)
+    repo: z.string().optional(),
+    role: z.string().optional(),
+    skill: z.string().optional(),
+    s: z.string().optional(),
+  }),
+  ordered: z.array(z.string()).default([]),
+});
+
+/**
+ * .what = the usage guide printed on --help
+ */
+const HELP_TEXT = `
+🦫 oh, behave!
+
+🌲 init.behavior --help
+   ├─ usage
+   │  ├─ init.behavior --name <name>                    init a behavior route, bound to this branch
+   │  ├─ init.behavior --name <name> --size mini        init a smaller route
+   │  └─ init.behavior --name <name> --wish @stdin      init with the wish piped in
+   │
+   └─ options
+      ├─ --name <name>     behavior name; @branch expands to the branch name    (required)
+      ├─ --dir <dir>       directory that holds .behavior/                      (default: .)
+      ├─ --size <size>     nano | mini | medi | mega | giga                     (default: medi)
+      ├─ --guard <level>   light | heavy self-reviews                           (default: light)
+      ├─ --wish <text>     wish content, inline or @stdin
+      ├─ --open <editor>   open the wish in an editor after init, e.g. codium
+      └─ --help, -h        show this help
+`.trim();
+
 // ────────────────────────────────────────────────────────────────────
 // exported CLI entry point
 // ────────────────────────────────────────────────────────────────────
 
 export const initBehavior = async (): Promise<void> => {
+  // answer a help ask before the required args are validated
+  const { named: namedForHelp } = getCliArgs({ schema: schemaOfHelpArgs });
+  if (namedForHelp.help || namedForHelp.h) {
+    console.log(HELP_TEXT);
+    return;
+  }
+
   const { named } = getCliArgs({ schema: schemaOfArgs });
   const context = { cwd: process.cwd() };
   const targetDirRaw = named.dir ?? '.';

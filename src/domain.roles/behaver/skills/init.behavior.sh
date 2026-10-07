@@ -16,11 +16,12 @@
 #   --name <name>     behavior name (required)
 #   --dir <directory> target directory (default: .)
 #   --guard <level>   guard level: light (default) or heavy
-#                     - light: minimal self-reviews (3 vision, 0 criteria, 5 blueprint)
-#                     - heavy: comprehensive self-reviews (8 vision, 4 criteria, 11 blueprint)
+#                     - light: fewer, focused self-reviews
+#                     - heavy: more, thorough self-reviews
 #   --open <editor>   open wish file in editor after init
 #   --size <size>     nano | mini | medi (default) | mega | giga
 #   --wish <text>     wish content, inline or @stdin
+#   --help, -h        show usage and exit
 #
 # guarantee:
 #   - creates .behavior/ if not found
