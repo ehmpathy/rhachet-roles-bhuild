@@ -114,12 +114,12 @@ describe('init.behavior.flags', () => {
     });
   });
 
-  given('[case8] --help flag (currently errors - no help support)', () => {
-    when('[t0] init.behavior executed with --help', () => {
-      const scene = useBeforeAll(async () =>
-        genConsumerRepo({ branchName: 'feature/help-test' }),
-      );
+  given('[case8] --help flag', () => {
+    const scene = useBeforeAll(async () =>
+      genConsumerRepo({ branchName: 'feature/help-test' }),
+    );
 
+    when('[t0] init.behavior executed with --help', () => {
       const result = useThen('skill executes', () =>
         runInitBehaviorSkillDirect({
           args: '--help',
@@ -127,16 +127,53 @@ describe('init.behavior.flags', () => {
         }),
       );
 
-      then('exit code is non-zero (--help not supported)', () => {
-        expect(result.exitCode).not.toBe(0);
+      then('exit code is 0', () => {
+        expect(result.exitCode).toBe(0);
+      });
+
+      then('stdout shows the usage and every option', () => {
+        expect(result.stdout).toContain('init.behavior --help');
+        expect(result.stdout).toContain('usage');
+        [
+          '--name',
+          '--dir',
+          '--size',
+          '--guard',
+          '--wish',
+          '--open',
+          '--help, -h',
+        ].map((flag) => expect(result.stdout).toContain(flag));
+      });
+
+      then('stderr is empty', () => {
+        expect(result.stderr).toEqual('');
+      });
+
+      then('no behavior dir is created', () => {
+        expect(fs.existsSync(path.join(scene.repoDir, '.behavior'))).toBe(
+          false,
+        );
       });
 
       then('stdout matches snapshot', () => {
         expect(asSnapshotStable(result.stdout)).toMatchSnapshot();
       });
+    });
 
-      then('stderr matches snapshot', () => {
-        expect(asSnapshotStable(result.stderr)).toMatchSnapshot();
+    when('[t1] init.behavior executed with -h', () => {
+      const result = useThen('skill executes', () =>
+        runInitBehaviorSkillDirect({
+          args: '-h',
+          repoDir: scene.repoDir,
+        }),
+      );
+
+      then('exit code is 0', () => {
+        expect(result.exitCode).toBe(0);
+      });
+
+      then('stdout shows the same usage guide', () => {
+        expect(result.stdout).toContain('init.behavior --help');
       });
     });
   });
