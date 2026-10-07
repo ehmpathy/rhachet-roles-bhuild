@@ -5,7 +5,7 @@
  *         it whole. the suite's shared fixtures, and its account of what it
  *         runs against and why, live in git.grove.saturation.harness.ts.
  */
-import { spawnSync } from 'child_process';
+import { spawn, spawnSync } from 'child_process';
 import { mkdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { given, then, useThen, when } from 'test-fns';
@@ -157,10 +157,22 @@ given('[case1] the saturation probe must not COUNT ITSELF', () => {
     //    measured here, on the first RED run. property access unwraps, so the
     //    payload rides on a named field (the crewwork suite's own pattern).
     const ran = useThen('the probe exits clean', () => {
+      // 🔴 a LOAD SOURCE, so the `roll=` arm below cannot pass or fail on the
+      //    runner's mood. `roll=` carries a `>= 1%` cpu floor (see the timeout
+      //    suite's idle-box case), so a fully idle ci runner emits zero rows —
+      //    measured red on ci, 2026-10-07. a detached spinner sits in its OWN
+      //    process group, so the self-filter cannot drop it, and it holds a full
+      //    core for the probe's whole read.
+      const spinner = spawn('sh', ['-c', 'while :; do :; done'], {
+        detached: true,
+        stdio: 'ignore',
+      });
+      spawnSync('sleep', ['1']);
       const out = spawnSync('bash', ['-c', getProbePayload()], {
         encoding: 'utf8',
         timeout: 120_000,
       });
+      process.kill(-spinner.pid!, 'SIGKILL');
       if (out.status !== 0)
         throw new Error(
           `the probe exited ${out.status} — a clamp on its OUTPUT cannot run: ${out.stderr}`,
