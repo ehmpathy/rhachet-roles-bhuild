@@ -1,4 +1,5 @@
 import { DomainLiteral } from 'domain-objects';
+import type { IsoDateStamp } from 'iso-time';
 
 import { BehaviorDecompositionContextAnalysis } from './BehaviorDecompositionContextAnalysis';
 import { BehaviorDecompositionProposed } from './BehaviorDecompositionProposed';
@@ -25,9 +26,13 @@ interface BehaviorDecompositionPlan {
   contextAnalysis: BehaviorDecompositionContextAnalysis;
 
   /**
-   * timestamp of plan generation
+   * the day the plan was generated, as a datestamp (YYYY-MM-DD)
+   *
+   * .note = the plan persists into a tracked behavior dir, so it holds no time of day
+   *         (rule.forbid.timestamps-in-tracked-files). a plan file from before may hold an
+   *         instant; computePlanFromFile casts it to its day on read
    */
-  generatedAt: string;
+  generatedAt: IsoDateStamp;
 }
 class BehaviorDecompositionPlan
   extends DomainLiteral<BehaviorDecompositionPlan>

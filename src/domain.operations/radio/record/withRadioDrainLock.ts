@@ -2,6 +2,8 @@ import { join } from 'path';
 import { createCache } from 'simple-on-disk-cache';
 import { withSimpleMutex } from 'with-simple-mutex';
 
+import { genRadioLockDirIgnore } from './genRadioLockDirIgnore';
+
 /**
  * .what = the dir that holds the worktree's radio locks
  * .why = a drain reaches every record dir in the worktree, so one lock spans them all;
@@ -29,6 +31,10 @@ export const withRadioDrainLock = <
   logic: (input: TInput, context: TContext) => Promise<TOutput>,
 ) => {
   return async (input: TInput, context: TContext): Promise<TOutput> => {
+    // the lock file holds a lease clock; keep the whole lock dir out of git
+    const lockDir = asRadioLockDir(context);
+    genRadioLockDirIgnore({ dir: lockDir });
+
     // the lock state lives on disk, so a guard built per call still shares it across calls
     const drainGuarded = withSimpleMutex(
       async (args: { input: TInput; context: TContext }) =>
@@ -36,7 +42,7 @@ export const withRadioDrainLock = <
       {
         key: () => 'radio.drain',
         cache: createCache({
-          directory: { local: { path: asRadioLockDir(context) } },
+          directory: { local: { path: lockDir } },
         }),
         lease: { duration: { minutes: 5 } },
         acquire: {

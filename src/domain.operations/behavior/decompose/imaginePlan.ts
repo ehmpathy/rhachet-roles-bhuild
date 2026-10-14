@@ -1,4 +1,5 @@
 import * as fs from 'fs/promises';
+import { today } from 'iso-time';
 import * as path from 'path';
 
 import { BehaviorDecompositionPlan } from '../../../domain.objects/BehaviorDecompositionPlan';
@@ -66,7 +67,7 @@ export const imaginePlan = async (
       (p) => new BehaviorDecompositionProposed(p),
     ),
     contextAnalysis,
-    generatedAt: new Date().toISOString(),
+    generatedAt: today(), // a datestamp: the plan lands in a tracked behavior dir
   });
 
   return plan;

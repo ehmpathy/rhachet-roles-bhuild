@@ -31,6 +31,7 @@ ignores:
   - rhachet-roles-bhuild
   - "@anthropic-ai/claude-code"
   - rhachet-brains-anthropic
+  - rhachet-brains-fireworksai
   - rhachet-roles-bhrain
   - rhachet-roles-ehmpathy
   - rhachet-roles-rhachet

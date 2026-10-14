@@ -1,8 +1,10 @@
 import * as fs from 'fs/promises';
+import { asIsoDateStamp } from 'iso-time';
 import * as os from 'os';
 import * as path from 'path';
 import { given, then, when } from 'test-fns';
 
+import { getTimestampFound } from '../../../.test/utils/getTimestampFound';
 import { BehaviorDecompositionPlan } from '../../../domain.objects/BehaviorDecompositionPlan';
 import { applyPlan } from './applyPlan';
 
@@ -62,7 +64,7 @@ describe('applyPlan.integration', () => {
           },
           recommendation: 'DECOMPOSE_UNNEEDED',
         },
-        generatedAt: '2025-01-01T12:00:00.000Z',
+        generatedAt: asIsoDateStamp('2025-01-01'),
       });
 
       then('sub-behavior directories are created', async () => {
@@ -148,6 +150,21 @@ describe('applyPlan.integration', () => {
         expect(decomposedContent).toContain('business-logic');
         expect(decomposedContent).toContain('depends on');
       });
+
+      then(
+        'z.decomposed.md names the day it was generated, never a time of day',
+        async () => {
+          const result = await applyPlan({ plan });
+          const decomposedContent = await fs.readFile(
+            result.decomposedMarkerPath,
+            'utf-8',
+          );
+          expect(decomposedContent).toContain('- generated on: 2025-01-01');
+          expect(getTimestampFound({ content: decomposedContent })).toEqual(
+            null,
+          );
+        },
+      );
     });
   });
 });

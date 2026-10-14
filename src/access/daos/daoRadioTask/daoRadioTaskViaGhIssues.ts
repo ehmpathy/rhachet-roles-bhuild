@@ -5,7 +5,7 @@ import {
   ConstraintError,
   UnexpectedCodePathError,
 } from 'helpful-errors';
-import type { IsoDateStamp } from 'iso-time';
+import { asIsoDateStamp } from 'iso-time';
 import * as os from 'os';
 import * as path from 'path';
 import { promisify } from 'util';
@@ -26,14 +26,6 @@ import { isGithubAuthFailure } from './isGithubAuthFailure';
 const execAsync = promisify(exec);
 const writeFileAsync = promisify(fs.writeFile);
 const unlinkAsync = promisify(fs.unlink);
-
-/**
- * .what = convert Date to IsoDateStamp
- * .why = format date for RadioTask fields
- */
-const toIsoDateStamp = (date: Date): IsoDateStamp => {
-  return date.toISOString().split('T')[0] as IsoDateStamp;
-};
 
 /**
  * .what = run gh cli command and return stdout
@@ -130,7 +122,7 @@ export const daoRadioTaskViaGhIssues = {
             state: issue.state.toLowerCase() as 'open' | 'closed',
             assignees: issue.assignees.map((a) => a.login),
             repo: repo,
-            createdAt: toIsoDateStamp(new Date(issue.createdAt)),
+            createdAt: asIsoDateStamp(new Date(issue.createdAt)),
             createdBy: issue.author.login,
           });
         } catch (error: unknown) {
@@ -183,7 +175,7 @@ export const daoRadioTaskViaGhIssues = {
           state: match.state.toLowerCase() as 'open' | 'closed',
           assignees: match.assignees.map((a) => a.login),
           repo: input.repo,
-          createdAt: toIsoDateStamp(new Date(match.createdAt)),
+          createdAt: asIsoDateStamp(new Date(match.createdAt)),
           createdBy: match.author.login,
         });
       },
@@ -234,7 +226,7 @@ export const daoRadioTaskViaGhIssues = {
             state: issue.state.toLowerCase() as 'open' | 'closed',
             assignees: issue.assignees.map((a) => a.login),
             repo: input.repo,
-            createdAt: toIsoDateStamp(new Date(issue.createdAt)),
+            createdAt: asIsoDateStamp(new Date(issue.createdAt)),
             createdBy: issue.author.login,
           }),
         );

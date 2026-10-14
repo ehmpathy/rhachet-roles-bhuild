@@ -75,6 +75,11 @@ describe('computePlanFromFile', () => {
           'DECOMPOSE_UNNEEDED',
         );
       });
+
+      then('a legacy instant in generatedAt reads as its day', async () => {
+        const result = await computePlanFromFile({ planPath });
+        expect(result.generatedAt).toEqual('2025-01-01');
+      });
     });
   });
 

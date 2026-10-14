@@ -4,6 +4,7 @@ import { getAllRadioTaskRecordsHeld } from './getAllRadioTaskRecordsHeld';
 import type { RadioTaskRecordFate } from './RadioTaskRecordFate';
 import type { ShellExecutor } from './ShellExecutor';
 import { setRadioTaskRecordHeldBehindHalt } from './setRadioTaskRecordHeldBehindHalt';
+import { setRadioTaskRecordsClockShed } from './setRadioTaskRecordsClockShed';
 import { setRadioTaskRecordUpstream } from './setRadioTaskRecordUpstream';
 import { withRadioDrainLock } from './withRadioDrainLock';
 
@@ -70,14 +71,20 @@ const setRadioTaskRecordsInLine = async (
  *         new, in its first place when it re-types a held task (C5).
  *         an upstream fault halts the drain; the records after it stay held, in order,
  *         so a fault that likely hits them all is reported once, never reordered around.
- *         a record already DELIVERED is never re-sent: its local mark answers first (C3)
+ *         a record already DELIVERED is never re-sent: its local mark answers first (C3).
+ *         after the line, any record a prior version stamped with a clock is written back
+ *         without it, settled ones included, so every drain leaves the record dirs clock-free
  */
 const _setRadioTaskRecordsDrained = async (
   input: Record<string, never>,
   context: DrainContext,
 ): Promise<{ fates: RadioTaskRecordFate[] }> => {
+  // send the held line, oldest first
   const line = getAllRadioTaskRecordsHeld({}, context);
   const fates = await setRadioTaskRecordsInLine({ line }, context);
+
+  // write back any record a prior version stamped that the line did not rewrite
+  setRadioTaskRecordsClockShed({}, context);
   return { fates };
 };
 

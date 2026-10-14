@@ -42,8 +42,8 @@ exports[`radio.task.push — the radio.recorder given: [case1] a clone on a bran
 
 🦫 back in the river! the backlog is delivered
    ├─ drained
-   │  ├─ #<exid> fix flaky test (held since <stamp>)
-   │  └─ #<exid> guard absent sponsor (held since <stamp>)
+   │  ├─ #<exid> fix flaky test
+   │  └─ #<exid> guard absent sponsor
    ├─ pushed
    │  └─ #<exid> retry race (created)
    └─ backlog = 0"
@@ -95,7 +95,7 @@ exports[`radio.task.push — the radio.recorder given: [case2] a record file on 
 "💥 MalfunctionError: radio task record could not be read
    ├─ where: <dir>/record.bad.json
    ├─ why:   <json parse fault>
-   └─ fix:   repair the json of the record file, or remove it
+   └─ fix:   repair the record file: valid json, in the shape named above. do not remove it: that drops its task unsent
     at <stack>"
 `;
 
@@ -112,6 +112,19 @@ exports[`radio.task.push — the radio.recorder given: [case2] a record file on 
    └─ options
       ├─ --when      hook.onStop
       └─ --help, -h  show this help"
+`;
+
+exports[`radio.task.push — the radio.recorder given: [case2] a record file on disk that is not valid json when: [t2] the clone pushes a first task, the bad record still on disk then: stderr first says the push is saved, so the caller repairs + re-pushes 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+   └─ 💥 failed with an error
+
+🦫 this push is saved, as QUEUED in .behavior/.radio/. fix the fault below, then push again to deliver it
+
+💥 MalfunctionError: radio task record could not be read
+   ├─ where: <dir>/record.bad.json
+   ├─ why:   <json parse fault>
+   └─ fix:   repair the record file: valid json, in the shape named above. do not remove it: that drops its task unsent
+    at <stack>"
 `;
 
 exports[`radio.task.push — the radio.recorder given: [case3] a clone claims an extant task while the radio is shut (U2, case=7) when: [t0] the clone claims task 412 then: the output says held, names the claim, and the lift 1`] = `
@@ -138,4 +151,104 @@ exports[`radio.task.push — the radio.recorder given: [case4] a blocked push pi
    ├─ backlog = 1 await the radio
    └─ lift it (human): rhx radio.uses allow
       └─ then the next push delivers the backlog first"
+`;
+
+exports[`radio.task.push — the radio.recorder given: [case5] two clones run one journey, seconds apart: a legacy record, a push held unbound, a route bind, a push held bound, then the radio opens (case=1, case=3, case=4) when: [t0] the first clone runs the journey then: the drain delivers the legacy record first, then each held push in push order, then itself 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 back in the river! the backlog is delivered
+   ├─ drained
+   │  ├─ #<exid> book a lesson for bert
+   │  ├─ #<exid> rent a wetsuit
+   │  └─ #<exid> post the swell forecast
+   ├─ pushed
+   │  └─ #<exid> remind bert of his lesson (created)
+   └─ backlog = 0"
+`;
+
+exports[`radio.task.push — the radio.recorder given: [case5] two clones run one journey, seconds apart: a legacy record, a push held unbound, a route bind, a push held bound, then the radio opens (case=1, case=3, case=4) when: [t1] a second clone runs the same journey, on a later clock then: the record bytes read as the snapshot pins them 1`] = `
+"# .behavior/.radio/record.legacy-a.json
+{
+  "key": "legacy-a",
+  "kind": "create",
+  "repo": {
+    "owner": "recorder-acpt-rerun",
+    "name": "repo-<run>"
+  },
+  "via": "os.fileops",
+  "auth": null,
+  "idem": null,
+  "title": "book a lesson for bert",
+  "description": "a sandpine surf lesson",
+  "exid": null,
+  "status": null,
+  "recordStatus": "DELIVERED",
+  "reason": null,
+  "heldSeq": 1,
+  "deliveredExid": "<exid>"
+}
+
+# .behavior/.radio/record.<key>.json
+{
+  "key": "<key>",
+  "kind": "create",
+  "repo": {
+    "owner": "recorder-acpt-rerun",
+    "name": "repo-<run>"
+  },
+  "exid": null,
+  "title": "rent a wetsuit",
+  "description": "size m",
+  "status": null,
+  "via": "os.fileops",
+  "auth": null,
+  "idem": null,
+  "heldSeq": 2,
+  "recordStatus": "DELIVERED",
+  "reason": null,
+  "deliveredExid": "<exid>"
+}
+
+# .behavior/v2026_10_07.rerun/.radio/record.<key>.json
+{
+  "key": "<key>",
+  "kind": "create",
+  "repo": {
+    "owner": "recorder-acpt-rerun",
+    "name": "repo-<run>"
+  },
+  "exid": null,
+  "title": "post the swell forecast",
+  "description": "dawn patrol",
+  "status": null,
+  "via": "os.fileops",
+  "auth": null,
+  "idem": null,
+  "heldSeq": 3,
+  "recordStatus": "DELIVERED",
+  "reason": null,
+  "deliveredExid": "<exid>"
+}
+
+# .behavior/v2026_10_07.rerun/.radio/record.<key>.json
+{
+  "key": "<key>",
+  "kind": "create",
+  "repo": {
+    "owner": "recorder-acpt-rerun",
+    "name": "repo-<run>"
+  },
+  "exid": null,
+  "title": "remind bert of his lesson",
+  "description": "tomorrow",
+  "status": null,
+  "via": "os.fileops",
+  "auth": null,
+  "idem": null,
+  "heldSeq": 4,
+  "recordStatus": "DELIVERED",
+  "reason": null,
+  "deliveredExid": "<exid>"
+}
+"
 `;

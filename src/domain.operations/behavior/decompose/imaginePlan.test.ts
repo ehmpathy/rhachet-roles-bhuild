@@ -99,18 +99,22 @@ describe('imaginePlan', () => {
         );
       });
 
-      then('plan includes generatedAt timestamp', async () => {
-        const behavior = new BehaviorPersisted({
-          name: 'parent',
-          path: behaviorPath,
-        });
-        const role = { briefs: [] };
-        const context = { brain: { repl: mockBrainRepl } };
+      then(
+        'plan names the day it was generated, never a time of day',
+        async () => {
+          const behavior = new BehaviorPersisted({
+            name: 'parent',
+            path: behaviorPath,
+          });
+          const role = { briefs: [] };
+          const context = { brain: { repl: mockBrainRepl } };
 
-        const plan = await imaginePlan({ behavior, role }, context);
+          const plan = await imaginePlan({ behavior, role }, context);
 
-        expect(plan.generatedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
-      });
+          // the plan file lands in a tracked behavior dir, so a time of day would trip the gate
+          expect(plan.generatedAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        },
+      );
     });
 
     when('[t1] brain.repl returns JSON embedded in text', () => {

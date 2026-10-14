@@ -1,5 +1,6 @@
 import * as fs from 'fs/promises';
 import { getError } from 'helpful-errors';
+import { asIsoDateStamp } from 'iso-time';
 import * as os from 'os';
 import * as path from 'path';
 import { given, then, when } from 'test-fns';
@@ -63,7 +64,7 @@ describe('applyPlan', () => {
           },
           recommendation: 'DECOMPOSE_UNNEEDED',
         },
-        generatedAt: '2025-01-01T00:00:00.000Z',
+        generatedAt: asIsoDateStamp('2025-01-01'),
       });
 
       then('creates behavior directories', async () => {
@@ -126,7 +127,7 @@ describe('applyPlan', () => {
           },
           recommendation: 'DECOMPOSE_UNNEEDED',
         },
-        generatedAt: '2025-01-01T00:00:00.000Z',
+        generatedAt: asIsoDateStamp('2025-01-01'),
       });
 
       then('throws BadRequestError about already decomposed', async () => {
@@ -177,7 +178,7 @@ describe('applyPlan', () => {
           },
           recommendation: 'DECOMPOSE_UNNEEDED',
         },
-        generatedAt: '2025-01-01T00:00:00.000Z',
+        generatedAt: asIsoDateStamp('2025-01-01'),
       });
 
       then('throws BadRequestError about name conflict', async () => {
@@ -203,7 +204,7 @@ describe('applyPlan', () => {
           },
           recommendation: 'DECOMPOSE_UNNEEDED',
         },
-        generatedAt: '2025-01-01T00:00:00.000Z',
+        generatedAt: asIsoDateStamp('2025-01-01'),
       });
 
       then('throws BadRequestError about parent not found', async () => {

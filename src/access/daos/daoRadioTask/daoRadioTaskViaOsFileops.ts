@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs/promises';
-import type { IsoDateStamp } from 'iso-time';
+import { today } from 'iso-time';
 import * as os from 'os';
 import * as path from 'path';
 
@@ -17,14 +17,6 @@ import { extractTaskFromOsFileops } from '../../../domain.operations/radio/task/
  */
 const genShortId = (): string => {
   return crypto.randomUUID().slice(0, 8);
-};
-
-/**
- * .what = convert Date to IsoDateStamp
- * .why = format date for RadioTask fields
- */
-const toIsoDateStamp = (date: Date): IsoDateStamp => {
-  return date.toISOString().split('T')[0] as IsoDateStamp;
 };
 
 /**
@@ -60,7 +52,7 @@ const getStatusFlagPath = (
  * .why = preserves prior versions on edit
  */
 const getBackupFilePath = (radioDir: string, exid: string): string => {
-  const isoNow = toIsoDateStamp(new Date());
+  const isoNow = today();
   return path.join(radioDir, `task.${exid}.bak.${isoNow}.md`);
 };
 

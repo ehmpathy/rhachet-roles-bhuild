@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`check.timestamps given: [case1] a staged markdown file that holds a timestamp when: [t0] the gate runs then: the words a human reads are pinned 1`] = `
+"✋ ConstraintError: timestamps are forbidden in tracked files. mask them to prevent permadrift
+   ├─ lessons.md:3:book-a-lesson reminder sent 2026-09-29THH:MM:SSZ
+   ├─ fix: cut it to a datestamp (YYYY-MM-DD), or mask the time (THH:MM:SSZ); then stage again
+   └─ why: .agent/repo=.this/role=any/briefs/rule.forbid.timestamps-in-tracked-files.md
+"
+`;
+
+exports[`check.timestamps given: [case4] a staged file whose blob git cannot read when: [t0] the gate runs then: the words a human reads are pinned 1`] = `
+"<a line from git>
+💥 MalfunctionError: check.timestamps failed to read staged content for lessons.md
+"
+`;

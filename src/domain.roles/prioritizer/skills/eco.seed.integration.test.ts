@@ -44,8 +44,9 @@
  */
 import { execFileSync, spawnSync } from 'child_process';
 import { join } from 'path';
-import { given, then, useBeforeAll } from 'test-fns';
+import { genTempDir, given, then, useBeforeAll } from 'test-fns';
 
+import { daoRadioTaskRecord } from '../../../access/daos/daoRadioTaskRecord';
 import { tempDirs } from '../../.test/tempDirs';
 
 const PATH_ECOWORK_DB = join(__dirname, 'work', 'ecowork.db.mjs');
@@ -57,11 +58,29 @@ const PATH_ECO_SEED_SH = join(__dirname, 'eco.seed.sh');
  *         unreadable source and still exits 0 is the defect, so stdout
  *         alone is never enough to grade a run
  */
-const seed = (input: { db: string; args: string }) =>
+const seed = (input: { db: string; args: string; cwd?: string }) =>
   spawnSync('bash', ['-c', `'${PATH_ECO_SEED_SH}' ${input.args}`], {
+    cwd: input.cwd,
     encoding: 'utf8',
     env: { ...process.env, ECOWORK_DB: input.db },
     timeout: 180_000,
+  });
+
+/**
+ * .what = a temp git repo that resolves this repo's roles and package, for a run that writes
+ * .why  = `gen --mode apply` pipes into `rhx radio.task.push`, which records every push in the
+ *         cwd's `.behavior/**\/.radio/` before it tries the send. run in this worktree, a test
+ *         push lands in the bound route and moves every real push's place in line. links to
+ *         `.agent/` and `node_modules/` let `rhx` and the skill's package import resolve the same
+ */
+const genSeedCwdHermetic = (input: { slug: string }): string =>
+  genTempDir({
+    slug: input.slug,
+    git: true,
+    symlink: [
+      { at: 'node_modules', to: 'node_modules' },
+      { at: '.agent', to: '.agent' },
+    ],
   });
 
 /**
@@ -436,13 +455,24 @@ describe('eco.seed', () => {
         encoding: 'utf8',
         timeout: 30_000,
       });
+      const cwd = genSeedCwdHermetic({ slug: 'seed-gen-blind-cwd' });
       const run = seed({
         db,
         args: `gen --for altrock://doomed-push --into 'ehmpathy/no-such-repo-for-an-eco-seed-gen-clamp' --mode apply`,
+        cwd,
       });
+      const isAimedAtDoomedRepo = (entry: {
+        record: { repo: { name: string } };
+      }) => entry.record.repo.name === 'no-such-repo-for-an-eco-seed-gen-clamp';
       return {
         run,
         refsAfter: readRefTask({ db, slug: 'altrock://doomed-push' }),
+        recordsInCwd: daoRadioTaskRecord.get
+          .all({ dirs: daoRadioTaskRecord.get.dirs({ cwd }) })
+          .filter(isAimedAtDoomedRepo),
+        recordsInWorktree: daoRadioTaskRecord.get
+          .all({ dirs: daoRadioTaskRecord.get.dirs({ cwd: process.cwd() }) })
+          .filter(isAimedAtDoomedRepo),
       };
     });
 
@@ -462,6 +492,15 @@ describe('eco.seed', () => {
       '[t2] and it says which half failed, and that the row is untouched',
       () => {
         expect(scene.run.stderr).toContain('the row is untouched');
+      },
+    );
+
+    // the push records in the run's own cwd, never in the worktree the suite runs from
+    then(
+      '[t3] and the push it held is recorded in the temp repo, not this worktree',
+      () => {
+        expect(scene.recordsInCwd).toHaveLength(1);
+        expect(scene.recordsInWorktree).toEqual([]);
       },
     );
   });

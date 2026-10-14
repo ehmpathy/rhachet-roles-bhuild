@@ -11,14 +11,14 @@ const asCodeUnitOrder = (input: { a: string; b: string }): number => {
 };
 
 /**
- * .what = the order two records drain in: oldest first
- * .why = the drain delivers in the order the pushes were made. heldAt leads;
- *        heldSeq breaks a same-second tie; the key makes the order total
+ * .what = the order two records drain in: first pushed, first delivered
+ * .why = the drain delivers in the order the pushes were made. heldSeq leads — it is
+ *        minted across the whole worktree; the key makes the order total where two
+ *        seqs tie (a legacy per-dir seq, or two mints at one instant)
  */
 export const asRadioTaskRecordOrder = (input: {
   a: { record: RadioTaskRecord };
   b: { record: RadioTaskRecord };
 }): number =>
-  asCodeUnitOrder({ a: input.a.record.heldAt, b: input.b.record.heldAt }) ||
   input.a.record.heldSeq - input.b.record.heldSeq ||
   asCodeUnitOrder({ a: input.a.record.key, b: input.b.record.key });
