@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import { genTempDir, given, then, useBeforeAll, useThen, when } from 'test-fns';
 
 import { daoRadioTaskRecord } from '@src/access/daos/daoRadioTaskRecord';
@@ -26,51 +27,41 @@ const asPush = (input: { title: string }) => ({
 });
 
 describe('setRadioTaskRecordFromPush', () => {
-  given(
-    '[case1] two pushes in one second, the first with the later key',
-    () => {
-      // .note = heldAt has one-second precision; push the task whose key sorts later
-      //         first, so a tiebreak on the key would reverse the push order
-      const scene = useBeforeAll(async () => {
-        const cwd = genTempDir({ slug: 'radio-record-heldseq', git: true });
-        const dir = `${cwd}/.behavior/.radio`;
-        const isKeyOfALater =
-          asRadioTaskRecordKey(asPush({ title: 'task a' })) >
-          asRadioTaskRecordKey(asPush({ title: 'task b' }));
-        const titleFirst = isKeyOfALater ? 'task a' : 'task b';
-        const titleSecond = isKeyOfALater ? 'task b' : 'task a';
-        const first = setRadioTaskRecordFromPush(
-          { push: asPush({ title: titleFirst }) },
-          { dir },
-        );
-        const second = setRadioTaskRecordFromPush(
-          { push: asPush({ title: titleSecond }) },
-          { dir },
-        );
-        daoRadioTaskRecord.set.upsert({
-          dir,
-          record: new RadioTaskRecord({
-            ...second.record,
-            heldAt: first.record.heldAt,
-          }),
-        });
-        return { cwd, titleFirst, titleSecond };
-      });
+  given('[case1] two pushes, the first with the later key', () => {
+    // .note = push the task whose key sorts later first, so a tiebreak on the key
+    //         would reverse the push order; only heldSeq can keep it
+    const scene = useBeforeAll(async () => {
+      const cwd = genTempDir({ slug: 'radio-record-heldseq', git: true });
+      const dir = `${cwd}/.behavior/.radio`;
+      const isKeyOfALater =
+        asRadioTaskRecordKey(asPush({ title: 'task a' })) >
+        asRadioTaskRecordKey(asPush({ title: 'task b' }));
+      const titleFirst = isKeyOfALater ? 'task a' : 'task b';
+      const titleSecond = isKeyOfALater ? 'task b' : 'task a';
+      setRadioTaskRecordFromPush(
+        { push: asPush({ title: titleFirst }) },
+        { dir, cwd },
+      );
+      setRadioTaskRecordFromPush(
+        { push: asPush({ title: titleSecond }) },
+        { dir, cwd },
+      );
+      return { cwd, titleFirst, titleSecond };
+    });
 
-      when('[t0] the held records are lined up', () => {
-        then('they hold the push order, not the key order', () => {
-          expect(
-            getAllRadioTaskRecordsHeld({}, { cwd: scene.cwd }).map(
-              ({ record }) => [record.title, record.heldSeq],
-            ),
-          ).toEqual([
-            [scene.titleFirst, 1],
-            [scene.titleSecond, 2],
-          ]);
-        });
+    when('[t0] the held records are lined up', () => {
+      then('they hold the push order, not the key order', () => {
+        expect(
+          getAllRadioTaskRecordsHeld({}, { cwd: scene.cwd }).map(
+            ({ record }) => [record.title, record.heldSeq],
+          ),
+        ).toEqual([
+          [scene.titleFirst, 1],
+          [scene.titleSecond, 2],
+        ]);
       });
-    },
-  );
+    });
+  });
 
   given('[case2] a record already delivered upstream', () => {
     const scene = useBeforeAll(async () => {
@@ -78,7 +69,7 @@ describe('setRadioTaskRecordFromPush', () => {
       const dir = `${cwd}/.behavior/.radio`;
       const { record } = setRadioTaskRecordFromPush(
         { push: asPush({ title: 'fix flaky test' }) },
-        { dir },
+        { dir, cwd },
       );
       daoRadioTaskRecord.set.upsert({
         dir,
@@ -88,14 +79,14 @@ describe('setRadioTaskRecordFromPush', () => {
           deliveredExid: '412',
         }),
       });
-      return { dir };
+      return { dir, cwd };
     });
 
     when('[t0] the same task is re-pushed verbatim (C3)', () => {
       const result = useThen('the push is transcribed', async () =>
         setRadioTaskRecordFromPush(
           { push: asPush({ title: 'fix flaky test' }) },
-          { dir: scene.dir },
+          { dir: scene.dir, cwd: scene.cwd },
         ),
       );
 
@@ -116,7 +107,7 @@ describe('setRadioTaskRecordFromPush', () => {
               description: 'a new body',
             },
           },
-          { dir: scene.dir },
+          { dir: scene.dir, cwd: scene.cwd },
         ),
       );
 
@@ -129,4 +120,125 @@ describe('setRadioTaskRecordFromPush', () => {
       });
     });
   });
+
+  given('[case3] pushes into two record dirs of one worktree', () => {
+    const scene = useBeforeAll(async () => {
+      const cwd = genTempDir({ slug: 'radio-record-heldseq-dirs', git: true });
+      const dirUnbound = `${cwd}/.behavior/.radio`;
+      const dirRoute = `${cwd}/.behavior/v2026_01_01.demo/.radio`;
+      const first = setRadioTaskRecordFromPush(
+        { push: asPush({ title: 'task unbound' }) },
+        { dir: dirUnbound, cwd },
+      );
+      const second = setRadioTaskRecordFromPush(
+        { push: asPush({ title: 'task routed' }) },
+        { dir: dirRoute, cwd },
+      );
+      const third = setRadioTaskRecordFromPush(
+        { push: asPush({ title: 'task unbound again' }) },
+        { dir: dirUnbound, cwd },
+      );
+      return { cwd, first, second, third };
+    });
+
+    when('[t0] the seq each push took is read', () => {
+      then('the seq spans the worktree, not one dir', () => {
+        expect([
+          scene.first.record.heldSeq,
+          scene.second.record.heldSeq,
+          scene.third.record.heldSeq,
+        ]).toEqual([1, 2, 3]);
+      });
+
+      then('the held records line up in push order across dirs', () => {
+        expect(
+          getAllRadioTaskRecordsHeld({}, { cwd: scene.cwd }).map(
+            ({ record }) => record.title,
+          ),
+        ).toEqual(['task unbound', 'task routed', 'task unbound again']);
+      });
+    });
+  });
+
+  given(
+    '[case4] a legacy record file that still holds heldAt and settledAt',
+    () => {
+      const scene = useBeforeAll(async () => {
+        const cwd = genTempDir({ slug: 'radio-record-legacy', git: true });
+        const dir = `${cwd}/.behavior/.radio`;
+        const { record } = setRadioTaskRecordFromPush(
+          { push: asPush({ title: 'task legacy' }) },
+          { dir, cwd },
+        );
+        const path = `${dir}/record.${record.key}.json`;
+        const legacy = {
+          ...JSON.parse(fs.readFileSync(path, 'utf-8')),
+          heldAt: '2026-09-29T00:00:00Z', // note: a pinned stamp never drifts, and the gate exempts .ts files
+          settledAt: null,
+        };
+        fs.writeFileSync(path, JSON.stringify(legacy, null, 2) + '\n');
+        return { cwd, dir, path };
+      });
+
+      when('[t0] the same task is re-pushed', () => {
+        const result = useThen('the push is transcribed', async () => {
+          setRadioTaskRecordFromPush(
+            { push: asPush({ title: 'task legacy' }) },
+            { dir: scene.dir, cwd: scene.cwd },
+          );
+          return { content: fs.readFileSync(scene.path, 'utf-8') };
+        });
+
+        then('the rewrite sheds the legacy clock fields', () => {
+          expect(result.content).not.toContain('heldAt');
+          expect(result.content).not.toContain('settledAt');
+        });
+
+        then('the record keeps its place in line', () => {
+          expect(JSON.parse(result.content).heldSeq).toEqual(1);
+        });
+      });
+    },
+  );
+
+  given(
+    '[case5] a push held while unbound, re-pushed after a route bind moved the home',
+    () => {
+      const scene = useBeforeAll(async () => {
+        const cwd = genTempDir({ slug: 'radio-record-rebind', git: true });
+        const dirUnbound = `${cwd}/.behavior/.radio`;
+        const dirRoute = `${cwd}/.behavior/v2026_01_01.lessons/.radio`;
+        const first = setRadioTaskRecordFromPush(
+          { push: asPush({ title: 'book-a-lesson reminder' }) },
+          { dir: dirUnbound, cwd },
+        );
+        return { cwd, dirUnbound, dirRoute, first };
+      });
+
+      when('[t0] the same push is re-pushed into the route home', () => {
+        const result = useThen('the push is transcribed', async () =>
+          setRadioTaskRecordFromPush(
+            { push: asPush({ title: 'book-a-lesson reminder' }) },
+            { dir: scene.dirRoute, cwd: scene.cwd },
+          ),
+        );
+
+        then('it lands on its extant record, in the dir that holds it', () => {
+          expect(result.dir).toEqual(scene.dirUnbound);
+          expect(result.before?.key).toEqual(scene.first.record.key);
+        });
+
+        then('it keeps its place in line', () => {
+          expect(result.record.heldSeq).toEqual(scene.first.record.heldSeq);
+        });
+
+        then('one record waits, not two', () => {
+          expect(
+            getAllRadioTaskRecordsHeld({}, { cwd: scene.cwd }),
+          ).toHaveLength(1);
+          expect(fs.existsSync(scene.dirRoute)).toEqual(false);
+        });
+      });
+    },
+  );
 });

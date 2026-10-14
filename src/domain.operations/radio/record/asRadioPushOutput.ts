@@ -5,7 +5,6 @@ import { asTaskDetailOutput } from '@src/domain.operations/radio/cli/asTaskDetai
 
 import { asRadioErrorHeadline } from './asRadioErrorHeadline';
 import { asRadioErrorHintLines } from './asRadioErrorHintLines';
-import { asRadioHeldSinceLabel } from './asRadioHeldSinceLabel';
 import { asRadioTaskRecordLabel } from './asRadioTaskRecordLabel';
 import { asRadioTaskRepoSlug } from './asRadioTaskRepoSlug';
 import { asRadioTreeLines } from './asRadioTreeLines';
@@ -70,12 +69,13 @@ const asTarget = (input: { record: RadioTaskRecord }): string =>
 const asOthersSections = (input: {
   others: RadioTaskRecordFate[];
 }): { drained: RadioTreeBranch[]; closedOrHeld: RadioTreeBranch[] } => {
+  // the drained lines print in drain order, so their order alone is the place in line
   const drained = input.others.flatMap((fate) =>
     fate.fate === 'delivered'
       ? [
           fate.outcome === 'found'
-            ? `${asDeliveredLine(fate)} (${asRadioHeldSinceLabel(fate)}; already upstream — marked delivered)`
-            : `${asDeliveredLine(fate)} (${asRadioHeldSinceLabel(fate)})`,
+            ? `${asDeliveredLine(fate)} (already upstream — marked delivered)`
+            : asDeliveredLine(fate),
         ]
       : [],
   );

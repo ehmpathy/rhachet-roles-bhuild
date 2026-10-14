@@ -1,5 +1,5 @@
 import { BadRequestError } from 'helpful-errors';
-import type { IsoDateStamp } from 'iso-time';
+import { today } from 'iso-time';
 
 import {
   type ContextDispatchRadio,
@@ -14,14 +14,6 @@ import { RadioTaskStatus } from '../../../../domain.objects/RadioTaskStatus';
 import { getCurrentActor } from '../../../../infra/git/getCurrentActor';
 import { getCurrentBranch } from '../../../../infra/git/getCurrentBranch';
 import { assure } from '../../../../infra/types/assure';
-
-/**
- * .what = convert Date to IsoDateStamp
- * .why = format date for RadioTask fields
- */
-const toIsoDateStamp = (date: Date): IsoDateStamp => {
-  return date.toISOString().split('T')[0] as IsoDateStamp;
-};
 
 /**
  * .what = update a task on a channel (status, title, description)
@@ -148,7 +140,7 @@ const applyStatusTransition = async (
       ...task,
       status: RadioTaskStatus.CLAIMED,
       claimedBy: actor,
-      claimedAt: toIsoDateStamp(new Date()),
+      claimedAt: today(),
       branch,
     });
   }
@@ -177,7 +169,7 @@ const applyStatusTransition = async (
     return new RadioTask({
       ...task,
       status: RadioTaskStatus.DELIVERED,
-      deliveredAt: toIsoDateStamp(new Date()),
+      deliveredAt: today(),
     });
   }
 

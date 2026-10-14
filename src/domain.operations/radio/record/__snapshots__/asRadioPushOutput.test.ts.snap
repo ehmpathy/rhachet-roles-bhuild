@@ -66,7 +66,7 @@ exports[`asRadioPushOutput given: [case3] an unbound push held by an upstream fa
 exports[`asRadioPushOutput given: [case4] an open push that drains a backlog (C4, C20, U3) when: [t0] one drains, one is refused, one stays held behind a shut org then: it lists drained, pushed, refused, still held, and the backlog 1`] = `
 "🦫 back in the river! part of the backlog is delivered
    ├─ drained
-   │  └─ #412 fix flaky keyrack test (held since 2026-09-29T09:14Z)
+   │  └─ #412 fix flaky keyrack test
    ├─ pushed
    │  └─ #415 retry race in route.bounce (created)
    ├─ refused — closed, never retried
@@ -98,7 +98,7 @@ exports[`asRadioPushOutput given: [case7] a delivered push re-pushed through an 
    ├─ into    = ehmpathy/rhachet
    ├─ exid    = #412
    ├─ drained
-   │  └─ #413 guard absent sponsor (held since 2026-09-29T09:14Z; already upstream — marked delivered)
+   │  └─ #413 guard absent sponsor (already upstream — marked delivered)
    └─ backlog = 0"
 `;
 
@@ -108,7 +108,7 @@ exports[`asRadioPushOutput given: [case8] a refused push through an open gate, w
    ├─ into    = ehmpathy/rhachet
    ├─ status  = REFUSED (task already claimed by different branch) — closed, never retried
    ├─ drained
-   │  └─ #412 fix flaky keyrack test (held since 2026-09-29T09:14Z)
+   │  └─ #412 fix flaky keyrack test
    ├─ still held
    │  ├─ guard gateway → sandpine/svc-reservations (radio.uses:blocked — org)
    │  └─ lift it (human): rhx radio.uses --org sandpine allow

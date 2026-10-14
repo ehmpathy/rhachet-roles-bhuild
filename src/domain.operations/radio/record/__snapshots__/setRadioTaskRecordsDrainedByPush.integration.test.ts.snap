@@ -1,0 +1,86 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`setRadioTaskRecordsDrainedByPush given: [case11] the same pushes, rerun a day apart when: [t0] each run holds two pushes in two dirs behind the shut gate, refuses a claim, delivers a push, and repeats it then: the bytes of each record are pinned, upstream exid masked 1`] = `
+[
+  "{
+  "key": "<key>",
+  "kind": "create",
+  "repo": {
+    "owner": "recorder-shut",
+    "name": "repo-<runId>"
+  },
+  "via": "os.fileops",
+  "auth": null,
+  "idem": null,
+  "title": "task a",
+  "description": "details for task a",
+  "exid": null,
+  "status": null,
+  "heldSeq": 1,
+  "recordStatus": "QUEUED",
+  "reason": "radio.uses:blocked — org",
+  "deliveredExid": null
+}
+",
+  "{
+  "key": "<key>",
+  "kind": "create",
+  "repo": {
+    "owner": "recorder-shut",
+    "name": "repo-<runId>"
+  },
+  "via": "os.fileops",
+  "auth": null,
+  "idem": null,
+  "title": "task b",
+  "description": "details for task b",
+  "exid": null,
+  "status": null,
+  "heldSeq": 2,
+  "recordStatus": "QUEUED",
+  "reason": "radio.uses:blocked — org",
+  "deliveredExid": null
+}
+",
+  "{
+  "key": "<key>",
+  "kind": "update",
+  "repo": {
+    "owner": "recorder-open",
+    "name": "repo-<runId>"
+  },
+  "via": "os.fileops",
+  "auth": null,
+  "idem": null,
+  "title": null,
+  "description": null,
+  "exid": "absent-999",
+  "status": "CLAIMED",
+  "heldSeq": 3,
+  "recordStatus": "REFUSED",
+  "reason": "BadRequestError: task not found",
+  "deliveredExid": null
+}
+",
+  "{
+  "key": "<key>",
+  "kind": "create",
+  "repo": {
+    "owner": "recorder-open",
+    "name": "repo-<runId>"
+  },
+  "via": "os.fileops",
+  "auth": null,
+  "idem": null,
+  "title": "task c",
+  "description": "details for task c",
+  "exid": null,
+  "status": null,
+  "heldSeq": 4,
+  "recordStatus": "DELIVERED",
+  "reason": null,
+  "deliveredExid": "<exid>"
+}
+",
+]
+`;

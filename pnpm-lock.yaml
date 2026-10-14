@@ -93,6 +93,9 @@ importers:
       rhachet-brains-anthropic:
         specifier: 0.4.3
         version: 0.4.3(rhachet@1.48.1(zod@4.3.4))
+      rhachet-brains-fireworksai:
+        specifier: 0.2.3
+        version: 0.2.3(rhachet@1.48.1(zod@4.3.4))
       rhachet-brains-openrouter:
         specifier: 0.1.3
         version: 0.1.3(rhachet@1.48.1(zod@4.3.4))
@@ -100,8 +103,8 @@ importers:
         specifier: 0.3.3
         version: 0.3.3(rhachet@1.48.1(zod@4.3.4))
       rhachet-roles-bhrain:
-        specifier: 0.39.2
-        version: 0.39.2(@types/node@22.15.21)(rhachet-brains-openrouter@0.1.3(rhachet@1.48.1(zod@4.3.4)))(rhachet@1.48.1(zod@4.3.4))(with-simple-cache@0.15.1)
+        specifier: 0.39.3
+        version: 0.39.3(@types/node@22.15.21)(rhachet-brains-openrouter@0.1.3(rhachet@1.48.1(zod@4.3.4)))(rhachet@1.48.1(zod@4.3.4))(with-simple-cache@0.15.1)
       rhachet-roles-bhuild:
         specifier: link:.
         version: 'link:'
@@ -4051,6 +4054,12 @@ packages:
     peerDependencies:
       rhachet: '>=1.21.4'
 
+  rhachet-brains-fireworksai@0.2.3:
+    resolution: {integrity: sha512-OPcchqbrqeDzIQz2YYMGU1AeHqcPb9OWbl3WoI9qI3VW7cOILt6TL5ZWs54dxh19e6BNpuLbFUZ8/asP+9pq0A==}
+    engines: {node: '>=8.0.0'}
+    peerDependencies:
+      rhachet: '>=1.21.4'
+
   rhachet-brains-openrouter@0.1.3:
     resolution: {integrity: sha512-DaA0AgnL7z1CBS7SGpxlZbT2T6RL6caW++hoMJ1PNxZl/si9VGVRQN8YWS1l23GtNtimL1mdImolnDsXmm6s2g==}
     engines: {node: '>=8.0.0'}
@@ -4063,8 +4072,8 @@ packages:
     peerDependencies:
       rhachet: '>=1.21.4'
 
-  rhachet-roles-bhrain@0.39.2:
-    resolution: {integrity: sha512-hfdgZKuqWsOkYc5yQrNWGsHEVC8B99U1qQ6KX+4pWGJN7Hsktc7tnWtvjVp11BYrdUJrhdbKX4ZnzbbnqECXoQ==}
+  rhachet-roles-bhrain@0.39.3:
+    resolution: {integrity: sha512-1H3xUL/8YIzyWL1ngbwNSdjC9n5L5pTgQxbhKROs4+y1F4W7IG714//ePST51BOMysac1MyqFsW+zVSdT3iVOg==}
     engines: {node: '>=8.0.0'}
     peerDependencies:
       rhachet: '>=1.41.21'
@@ -9183,6 +9192,19 @@ snapshots:
       type-fns: 1.21.0
       zod: 4.3.4
 
+  rhachet-brains-fireworksai@0.2.3(rhachet@1.48.1(zod@4.3.4)):
+    dependencies:
+      domain-objects: 0.31.9
+      helpful-errors: 1.5.3
+      iso-price: 1.1.1(domain-objects@0.31.9)
+      openai: 5.8.2(zod@4.3.4)
+      rhachet: 1.48.1(zod@4.3.4)
+      rhachet-artifact: 1.0.1
+      rhachet-artifact-git: 1.1.5
+      zod: 4.3.4
+    transitivePeerDependencies:
+      - ws
+
   rhachet-brains-openrouter@0.1.3(rhachet@1.48.1(zod@4.3.4)):
     dependencies:
       domain-objects: 0.31.9
@@ -9213,7 +9235,7 @@ snapshots:
     transitivePeerDependencies:
       - ws
 
-  rhachet-roles-bhrain@0.39.2(@types/node@22.15.21)(rhachet-brains-openrouter@0.1.3(rhachet@1.48.1(zod@4.3.4)))(rhachet@1.48.1(zod@4.3.4))(with-simple-cache@0.15.1):
+  rhachet-roles-bhrain@0.39.3(@types/node@22.15.21)(rhachet-brains-openrouter@0.1.3(rhachet@1.48.1(zod@4.3.4)))(rhachet@1.48.1(zod@4.3.4))(with-simple-cache@0.15.1):
     dependencies:
       '@ehmpathy/as-command': 1.0.3
       '@ehmpathy/uni-time': 1.8.1

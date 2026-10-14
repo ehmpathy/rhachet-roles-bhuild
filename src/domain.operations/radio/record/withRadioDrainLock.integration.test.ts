@@ -1,4 +1,4 @@
-import { spawn } from 'child_process';
+import { execSync, spawn } from 'child_process';
 import * as fs from 'fs';
 import { sleep } from 'iso-time';
 import * as path from 'path';
@@ -152,4 +152,49 @@ describe('withRadioDrainLock', () => {
       });
     });
   });
+
+  given(
+    '[case4] a lock file on disk, as a crashed drain leaves it (rule.forbid.timestamps-in-tracked-files)',
+    () => {
+      const scene = useBeforeAll(async () => ({
+        cwd: genTempDir({ slug: 'radio-drain-lock-crash', git: true }),
+      }));
+
+      when('[t0] the lock is held, so its file sits on disk', () => {
+        const result = useThen('the dir is observed mid-drain', async () => {
+          const observe = withRadioDrainLock(
+            async (_input: Record<string, never>, context: { cwd: string }) => {
+              const dirLocks = path.join(
+                context.cwd,
+                '.behavior',
+                '.radio',
+                '.locks',
+              );
+              return {
+                locksOnDisk: fs
+                  .readdirSync(dirLocks)
+                  .filter((name) => name !== '.gitignore'),
+                filesStageable: execSync(
+                  'git ls-files --others --exclude-standard',
+                  { cwd: context.cwd },
+                )
+                  .toString('utf-8')
+                  .split('\n')
+                  .filter((rel) => rel.length > 0),
+              };
+            },
+          );
+          return observe({}, { cwd: scene.cwd });
+        });
+
+        then('git can stage no file from the lock dir', () => {
+          // guard: the lock file must be on disk, else the check grades naught
+          expect(result.locksOnDisk.length).toBeGreaterThan(0);
+          expect(
+            result.filesStageable.filter((rel) => rel.includes('.locks')),
+          ).toEqual([]);
+        });
+      });
+    },
+  );
 });

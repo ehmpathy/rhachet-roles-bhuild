@@ -1,6 +1,7 @@
 import type { IsoDateStamp } from 'iso-time';
 import { given, then, when } from 'test-fns';
 
+import { getTimestampFound } from '../../../../.test/utils/getTimestampFound';
 import { RadioTask } from '../../../../domain.objects/RadioTask';
 import { RadioTaskRepo } from '../../../../domain.objects/RadioTaskRepo';
 import { RadioTaskStatus } from '../../../../domain.objects/RadioTaskStatus';
@@ -109,6 +110,16 @@ describe('composeTaskIntoOsFileops', () => {
         expect(result).toContain('🌲 tree planted at foreman/fix-flaky-test');
       });
 
+      then(
+        'every date field is a datestamp, with no time of day (rule.forbid.timestamps-in-tracked-files)',
+        () => {
+          const result = composeTaskIntoOsFileops({ task });
+          expect(result).toContain('pushed_at: 2026-01-30\n');
+          expect(result).toContain('claimed_at: 2026-01-30\n');
+          expect(getTimestampFound({ content: result })).toEqual(null);
+        },
+      );
+
       then('matches snapshot', () => {
         const result = composeTaskIntoOsFileops({ task });
         expect(result).toMatchSnapshot();
@@ -138,4 +149,48 @@ describe('composeTaskIntoOsFileops', () => {
       });
     });
   });
+
+  given(
+    '[case4] a task in each status (rule.forbid.timestamps-in-tracked-files)',
+    () => {
+      const tasks = [
+        RadioTaskStatus.QUEUED,
+        RadioTaskStatus.CLAIMED,
+        RadioTaskStatus.DELIVERED,
+      ].map(
+        (status) =>
+          new RadioTask({
+            exid: '144',
+            title: 'book-a-lesson reminder',
+            description: 'remind the surfer the day before the lesson',
+            status,
+            repo: new RadioTaskRepo({ owner: 'sandpine', name: 'svc-lessons' }),
+            pushedBy: 'bert',
+            pushedAt: '2026-01-30' as IsoDateStamp,
+            claimedBy: status === RadioTaskStatus.QUEUED ? null : 'foreman',
+            claimedAt:
+              status === RadioTaskStatus.QUEUED
+                ? null
+                : ('2026-01-30' as IsoDateStamp),
+            deliveredAt:
+              status === RadioTaskStatus.DELIVERED
+                ? ('2026-01-31' as IsoDateStamp)
+                : null,
+            branch:
+              status === RadioTaskStatus.QUEUED
+                ? null
+                : 'foreman/lesson-reminder',
+          }),
+      );
+
+      when('[t0] each is composed into os.fileops format', () => {
+        then('no status branch writes a time of day', () => {
+          tasks.forEach((task) => {
+            const result = composeTaskIntoOsFileops({ task });
+            expect(getTimestampFound({ content: result })).toEqual(null);
+          });
+        });
+      });
+    },
+  );
 });

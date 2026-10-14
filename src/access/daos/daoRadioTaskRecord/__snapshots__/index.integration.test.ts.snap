@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`daoRadioTaskRecord given: [case7] a record file with no numeric heldSeq when: [t0] the dir is read then: the message a human reads is pinned 1`] = `
+"💥 MalfunctionError: radio task record could not be read
+   ├─ where: <dir>/record.k1.json
+   ├─ why:   the record lacks a positive integer heldSeq, its place in line (found: "first")
+   └─ fix:   repair the record file: valid json, in the shape named above. do not remove it: that drops its task unsent"
+`;

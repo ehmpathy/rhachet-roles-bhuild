@@ -1,4 +1,4 @@
-import { asIsoDateStamp, asIsoTimeStamp } from 'iso-time';
+import { asIsoDateStamp } from 'iso-time';
 import { given, then, when } from 'test-fns';
 
 import { RadioChannel } from '@src/domain.objects/RadioChannel';
@@ -30,9 +30,7 @@ const genRecord = (input: Partial<RadioTaskRecord>): RadioTaskRecord =>
     status: null,
     recordStatus: RadioTaskRecordStatus.QUEUED,
     reason: null,
-    heldAt: asIsoTimeStamp('2026-09-29T09:14:00Z'),
     heldSeq: 1,
-    settledAt: null,
     deliveredExid: null,
     ...input,
   });
@@ -280,9 +278,7 @@ describe('asRadioPushOutput', () => {
               '🦫 back in the river! part of the backlog is delivered',
             );
             expect(output).not.toContain('river! the backlog is delivered');
-            expect(output).toContain(
-              '#412 fix flaky keyrack test (held since 2026-09-29T09:14Z)',
-            );
+            expect(output).toContain('#412 fix flaky keyrack test');
             expect(output).toContain(
               '#415 retry race in route.bounce (created)',
             );
@@ -390,7 +386,7 @@ describe('asRadioPushOutput', () => {
             expect(output).toContain('🦫 already delivered');
             expect(output).toContain('exid    = #412');
             expect(output).toContain(
-              '#413 guard absent sponsor (held since 2026-09-29T09:14Z; already upstream — marked delivered)',
+              '#413 guard absent sponsor (already upstream — marked delivered)',
             );
             expect(output).toContain('backlog = 0');
             expect(output).toMatchSnapshot();
@@ -449,9 +445,7 @@ describe('asRadioPushOutput', () => {
           () => {
             expect(output).toContain('🦫 refused upstream');
             expect(output).toContain('closed, never retried');
-            expect(output).toContain(
-              '#412 fix flaky keyrack test (held since 2026-09-29T09:14Z)',
-            );
+            expect(output).toContain('#412 fix flaky keyrack test');
             expect(output).toContain(
               'guard gateway → sandpine/svc-reservations (radio.uses:blocked — org)',
             );

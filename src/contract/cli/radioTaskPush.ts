@@ -195,7 +195,7 @@ export const cliRadioTaskPush = async (): Promise<void> => {
   };
   const bind = getOneBranchBindForRecord({ cwd: context.cwd });
   const home = getOneRadioTaskRecordHome({ bind }, context);
-  const { record } = setRadioTaskRecordFromPush(
+  const { record, dir } = setRadioTaskRecordFromPush(
     {
       push: {
         ...task,
@@ -204,22 +204,40 @@ export const cliRadioTaskPush = async (): Promise<void> => {
         idem: named.idem ?? null,
       },
     },
-    { dir: home.dir },
+    { dir: home.dir, cwd: context.cwd },
   );
 
-  // hold at a shut gate, or drain the backlog through an open one
-  const { pushed, others } = await setRadioTaskRecordsDrainedByPush(
-    { record, dir: home.dir },
+  // name where the record lives: a re-push after a bind stays where it was first held
+  const homeOfRecord = asRadioTaskRecordHomeFromCwd(
+    { home: { ...home, dir } },
     context,
   );
 
+  // hold at a shut gate, or drain the backlog through an open one; then count what still waits
+  // note: any fault past the transcribe (an unreadable record, a bad gate config) still fails
+  //       loud, but first says this push is saved, since the transcribe above returned. the
+  //       caller then knows a fix + re-push delivers it, not a second transcribe
+  const { pushed, others, backlog } = await (async () => {
+    try {
+      const drained = await setRadioTaskRecordsDrainedByPush(
+        { record, dir },
+        context,
+      );
+      return { ...drained, backlog: getAllRadioTaskRecordsHeld({}, context) };
+    } catch (error) {
+      console.error(
+        `🦫 this push is saved, as ${record.recordStatus} in ${homeOfRecord.dir}/. fix the fault below, then push again to deliver it\n`,
+      );
+      throw error;
+    }
+  })();
+
   // report the fate of this push, and of the backlog it carried
-  const backlog = getAllRadioTaskRecordsHeld({}, context);
   console.log(
     asRadioPushOutput({
       pushed,
       others,
-      home: asRadioTaskRecordHomeFromCwd({ home }, context),
+      home: homeOfRecord,
       backlog: backlog.length,
     }),
   );

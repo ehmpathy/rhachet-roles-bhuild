@@ -4,6 +4,7 @@ import { MalfunctionError } from 'helpful-errors';
 import path from 'path';
 import { given, then, useBeforeAll, useThen, when } from 'test-fns';
 
+import { getTimestampFound } from '../../src/.test/utils/getTimestampFound';
 import {
   genConsumerRepo,
   runRhachetSkill,
@@ -99,14 +100,13 @@ const getOnStopHookCommandFromSettings = (input: {
 
 /**
  * .what = mask the parts of a drain output that vary per run
- * .why = os.fileops exids, dates, and held-since stamps differ each run; the shape is what the snapshot pins
+ * .why = os.fileops exids and dates differ each run; the shape is what the snapshot pins
  */
 const asStableOutput = (input: { output: string }): string =>
   sanitizeOutput(input.output)
     .replace(/#[\w-]+/g, '#<exid>')
     .replace(/exid: [\w-]+/g, 'exid: <exid>')
     .replace(/repo-\d+/g, 'repo-<run>')
-    .replace(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}Z/g, '<stamp>')
     .replace(/\d{4}-\d{2}-\d{2}/g, '<date>');
 
 describe('radio.task.push — the radio.recorder', () => {
@@ -407,6 +407,37 @@ describe('radio.task.push — the radio.recorder', () => {
         expect(result.stdout).toContain('closed, never retried');
         expect(asStableOutput({ output: result.stdout })).toMatchSnapshot();
       });
+
+      then('no file the cli wrote holds a time of day — records held, delivered, refused, and the tasks sent', () => {
+        // every record the cli wrote in this scene, in every state it settled
+        const dirRecords = path.join(scene.consumer.repoDir, routeRel, '.radio');
+        const records = fs
+          .readdirSync(dirRecords)
+          .filter((f) => f.startsWith('record.'))
+          .map((f) => fs.readFileSync(path.join(dirRecords, f), 'utf-8'));
+        expect(records.map((content) => JSON.parse(content).recordStatus).sort()).toEqual([
+          'DELIVERED',
+          'DELIVERED',
+          'DELIVERED',
+          'DELIVERED',
+          'REFUSED',
+        ]);
+
+        // every task the os.fileops channel filed upstream
+        const store = path.join(scene.homeDir, 'git', '.radio', ...target.split('/'));
+        const tasks = fs
+          .readdirSync(store)
+          .filter((f) => f.endsWith('._.md'))
+          .map((f) => fs.readFileSync(path.join(store, f), 'utf-8'));
+        expect(tasks).toHaveLength(4);
+
+        // a datestamp is fine; a time of day is the drift the gate forbids
+        [...records, ...tasks].forEach((content) => {
+          expect(getTimestampFound({ content })).toEqual(null);
+          expect(content).not.toContain('heldAt');
+          expect(content).not.toContain('settledAt');
+        });
+      });
     });
   });
 
@@ -545,6 +576,162 @@ describe('radio.task.push — the radio.recorder', () => {
     });
   });
 
+  given('[case5] two clones run one journey, seconds apart: a legacy record, a push held unbound, a route bind, a push held bound, then the radio opens (case=1, case=3, case=4)', () => {
+    // one target name for both runs, so the record keys (a hash of the push identity) match
+    const target = `recorder-acpt-rerun/repo-${Date.now()}`;
+    const routeRel = '.behavior/v2026_10_07.rerun';
+    const [owner, name] = target.split('/');
+
+    /**
+     * .what = run the whole journey in a fresh consumer repo, through the cli alone
+     * .why = a rerun on another clock must write the same bytes; the legacy record must drain
+     *        first and shed its clock; the drain must cross the unbound dir and the route dir
+     */
+    const asRun = (input: { slug: string }) => {
+      const consumer = genConsumerRepo({
+        prefix: `radio-recorder-acpt-rerun-${input.slug}-`,
+        branchName: 'feat/recorder-rerun',
+      });
+      const homeDir = path.join(consumer.repoDir, '.home');
+      fs.mkdirSync(homeDir);
+      const push = (args: string) =>
+        runDispatcherSkill({ repoDir: consumer.repoDir, homeDir, skill: 'radio.task.push', args });
+
+      // a prior version wrote this record: it holds a clock field, and took seq 1
+      const dirUnbound = path.join(consumer.repoDir, '.behavior', '.radio');
+      fs.mkdirSync(dirUnbound, { recursive: true });
+      fs.writeFileSync(
+        path.join(dirUnbound, 'record.legacy-a.json'),
+        JSON.stringify(
+          {
+            key: 'legacy-a',
+            kind: 'create',
+            repo: { owner, name },
+            via: 'os.fileops',
+            auth: null,
+            idem: null,
+            title: 'book a lesson for bert',
+            description: 'a sandpine surf lesson',
+            exid: null,
+            status: null,
+            recordStatus: 'QUEUED',
+            reason: 'radio.uses blocked',
+            heldSeq: 1,
+            deliveredExid: null,
+            heldAt: '2026-01-01T00:00:00Z', // note: a pinned stamp; the gate exempts .ts files
+            settledAt: null,
+          },
+          null,
+          2,
+        ),
+      );
+
+      // a push held while the branch is unbound, then one held after a route bind
+      const heldUnbound = push(
+        `--via os.fileops --into ${target} --title "rent a wetsuit" --description "size m"`,
+      );
+      const bindDir = path.join(consumer.repoDir, routeRel, '.bind');
+      fs.mkdirSync(bindDir, { recursive: true });
+      fs.writeFileSync(path.join(bindDir, 'feat.recorder-rerun.flag'), '');
+      const heldBound = push(
+        `--via os.fileops --into ${target} --title "post the swell forecast" --description "dawn patrol"`,
+      );
+
+      // the human opens the radio; the next push drains all that waits, oldest first
+      runDispatcherSkill({
+        repoDir: consumer.repoDir,
+        homeDir,
+        skill: 'radio.uses',
+        args: 'allow',
+        asHuman: true,
+      });
+      const drain = push(
+        `--via os.fileops --into ${target} --title "remind bert of his lesson" --description "tomorrow"`,
+      );
+
+      // every record file, by path rel to the repo; os.fileops mints a random exid per run
+      const records = [dirUnbound, path.join(consumer.repoDir, routeRel, '.radio')]
+        .flatMap((dir) =>
+          fs
+            .readdirSync(dir)
+            .filter((f) => f.startsWith('record.'))
+            .map((f) => ({
+              rel: path.relative(consumer.repoDir, path.join(dir, f)),
+              content: fs
+                .readFileSync(path.join(dir, f), 'utf-8')
+                .replace(/"deliveredExid": "[^"]+"/, '"deliveredExid": "<exid>"'),
+            })),
+        )
+        .sort((a, b) => JSON.parse(a.content).heldSeq - JSON.parse(b.content).heldSeq); // drain order; a key-hashed filename would reorder per run
+      return { heldUnbound, heldBound, drain, records };
+    };
+
+    const runs = useBeforeAll(async () => {
+      const first = asRun({ slug: 'a' });
+      await new Promise((done) => setTimeout(done, 1100)); // past a second boundary: any clock field would differ
+      const second = asRun({ slug: 'b' });
+      return { first, second };
+    });
+
+    when('[t0] the first clone runs the journey', () => {
+      then('both early pushes are held, exit 2', () => {
+        expect(runs.first.heldUnbound.exitCode).toBe(2);
+        expect(runs.first.heldBound.exitCode).toBe(2);
+      });
+
+      then('the drain delivers the legacy record first, then each held push in push order, then itself', () => {
+        expect(runs.first.drain.exitCode).toBe(0);
+        const order = [
+          'book a lesson for bert',
+          'rent a wetsuit',
+          'post the swell forecast',
+          'remind bert of his lesson',
+        ].map((title) => runs.first.drain.stdout.indexOf(title));
+        expect(order.every((at) => at >= 0)).toBe(true);
+        expect([...order].sort((a, b) => a - b)).toEqual(order);
+        expect(asStableOutput({ output: runs.first.drain.stdout })).toMatchSnapshot();
+      });
+
+      then('the records span both dirs, all DELIVERED, seq 1 to 4, and none holds a clock key', () => {
+        const json = runs.first.records.map(({ rel, content }) => ({ rel, ...JSON.parse(content) }));
+        expect(json.map((r) => r.rel.startsWith(routeRel))).toEqual([false, false, true, true]); // two unbound, two in the route
+        expect(json.map((r) => r.recordStatus)).toEqual(['DELIVERED', 'DELIVERED', 'DELIVERED', 'DELIVERED']);
+        expect(json.map((r) => r.heldSeq)).toEqual([1, 2, 3, 4]);
+        expect(json.map((r) => r.title)).toEqual([
+          'book a lesson for bert',
+          'rent a wetsuit',
+          'post the swell forecast',
+          'remind bert of his lesson',
+        ]);
+        runs.first.records.forEach(({ content }) => {
+          expect(content).not.toContain('heldAt');
+          expect(content).not.toContain('settledAt');
+          expect(getTimestampFound({ content })).toEqual(null);
+        });
+      });
+    });
+
+    when('[t1] a second clone runs the same journey, on a later clock', () => {
+      then('it writes the same record files, byte for byte', () => {
+        expect(runs.second.records).toEqual(runs.first.records);
+      });
+
+      then('the record bytes read as the snapshot pins them', () => {
+        // the key hashes the target, whose name holds this run's id; the legacy key stays legible
+        expect(
+          runs.second.records
+            .map(
+              ({ rel, content }) =>
+                `# ${rel.replace(/record\.[0-9a-f]{16}\.json/, 'record.<key>.json')}\n${content
+                  .replace(/repo-\d+/g, 'repo-<run>')
+                  .replace(/"key": "[0-9a-f]{16}"/, '"key": "<key>"')}`,
+            )
+            .join('\n'),
+        ).toMatchSnapshot();
+      });
+    });
+  });
+
   given('[case2] a record file on disk that is not valid json', () => {
     const scene = useBeforeAll(async () => {
       const consumer = genConsumerRepoWithDispatcher({
@@ -616,6 +803,51 @@ describe('radio.task.push — the radio.recorder', () => {
         expect(result.exitCode).toBe(0);
         expect(result.stdout).toContain('radio.task.held --when hook.onStop');
         expect(sanitizeOutput(result.stdout)).toMatchSnapshot();
+      });
+    });
+
+    when('[t2] the clone pushes a first task, the bad record still on disk', () => {
+      const target = `recorder-acpt-malformed/repo-${Date.now()}`;
+      const result = useThen('the push runs', () =>
+        runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.push',
+          args: `--via os.fileops --into ${target} --title "book-a-lesson reminder" --description "remind bert of his lesson"`,
+        }),
+      );
+
+      then('the push is recorded first — held, never lost', () => {
+        const dir = path.join(scene.consumer.repoDir, '.behavior', '.radio');
+        const records = fs
+          .readdirSync(dir)
+          .filter((f) => f.startsWith('record.') && f !== 'record.bad.json')
+          .map((f) => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf-8')));
+        expect(records).toHaveLength(1);
+        expect(records[0].title).toEqual('book-a-lesson reminder');
+        expect(records[0].recordStatus).toEqual('QUEUED');
+      });
+
+      then('then it fails loud on the bad record, as a malfunction, and names it', () => {
+        expect(result.exitCode).toBe(1);
+        expect(result.stderr).toContain('radio task record could not be read');
+        expect(result.stderr).toContain('record.bad.json');
+      });
+
+      then('stderr first says the push is saved, so the caller repairs + re-pushes', () => {
+        expect(result.stderr).toContain(
+          '🦫 this push is saved, as QUEUED in .behavior/.radio/. fix the fault below',
+        );
+        // mask the absolute dir, node's JSON.parse text, and the stack, as [t0] does; and drop the
+        // ansi color codes the rhachet wrapper paints on stderr
+        const stderrStable = result.stderr
+          // biome-ignore lint/suspicious/noControlCharactersInRegex: the escape byte is what an ansi code starts with
+          .replace(/\u001b\[[0-9;]*m/g, '')
+          .replace(/\S*\/record\.bad\.json/g, '<dir>/record.bad.json')
+          .replace(/(├─ why:\s+).*/g, '$1<json parse fault>')
+          .replace(/(^\s+at .*$\n?)+/m, '    at <stack>\n')
+          .trim();
+        expect(stderrStable).toMatchSnapshot();
       });
     });
   });

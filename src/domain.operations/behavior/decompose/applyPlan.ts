@@ -185,7 +185,7 @@ ${dependencyList || '(no dependencies declared)'}
 
 ## decomposition metadata
 
-- generated at: ${plan.generatedAt}
+- generated on: ${plan.generatedAt}
 - context analysis: ${plan.contextAnalysis.usage.window.percentage}% of context window
 - recommendation: ${plan.contextAnalysis.recommendation}
 `;

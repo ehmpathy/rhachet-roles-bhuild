@@ -1,4 +1,3 @@
-import { asIsoTimeStamp } from 'iso-time';
 import { given, then, when } from 'test-fns';
 
 import { RadioChannel } from '@src/domain.objects/RadioChannel';
@@ -25,9 +24,7 @@ const genRecord = (input: {
     status: null,
     recordStatus: RadioTaskRecordStatus.QUEUED,
     reason: input.reason ?? 'radio.uses:blocked — global',
-    heldAt: asIsoTimeStamp('2026-09-29T09:14:00Z'),
     heldSeq: 1,
-    settledAt: null,
     deliveredExid: null,
   });
 

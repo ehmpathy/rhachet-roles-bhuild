@@ -1,5 +1,4 @@
 import { DomainEntity } from 'domain-objects';
-import type { IsoTimeStamp } from 'iso-time';
 
 import type { IdempotencyMode } from './IdempotencyMode';
 import type { RadioChannel } from './RadioChannel';
@@ -74,22 +73,14 @@ interface RadioTaskRecord {
   reason: string | null;
 
   /**
-   * when the push was first transcribed
-   */
-  heldAt: IsoTimeStamp;
-
-  /**
-   * place in line within its dir: 1 + the highest heldSeq there; the drain order
+   * place in line across the worktree: 1 + the highest heldSeq in any record dir; the drain order
    *
-   * .note = heldAt has one-second precision, so two pushes in one second would tie;
-   *         the sequence keeps the push order the stamp cannot
+   * .note = a record holds no timestamp. a clock value changes on every run with no change
+   *         in sense, so it would churn the diff of a tracked record
+   *         (rule.forbid.timestamps-in-tracked-files). the order is this sequence; "when" is
+   *         a question git answers
    */
   heldSeq: number;
-
-  /**
-   * when the record settled as DELIVERED or REFUSED (null while held)
-   */
-  settledAt: IsoTimeStamp | null;
 
   /**
    * external id upstream assigned on delivery (null until delivered)
@@ -109,7 +100,6 @@ class RadioTaskRecord
     'description',
     'recordStatus',
     'reason',
-    'settledAt',
     'deliveredExid',
   ] as const;
   public static nested = { repo: RadioTaskRepo };

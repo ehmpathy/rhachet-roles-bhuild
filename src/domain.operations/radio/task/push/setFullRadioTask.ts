@@ -1,4 +1,4 @@
-import type { IsoDateStamp } from 'iso-time';
+import { today } from 'iso-time';
 
 import {
   type ContextDispatchRadio,
@@ -13,14 +13,6 @@ import type { RadioTaskRepo } from '../../../../domain.objects/RadioTaskRepo';
 import { RadioTaskStatus } from '../../../../domain.objects/RadioTaskStatus';
 import { getCurrentActor } from '../../../../infra/git/getCurrentActor';
 import { assure } from '../../../../infra/types/assure';
-
-/**
- * .what = convert Date to IsoDateStamp
- * .why = format date for RadioTask fields
- */
-const toIsoDateStamp = (date: Date): IsoDateStamp => {
-  return date.toISOString().split('T')[0] as IsoDateStamp;
-};
 
 /**
  * .what = create a new task on a channel
@@ -57,7 +49,7 @@ export const setFullRadioTask = async <TChannel extends RadioChannel>(
     status: RadioTaskStatus.QUEUED,
     repo: input.task.repo,
     pushedBy,
-    pushedAt: toIsoDateStamp(new Date()),
+    pushedAt: today(),
     claimedBy: null,
     claimedAt: null,
     deliveredAt: null,

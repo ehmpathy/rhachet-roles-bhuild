@@ -1,6 +1,7 @@
 import type { IsoDateStamp } from 'iso-time';
 import { given, then, when } from 'test-fns';
 
+import { getTimestampFound } from '../../../../.test/utils/getTimestampFound';
 import { RadioTask } from '../../../../domain.objects/RadioTask';
 import { RadioTaskRepo } from '../../../../domain.objects/RadioTaskRepo';
 import { RadioTaskStatus } from '../../../../domain.objects/RadioTaskStatus';
@@ -112,10 +113,70 @@ describe('composeTaskIntoGhIssues', () => {
         );
       });
 
+      then(
+        'title and body hold no time of day (rule.forbid.timestamps-in-tracked-files)',
+        () => {
+          const result = composeTaskIntoGhIssues({ task });
+          expect(
+            getTimestampFound({
+              content: `${result.title}\n${result.body}`,
+            }),
+          ).toEqual(null);
+        },
+      );
+
       then('matches snapshot', () => {
         const result = composeTaskIntoGhIssues({ task });
         expect(result).toMatchSnapshot();
       });
     });
   });
+
+  given(
+    '[case4] a task in each status (rule.forbid.timestamps-in-tracked-files)',
+    () => {
+      const tasks = [
+        RadioTaskStatus.QUEUED,
+        RadioTaskStatus.CLAIMED,
+        RadioTaskStatus.DELIVERED,
+      ].map(
+        (status) =>
+          new RadioTask({
+            exid: '144',
+            title: 'book-a-lesson reminder',
+            description: 'remind the surfer the day before the lesson',
+            status,
+            repo: new RadioTaskRepo({ owner: 'sandpine', name: 'svc-lessons' }),
+            pushedBy: 'bert',
+            pushedAt: '2026-01-30' as IsoDateStamp,
+            claimedBy: status === RadioTaskStatus.QUEUED ? null : 'foreman',
+            claimedAt:
+              status === RadioTaskStatus.QUEUED
+                ? null
+                : ('2026-01-30' as IsoDateStamp),
+            deliveredAt:
+              status === RadioTaskStatus.DELIVERED
+                ? ('2026-01-31' as IsoDateStamp)
+                : null,
+            branch:
+              status === RadioTaskStatus.QUEUED
+                ? null
+                : 'foreman/lesson-reminder',
+          }),
+      );
+
+      when('[t0] each is composed into gh.issues format', () => {
+        then('no status branch writes a time of day in title or body', () => {
+          tasks.forEach((task) => {
+            const result = composeTaskIntoGhIssues({ task });
+            expect(
+              getTimestampFound({
+                content: `${result.title}\n${result.body}`,
+              }),
+            ).toEqual(null);
+          });
+        });
+      });
+    },
+  );
 });

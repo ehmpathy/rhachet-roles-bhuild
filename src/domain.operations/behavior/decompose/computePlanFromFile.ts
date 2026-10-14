@@ -1,5 +1,6 @@
 import * as fs from 'fs/promises';
 import { BadRequestError } from 'helpful-errors';
+import { asIsoDateStamp } from 'iso-time';
 
 import { BehaviorDecompositionPlan } from '../../../domain.objects/BehaviorDecompositionPlan';
 
@@ -42,8 +43,9 @@ export const computePlanFromFile = async (input: {
       planPath: input.planPath,
     });
 
-  // construct domain object (validates nested structure)
-  return new BehaviorDecompositionPlan(
-    data as unknown as BehaviorDecompositionPlan,
-  );
+  // construct domain object (validates nested structure); a legacy instant reads as its day
+  return new BehaviorDecompositionPlan({
+    ...(data as unknown as BehaviorDecompositionPlan),
+    generatedAt: asIsoDateStamp(String(data.generatedAt)),
+  });
 };

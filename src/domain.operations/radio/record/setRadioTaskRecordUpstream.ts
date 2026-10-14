@@ -1,5 +1,3 @@
-import { now } from 'iso-time';
-
 import { daoRadioTaskRecord } from '@src/access/daos/daoRadioTaskRecord';
 import { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 import { RadioTaskRecordStatus } from '@src/domain.objects/RadioTaskRecordStatus';
@@ -12,24 +10,45 @@ import { asRadioTaskRepoSlug } from './asRadioTaskRepoSlug';
 import { asRadioUpstreamReason } from './asRadioUpstreamReason';
 import { getOneRadioContextForRecord } from './getOneRadioContextForRecord';
 import { isRadioReplayRefusal } from './isRadioReplayRefusal';
+import { isRadioTaskRecordRepushedSince } from './isRadioTaskRecordRepushedSince';
 import type { RadioTaskRecordFate } from './RadioTaskRecordFate';
 import type { ShellExecutor } from './ShellExecutor';
 import { setRadioTaskRecordHeldAtGate } from './setRadioTaskRecordHeldAtGate';
 import { setRadioTaskUpstreamFromRecord } from './setRadioTaskUpstreamFromRecord';
 
 /**
- * .what = persist a record's new fate
- * .why = a shared write for held, refused, and delivered outcomes
+ * .what = persist a record's new fate, unless a re-push rewrote its request since the send
+ * .why = a shared write for held, refused, and delivered outcomes. the push transcribe runs
+ *        outside the drain lock, so a re-push can land while this record is in flight; to
+ *        settle the stale copy would write the old body back and mark it delivered, and the
+ *        new body would never be sent. so the record is left as the re-push wrote it, QUEUED,
+ *        and the re-push's own drain (next behind this lock) sends it
+ *
+ * .note = the read and the write here are adjacent, so the window left is microseconds,
+ *         not the length of a send
  */
 const setRecord = (input: {
   dir: string;
   record: RadioTaskRecord;
   change: Partial<RadioTaskRecord>;
-}): RadioTaskRecord =>
-  daoRadioTaskRecord.set.upsert({
+}): RadioTaskRecord => {
+  // a re-push since the send: leave its request queued, for its own drain
+  const current = daoRadioTaskRecord.get.one.byUnique({
+    dir: input.dir,
+    key: input.record.key,
+  });
+  if (
+    current &&
+    isRadioTaskRecordRepushedSince({ read: input.record, current })
+  )
+    return current;
+
+  // settle the record the send carried
+  return daoRadioTaskRecord.set.upsert({
     dir: input.dir,
     record: new RadioTaskRecord({ ...input.record, ...input.change }),
   });
+};
 
 /**
  * .what = send one record upstream on its own terms, then settle its fate
@@ -85,7 +104,6 @@ export const setRadioTaskRecordUpstream = async (
         change: {
           recordStatus: RadioTaskRecordStatus.REFUSED,
           reason: asRadioErrorHeadline({ message: send.fault.message }),
-          settledAt: now(),
         },
       }),
       detail: asRadioErrorHeadline({ message: send.fault.message }),
@@ -119,7 +137,6 @@ export const setRadioTaskRecordUpstream = async (
       change: {
         recordStatus: RadioTaskRecordStatus.DELIVERED,
         reason: null,
-        settledAt: record.settledAt ?? now(),
         deliveredExid: send.sent.task.exid,
       },
     }),

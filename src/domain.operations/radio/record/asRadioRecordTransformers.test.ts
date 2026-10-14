@@ -4,7 +4,6 @@ import {
   MalfunctionError,
   UnexpectedCodePathError,
 } from 'helpful-errors';
-import { asIsoTimeStamp } from 'iso-time';
 import { given, then, when } from 'test-fns';
 
 import { RadioChannel } from '@src/domain.objects/RadioChannel';
@@ -15,7 +14,6 @@ import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
 
 import { asRadioFateHeldBehindHalt } from './asRadioFateHeldBehindHalt';
 import { asRadioGateBlockedReason } from './asRadioGateBlockedReason';
-import { asRadioHeldSinceLabel } from './asRadioHeldSinceLabel';
 import { asRadioLiftCommand } from './asRadioLiftCommand';
 import { asRadioOtherFates } from './asRadioOtherFates';
 import { asRadioPushedFate } from './asRadioPushedFate';
@@ -44,9 +42,7 @@ const genRecord = (input: Partial<RadioTaskRecord>): RadioTaskRecord =>
     status: null,
     recordStatus: RadioTaskRecordStatus.QUEUED,
     reason: null,
-    heldAt: asIsoTimeStamp('2026-09-29T09:14:37Z'),
     heldSeq: 1,
-    settledAt: null,
     deliveredExid: null,
     ...input,
   });
@@ -60,11 +56,6 @@ const pushCreate = {
   description: 'the test flakes',
   exid: null,
   status: null,
-};
-
-const nextPlace = {
-  heldAt: asIsoTimeStamp('2026-09-29T10:00:00Z'),
-  heldSeq: 7,
 };
 
 const TEST_CASES = [
@@ -131,11 +122,6 @@ const TEST_CASES = [
         }),
       }),
     expect: { repo, exid: '412', status: RadioTaskStatus.CLAIMED },
-  },
-  {
-    description: 'held since: utc stamp to the minute',
-    when: (): unknown => asRadioHeldSinceLabel({ record: genRecord({}) }),
-    expect: 'held since 2026-09-29T09:14Z',
   },
   {
     description: 'fault: a ConstraintError (auth) is a send fault, kept as is',
@@ -228,20 +214,7 @@ const TEST_CASES = [
     expect: 'radio.uses:blocked — org',
   },
   {
-    description: 'order: an older heldAt drains first',
-    when: (): unknown =>
-      asRadioTaskRecordOrder({
-        a: {
-          record: genRecord({ heldAt: asIsoTimeStamp('2026-09-29T09:14:00Z') }),
-        },
-        b: {
-          record: genRecord({ heldAt: asIsoTimeStamp('2026-09-29T09:15:00Z') }),
-        },
-      }) < 0,
-    expect: true,
-  },
-  {
-    description: 'order: a same-second tie breaks by heldSeq',
+    description: 'order: a lower heldSeq drains first',
     when: (): unknown =>
       asRadioTaskRecordOrder({
         a: { record: genRecord({ heldSeq: 3 }) },
@@ -250,7 +223,8 @@ const TEST_CASES = [
     expect: true,
   },
   {
-    description: 'order: a full tie breaks by key, by code unit (B before a)',
+    description:
+      'order: a heldSeq tie (e.g. two legacy per-dir seqs) breaks by key, by code unit (B before a)',
     when: (): unknown =>
       asRadioTaskRecordOrder({
         a: { record: genRecord({ key: 'B' }) },
@@ -259,21 +233,21 @@ const TEST_CASES = [
     expect: true,
   },
   {
-    description: 'from push: a first push is QUEUED at the next place in line',
+    description: 'from push: a first push is QUEUED at the heldSeq it is given',
     when: (): unknown => {
       const record = asRadioTaskRecordFromPush({
         key: 'k',
         push: pushCreate,
         before: null,
-        next: nextPlace,
+        heldSeq: 7,
       });
-      return [record.recordStatus, record.heldAt, record.heldSeq, record.kind];
+      return [record.recordStatus, record.heldSeq, record.kind];
     },
-    expect: [RadioTaskRecordStatus.QUEUED, nextPlace.heldAt, 7, 'create'],
+    expect: [RadioTaskRecordStatus.QUEUED, 7, 'create'],
   },
   {
     description:
-      'from push: a verbatim re-push of a delivered record keeps its place and fate',
+      'from push: a verbatim re-push of a delivered record keeps its fate',
     when: (): unknown => {
       const record = asRadioTaskRecordFromPush({
         key: 'k',
@@ -282,7 +256,7 @@ const TEST_CASES = [
           recordStatus: RadioTaskRecordStatus.DELIVERED,
           deliveredExid: '412',
         }),
-        next: nextPlace,
+        heldSeq: 1,
       });
       return [record.recordStatus, record.deliveredExid, record.heldSeq];
     },
@@ -290,7 +264,7 @@ const TEST_CASES = [
   },
   {
     description:
-      'from push: a new body re-queues a delivered record, place kept, fate reset',
+      'from push: a new body re-queues a delivered record, fate reset',
     when: (): unknown => {
       const record = asRadioTaskRecordFromPush({
         key: 'k',
@@ -299,7 +273,7 @@ const TEST_CASES = [
           recordStatus: RadioTaskRecordStatus.DELIVERED,
           deliveredExid: '412',
         }),
-        next: nextPlace,
+        heldSeq: 1,
       });
       return [record.recordStatus, record.deliveredExid, record.heldSeq];
     },
@@ -318,7 +292,7 @@ const TEST_CASES = [
           status: RadioTaskStatus.CLAIMED,
         },
         before: null,
-        next: nextPlace,
+        heldSeq: 7,
       }).kind,
     expect: 'update',
   },
