@@ -24,7 +24,7 @@ not part the two states. the repair belongs at step 1.
 
 | the remedy | how its failure mimics the defect |
 |---|---|
-| `keyrack set --key FIREWORKS_API_KEY --env test`, where the lane asked for `--env prep` | the lane throws the same error, indistinguishable from no fix at all |
+| `keyrack set --key OPENROUTER_API_KEY --env test`, where the lane asked for `--env prep` | the lane throws the same error, indistinguishable from no fix at all |
 | `git.repo.test --what acceptance --mode apply`, absent required `--against`/`--env` | errors before it reaches the api, so a topped-up account still reads as empty |
 
 the second was caught only by a deliberate re-read of the command before it reached the human —

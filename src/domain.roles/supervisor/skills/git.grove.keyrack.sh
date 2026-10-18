@@ -23,15 +23,15 @@
 #   different, not that a mech is absent.
 #
 # usage:
-#   rhx keyrack get --owner ehmpath --key FIREWORKS_API_KEY --env prep --value \
+#   rhx keyrack get --owner ehmpath --key OPENROUTER_API_KEY --env prep --value \
 #     | rhx git.grove.keyrack set <grove> \
-#         --org ehmpathy --key FIREWORKS_API_KEY --env prep --value @stdin
+#         --org ehmpathy --key OPENROUTER_API_KEY --env prep --value @stdin
 #
 # args:
 #   set        the only verb today                          [required]
 #   <grove>    grove exid, `cloud://<exid>`, or `local`      [required]
 #   --org      the org to set the key under                  [required]
-#   --key      the key name, e.g. FIREWORKS_API_KEY          [required]
+#   --key      the key name, e.g. OPENROUTER_API_KEY         [required]
 #   --env      test | prep | prod | camp                     [required]
 #   --value    must be `@stdin` — a literal is REFUSED       [required]
 #   --owner    keyrack owner on the grove                    [default: ehmpath]
@@ -132,9 +132,9 @@ if [[ -z "$grove" ]]; then
 fi
 if [[ -z "$org" || -z "$key" || -z "$env" ]]; then
   echo "✋ git.grove.keyrack: --org, --key, and --env are all required" >&2
-  echo "   e.g. rhx keyrack get --owner ehmpath --key FIREWORKS_API_KEY --env prep --value \\" >&2
+  echo "   e.g. rhx keyrack get --owner ehmpath --key OPENROUTER_API_KEY --env prep --value \\" >&2
   echo "          | rhx git.grove.keyrack set $grove \\" >&2
-  echo "              --org ehmpathy --key FIREWORKS_API_KEY --env prep --value @stdin" >&2
+  echo "              --org ehmpathy --key OPENROUTER_API_KEY --env prep --value @stdin" >&2
   exit 2
 fi
 
