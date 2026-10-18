@@ -3,12 +3,19 @@
 ## .what
 
 **critipath vs alterpath** is the **care** axis of an experience — how much we care that a
-path is demonstrated. care is set by one number, the path's **severity** if it broke:
+path is demonstrated. one number sets care — the path's **severity** if it broke:
 
-- a **critipath** — a **criti**cal path — high severity. a core usecase leans on it and a break
+```
+⭐ critipath — failure INTOLERABLE      🌙 alterpath — failure DEFERRABLE
+```
+
+- ⭐ a **critipath** — a **criti**cal path — high severity. a core usecase leans on it and a break
   is costly to absorb. → demo **required**; absent = **blocker**.
-- an **alterpath** — an **alter**nate path — low severity. a break is cheap to absorb (a workable
+- 🌙 an **alterpath** — an **alter**nate path — low severity. a break is cheap to absorb (a workable
   fallback, or it rarely fires). → demo **optional bonus**; absent = **nitpick**.
+
+⇒ why the glyph pair is ⭐/🌙, and the six candidates rejected:
+`term=behavior.experience._.choice.reason.md` §*the glyphs*.
 
 this is one of the two axes an experience sits on (see `define.experience`). the other is
 **feel** (happy vs sharp — see `define.experience._.axis=feel.path=happy-vs-sharp`). they are independent: a
@@ -35,6 +42,20 @@ recovery costs it all — but only if it ever fires.
 
 so "escalate to support" is *always* a fallback — which is why "does a fallback exist?" is the
 wrong question. the right one is **is the fallback workable?** = is `freq × cost` tolerable.
+
+### 🟡 severity is an AGGREGATE, never per-incident
+
+when `grove open` breaks (beaver table below), support **does** hand-load the trees — each beaver
+gets their grove. the failure is tolerated incident by incident. it is intolerable only in **sum**.
+
+| you ask | you get |
+|---|---|
+| *"is this one failure survivable?"* | ⛔ nearly every one is. you name every path **alter** |
+| **"what does a season of these cost?"** | ✅ the product |
+
+⇒ `critipath` does not mean *"the break is catastrophic"*. it means **the expected burden is
+intolerable** — which a common break that merely irks reaches as surely as a rare fatal one.
+`intolerable` describes the sum, never the incident.
 
 ## .the boundary — frequency zero zeroes any cost
 
@@ -65,6 +86,31 @@ the word **workable** does the work, and it is not binary — it is the `freq ×
 a fallback that tanks the goal (cost → ∞) is not workable at any frequency. a fallback that is
 cheap (cost ≈ 0) is workable at any frequency. in between, frequency decides: a costly fallback is
 workable when rare, unworkable when the path is walked so often the cost compounds.
+
+### 🔴 the test is not the definition
+
+the test approximates `freq × cost`, and the two **diverge** at the boundary above: the shoetie
+case has no workable route around a break, so **the test says critipath**. `0 × ∞ = 0`, so **the
+definition says not critical**.
+
+⇒ when they disagree, the product rules. reach for the test to move fast; reach for `freq × cost`
+at `freq = 0` or `cost = ∞`.
+
+🟡 so `critipath` is **not** "no workable way around a break". that promotes the heuristic to the
+definition and inherits its blind spot.
+
+## .what `deferrable` means: the repair defers, never the response
+
+an alterpath break is **absorbed now** — the actor takes the fallback and reaches the goal today.
+the **repair** is what defers:
+
+| | response to a break | the repair |
+|---|---|---|
+| ⭐ **critipath** | none reaches the goal | **forced** — the actor is stopped until it lands |
+| 🌙 **alterpath** | immediate — take the fallback | **deferrable** |
+
+⇒ the same word governs the **demo**: a critipath demo cannot be deferred (**blocker**); an
+alterpath demo can (**nitpick**).
 
 ## .an alterpath is not "a lesser feature"
 
@@ -165,6 +211,8 @@ still reaches the goal.
   — the worked `freq × cost` catalog (every cell → its care, with examples)
 - `define.experience._.axis=care.path=criti-vs-alter._.demo.boundary=shoetie-on-carbumper-at-75mph`
   — the `0 × ∞ = 0` boundary case (a total loss nobody walks is not critical)
-- `define.experience._.demo.surf-school` — the worked catalog + cases
+- `define.experience._.demo.surf-school` 🐢 — the 2×2 baseline; the axes are independent
+- `define.experience._.demo.camp-beaver` 🦫 — 🔴 **frequency alone flips the care**; severity is an aggregate
+- `define.experience._.demo.ship-sailor` 🐈⛵ — 🔴 **`0 × ∞ = 0`**; the test and the product disagree
 - `rule.require.experience-coverage` — the rule that blocks on absent critipaths
 - architect `def.domain-discovery` — the "what does the actor truly want?" that care forces

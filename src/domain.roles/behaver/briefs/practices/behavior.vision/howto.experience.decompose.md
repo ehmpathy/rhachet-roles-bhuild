@@ -13,10 +13,15 @@ discipline is to actually walk the product.
 
 the behaver refines the architect's three verdicts into four, so a cell's verdict names its
 **coverage** or *why* it can't occur: architect `filled` → **demoed** / **itemized** (a real
-experience, demonstrated vs merely on record); architect `forbidden` splits into **forbidden** (by
-nurture — attemptable, the behavior rejects it) and **impossible** (by nature — no attempt is even
-possible). the split matters because a nurture-forbidden path yields a *sharp rejection experience*
-to demo, while a nature-impossible one yields no experience at all.
+experience, demonstrated vs merely on record); architect `forbidden` splits into **forbidden**
+(attemptable, and the behavior rejects it) and **impossible** (no attempt is possible at all). the
+split matters because a forbidden path yields a *sharp rejection experience* to demo, while an
+impossible one yields no experience at all.
+
+🔴 **`impossible` keys on the absence of an ATTEMPT, never on the absence of a CHOICE.** nature bars
+some attempts; **the shipped design bars most of them** — no law prevents a lane we simply did not
+build, and with no lane there is no attempt to reject. a `by nature` gloss mis-sorts every cell of
+the second kind, which is the common one.
 
 ## .why this is the discovery engine — not a nicety
 
@@ -45,17 +50,35 @@ move is to find *all* the dimensions the wish varies over.
    correlate, they are one axis; if a value spans two concepts, split it.
 2. **take the product.** enumerate every tuple across the dimensions. this is the full experience
    space, by construction.
-3. **verdict each cell.** every cell is one of four — two for experiences that occur (by how much
-   they're covered), two for experiences that cannot (by *why* they cannot):
+3. 🔴 **prune the space, before you verdict it.** the product is what the *first draft of a design*
+   happened to permit — it is not a fact you must accept. hold each **subset** — a row, a column, a
+   plane — and ask: *would the behavior be worse if not one of these cells could occur?*
+
+   | lever | what it does | the subset goes from |
+   |---|---|---|
+   | **forbid** | the actor may attempt it; the behavior refuses, loud | N cells → **1** sharp rejection |
+   | **redirect** | the attempt funnels into an extant path | N cells → **0** new |
+   | **guard** | the attempt cannot be made | N cells → **impossible** |
+
+   ⇒ a guard beats a redirect beats a forbid — reach for the highest rung the domain permits.
+
+   🟡 **merge first.** two axis values that behave identically across every other axis are one
+   value, and that is a defect in the **model** — fix it before you change the **design**.
+
+   ⇒ every prune is recorded in the inventory with its **subset · count · lever · cost**. the
+   mandate, the bound, and the failure modes are `rule.always.prune-the-experience-space`.
+
+4. **verdict each cell that survives.** every cell is one of four — two for experiences that occur
+   (by how much they're covered), two for experiences that cannot (by *why* they cannot):
 
 | verdict | sense | what to do |
 |---------|-------|-----------|
-| **demoed** | a real experience, demonstrated | name its feel and care; write a `case=N` — critipaths + chosen alterpaths |
+| **demoed** | a real experience, demonstrated | name its feel and care; write a `case=NNN` — critipaths + chosen alterpaths |
 | **itemized** | a real experience, on record but not demoed | list it in the inventory — a deliberate skip, not an oversight |
-| **forbidden** | can't occur by **nurture** — the actor may attempt it, the behavior must reject it | record *why*; the rejection is a sharp path — demo it if critical. it is an invariant |
-| **impossible** | can't occur by **nature** — no attempt is even possible | record it, then set it aside — there is no experience to demo |
+| **forbidden** | **the attempt is possible and rejected** — the actor may try it, the behavior must refuse | record *why*; the rejection is a sharp path — demo it if critical. it is an invariant |
+| **impossible** | **no attempt is possible at all** — barred by nature, or by a design we did not ship | record it **and what bars it**, then set it aside — there is no experience to demo |
 
-4. **read the rest.** the demoed cells are the critipaths you commit to; the rest carry the
+5. **read the rest.** the demoed cells are the critipaths you commit to; the rest carry the
    decisions. an **itemized** cell is a path on record you chose not to demo; a **forbidden** cell
    is a rejection the behavior must enforce (an invariant); an **impossible** cell is void by
    nature — noted, then set aside.
@@ -64,6 +87,9 @@ move is to find *all* the dimensions the wish varies over.
 
 - **completeness of consideration** — every combination has a verdict, so a reviewer can see
   none was missed. this is the falsifiable check a free-list cannot offer.
+- 🔴 **the space gets SMALLER, not merely walked** — the prune step turns the grid from a coverage
+  ledger into a design instrument. a cell removed by a guard is a code path, a test, a doc line, and
+  a support case that never exist
 - **the forbidden cells become invariants** — a nurture-barred path, with its reason, is a
   checkable rule the behavior must enforce (a rejection, a safety guard). an **impossible** cell
   needs no guard — nature already bars it.
@@ -88,9 +114,9 @@ decomposition produces three vision-extension files, each with one job:
 
 | artifact | hosts |
 |----------|-------|
-| `1.vision.experience.dimensions.md` | the **dimensions** — the axes discovered, their values, why each is orthogonal |
-| `1.vision.experience.case=_.md` (the inventory) | the **matrix** — the product walked into cells, each verdicted + named (feel · care); forbidden cells = rejection invariants |
-| `1.vision.experience.case=N.$slug.md` | one **demo** per critipath + each chosen alterpath (narrative + `[tn]`) |
+| `1.vision.yield.appendix.experience.dimensions.md` | the **dimensions** — the axes discovered, their values, why each is orthogonal |
+| `1.vision.yield.appendix.experience.case=_.md` (the inventory) | the **matrix** — the product walked into cells, each verdicted + named (feel · care); forbidden cells = rejection invariants |
+| `1.vision.yield.appendix.experience.case=NNN.$slug.md` | one **demo** per critipath + each chosen alterpath (narrative + `[tn]`) |
 
 ## .worked example — the beaver camp 🦫
 
@@ -104,11 +130,12 @@ the box is 3 × 2 × 3 = **18 cells** — far more than "open" and "restore" alo
 
 - **demoed** — `beaver × open × fresh` (the happy critipath: every dawn, no fallback that scales);
   `beaver × restore × corrupt` (a sharp path — its care set by `freq × cost`).
-- **forbidden** (by nurture) — `beaver × restore × fresh` (restore a grove that is not corrupt: the
-  actor *can* run it, but the behavior must refuse to clobber a healthy grove without `--force` →
-  a sharp rejection to demo; an invariant).
-- **impossible** (by nature) — `beaver × open × absent` (cannot open a grove that does not exist —
-  no grove is there to open; void by nature, no experience to demo).
+- **forbidden** — `beaver × restore × fresh` (restore a grove that is not corrupt: the actor *can*
+  run it, but the behavior must refuse to clobber a healthy grove without `--force` → a sharp
+  rejection to demo; an invariant).
+- **impossible** — `beaver × open × absent` (cannot open a grove that does not exist — no grove is
+  there to open, so there is no attempt to reject; **barred by nature** here, which is the rarer of
+  the two bars).
 - **itemized** — `admin × restore × corrupt` (possible; deferred — support handles admin restores
   today; on record, not demoed).
 - **hidden dimension** — the `system-cron` actor row forces a `has-human?` dimension: a cron
@@ -118,6 +145,23 @@ the box is 3 × 2 × 3 = **18 cells** — far more than "open" and "restore" alo
 that latent axis is the whole point: the walk found a critipath (unattended cron restore) that no
 one listed, because the *dimensions*, not the author's memory, generated it.
 
+### 🔴 then prune it — 18 cells become 9
+
+the walk is step 2. **step 3 asks what the design could delete**, and here two subsets fall:
+
+| subset | cells | lever | the design now owes | the cost |
+|---|---|---|---|---|
+| `admin × *` — every admin cell was itemized, none demoed | **6 → 0** | **redirect** | `--as admin` on the beaver path | an admin gets no distinct surface; their errors read in beaver vocabulary |
+| `system-cron × restore × *` — the latent `has-human?` axis says a cron cannot confirm a clobber | **3 → impossible** | **guard** | the cron entrypoint rejects `restore` at parse | no unattended restore. a corrupt grove waits for a human |
+
+⇒ **9 cells left, and the critipath the walk discovered was removed rather than demoed.** the
+unattended cron restore was real, sharp, and expensive — and the guard means it cannot happen, which
+is strictly better than a demo of it.
+
+🟡 both rows carry a **cost**, and the second is a genuine loss. that is what makes it a prune rather
+than a free win — and it is why `rule.always.prune-the-experience-space` blocks a prune that states
+no cost.
+
 ## .see also
 
 - `howto.experience.enumerate` — the actors × feel grid; the two-dimension special case of this
@@ -125,4 +169,6 @@ one listed, because the *dimensions*, not the author's memory, generated it.
 - architect `def.dimensional-decomposition.history.morphological-analysis` — Zwicky's origin + citations
 - `define.experience._.axis=care.path=criti-vs-alter` — how to set each cell's care
 - `rule.require.dimensional-decomposition` — the mandate + how a reviewer grades the dimensions
+- `rule.always.prune-the-experience-space` — step 3: the levers, the record, and the bound
+- architect `rule.require.fewer-paths-via-idempotency` — the same pressure at the code grain
 - `define.experience._.demo.surf-school` — a worked feel × care catalog

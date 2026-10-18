@@ -7,10 +7,10 @@ book a surf lesson at a seaturtle surf school."* it walks **all four quadrants**
 **feel × care** grid — one realistic case each — so the two axes, how they differ, and how they
 combine are intuitive:
 
-|  | **happy** (glides to success) | **sharp** (hits an edge that can cut) |
-|--|-------------------------------|----------------------------------------|
-| **critipath** (no workable fallback) | **case 1** — book my spot + tide | **case 2** — book a closed spot → graceful "no" (must fail safe) |
-| **alterpath** (a workable fallback) | **case 3** — take the nearest open slot | **case 4** — mistype a spot → "did you mean…?" |
+|  | 🌴 **happy** — no edge to guard | 🌵 **sharp** — an edge the behavior must guard |
+|--|-----------------------------------|------------------------------------------------|
+| ⭐ **critipath** — failure intolerable | **case 1** — book my spot + tide | **case 2** — book a closed spot → graceful "no" (must fail safe) |
+| 🌙 **alterpath** — failure deferrable | **case 3** — take the nearest open slot | **case 4** — mistype a spot → "did you mean…?" |
 
 each case is rendered twice (narrative + bdd `[tn]`). reference this when unsure what a worked
 experience surface looks like. the frame is `define.experience`; the method is
@@ -27,20 +27,20 @@ experience surface looks like. the frame is `define.experience`; the method is
 
 ---
 
-## `1.vision.experience.case=_.md` (the catalog)
+## `1.vision.yield.appendix.experience.case=_.md` (the catalog)
 
 the catalog is a **small, linked index** — one row per experience, each **linked** to its own
-`case=N` file, with a feel and care named. it holds pointers, not the demos; the demos live in the
-companion files. **feel** = what the actor feels (happy / sharp). **care** = if the path broke,
-is there a workable fallback? (critipath = no → required, blocker if absent · alterpath = yes →
-bonus, nitpick).
+`case=NNN` file, with a feel and care named. it holds pointers, not the demos; the demos live in the
+companion files. **feel** = is there an edge the behavior must guard? **care** = `freq × cost` —
+is the failure intolerable (critipath → required, blocker if absent) or deferrable (alterpath →
+bonus, nitpick)?
 
 | case | experience | actor | feel | care | one-line |
 |------|------------|-------|------|------|----------|
-| 1 | [book-my-spot](./1.vision.experience.case=1.book-my-spot.md) | surfer | happy | critipath | names an exact spot + tide, the school holds it — the route it lives on |
-| 2 | [book-a-closed-spot](./1.vision.experience.case=2.book-a-closed-spot.md) | surfer | sharp | critipath | picks a closed spot, gets a graceful "no" that names the fix |
-| 3 | [take-the-nearest-slot](./1.vision.experience.case=3.take-the-nearest-slot.md) | surfer | happy | alterpath | skips the spot name, takes the nearest open slot; a convenience over a named pick |
-| 4 | [mistype-a-spot-name](./1.vision.experience.case=4.mistype-a-spot-name.md) | surfer | sharp | alterpath | fat-fingers the spot name, gets a "did you mean…?" and recovers |
+| 1 | [book-my-spot](./1.vision.yield.appendix.experience.case=001.book-my-spot.md) | surfer | happy | critipath | names an exact spot + tide, the school holds it — the route it lives on |
+| 2 | [book-a-closed-spot](./1.vision.yield.appendix.experience.case=002.book-a-closed-spot.md) | surfer | sharp | critipath | picks a closed spot, gets a graceful "no" that names the fix |
+| 3 | [take-the-nearest-slot](./1.vision.yield.appendix.experience.case=003.take-the-nearest-slot.md) | surfer | happy | alterpath | skips the spot name, takes the nearest open slot; a convenience over a named pick |
+| 4 | [mistype-a-spot-name](./1.vision.yield.appendix.experience.case=004.mistype-a-spot-name.md) | surfer | sharp | alterpath | fat-fingers the spot name, gets a "did you mean…?" and recovers |
 
 > **critipaths (1, 2) are required** — each must have a case, and the sharp one (2) must prove
 > it fails safe. **alterpaths (3, 4) are a bonus** — demoed here because they strengthen the
@@ -51,7 +51,7 @@ bonus, nitpick).
 
 ---
 
-## `1.vision.experience.case=1.book-my-spot.md` — happy critipath
+## `1.vision.yield.appendix.experience.case=001.book-my-spot.md` — happy critipath
 
 **narrative**
 
@@ -73,7 +73,7 @@ given a surfer "kai" and an open spot "mavericks" at 6am
 
 ---
 
-## `1.vision.experience.case=2.book-a-closed-spot.md` — sharp critipath (fails safe)
+## `1.vision.yield.appendix.experience.case=002.book-a-closed-spot.md` — sharp critipath (fails safe)
 
 **narrative**
 
@@ -111,7 +111,7 @@ given a surfer "kai" and a closed spot "pipeline"
 
 ---
 
-## `1.vision.experience.case=3.take-the-nearest-slot.md` — happy alterpath
+## `1.vision.yield.appendix.experience.case=003.take-the-nearest-slot.md` — happy alterpath
 
 **narrative**
 
@@ -137,7 +137,7 @@ given a surfer "jo" and open spots, the nearest is "trestles" at 7am
 
 ---
 
-## `1.vision.experience.case=4.mistype-a-spot-name.md` — sharp alterpath
+## `1.vision.yield.appendix.experience.case=004.mistype-a-spot-name.md` — sharp alterpath
 
 **narrative**
 
@@ -168,10 +168,11 @@ given a surfer "jo" who mistypes the spot as "mavriks"
 
 **two independent axes.** every experience is one point on a 2×2:
 
-- **feel** — what the actor *feels* as they walk the path. **happy** = glides to success.
-  **sharp** = hits an edge that can cut (a rejection, a limit, a bad handoff).
-- **care** — what happens if the path *broke*. **critipath** = no workable fallback, a core
-  usecase fails. **alterpath** = a workable fallback remains, the actor still reaches the goal.
+- 🌴|🌵 **feel** — is there an **edge** the behavior must guard? **sharp** = yes (a rejection, a
+  limit, a bad handoff). **happy** = no. 🟡 set by the edge, never the outcome — a sharp path
+  routinely succeeds.
+- ⭐|🌙 **care** — `severity = freq × cost`. **critipath** = intolerable in sum. **alterpath** =
+  deferrable; the fallback absorbs the break now, the repair waits.
 
 they are independent — hold one constant and the other still varies. this demo proves it with
 four held-constant pairs:
@@ -220,6 +221,8 @@ declined → pays again). that boundary-dense walk is the highest-value and high
 - `define.experience._.axis=feel.path=happy-vs-sharp` — the feel axis deep dive (more seaturtle examples)
 - `define.experience._.axis=care.path=criti-vs-alter` — the care axis deep dive (the one test: workable fallback?)
 - `define.experience._.metric=boundary-density` — how the quadrants combine into a dense journey
+- `define.experience._.demo.camp-beaver` 🦫 — frequency alone flips the care; severity is an aggregate
+- `define.experience._.demo.ship-sailor` 🐈⛵ — the two decoys (a sharp path that succeeds; `0 × ∞ = 0`)
 - `howto.experience.enumerate` — the method that produced this catalog
 - `rule.require.experience-coverage` — the rule this example satisfies
 - `code.test/frames.behavior/howto.write-bdd` (mechanic) — the `[tn]` form each case uses

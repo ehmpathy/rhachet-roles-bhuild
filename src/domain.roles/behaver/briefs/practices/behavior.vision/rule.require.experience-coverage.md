@@ -30,10 +30,10 @@ for the vision to pass:
 0. **a decomposition** — the critipaths are *discovered*, not free-listed: the experience space is
    factored into orthogonal dimensions and the product walked (`rule.require.dimensional-decomposition`).
    this is the companion rule; without it, the catalog below is a sample, not a coverage contract.
-1. **a catalog** — `1.vision.experience.case=_.md` holds the walked matrix: every cell verdicted
+1. **a catalog** — `1.vision.yield.appendix.experience.case=_.md` holds the walked matrix: every cell verdicted
    (demoed / itemized / forbidden / impossible), each real experience given a feel (happy / sharp)
    and a care (critipath / alterpath, where care = `freq × cost`). the catalog is the coverage contract.
-2. **a case per demoed experience** — `1.vision.experience.case=N.$slug.md` demonstrates each
+2. **a case per demoed experience** — `1.vision.yield.appendix.experience.case=NNN.$slug.md` demonstrates each
    critipath + chosen alterpath, twice: as a narrative and as a bdd `[tn]` timeline. a sharp
    critipath case shows the edge fails safe (fast, loud, teaches the fix).
 3. **walk-then-grade** — first walk the product to name the critipaths, then check each has a case.
@@ -82,6 +82,7 @@ graded at the `1.vision` guard by two reviewers over this rule:
 - `define.experience._.metric=boundary-density` — the metric that centers the densest, highest-risk experiences
 - `howto.experience.enumerate` — the method that finds the critipaths this rule grades
 - `define.experience._.demo.surf-school` — a worked example of a catalog + case files
+- `rule.require.zero-padded-case-index` — the `case=NNN` filename width these demos carry
 - `code.test/frames.behavior/rule.require.given-when-then` (mechanic) — the `[tn]` timeline form
 - `behavior.execution/ergonomist/rule.require.acceptance-journey-coverage` (ergonomist) — the
   delivery-stage coverage twin this shifts left

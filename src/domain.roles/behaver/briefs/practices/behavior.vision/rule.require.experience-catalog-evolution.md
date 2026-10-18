@@ -2,8 +2,8 @@
 
 ## .what
 
-the three experience artifacts — `1.vision.experience.dimensions.md` (the axes),
-`1.vision.experience.case=_.md` (the inventory), and each `1.vision.experience.case=N.$slug.md`
+the three experience artifacts — `1.vision.yield.appendix.experience.dimensions.md` (the axes),
+`1.vision.yield.appendix.experience.case=_.md` (the inventory), and each `1.vision.yield.appendix.experience.case=NNN.$slug.md`
 (the demos) — form a **standing coverage contract**, not a one-time vision-stage deliverable. when a
 new experience surfaces at **any** later stage (criteria, blueprint, execution, verification,
 playtest), you must evolve the contract to hold it **before that stage passes**:
@@ -12,7 +12,7 @@ playtest), you must evolve the contract to hold it **before that stage passes**:
    the dimension it varies on (or the value that was absent), so the space stays walked.
 2. **itemize it** in the `case=_` inventory — give the cell its verdict (demoed / itemized /
    forbidden / impossible) and, if it is a real experience, its feel × care.
-3. **demo it** with a `case=N` file (narrative + bdd `[tn]`) **if it is a critipath** — an
+3. **demo it** with a `case=NNN` file (narrative + bdd `[tn]`) **if it is a critipath** — an
    alterpath may stay itemized; a critipath owes a demonstration.
 
 the contract is discovered, not frozen. a new experience found downstream is evidence the vision's
@@ -28,7 +28,7 @@ artifacts fall out of step with reality:
 - **a stale inventory lies** — it asserts "these are the critipaths" while a newly-found critipath
   sits outside it, undemonstrated. the coverage contract silently becomes a coverage *sample* again.
 - **downstream stages inherit the gap** — `2.1.criteria` bdd, acceptance tests, and `5.5.playtest`
-  all feed off the `case=N` demos. an experience absent from the catalog is absent from each artifact
+  all feed off the `case=NNN` demos. an experience absent from the catalog is absent from each artifact
   it seeds.
 - **the space stops being falsifiable** — `rule.require.dimensional-decomposition` earns its
   completeness "by construction" from the walked product. bolt an experience on outside the
@@ -66,14 +66,14 @@ so verification grades the contract in **both directions**:
 
 evolution is proportionate, not busywork. a discovered **alterpath** may be itemized and left
 undemoed — its absence is a nitpick, not a blocker (`rule.require.experience-coverage`). only a
-discovered **critipath** compels a `case=N` demo. and a discovery that is genuinely out of the
+discovered **critipath** compels a `case=NNN` demo. and a discovery that is genuinely out of the
 wish's bounded scope is flagged to the wisher, not force-fit into the contract.
 
 ## .enforcement
 
 - a new critipath discovered downstream, left out of the inventory (or in the inventory with no
   demo), while the stage passes = **blocker**.
-- a new experience demonstrated or tested outside the catalog — a `case=N`-shaped artifact or a
+- a new experience demonstrated or tested outside the catalog — a `case=NNN`-shaped artifact or a
   test with no inventory row to match = **blocker** (the contract drifted from reality).
 - a catalog critipath with no real test by the time the verification stage passes = **blocker**
   (the sketch never became proof — the forward terminus above).

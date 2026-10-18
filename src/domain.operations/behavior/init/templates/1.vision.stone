@@ -2,8 +2,6 @@ illustrate the vision implied in the wish $BEHAVIOR_DIR_REL/0.wish.md
 
 emit into $BEHAVIOR_DIR_REL/1.vision.yield.md
 
----
-
 paint a picture of what the world looks like when this wish is fulfilled
 
 testdrive the contract we propose via realworld examples
@@ -24,7 +22,7 @@ specifically,
 - **itemize** — verdict every cell into the inventory; name each real experience's feel × care
 - **demonstrate** — a narrative + bdd `[tn]` sketch per critipath (+ chosen alterpaths)
 
-→ see `howto.experience.demonstrate` (the method, the artifacts to emit, why `[tn]` is a sketch)
+→ `howto.experience.demonstrate` — the method, the bullet format, the artifacts, the coverage grep
 
 ## mental model
 
@@ -47,7 +45,12 @@ specifically,
 
 ## groundwork
 
+**emit into $BEHAVIOR_DIR_REL/1.vision.yield.appendix.groundwork.md**, and cite it from the yield.
+
 sanity check the vision against reality. not exhaustive research — just enough to know the vision isn't built on false assumptions.
+
+⇒ the yield keeps only **what a read CHANGED** — the finds that moved a decision. every citation,
+every table of verified claims, and the full assumption triage go in the groundwork.
 
 ### external research
 
@@ -66,8 +69,42 @@ if the wish references extant behavior, patterns, or code:
 - cite what you checked (file paths, line numbers)
 - if none referenced, say "none — no extant behavior extended"
 
+### triage every open item
+
+- **[answered]** — settled now, and by what read
+- **[research]** — needs measurement later, and what would measure it
+- **[wisher]** — only the wisher can rule
+
+🔴 **before you file an item as [research], try to close it.** an unknown you could have closed with
+one grep or one file read is not rigor — it is an unasked question dressed as rigor.
+
 ## what is awkward?
 
 - what feels off or forced?
 - where does the design fight the user's mental model?
 - what tradeoffs feel uncomfortable?
+
+## the emit contract — where each of the above lands
+
+the yield holds the answer; the archaeology lives in the appendices beside it. the yield states
+decisions, and the work that produced them lives in appendices the yield **cites by path** rather
+than restates:
+
+| file | holds |
+|------|-------|
+| `1.vision.yield.md` | the decision, one line of reason each, the open forks |
+| `1.vision.yield.appendix.groundwork.md` | the reads that back each claim — every row cites a path a reader can re-run |
+| `1.vision.yield.appendix.experience.dimensions.md` | the axes, and why they are orthogonal |
+| `1.vision.yield.appendix.experience.case=_.md` | the inventory — one bullet per cell, verdicted |
+| `1.vision.yield.appendix.experience.case=NNN.$slug.md` | one demo per critipath |
+
+⇒ a claim belongs in exactly **one** of these. if it reads in two, one of the two is redundant.
+
+🔴 **`NNN` is literal — zero-pad the case index to width 3: `case=001`.** unpadded, `case=10` sorts
+between `case=1` and `case=2`, so the dir disagrees with the inventory's own sequence — and the break
+is silent until the tenth case, then retroactive across the nine before it.
+see `rule.require.zero-padded-case-index`.
+
+🟡 **groundwork is an appendix to read, not one to skip.** it is where a reviewer checks whether a
+claim was **verified or assumed**, so a bare *"i checked X"* with no path is worth less than an
+honest *"[research] — unverified"*.

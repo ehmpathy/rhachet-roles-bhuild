@@ -39,13 +39,42 @@ do these in order:
      `rule.require.experience-coverage` (what blocks) · mechanic
      `code.test/frames.behavior/rule.require.given-when-then` (the `[tn]` form)
 
+## .the inventory reads as one bullet per cell
+
+each bullet says what the experience **is**, from the actor's side, tagged and suffixed:
+
+```
+🌴 happy — smooth passage; no edge to guard  ⭐ critipath — failure INTOLERABLE (`freq × cost`)
+🌵 sharp — an edge the behavior must guard   🌙 alterpath — failure DEFERRABLE
+
+- [🌴,⭐] surfer — names an exact spot + tide, the school holds it · case=001.$slug.md
+- [🌵,⭐] surfer — picks a closed spot, gets a "no" that names the fix · case=002.$slug.md
+- [🌴,🌙] surfer — skips the spot name, takes the nearest open slot — itemized; fallback: $what
+```
+
+a bullet that ends in a `case=…md` is **demoed** · one that ends in `— itemized` names its
+**fallback** · `— impossible` means no attempt is possible, so no guard is owed.
+
+🟡 **feel is set by the EDGE. the outcome does not set it** — a sharp path often succeeds (the
+`limit` case is "the successful edge": you get the last open slot, one step from a double-book).
+
+🟡 **those actors belong to the surf-school demo.** discover your own wish's actors — a `wisher`,
+a `driver`, or a `lane` are actors of a *route*, and most wishes have none of them.
+
+🔴 **a `⭐` bullet with no `case=…md` suffix is an absent critipath.** that grep is the coverage
+check, and it must return zero hits.
+
+🔴 **never point one cell at another cell's demo.** the pointer is only ever reached for when a
+critipath has no demo — and such a cell either owes one, or was never a critipath. "neither" is not
+an available answer.
+
 ## .the three artifacts
 
 | step | artifact | holds |
 |------|----------|-------|
-| decompose | `1.vision.experience.dimensions.md` | the dimensions + the walked product |
-| itemize | `1.vision.experience.case=_.md` | the inventory: the matrix, every cell verdicted + named — the coverage contract |
-| demonstrate | `1.vision.experience.case=N.$slug.md` | one demo per critipath + chosen alterpath |
+| decompose | `1.vision.yield.appendix.experience.dimensions.md` | the dimensions + the walked product |
+| itemize | `1.vision.yield.appendix.experience.case=_.md` | the inventory: the matrix, every cell verdicted + named — the coverage contract |
+| demonstrate | `1.vision.yield.appendix.experience.case=NNN.$slug.md` | one demo per critipath + chosen alterpath |
 
 link them from `1.vision.yield.md`; never inline them — each carries its own content.
 
@@ -60,3 +89,4 @@ sketch commands, not committed flags; they show *intended* behavior, and feed `2
 - `howto.experience.decompose` — step 1 in full
 - `howto.experience.enumerate` — the actors × feel grid, the two-dimension special case
 - `rule.require.experience-coverage` — the rule the coverage review enforces
+- `rule.require.zero-padded-case-index` — the `case=NNN` filename width, cited from bhrain's `asStoneGuardCounter`

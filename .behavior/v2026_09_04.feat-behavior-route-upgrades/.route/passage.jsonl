@@ -1,0 +1,280 @@
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.self","reason":"review.self required: has-grounded-in-reality"}
+{"stone":"1.vision","status":"promised","reason":"promised review.self: has-grounded-in-reality"}
+{"stone":"1.vision","status":"promised","reason":"promised review.self: has-experience-coverage"}
+{"stone":"1.vision","status":"promised","reason":"promised review.self: has-questioned-requirements"}
+{"stone":"1.vision","status":"promised","reason":"promised review.self: has-questioned-assumptions"}
+{"stone":"1.vision","status":"promised","reason":"promised review.self: has-questioned-questions"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (1 > 0); wait for human approval"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: experience-coverage"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dimensional-decomposition"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (2 > 0); wait for human approval"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dimensional-decomposition"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: experience-coverage"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (1 > 0); wait for human approval"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: experience-coverage"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dimensional-decomposition"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"approval","reason":"wait for human approval"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"approval","reason":"wait for human approval"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: experience-coverage"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dimensional-decomposition"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"approval","reason":"wait for human approval"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dimensional-decomposition"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: experience-coverage"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"no review files found for hash ee3fbd49; wait for human approval"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"approval","reason":"wait for human approval"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"approval","reason":"wait for human approval"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"approval","reason":"wait for human approval"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dimensional-decomposition"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"approval","reason":"wait for human approval"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dimensional-decomposition"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"approval","reason":"wait for human approval"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dimensional-decomposition"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"approval","reason":"wait for human approval"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"approval","reason":"wait for human approval"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"approval","reason":"wait for human approval"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (1 > 0); wait for human approval"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: prose-of-briefs"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (1 > 0); wait for human approval"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: prose-of-briefs"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (1 > 0); wait for human approval"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: prose-of-briefs"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","reason":"reviewer constraint; peer reviewer budget exhausted: prose-of-briefs, experience-coverage"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (3 > 0); wait for human approval"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (5 > 0); wait for human approval"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: prose-of-briefs"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (4 > 0); wait for human approval"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dense-of-briefs"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dimensional-decomposition"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: prose-of-briefs"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: prose-of-yields"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: experience-coverage"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (3 > 0); wait for human approval"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dimensional-decomposition"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dense-of-briefs"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dense-of-yields"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: experience-coverage"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.self","reason":"review.self required: has-ejected-the-archaeology"}
+{"stone":"1.vision","status":"promised","reason":"promised review.self: has-ejected-the-archaeology"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.self","reason":"review.self required: has-repaired-structurally"}
+{"stone":"1.vision","status":"promised","reason":"promised review.self: has-repaired-structurally"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer.uncontemplated","reason":"peer review awaits contemplation: yield-density"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: yield-density"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (7 > 0); wait for human approval"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dimensional-decomposition"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: struct-of-briefs"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: struct-of-yields"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dense-of-briefs"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dense-of-yields"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: experience-coverage"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (7 > 0); wait for human approval"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: struct-of-briefs"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: struct-of-yields"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dense-of-briefs"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dense-of-yields"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: experience-coverage"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"malfunction"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dense-of-briefs"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: experience-coverage"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"malfunction"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dense-of-briefs"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: experience-coverage"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (5 > 0); wait for human approval"}
+{"stone":"1.vision","status":"blocked"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (5 > 0); wait for human approval"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (7 > 0); wait for human approval"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dense-of-yields"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dense-of-briefs"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dimensional-decomposition"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: experience-coverage"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (6 > 0); wait for human approval"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dense-of-briefs"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dense-of-yields"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (5 > 0); wait for human approval"}
+{"stone":"1.vision","status":"blocked"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (5 > 0); wait for human approval"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: condense-of-yields"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (7 > 0); wait for human approval"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: condense-of-yields"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dense-of-briefs"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dense-of-yields"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (6 > 0); wait for human approval"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: condense-of-yields"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dense-of-yields"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dense-of-briefs"}
+{"stone":"1.vision","status":"blocked"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (17 > 0); wait for human approval"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (18 > 0); wait for human approval"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (19 > 0); wait for human approval"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: overzoom-of-yields"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: terse-of-yields"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: terse-of-briefs"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dense-of-briefs"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer.uncontemplated","reason":"peer review awaits contemplation: hermetic-of-yields"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: hermetic-of-yields"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer","reason":"blockers exceed threshold (19 > 0); wait for human approval"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: dense-of-briefs"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: overzoom-of-yields"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: terse-of-briefs"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: terse-of-yields"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: condense-of-yields"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: section-of-yields"}
+{"stone":"1.vision","status":"contemplated","reason":"contemplated review.peer: hermetic-of-yields"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"malfunction","reason":"reviewer or judge malfunctioned; peer reviewer budget exhausted: dense-of-briefs"}
+{"stone":"1.vision","status":"conceded","reviewer":"dense-of-briefs","about":"blocker.1","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i038.3feff06db5621879e5.r002._.given.by_peer.dense-of-briefs.md","severity":"better","reason":"conceded review.peer: dense-of-briefs blocker.1 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"dense-of-briefs","about":"blocker.2","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i038.3feff06db5621879e5.r002._.given.by_peer.dense-of-briefs.md","severity":"better","reason":"conceded review.peer: dense-of-briefs blocker.2 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"dense-of-briefs","about":"nitpick.1","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i038.3feff06db5621879e5.r002._.given.by_peer.dense-of-briefs.md","severity":"better","reason":"conceded review.peer: dense-of-briefs nitpick.1 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"dense-of-briefs","about":"nitpick.2","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i038.3feff06db5621879e5.r002._.given.by_peer.dense-of-briefs.md","severity":"better","reason":"conceded review.peer: dense-of-briefs nitpick.2 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"dense-of-briefs","about":"nitpick.3","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i038.3feff06db5621879e5.r002._.given.by_peer.dense-of-briefs.md","severity":"better","reason":"conceded review.peer: dense-of-briefs nitpick.3 (better)"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: dense-of-briefs"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: overzoom-of-yields"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: terse-of-briefs"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: terse-of-yields"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: condense-of-yields"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: section-of-yields"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: hermetic-of-yields"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"blocked","blocker":"review.peer.undeclared","reason":"peer review awaits absorption: 12 concerns unabsorbed"}
+{"stone":"1.vision","status":"conceded","reviewer":"prose-of-briefs","about":"blocker.1","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i022.9dbd4831edfe640903.r002._.given.by_peer.prose-of-briefs.md","severity":"better","reason":"conceded review.peer: prose-of-briefs blocker.1 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"prose-of-briefs","about":"nitpick.1","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i022.9dbd4831edfe640903.r002._.given.by_peer.prose-of-briefs.md","severity":"better","reason":"conceded review.peer: prose-of-briefs nitpick.1 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"prose-of-briefs","about":"nitpick.2","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i022.9dbd4831edfe640903.r002._.given.by_peer.prose-of-briefs.md","severity":"better","reason":"conceded review.peer: prose-of-briefs nitpick.2 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"prose-of-briefs","about":"nitpick.3","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i022.9dbd4831edfe640903.r002._.given.by_peer.prose-of-briefs.md","severity":"better","reason":"conceded review.peer: prose-of-briefs nitpick.3 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"prose-of-yields","about":"blocker.1","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i022.9dbd4831edfe640903.r003._.given.by_peer.prose-of-yields.md","severity":"better","reason":"conceded review.peer: prose-of-yields blocker.1 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"prose-of-yields","about":"nitpick.1","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i022.9dbd4831edfe640903.r003._.given.by_peer.prose-of-yields.md","severity":"better","reason":"conceded review.peer: prose-of-yields nitpick.1 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"prose-of-yields","about":"nitpick.2","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i022.9dbd4831edfe640903.r003._.given.by_peer.prose-of-yields.md","severity":"better","reason":"conceded review.peer: prose-of-yields nitpick.2 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"yield-density","about":"blocker.1","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i020.f148ad596a0b4aeb12.r003._.given.by_peer.yield-density.md","severity":"better","reason":"conceded review.peer: yield-density blocker.1 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"yield-density","about":"blocker.2","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i020.f148ad596a0b4aeb12.r003._.given.by_peer.yield-density.md","severity":"better","reason":"conceded review.peer: yield-density blocker.2 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"yield-density","about":"blocker.3","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i020.f148ad596a0b4aeb12.r003._.given.by_peer.yield-density.md","severity":"better","reason":"conceded review.peer: yield-density blocker.3 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"yield-density","about":"nitpick.1","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i020.f148ad596a0b4aeb12.r003._.given.by_peer.yield-density.md","severity":"better","reason":"conceded review.peer: yield-density nitpick.1 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"yield-density","about":"nitpick.2","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i020.f148ad596a0b4aeb12.r003._.given.by_peer.yield-density.md","severity":"better","reason":"conceded review.peer: yield-density nitpick.2 (better)"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: prose-of-briefs"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: prose-of-yields"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: yield-density"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"poured","level":1}
+{"stone":"1.vision","status":"malfunction"}
+{"stone":"1.vision","status":"conceded","reviewer":"overzoom-of-yields","about":"blocker.1","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r004._.given.by_peer.overzoom-of-yields.md","severity":"better","reason":"conceded review.peer: overzoom-of-yields blocker.1 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"overzoom-of-yields","about":"blocker.2","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r004._.given.by_peer.overzoom-of-yields.md","severity":"better","reason":"conceded review.peer: overzoom-of-yields blocker.2 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"overzoom-of-yields","about":"blocker.3","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r004._.given.by_peer.overzoom-of-yields.md","severity":"better","reason":"conceded review.peer: overzoom-of-yields blocker.3 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"overzoom-of-yields","about":"nitpick.1","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r004._.given.by_peer.overzoom-of-yields.md","severity":"better","reason":"conceded review.peer: overzoom-of-yields nitpick.1 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"overzoom-of-yields","about":"nitpick.2","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r004._.given.by_peer.overzoom-of-yields.md","severity":"better","reason":"conceded review.peer: overzoom-of-yields nitpick.2 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"overzoom-of-yields","about":"nitpick.3","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r004._.given.by_peer.overzoom-of-yields.md","severity":"better","reason":"conceded review.peer: overzoom-of-yields nitpick.3 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"blocker.1","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs blocker.1 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"blocker.2","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs blocker.2 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"blocker.3","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs blocker.3 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"blocker.4","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs blocker.4 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"nitpick.1","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs nitpick.1 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"nitpick.2","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs nitpick.2 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"nitpick.3","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs nitpick.3 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"nitpick.4","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs nitpick.4 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"nitpick.5","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs nitpick.5 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"nitpick.6","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs nitpick.6 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"nitpick.7","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs nitpick.7 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"nitpick.8","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs nitpick.8 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"nitpick.9","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs nitpick.9 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"nitpick.10","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs nitpick.10 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"nitpick.11","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs nitpick.11 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"nitpick.12","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs nitpick.12 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"nitpick.13","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs nitpick.13 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-yields","about":"blocker.1","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r006._.given.by_peer.terse-of-yields.md","severity":"better","reason":"conceded review.peer: terse-of-yields blocker.1 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-yields","about":"blocker.2","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r006._.given.by_peer.terse-of-yields.md","severity":"better","reason":"conceded review.peer: terse-of-yields blocker.2 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-yields","about":"nitpick.1","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r006._.given.by_peer.terse-of-yields.md","severity":"better","reason":"conceded review.peer: terse-of-yields nitpick.1 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-yields","about":"nitpick.2","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r006._.given.by_peer.terse-of-yields.md","severity":"better","reason":"conceded review.peer: terse-of-yields nitpick.2 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-yields","about":"nitpick.3","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r006._.given.by_peer.terse-of-yields.md","severity":"better","reason":"conceded review.peer: terse-of-yields nitpick.3 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"section-of-yields","about":"nitpick.1","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r008._.given.by_peer.section-of-yields.md","severity":"better","reason":"conceded review.peer: section-of-yields nitpick.1 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"section-of-yields","about":"nitpick.2","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r008._.given.by_peer.section-of-yields.md","severity":"better","reason":"conceded review.peer: section-of-yields nitpick.2 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"section-of-yields","about":"nitpick.3","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r008._.given.by_peer.section-of-yields.md","severity":"better","reason":"conceded review.peer: section-of-yields nitpick.3 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"hermetic-of-yields","about":"blocker.1","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r009._.given.by_peer.hermetic-of-yields.md","severity":"better","reason":"conceded review.peer: hermetic-of-yields blocker.1 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"hermetic-of-yields","about":"blocker.2","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r009._.given.by_peer.hermetic-of-yields.md","severity":"better","reason":"conceded review.peer: hermetic-of-yields blocker.2 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"hermetic-of-yields","about":"blocker.3","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r009._.given.by_peer.hermetic-of-yields.md","severity":"better","reason":"conceded review.peer: hermetic-of-yields blocker.3 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"hermetic-of-yields","about":"blocker.4","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r009._.given.by_peer.hermetic-of-yields.md","severity":"better","reason":"conceded review.peer: hermetic-of-yields blocker.4 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"hermetic-of-yields","about":"blocker.5","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r009._.given.by_peer.hermetic-of-yields.md","severity":"better","reason":"conceded review.peer: hermetic-of-yields blocker.5 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"hermetic-of-yields","about":"blocker.6","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r009._.given.by_peer.hermetic-of-yields.md","severity":"better","reason":"conceded review.peer: hermetic-of-yields blocker.6 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"hermetic-of-yields","about":"nitpick.1","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r009._.given.by_peer.hermetic-of-yields.md","severity":"better","reason":"conceded review.peer: hermetic-of-yields nitpick.1 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"hermetic-of-yields","about":"nitpick.2","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r009._.given.by_peer.hermetic-of-yields.md","severity":"better","reason":"conceded review.peer: hermetic-of-yields nitpick.2 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"hermetic-of-yields","about":"nitpick.3","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i040.85781067f9b769d6bb.r009._.given.by_peer.hermetic-of-yields.md","severity":"better","reason":"conceded review.peer: hermetic-of-yields nitpick.3 (better)"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: overzoom-of-yields"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: terse-of-briefs"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: terse-of-yields"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: condense-of-yields"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: section-of-yields"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: hermetic-of-yields"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"malfunction"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"blocker.1","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i041.73464c786a2ba79465.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs blocker.1 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"nitpick.1","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i041.73464c786a2ba79465.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs nitpick.1 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"nitpick.2","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i041.73464c786a2ba79465.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs nitpick.2 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"nitpick.3","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i041.73464c786a2ba79465.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs nitpick.3 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"nitpick.4","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i041.73464c786a2ba79465.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs nitpick.4 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"nitpick.5","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i041.73464c786a2ba79465.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs nitpick.5 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"nitpick.6","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i041.73464c786a2ba79465.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs nitpick.6 (better)"}
+{"stone":"1.vision","status":"conceded","reviewer":"terse-of-briefs","about":"nitpick.7","given":"/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades/.behavior/v2026_09_04.feat-behavior-route-upgrades/.reviews/peer/1.vision._.review.i041.73464c786a2ba79465.r005._.given.by_peer.terse-of-briefs.md","severity":"better","reason":"conceded review.peer: terse-of-briefs nitpick.7 (better)"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: overzoom-of-yields"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: terse-of-briefs"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: terse-of-yields"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: condense-of-yields"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: section-of-yields"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: hermetic-of-yields"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"malfunction"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: overzoom-of-yields"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: terse-of-briefs"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: terse-of-yields"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: condense-of-yields"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: section-of-yields"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: hermetic-of-yields"}
+{"stone":"1.vision","status":"blocked"}
+{"stone":"1.vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"1.vision","status":"malfunction"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: overzoom-of-yields"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: terse-of-briefs"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: terse-of-yields"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: condense-of-yields"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: section-of-yields"}
+{"stone":"1.vision","status":"absorbed","reason":"absorbed review.peer: hermetic-of-yields"}
+{"stone":"1.vision","status":"blocked"}

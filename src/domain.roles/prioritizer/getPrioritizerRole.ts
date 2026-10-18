@@ -29,12 +29,7 @@ export const ROLE_PRIORITIZER: Role = Role.build({
   },
   hooks: {
     onBrain: {
-      onBoot: [
-        {
-          command: './node_modules/.bin/rhachet roles boot --role prioritizer',
-          timeout: 'PT10S',
-        },
-      ],
+      onBoot: [],
       onTool: [],
       onStop: [],
     },

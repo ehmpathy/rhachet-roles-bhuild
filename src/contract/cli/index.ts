@@ -98,6 +98,11 @@ const loadReflect = (): typeof import('./reflect.on.reviews.self') =>
   require('./reflect.on.reviews.self');
 const loadReview = (): typeof import('./review.behavior') =>
   require('./review.behavior');
+const loadReviewArchaeology =
+  (): typeof import('./review.for.yield-archaeology') =>
+    require('./review.for.yield-archaeology');
+const loadTally = (): typeof import('./tally.reviews.peer') =>
+  require('./tally.reviews.peer');
 
 export const cli = {
   bindBehavior: asLazyCli(() => loadBind().bindBehavior),
@@ -114,4 +119,8 @@ export const cli = {
   radioTaskPush: asLazyCli(() => loadRadioPush().cliRadioTaskPush),
   reflectOnReviewsSelf: asLazyCli(() => loadReflect().reflectOnReviewsSelf),
   reviewBehavior: asLazyCli(() => loadReview().reviewBehavior),
+  reviewForYieldArchaeology: asLazyCli(
+    () => () => loadReviewArchaeology().reviewForYieldArchaeology(),
+  ),
+  tallyReviewsPeer: asLazyCli(() => loadTally().tallyReviewsPeer),
 };

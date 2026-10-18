@@ -4,8 +4,8 @@
 
 the vision must **decompose the experience space into orthogonal dimensions and walk the product**
 — not free-list a handful of experiences. the discovered dimensions live in a
-`1.vision.experience.dimensions.md` artifact; the walked matrix lives in the
-`1.vision.experience.case=_.md` inventory; every cell is verdicted (demoed / itemized / forbidden / impossible).
+`1.vision.yield.appendix.experience.dimensions.md` artifact; the walked matrix lives in the
+`1.vision.yield.appendix.experience.case=_.md` inventory; every cell is verdicted (demoed / itemized / forbidden / impossible).
 
 without this, an author cannot claim they **considered** the critipaths — they only sampled the
 paths they happened to recall.
@@ -26,16 +26,21 @@ are they exhaustive — is an external check the author cannot quietly pass by o
 
 for the vision to pass:
 
-1. **a dimensions artifact** — `1.vision.experience.dimensions.md` names the axes
+1. **a dimensions artifact** — `1.vision.yield.appendix.experience.dimensions.md` names the axes
    the experience varies over (actor, goal, path-variant, feel-trigger, resource-state,
    concurrency, …), each a small closed value set, each justified as **orthogonal** to the rest.
 2. **a walked matrix** — the inventory takes the product of those axes and gives **every cell** a
    verdict: **demoed** (a real experience, demonstrated — named feel × care), **itemized** (a real
-   experience on record, deliberately not demoed), **forbidden** (can't occur by *nurture* — the
-   behavior rejects it), or **impossible** (can't occur by *nature* — no attempt is possible).
-3. **forbidden cells recorded as invariants** — a nurture-barred path with its *why* is a checkable
+   experience on record, deliberately not demoed), **forbidden** (the attempt is possible and the
+   behavior rejects it), or **impossible** (no attempt is possible at all).
+3. **forbidden cells recorded as invariants** — a rejected-attempt path with its *why* is a checkable
    rule the execution must hold (its rejection is often a sharp critipath to demo); an impossible
-   cell is noted, then set aside — nature bars it, no guard needed.
+   cell is noted **with what bars it**, then set aside — no attempt means no guard is owed.
+
+   🔴 **an impossible cell is usually barred by the SHIPPED DESIGN rather than by nature.** no law
+   prevents a lane you did not build; with no lane there is no attempt to reject. so *"can't occur
+   by nature"* is the narrow case, and a walk that treats it as the definition mis-sorts the common
+   one.
 4. **the hidden-dimension check** — a whole row or column that cannot occur means two axes were not
    orthogonal; the latent dimension must be surfaced, not left implicit.
 
@@ -50,8 +55,8 @@ apply these questions to the dimensions artifact + inventory:
 - **walked?** does every cell carry a verdict, or are cells silently absent? an absent cell is an
   unconsidered experience.
 - **barred-with-reason?** does each **forbidden** or **impossible** cell state *why* it cannot
-  occur — and which it is (nurture vs nature)? a bare "can't happen" hides whether it is a real
-  rejection invariant or a dodge.
+  occur — and, for an impossible one, **what bars the attempt** (nature, or a design we did not
+  ship)? a bare "can't happen" hides whether it is a real rejection invariant or a dodge.
 - **the missing-axis smell** — could you name a dimension the author did not? concurrency, actor =
   `system`, resource-absent states are the usual omissions. a real path off a missing axis is a
   **blocker**: the space was under-decomposed.

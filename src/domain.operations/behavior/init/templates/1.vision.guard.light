@@ -62,11 +62,11 @@ reviews:
            every experience the wish implies, then name each one's feel (happy / sharp)
            and care (critipath / alterpath). do not enumerate only critipaths — enumerate all,
            then let the care decide severity.
-        2. demonstrate — is there a `1.vision.experience.case=N.$slug.md` per experience,
+        2. demonstrate — is there a `1.vision.yield.appendix.experience.case=NNN.$slug.md` per experience,
            rendered both as a narrative (actor's pov) and a bdd `[tn]` timeline? does each
            sharp critipath prove it fails safe (fast, loud, teaches the fix) — not just that
            the edge exists?
-        3. catalog — does `1.vision.experience.case=_.md` list them all, name each cell's feel and care,
+        3. catalog — does `1.vision.yield.appendix.experience.case=_.md` list them all, name each cell's feel and care,
            and link to its case file? did the junior hunt out and center the densest experiences
            — the ones that cross the most boundaries in one walk (highest value and highest
            risk)? a vision of only sterile single-boundary demos is thin.
@@ -129,13 +129,158 @@ reviews:
 
         ensure they're enumerated within the vision under "open questions & assumptions"
 
+    # ⇒ the WRITE-TIME half of the prose gate, and the cheapest lane in this guard.
+    #   it changes what gets written, so the peer lanes confirm rather than trim. no halt risk:
+    #   the driver answers it rather than argues with it.
+    - slug: has-ejected-the-archaeology
+      say: |
+        the yield states the OUTPUT. the road to it is archaeology, and archaeology is MOVED to an
+        appendix and cited by path — never cut, and never left in the yield.
+
+        walk $route/1.vision.yield.md section by section. for each passage ask:
+
+          who needs this, and WHEN?
+          - every reader, here                     → keep it in the yield
+          - no reader, ever                        → cut it
+          - a reader who disputes the claim, later → ARCHAEOLOGY. move it, and ref it
+
+        the third answer is the one that gets mis-sorted, and it is the whole point of this review.
+        a passage that is true, tight, cited, and load-bearing will pass every density check you
+        run — because those ask "is this worth keeping?" and the answer is yes. they never ask
+        "keep it WHERE?".
+
+        the tells, each of which is archaeology by definition:
+        - "we first tried X, then Y"        — an attempt trail
+        - a measurement's full method       — keep the number, ref the method
+        - a tool you built to reach a claim — the claim is the yield's; the tool is a note
+        - a review round narrated inline    — a round is archaeology by construction
+        - a read, its command, and its output — the verdict is the yield's; the trail is not
+        - "for the curious"                 — it just named itself a note
+
+        🔴 the SECOND mood, and NO lint catches it: an IMPERATIVE. a yield declares what IS; it
+        gives no orders. an order is unverifiable by a gate, it rots the moment it is obeyed, and
+        no downstream artifact takes it — a roadmap declares its steps too.
+        - "the driver should narrow the glob"     → "the glob is narrowed to <x>", if it is
+        - "phase 2 will fold the flag"            → "phase 2 = the flag is folded"
+        - any future tense: will, is to be        → a yield has no future tense
+
+        for each passage you move:
+        - it lands in $route/1.vision.yield.appendix.$what.md, at full depth. do NOT compress it.
+        - the yield keeps the DECISION it produced, in one line, plus a ref by path.
+        - an uncited note is a deletion. an unresolvable ref is a phantom path. both are blockers.
+
+        ⚠️ do not cut evidence to hit a length. that cut is lossy, and this review forbids it —
+        the move is what makes the yield terse without loss.
+
+        articulate: which passages you moved and where, which you kept and why every reader needs
+        them here, and which you cut. if you moved none, state which sections you walked and why
+        each earned its place in the decision file.
+
   peer:
     # dimensional decomposition — light-enrolled, scoped to one concern:
     # are the experience dimensions orthogonal + exhaustive, and is the product fully walked?
     # this is the discovery check — it grades the space, not the demos. it catches the
     # critipaths a free-list would miss, and closes the self-authored-yardstick gap.
+    #
+    # 🔴 BRACED — the nest must expand 2/2. a rename drops one SILENTLY while the other matches;
+    #    verify with `rhx globsafe --pattern '<the brace>'` after any edit to this bind.
+    #    the PRUNE rule rides here because it grades the same artifact the walk produces: a walked
+    #    space with no prune pass is the defect, and only this lane reads the dimensions.
     - slug: dimensional-decomposition
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/rule.require.dimensional-decomposition.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/howto.experience.decompose.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.axis=care.path=criti-vs-alter.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/domain.discovery/howto.dimensional-decomposition.md' --refs '$route/0.wish.md' --diffs since-main --paths-with '$route/1.vision.*.md' --join intersect --conversation $conversation --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/rule.{require.dimensional-decomposition,always.prune-the-experience-space}.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/domain.operations/rule.require.fewer-paths-via-idempotency.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/howto.experience.decompose.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.axis=care.path=criti-vs-alter.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/domain.discovery/howto.dimensional-decomposition.md' --refs '$route/0.wish.md' --diffs since-main --paths-with '$route/1.vision.*.md' --join intersect --conversation $conversation --output "$output"
+      budget: 3
+      level: 1
+
+    # ── the ARCHAEOLOGY lint — deterministic, $0, 1ms. it runs BESIDE the prose lanes on
+    #    purpose: this lane says WHICH LINE states the road, and the prose lanes grade what is
+    #    left once it is ejected.
+    #
+    # 🔴 `rule.require.archaeology-in-notes` offers a third verdict — MOVE — where cut and keep
+    #    both lose. a reviewer can STATE that verdict and a driver can argue with it; a lint
+    #    NAMES the line, so the repair is an edit.
+    # 🔴 it grades PLACE, never prose. a well-written retraction is still a retraction, and a
+    #    clean run says naught about whether what remains is dense — that is `dense-of-yields`.
+    # 🟡 it reads `$route/*.yield.md` alone. the appendix is where archaeology BELONGS, so a
+    #    lint over it would fine the driver for the ejection this lane exists to demand.
+    # 🟡 `budget: 99` is not a typo. a budget bounds ROUNDS because each round costs money and
+    #    attention; this one costs neither, so a bound on it saves naught.
+    # 🔴 `level: 0` runs it BEFORE the l1 LLM lanes. it is a $0/1ms deterministic scan, so it
+    #    fails the cheap defect loud before a paid reviewer spends a round — lowest level runs
+    #    first (`getStoneGuardLevelClearance.ts`).
+    - slug: archaeology-of-yields
+      run: $rhx review.for.yield-archaeology --route $route --stone 1.vision
+      budget: 99
+      level: 0
+
+    # ── the CUT gate. ONE lane per subject, and the merge is not a convenience: every rule in
+    #    the rubric repairs by REMOVAL, so the three lanes it replaces returned three verdicts
+    #    that ended in one instruction, at three context loads and three budgets.
+    #
+    #      cut it    the passage ranks below the 95% bar, or serves no purpose at all
+    #      move it   the passage belongs in a zoom, a note, or an appendix
+    #
+    # 🔴 the rules that grade a property OTHER than volume are dropped, and a measurement is why:
+    #    on a 20-rule prose lane, 24 of its 40 points — 60% — cited the three CHEAPEST mechanical
+    #    rules, and the five that grade the THOUGHT cited 0. a rule in a crowded lane is a rule
+    #    that never fires, so the dropped ones were already dark.
+    # 🔴 `--rules` is NOT repeatable — `review.ts` casts `options.rules as string`, so a second
+    #    `--rules` last-wins SILENTLY. the whole rubric rides one brace.
+    #
+    # 🔴 LIGHT and HEAVY bind the SAME peer set. the variant axis is self-review depth
+    #    (`define.guard-variants-heavy-light`), so a peer lane split by variant is a detection
+    #    hole keyed to a flag rather than to what the stage wrote. the briefs subject rode HEAVY
+    #    alone while it cost 3 extra lanes; at 1 lane that cost no longer buys the split.
+    # 🔴 the two subjects PARTITION the corpus: `-of-briefs` takes `**/*.md` minus the yields,
+    #    `-of-yields` takes the yields. prose is the whole artifact in a brief where it is a
+    #    minority of a skill, so a merged lane could not say which subject its verdict addressed.
+    # 🟡 the `--paths-wout` is what makes the partition real. it is NOT a second `--paths-with`:
+    #    a repeated `--paths-with` last-wins silently (bhuild#366).
+    #
+    # 🔴 BRACED — the nest must expand 10/10 for THIS subject. a rename drops a member SILENTLY
+    #    while the survivors still match (`length > 0`, no throw) — a partial rubric that reads
+    #    like a clean one. after ANY edit: `rhx globsafe --pattern '<the brace>'`.
+    # 🟡 the briefs subject pins `role={any,telepath,mechanic}`: architect and mechanic BOTH carry
+    #    `lang.prose/`, so an unpinned role glob loads two copies of three rules.
+    # 🟡 `--goal exhaustive` is set against the `representative` default: a SAMPLED verdict and a
+    #    SWEPT one render identically. `--optional rules` is ABSENT on purpose — with it, a
+    #    zero-match rubric skips and emits `0/0`, which the guard tallies as approved.
+    - slug: density-of-briefs
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=*/role={any,telepath,mechanic}/briefs/**/rule.{require.{reflexive-condensation,dense-prose,archaeology-in-notes,brevity},forbid.{purposeless-passages,defensive-prose,subversive-prose,rambles,chronological-accretion,ejectable-overzoom}}.md' --refs '.agent/repo=bhrain/role=telepath/briefs/define.{reflexive-condensation,subversive-prose,purpose-first}.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.prose/define.wick-dense.md' --refs '.agent/repo=bhrain/role=telepath/briefs/howto.razor-a-thought.md' --diffs since-main --paths-with '**/*.md' --paths-wout '.behavior/*' --paths-wout '.dream/*' --join intersect --goal exhaustive --conversation $conversation --output "$output"
+      budget: 3
+      level: 1
+
+    # 🔴 BRACED — the nest must expand 15/15 — NOT the same rubric as `density-of-briefs`. this subject adds the 5 behaver yield rules, which grade a property only a yield has. they are barred from the briefs subject by the crowding measurement above: a rule with no applicable subject still takes a slot, and the cheap rules win the slots.
+    - slug: density-of-yields
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=*/role={any,telepath,mechanic,behaver}/briefs/**/rule.{require.{reflexive-condensation,dense-prose,archaeology-in-notes,brevity,every-passage-earns-its-slot,yield.{declarative,hermeticity}},forbid.{purposeless-passages,defensive-prose,subversive-prose,rambles,chronological-accretion,ejectable-overzoom,downstream-detail-in-a-yield,yield.baggage}}.md' --refs '.agent/repo=bhrain/role=telepath/briefs/define.{reflexive-condensation,subversive-prose,purpose-first}.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.prose/define.wick-dense.md' --refs '.agent/repo=bhrain/role=telepath/briefs/howto.razor-a-thought.md' --diffs since-main --paths-with '$route/1.vision.yield.md' --join intersect --goal exhaustive --conversation $conversation --output "$output"
+      budget: 3
+      level: 1
+
+    # ── the CLOSE gate. two driver-owned checks, run HERE because the driver opens fulcrums and
+    #    spots adjacent fixes AT THIS STAGE — not at the terminal stone, where the context that
+    #    could close them is long gone. distinct from the terminal `fulcrums-driver-owned`
+    #    ESCALATION council: that gathers what the human must rule; these grade what the driver
+    #    already owed ITSELF.
+    #
+    # 🔴 `defer-fulcrums-to-last` governs WHEN to escalate (do not halt to ask the human at every
+    #    fork) — it does NOT license a CLOSEABLE fulcrum left open. a fulcrum the wish or a
+    #    reviewer impliedly answered "was never a fulcrum"; a clean-rework fork the driver resolved
+    #    is closed with its verdict recorded (`itemize-the-fulcrums-you-best-guess`). only a
+    #    DIRTY-rework fork is deferred to the council.
+    # 🔴 BRACED — the nest must expand 2/2. verify with `rhx globsafe`.
+    # 🟡 an empty `.fulcrums/` intersects to zero files and reads clean — no fulcrums, no check.
+    - slug: fulcrums-self-sufficient
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhrain/role=driver/briefs/rule.always.{defer-fulcrums-to-last,itemize-the-fulcrums-you-best-guess}.md' --refs '.agent/repo=bhrain/role=driver/briefs/howto.navigate-fulcrum-choices*.md' --diffs since-main --paths-with '$route/.fulcrums/inventory.of=fulcrums.*' --join intersect --goal exhaustive --conversation $conversation --output "$output"
+      budget: 3
+      level: 1
+
+    # 🔴 the scouts-honor gate: a fix SAFE + CLEAN + adjacent to the work is done NOW, never
+    #    deferred. a dream is earned ONLY by a large / dirty fix that ripples. the tell is a dream
+    #    that describes a small in-scope fix — that was a fix, never a follow-up
+    #    (`fix-forward-under-scouts-honor`, `catch-dreams-for-followups`).
+    # 🟡 subject is `$route/dreams/*` — the route-local dream symlinks; an empty dir reads clean.
+    # 🔴 BRACED — the nest must expand 2/2. verify with `rhx globsafe`.
+    - slug: scouts-honor-fix-forward
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhrain/role=driver/briefs/rule.always.{fix-forward-under-scouts-honor,catch-dreams-for-followups}.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/work.flow/rule.prefer.scouts-honor.md' --diffs since-main --paths-with '$route/dreams/*.md' --join intersect --goal exhaustive --conversation $conversation --output "$output"
       budget: 3
       level: 1
 

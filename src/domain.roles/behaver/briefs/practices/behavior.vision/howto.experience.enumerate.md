@@ -7,7 +7,7 @@ before you demonstrate any of them. you enumerate first, **then name its feel an
 experience gets a **feel** (happy / sharp) and a **care** (critipath / alterpath). the care
 decides what blocks, not whether it makes the list — an alterpath is enumerated the same as a
 critipath; it is just marked a bonus. the output is a list of experiences, each titled
-`actor + feel + observable outcome`, with a feel and care set, that the `case=N` demos then render
+`actor + feel + observable outcome`, with a feel and care set, that the `case=NNN` demos then render
 (narrative + `[tn]`) and the `case=_` catalog then indexes.
 
 this is the method behind `rule.require.experience-coverage`: the rule blocks on absent
@@ -71,7 +71,7 @@ demo — the close op is an idempotent no-op").
 | surfer | book my spot + tide → held (critipath) · take the nearest open slot → confirmation (alterpath — falls back to a named slot) | book a closed spot → named rejection (critipath) · grab the last slot → limit holds, site drops it at once (critipath) · book when the site-index is unreachable → fails loud, no stale slot (critipath) |
 | admin | close a spot → slots vanish at once (critipath) | close an already-closed spot → no-op (alterpath, skip) |
 
-every real-experience row after the dedupe is a `case=N` demo. every cell you marked skip/n/a is a
+every real-experience row after the dedupe is a `case=NNN` demo. every cell you marked skip/n/a is a
 declared non-experience — the review reads it as a deliberate choice, not an oversight.
 
 to name each row's **care**, apply the one test: *if this path broke, would a core usecase fail,

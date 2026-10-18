@@ -230,52 +230,152 @@ reviews:
         this is the final self-review. you are about to hand off to peer review.
         prove every item above was addressed — with a pointer — not deferred.
 
+    # ⇒ scouts honor, at the LAST gate that can still act on it. every prior stone asked the
+    #   same two questions of the dreams it could see; this asks them of the dreams the WHOLE
+    #   behavior accumulated, and it is the last stone with the code open. a dream that clears
+    #   this gate leaves the behavior, so the cheap fix it describes is re-derived by a stranger.
+    - slug: has-fixed-forward-adjacent-fixes
+      say: |
+        a fix that is SAFE + CLEAN + adjacent to this work is done NOW, in this behavior. a
+        dream is earned ONLY by a fix that is large, unsafe, or ripples beyond the open diff.
+
+        🔴 this is the LAST stone that can still do the fix. the code is open, the context is
+        held, and no later gate asks this again — so a dream you pass here is a dream that
+        ships, and the next traveler buys back the comprehension you already paid for.
+
+        walk $route/dreams/*.md — ALL of them, including those caught at earlier stones and
+        left standing. per dream, answer BOTH questions — and both grade the FIX, never the
+        scope:
+
+        1. is it SAFE?  does it touch behavior beyond what you came for, or risk work you
+                        cannot see?
+        2. is it CLEAN? does it land in the diff you already have, or does it ripple into
+                        files, contracts, and callers this change never opened?
+
+        | safe | clean | verdict                                                           |
+        |------|-------|-------------------------------------------------------------------|
+        | yes  | yes   | it was a FIX. do it NOW, and delete the dream                     |
+        | yes  | no    | a real defer — and it owes a fulcrum row, since the dirt is a call |
+        | no   | —     | a real defer — and it owes a fulcrum row                           |
+
+        🔴 these three are NOT one of the two questions, and each is the excuse a deferred
+        fix hides behind:
+        - "i wasn't asked to"            → scouts honor IS the fix nobody asked for
+        - "it belongs to a later stone"  → 🔴 there is no later stone. this is it
+        - "i'll flag it as a follow-up"  → that phrase IS the cue. run the two questions
+
+        🟡 a fix now costs seconds; the same fix later costs the full re-derivation, because
+        the comprehension that made it cheap is spent either way.
+
+        for each dream that fails the test: do the fix, delete the dream, and say so.
+        for each dream that passes: confirm its fulcrum row exists, or add one.
+
+    # ⇒ the WRITE-TIME half of the prose gate. it changes what gets written, so the peer lanes
+    #   confirm rather than trim. no halt risk: the driver answers it rather than argues with it.
+    - slug: has-ejected-the-archaeology
+      say: |
+        the yield states the OUTPUT; its road is archaeology — MOVED to an appendix and cited
+        by path, never cut and never left inline.
+
+        walk $route/5.3.verification.yield.md. per passage: who needs this, and WHEN?
+        - every reader, here                      → keep
+        - no reader, ever                         → cut
+        - a reader who disputes the claim, later  → archaeology; move it, ref it by path
+
+        the tells, each archaeology by definition:
+        - "we first tried X, then Y"              — an attempt trail
+        - a measurement's full method             — keep the number, ref the method
+        - a tool built to reach a claim           — the claim is the yield's; the tool is a note
+        - a review round narrated inline          — a round is archaeology by construction
+        - a calendar date on a measurement        — state what holds, not when you measured it
+        - "for the curious"                       — it just named itself a note
+
+        🔴 the SECOND mood, and NO lint catches it: an IMPERATIVE. a yield declares what IS; it
+        gives no orders. an order is unverifiable by a gate, it rots the moment it is obeyed, and
+        no downstream artifact takes it — a roadmap declares its steps too.
+        - "the driver should narrow the glob"     → "the glob is narrowed to <x>", if it is
+        - "phase 2 will fold the flag"            → "phase 2 = the flag is folded"
+        - any future tense: will, is to be        → a yield has no future tense
+
+        an uncited move is a deletion; an unresolvable ref is a phantom path — both blockers.
+        do NOT cut evidence to hit a length; that cut is lossy.
+
+        articulate: what you moved and where, what you kept and why every reader needs it here.
+        if you moved none, state which sections you walked and why each earned its place.
+
   peer:
+    # --- level 0: the deterministic archaeology floor (runs before the l1 LLM lanes) ---
+    # ⇒ the $0/1ms scan under `density-of-yields`. it NAMES the archaeology line, so the repair is
+    #   an edit rather than an argument. lowest level runs first (`getStoneGuardLevelClearance.ts`).
+    #   it grades PLACE not prose and reads $route/5.3.verification.yield.md alone. `budget: 99` —
+    #   it costs neither money nor attention, so a bound on rounds saves naught.
+    - slug: archaeology-of-yields
+      run: $rhx review.for.yield-archaeology --route $route --stone 5.3.verification
+      budget: 99
+      level: 0
+
     # --- level 1: cheap reviewers (run first, in parallel) ---
 
     - slug: repo-rules
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=.this/**/rule.*.md' --optional rules --diffs since-main --paths-with '**/*.{ts,sh,md,snap}' --join intersect --conversation $conversation --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=.this/**/rule.*.md' --optional rules --diffs since-main --paths-with '**/*.{ts,sh,md,snap}' --paths-wout '.behavior/*' --paths-wout '.dream/*' --join intersect --conversation $conversation --output "$output"
       budget: 3
       level: 1
 
     - slug: ergo-contract-snapshots
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.contract-snapshot-exhaustiveness.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --diffs since-main --paths-with '**/*.{ts,sh,md,snap}' --join intersect --conversation $conversation --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.contract-snapshot-exhaustiveness.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --diffs since-main --paths-with '**/*.{ts,sh,md,snap}' --paths-wout '.behavior/*' --paths-wout '.dream/*' --join intersect --conversation $conversation --output "$output"
       budget: 3
       level: 1
 
     - slug: mech-external-contracts
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.external-contract-integration-tests.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.unit/rule.forbid.remote-boundaries.md' --diffs since-main --paths-with '**/*.{ts,sh,md,snap}' --join intersect --conversation $conversation --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.external-contract-integration-tests.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.unit/rule.forbid.remote-boundaries.md' --diffs since-main --paths-with '**/*.{ts,sh,md,snap}' --paths-wout '.behavior/*' --paths-wout '.dream/*' --join intersect --conversation $conversation --output "$output"
       budget: 3
       level: 1
 
     - slug: ergo-acceptance-journey-coverage
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/ergonomist/rule.require.acceptance-journey-coverage.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/frames.behavior/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --diffs since-main --paths-with '**/*.{ts,sh,md,snap}' --join intersect --conversation $conversation --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/ergonomist/rule.require.acceptance-journey-coverage.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/frames.behavior/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --diffs since-main --paths-with '**/*.{ts,sh,md,snap}' --paths-wout '.behavior/*' --paths-wout '.dream/*' --join intersect --conversation $conversation --output "$output"
       budget: 3
       level: 1
 
     - slug: behavior-experience-coverage
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/rule.require.experience-{coverage,catalog-evolution}.md' --refs '$route/1.vision.experience.case=*.md' --refs '$route/1.vision.experience.dimensions.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience.md' --diffs since-main --paths-with '**/*.test.ts' --paths-with '**/*.snap' --join intersect --conversation $conversation --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/rule.require.experience-{coverage,catalog-evolution}.md' --refs '$route/1.vision.yield.appendix.experience.case=*.md' --refs '$route/1.vision.yield.appendix.experience.dimensions.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience.md' --diffs since-main --paths-with '**/*.{test.ts,snap}' --join intersect --conversation $conversation --output "$output"
       budget: 3
       level: 1
 
     - slug: ergo-snapshot-visual-blemishes
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/ergonomist/rule.forbid.snapshot-visual-blemishes.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.tones/*.md.min' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.contract-snapshot-exhaustiveness.md' --diffs since-main --paths-with '**/*.{ts,sh,md,snap}' --join intersect --conversation $conversation --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/ergonomist/rule.forbid.snapshot-visual-blemishes.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.tones/*.md.min' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.require.contract-snapshot-exhaustiveness.md' --diffs since-main --paths-with '**/*.{ts,sh,md,snap}' --paths-wout '.behavior/*' --paths-wout '.dream/*' --join intersect --conversation $conversation --output "$output"
       budget: 3
       level: 1
 
     - slug: mech-given-when-then
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/frames.behavior/rule.require.given-when-then.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/criteria.given_when_then.[seed].v3.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/frames.behavior/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/lessons.howto/*.md.min' --diffs since-main --paths-with '**/*.test.ts' --paths-with '**/*.snap' --join intersect --conversation $conversation --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/frames.behavior/rule.require.given-when-then.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/criteria.given_when_then.[seed].v3.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/frames.behavior/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/lessons.howto/*.md.min' --diffs since-main --paths-with '**/*.{test.ts,snap}' --join intersect --conversation $conversation --output "$output"
       budget: 3
       level: 1
 
     - slug: mech-test-intent
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.forbid.test-intent-violations.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/work.flow/refactor/rule.require.review-test-changes.md.min' --diffs since-main --paths-with '**/*.test.ts' --paths-with '**/*.snap' --join intersect --conversation $conversation --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/rule.forbid.test-intent-violations.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/work.flow/refactor/rule.require.review-test-changes.md.min' --diffs since-main --paths-with '**/*.{test.ts,snap}' --join intersect --conversation $conversation --output "$output"
       budget: 3
       level: 1
 
     - slug: mech-test-scope-purity
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.*/rule.*.md' --diffs since-main --paths-with '{src,blackbox}/**/*.test.ts' --join intersect --conversation $conversation --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.*/rule.*.md' --diffs since-main --paths-with '**/*.test.ts' --join intersect --conversation $conversation --output "$output"
       budget: 3
+      level: 1
+
+    # ── the CUT gate, bound to THIS stage's yield. ONE lane, because every rule in the rubric
+    #    repairs by REMOVAL — cut the passage, or move it to a zoom. the rubric itself, and the
+    #    measurement that set its size, are declared once in `1.vision.guard`.
+    #
+    # 🔴 the subject is THIS stage's yield, never `$route/*.yield.md`. a route-wide glob would
+    #    re-grade every prior stage's yield — each already approved, each already answered — so the
+    #    driver pays for a re-litigation the guard cannot distinguish from a fresh defect.
+    # 🔴 BRACED — the nest must expand 15/15 — the 10 prose rules plus the 5 behaver yield rules, which grade a property only a yield has. a rename drops a member SILENTLY while the survivors
+    #    still match (`length > 0`, no throw). verify with `rhx globsafe --pattern '<the brace>'`.
+    # 🟡 `role={any,telepath,mechanic,behaver}` pins the fork: architect and mechanic BOTH carry
+    #    `lang.prose/`, so an unpinned role glob loads two copies of three rules.
+    - slug: density-of-yields
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=*/role={any,telepath,mechanic,behaver}/briefs/**/rule.{require.{reflexive-condensation,dense-prose,archaeology-in-notes,brevity,every-passage-earns-its-slot,yield.{declarative,hermeticity}},forbid.{purposeless-passages,defensive-prose,subversive-prose,rambles,chronological-accretion,ejectable-overzoom,downstream-detail-in-a-yield,yield.baggage}}.md' --refs '.agent/repo=bhrain/role=telepath/briefs/define.{reflexive-condensation,subversive-prose,purpose-first}.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.prose/define.wick-dense.md' --refs '.agent/repo=bhrain/role=telepath/briefs/howto.razor-a-thought.md' --diffs since-main --paths-with '$route/5.3.verification.yield.md' --join intersect --goal exhaustive --conversation $conversation --output "$output"
+      budget: 3
+      level: 1
       level: 1
 
     # --- level 3: expensive reviewers (run after level 1 is terminal) ---

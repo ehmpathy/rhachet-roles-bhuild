@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node '.agent/repo=bhrain/role=telepath/skills/review.for/review.for.emphasis-noise.density.js' .behavior/v2026_09_04 --limit=0)",
+      "Bash(node '.agent/repo=bhrain/role=telepath/skills/review.for/review.for.emphasis-noise.density.js' 1.vision.yield.md --limit=0)",
+      "Bash(node '.agent/repo=bhrain/role=telepath/skills/review.for/review.for.width-ambiguous-glyphs.js' .behavior/v2026_09_04)",
+      "Bash(node '.agent/repo=bhrain/role=telepath/skills/review.for/review.for.diffusion.flat.js' .behavior/v2026_09_04.feat-behavior-route-upgrades/1.vision.yield.md)",
+      "Bash(node '.agent/repo=bhrain/role=telepath/skills/review.for/review.for.narration.paragraphs.js' .behavior/v2026_09_04.feat-behavior-route-upgrades/1.vision.yield.md)",
+      "Bash(node:*)",
+      "Bash(for s:*)",
+      "Bash(do rhx:*)",
+      "Bash(done)",
+      "Bash(rhx grepsafe:*)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Read(//^  peer:/{p=1} /^  self:/{p=0} p&&/- slug:/**)",
+      "Bash(git rev-parse:*)",
+      "Bash(for c:*)",
+      "Bash(do printf:*)",
+      "Bash(git -C /home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-behavior-route-upgrades diff --stat main...HEAD)",
+      "Bash(git rm:*)"
+    ]
+  }
+}

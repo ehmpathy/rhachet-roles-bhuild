@@ -5,9 +5,16 @@
 **happy vs sharp** is the **feel** axis of an experience — what the actor *feels* as they walk
 the path.
 
-- a **happy path** — the smooth success. the actor gets what they came for, no snag.
-- a **sharp path** — an edge that can cut. a rejection, a limit, a handoff gone wrong — a place
+```
+🌴 happy — smooth passage; no edge to guard   🌵 sharp — an edge the behavior must guard
+```
+
+- 🌴 a **happy path** — the smooth success. the actor gets what they came for, no snag.
+- 🌵 a **sharp path** — an edge that can cut. a rejection, a limit, a handoff gone wrong — a place
   the actor can get hurt if the behavior does not handle it well.
+
+🟡 **a sharp path is not a defect** — it is handled, or it is not. why the glyph pair is 🌴/🌵, and
+the six candidates rejected: `term=behavior.experience._.choice.reason.md` §*the glyphs*.
 
 this is one of the two axes an experience sits on (see `define.experience`). the other is
 **care** (critipath vs alterpath — see `define.experience._.axis=care.path=criti-vs-alter`). they are independent:
@@ -21,10 +28,24 @@ trace, a silent no-op, a double-charge, a stranded slot. **feel** forces the aut
 edges *before* execution, at the vision, where a sharp edge costs a paragraph to handle instead
 of a rebuild.
 
+## .the discriminator is the EDGE, never the OUTCOME
+
+🔴 **a sharp path routinely succeeds.** the `limit` row below is *"the successful edge"* — grab
+the **last** open slot and you get exactly what you came for, one step from a double-book.
+
+| the question | |
+|---|---|
+| *"did the actor get what they came for?"* | ⛔ holds of both poles |
+| *"did it glide, or did it hurt?"* | ⛔ names the mechanism, not the encounter |
+| **"is there an edge here the behavior must guard?"** | ✅ the axis |
+
+⇒ `sharp` = an edge **present**, plus the obligation to fail safe. never a cut that landed.
+
 ## .a sharp path must fail safe
 
-a happy path just needs to work. a **sharp path carries an extra obligation**: the demo must
-show the edge is handled so the actor is **not cut**. a sharp path fails safe when it is:
+a happy path has no edge, so its demo shows it reaches the goal. a **sharp path carries an
+extra obligation**: its demo must show the edge is guarded, so the actor is **not cut**. a
+sharp path fails safe when it is:
 
 - **fast** — caught at once, at the boundary, not deep in a call stack
   (`code.prod/pitofsuccess.errors/rule.require.failfast`)
@@ -79,13 +100,24 @@ do not conflate the axes:
 feel sets the **obligation** (a sharp path must fail safe); care sets the **severity** (a
 critipath blocks if absent, an alterpath is a nitpick). you name a feel and a care on every experience.
 
+🟡 **the axes collapse fastest through vocabulary.** the tell is which question a word answers:
+
+| a word like… | belongs to | it answers |
+|---|---|---|
+| reliable · load-critical · lean on it · it holds | **care** | *what if it breaks?* |
+| smooth · snag · edge · limit · guarded · cut | **feel** | *what does the actor meet?* |
+
+a `feel` gloss that says *"it holds"* has stated a `care` verdict.
+
 ## .see also
 
 - `define.experience` — the parent frame (feel × care) these two briefs deepen
 - `define.experience._.axis=care.path=criti-vs-alter` — the other axis (how much we care)
 - `define.experience._.metric=boundary-density` — the metric to prioritize demos by (the guardrail here protects its
   fail-safe requirement inside dense journeys)
-- `define.experience._.demo.surf-school` — the worked catalog + cases (a sharp critipath that fails safe)
+- `define.experience._.demo.surf-school` 🐢 — the 2×2 baseline; the axes are independent
+- `define.experience._.demo.ship-sailor` 🐈⛵ — 🔴 **a sharp path that SUCCEEDS** (miki clears the shoal on the last tide minute)
+- `define.experience._.demo.camp-beaver` 🦫 — frequency flips the care; severity is an aggregate
 - ergonomist `def.frictionless`, `def.ergonomic`, `rule.require.errors-name-the-fix` — the
   pit-of-success lens a sharp path must prove
 - mechanic `rule.require.failfast`, `rule.require.failloud` — fast + loud, the first two proofs
