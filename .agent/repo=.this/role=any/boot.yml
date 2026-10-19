@@ -9,7 +9,7 @@
 # .mode = SUBJECT (the `always:` key): the say glob and the ref globs apply together.
 
 budget:
-  tokens: 5_000
+  tokens: 30_000
 always:
   briefs:
     say:

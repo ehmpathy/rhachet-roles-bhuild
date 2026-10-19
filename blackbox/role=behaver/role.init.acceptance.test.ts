@@ -1,8 +1,23 @@
-import fs from 'fs';
-import path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
-import { genConsumerRepo, runRolesInit } from '../.test/infra';
+import {
+  genConsumerRepo,
+  getRepoClaudeSettings,
+  REPO_CLAUDE_SETTINGS_PATH,
+  runRolesInit,
+  setFileInRepo,
+} from '../.test/infra';
+
+/**
+ * .what = the hooks under one claude event, flattened across matchers
+ * .why  = each assertion asks about hooks, not the matcher shape that groups them
+ */
+const getHooksOfEvent = (input: {
+  repoDir: string;
+  event: string;
+}): { command: string; author?: string }[] =>
+  (getRepoClaudeSettings({ repoDir: input.repoDir }).hooks?.[input.event] ?? [])
+    .flatMap((matcher) => matcher.hooks ?? []);
 
 describe('behaver role.init acceptance (as consumer)', () => {
   given('[case1] fresh consumer repo without behaver initialization', () => {
@@ -26,66 +41,36 @@ describe('behaver role.init acceptance (as consumer)', () => {
         expect(result.exitCode).toBe(0);
       });
 
-      then('binds hooks to settings.json (repo-level)', () => {
-        // verify hooks are bound to settings.json (not settings.local.json)
-        const settingsPath = path.join(
-          scene.repoDir,
-          '.claude',
-          'settings.json',
-        );
-        expect(fs.existsSync(settingsPath)).toBe(true);
-
-        const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
-
-        // verify SessionStart hook was added for boot-behavior
-        expect(settings.hooks).toBeDefined();
-        expect(settings.hooks.SessionStart).toBeDefined();
-
-        // hooks are structured as: { matcher: "*", hooks: [{ command: "...", ... }] }
-        const sessionStartMatchers = settings.hooks.SessionStart;
-        const matcherWithBootBehavior = sessionStartMatchers.find(
-          (entry: { matcher: string; hooks: Array<{ command: string }> }) =>
-            entry.hooks?.some((hook) =>
-              hook.command.includes('sessionstart.boot-behavior'),
-            ),
-        );
-        expect(matcherWithBootBehavior).toBeDefined();
+      then('binds hooks to the repo-level settings', () => {
+        // rhachet binds role hooks into .claude/settings.of.repo.json — never the
+        // .claude/settings.json beside it, which links to the host's own settings
+        const hooks = getHooksOfEvent({
+          repoDir: scene.repoDir,
+          event: 'SessionStart',
+        });
+        expect(
+          hooks.some((hook) =>
+            hook.command.includes('sessionstart.boot-behavior'),
+          ),
+        ).toBe(true);
       });
 
       then('hook command uses rhachet run --init pattern', () => {
-        const settingsPath = path.join(
-          scene.repoDir,
-          '.claude',
-          'settings.json',
-        );
-        const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
-        const sessionStartMatchers = settings.hooks.SessionStart;
-        const hooks = sessionStartMatchers.flatMap(
-          (m: { hooks?: { command: string }[] }) => m.hooks ?? [],
-        );
-        const bootHook = hooks.find((h: { command: string }) =>
-          h.command.includes('boot-behavior'),
-        );
+        const bootHook = getHooksOfEvent({
+          repoDir: scene.repoDir,
+          event: 'SessionStart',
+        }).find((hook) => hook.command.includes('boot-behavior'));
 
-        expect(bootHook.command).toContain('rhachet');
-        expect(bootHook.command).toContain('run');
-        expect(bootHook.command).toContain('--init');
+        expect(bootHook?.command).toContain('rhachet');
+        expect(bootHook?.command).toContain('run');
+        expect(bootHook?.command).toContain('--init');
       });
 
       then('hook has correct author tag', () => {
-        const settingsPath = path.join(
-          scene.repoDir,
-          '.claude',
-          'settings.json',
-        );
-        const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
-        const sessionStartMatchers = settings.hooks.SessionStart;
-        const hooks = sessionStartMatchers.flatMap(
-          (m: { hooks?: { author: string }[] }) => m.hooks ?? [],
-        );
-        const bootHook = hooks.find(
-          (h: { author: string }) => h.author === 'repo=bhuild/role=behaver',
-        );
+        const bootHook = getHooksOfEvent({
+          repoDir: scene.repoDir,
+          event: 'SessionStart',
+        }).find((hook) => hook.author === 'repo=bhuild/role=behaver');
 
         expect(bootHook).toBeDefined();
       });
@@ -127,27 +112,34 @@ describe('behaver role.init acceptance (as consumer)', () => {
           withClaudeDir: true,
         });
 
-        // inject a stale hook that uses deprecated .agent/ path pattern
-        const settingsPath = path.join(repoDir, '.claude', 'settings.json');
-        const staleSettings = {
-          hooks: {
-            SessionStart: [
-              {
-                matcher: '*',
-                hooks: [
+        // inject a stale hook that uses deprecated .agent/ path pattern.
+        // setFileInRepo refuses any write that would leave the temp repo
+        setFileInRepo({
+          repoDir,
+          path: REPO_CLAUDE_SETTINGS_PATH,
+          content: JSON.stringify(
+            {
+              hooks: {
+                SessionStart: [
                   {
-                    type: 'command',
-                    command:
-                      '.agent/repo=bhuild/role=behaver/inits/claude.hooks/old-boot-behavior.sh',
-                    timeout: 10,
-                    author: 'repo=bhuild/role=behaver',
+                    matcher: '*',
+                    hooks: [
+                      {
+                        type: 'command',
+                        command:
+                          '.agent/repo=bhuild/role=behaver/inits/claude.hooks/old-boot-behavior.sh',
+                        timeout: 10,
+                        author: 'repo=bhuild/role=behaver',
+                      },
+                    ],
                   },
                 ],
               },
-            ],
-          },
-        };
-        fs.writeFileSync(settingsPath, JSON.stringify(staleSettings, null, 2));
+            },
+            null,
+            2,
+          ),
+        });
 
         return { repoDir };
       });
@@ -165,28 +157,20 @@ describe('behaver role.init acceptance (as consumer)', () => {
       });
 
       then('stale hook is cleaned and replaced', () => {
-        const settingsPath = path.join(
-          scene.repoDir,
-          '.claude',
-          'settings.json',
-        );
-        const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
-        const sessionStartMatchers = settings.hooks?.SessionStart ?? [];
-        const hooks = sessionStartMatchers.flatMap(
-          (m: { hooks?: { command: string }[] }) => m.hooks ?? [],
-        );
+        const hooks = getHooksOfEvent({
+          repoDir: scene.repoDir,
+          event: 'SessionStart',
+        });
 
         // stale hook should be removed
-        const staleHook = hooks.find((h: { command: string }) =>
-          h.command.includes('.agent/repo=bhuild'),
-        );
-        expect(staleHook).toBeUndefined();
+        expect(
+          hooks.find((hook) => hook.command.includes('.agent/repo=bhuild')),
+        ).toBeUndefined();
 
         // new hook should be present
-        const validHook = hooks.find((h: { command: string }) =>
-          h.command.includes('boot-behavior'),
-        );
-        expect(validHook).toBeDefined();
+        expect(
+          hooks.find((hook) => hook.command.includes('boot-behavior')),
+        ).toBeDefined();
       });
     });
   });
