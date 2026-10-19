@@ -20,12 +20,7 @@ export const ROLE_DISPATCHER: Role = Role.build({
   keyrack: { uri: __dirname + '/keyrack.yml' },
   hooks: {
     onBrain: {
-      onBoot: [
-        {
-          command: './node_modules/.bin/rhachet roles boot --role dispatcher',
-          timeout: 'PT10S',
-        },
-      ],
+      onBoot: [],
       onTool: [],
       onStop: [
         // remind the human of held radio tasks, in one line; never blocks the stop.

@@ -20,12 +20,7 @@ export const ROLE_DECOMPOSER: Role = Role.build({
   },
   hooks: {
     onBrain: {
-      onBoot: [
-        {
-          command: './node_modules/.bin/rhachet roles boot --role decomposer',
-          timeout: 'PT10S',
-        },
-      ],
+      onBoot: [],
       onTool: [],
       onStop: [],
     },

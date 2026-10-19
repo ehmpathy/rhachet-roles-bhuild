@@ -29,12 +29,7 @@ export const ROLE_SUPERVISOR: Role = Role.build({
   },
   hooks: {
     onBrain: {
-      onBoot: [
-        {
-          command: './node_modules/.bin/rhachet roles boot --role supervisor',
-          timeout: 'PT10S',
-        },
-      ],
+      onBoot: [],
       onTool: [],
       onStop: [],
     },
