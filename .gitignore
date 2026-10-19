@@ -30,4 +30,4 @@ z.plan.*.json
 # a duct registry is machine-global ($HOME/.ductwork). a `registry/` at the repo
 # root is test litter from a run that wrote under $PWD — never source.
 /registry/
-!.agent/.actors/actor.via.slug=.default/
+!.agent/.actors/actor.via.repo=ambient/

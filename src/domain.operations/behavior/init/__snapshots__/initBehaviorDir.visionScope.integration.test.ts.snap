@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`initBehaviorDir.visionScope given: [case1] a vision route, guard=light when: [t0] each vision peer lane scope is walked by bhrain then: the scopes match the snapshot 1`] = `
+[
+  {
+    "files": [
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.case=1.book-a-lesson.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.case=_.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.dimensions.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.yield.md",
+    ],
+    "slug": "dimensional-decomposition",
+  },
+  {
+    "files": [
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.case=1.book-a-lesson.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.case=_.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.dimensions.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.yield.md",
+    ],
+    "slug": "experience-coverage",
+  },
+]
+`;
+
+exports[`initBehaviorDir.visionScope given: [case2] a vision route, guard=heavy when: [t0] each vision peer lane scope is walked by bhrain then: the scopes match the snapshot 1`] = `
+[
+  {
+    "files": [
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.case=1.book-a-lesson.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.case=_.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.dimensions.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.yield.md",
+    ],
+    "slug": "dimensional-decomposition",
+  },
+  {
+    "files": [
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.case=1.book-a-lesson.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.case=_.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.dimensions.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.yield.md",
+    ],
+    "slug": "experience-coverage",
+  },
+]
+`;

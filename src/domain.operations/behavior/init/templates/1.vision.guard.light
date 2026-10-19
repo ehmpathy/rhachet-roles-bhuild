@@ -130,18 +130,22 @@ reviews:
         ensure they're enumerated within the vision under "open questions & assumptions"
 
   peer:
+    # each lane binds two globs. the first reaches the yield. the second reaches the experience
+    # files. bhrain drops route files other than `*.yield.md` unless a glob names them and naught
+    # else — so the experience files need a glob of their own, or the lanes never read them.
+    #
     # dimensional decomposition — light-enrolled, scoped to one concern:
     # are the experience dimensions orthogonal + exhaustive, and is the product fully walked?
     # this is the discovery check — it grades the space, not the demos. it catches the
     # critipaths a free-list would miss, and closes the self-authored-yardstick gap.
     - slug: dimensional-decomposition
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/rule.require.dimensional-decomposition.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/howto.experience.decompose.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.axis=care.path=criti-vs-alter.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/domain.discovery/howto.dimensional-decomposition.md' --refs '$route/0.wish.md' --diffs since-main --paths-with '$route/1.vision.*.md' --join intersect --conversation $conversation --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/rule.require.dimensional-decomposition.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/howto.experience.decompose.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.axis=care.path=criti-vs-alter.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/domain.discovery/howto.dimensional-decomposition.md' --refs '$route/0.wish.md' --diffs since-main --paths-with '$route/1.vision.*.md' --paths-with '$route/1.vision.experience.*.md' --join intersect --conversation $conversation --output "$output"
       budget: 3
       level: 1
 
     # experience coverage — light-enrolled, scoped to one concern:
     # are the critipaths (happy + sharp) each demonstrated, and do sharp ones fail safe?
     - slug: experience-coverage
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/rule.require.experience-coverage.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.axis=feel.path=happy-vs-sharp.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.axis=care.path=criti-vs-alter.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.metric=boundary-density.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/howto.experience.enumerate.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.demo.surf-school.md' --refs '$route/0.wish.md' --diffs since-main --paths-with '$route/1.vision.*.md' --join intersect --conversation $conversation --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/rule.require.experience-coverage.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.axis=feel.path=happy-vs-sharp.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.axis=care.path=criti-vs-alter.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.metric=boundary-density.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/howto.experience.enumerate.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.demo.surf-school.md' --refs '$route/0.wish.md' --diffs since-main --paths-with '$route/1.vision.*.md' --paths-with '$route/1.vision.experience.*.md' --join intersect --conversation $conversation --output "$output"
       budget: 3
       level: 1

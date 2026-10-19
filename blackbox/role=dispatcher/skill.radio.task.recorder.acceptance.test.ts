@@ -7,6 +7,8 @@ import { given, then, useBeforeAll, useThen, when } from 'test-fns';
 import { getTimestampFound } from '../../src/.test/utils/getTimestampFound';
 import {
   genConsumerRepo,
+  getRepoClaudeSettings,
+  REPO_CLAUDE_SETTINGS_PATH,
   runRhachetSkill,
   runRolesInit,
   sanitizeOutput,
@@ -46,8 +48,8 @@ const runDispatcherSkill = (input: {
 
 /**
  * .what = a consumer repo with the dispatcher role initialized, as a human sets it up
- * .why = `rhachet roles init` writes the onStop hook into `.claude/settings.json`; the test
- *        drives the hook from there, the same surface claude reads
+ * .why = `rhachet roles init` writes the onStop hook into the repo-level claude settings;
+ *        the test drives the hook from there, the same surface claude reads
  */
 const genConsumerRepoWithDispatcher = (input: {
   prefix: string;
@@ -69,27 +71,21 @@ const genConsumerRepoWithDispatcher = (input: {
 
 /**
  * .what = the dispatcher's onStop hook command, as written into the consumer's settings
- * .why = the hook is a contract claude runs from `.claude/settings.json`; the test reads it
- *        there rather than from the role's source, so a wire defect in init surfaces here
+ * .why = the hook is a contract claude runs from the repo-level claude settings; the test
+ *        reads it there rather than from the role's source, so a wire defect in init
+ *        surfaces here
  */
 const getOnStopHookCommandFromSettings = (input: {
   repoDir: string;
 }): string => {
-  const settings = JSON.parse(
-    fs.readFileSync(
-      path.join(input.repoDir, '.claude', 'settings.json'),
-      'utf-8',
-    ),
-  ) as {
-    hooks?: Record<string, { hooks?: { command: string }[] }[]>;
-  };
+  const settings = getRepoClaudeSettings({ repoDir: input.repoDir });
   const command = (settings.hooks?.Stop ?? [])
     .flatMap((entry) => entry.hooks ?? [])
     .map((hook) => hook.command)
     .find((cmd) => cmd.includes('radioTaskHeld'));
   if (!command)
     throw new MalfunctionError(
-      'dispatcher onStop hook absent from .claude/settings.json',
+      `dispatcher onStop hook absent from ${REPO_CLAUDE_SETTINGS_PATH}`,
       {
         hint: 'rhachet roles init --role dispatcher must bind onBrain.onStop for radio.task.held',
         hooks: settings.hooks,

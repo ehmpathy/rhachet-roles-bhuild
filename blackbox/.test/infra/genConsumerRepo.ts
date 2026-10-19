@@ -5,6 +5,9 @@ import path from 'path';
 
 import { genTempDir } from 'test-fns';
 
+import { REPO_CLAUDE_SETTINGS_PATH } from './getRepoClaudeSettings';
+import { setFileInRepo } from './setFileInRepo';
+
 /**
  * .what = the roles every consumer repo links, in link order
  * .why  = one list feeds the template build, so a role added here reaches
@@ -234,14 +237,16 @@ export const genConsumerRepo = (input?: {
 
   setConsumerLinks({ repoDir });
 
-  // a pre-made .claude/settings.json is what `roles link` would have found.
-  // link moves it into the actor brain dir and leaves `.claude` a symlink to
-  // that dir, so a write through the copied symlink lands it exactly there
+  // seed empty repo-level settings, so `roles init` binds hooks into a clean file.
+  // 🔴 never `.claude/settings.json`: it links on to the host's own
+  //    `~/.claude/settings.json`, and a write there clobbers the machine's real
+  //    settings. setFileInRepo refuses any write that would leave the repo
   if (input?.withClaudeDir)
-    fs.writeFileSync(
-      path.join(repoDir, '.claude', 'settings.json'),
-      JSON.stringify({ hooks: {} }, null, 2),
-    );
+    setFileInRepo({
+      repoDir,
+      path: REPO_CLAUDE_SETTINGS_PATH,
+      content: JSON.stringify({ hooks: {} }, null, 2),
+    });
 
   return { repoDir };
 };
