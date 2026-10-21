@@ -9,3 +9,5 @@
 | F5 | "park at a gate" moves the token limits only, not ram | clean | open | 75% |
 | F6 | report the answer as a frontier per kind + an exchange rate, not one mixed number | clean | open | 75% |
 | F7 | keep the sprout gate (`--for <kind>`) in scope, though the wish did not ask | clean | open | 60% |
+| F8 | per-call account attribution is not a blocker: calibrate the account pool from a statusline % ledger | clean | open | 70% |
+| F9 | all seven accounts share one plan tier (best guess: Max); if wrong, the pool reads low | clean | open | 60% |

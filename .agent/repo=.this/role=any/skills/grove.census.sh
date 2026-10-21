@@ -12,6 +12,8 @@
 #   grove.census.sh --window 180       # token window, in minutes
 #   grove.census.sh --sample 60        # fork-rate sample, in seconds
 #   grove.census.sh --json             # one json record, for a tick
+#   grove.census.sh --since <iso> --until <iso>
+#                                      # burn between two utc instants (cap calibration)
 #
 # guarantee:
 #   - read-only: reads /proc and claude transcripts; writes no file
@@ -30,6 +32,8 @@ trap 'exit 0' PIPE
 WINDOW_MIN=60
 SAMPLE_SEC=30
 AS_JSON=false
+SINCE_AT=""
+UNTIL_AT=""
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -49,10 +53,20 @@ while [[ $# -gt 0 ]]; do
       AS_JSON=true
       shift
       ;;
+    --since)
+      SINCE_AT="$2"
+      shift 2
+      ;;
+    --until)
+      UNTIL_AT="$2"
+      shift 2
+      ;;
     --help|-h)
-      echo "usage: grove.census.sh [--window <min>] [--sample <sec>] [--json]"
+      echo "usage: grove.census.sh [--window <min> | --since <iso> [--until <iso>]] [--sample <sec>] [--json]"
       echo ""
-      echo "  --window <min>   token burn window, in minutes (default 60)"
+      echo "  --window <min>   token burn window, in minutes back from now (default 60)"
+      echo "  --since <iso>    token burn from this instant (utc), in place of --window"
+      echo "  --until <iso>    token burn up to this instant (utc; default now)"
       echo "  --sample <sec>   fork-rate sample length, in seconds (default 30)"
       echo "  --json           emit one json record in place of the tree"
       exit 0
@@ -153,27 +167,71 @@ CREW_RAM_JSON=$(
   '
 )
 
+# token burn span: --since/--until when given, else the last --window minutes
+NOW_EPOCH=$(date -u +%s)
+SINCE_EPOCH=$((NOW_EPOCH - WINDOW_MIN * 60))
+UNTIL_EPOCH=$NOW_EPOCH
+if [[ -n "$SINCE_AT" ]]; then
+  SINCE_EPOCH=$(date -u -d "$SINCE_AT" +%s 2>/dev/null) || { echo "✋ ConstraintError: --since is not a readable instant: '$SINCE_AT'" >&2; exit 2; }
+fi
+if [[ -n "$UNTIL_AT" ]]; then
+  UNTIL_EPOCH=$(date -u -d "$UNTIL_AT" +%s 2>/dev/null) || { echo "✋ ConstraintError: --until is not a readable instant: '$UNTIL_AT'" >&2; exit 2; }
+fi
+(( SINCE_EPOCH < UNTIL_EPOCH )) || { echo "✋ ConstraintError: the span is empty: --since must precede --until (and now)" >&2; exit 2; }
+SINCE=$(date -u -d "@$SINCE_EPOCH" +%Y-%m-%dT%H:%M:%S)
+UNTIL=$(date -u -d "@$UNTIL_EPOCH" +%Y-%m-%dT%H:%M:%S)
+WINDOW_MIN=$(( (UNTIL_EPOCH - SINCE_EPOCH) / 60 ))
+FIND_MIN=$(( (NOW_EPOCH - SINCE_EPOCH) / 60 + 1 ))
+
 # token burn per crew, from every claude config dir on this grove
-SINCE=$(date -u -d "-${WINDOW_MIN} min" +%Y-%m-%dT%H:%M:%S)
 CONFIG_DIRS=()
 [[ -d "$HOME/.claude/projects" ]] && CONFIG_DIRS+=("$HOME/.claude")
 for d in "$HOME"/git/*/_worktrees/*/.agent/.actors/*/brain/.claude "$HOME"/git/*/*/.agent/.actors/*/brain/.claude; do
   [[ -d "$d/projects" ]] && CONFIG_DIRS+=("$d")
 done
 
+# the account a config dir is signed in to NOW (transcripts record none)
+# .note = a swap overwrites this, so burn before the last swap is misattributed
+read_account() {
+  local cfg="$1" file
+  for file in "$cfg/.claude.json" "$(dirname "$cfg")/.claude.json"; do
+    [[ -f "$file" ]] || continue
+    jq -r '.oauthAccount.emailAddress // "unsigned"' "$file" 2>/dev/null && return 0
+  done
+  echo "unknown"
+}
+
 TOKEN_LINES=$(
   for cfg in "${CONFIG_DIRS[@]}"; do
     actor=$(echo "$cfg" | sed -n 's#.*/\.actors/\([^/]*\)/brain/\.claude$#\1#p')
-    find "$cfg/projects" -name '*.jsonl' -mmin "-$WINDOW_MIN" 2>/dev/null | while read -r file; do
+    account=$(read_account "$cfg")
+    find "$cfg/projects" -name '*.jsonl' -mmin "-$FIND_MIN" 2>/dev/null | while read -r file; do
       fork=false
       [[ "$file" == */subagents/* ]] && fork=true
-      jq -c --arg since "$SINCE" --arg actor "${actor:-home}" --argjson fork "$fork" '
-        select(.timestamp? != null and .timestamp >= $since and .message.usage? != null)
-        | { id: (.message.id // .uuid), cwd: (.cwd // ""), actor: $actor, fork: $fork,
+      jq -c --arg since "$SINCE" --arg until "$UNTIL" --arg actor "${actor:-home}" --arg account "$account" --argjson fork "$fork" '
+        select(.timestamp? != null and .timestamp >= $since and .timestamp < $until and .message.usage? != null)
+        | { id: (.message.id // .uuid), cwd: (.cwd // ""), actor: $actor, account: $account, fork: $fork,
             session: (.sessionId // ""), u: .message.usage }
       ' "$file" 2>/dev/null || true
     done
   done
+)
+
+# burn per account, by the account each config dir is signed in to now
+ACCOUNT_TOKENS_JSON=$(
+  echo "$TOKEN_LINES" | jq -s '
+    def n($x): ($x // 0);
+    unique_by(.id)
+    | map({ account, cfg: .actor,
+            weighted: (n(.u.input_tokens)
+              + 1.25 * (n(.u.cache_creation_input_tokens) - n(.u.cache_creation.ephemeral_1h_input_tokens))
+              + 2 * n(.u.cache_creation.ephemeral_1h_input_tokens)
+              + 0.1 * n(.u.cache_read_input_tokens) + 5 * n(.u.output_tokens)) })
+    | group_by(.account)
+    | map({ account: .[0].account, config_dirs: (map(.cfg) | unique | length),
+            weighted: (map(.weighted) | add | floor) })
+    | sort_by(-.weighted)
+  '
 )
 
 CREW_TOKENS_JSON=$(
@@ -211,7 +269,7 @@ RECORD=$(jq -n \
   --argjson swapKb "$SWAP_TOTAL_KB" --argjson load1 "$LOAD_1" --argjson load5 "$LOAD_5" \
   --arg psiCpu "$PSI_CPU_SOME_60" --arg psiMemSome "$PSI_MEM_SOME_60" --arg psiMemFull "$PSI_MEM_FULL_60" \
   --argjson forksPerSec "$FORKS_PER_SEC" --argjson sampleSec "$SAMPLE_SEC" --argjson windowMin "$WINDOW_MIN" \
-  --argjson coresBusy "$CORES_BUSY" \
+  --argjson coresBusy "$CORES_BUSY" --argjson accounts "$ACCOUNT_TOKENS_JSON" \
   --argjson ram "$CREW_RAM_JSON" --argjson tokens "$CREW_TOKENS_JSON" '
   { grove: $host, date: $date,
     cpu: { count: $cpus, busy_cores: $coresBusy, load1: $load1, load5: $load5, psi_some_avg60: $psiCpu },
@@ -219,6 +277,7 @@ RECORD=$(jq -n \
            swap_gb: ($swapKb / 1048576 * 10 | floor / 10), psi_some_avg60: $psiMemSome, psi_full_avg60: $psiMemFull },
     forks: { per_sec: $forksPerSec, sample_sec: $sampleSec },
     window_min: $windowMin,
+    accounts: $accounts,
     crews: ([$ram[].crew, $tokens[].crew] | unique | map(. as $c | {
       crew: ($c | split("/") | last),
       ram_gb: (([$ram[] | select(.crew == $c) | .pss_kb] | add // 0) / 1048576 * 100 | floor / 100),
@@ -236,6 +295,7 @@ if [[ "$AS_JSON" == "true" ]]; then
 fi
 
 # emit the tree for a human
+# .note = the account rows read "signed in now", never "burned by"; see read_account
 echo "$RECORD" | jq -r '
   def mtok($x): "\(($x // 0) / 1000000 * 10 | floor / 10)M";
   "🐚 grove.census",
@@ -244,7 +304,10 @@ echo "$RECORD" | jq -r '
   "   ├─ cpu in crews: \([.crews[].cores] | add * 100 | floor / 100) cores",
   "   ├─ ram: \(.ram.avail_gb)G avail of \(.ram.total_gb)G · swap \(.ram.swap_gb)G · psi some \(.ram.psi_some_avg60)% full \(.ram.psi_full_avg60)%",
   "   ├─ forks: \(.forks.per_sec)/s over \(.forks.sample_sec)s",
-  "   └─ crews (ram now · tokens over the last \(.window_min) min, cost-weighted)",
+  "   ├─ account burn over \(.window_min) min: \(mtok([.crews[].tokens.weighted // 0] | add)) weighted · \(mtok([.crews[].tokens.raw // 0] | add)) raw",
+  "   ├─ accounts (signed in now — a swap inside the span misattributes)",
+  ( .accounts[] | "   │  ├─ \(.account): \(mtok(.weighted)) weighted · \(.config_dirs) config dirs" ),
+  "   └─ crews (ram now · tokens over the \(.window_min) min span, cost-weighted)",
   ( .crews | sort_by(-(.tokens.weighted // 0)) | length as $len | to_entries[] |
     (if .key == ($len - 1) then "      └─ " else "      ├─ " end)
     + "\(.value.crew): \(.value.ram_gb)G · \(.value.cores) cores · \(.value.seats_live) seats · \(.value.procs) procs"
@@ -254,4 +317,9 @@ echo "$RECORD" | jq -r '
         + " · raw \(mtok(.value.tokens.raw)) · out \(mtok(.value.tokens.output))"
         + " · forks \(mtok(.value.tokens.weighted_fork))"
       else " · no burn in window" end) )
-'
+' || {
+  # a reader that closed stdout early kills jq with SIGPIPE (exit 141); that is not a fault
+  rc=$?
+  [[ $rc -eq 141 ]] && exit 0
+  exit "$rc"
+}
