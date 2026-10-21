@@ -1,6 +1,6 @@
 # measure · grove 0901 · census
 
-the first reads of grove 0901 (`ip-10-20-2-103`), account jelly@ehmpath.com. evidence for the
+the first reads of grove 0901 (`ip-10-20-2-103`), seats across seven accounts. evidence for the
 criteria and blueprint stones. every number here is **one read** (yield tier: `1 read ·
 unranked`) until a later read in another condition confirms it.
 
@@ -33,7 +33,7 @@ it reads `/proc` for cpu, ram, pressure, and forks, and every claude config dir 
   claude seats, 12 with a `node` parent: orphan clones of a test or review run, no burn in 3h
   (A1-adjacent: a parked or orphan seat holds its ram)
 
-## .the account (jelly@ehmpath.com, all 42 crews)
+## .the grove's burn (all 42 crews, every account)
 
 | window | cost-weighted | raw | crews that burned |
 |---|---|---|---|
@@ -41,21 +41,65 @@ it reads `/proc` for cpu, ram, pressure, and forks, and every claude config dir 
 | 180 min | **117.8M** (~39M/h) | **728M** (~243M/h) | 12 |
 
 - raw is ~6× weighted: cache reads dominate the raw count and weigh 0.1
-- the cap is **uncalibrated**: no read of the 5h or 7d cap % exists for this account yet (Q2,
-  C2). so the token limit on 0901 reads ⚪ until a cap % pair lands
+- the burn above is the **grove's**, not one account's. 0901 runs seats on many accounts (below)
+
+## .accounts — the grove burns on seven, and swaps between them
+
+no transcript line names its account (zero hits across every field). the only record is each
+config dir's `.claude.json` → `oauthAccount`, which holds the account signed in **now**. a swap
+overwrites it, and the operators swap accounts on purpose, before a cap hits.
+
+burn since the 7d window opened, attributed by each config dir's **current** sign-in:
+
+| account | config dirs | weighted |
+|---|---|---|
+| vlad@ahbode.com | 4 | 326.8M |
+| owl@ehmpath.com | 8 | 317.3M |
+| vlad@ahction.com | 3 | 205.5M |
+| beaver@ehmpath.com | 4 | 187.8M |
+| optimizer@ahbode.com | 2 | 62.9M |
+| jelly@ehmpath.com | 3 | 38.4M |
+| seaturtle@ehmpath.com | 2 | 19.8M |
+
+⇒ **this table cannot calibrate a cap.** jelly reads 38.4M against a 73% cap use, which would
+make a ~53M weekly cap, an absurd figure. the 73% was spent in dirs since swapped to other
+accounts, and the current sign-in reassigns all of a dir's history. the per-account burn needs
+a per-call account, and the census cannot supply one from what is on disk.
+
+## .the cap — one read, possibly stale
+
+read by the director via `/usage` in this seat's pane, 2026-10-21, account jelly@ehmpath.com:
+
+| window | read | note |
+|---|---|---|
+| 7d (all models) | **73% used**; resets 2026-10-24, 78.5h after the read | the panel printed *"Could not refresh usage data"* — the % may be stale |
+| 5h | no bar shown | 5h stays ⚪ uncalibrated |
+| this seat's session | $25.16, 35m of API time | context only |
+
+a second read via a clone (`rhx enroll claude --as @:cap-probe`, then `rhx clone say @:cap-probe
+--what /usage`) opened the panel and failed: *"Error: Failed to load usage data"*. two reads,
+two load faults: the usage panel on 0901 does not load reliably.
+
+⇒ **tokens.7d and tokens.5h stay ⚪ uncalibrated on 0901** for now. per-call attribution is not
+needed to fix that (F8): the count rests on the **pool** of accounts in rotation, calibrated from
+each account's % at two instants against the fleet's total burn between them. each seat's
+statusline already receives that % (`rate_limits.*.used_percentage` + `resets_at`), so a ledger
+of it replaces `/usage`.
 
 ## .the limits on 0901 — first estimate, one read
 
 | limit | estimate | binds? |
 |---|---|---|
-| grove.cpu | 4 cores ÷ ~1.0 core per crew at work ≈ **4 crews at work** | **yes** — at 4 now, psi 🔴 |
+| grove.cpu | 4 cores ÷ ~1.0 core per crew at work ≈ **4 crews at work** | yes, at any instant — at 4 now, psi 🔴 |
 | grove.ram | 9.5G avail ÷ ~1.2G per crew at work ≈ 7–8 more at work | no |
-| tokens.5h / tokens.7d | ⚪ uncalibrated | unknown |
+| tokens.5h / tokens.7d | ⚪ uncalibrated, per account | unknown |
 
-⇒ **0901 affords ~4 behavior crews at work at once, and cpu binds.** crews at a gate or idle
-cost ~0 cpu, so they do not count against it; each holds ~0.2–0.4G of ram, which does not bind
-here. so on 0901 a fell or park of idle crews buys **+0 crews** (the aha, measured once): ram is
-not the wall.
+⇒ **0901 affords ~4 behavior crews at work at once, and cpu binds**, as far as is measured. the
+token limits are per account, and burn spreads across seven, so the token wall is the sum of
+seven caps, less whatever the swaps leave unused.
+
+⇒ crews at a gate or idle cost ~0 cpu and ~0 tokens; each holds ~0.2–0.4G of ram, which does not
+bind. so on 0901 a fell or park of idle crews buys **+0 crews** (the aha, measured once).
 
 ## .caveats
 
@@ -69,6 +113,10 @@ not the wall.
 - **crew = worktree.** reviewer or test clones whose cwd sits in a crew's worktree count as that
   crew's seats; their transcripts may live in a temp config dir the census does not scan, so
   "no burn" on such seats is a lower bound
+- **a cap calibration, once attribution exists, still leans on three estimates.**
+  - burn from felled worktrees whose transcripts were deleted is absent, so burn is a lower bound
+  - usage outside claude code transcripts on an account is not counted
+  - the plan may weigh token types apart from api price ratios (F3)
 - **no directive crews on 0901**: every director seat runs on local, so directive crew costs
   must come from local's reads
 
@@ -76,5 +124,11 @@ not the wall.
 
 1. two more 0901 census reads at other loads (`--window 60 --sample 60`), to promote cpu/crew
    from one read to measured
-2. a cap % pair for jelly@ehmpath.com, both windows, ~1h of burn apart, to calibrate tokens
+2. ~~one probe: does this grove's claude (2.1.280) hand `rate_limits` to the statusline?~~ the
+   static probe (`rhx claude.statusline.probe`) reads yes: the 2.1.280 statusline input builds
+   `...(five_hour || seven_day || spend_limit) && { rate_limits }`, so the field arrives whenever
+   the api returns a limit. one live tick on a seat is still owed to see the values. the ledger
+   is `rhx claude.statusline.caplog`: it wraps bhrain's `routeStatusLine`, and logs (account,
+   5h %, 7d %) per change to the gitignored `.log/role=any/skill=claude.statusline.caplog/`.
+   one seat first, via its own `.claude/settings.local.json`; a fleet rollout is a later call
 3. local's reads from the director (see `appendix/measure.grove=local.asks.md`)
