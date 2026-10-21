@@ -42,6 +42,22 @@ it reads `/proc` for cpu, ram, pressure, and forks, and every claude config dir 
 
 - raw is ~6× weighted: cache reads dominate the raw count and weigh 0.1
 - the burn above is the **grove's**, not one account's. 0901 runs seats on many accounts (below)
+- a second 60 min read, hours later: **49.6 – 54.5M** weighted (~292 – 315M raw), 10 crews that
+  burned. the top crew alone (a route-upgrade crew at a review ladder) burned **20.3M/h**, 3 seats
+
+## .a token lever seen in the reads — reviewer brain asks write, never read
+
+the reviewer's `brain-claude-ask` calls run in a temp config dir, one dir per ask, so the census
+pools them in one row (`(brain asks, crew unknown)`). over one 60 min span:
+
+| calls | cache write 5m | cache read | weighted |
+|---|---|---|---|
+| 15 | **3.45M** | 0.11M | **4.3M** (~9% of the grove's hour) |
+
+⇒ each ask writes its whole prompt to cache fresh (~230K) and no later ask reads it back. a
+cache write weighs 1.25, a read 0.1: were the shared prefix (rubric + briefs) read rather than
+rewritten, the same 15 asks would cost ~0.5M. **estimated gain: ~3.8M/h on 0901**, about the burn
+of one crew at work. one read; the ask's prompt layout must be checked before this ranks
 
 ## .accounts — the grove burns on seven, and swaps between them
 
@@ -105,8 +121,10 @@ bind. so on 0901 a fell or park of idle crews buys **+0 crews** (the aha, measur
 
 - **one read.** cpu per crew is one 60s sample; the crew mix moves minute to minute. a second
   and third read in other conditions are owed before any lever ranks
-- **cpu per crew overcounts ~15%**: the per-crew sum read 4.47 cores against 3.84 grove busy. a
-  child reaped mid-sample adds its whole life to its parent's cutime
+- **cpu per crew in the first read overcounts ~15%** (4.47 in crews against 3.84 busy): a child
+  reaped mid-sample added its whole life to its parent's cutime. the census now charges each pid
+  `b − a` over a span it measures end to end, and names the cpu outside every crew; a later read
+  attributes 2.5 + 0.05 of 3.13 busy cores
 - **forks per crew** is grove-wide ÷ live crews; per-crew fork rate is not yet split
 - **cost weights** are api price ratios (F3): input 1 · cache write 5m 1.25 · 1h 2 · cache read
   0.1 · output 5
