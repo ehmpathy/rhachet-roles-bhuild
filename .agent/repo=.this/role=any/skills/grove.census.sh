@@ -97,7 +97,9 @@ PSI_MEM_FULL_60=$(awk '/^full/ {sub("avg60=", "", $3); print $3}' /proc/pressure
 
 # map each live process to: pid, ppid, comm, pss kb, cwd
 # .note = a process may exit mid-read; each read tolerates that and moves on
-PROC_ROWS=$(
+# .note = read at both ends of the sample: a pid born inside the window is charged to its
+#         crew, and a pid dead inside it still gives back its pre-sample ticks (see read_ticks)
+read_proc_rows() {
   for dir in /proc/[0-9]*; do
     pid=${dir#/proc/}
     stat=$(cat "$dir/stat" 2>/dev/null) || continue
@@ -106,12 +108,15 @@ PROC_ROWS=$(
     ppid=$(echo "$rest" | awk '{print $2}')
     pss=$(awk '/^Pss:/ {print $2}' "$dir/smaps_rollup" 2>/dev/null || true)
     cwd=$(readlink "$dir/cwd" 2>/dev/null || true)
-    printf '%s\t%s\t%s\t%s\t%s\n' "$pid" "$ppid" "$comm" "${pss:-0}" "$cwd"
+    printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$1" "$pid" "$ppid" "$comm" "${pss:-0}" "$cwd"
   done
-)
+}
+PROC_ROWS_A=$(read_proc_rows a)
 
 # cpu ticks per process: utime + stime + cutime + cstime (stat fields 14-17)
-# .note = a child reaped mid-sample lands in its parent's cutime, so its spend still counts
+# .note = a child reaped mid-sample lands its WHOLE life in its parent's cutime, the part
+#         before the sample too. the delta below charges each pid (b - a), absent = 0, so a
+#         pid gone by b gives back its pre-sample ticks and the parent's jump nets to the window
 read_ticks() {
   for dir in /proc/[0-9]*; do
     stat=$(cat "$dir/stat" 2>/dev/null) || continue
@@ -123,6 +128,9 @@ read_cpu_busy() { awk '/^cpu / {print $2 + $3 + $4 + $7 + $8 + $9}' /proc/stat; 
 
 # one sample window for fork rate and cpu spend
 CLK_TCK=$(getconf CLK_TCK)
+# .note = a tick read walks all of /proc and takes seconds, so the per-crew span is
+#         measured end to end, never assumed to be --sample
+SPAN_START_NS=$(date +%s%N)
 TICKS_A=$(read_ticks)
 BUSY_A=$(read_cpu_busy)
 FORKS_BEFORE=$(awk '/^processes/ {print $2}' /proc/stat)
@@ -130,42 +138,65 @@ sleep "$SAMPLE_SEC"
 FORKS_AFTER=$(awk '/^processes/ {print $2}' /proc/stat)
 BUSY_B=$(read_cpu_busy)
 TICKS_B=$(read_ticks)
+TICK_SPAN_SEC=$(echo "scale=3; ($(date +%s%N) - $SPAN_START_NS) / 1000000000" | bc)
+PROC_ROWS_B=$(read_proc_rows b)
 FORKS_PER_SEC=$(echo "scale=2; ($FORKS_AFTER - $FORKS_BEFORE) / $SAMPLE_SEC" | bc)
 CORES_BUSY=$(echo "scale=2; ($BUSY_B - $BUSY_A) / $CLK_TCK / $SAMPLE_SEC" | bc)
 TICK_DELTA_JSON=$(
   printf '%s\n%s\n' "$(echo "$TICKS_A" | sed 's/^/a\t/')" "$(echo "$TICKS_B" | sed 's/^/b\t/')" | jq -R -s '
     split("\n") | map(select(length > 0) | split("\t"))
     | reduce .[] as $r ({}; .[$r[1]][$r[0]] = ($r[2] | tonumber))
-    | with_entries(select(.value.a != null and .value.b != null) | .value = (.value.b - .value.a))
+    | with_entries(.value = ((.value.b // 0) - (.value.a // 0)))
   '
 )
 
 # per crew ram + cpu: each top claude seat plus all its descendants, grouped by worktree
-CREW_RAM_JSON=$(
-  echo "$PROC_ROWS" | jq -R -s --argjson dticks "$TICK_DELTA_JSON" --argjson hz "$CLK_TCK" --argjson sec "$SAMPLE_SEC" '
+PROC_ROWS=$(printf '%s\n%s\n' "$PROC_ROWS_A" "$PROC_ROWS_B")
+PROCS_JSON=$(
+  echo "$PROC_ROWS" | jq -R -s '
     split("\n") | map(select(length > 0) | split("\t")
-      | {pid: .[0], ppid: .[1], comm: .[2], pss: (.[3] | tonumber), cwd: .[4]})
-    | . as $procs
+      | {at: .[0], pid: .[1], ppid: .[2], comm: .[3], pss: (.[4] | tonumber), cwd: .[5]})
+    # one row per pid: the b read wins; a pid gone by b keeps its a row, with no ram
+    | reduce .[] as $p ({}; if $p.at == "b" or .[$p.pid] == null
+        then .[$p.pid] = ($p | if .at == "a" then .pss = 0 else . end) else . end)
+    | [.[]]
+  '
+)
+CREW_RAM_JSON=$(
+  echo "$PROCS_JSON" | jq --argjson dticks "$TICK_DELTA_JSON" --argjson hz "$CLK_TCK" --argjson sec "$TICK_SPAN_SEC" '
+    . as $procs
     | (reduce $procs[] as $p ({}; .[$p.ppid] += [$p.pid])) as $kids
     | (reduce $procs[] as $p ({}; .[$p.pid] = $p)) as $byPid
     | def tree($id): [$id] + ([($kids[$id] // [])[] | tree(.)] | add // []);
     def crew($cwd): ($cwd | capture("^(?<root>.*/_worktrees/[^/]+)") .root) // $cwd;
+    def cores($t): ([$t, 0] | max | . / $hz / $sec * 100 | floor / 100);
     [ $procs[] | select(.comm == "claude.exe" or .comm == "claude")
       | select(($byPid[.ppid].comm // "") as $pc | ($pc != "claude.exe" and $pc != "claude"))
       | . as $seat
       | (tree($seat.pid)) as $ids
-      | { crew: crew($seat.cwd), seat_pid: $seat.pid,
-          parent: ($byPid[$seat.ppid].comm // "?"),
-          procs: ($ids | length),
-          pss_kb: ([$ids[] | ($byPid[.].pss // 0)] | add),
-          ticks: ([$ids[] | ($dticks[.] // 0)] | add) } ]
-    | group_by(.crew)
-    | map({ crew: .[0].crew, seats: length,
-            seat_parents: (map(.parent) | group_by(.) | map({(.[0]): length}) | add),
-            procs: (map(.procs) | add), pss_kb: (map(.pss_kb) | add),
-            cores: ((map(.ticks) | add) / $hz / $sec * 100 | floor / 100) })
+      | { crew: crew($seat.cwd), seat: true, ids: $ids,
+          parent: ($byPid[$seat.ppid].comm // "?") } ] as $seats
+    | ([$seats[].ids[]] | map({(.): true}) | add // {}) as $inTree
+    # a process outside every seat tree, with its cwd in a crew worktree, is that crew'"'"'s
+    | ([ $procs[] | select($inTree[.pid] | not) | select(.cwd | test("/_worktrees/[^/]+"))
+         | { crew: crew(.cwd), seat: false, ids: [.pid], parent: "cwd" } ]) as $strays
+    | ([$seats[].ids[], $strays[].ids[]] | map({(.): true}) | add // {}) as $inCrew
+    | { crews: ($seats + $strays
+        | map(. + { pss_kb: ([.ids[] | ($byPid[.].pss // 0)] | add // 0),
+                    ticks: ([.ids[] | ($dticks[.] // 0)] | add // 0) })
+        | group_by(.crew)
+        | map({ crew: .[0].crew, seats: (map(select(.seat)) | length),
+                seat_parents: (map(select(.seat) | .parent) | group_by(.) | map({(.[0]): length}) | add // {}),
+                procs: (map(.ids | length) | add), pss_kb: (map(.pss_kb) | add),
+                cores: cores(map(.ticks) | add) })),
+        # the rest of the grove: busy cpu in no crew, by command
+        outside: ([ $procs[] | select($inCrew[.pid] | not) | {comm, t: ($dticks[.pid] // 0)} ]
+          | group_by(.comm) | map({comm: .[0].comm, cores: cores(map(.t) | add)})
+          | map(select(.cores > 0)) | sort_by(-.cores)) }
   '
 )
+CREW_OUTSIDE_JSON=$(echo "$CREW_RAM_JSON" | jq '.outside')
+CREW_RAM_JSON=$(echo "$CREW_RAM_JSON" | jq '.crews')
 
 # token burn span: --since/--until when given, else the last --window minutes
 NOW_EPOCH=$(date -u +%s)
@@ -236,7 +267,9 @@ ACCOUNT_TOKENS_JSON=$(
 
 CREW_TOKENS_JSON=$(
   echo "$TOKEN_LINES" | jq -s --argjson hours "$(echo "scale=4; $WINDOW_MIN / 60" | bc)" '
-    def crew($cwd): ($cwd | capture("^(?<root>.*/_worktrees/[^/]+)") .root) // $cwd;
+    # a reviewer brain ask runs in a temp dir that names no crew: pool them in one row
+    def crew($cwd): if ($cwd | test("brain-claude-ask")) then "(brain asks, crew unknown)"
+      else (($cwd | capture("^(?<root>.*/_worktrees/[^/]+)") .root) // $cwd) end;
     def n($x): ($x // 0);
     unique_by(.id)
     | map(. + {
@@ -270,9 +303,10 @@ RECORD=$(jq -n \
   --arg psiCpu "$PSI_CPU_SOME_60" --arg psiMemSome "$PSI_MEM_SOME_60" --arg psiMemFull "$PSI_MEM_FULL_60" \
   --argjson forksPerSec "$FORKS_PER_SEC" --argjson sampleSec "$SAMPLE_SEC" --argjson windowMin "$WINDOW_MIN" \
   --argjson coresBusy "$CORES_BUSY" --argjson accounts "$ACCOUNT_TOKENS_JSON" \
-  --argjson ram "$CREW_RAM_JSON" --argjson tokens "$CREW_TOKENS_JSON" '
+  --argjson ram "$CREW_RAM_JSON" --argjson tokens "$CREW_TOKENS_JSON" --argjson outside "$CREW_OUTSIDE_JSON" '
   { grove: $host, date: $date,
-    cpu: { count: $cpus, busy_cores: $coresBusy, load1: $load1, load5: $load5, psi_some_avg60: $psiCpu },
+    cpu: { count: $cpus, busy_cores: $coresBusy, load1: $load1, load5: $load5, psi_some_avg60: $psiCpu,
+           outside_crews: $outside },
     ram: { total_gb: ($memTotalKb / 1048576 * 10 | floor / 10), avail_gb: ($memAvailKb / 1048576 * 10 | floor / 10),
            swap_gb: ($swapKb / 1048576 * 10 | floor / 10), psi_some_avg60: $psiMemSome, psi_full_avg60: $psiMemFull },
     forks: { per_sec: $forksPerSec, sample_sec: $sampleSec },
@@ -301,7 +335,7 @@ echo "$RECORD" | jq -r '
   "🐚 grove.census",
   "   ├─ grove: \(.grove) (\(.date))",
   "   ├─ cpu: \(.cpu.busy_cores) of \(.cpu.count) cores busy over \(.forks.sample_sec)s · load \(.cpu.load1) / \(.cpu.load5) · psi some avg60 \(.cpu.psi_some_avg60)%",
-  "   ├─ cpu in crews: \([.crews[].cores] | add * 100 | floor / 100) cores",
+  "   ├─ cpu in crews: \([.crews[].cores] | add * 100 | floor / 100) cores · outside crews: \([.cpu.outside_crews[].cores] | add // 0 | . * 100 | floor / 100) cores (\(.cpu.outside_crews[:3] | map("\(.comm) \(.cores)") | join(", ")))",
   "   ├─ ram: \(.ram.avail_gb)G avail of \(.ram.total_gb)G · swap \(.ram.swap_gb)G · psi some \(.ram.psi_some_avg60)% full \(.ram.psi_full_avg60)%",
   "   ├─ forks: \(.forks.per_sec)/s over \(.forks.sample_sec)s",
   "   ├─ account burn over \(.window_min) min: \(mtok([.crews[].tokens.weighted // 0] | add)) weighted · \(mtok([.crews[].tokens.raw // 0] | add)) raw",
