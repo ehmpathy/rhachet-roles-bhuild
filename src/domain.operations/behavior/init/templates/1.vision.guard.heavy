@@ -77,6 +77,30 @@ reviews:
 
         a wish with no user-visible experience declares "no experiences — internal only".
 
+    - slug: has-rendered-stdout
+      say: |
+        a junior recently modified files in this repo. we need to carefully
+        review the vision due to this.
+
+        did the junior render what a human or a clone will actually read, or only describe it?
+        read `rule.require.vision-renders-stdout` and its twin
+        `rule.forbid.vision-without-rendered-stdout` before you grade.
+
+        for each surface the wish adds or changes (a cli, a hook, a notice, an error), ask:
+        - is its exact stdout rendered in a code block, or merely described in prose?
+        - does the gallery hold the sharp samples — each refusal with the fix it names, each
+          relative input (`local`, a short form, a default) cast to its absolute form, each
+          down dependency — or only the happy ones?
+        - does it show what the peer receives, not only what the caller sees?
+        - does it reuse the role's extant shape — voice glyph, role mark, treestruct, one space
+          after a glyph — or invent a new one with no reason?
+        - does each sample fill each slot with a distinct, realistic value?
+
+        a surface with no rendered stdout is a blocker. a gallery with no sharp sample is a
+        blocker. render it now, before you continue.
+
+        a wish with no human- or clone-read surface declares "no stdout — internal only".
+
     - slug: has-questioned-fundamentals
       say: |
         did we reason from first principles or from convention?

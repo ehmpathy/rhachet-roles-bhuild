@@ -5,8 +5,10 @@
 #         does not depend on. depcheck reported one as a MISSING dependency
 #         (`claude-code`), so `test:lint` failed on a file that is gitignored
 #         and is not this package's source. none of `.agent/` ever is.
+#         `.claude` is a symlink into that same actor brain, so it is ignored too.
 ignore-patterns:
   - .agent
+  - .claude
 
 ignores:
   - depcheck
