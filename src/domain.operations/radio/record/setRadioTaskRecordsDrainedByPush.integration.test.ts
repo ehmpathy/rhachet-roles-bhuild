@@ -1124,6 +1124,11 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
         }));
 
     const asRun = async (input: { slug: string; now: string }) => {
+      // build the scene on the real clock. genTempDir names each dir by the clock, and a
+      // peer jest worker's prune deletes a dir whose name reads past its window, so a
+      // scene built under the pinned day was deleted mid-setup on a loaded box
+      const scene = genScene({ slug: input.slug });
+
       // .note = fake only Date, so the clock reads the pinned day while timers still run
       jest.useFakeTimers({
         now: new Date(input.now),
@@ -1146,7 +1151,6 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
       });
       try {
         // hold one push unbound, bind a route, then hold one in the route: two record dirs
-        const scene = genScene({ slug: input.slug });
         await pushViaRecorder({ ...scene, repo: repoShut, title: 'task a' });
         const branch = execSync('git rev-parse --abbrev-ref HEAD', {
           cwd: scene.cwd,
@@ -1185,6 +1189,7 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
         return {
           records: getAllRecordsStageable({ cwd: scene.cwd }),
           recordsAfterDeliver,
+          sceneDirName: path.basename(scene.cwd),
         };
       } finally {
         jest.useRealTimers();
@@ -1204,6 +1209,19 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
             now: '2026-10-08',
           }),
         }));
+
+        then(
+          '🔴 each run built its scene on the real clock, never the pinned day',
+          () => {
+            // a scene dir named by the pinned day reads stale to a peer worker's prune
+            expect(result.dayOne.sceneDirName.startsWith('2026-10-07')).toEqual(
+              false,
+            );
+            expect(result.dayTwo.sceneDirName.startsWith('2026-10-08')).toEqual(
+              false,
+            );
+          },
+        );
 
         then('each run wrote one record unbound and three in the route', () => {
           expect(
