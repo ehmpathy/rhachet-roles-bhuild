@@ -53,6 +53,16 @@ the lean stands on each. on record for review, not open questions.
 - **F22 — the deferred set.** notice retry, one wedged say, per-tick cost, `get` unbounded, the
   stale flag, layer placement, daemon upgrade + env allowlist: deferred to a dream. `.behavior/v2026_10_21.feat-phone-text/.fulcrums/inventory.of=fulcrums.case=F22-scale-and-retry-deferred.md`
 
+## message changes since the first checkpoint
+
+- **the grant hint reads in two steps.** a refusal to text a non-contact, or to grant a contact
+  while the meter is blocked, now says: a human lifts the meter from any shell in this tree
+  (`rhx phone.contacts.uses allow`), then the clone grants
+- **a no-op revoke names the state, not an act.** `phone.contacts del` on an address that is not a
+  contact printed `revoked: <address>` under "no change, they were not in the pond"; it now
+  prints `not a contact: <address>` (a no-op grant: `already a contact: <address>`). a repeated
+  `--address` prints a blank line between its blocks
+
 ## changes outside the phone (F23)
 
 - `getCliArgs` takes `valueRawKeys`, so `--what ''` and `--what '--x'` read as text
