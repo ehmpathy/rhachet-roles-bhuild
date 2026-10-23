@@ -3,7 +3,8 @@
 exports[`setPhoneContact given: [case1] a clone whose tree meter is unset when: [t0] the clone grants itself a contact then: the refusal names the meter and who may lift it 1`] = `
 "✋ ConstraintError: this clone may not manage its own contacts
    ├─ meter: phone.contacts.uses = blocked (default)
-   └─ lift it (human): rhx phone.contacts.uses allow"
+   ├─ lift it (human), from any shell in this tree: rhx phone.contacts.uses allow
+   └─ then run this grant again"
 `;
 
 exports[`setPhoneContact given: [case3] a human, and a peer tree that does not exist when: [t0] the human grants a contact in an absent tree then: the refusal names the absent tree, and where it looked 1`] = `

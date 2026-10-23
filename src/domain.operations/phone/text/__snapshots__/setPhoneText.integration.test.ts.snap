@@ -15,8 +15,9 @@ exports[`setPhoneText given: [case2] a mechanic with no contacts when: [t1] it t
 "✋ ConstraintError: phone://grove=bert-laptop/tree=notebook/clone=director is not a contact
    ├─ you may reach
    │  └─ @:foreman   (own tree)
-   └─ grant it (a human, or a clone whose meter is allowed)
-      └─ rhx phone.contacts set --address phone://grove=bert-laptop/tree=notebook/clone=director"
+   └─ grant it, in two steps
+      ├─ a human, from any shell in this tree: rhx phone.contacts.uses allow
+      └─ then this clone: rhx phone.contacts set --address phone://grove=bert-laptop/tree=notebook/clone=director"
 `;
 
 exports[`setPhoneText given: [case2] a mechanic with no contacts when: [t3] it texts itself then: the refusal names its own number 1`] = `
