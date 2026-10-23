@@ -1,5 +1,7 @@
 # rule.always.read-both-crew-halves
 
+> ⚠️ `rule.always.read-both-crew-halves.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
+
 ## .what
 
 whenever you ask **"is this crew alright?"** — booted, healthy, malformed, tabless — read

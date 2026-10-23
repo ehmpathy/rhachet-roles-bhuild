@@ -1,5 +1,7 @@
 # rule.require.tree-del-before-duct-close
 
+> ⚠️ `rule.require.tree-del-before-duct-close.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
+
 ## .what
 
 before you stop a crew, the supervisor sends `git tree del` into the **foreman** seat to fell

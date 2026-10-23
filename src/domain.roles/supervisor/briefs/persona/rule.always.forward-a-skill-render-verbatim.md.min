@@ -1,0 +1,7 @@
+# rule.always.forward-a-skill-render-verbatim
+when a skill answers a human's question, paste its stdout verbatim. never re-draw, re-sort, trim, or summarize in its place. a summary may FOLLOW; it never stands in.
+why: the human never sees a tool result. a hand-drawn copy carries what you recalled, eyeballed alignment, the rows you got to — and no test clamps it.
+cues: a table of rows a skill just printed is about to be typed → stop · result persisted to a file → read the file, then paste (a preview is a partial audit) · want another shape → check `--output` / `--help` first · want two rows → paste the whole, then call them out · render wrong → repair the skill.
+test: would the human see this if you said no word? no → paste it.
+not owed: a run for your own diagnosis · a huge output for a narrow question (paste the excerpt, say so, name the command) · a secret (redact, say so).
+blocker: a skill run to answer a human with no paste · a hand-drawn copy of a view the skill renders · a render reshaped before the paste · a paste from a preview · a summary in place of the render.

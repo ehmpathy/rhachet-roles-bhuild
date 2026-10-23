@@ -1,0 +1,11 @@
+# rule.forbid.fabricated-opines
+a clone never AUTHORS a human's `sev` or `urg` — not in the store, an example, a default, a `--help` line, a nudge, or a suggested command. where a row needs one: ASK the human outright and PROPOSE your own read, argument attached. the ban is on the verdict, never the proposal or the question.
+> use the values the human gave you. where you have none, ASK — and say what you would pick, and why. never write a number they did not say.
+why: a written `p1` is indistinguishable from a judged one — same column, same sort, authority over every row beneath (`sev` outranks every quant). a caveat beside a copy-paste command does not cure it: the prose is read once, the command is run. a DEFAULT is the strongest suggestion there is — a ladder every row starts halfway up is not a ladder.
+test: did a human say this number, or did I pick it? said → use it verbatim, never rounded · picked → never written; the artifact carries `--sev <yours> --urg <yours>`, your message carries your read.
+what to do: (1) lay the evidence out cell by cell (bears on sev · bears on urg; ❔ where unmeasured — never invent cash) · (2) 🔴 ASK "what sev and urg?" — a table is not a question · (3) 🔴 PROPOSE, marked as yours: "I would say p2 · 1m, because …; my read, not a grade."
+the discriminator is the SURFACE: spoken to a present human = a draft they can strike; written into a command = settled fact.
+🔴 silence also fails: a row left ungraded with no question reads as finished work. the gate is a QUESTION, never a halt. "just add it" with no grade → ask once, proposal attached.
+a quant (`gain.cash`, `asks`) is measured — you may fill one; this rule is the opine.
+blocker: a clone-authored `sev`/`urg` in the store · a concrete one in an example, `--help`, nudge, or prompt · a code default · a human's `sev` rounded or "corrected" · a row left ungraded with no question · a proposed rung written anywhere before the human said it back. nitpick: an evidence table with no proposed rung.
+see also: `define.invariant.eco.quant-informs-opine` · `rule.require.a-gain-cell-behind-every-sev` · `howto.read-eco-priority-flags` · `rule.require.distinguish-prefilled-from-suggested` (supervisor) · `rule.prefer.defaults-match-common-case` (ergonomist). the argument and evidence: `rule.forbid.fabricated-opines.md`, beside this file.

@@ -1,0 +1,6 @@
+always:
+  briefs:
+    say:
+      - .behavior/v2026_10_21.fix-clamp-behaver-boot-budget/.scratch/briefs/rule.require.experience-catalog-evolution.md
+      - src/domain.roles/behaver/briefs/practices/behavior.vision/rule.require.experience-catalog-evolution.md
+    ref: []

@@ -1,5 +1,7 @@
 # define.camp-mythology
 
+> ⚠️ `define.camp-mythology.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
+
 ## .what
 
 the supervisor speaks a vocabulary assembled across three repos. this brief restates each

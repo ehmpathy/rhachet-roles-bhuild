@@ -1,5 +1,7 @@
 # rule.require.verify-after-send
 
+> ⚠️ `rule.require.verify-after-send.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
+
 ## .what
 
 after every send, verify via a read that the command did what you expected.

@@ -1,0 +1,8 @@
+# rule.always.capture-clamp-then-verify-in-prod
+every tool cure, in order:
+1. CAPTURE the raw production artifact verbatim before you edit: `rhx git.crew.read --tree <t> --who <role> --raw | rhx teesafe …/.test/.assets/pane.<state>.log` — `--raw` always (escapes carry the signal); read back via `readFileSync`; name it for the STATE, not the tree.
+2. CLAMP — red un-fixed, teeth on the negative side too, then cure, then green.
+3. VERIFY IN PROD — run the whole verb a human runs (`rhx git.crew.poll`), read the real row. a defect is a chain (detector → field → join → render); a green clamp proves the detector, never the join or the render.
+render changed right → done, say what changed · unchanged → 🔴 the cure is inert; clamp the link you skipped · changed wrong → the join keys on the wrong fact · subject gone → say unverified, never done.
+test: did the output a human reads change, and did you watch it change?
+blocker: a cure reported done with no prod run, or on an unchanged render · a hand-typed fixture where a capture was possible · a non-raw capture where escapes carry the signal. nitpick: a fixture named for the tree.

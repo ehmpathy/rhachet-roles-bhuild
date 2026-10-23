@@ -1,5 +1,7 @@
 # rule.always.read-stars-as-sponsored-priorities
 
+> ⚠️ `rule.always.read-stars-as-sponsored-priorities.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
+
 > **when a human asks about "stars" — "how are our stars", "the stars" — they mean the ⭐
 > SPONSORED priorities. answer from `rhx eco.priority get`, the ⭐-topped rows. NEVER a fleet
 > crew-poll of high performers.**
