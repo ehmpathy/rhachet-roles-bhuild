@@ -97,7 +97,7 @@
     "esbuild-register": "3.6.0",
     "husky": "8.0.3",
     "jest": "30.2.0",
-    "rhachet": "github:ehmpathy/rhachet#1d747fd559d38a5670923c95f21b00c317c82a35",
+    "rhachet": "1.50.1",
     "rhachet-brains-anthropic": "0.4.3",
     "rhachet-brains-fireworksai": "0.2.3",
     "rhachet-brains-openrouter": "0.1.3",
