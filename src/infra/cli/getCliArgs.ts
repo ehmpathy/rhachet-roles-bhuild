@@ -22,6 +22,7 @@ export type RhachetArgs = z.infer<typeof schemaOfRhachetArgs>;
  */
 const getCliArgsRaw = (
   argv: string[],
+  options: { valueRawKeys: string[] },
 ): { named: Record<string, string | boolean>; ordered: string[] } => {
   const named: Record<string, string | boolean> = {};
   const ordered: string[] = [];
@@ -35,6 +36,13 @@ const getCliArgsRaw = (
     if (arg.startsWith('--')) {
       const key = arg.slice(2);
       const next = argv[i + 1];
+
+      // a free-text key takes the next arg whole, even an empty one or one that leads with `--`
+      if (options.valueRawKeys.includes(key)) {
+        if (next !== undefined) named[key] = next;
+        i++;
+        continue;
+      }
 
       // check if next arg is a value (not another flag)
       if (next && !next.startsWith('--')) {
@@ -103,6 +111,12 @@ type CliSchemaWithRhachetArgs = z.ZodObject<{
 export const getCliArgs = <T extends CliSchemaWithRhachetArgs>(input: {
   schema: T;
   argv?: string[];
+
+  /**
+   * keys whose value is free text: the next arg is always the value, so `--what ''` and
+   * `--what '--apply is blocked'` reach the caller as strings, never as a boolean flag
+   */
+  valueRawKeys?: string[];
 }): z.infer<T> => {
   // drop script filename from argv if present
   //
@@ -119,7 +133,7 @@ export const getCliArgs = <T extends CliSchemaWithRhachetArgs>(input: {
     ? process.argv.slice(2)
     : process.argv.slice(1);
   const argv = input.argv ?? argvWithoutScriptFilename;
-  const raw = getCliArgsRaw(argv);
+  const raw = getCliArgsRaw(argv, { valueRawKeys: input.valueRawKeys ?? [] });
 
   // validate against schema
   const result = input.schema.safeParse(raw);

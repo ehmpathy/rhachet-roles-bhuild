@@ -1,0 +1,54 @@
+diff --git a/dist/domain.operations/route/brain/getCloneAddress.d.ts b/dist/domain.operations/route/brain/getCloneAddress.d.ts
+index 2a54aeff366a9b21a531385c0e138ce55e6aa0c4..f3fa66c718ded9ae3bf8d641104d18a5e80bc99e 100644
+--- a/dist/domain.operations/route/brain/getCloneAddress.d.ts
++++ b/dist/domain.operations/route/brain/getCloneAddress.d.ts
+@@ -11,7 +11,7 @@ import type { StoneBrainHaltCause } from './StoneBrainHaltCause';
+  *         smallest `route.drive` hook timeout read off disk — a prose claim about a foreign
+  *         file rots in silence
+  */
+-export declare const WHOAMI_TIMEOUT_MS = 10000;
++export declare const WHOAMI_TIMEOUT_MS = 90000;
+ /**
+  * .what = the clone address a probe confirmed, or the reason none was
+  * .why = unenrolled is the common case, so it is an answer, never an exception
+diff --git a/dist/domain.operations/route/brain/getCloneAddress.js b/dist/domain.operations/route/brain/getCloneAddress.js
+index 3eff1b9855011ef86cc28ae12bcd7d1263781a48..f847003c91e8bd02f6af6c0325c9acda2744f655 100644
+--- a/dist/domain.operations/route/brain/getCloneAddress.js
++++ b/dist/domain.operations/route/brain/getCloneAddress.js
+@@ -10,13 +10,15 @@ const setBrainApplyNote_1 = require("./setBrainApplyNote");
+  *        unbounded await on a child that never closes would burn the whole cap, and the halt
+  *        would read as a slow hook rather than name its fix (case=2)
+  *
+- * .note = 10s. measured on rhachet 1.47.6: p50 = 5537ms, p95 ≈ 6500ms; a 2s cap timed out
+- *         every healthy probe
++ * .note = 90s. measured on rhachet 1.47.6: p50 = 5537ms, p95 ≈ 6500ms; a 2s cap timed out
++ *         every healthy probe. on rhachet 1.50.0 a healthy probe measured 8.2s on a loaded
++ *         grove, so a 10s cap halted healthy drives; 90s leaves room for load
++ *         (onBoot hook raised to PT120S to hold it)
+  * .note = exported so `getCloneAddress.integration.test.ts [case8]` can clamp it against the
+  *         smallest `route.drive` hook timeout read off disk — a prose claim about a foreign
+  *         file rots in silence
+  */
+-exports.WHOAMI_TIMEOUT_MS = 10000;
++exports.WHOAMI_TIMEOUT_MS = 90000;
+ /**
+  * .what = the sentinel a failed `JSON.parse` returns, so its failure is a VALUE
+  * .why = a parsed document may legitimately be `null`, `false`, or `0`, so no in-band value can
+diff --git a/dist/domain.roles/driver/getDriverRole.js b/dist/domain.roles/driver/getDriverRole.js
+index a8bc199a2b5e28330f6df113d03eb91128e4466b..646178eb4b739ca41dfeacfdf464b1bc7e402232 100644
+--- a/dist/domain.roles/driver/getDriverRole.js
++++ b/dist/domain.roles/driver/getDriverRole.js
+@@ -38,11 +38,11 @@ exports.ROLE_DRIVER = rhachet_1.Role.build({
+     hooks: {
+         onBrain: {
+             onBoot: [
+-                // .why PT25S = this hook may probe `clone whoami` (cap 10s, p50 5.5s) and take the
++                // .why PT120S = this hook may probe `clone whoami` (cap 90s, p50 5.5–8s) and take the
+                 //      drive-state lock twice; `getCloneAddress.integration.test.ts [case8]` clamps it
+                 {
+                     command: './node_modules/.bin/rhx route.drive --when hook.onBoot',
+-                    timeout: 'PT25S',
++                    timeout: 'PT120S',
+                 },
+             ],
+             onTool: [
