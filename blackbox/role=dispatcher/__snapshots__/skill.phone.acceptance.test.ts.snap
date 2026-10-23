@@ -458,7 +458,7 @@ exports[`phone skills given: [case10] a director tree and a crew tree on one gro
 🦫 no change, they were not in the pond
 
 💧 phone.contacts del
-   ├─ revoked: phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic
+   ├─ not a contact: phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic
    └─ contacts: 0
 ---
 🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts
@@ -548,11 +548,12 @@ exports[`phone skills given: [case11] a foreman at a modal, then one whose say c
 🦫 no change, they were not in the pond
 
 💧 phone.contacts del
-   ├─ revoked: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=foreman
+   ├─ not a contact: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=foreman
    └─ contacts: 0
+
 🦫 no change, they were not in the pond
 
 💧 phone.contacts del
-   ├─ revoked: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   ├─ not a contact: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
    └─ contacts: 0"
 `;
