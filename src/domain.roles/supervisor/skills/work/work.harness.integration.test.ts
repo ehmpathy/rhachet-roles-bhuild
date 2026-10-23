@@ -32,7 +32,12 @@ describe('runDriver', () => {
         );
         expect(error).toBeInstanceOf(MalfunctionError);
         expect(error.message).toContain('did not exit on its own');
-        expect(error.message).toContain('began'); // the streams so far ride along
+        // the bound and both streams so far ride along. their content is racy: on a
+        // saturated box the kill can land before bash writes a byte, so only the fields
+        // are asserted, never what the driver managed to print
+        expect(error.message).toContain('"timeoutMs": 500');
+        expect(error.message).toContain('"stdout"');
+        expect(error.message).toContain('"stderr"');
       });
     });
   });
