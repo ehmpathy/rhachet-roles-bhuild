@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asPhoneAddressFromInput a repeated key is refused 1`] = `
+"✋ ConstraintError: phone://grove=a/grove=b/clone=director is not a phone address
+   ├─ accepted forms
+   │  ├─ phone://grove=<grove>/tree=<tree>/clone=<clone>
+   │  ├─ phone://grove=local/tree=<tree>/clone=<clone>
+   │  └─ @:<clone>   (a clone in your own tree)
+   └─ see who you may reach: rhx phone.contacts get"
+`;
+
+exports[`asPhoneAddressFromInput an address with no scheme is refused 1`] = `
+"✋ ConstraintError: notebook/director is not a phone address
+   ├─ accepted forms
+   │  ├─ phone://grove=<grove>/tree=<tree>/clone=<clone>
+   │  ├─ phone://grove=local/tree=<tree>/clone=<clone>
+   │  └─ @:<clone>   (a clone in your own tree)
+   └─ see who you may reach: rhx phone.contacts get"
+`;
+
+exports[`asPhoneAddressFromInput an empty clone is refused 1`] = `
+"✋ ConstraintError: @: is not a phone address
+   ├─ accepted forms
+   │  ├─ phone://grove=<grove>/tree=<tree>/clone=<clone>
+   │  ├─ phone://grove=local/tree=<tree>/clone=<clone>
+   │  └─ @:<clone>   (a clone in your own tree)
+   └─ see who you may reach: rhx phone.contacts get"
+`;
+
+exports[`asPhoneAddressFromInput keys out of order are refused, and the canonical form is named 1`] = `
+"✋ ConstraintError: phone://tree=notebook/grove=bert-laptop/clone=director is not in canonical order
+   ├─ the keys come in one order: grove, tree, clone
+   └─ use: phone://grove=bert-laptop/tree=notebook/clone=director"
+`;
+
+exports[`asPhoneAddressFromInput the @: shorthand inside the clone key is refused 1`] = `
+"✋ ConstraintError: phone://grove=bert-laptop/tree=notebook/clone=@:director is not a phone address
+   ├─ accepted forms
+   │  ├─ phone://grove=<grove>/tree=<tree>/clone=<clone>
+   │  ├─ phone://grove=local/tree=<tree>/clone=<clone>
+   │  └─ @:<clone>   (a clone in your own tree)
+   └─ see who you may reach: rhx phone.contacts get"
+`;

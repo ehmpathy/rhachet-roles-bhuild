@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asPhoneTextRef a #number is refused the same way 1`] = `
+"✋ ConstraintError: #14 is not a text reference
+   ├─ a text is named by its uuid: the first 8 chars (7f3e9a02) or the whole
+   └─ see each text with its name: rhx phone.text get"
+`;
+
+exports[`asPhoneTextRef a 7-char prefix is refused, never guessed 1`] = `
+"✋ ConstraintError: 7f3e9a0 is not a text reference
+   ├─ a text is named by its uuid: the first 8 chars (7f3e9a02) or the whole
+   └─ see each text with its name: rhx phone.text get"
+`;
+
+exports[`asPhoneTextRef a number is refused: texts go by name, not number 1`] = `
+"✋ ConstraintError: 3 is not a text reference
+   ├─ a text is named by its uuid: the first 8 chars (7f3e9a02) or the whole
+   └─ see each text with its name: rhx phone.text get"
+`;

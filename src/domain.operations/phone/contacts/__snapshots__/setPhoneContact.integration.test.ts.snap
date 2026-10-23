@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`setPhoneContact given: [case1] a clone whose tree meter is unset when: [t0] the clone grants itself a contact then: the refusal names the meter and who may lift it 1`] = `
+"✋ ConstraintError: this clone may not manage its own contacts
+   ├─ meter: phone.contacts.uses = blocked (default)
+   └─ lift it (human): rhx phone.contacts.uses allow"
+`;
+
+exports[`setPhoneContact given: [case3] a human, and a peer tree that does not exist when: [t0] the human grants a contact in an absent tree then: the refusal names the absent tree, and where it looked 1`] = `
+"✋ ConstraintError: no tree coachbook.beav.feat-slot-shape on bert-laptop
+   ├─ searched: $GIT_ROOT/*/_worktrees/ and $GIT_ROOT/*/
+   └─ see who you may reach: rhx phone.contacts get"
+`;
+
+exports[`setPhoneContact given: [case5] a grant that needs no contact, or can not pick one tree when: [t0] the human grants a clone in its own tree then: the refusal says it is already in the pond, and how to text it 1`] = `
+"✋ ConstraintError: phone://grove=bert-laptop/tree=notebook/clone=director is in this clone's own tree
+   └─ text it as is: rhx phone.text set --to phone://grove=bert-laptop/tree=notebook/clone=director --what '...'"
+`;
+
+exports[`setPhoneContact given: [case5] a grant that needs no contact, or can not pick one tree when: [t1] two orgs each hold a tree of that name then: the refusal names both dirs, never guesses one 1`] = `
+"✋ ConstraintError: tree svc-lessons.beav.feat-book-a-lesson names 2 dirs on this grove
+   ├─ dirs
+   │  ├─ $GIT_ROOT/sandpine/_worktrees/svc-lessons.beav.feat-book-a-lesson
+   │  └─ $GIT_ROOT/sandpine-archive/_worktrees/svc-lessons.beav.feat-book-a-lesson
+   └─ a tree name must be unique on its grove; rename one of them"
+`;

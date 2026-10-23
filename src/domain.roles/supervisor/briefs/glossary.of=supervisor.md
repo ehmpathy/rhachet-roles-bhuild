@@ -19,6 +19,8 @@ this package, at `ehmpathy/rhachet-roles-bhuild:.agent/repo=.this/role=any/brief
 | **grove.power** | the lever that switches a grove's box on — `aws` (wake powers it up) or `none` (it never sleeps) | cloud, provider, platform |
 | **grove.reach** | where, and as whom, the tailnet gets to a grove's box — one host, one port, one user | endpoint, address, target, dest |
 | **grove.purpose** | what a grove is FOR — and so whether a crew may live on it | tier, class, env |
+| **tree** | one worktree = one branch = one pr, on one grove — the unit a crew works in | repo, branch, checkout, workspace |
+| **clone** | one worker in a tree, named by its role slug, or by its serial when it has none | agent, bot, session, seat |
 | **crew** | the set of clones that work ONE tree | team, pod, worker set |
 | **crew.reflector** | the third seat in the standard crew, beside mechanic and foreman | reviewer, critic, auditor |
 | **duct** | an addressable channel to one worker's keyboard, named by a uri | terminal, tab, session, pane |
