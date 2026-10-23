@@ -1,4 +1,4 @@
-import { sleep } from 'iso-time';
+import { type IsoDuration, sleep } from 'iso-time';
 
 import {
   daoPhoneDaemon,
@@ -6,6 +6,17 @@ import {
 } from '@src/access/daos/daoPhoneDaemon';
 import { genPhoneCacheDir } from '@src/access/daos/genPhoneCacheDir';
 import { genProcessDetached } from '@src/infra/process/genProcessDetached';
+
+import { getOnePollCount } from './getOnePollCount';
+
+/**
+ * .what = how long a start waits to see the new daemon's lock, and how often it looks
+ * .why = the daemon is a fresh node process that loads the whole package before it claims the
+ *        lock; on a loaded host that takes seconds, and a wait shorter than it reports a daemon
+ *        that did start as one that did not (measured: >3s on a loaded 2026-10-23 host)
+ */
+const START_WAIT: IsoDuration = { seconds: 10 };
+const START_POLL: IsoDuration = { milliseconds: 150 };
 
 /**
  * .what = finds this tree's live daemon, or starts one detached
@@ -42,12 +53,13 @@ export const genPhoneDaemon = async (input: {
     env: { ...process.env, RHACHET_CLONE_SERIAL: '' },
   });
 
-  // wait a moment for the daemon to claim its lock, so the caller can name its pid
-  for (let attempt = 0; attempt < 20; attempt++) {
+  // wait for the daemon to claim its lock, so the caller can name its pid
+  const polls = getOnePollCount({ wait: START_WAIT, poll: START_POLL });
+  for (let attempt = 0; attempt < polls; attempt++) {
     const lock = await daoPhoneDaemon.getOne({ treeDir });
     if (lock?.state === 'LIVE' && lock.pid !== null)
       return { lock, outcome: 'STARTED' };
-    await sleep({ milliseconds: 150 });
+    await sleep(START_POLL);
   }
   return {
     lock: await daoPhoneDaemon.getOne({ treeDir }),
