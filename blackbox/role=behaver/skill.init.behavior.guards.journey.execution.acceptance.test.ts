@@ -104,10 +104,11 @@ describe('skill.init.behavior.guards.journey.execution', () => {
 
     when('[t1] execution pass attempted after promises', () => {
       then('allowed (no judges)', () => {
-        expect(scene.passAfterPromises.code).toEqual(0);
+        // assert the text first, so a refusal prints its own output in the failure
         const output = asCallOutput({ call: scene.passAfterPromises });
-        expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('passage = allowed');
+        expect(scene.passAfterPromises.code).toEqual(0);
+        expect(asSnapshotStable(output)).toMatchSnapshot();
       });
 
       then('execution holds a passage marker', () => {
