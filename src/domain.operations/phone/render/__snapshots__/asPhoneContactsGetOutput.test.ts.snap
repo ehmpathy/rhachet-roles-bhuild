@@ -1,0 +1,75 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asPhoneContactsGetOutput given: [case1] no contacts, no inbound, an empty tree when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 here's who's in the pond
+
+💧 phone.contacts
+   ├─ you: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   ├─ contacts
+   │  ├─ (none)
+   │  ├─ grant one: rhx phone.contacts set --address phone://grove=local/tree=<tree>/clone=<clone>
+   │  └─ a clone may grant its own only where the tree meter allows: rhx phone.contacts.uses get
+   └─ own tree
+      └─ (none)"
+`;
+
+exports[`asPhoneContactsGetOutput given: [case2] contacts, a sender that texted first, and its own tree when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 here's who's in the pond
+
+💧 phone.contacts
+   ├─ you: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   ├─ contacts
+   │  └─ phone://grove=bert-laptop/tree=notebook/clone=director   (LIVE)
+   ├─ texted you
+   │  └─ phone://grove=grove-sandpine-v20260901/tree=svc-lessons.beav.feat-coachbook/clone=mechanic   (other grove)
+   └─ own tree
+      ├─ @:foreman    (LIVE)
+      └─ @:9b3d7e10   (DEAF · no slug, so it goes by its serial; text it as shown)"
+`;
+
+exports[`asPhoneContactsGetOutput given: [case3] a tree with DEAD clones enrolled before the LIVE one, as a long-lived tree holds when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 here's who's in the pond
+
+💧 phone.contacts
+   ├─ you: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   ├─ contacts
+   │  ├─ (none)
+   │  ├─ grant one: rhx phone.contacts set --address phone://grove=local/tree=<tree>/clone=<clone>
+   │  └─ a clone may grant its own only where the tree meter allows: rhx phone.contacts.uses get
+   └─ own tree
+      ├─ @:foreman    (LIVE)
+      ├─ @:9b3d7e10   (DEAF · no slug, so it goes by its serial; text it as shown)
+      └─ + 2 DEAD, not shown (see all: rhx clone list)"
+`;
+
+exports[`asPhoneContactsGetOutput given: [case4] a contacts file no reader here can parse, as a newer writer would leave when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 here's who's in the pond
+
+💧 phone.contacts
+   ├─ you: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   ├─ contacts
+   │  ├─ unreadable, read as no grants: phone contacts file has an unknown shape
+   │  │  ├─ /home/bert/git/sandpine/_worktrees/svc-lessons.beav.feat-book-a-lesson/.agent/.cache/repo=bhuild/role=dispatcher/skill=phone.contacts/clone=mechanic/contacts.json
+   │  │  └─ a grant rewrites it: rhx phone.contacts set --address <address>
+   │  ├─ (none)
+   │  ├─ grant one: rhx phone.contacts set --address phone://grove=local/tree=<tree>/clone=<clone>
+   │  └─ a clone may grant its own only where the tree meter allows: rhx phone.contacts.uses get
+   └─ own tree
+      └─ (none)"
+`;
+
+exports[`asPhoneContactsGetOutput given: [case5] a contact in each reach state the producer can emit: a clone state, gone, no clone yet, other grove when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 here's who's in the pond
+
+💧 phone.contacts
+   ├─ you: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   ├─ contacts
+   │  ├─ phone://grove=bert-laptop/tree=svc-lessons.beav.feat-spot-forecast-widget/clone=mechanic     (LIVE)
+   │  ├─ phone://grove=bert-laptop/tree=svc-lessons.beav.feat-cert-ingest/clone=mechanic              (DEAD)
+   │  ├─ phone://grove=bert-laptop/tree=svc-lessons.beav.feat-coachbook/clone=foreman                 (DEAF)
+   │  ├─ phone://grove=bert-laptop/tree=svc-lessons.beav.feat-board-rentals/clone=mechanic            (gone)
+   │  ├─ phone://grove=bert-laptop/tree=svc-lessons.beav.feat-wetsuit-stock/clone=mechanic            (no clone yet)
+   │  └─ phone://grove=grove-sandpine-v20260901/tree=svc-lessons.beav.feat-coachbook/clone=mechanic   (other grove)
+   └─ own tree
+      └─ (none)"
+`;

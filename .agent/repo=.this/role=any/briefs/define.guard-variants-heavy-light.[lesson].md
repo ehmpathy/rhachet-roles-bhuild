@@ -36,7 +36,7 @@ heavy is opt-in — for when extra scrutiny is worth the cost.
 
 | guard | light | heavy |
 |-------|-------|-------|
-| 1.vision | 3 reviews | 8 reviews |
+| 1.vision | 6 reviews | 11 reviews |
 | 2.1.criteria.blackbox | none | 4 reviews |
 | 3.3.1.blueprint.product.v1 | 13 reviews | 17 reviews |
 

@@ -3,7 +3,8 @@ import { Role } from 'rhachet';
 export const ROLE_DISPATCHER: Role = Role.build({
   slug: 'dispatcher',
   name: 'Dispatcher',
-  purpose: 'broadcast and receive tasks via radio channels',
+  purpose:
+    'broadcast and receive tasks via radio channels; text peer clones via the phone',
   readme: { uri: __dirname + '/readme.md' },
   traits: [],
   skills: {

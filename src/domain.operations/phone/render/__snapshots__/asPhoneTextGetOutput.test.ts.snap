@@ -1,0 +1,67 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asPhoneTextGetOutput given: [case1] an empty thread when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 the pond is still
+
+💧 phone.text get
+   ├─ you: phone://grove=bert-laptop/tree=notebook/clone=director
+   └─ (no texts yet)"
+`;
+
+exports[`asPhoneTextGetOutput given: [case2] one text, said when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 here's the thread
+
+💧 phone.text get
+   ├─ you: phone://grove=bert-laptop/tree=notebook/clone=director
+   └─ 7f3e9a02 → phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic   DELIVERED
+      └─ where is book-a-lesson?"
+`;
+
+exports[`asPhoneTextGetOutput given: [case3] a full thread: said, a reply, one that waits, one refused when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 here's the thread
+
+💧 phone.text get
+   ├─ you: phone://grove=bert-laptop/tree=notebook/clone=director
+   ├─ 7f3e9a02 → phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic   DELIVERED
+   │  ├─ where is book-a-lesson?
+   │  └─ blocked on aught?
+   ├─ a1b2c3d4 ← phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic   DELIVERED · re 7f3e9a02
+   │  └─ pr open; awaits ci
+   ├─ 0c5e8f1a → phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic   QUEUED · peer at a modal
+   │  └─ text me when green
+   └─ 20fa7ac9 → phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic   REFUSED · no clone mechanic in that tree
+      └─ hello?"
+`;
+
+exports[`asPhoneTextGetOutput given: [case4] a QUEUED text, and no daemon live to carry it when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 here's the thread
+
+💧 phone.text get
+   ├─ you: phone://grove=bert-laptop/tree=notebook/clone=director
+   ├─ 0c5e8f1a → phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic   QUEUED
+   │  └─ text me when green
+   └─ daemon: DOWN — the QUEUED texts wait for it
+      └─ start it: rhx phone.daemon set"
+`;
+
+exports[`asPhoneTextGetOutput given: [case5] one text, and one record a newer writer left when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 here's the thread
+
+💧 phone.text get
+   ├─ you: phone://grove=bert-laptop/tree=notebook/clone=director
+   ├─ 7f3e9a02 → phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic   DELIVERED
+   │  └─ where is book-a-lesson?
+   └─ 1 unreadable, skipped
+      ├─ text.0002.in.json: phone text record has an unknown shape
+      └─ a torn write, or a newer rhachet-roles-bhuild; upgrade, else ask who wrote it"
+`;
+
+exports[`asPhoneTextGetOutput given: [case6] no text it can read, one record it can not when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 here's the thread
+
+💧 phone.text get
+   ├─ you: phone://grove=bert-laptop/tree=notebook/clone=director
+   └─ 1 unreadable, skipped
+      ├─ text.0001.in.json: phone text record is not json
+      └─ a torn write, or a newer rhachet-roles-bhuild; upgrade, else ask who wrote it"
+`;
