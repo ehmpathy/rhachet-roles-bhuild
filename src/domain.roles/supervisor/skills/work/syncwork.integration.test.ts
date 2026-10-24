@@ -28,6 +28,7 @@
  */
 import { execFileSync, spawnSync } from 'child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'fs';
+import { getError, MalfunctionError } from 'helpful-errors';
 import { join } from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
@@ -154,11 +155,28 @@ const getIndexFingerprint = (input: { tree: string }): string => {
   return readFileSync(path).toString('base64');
 };
 
+/**
+ * .what = the budget of one tree.sync call, and this file's jest limit
+ * .why  = a sync takes seconds on a quiet box and outlived 60s under load. a
+ *         hook runs up to two syncs, so the jest limit holds two budgets plus
+ *         the world it builds; a limit of 90s (the integration default) could
+ *         not hold even one load-slow pair.
+ */
+const MS_SYNC_BUDGET = 120_000;
+
+const COUNT_SYNC_PER_HOOK_MAX = 2;
+
+const MS_SYNC_JEST_LIMIT = COUNT_SYNC_PER_HOOK_MAX * MS_SYNC_BUDGET + 60_000;
+
+jest.setTimeout(MS_SYNC_JEST_LIMIT);
+
 /** .what = run a tree.sync call against a world */
 const runSync = (input: {
   world: ReturnType<typeof genWorld>;
   command: string;
+  budgetMs?: number;
 }): { stdout: string; stderr: string; exit: number } => {
+  const budgetMs = input.budgetMs ?? MS_SYNC_BUDGET;
   const dir = tempDirs.genOne({ slug: 'sync-driver' });
   const pathDriver = join(dir, 'driver.sh');
   writeFileSync(
@@ -182,15 +200,26 @@ const runSync = (input: {
       SYNCWORK_GIT_ROOT: input.world.rootLocal,
       SYNCWORK_GIT_ROOT_REMOTE: input.world.rootGrove,
     },
-    timeout: 60_000,
+    timeout: budgetMs,
   });
 
+  // a killed sync has no exit code; fail loud, never fake one, else a case
+  // that expects a non-zero exit passes on a kill
   const stdout = spawned.stdout ?? '';
+  if (spawned.status === null)
+    throw new MalfunctionError('the tree.sync driver was killed', {
+      signal: spawned.signal,
+      budgetMs,
+      stdout,
+      stderr: spawned.stderr ?? '',
+      hint: 'the box may be loaded; the budget sits in MS_SYNC_BUDGET',
+    });
+
   const marker = stdout.match(/__EXIT__=(\d+)/);
   return {
     stdout,
     stderr: spawned.stderr ?? '',
-    exit: marker ? Number(marker[1]) : (spawned.status ?? 1),
+    exit: marker ? Number(marker[1]) : spawned.status,
   };
 };
 
@@ -1404,6 +1433,31 @@ describe('syncwork', () => {
       then('it names the deliberate alternative', () => {
         expect(result.stderr).toContain('keyrack');
         expect(result.stderr).toContain('git.grove.send');
+      });
+    });
+  });
+
+  /**
+   * 🔴 the clamp for the load red of [case1]: a sync killed at its 60s budget
+   *    read as exit 1, so [t1] failed on `toBe(0)` with no word of a kill, and
+   *    a case that expects a non-zero exit would have passed on one.
+   */
+  given('[case9] a sync that outlives its budget', () => {
+    const world = useBeforeAll(async () => genWorld({ slug: 'killed' }));
+
+    when('[t0] the driver is killed mid-run', () => {
+      then('🔴 it throws loud, never a fake exit code', async () => {
+        const error = await getError(async () =>
+          runSync({ world, command: 'sleep 10', budgetMs: 1_000 }),
+        );
+        expect(error).toBeInstanceOf(MalfunctionError);
+        expect(error.message).toContain('the tree.sync driver was killed');
+      });
+
+      then('the jest limit holds the most syncs one hook runs', () => {
+        expect(COUNT_SYNC_PER_HOOK_MAX * MS_SYNC_BUDGET).toBeLessThan(
+          MS_SYNC_JEST_LIMIT,
+        );
       });
     });
   });
