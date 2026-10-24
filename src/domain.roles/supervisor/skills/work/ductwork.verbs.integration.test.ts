@@ -583,49 +583,99 @@ describe('ductwork', () => {
       //          the pane's blank tail, so an unstripped tail yields only pad.
       //          [case5] cannot catch this: its `--lines 20` is wide enough to
       //          reach back over the pad on a short pane.
-      const scene = useBeforeAll(async () => {
-        const socket = genSocket('idlepad');
+      // .why the wait = the case reads an idle pane, so the shell must have
+      //        drawn its prompt first. a fixed `sleep 2` guessed at that, and on
+      //        a loaded box (2026-10-23, load ~98 on 12) the guess lost: the pane
+      //        was still all pad, so the read held no signal and the case went
+      //        red for a reason that has naught to do with the strip. the wait
+      //        reads tmux DIRECT (never the lib under test) until a row holds a
+      //        printable char, bounded so a shell that never draws still reds
+      const readIdlePaneThroughNarrowWindow = (input: {
+        slug: string;
+        shellDelaySeconds: number;
+      }): { socket: string; result: ReturnType<typeof runDuct> } => {
+        const socket = genSocket(input.slug);
         const ductworkDir = tempDirs.genOne({ slug: 'registry' });
         const cwd = tempDirs.genOne({ slug: 'cwd' });
+        const session = `${TREE}/mechanic`;
         const result = runDuct({
           body: [
-            `duct.open --on 'duct:///${TREE}/mechanic' --cwd '${cwd}'`,
-            // let the shell settle so a prompt is drawn and the rest is pad
-            'sleep 2',
+            // a shell that draws its prompt late stands in for a loaded box
+            ...(input.shellDelaySeconds > 0
+              ? [
+                  `printf '#!/bin/sh\\nsleep ${input.shellDelaySeconds}\\nexec /bin/sh "$@"\\n' > '${cwd}/slow.sh'`,
+                  `chmod +x '${cwd}/slow.sh'`,
+                  `export SHELL='${cwd}/slow.sh'`,
+                ]
+              : []),
+            `duct.open --on 'duct:///${session}' --cwd '${cwd}'`,
+            // wait, bounded at 30s, until the pane holds a drawn row
+            `for i in $(seq 1 150); do tmux -L "$DUCTWORK_TMUX_SOCKET" capture-pane -p -t '${session}' 2>/dev/null | grep -q '[^[:space:]]' && break; sleep 0.2; done`,
             // sentinels bracket the read, so the assertion sees the READ's bytes
             // alone — duct.open and duct.stop both print, so a bare "stdout is
             // non-empty" check would pass with no read at all
             'echo __READ_BEGIN__',
-            `duct.read --on 'duct:///${TREE}/mechanic' --lines 3 --raw`,
+            `duct.read --on 'duct:///${session}' --lines 3 --raw`,
             'echo __READ_END__',
-            `duct.stop --on 'duct:///${TREE}/mechanic'`,
+            `duct.stop --on 'duct:///${session}'`,
           ].join('\n'),
           socket,
           ductworkDir,
         });
         return { socket, result };
-      });
+      };
+
+      // a pad row under --raw still carries ANSI color resets, so it is
+      // non-empty as a STRING while it holds no printable char. strip the
+      // escapes before the test, exactly as the lib does
+      const asReadShape = (input: { stdout: string }) => {
+        const between =
+          input.stdout.split('__READ_BEGIN__')[1]?.split('__READ_END__')[0] ??
+          '';
+        const printable = between
+          .replace(/\u001b\[[0-9;?]*[A-Za-z]/g, '')
+          .replace(/\s/g, '');
+        return {
+          sentinelsFound: between !== '',
+          hasPrintable: printable !== '',
+        };
+      };
 
       when('[t0] the idle pane is read through a 3-line window', () => {
+        const scene = useBeforeAll(async () =>
+          readIdlePaneThroughNarrowWindow({
+            slug: 'idlepad',
+            shellDelaySeconds: 0,
+          }),
+        );
+
         then('the read yields signal, never the blank rows tmux padded', () => {
-          const between =
-            scene.result.stdout
-              .split('__READ_BEGIN__')[1]
-              ?.split('__READ_END__')[0] ?? '';
-          // a pad row under --raw still carries ANSI color resets, so it is
-          // non-empty as a STRING while it holds no printable char. strip the
-          // escapes before the test, exactly as the lib does
-          const printable = between
-            .replace(/\u001b\[[0-9;?]*[A-Za-z]/g, '')
-            .replace(/\s/g, '');
-          expect({
-            sentinelsFound: between !== '',
-            hasPrintable: printable !== '',
-          }).toEqual({
+          expect(asReadShape(scene.result)).toEqual({
             sentinelsFound: true,
             hasPrintable: true,
           });
         });
+      });
+
+      when('[t1] the shell draws its prompt late, as on a loaded box', () => {
+        // 🔴 the measured red, 2026-10-23: `"hasPrintable": false` under load.
+        //    a shell 4s late reproduces it on any box against the old `sleep 2`
+        const scene = useBeforeAll(async () =>
+          readIdlePaneThroughNarrowWindow({
+            slug: 'idlepad-slow',
+            shellDelaySeconds: 4,
+          }),
+        );
+
+        then(
+          'the read still yields signal — the case waits on the draw, not a clock',
+          () => {
+            expect(asReadShape(scene.result)).toEqual({
+              sentinelsFound: true,
+              hasPrintable: true,
+            });
+          },
+        );
       });
     },
   );
