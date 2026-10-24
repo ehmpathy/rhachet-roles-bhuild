@@ -10,10 +10,7 @@ exports[`phone skills given: [case1] a shell with no enrolled clone when: [t0] p
 
 ✋ ConstraintError: the phone runs only inside an enrolled clone
    ├─ RHACHET_CLONE_SERIAL is not set in this shell
-   ├─ run it from a clone: rhx enroll claude --as @:<slug>
-   └─ a human who grants a clone its contacts: lift the meter here, then the clone grants
-      ├─ rhx phone.contacts.uses allow
-      └─ then, in the clone: rhx phone.contacts set --address <address>"
+   └─ run it from a clone: rhx enroll claude --as @:<slug>"
 `;
 
 exports[`phone skills given: [case1] a shell with no enrolled clone when: [t1] phone.text --help runs then: it exits 0 and shows the three verbs and the address forms 1`] = `
@@ -27,12 +24,23 @@ exports[`phone skills given: [case1] a shell with no enrolled clone when: [t1] p
    │  ├─ phone.text get [--text <uuid>]                                      this clone's thread, or one text
    │  └─ phone.text del --text <uuid>                                        withdraw a QUEUED text
    │
+   ├─ the inputs
+   │  ├─ --to <address>     a peer; repeat it to text a group (each peer gets its own text)
+   │  ├─ --what <text>      the words; --what @stdin reads them from a pipe
+   │  ├─ --re <uuid>        optional: the text this one answers; the peer sees the link
+   │  └─ --text <uuid>      the text to read (get) or to withdraw (del)
+   │
+   ├─ for example
+   │  ├─ rhx phone.text set --to @:foreman --what 'the slot shape changed'
+   │  └─ echo 'got it' | rhx phone.text set --to @:mechanic --re 7f3e9a02 --what @stdin
+   │
    ├─ the address
    │  ├─ phone://grove=<grove>/tree=<tree>/clone=<clone>
    │  ├─ phone://grove=local/tree=<tree>/clone=<clone>   (local = this grove)
    │  └─ @:<clone>                                       (a clone in your own tree)
    │
-   └─ a text is named by its uuid: the first 8 chars (7f3e9a02) or the whole"
+   └─ the text's name
+      └─ its uuid: the first 8 chars (7f3e9a02) or the whole"
 `;
 
 exports[`phone skills given: [case2] the phone.contacts.uses meter, unset when: [t0] a human reads it, a clone tries to lift it, then a human lifts it then: each step matches its snapshot 1`] = `
@@ -94,6 +102,55 @@ exports[`phone skills given: [case2] the phone.contacts.uses meter, unset when: 
    └─ state: blocked"
 `;
 
+exports[`phone skills given: [case2] the phone.contacts.uses meter, unset when: [t2] a human re-runs each verb, then the meter file is corrupt, then a human repairs it then: each step matches its snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts.uses
+
+🦫 the dam holds
+
+💧 phone.contacts.uses block
+   └─ state: blocked (unchanged)
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts.uses
+
+🦫 the dam is open
+
+💧 phone.contacts.uses allow
+   └─ state: blocked → allowed
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts.uses
+
+🦫 the dam is open
+
+💧 phone.contacts.uses allow
+   └─ state: allowed (unchanged)
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts.uses
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts.uses
+   └─ 💥 failed with an error
+
+🦫 bummer, the dam gauge is unreadable
+
+💥 MalfunctionError: phone.contacts.uses meter has an unknown shape
+   ├─ file: $REPO/.meter/phone.contacts.uses.jsonc
+   └─ a human rewrites it: rhx phone.contacts.uses block (or allow)
+    at <frame>
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts.uses
+
+🦫 the dam holds
+
+💧 phone.contacts.uses block
+   └─ state: unreadable → blocked
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts.uses
+
+🦫 the dam holds
+
+💧 phone.contacts.uses
+   └─ state: blocked"
+`;
+
 exports[`phone skills given: [case3] the phone.daemon, never started when: [t0] its state is read then: it names how to start it, and matches its snapshot 1`] = `
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.daemon
 
@@ -105,7 +162,7 @@ exports[`phone skills given: [case3] the phone.daemon, never started when: [t0] 
    └─ log: $REPO/.agent/.cache/repo=bhuild/role=dispatcher/skill=phone.daemon/daemon.log"
 `;
 
-exports[`phone skills given: [case4] the phone.daemon, started and stopped by a human when: [t0] it is started twice, read, stopped, and read again then: the set and del outputs match their snapshots 1`] = `
+exports[`phone skills given: [case4] the phone.daemon, started and stopped by a human when: [t0] it is started twice, read, stopped, and read again then: the set, get, del, and DOWN get outputs match their snapshots 1`] = `
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.daemon
 
 🦫 the daemon dives in
@@ -126,11 +183,29 @@ exports[`phone skills given: [case4] the phone.daemon, started and stopped by a 
 ---
 🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.daemon
 
+🦫 the daemon swims
+
+💧 phone.daemon
+   ├─ state: LIVE
+   ├─ pid: <pid>
+   └─ log: $REPO/.agent/.cache/repo=bhuild/role=dispatcher/skill=phone.daemon/daemon.log
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.daemon
+
 🦫 the daemon climbs out
 
 💧 phone.daemon del
    ├─ state: DOWN
-   └─ QUEUED texts wait on disk for the next start"
+   └─ QUEUED texts wait on disk for the next start
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.daemon
+
+🦫 the daemon rests
+
+💧 phone.daemon
+   ├─ state: DOWN
+   ├─ start it: rhx phone.daemon set
+   └─ log: $REPO/.agent/.cache/repo=bhuild/role=dispatcher/skill=phone.daemon/daemon.log"
 `;
 
 exports[`phone skills given: [case5] a verb the phone does not know when: [t0] phone.daemon runs with it then: it exits 2 with a constraint header that names the verbs 1`] = `
@@ -176,9 +251,20 @@ exports[`phone skills given: [case6] phone.contacts, in a shell with no enrolled
 
 ✋ ConstraintError: the phone runs only inside an enrolled clone
    ├─ RHACHET_CLONE_SERIAL is not set in this shell
+   └─ run it from a clone: rhx enroll claude --as @:<slug>
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts
+   └─ ✋ blocked by constraints
+
+🦫 bummer, no clone holds this phone
+
+✋ ConstraintError: the phone runs only inside an enrolled clone
+   ├─ RHACHET_CLONE_SERIAL is not set in this shell
    ├─ run it from a clone: rhx enroll claude --as @:<slug>
-   └─ a human who grants a clone its contacts: lift the meter here, then the clone grants
-      ├─ rhx phone.contacts.uses allow
+   └─ a human holds no mailbox; a human lifts the meter, so a clone may grant its contacts
+      ├─ lift it: rhx phone.contacts.uses allow
       └─ then, in the clone: rhx phone.contacts set --address <address>
 ---
 🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts
@@ -191,22 +277,8 @@ exports[`phone skills given: [case6] phone.contacts, in a shell with no enrolled
 ✋ ConstraintError: the phone runs only inside an enrolled clone
    ├─ RHACHET_CLONE_SERIAL is not set in this shell
    ├─ run it from a clone: rhx enroll claude --as @:<slug>
-   └─ a human who grants a clone its contacts: lift the meter here, then the clone grants
-      ├─ rhx phone.contacts.uses allow
-      └─ then, in the clone: rhx phone.contacts set --address <address>
----
-🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts
-
-🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts
-   └─ ✋ blocked by constraints
-
-🦫 bummer, no clone holds this phone
-
-✋ ConstraintError: the phone runs only inside an enrolled clone
-   ├─ RHACHET_CLONE_SERIAL is not set in this shell
-   ├─ run it from a clone: rhx enroll claude --as @:<slug>
-   └─ a human who grants a clone its contacts: lift the meter here, then the clone grants
-      ├─ rhx phone.contacts.uses allow
+   └─ a human holds no mailbox; a human lifts the meter, so a clone may grant its contacts
+      ├─ lift it: rhx phone.contacts.uses allow
       └─ then, in the clone: rhx phone.contacts set --address <address>"
 `;
 
@@ -244,10 +316,7 @@ exports[`phone skills given: [case7] phone.text set and del, in a shell with no 
 
 ✋ ConstraintError: the phone runs only inside an enrolled clone
    ├─ RHACHET_CLONE_SERIAL is not set in this shell
-   ├─ run it from a clone: rhx enroll claude --as @:<slug>
-   └─ a human who grants a clone its contacts: lift the meter here, then the clone grants
-      ├─ rhx phone.contacts.uses allow
-      └─ then, in the clone: rhx phone.contacts set --address <address>
+   └─ run it from a clone: rhx enroll claude --as @:<slug>
 ---
 🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
 
@@ -258,10 +327,7 @@ exports[`phone skills given: [case7] phone.text set and del, in a shell with no 
 
 ✋ ConstraintError: the phone runs only inside an enrolled clone
    ├─ RHACHET_CLONE_SERIAL is not set in this shell
-   ├─ run it from a clone: rhx enroll claude --as @:<slug>
-   └─ a human who grants a clone its contacts: lift the meter here, then the clone grants
-      ├─ rhx phone.contacts.uses allow
-      └─ then, in the clone: rhx phone.contacts set --address <address>"
+   └─ run it from a clone: rhx enroll claude --as @:<slug>"
 `;
 
 exports[`phone skills given: [case7] phone.text set and del, in a shell with no enrolled clone when: [t1] del runs with no --text then: the refusal matches its snapshot 1`] = `
@@ -313,6 +379,36 @@ exports[`phone skills given: [case8] the --help of each other phone skill when: 
       └─ phone.daemon del   stop it; no text is lost"
 `;
 
+exports[`phone skills given: [case8] the --help of each other phone skill when: [t1] each runs with a typo, with -h, and with no verb then: the typo refusals match their snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts
+   └─ ✋ blocked by constraints
+
+🦫 bummer, that verb is not one the phone knows
+
+✋ ConstraintError: phone.contacts has no verb 'add'
+   ├─ verbs
+   │  ├─ rhx phone.contacts get
+   │  ├─ rhx phone.contacts set --address <address>
+   │  └─ rhx phone.contacts del --address <address>
+   └─ see the usage: rhx phone.contacts --help
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts.uses
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts.uses
+   └─ ✋ blocked by constraints
+
+🦫 bummer, that verb is not one the phone knows
+
+✋ ConstraintError: phone.contacts.uses has no verb 'lift'
+   ├─ verbs
+   │  ├─ rhx phone.contacts.uses get
+   │  ├─ rhx phone.contacts.uses allow
+   │  └─ rhx phone.contacts.uses block
+   └─ see the usage: rhx phone.contacts.uses --help"
+`;
+
 exports[`phone skills given: [case9] a mechanic and a foreman in one tree, on a stub rhachet when: [t0] the mechanic texts the foreman, and the foreman replies then: every output and every said message matches its snapshot 1`] = `
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
 
@@ -321,16 +417,18 @@ exports[`phone skills given: [case9] a mechanic and a foreman in one tree, on a 
 💧 phone.text set
    ├─ from: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
    ├─ to: phone://grove=bert-laptop/tree=$TREE/clone=foreman
-   ├─ text: <text>
+   ├─ text: <text01>
    ├─ 1 repeated --to dropped; each peer gets one text
-   └─ status: QUEUED → a daemon started (was down); it delivers it
+   └─ status: QUEUED → a daemon started (was down); it carries it
+      └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get
 ---
 🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
 
 🦫 here's the thread
 
 💧 phone.text get
-   └─ <text> ← phone://grove=bert-laptop/tree=$TREE/clone=mechanic   DELIVERED
+   ├─ you: phone://grove=bert-laptop/tree=$TREE/clone=foreman
+   └─ <text01> ← phone://grove=bert-laptop/tree=$TREE/clone=mechanic   DELIVERED
       ├─ slot shape changed for book-a-lesson
       └─ it's 'lesson.slot', not 'slot'
 ---
@@ -341,36 +439,38 @@ exports[`phone skills given: [case9] a mechanic and a foreman in one tree, on a 
 💧 phone.text set
    ├─ from: phone://grove=bert-laptop/tree=$TREE/clone=foreman
    ├─ to: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
-   ├─ text: <text>, re <text>
-   └─ status: QUEUED → the daemon delivers it
+   ├─ text: <text02>, re <text01>
+   └─ status: QUEUED → the daemon carries it
+      └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get
 ---
 🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
 
 🦫 here's the thread
 
 💧 phone.text get
-   ├─ <text> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   ├─ you: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
+   ├─ <text01> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
    │  ├─ slot shape changed for book-a-lesson
    │  └─ it's 'lesson.slot', not 'slot'
-   └─ <text> ← phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED · re <text>
+   └─ <text02> ← phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED · re <text01>
       └─ got it; slot renamed
 ---
-🦫🔔 text <text> from phone://grove=bert-laptop/tree=$TREE/clone=mechanic
+🦫🔔 text <text01> from phone://grove=bert-laptop/tree=$TREE/clone=mechanic
 
 slot shape changed for book-a-lesson
 it's 'lesson.slot', not 'slot'
 
-   └─ reply
-      ├─ rhx phone.text set --to phone://grove=bert-laptop/tree=$TREE/clone=mechanic --re <text> --what '...'
-      └─ words with quotes or newlines? pipe them in: --what @stdin
+💧 reply
+   ├─ rhx phone.text set --to phone://grove=bert-laptop/tree=$TREE/clone=mechanic --re <text01> --what '...'
+   └─ words with quotes or newlines? pipe them in: --what @stdin
 ---
-🦫🔔 text <text> from phone://grove=bert-laptop/tree=$TREE/clone=foreman (re <text>)
+🦫🔔 text <text02> from phone://grove=bert-laptop/tree=$TREE/clone=foreman (re <text01>)
 
 got it; slot renamed
 
-   └─ reply
-      ├─ rhx phone.text set --to phone://grove=bert-laptop/tree=$TREE/clone=foreman --re <text> --what '...'
-      └─ words with quotes or newlines? pipe them in: --what @stdin"
+💧 reply
+   ├─ rhx phone.text set --to phone://grove=bert-laptop/tree=$TREE/clone=foreman --re <text02> --what '...'
+   └─ words with quotes or newlines? pipe them in: --what @stdin"
 `;
 
 exports[`phone skills given: [case10] a director tree and a crew tree on one grove, on a stub rhachet when: [t0] the director is granted the crew mechanic, texts it, is answered, then revokes it then: every output and every said message matches its snapshot 1`] = `
@@ -422,8 +522,9 @@ exports[`phone skills given: [case10] a director tree and a crew tree on one gro
 💧 phone.text set
    ├─ from: phone://grove=bert-laptop/tree=$TREE_DIRECTOR/clone=director
    ├─ to: phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic
-   ├─ text: <text>
-   └─ status: QUEUED → a daemon started (was down); it delivers it
+   ├─ text: <text01>
+   └─ status: QUEUED → a daemon started (was down); it carries it
+      └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get
 ---
 🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
 
@@ -432,17 +533,19 @@ exports[`phone skills given: [case10] a director tree and a crew tree on one gro
 💧 phone.text set
    ├─ from: phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic
    ├─ to: phone://grove=bert-laptop/tree=$TREE_DIRECTOR/clone=director
-   ├─ text: <text>, re <text>
-   └─ status: QUEUED → a daemon started (was down); it delivers it
+   ├─ text: <text02>, re <text01>
+   └─ status: QUEUED → a daemon started (was down); it carries it
+      └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get
 ---
 🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
 
 🦫 here's the thread
 
 💧 phone.text get
-   ├─ <text> → phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic   DELIVERED
+   ├─ you: phone://grove=bert-laptop/tree=$TREE_DIRECTOR/clone=director
+   ├─ <text01> → phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic   DELIVERED
    │  └─ --apply is blocked on book-a-lesson; can you look?
-   └─ <text> ← phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic   DELIVERED · re <text>
+   └─ <text02> ← phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic   DELIVERED · re <text01>
       └─ on it; the slot shape changed
 ---
 🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts
@@ -468,29 +571,313 @@ exports[`phone skills given: [case10] a director tree and a crew tree on one gro
 💧 phone.contacts
    ├─ you: phone://grove=bert-laptop/tree=$TREE_DIRECTOR/clone=director
    ├─ contacts
-   │  └─ (none)
-   │     ├─ grant one: rhx phone.contacts set --address phone://grove=local/tree=<tree>/clone=<clone>
-   │     └─ a clone may grant its own only where the tree meter allows: rhx phone.contacts.uses get
+   │  ├─ (none)
+   │  ├─ grant one: rhx phone.contacts set --address phone://grove=local/tree=<tree>/clone=<clone>
+   │  └─ a clone may grant its own only where the tree meter allows: rhx phone.contacts.uses get
    ├─ texted you
    │  └─ phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic   (LIVE)
    └─ own tree
       └─ (none)
 ---
-🦫🔔 text <text> from phone://grove=bert-laptop/tree=$TREE_DIRECTOR/clone=director
+🦫🔔 text <text01> from phone://grove=bert-laptop/tree=$TREE_DIRECTOR/clone=director
 
 --apply is blocked on book-a-lesson; can you look?
 
-   └─ reply
-      ├─ rhx phone.text set --to phone://grove=bert-laptop/tree=$TREE_DIRECTOR/clone=director --re <text> --what '...'
-      └─ words with quotes or newlines? pipe them in: --what @stdin
+💧 reply
+   ├─ rhx phone.text set --to phone://grove=bert-laptop/tree=$TREE_DIRECTOR/clone=director --re <text01> --what '...'
+   └─ words with quotes or newlines? pipe them in: --what @stdin
 ---
-🦫🔔 text <text> from phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic (re <text>)
+🦫🔔 text <text02> from phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic (re <text01>)
 
 on it; the slot shape changed
 
-   └─ reply
-      ├─ rhx phone.text set --to phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic --re <text> --what '...'
-      └─ words with quotes or newlines? pipe them in: --what @stdin"
+💧 reply
+   ├─ rhx phone.text set --to phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic --re <text02> --what '...'
+   └─ words with quotes or newlines? pipe them in: --what @stdin"
+`;
+
+exports[`phone skills given: [case10] a director tree and a crew tree on one grove, on a stub rhachet when: [t1] a human lifts the director tree meter; the director grants, groups, revokes, and is refused then: every output and the notice match their snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts.uses
+
+🦫 the dam is open
+
+💧 phone.contacts.uses allow
+   └─ state: blocked (default) → allowed
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts
+
+🦫 new friend in the pond
+
+💧 phone.contacts set
+   ├─ granted: phone://grove=bert-laptop/tree=$TREE_CREW/clone=foreman
+   └─ contacts: 1
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🦫 tail slapped, x2!
+
+💧 phone.text set
+   ├─ from: phone://grove=bert-laptop/tree=$TREE_DIRECTOR/clone=director
+   ├─ group: 2 peers
+   │  ├─ <text01> → phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic
+   │  └─ <text02> → phone://grove=bert-laptop/tree=$TREE_CREW/clone=foreman
+   └─ status: QUEUED → the daemon carries them
+      └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts
+
+🦫 waved them off
+
+💧 phone.contacts del
+   ├─ revoked: phone://grove=bert-laptop/tree=$TREE_CREW/clone=foreman
+   └─ contacts: 0
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+   └─ ✋ blocked by constraints
+
+🦫 bummer, no such contact
+
+✋ ConstraintError: phone://grove=bert-laptop/tree=$TREE_CREW/clone=foreman is not a contact
+   ├─ you may reach
+   │  └─ phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic   (texted you)
+   └─ grant it, as this clone: rhx phone.contacts set --address phone://grove=bert-laptop/tree=$TREE_CREW/clone=foreman
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+   └─ ✋ blocked by constraints
+
+🦫 bummer, no such contact
+
+✋ ConstraintError: phone://grove=bert-laptop/tree=$TREE_CREW/clone=foreman is not a contact
+   ├─ you may reach
+   │  └─ phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic   (texted you)
+   ├─ grant it, as this clone: rhx phone.contacts set --address phone://grove=bert-laptop/tree=$TREE_CREW/clone=foreman
+   └─ naught was sent: a group of 2 is refused whole
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+   └─ ✋ blocked by constraints
+
+🦫 bummer, that is your own number
+
+✋ ConstraintError: phone://grove=bert-laptop/tree=$TREE_DIRECTOR/clone=director is this clone
+   └─ text a peer: rhx phone.contacts get
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+   └─ ✋ blocked by constraints
+
+🦫 whoa, that text is a whole dam
+
+✋ ConstraintError: a text holds at most 8000 chars; this one holds 8001
+   └─ send the gist, and name a file in the tree for the rest
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+   └─ ✋ blocked by constraints
+
+🦫 bummer, that address reads backwards
+
+✋ ConstraintError: phone://tree=$TREE_CREW/grove=local/clone=mechanic is not in canonical order
+   ├─ the keys come in one order: grove, tree, clone
+   └─ use: phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+   └─ ✋ blocked by constraints
+
+🦫 bummer, that address does not parse
+
+✋ ConstraintError: phone://grove=local/tree=$TREE_CREW/clone=@:mechanic is not a phone address
+   ├─ fault: the clone key takes a bare name: clone=mechanic, not clone=@:mechanic
+   ├─ accepted forms
+   │  ├─ phone://grove=<grove>/tree=<tree>/clone=<clone>
+   │  ├─ phone://grove=local/tree=<tree>/clone=<clone>
+   │  └─ @:<clone>   (a clone in your own tree)
+   └─ see who you may reach: rhx phone.contacts get
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+   └─ ✋ blocked by constraints
+
+🦫 bummer, that flag came with no value
+
+✋ ConstraintError: --re takes a value: the uuid of the text it answers (its first 8 chars, or the whole)
+   ├─ rhx phone.text set --to <address> --what '...' --re <uuid>
+   └─ see the usage: rhx phone.text --help
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+   └─ ✋ blocked by constraints
+
+🦫 bummer, no text by that name
+
+✋ ConstraintError: no text deadbeef in this mailbox
+   └─ see each text with its name: rhx phone.text get
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+   └─ ✋ blocked by constraints
+
+🦫 bummer, no river to that grove yet
+
+✋ ConstraintError: phone://grove=grove-sandpine-v20260901/tree=svc-lessons/clone=mechanic is on another grove
+   ├─ this grove: bert-laptop
+   └─ texts across groves ride a later delivery; text a peer on this grove
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+   └─ ✋ blocked by constraints
+
+🦫 bummer, no such grove
+
+✋ ConstraintError: no grove grove-nope is known on bert-laptop
+   ├─ this grove: bert-laptop
+   └─ see the known groves: rhx git.grove.list
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts
+   └─ ✋ blocked by constraints
+
+🦫 bummer, no such tree here
+
+✋ ConstraintError: no tree svc-wetsuit-stock on bert-laptop
+   ├─ searched: $GIT_ROOT/*/_worktrees/ and $GIT_ROOT/*/
+   └─ see who you may reach: rhx phone.contacts get
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts
+
+🦫 new friend in the pond
+
+💧 phone.contacts set
+   ├─ granted: phone://grove=bert-laptop/tree=$TREE_CREW/clone=foreman
+   └─ contacts: 1
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts
+   └─ ✋ blocked by constraints
+
+🦫 bummer, no such tree here
+
+✋ ConstraintError: no tree svc-wetsuit-stock on bert-laptop
+   ├─ searched: $GIT_ROOT/*/_worktrees/ and $GIT_ROOT/*/
+   └─ see who you may reach: rhx phone.contacts get
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🦫 tail slapped!
+
+💧 phone.text set
+   ├─ from: phone://grove=bert-laptop/tree=$TREE_DIRECTOR/clone=director
+   ├─ to: phone://grove=bert-laptop/tree=$TREE_DIRECTOR/clone=ghost
+   ├─ text: <text03>
+   └─ status: QUEUED → the daemon carries it
+      └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🦫 here's the thread
+
+💧 phone.text get
+   ├─ you: phone://grove=bert-laptop/tree=$TREE_DIRECTOR/clone=director
+   ├─ <text04> → phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic    DELIVERED
+   │  └─ --apply is blocked on book-a-lesson; can you look?
+   ├─ <text05> ← phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic    DELIVERED · re <text04>
+   │  └─ on it; the slot shape changed
+   ├─ <text01> → phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic    DELIVERED
+   │  └─ boards are in
+   ├─ <text02> → phone://grove=bert-laptop/tree=$TREE_CREW/clone=foreman     DELIVERED
+   │  └─ boards are in
+   └─ <text03> → phone://grove=bert-laptop/tree=$TREE_DIRECTOR/clone=ghost   REFUSED · no clone answers to @:ghost in that tree
+      └─ anyone there?
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+   └─ ✋ blocked by constraints
+
+🦫 bummer, texts go by name, not number
+
+✋ ConstraintError: 3 is not a text reference
+   ├─ a text is named by its uuid: the first 8 chars (7f3e9a02) or the whole
+   └─ see each text with its name: rhx phone.text get
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+   └─ ✋ blocked by constraints
+
+🦫 bummer, no text by that name
+
+✋ ConstraintError: no text deadbeef in this mailbox
+   └─ see each text with its name: rhx phone.text get
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+   └─ ✋ blocked by constraints
+
+🦫 that one's downstream
+
+✋ ConstraintError: text <text01> was already DELIVERED
+   ├─ a delivered text can not be unsaid
+   └─ send a correction
+      └─ rhx phone.text set --to phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic --re <text01> --what '...'
+---
+🦫🔔 text <text03> was REFUSED
+   ├─ to: phone://grove=bert-laptop/tree=$TREE_DIRECTOR/clone=ghost
+   ├─ reason: no clone answers to @:ghost in that tree
+   └─ next: rhx phone.contacts get, then text a peer that answers"
+`;
+
+exports[`phone skills given: [case11] a foreman at a modal, then one whose say cannot be confirmed, on a stub rhachet when: [t0] the mechanic texts the foreman while it sits at a modal, then the modal clears then: the send, both threads, and the said text match their snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🦫 tail slapped!
+
+💧 phone.text set
+   ├─ from: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
+   ├─ to: phone://grove=bert-laptop/tree=$TREE/clone=foreman
+   ├─ text: <text01>
+   └─ status: QUEUED → a daemon started (was down); it carries it
+      └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🦫 here's the thread
+
+💧 phone.text get
+   ├─ you: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
+   └─ <text01> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   QUEUED · peer at a modal
+      └─ is the swell up?
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🦫 here's the thread
+
+💧 phone.text get
+   ├─ you: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
+   └─ <text01> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+      └─ is the swell up?
+---
+🦫🔔 text <text01> from phone://grove=bert-laptop/tree=$TREE/clone=mechanic
+
+is the swell up?
+
+💧 reply
+   ├─ rhx phone.text set --to phone://grove=bert-laptop/tree=$TREE/clone=mechanic --re <text01> --what '...'
+   └─ words with quotes or newlines? pipe them in: --what @stdin"
 `;
 
 exports[`phone skills given: [case11] a foreman at a modal, then one whose say cannot be confirmed, on a stub rhachet when: [t1] the mechanic texts the foreman, and the say cannot be confirmed then: the thread and the notice match their snapshot 1`] = `
@@ -499,12 +886,13 @@ exports[`phone skills given: [case11] a foreman at a modal, then one whose say c
 🦫 here's the thread
 
 💧 phone.text get
-   ├─ <text> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   ├─ you: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
+   ├─ <text01> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
    │  └─ is the swell up?
-   └─ <text> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   FAULTED · unconfirmed: no echo seen
+   └─ <text02> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   FAULTED · unconfirmed: no echo seen
       └─ board count?
 ---
-🦫🔔 text <text> was FAULTED
+🦫🔔 text <text02> was FAULTED
    ├─ to: phone://grove=bert-laptop/tree=$TREE/clone=foreman
    ├─ reason: unconfirmed: no echo seen
    └─ next: rhx phone.text get, then decide: resend, or let it rest (a resend may say it twice)"
@@ -526,9 +914,9 @@ exports[`phone skills given: [case11] a foreman at a modal, then one whose say c
 🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
    └─ ✋ blocked by constraints
 
-🦫 bummer, that verb needs one more flag
+🦫 bummer, that flag came with no value
 
-✋ ConstraintError: phone.text get needs --text
+✋ ConstraintError: --text takes a value: the text's uuid (its first 8 chars, or the whole)
    ├─ rhx phone.text get --text <uuid>
    └─ see the usage: rhx phone.text --help
 ---
@@ -537,9 +925,9 @@ exports[`phone skills given: [case11] a foreman at a modal, then one whose say c
 🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts
    └─ ✋ blocked by constraints
 
-🦫 bummer, that verb needs one more flag
+🦫 bummer, that flag came with no value
 
-✋ ConstraintError: phone.contacts set needs --address
+✋ ConstraintError: --address takes a value: a peer address, phone://grove=<grove>/tree=<tree>/clone=<clone>
    ├─ rhx phone.contacts set --address <address>
    └─ see the usage: rhx phone.contacts --help
 ---
@@ -548,12 +936,398 @@ exports[`phone skills given: [case11] a foreman at a modal, then one whose say c
 🦫 no change, they were not in the pond
 
 💧 phone.contacts del
-   ├─ not a contact: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=foreman
+   ├─ not a contact: phone://grove=bert-laptop/tree=$TREE/clone=foreman
    └─ contacts: 0
 
 🦫 no change, they were not in the pond
 
 💧 phone.contacts del
-   ├─ not a contact: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
-   └─ contacts: 0"
+   ├─ not a contact: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
+   ├─ contacts: 0
+   └─ 1 repeated --address dropped; each peer is one revoke"
+`;
+
+exports[`phone skills given: [case11] a foreman at a modal, then one whose say cannot be confirmed, on a stub rhachet when: [t3] the mechanic texts the foreman at a modal, reads the text by name, then withdraws it then: each step matches its snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🦫 tail slapped!
+
+💧 phone.text set
+   ├─ from: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
+   ├─ to: phone://grove=bert-laptop/tree=$TREE/clone=foreman
+   ├─ text: <text01>
+   └─ status: QUEUED → the daemon carries it
+      └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🦫 here's the thread
+
+💧 phone.text get
+   ├─ you: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
+   └─ <text01> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   QUEUED · peer at a modal
+      └─ wetsuit count?
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🦫 fished it back out
+
+💧 phone.text del
+   ├─ text: <text01> → phone://grove=bert-laptop/tree=$TREE/clone=foreman
+   └─ status: QUEUED → WITHDRAWN (never said)
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🦫 already fished out
+
+💧 phone.text del
+   ├─ text: <text01> → phone://grove=bert-laptop/tree=$TREE/clone=foreman
+   └─ status: WITHDRAWN (no change)
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🦫 here's the thread
+
+💧 phone.text get
+   ├─ you: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
+   └─ <text01> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   WITHDRAWN · withdrawn by its sender; never said
+      └─ wetsuit count?"
+`;
+
+exports[`phone skills given: [case11] a foreman at a modal, then one whose say cannot be confirmed, on a stub rhachet when: [t4] the foreman is revived under a new serial, then texted again then: the empty thread and the off-roster refusal match their snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🦫 the pond is still
+
+💧 phone.text get
+   ├─ you: phone://grove=bert-laptop/tree=$TREE/clone=reflector
+   └─ (no texts yet)
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+   └─ ✋ blocked by constraints
+
+🦫 bummer, this clone is not on the roster here
+
+✋ ConstraintError: no clone with serial d03e6f91-5b2c-4a87-9e14-7f60c3a8b2d5 is enrolled in $TREE
+   ├─ this shell's RHACHET_CLONE_SERIAL names a clone the tree does not hold: a stale shell, or a clone of another tree
+   ├─ the phone signs each text with the clone that sends it
+   └─ run the phone from the clone itself, in its own tree; see the roster: rhx clone list"
+`;
+
+exports[`phone skills given: [case11] a foreman at a modal, then one whose say cannot be confirmed, on a stub rhachet when: [t4] the foreman is revived under a new serial, then texted again then: the revived thread, the send, and the said text match their snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🦫 here's the thread
+
+💧 phone.text get
+   ├─ you: phone://grove=bert-laptop/tree=$TREE/clone=foreman
+   ├─ <text01> ← phone://grove=bert-laptop/tree=$TREE/clone=mechanic   DELIVERED
+   │  └─ is the swell up?
+   └─ <text02> ← phone://grove=bert-laptop/tree=$TREE/clone=mechanic   DELIVERED
+      └─ never mind, found them
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🦫 tail slapped!
+
+💧 phone.text set
+   ├─ from: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
+   ├─ to: phone://grove=bert-laptop/tree=$TREE/clone=foreman
+   ├─ text: <text03>
+   └─ status: QUEUED → the daemon carries it
+      └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get
+---
+🦫🔔 text <text03> from phone://grove=bert-laptop/tree=$TREE/clone=mechanic
+
+welcome back
+
+💧 reply
+   ├─ rhx phone.text set --to phone://grove=bert-laptop/tree=$TREE/clone=mechanic --re <text03> --what '...'
+   └─ words with quotes or newlines? pipe them in: --what @stdin"
+`;
+
+exports[`phone skills given: [case11] a foreman at a modal, then one whose say cannot be confirmed, on a stub rhachet when: [t5] the daemon is stopped with a text QUEUED, then a crashed lock is left behind then: each step matches its snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🦫 tail slapped!
+
+💧 phone.text set
+   ├─ from: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
+   ├─ to: phone://grove=bert-laptop/tree=$TREE/clone=foreman
+   ├─ text: <text01>
+   └─ status: QUEUED → the daemon carries it
+      └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.daemon
+
+🦫 the daemon climbs out
+
+💧 phone.daemon del
+   ├─ state: DOWN
+   └─ QUEUED texts wait on disk for the next start
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.daemon
+
+🦫 the daemon rests
+
+💧 phone.daemon
+   ├─ state: DOWN
+   ├─ start it: rhx phone.daemon set
+   └─ log: $REPO/.agent/.cache/repo=bhuild/role=dispatcher/skill=phone.daemon/daemon.log
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.daemon
+
+🦫 the daemon already rests
+
+💧 phone.daemon del
+   ├─ state: DOWN
+   └─ QUEUED texts wait on disk for the next start
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🦫 here's the thread
+
+💧 phone.text get
+   ├─ you: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
+   ├─ <text02> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   │  └─ is the swell up?
+   ├─ <text03> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   FAULTED · unconfirmed: no echo seen
+   │  └─ board count?
+   ├─ <text04> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   WITHDRAWN · withdrawn by its sender; never said
+   │  └─ wetsuit count?
+   ├─ <text05> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   │  └─ never mind, found them
+   ├─ <text06> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   │  └─ welcome back
+   ├─ <text01> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   QUEUED · peer at a modal
+   │  └─ tide is out
+   └─ daemon: DOWN — the QUEUED texts wait for it
+      └─ start it: rhx phone.daemon set
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.daemon
+
+🦫 the daemon rests
+
+💧 phone.daemon
+   ├─ state: DOWN
+   ├─ start it: rhx phone.daemon set
+   └─ log: $REPO/.agent/.cache/repo=bhuild/role=dispatcher/skill=phone.daemon/daemon.log
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.daemon
+
+🦫 the daemon dives in
+
+💧 phone.daemon set
+   ├─ state: LIVE
+   ├─ pid: <pid>
+   └─ log: $REPO/.agent/.cache/repo=bhuild/role=dispatcher/skill=phone.daemon/daemon.log
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🦫 here's the thread
+
+💧 phone.text get
+   ├─ you: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
+   ├─ <text02> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   │  └─ is the swell up?
+   ├─ <text03> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   FAULTED · unconfirmed: no echo seen
+   │  └─ board count?
+   ├─ <text04> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   WITHDRAWN · withdrawn by its sender; never said
+   │  └─ wetsuit count?
+   ├─ <text05> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   │  └─ never mind, found them
+   ├─ <text06> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   │  └─ welcome back
+   └─ <text01> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+      └─ tide is out"
+`;
+
+exports[`phone skills given: [case11] a foreman at a modal, then one whose say cannot be confirmed, on a stub rhachet when: [t6] the roster shows one clone DEAF and one DEAD, then each is granted or texted then: the grant refusal, the contacts read, the DEAD send, and its wait match their snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts
+   └─ ✋ blocked by constraints
+
+🦫 no need, that one is already in your pond
+
+✋ ConstraintError: phone://grove=bert-laptop/tree=$TREE/clone=reflector is in this clone's own tree
+   └─ text it as is: rhx phone.text set --to phone://grove=bert-laptop/tree=$TREE/clone=reflector --what '...'
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts
+
+🦫 here's who's in the pond
+
+💧 phone.contacts
+   ├─ you: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
+   ├─ contacts
+   │  ├─ (none)
+   │  ├─ grant one: rhx phone.contacts set --address phone://grove=local/tree=<tree>/clone=<clone>
+   │  └─ a clone may grant its own only where the tree meter allows: rhx phone.contacts.uses get
+   └─ own tree
+      ├─ @:foreman     (LIVE)
+      ├─ @:reflector   (DEAF)
+      └─ + 1 DEAD, not shown (see all: rhx clone list)
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🦫 tail slapped!
+
+💧 phone.text set
+   ├─ from: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
+   ├─ to: phone://grove=bert-laptop/tree=$TREE/clone=shaper
+   ├─ text: <text01>
+   └─ status: QUEUED → the daemon carries it
+      └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🦫 here's the thread
+
+💧 phone.text get
+   ├─ you: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
+   ├─ <text02> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   │  └─ is the swell up?
+   ├─ <text03> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   FAULTED · unconfirmed: no echo seen
+   │  └─ board count?
+   ├─ <text04> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   WITHDRAWN · withdrawn by its sender; never said
+   │  └─ wetsuit count?
+   ├─ <text05> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   │  └─ never mind, found them
+   ├─ <text06> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   │  └─ welcome back
+   ├─ <text07> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   │  └─ tide is out
+   └─ <text01> → phone://grove=bert-laptop/tree=$TREE/clone=shaper    QUEUED · peer clone is DEAD
+      └─ fins?"
+`;
+
+exports[`phone skills given: [case11] a foreman at a modal, then one whose say cannot be confirmed, on a stub rhachet when: [t7] a mailbox record no reader can parse, then two texts that share an alias then: the torn thread and the shared-alias refusal match their snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🦫 here's the thread
+
+💧 phone.text get
+   ├─ you: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
+   ├─ <text01> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   │  └─ is the swell up?
+   ├─ <text02> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   FAULTED · unconfirmed: no echo seen
+   │  └─ board count?
+   ├─ <text03> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   WITHDRAWN · withdrawn by its sender; never said
+   │  └─ wetsuit count?
+   ├─ <text04> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   │  └─ never mind, found them
+   ├─ <text05> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   │  └─ welcome back
+   ├─ <text06> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   │  └─ tide is out
+   ├─ <text07> → phone://grove=bert-laptop/tree=$TREE/clone=shaper    QUEUED · peer clone is DEAD
+   │  └─ fins?
+   └─ 1 unreadable, skipped
+      ├─ text.9999.out.json: phone text record is not json
+      └─ a torn write, or a newer rhachet-roles-bhuild; upgrade, else ask who wrote it
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+   └─ ✋ blocked by constraints
+
+🦫 bummer, two fish answer to that name
+
+✋ ConstraintError: <text01> matches 2 texts in this mailbox
+   ├─ <text01>-xxxx-xxxx-xxxx-xxxxxxxxxxxx → phone://grove=bert-laptop/tree=$TREE/clone=foreman
+   ├─ <text01>-xxxx-xxxx-xxxx-xxxxxxxxxxxx → phone://grove=bert-laptop/tree=$TREE/clone=foreman
+   └─ name one by its full uuid"
+`;
+
+exports[`phone skills given: [case11] a foreman at a modal, then one whose say cannot be confirmed, on a stub rhachet when: [t8] the foreman holds typed text in its input box, then shows a screen rhachet can not read then: both waits match their snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🦫 here's the thread
+
+💧 phone.text get
+   ├─ you: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
+   ├─ <text01> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   │  └─ is the swell up?
+   ├─ <text02> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   FAULTED · unconfirmed: no echo seen
+   │  └─ board count?
+   ├─ <text03> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   WITHDRAWN · withdrawn by its sender; never said
+   │  └─ wetsuit count?
+   ├─ <text04> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   │  └─ never mind, found them
+   ├─ <text05> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   │  └─ welcome back
+   ├─ <text06> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   │  └─ tide is out
+   ├─ <text07> → phone://grove=bert-laptop/tree=$TREE/clone=shaper    QUEUED · peer clone is DEAD
+   │  └─ fins?
+   └─ <text08> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   QUEUED · peer input box holds typed text
+      └─ wax on the rack?
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🦫 here's the thread
+
+💧 phone.text get
+   ├─ you: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
+   ├─ <text01> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   │  └─ is the swell up?
+   ├─ <text02> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   FAULTED · unconfirmed: no echo seen
+   │  └─ board count?
+   ├─ <text03> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   WITHDRAWN · withdrawn by its sender; never said
+   │  └─ wetsuit count?
+   ├─ <text04> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   │  └─ never mind, found them
+   ├─ <text05> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   │  └─ welcome back
+   ├─ <text06> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   DELIVERED
+   │  └─ tide is out
+   ├─ <text07> → phone://grove=bert-laptop/tree=$TREE/clone=shaper    QUEUED · peer clone is DEAD
+   │  └─ fins?
+   └─ <text08> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   QUEUED · peer screen unrecognized
+      └─ wax on the rack?"
+`;
+
+exports[`phone skills given: [case12] a director and a crew tree found by the shipped defaults alone, on a stub rhachet when: [t0] a human grants a crew clone, the director texts it, then texts two other groves then: every output matches its snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.contacts
+
+🦫 new friend in the pond
+
+💧 phone.contacts set
+   ├─ granted: phone://grove=$GROVE/tree=$TREE_CREW/clone=mechanic
+   └─ contacts: 1
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🦫 tail slapped!
+
+💧 phone.text set
+   ├─ from: phone://grove=$GROVE/tree=$TREE_DIRECTOR/clone=director
+   ├─ to: phone://grove=$GROVE/tree=$TREE_CREW/clone=mechanic
+   ├─ text: <text01>
+   └─ status: QUEUED → a daemon started (was down); it carries it
+      └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+   └─ ✋ blocked by constraints
+
+🦫 bummer, no river to that grove yet
+
+✋ ConstraintError: phone://grove=grove-sandpine-v20260901/tree=svc-lessons/clone=mechanic is on another grove
+   ├─ this grove: $GROVE
+   └─ texts across groves ride a later delivery; text a peer on this grove
+---
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=phone.text
+   └─ ✋ blocked by constraints
+
+🦫 bummer, no such grove
+
+✋ ConstraintError: no grove grove-nope is known on $GROVE
+   ├─ this grove: $GROVE
+   └─ see the known groves: rhx git.grove.list"
 `;

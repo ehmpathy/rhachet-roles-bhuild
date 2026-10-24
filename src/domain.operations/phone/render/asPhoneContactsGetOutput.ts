@@ -22,7 +22,8 @@ export const asPhoneContactsGetOutput = (input: {
       text: `${row.name.padEnd(width)}   (${row.state})`,
     }));
   };
-  // an empty contact list names how to get one, never a dead end
+  // an empty contact list names how to get one, never a dead end; the hints are peers of the
+  // empty leaf, since they answer it rather than detail it
   const nodesContacts: PhoneTreeNode[] =
     input.reach.contacts.length > 0
       ? asRows(
@@ -32,16 +33,12 @@ export const asPhoneContactsGetOutput = (input: {
           })),
         )
       : [
+          { text: '(none)' },
           {
-            text: '(none)',
-            children: [
-              {
-                text: 'grant one: rhx phone.contacts set --address phone://grove=local/tree=<tree>/clone=<clone>',
-              },
-              {
-                text: 'a clone may grant its own only where the tree meter allows: rhx phone.contacts.uses get',
-              },
-            ],
+            text: 'grant one: rhx phone.contacts set --address phone://grove=local/tree=<tree>/clone=<clone>',
+          },
+          {
+            text: 'a clone may grant its own only where the tree meter allows: rhx phone.contacts.uses get',
           },
         ];
 
@@ -60,7 +57,7 @@ export const asPhoneContactsGetOutput = (input: {
             name: `@:${clone.slug ?? clone.serial.slice(0, 8)}`,
             state: clone.slug
               ? clone.reachState
-              : `${clone.reachState} · no slug; stored as its full serial`,
+              : `${clone.reachState} · no slug, so it goes by its serial; text it as shown`,
           })),
         )
       : []),

@@ -1,4 +1,4 @@
-import { getError } from 'test-fns';
+import { getError, given, then, useThen, when } from 'test-fns';
 
 import { isPhoneRefusal } from '../render/isPhoneRefusal';
 import { asPhoneTextRef } from './asPhoneTextRef';
@@ -38,18 +38,32 @@ const CASES_REFUSED = [
 
 describe('asPhoneTextRef', () => {
   CASES_ACCEPTED.map((thisCase) =>
-    test(thisCase.description, () => {
-      expect(asPhoneTextRef({ raw: thisCase.given.raw })).toEqual(
-        thisCase.expect,
-      );
+    given(`an accepted ref: ${thisCase.description}`, () => {
+      when('[t0] it is cast', () => {
+        then('it names the text by alias or full uuid', () => {
+          expect(asPhoneTextRef({ raw: thisCase.given.raw })).toEqual(
+            thisCase.expect,
+          );
+        });
+      });
     }),
   );
 
   CASES_REFUSED.map((thisCase) =>
-    test(thisCase.description, () => {
-      const error = getError(() => asPhoneTextRef({ raw: thisCase.given.raw }));
-      expect(isPhoneRefusal(error)).toEqual(true);
-      expect(error.message).toMatchSnapshot();
+    given(`a refused ref: ${thisCase.description}`, () => {
+      when('[t0] it is cast', () => {
+        const refused = useThen('it is refused', () => ({
+          error: getError(() => asPhoneTextRef({ raw: thisCase.given.raw })),
+        }));
+
+        then('it is refused as a phone refusal', () => {
+          expect(isPhoneRefusal(refused.error)).toEqual(true);
+        });
+
+        then('the refusal matches the snapshot', () => {
+          expect(refused.error.message).toMatchSnapshot();
+        });
+      });
     }),
   );
 });

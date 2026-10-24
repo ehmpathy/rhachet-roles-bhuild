@@ -6,8 +6,10 @@ import { asPhoneTreeLines } from './asPhoneTreeLines';
 /**
  * .what = the `phone.daemon set` output, per what was observed
  * .why = FOUND and STARTED name the live pid; UNCONFIRMED is a malfunction the system must fix
- *        (a daemon was spawned, yet no live lock showed), so it opens with the qualified
- *        `💥 MalfunctionError:` header and names the log that holds the why
+ *        (a daemon was spawned, yet no live lock showed), so it reads the way every phone
+ *        refusal reads — the 🦫 vibe, a blank line, then the qualified `💥 MalfunctionError:`
+ *        header and its tree — and names the log that holds the why. the vibe is the vision's
+ *        rendered sample word for word; the header is the text the first snapshot locked
  */
 export const asPhoneDaemonSetOutput = (input: {
   lock: PhoneDaemonLock | null;
@@ -17,9 +19,9 @@ export const asPhoneDaemonSetOutput = (input: {
   // no live lock showed: a malfunction, with the log that holds the why
   if (input.outcome === 'UNCONFIRMED')
     return [
-      '💥 MalfunctionError: the daemon did not surface',
+      '🦫 bummer, the daemon did not surface',
       '',
-      '💧 phone.daemon set',
+      '💥 MalfunctionError: the daemon did not surface',
       ...asPhoneTreeLines({
         nodes: [
           { text: 'state: DOWN' },

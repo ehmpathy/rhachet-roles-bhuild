@@ -128,26 +128,17 @@ const getAllReadable = async (input: {
   const paths = await getAllRecordPaths(input);
   const reads = await Promise.all(
     paths.map(async (path) => {
-      const record = await getOneRecordFromPath({ path }).catch(
-        (error: unknown) => {
-          // only a record this dao refused to parse is tolerated; an fs fault still throws
-          if (!(error instanceof MalfunctionError)) throw error;
-          return error;
-        },
-      );
-      return { path, record };
+      // only a record this dao refused to parse is tolerated; an fs fault still throws
+      const read = await getOneRecordReadFromPath({ path });
+      return { path, read };
     }),
   );
   return {
-    entries: reads.flatMap((read) =>
-      read.record instanceof PhoneTextRecord
-        ? [{ path: read.path, record: read.record }]
-        : [],
+    entries: reads.flatMap((one) =>
+      one.read.record ? [{ path: one.path, record: one.read.record }] : [],
     ),
-    unreadable: reads.flatMap((read) =>
-      read.record instanceof MalfunctionError
-        ? [{ path: read.path, reason: read.record.message }]
-        : [],
+    unreadable: reads.flatMap((one) =>
+      one.read.reason ? [{ path: one.path, reason: one.read.reason }] : [],
     ),
   };
 };
@@ -158,25 +149,48 @@ const getAllReadable = async (input: {
 const getOneRecordFromPath = async (input: {
   path: string;
 }): Promise<PhoneTextRecord> => {
+  const read = await getOneRecordReadFromPath(input);
+  if (read.record) return read.record;
+  throw new MalfunctionError(read.reason, {
+    path: input.path,
+    issues: read.issues,
+  });
+};
+
+/**
+ * .what = reads one record file, and names in one plain line why it can not be used
+ * .why = a reader that skips a bad file prints that line beside the file name; the line must not
+ *        carry the error's metadata block, nor an absolute path the caller already holds
+ */
+const getOneRecordReadFromPath = async (input: {
+  path: string;
+}): Promise<
+  | { record: PhoneTextRecord; reason: null; issues: null }
+  | { record: null; reason: string; issues: string[] }
+> => {
   const text = await fs.readFile(input.path, 'utf8');
-  const json = ((): unknown => {
+  const json = ((): { value: unknown } | null => {
     try {
-      return JSON.parse(text);
-    } catch (error) {
-      throw new MalfunctionError('phone text record is not json', {
-        path: input.path,
-        cause: error instanceof Error ? error : undefined,
-      });
+      return { value: JSON.parse(text) };
+    } catch {
+      return null;
     }
   })();
-  const parsed = schemaOfRecord.safeParse(json);
+  if (!json)
+    return {
+      record: null,
+      reason: 'phone text record is not json',
+      issues: [],
+    };
+  const parsed = schemaOfRecord.safeParse(json.value);
   if (!parsed.success)
-    throw new MalfunctionError('phone text record has an unknown shape', {
-      path: input.path,
+    return {
+      record: null,
+      reason: 'phone text record has an unknown shape',
       issues: parsed.error.issues.map((issue) => issue.message),
-    });
+    };
   const { v: _version, ...record } = parsed.data;
-  return new PhoneTextRecord(record);
+  return { record: new PhoneTextRecord(record), reason: null, issues: null };
 };
 
 /**

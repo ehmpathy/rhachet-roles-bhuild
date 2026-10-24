@@ -99,15 +99,15 @@ const _cliPhoneContactsUses = async (): Promise<void> => {
       treeDir,
       state: verb === 'allow' ? 'allowed' : 'blocked',
     });
+    const stateLine =
+      before === state
+        ? `state: ${state} (unchanged)`
+        : `state: ${before === 'unset' ? 'blocked (default)' : before} → ${state}`;
     console.log(
       asPhoneOutput({
         vibe: state === 'allowed' ? 'the dam is open' : 'the dam holds',
         root: `phone.contacts.uses ${verb}`,
-        nodes: [
-          {
-            text: `state: ${before === 'unset' ? 'blocked (default)' : before} → ${state}`,
-          },
-        ],
+        nodes: [{ text: stateLine }],
       }),
     );
     return;

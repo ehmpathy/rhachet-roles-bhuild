@@ -1,3 +1,5 @@
+import { given, then, when } from 'test-fns';
+
 import { asPhoneSayOutcome } from './asPhoneSayOutcome';
 
 const SERIAL = '20fa7ac9-4dfc-4cbc-be9f-7685b5672a14';
@@ -201,10 +203,14 @@ const TEST_CASES = [
 
 describe('asPhoneSayOutcome', () => {
   TEST_CASES.map((thisCase) =>
-    test(thisCase.description, () => {
-      expect(asPhoneSayOutcome({ raw: thisCase.given })).toEqual(
-        thisCase.expect,
-      );
+    given(`a say that ends: ${thisCase.description}`, () => {
+      when('[t0] its outcome is read', () => {
+        then('the text gets the status and reason named', () => {
+          expect(asPhoneSayOutcome({ raw: thisCase.given })).toEqual(
+            thisCase.expect,
+          );
+        });
+      });
     }),
   );
 });

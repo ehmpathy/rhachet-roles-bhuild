@@ -1,5 +1,7 @@
 import { randomUUID } from 'crypto';
+import { MalfunctionError } from 'helpful-errors';
 
+import type { PhoneContactsUsesState } from '@src/access/daos/daoPhoneContactsUses';
 import {
   daoPhoneMailbox,
   type PhoneMailboxEntry,
@@ -10,6 +12,7 @@ import { PhoneTextRecord } from '@src/domain.objects/phone/PhoneTextRecord';
 import { asPhoneAddressesUnique } from '../address/asPhoneAddressesUnique';
 import { asPhoneAddressFromInput } from '../address/asPhoneAddressFromInput';
 import { asPhoneAddressString } from '../address/asPhoneAddressString';
+import { getOnePhoneContactsUses } from '../contacts/getOnePhoneContactsUses';
 import type { PhoneContext } from '../PhoneContext';
 import { asPhonePeerRefusal } from '../peer/asPhonePeerRefusal';
 import { getAllPhonePeers } from '../peer/getAllPhonePeers';
@@ -85,20 +88,41 @@ export const setPhoneText = async (
 
   // admit each peer, or refuse the whole send
   const reach = await getOnePhoneReach({ self }, context);
-  for (const peer of peers) {
-    const refusal = asPhonePeerRefusal({
-      peer,
+  const asRefusalOf = (input: {
+    peer: (typeof peers)[number];
+    meter: PhoneContactsUsesState | null;
+  }) =>
+    asPhonePeerRefusal({
+      peer: input.peer,
       self,
       reach,
       groveSelf: context.groveSelf,
+      meter: input.meter,
+      group: peers.length,
     });
-    if (refusal) throw refusal;
+  const peerRefused = peers.find(
+    (peer) => asRefusalOf({ peer, meter: null }) !== null,
+  );
+
+  // the meter is read only for a refusal, so its grant names just the steps still owed
+  if (peerRefused) {
+    const meter = await getOnePhoneContactsUses({ treeDir: self.treeDir });
+    throw (
+      asRefusalOf({ peer: peerRefused, meter }) ??
+      new MalfunctionError(
+        'a refused peer read as admitted once the meter was read',
+        {
+          peer: asPhoneAddressString(peerRefused.address),
+        },
+      )
+    );
   }
 
-  // link a reply to the text it answers, by its full uuid
-  const re = input.re
-    ? (await getOnePhoneTextByRef({ raw: input.re, self })).record.uuid
-    : null;
+  // link a reply to the text it answers, by its full uuid; a blank ref is refused, never dropped
+  const re =
+    input.re !== null
+      ? (await getOnePhoneTextByRef({ raw: input.re, self })).record.uuid
+      : null;
 
   // write one QUEUED record per peer, under one group id when there are several
   const group = peers.length > 1 ? randomUUID() : null;

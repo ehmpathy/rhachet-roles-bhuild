@@ -37,9 +37,9 @@ exports[`asPhoneDaemon*Output given: [case4] set, a daemon started when: [t0] th
 `;
 
 exports[`asPhoneDaemon*Output given: [case5] set, a daemon spawned that never showed a live lock when: [t0] the output is rendered then: it matches the snapshot 1`] = `
-"💥 MalfunctionError: the daemon did not surface
+"🦫 bummer, the daemon did not surface
 
-💧 phone.daemon set
+💥 MalfunctionError: the daemon did not surface
    ├─ state: DOWN
    ├─ no lock was seen LIVE within the wait
    ├─ read why in its log: /sandpine/svc-lessons/.agent/.cache/repo=bhuild/role=dispatcher/skill=phone.daemon/daemon.log
@@ -68,4 +68,13 @@ exports[`asPhoneDaemon*Output given: [case8] del, the daemon still mid-say when:
 💧 phone.daemon del
    ├─ state: STOPPING; it finishes its current say, then releases its lock
    └─ QUEUED texts wait on disk for the next start"
+`;
+
+exports[`asPhoneDaemon*Output given: [case9] get, a stale lock a dead daemon left behind when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 the daemon rests
+
+💧 phone.daemon
+   ├─ state: DOWN
+   ├─ start it: rhx phone.daemon set
+   └─ log: /sandpine/svc-lessons/.agent/.cache/repo=bhuild/role=dispatcher/skill=phone.daemon/daemon.log"
 `;
