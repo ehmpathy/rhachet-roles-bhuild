@@ -23,7 +23,16 @@ export const asPhoneAddressFromInput = (input: {
   // own-tree shorthand: @:<clone>
   if (raw.startsWith('@:')) {
     const clone = raw.slice(2);
-    if (!isSegmentValueValid(clone)) throw genMalformedRefusal({ raw });
+    if (!clone)
+      throw genMalformedRefusal({
+        raw,
+        fault: 'no clone is named after @:; e.g. @:foreman',
+      });
+    if (!isSegmentValueValid(clone))
+      throw genMalformedRefusal({
+        raw,
+        fault: `${clone} is not one plain clone name; letters, digits, . _ -`,
+      });
     return new PhoneAddress({
       grove: input.self.grove,
       tree: input.self.tree,
@@ -32,7 +41,11 @@ export const asPhoneAddressFromInput = (input: {
   }
 
   // the full form: phone://key=value/key=value/key=value
-  if (!raw.startsWith('phone://')) throw genMalformedRefusal({ raw });
+  if (!raw.startsWith('phone://'))
+    throw genMalformedRefusal({
+      raw,
+      fault: 'it starts with neither phone:// nor @:',
+    });
   const pairs = raw
     .slice('phone://'.length)
     .split('/')
@@ -43,7 +56,10 @@ export const asPhoneAddressFromInput = (input: {
         : { key: segment.slice(0, at), value: segment.slice(at + 1) };
     });
   if (pairs.length !== 3 || pairs.some((pair) => pair === null))
-    throw genMalformedRefusal({ raw });
+    throw genMalformedRefusal({
+      raw,
+      fault: 'it needs three key=value parts, split by /',
+    });
   const entries = pairs.flatMap((pair) => (pair ? [pair] : []));
 
   // each key must appear once, and only the three known keys
@@ -51,7 +67,11 @@ export const asPhoneAddressFromInput = (input: {
   const isKeySetValid =
     new Set(keys).size === 3 &&
     keys.every((key) => (KEYS_CANONICAL as readonly string[]).includes(key));
-  if (!isKeySetValid) throw genMalformedRefusal({ raw });
+  if (!isKeySetValid)
+    throw genMalformedRefusal({
+      raw,
+      fault: 'its keys must be grove, tree, and clone, each once',
+    });
 
   // read the values by key, so an out-of-order address can name its canonical form
   const getKeyValue = (key: (typeof KEYS_CANONICAL)[number]): string =>
@@ -61,8 +81,8 @@ export const asPhoneAddressFromInput = (input: {
   const tree = getKeyValue('tree');
   const clone = getKeyValue('clone');
   // each value lands in a path on disk, so each is one plain segment: never empty, never `..`
-  if (![grove, tree, clone].every(isSegmentValueValid))
-    throw genMalformedRefusal({ raw });
+  const valueFault = asPhoneAddressValueFault({ grove, tree, clone });
+  if (valueFault) throw genMalformedRefusal({ raw, fault: valueFault });
   const address = new PhoneAddress({ grove, tree, clone });
 
   // refuse an out-of-order address, and print the form it should have been
@@ -90,13 +110,33 @@ const isSegmentValueValid = (value: string): boolean =>
   /^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(value);
 
 /**
- * .what = the refusal for an address that matches no accepted form
+ * .what = the fault of the first grove, tree, or clone value that is not one plain name, or null
+ * .why = a refusal that names the real fault (a `@:` inside the clone key, an empty value) saves
+ *        the sender a guess against the list of accepted forms
  */
-const genMalformedRefusal = (input: { raw: string }) =>
+const asPhoneAddressValueFault = (input: {
+  grove: string;
+  tree: string;
+  clone: string;
+}): string | null => {
+  const keyBad = KEYS_CANONICAL.find((key) => !isSegmentValueValid(input[key]));
+  if (!keyBad) return null;
+  const value = input[keyBad];
+  if (!value) return `the ${keyBad} key has no value`;
+  if (value.startsWith('@:'))
+    return `the ${keyBad} key takes a bare name: ${keyBad}=${value.slice(2)}, not ${keyBad}=${value}`;
+  return `${keyBad}=${value} is not one plain name; letters, digits, . _ -`;
+};
+
+/**
+ * .what = the refusal for an address that matches no accepted form, with the fault it hit
+ */
+const genMalformedRefusal = (input: { raw: string; fault: string }) =>
   genPhoneRefusal({
     vibe: 'bummer, that address does not parse',
     headline: `${input.raw} is not a phone address`,
     nodes: [
+      { text: `fault: ${input.fault}` },
       {
         text: 'accepted forms',
         children: [

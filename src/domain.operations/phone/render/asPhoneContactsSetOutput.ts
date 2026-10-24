@@ -2,12 +2,15 @@ import { asPhoneOutput } from './asPhoneOutput';
 
 /**
  * .what = the `phone.contacts set | del` output: what changed, and how many contacts remain
+ * .note = a peer named twice is one peer; the drop is named, never silent, as `phone.text set`
+ *         names a repeated --to
  */
 export const asPhoneContactsSetOutput = (input: {
   mode: 'grant' | 'revoke';
   address: string;
   contacts: string[];
   isChanged: boolean;
+  duplicates: number;
 }): string =>
   asPhoneOutput({
     vibe: input.isChanged
@@ -19,6 +22,13 @@ export const asPhoneContactsSetOutput = (input: {
         text: `${input.isChanged ? LABEL_OF_CHANGE[input.mode] : LABEL_OF_NO_CHANGE[input.mode]}: ${input.address}`,
       },
       { text: `contacts: ${input.contacts.length}` },
+      ...(input.duplicates > 0
+        ? [
+            {
+              text: `${input.duplicates} repeated --address dropped; each peer is one ${input.mode}`,
+            },
+          ]
+        : []),
     ],
   });
 

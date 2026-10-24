@@ -1,4 +1,4 @@
-import { given, then, when } from 'test-fns';
+import { given, then, useThen, when } from 'test-fns';
 
 import { asPhoneContactsSetOutput } from './asPhoneContactsSetOutput';
 
@@ -19,6 +19,7 @@ const TEST_CASES: {
       address: MECHANIC,
       contacts: [FOREMAN, MECHANIC],
       isChanged: true,
+      duplicates: 0,
     },
     expect: {
       contains: 'new friend in the pond',
@@ -32,6 +33,7 @@ const TEST_CASES: {
       address: MECHANIC,
       contacts: [MECHANIC],
       isChanged: false,
+      duplicates: 0,
     },
     expect: {
       contains: 'no change, the pond already holds that',
@@ -45,6 +47,7 @@ const TEST_CASES: {
       address: MECHANIC,
       contacts: [FOREMAN],
       isChanged: true,
+      duplicates: 0,
     },
     expect: { contains: 'waved them off', label: `revoked: ${MECHANIC}` },
   },
@@ -55,10 +58,25 @@ const TEST_CASES: {
       address: MECHANIC,
       contacts: [FOREMAN],
       isChanged: false,
+      duplicates: 0,
     },
     expect: {
       contains: 'no change, they were not in the pond',
       label: `not a contact: ${MECHANIC}`,
+    },
+  },
+  {
+    description: '[case5] a revoke names one peer twice',
+    given: {
+      mode: 'revoke',
+      address: MECHANIC,
+      contacts: [FOREMAN],
+      isChanged: true,
+      duplicates: 1,
+    },
+    expect: {
+      contains: '1 repeated --address dropped; each peer is one revoke',
+      label: `revoked: ${MECHANIC}`,
     },
   },
 ];
@@ -67,21 +85,23 @@ describe('asPhoneContactsSetOutput', () => {
   TEST_CASES.map((thisCase) =>
     given(thisCase.description, () => {
       when('[t0] the output is rendered', () => {
-        const output = asPhoneContactsSetOutput(thisCase.given);
+        const rendered = useThen('it renders', () => ({
+          output: asPhoneContactsSetOutput(thisCase.given),
+        }));
 
         then('it names what changed', () => {
-          expect(output).toContain(thisCase.expect.contains);
+          expect(rendered.output).toContain(thisCase.expect.contains);
         });
 
         then(
           'its label names the state, never an act that did not happen',
           () => {
-            expect(output).toContain(thisCase.expect.label);
+            expect(rendered.output).toContain(thisCase.expect.label);
           },
         );
 
         then('it matches the snapshot', () => {
-          expect(output).toMatchSnapshot();
+          expect(rendered.output).toMatchSnapshot();
         });
       });
     }),

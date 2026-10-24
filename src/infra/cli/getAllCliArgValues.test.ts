@@ -1,3 +1,5 @@
+import { given, then, when } from 'test-fns';
+
 import { getAllCliArgValues } from './getAllCliArgValues';
 
 const TEST_CASES = [
@@ -25,8 +27,12 @@ const TEST_CASES = [
 
 describe('getAllCliArgValues', () => {
   TEST_CASES.map((thisCase) =>
-    test(thisCase.description, () => {
-      expect(getAllCliArgValues(thisCase.given)).toEqual(thisCase.expect);
+    given(`an argv: ${thisCase.description}`, () => {
+      when('[t0] the values of the flag are read', () => {
+        then('each value comes back in order', () => {
+          expect(getAllCliArgValues(thisCase.given)).toEqual(thisCase.expect);
+        });
+      });
     }),
   );
 });

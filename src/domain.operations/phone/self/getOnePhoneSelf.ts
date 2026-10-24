@@ -17,7 +17,7 @@ import { getOnePhoneTreeDirOfCwd } from '../tree/getOnePhoneTreeDirOfCwd';
  *         seconds, and it reads the same env var
  */
 export const getOnePhoneSelf = async (
-  input: { serial: string | null },
+  input: { serial: string | null; pitch: 'meter' | null },
   context: Pick<PhoneContext, 'groveSelf' | 'sdkClone'>,
 ): Promise<PhoneSelf> => {
   // a phone verb must run inside an enrolled clone
@@ -28,15 +28,20 @@ export const getOnePhoneSelf = async (
       nodes: [
         { text: 'RHACHET_CLONE_SERIAL is not set in this shell' },
         { text: 'run it from a clone: rhx enroll claude --as @:<slug>' },
-        {
-          text: 'a human who grants a clone its contacts: lift the meter here, then the clone grants',
-          children: [
-            { text: 'rhx phone.contacts.uses allow' },
-            {
-              text: 'then, in the clone: rhx phone.contacts set --address <address>',
-            },
-          ],
-        },
+        // the meter governs a change of contacts alone, so only a grant or revoke pitches it
+        ...(input.pitch === 'meter'
+          ? [
+              {
+                text: 'a human holds no mailbox; a human lifts the meter, so a clone may grant its contacts',
+                children: [
+                  { text: 'lift it: rhx phone.contacts.uses allow' },
+                  {
+                    text: 'then, in the clone: rhx phone.contacts set --address <address>',
+                  },
+                ],
+              },
+            ]
+          : []),
       ],
     });
 
@@ -49,10 +54,15 @@ export const getOnePhoneSelf = async (
   if (!found)
     throw genPhoneRefusal({
       vibe: 'bummer, this clone is not on the roster here',
-      headline: `no clone ${input.serial} is enrolled in ${basename(treeDir)}`,
+      headline: `no clone with serial ${input.serial} is enrolled in ${basename(treeDir)}`,
       nodes: [
+        {
+          text: "this shell's RHACHET_CLONE_SERIAL names a clone the tree does not hold: a stale shell, or a clone of another tree",
+        },
         { text: 'the phone signs each text with the clone that sends it' },
-        { text: 'see the roster: rhx clone list' },
+        {
+          text: 'run the phone from the clone itself, in its own tree; see the roster: rhx clone list',
+        },
       ],
     });
 

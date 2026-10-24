@@ -19,7 +19,11 @@ export const asPhoneTextGetOutput = (input: {
   entries: PhoneMailboxEntry[];
   unreadable: { path: string; reason: string }[];
   daemon: 'LIVE' | 'DOWN';
+  self: string;
 }): string => {
+  // name whose thread this is, as `phone.contacts get` does
+  const nodeSelf: PhoneTreeNode = { text: `you: ${input.self}` };
+
   // a record this clone can not read is named, never hidden from the trail
   const nodesUnreadable: PhoneTreeNode[] =
     input.unreadable.length > 0
@@ -31,7 +35,7 @@ export const asPhoneTextGetOutput = (input: {
                 text: `${basename(bad.path)}: ${bad.reason}`,
               })),
               {
-                text: 'a newer rhachet-roles-bhuild may have written it; upgrade to read it',
+                text: 'a torn write, or a newer rhachet-roles-bhuild; upgrade, else ask who wrote it',
               },
             ],
           },
@@ -42,13 +46,13 @@ export const asPhoneTextGetOutput = (input: {
     return asPhoneOutput({
       vibe: "here's the thread",
       root: 'phone.text get',
-      nodes: nodesUnreadable,
+      nodes: [nodeSelf, ...nodesUnreadable],
     });
   if (input.entries.length === 0)
     return asPhoneOutput({
       vibe: 'the pond is still',
       root: 'phone.text get',
-      nodes: [{ text: '(no texts yet)' }],
+      nodes: [nodeSelf, { text: '(no texts yet)' }],
     });
 
   // align the status column across every line
@@ -84,6 +88,6 @@ export const asPhoneTextGetOutput = (input: {
   return asPhoneOutput({
     vibe: "here's the thread",
     root: 'phone.text get',
-    nodes: [...nodes, ...nodesUnreadable, ...nodesDaemon],
+    nodes: [nodeSelf, ...nodes, ...nodesUnreadable, ...nodesDaemon],
   });
 };

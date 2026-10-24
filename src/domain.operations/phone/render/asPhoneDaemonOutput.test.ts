@@ -1,4 +1,4 @@
-import { given, then, when } from 'test-fns';
+import { given, then, useThen, when } from 'test-fns';
 
 import type { PhoneDaemonLock } from '@src/access/daos/daoPhoneDaemon';
 
@@ -54,7 +54,13 @@ const TEST_CASES = [
         outcome: 'UNCONFIRMED',
         logPath: LOG_PATH,
       }),
-    expect: { contains: '💥 MalfunctionError: the daemon did not surface' },
+    expect: {
+      contains: [
+        '💥 MalfunctionError: the daemon did not surface',
+        '🦫 bummer, the daemon did not surface',
+        'read why in its log',
+      ],
+    },
   },
   {
     description: '[case6] del, with no daemon',
@@ -71,20 +77,33 @@ const TEST_CASES = [
     render: () => asPhoneDaemonDelOutput({ outcome: 'STOPPING' }),
     expect: { contains: 'state: STOPPING' },
   },
+  {
+    description: '[case9] get, a stale lock a dead daemon left behind',
+    render: () =>
+      asPhoneDaemonGetOutput({
+        lock: { ...LOCK_LIVE, state: 'STALE' },
+        logPath: LOG_PATH,
+      }),
+    expect: { contains: ['state: DOWN', 'start it: rhx phone.daemon set'] },
+  },
 ];
 
 describe('asPhoneDaemon*Output', () => {
   TEST_CASES.map((thisCase) =>
     given(thisCase.description, () => {
       when('[t0] the output is rendered', () => {
-        const output = thisCase.render();
+        const rendered = useThen('it renders', () => ({
+          output: thisCase.render(),
+        }));
 
         then('it names what was observed', () => {
-          expect(output).toContain(thisCase.expect.contains);
+          [thisCase.expect.contains]
+            .flat()
+            .map((fact) => expect(rendered.output).toContain(fact));
         });
 
         then('it matches the snapshot', () => {
-          expect(output).toMatchSnapshot();
+          expect(rendered.output).toMatchSnapshot();
         });
       });
     }),

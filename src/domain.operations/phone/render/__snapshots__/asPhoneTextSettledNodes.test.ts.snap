@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asPhoneTextSettledNodes given: [case1] a DELIVERED text when: [t0] the advice is rendered then: it matches the snapshot 1`] = `
+"   ├─ a delivered text can not be unsaid
+   └─ send a correction
+      └─ rhx phone.text set --to phone://grove=bert-laptop/tree=svc-lessons/clone=mechanic --re 7f3e9a02 --what '...'"
+`;
+
+exports[`asPhoneTextSettledNodes given: [case2] a REFUSED text when: [t0] the advice is rendered then: it matches the snapshot 1`] = `
+"   ├─ a refused text never reached the peer; naught to take back
+   └─ fix the address, then send it fresh
+      ├─ see who you may reach: rhx phone.contacts get
+      └─ rhx phone.text set --to <address> --what '...'"
+`;
+
+exports[`asPhoneTextSettledNodes given: [case3] a FAULTED text when: [t0] the advice is rendered then: it matches the snapshot 1`] = `
+"   ├─ a faulted say may or may not have landed; it can not be unsaid
+   └─ ask the peer before a resend, linked to this text
+      └─ rhx phone.text set --to phone://grove=bert-laptop/tree=svc-lessons/clone=mechanic --re 7f3e9a02 --what '...'"
+`;

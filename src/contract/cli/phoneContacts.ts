@@ -77,32 +77,33 @@ const _cliPhoneContacts = async (): Promise<void> => {
   });
 
   // refuse a grant or revoke that names no peer, before any clone lookup; --address repeats
-  const addresses =
+  const addressesGiven =
     verb === 'get'
       ? null
-      : asPhoneAddressesUnique({
-          addresses: getAllCliArgValuesOrOne({
-            key: 'address',
-            argv: process.argv,
-            parsed: asPhoneFlagValue(named.address),
-          }),
-        }).map((value) =>
-          assertPhoneFlagGiven({
-            skill: 'phone.contacts',
-            verb,
-            flag: 'address',
-            value,
-            usage: `${verb} --address <address>`,
-          }),
-        );
-  if (addresses !== null && addresses.length === 0)
+      : getAllCliArgValuesOrOne({
+          key: 'address',
+          argv: process.argv,
+          parsed: asPhoneFlagValue(named.address),
+        });
+  const asAddressGiven = (raw: string | boolean | undefined) =>
     assertPhoneFlagGiven({
       skill: 'phone.contacts',
       verb,
       flag: 'address',
-      value: undefined,
+      raw,
+      takes: 'a peer address, phone://grove=<grove>/tree=<tree>/clone=<clone>',
       usage: `${verb} --address <address>`,
     });
+  const addresses =
+    addressesGiven === null
+      ? null
+      : asPhoneAddressesUnique({ addresses: addressesGiven }).map(
+          asAddressGiven,
+        );
+  if (addresses !== null && addresses.length === 0)
+    asAddressGiven(named.address);
+  const duplicates =
+    addresses === null ? 0 : addressesGiven!.length - addresses.length;
 
   // find the clone this verb runs as
   const context = getPhoneContextFromEnv({
@@ -110,7 +111,10 @@ const _cliPhoneContacts = async (): Promise<void> => {
     roster: 'memo',
   });
   const self = await getOnePhoneSelf(
-    { serial: process.env.RHACHET_CLONE_SERIAL || null },
+    {
+      serial: process.env.RHACHET_CLONE_SERIAL || null,
+      pitch: verb === 'get' ? null : 'meter',
+    },
     context,
   );
 
@@ -135,7 +139,14 @@ const _cliPhoneContacts = async (): Promise<void> => {
       },
       context,
     );
-    console.log(asPhoneContactsSetOutput({ mode, ...result }));
+    console.log(
+      asPhoneContactsSetOutput({
+        mode,
+        ...result,
+        // the repeat note rides the last block, once every address has converged
+        duplicates: index === addresses.length - 1 ? duplicates : 0,
+      }),
+    );
   }
 };
 

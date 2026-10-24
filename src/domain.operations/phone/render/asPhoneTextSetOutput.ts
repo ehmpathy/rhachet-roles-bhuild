@@ -17,10 +17,20 @@ export const asPhoneTextSetOutput = (input: {
   duplicates: number;
 }): string => {
   const pronoun = input.entries.length > 1 ? 'them' : 'it';
+
+  // the send reads no roster, so it promises a carry, never a delivery: a peer that is DEAD, at a
+  // modal, or not in its tree is learned by the daemon, and the thread names why
+  const nodeOfLand: PhoneTreeNode = {
+    text: 'a text that cannot land yet is held, or refused, with the reason: rhx phone.text get',
+  };
   const statusNode: PhoneTreeNode = {
-    FOUND: { text: `status: QUEUED → the daemon delivers ${pronoun}` },
+    FOUND: {
+      text: `status: QUEUED → the daemon carries ${pronoun}`,
+      children: [nodeOfLand],
+    },
     STARTED: {
-      text: `status: QUEUED → a daemon started (was down); it delivers ${pronoun}`,
+      text: `status: QUEUED → a daemon started (was down); it carries ${pronoun}`,
+      children: [nodeOfLand],
     },
     UNCONFIRMED: {
       text: 'status: QUEUED, but no daemon was seen to swim',
@@ -40,7 +50,7 @@ export const asPhoneTextSetOutput = (input: {
     return asPhoneOutput({
       vibe: 'naught to send',
       root: 'phone.text set',
-      nodes: [],
+      nodes: [{ text: 'status: naught sent; no peer was named' }],
     });
   const record = first.record;
   const reTail = record.re

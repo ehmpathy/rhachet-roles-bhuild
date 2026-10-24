@@ -31,3 +31,12 @@ exports[`asPhoneContactsSetOutput given: [case4] a contact not held is revoked w
    ├─ not a contact: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
    └─ contacts: 1"
 `;
+
+exports[`asPhoneContactsSetOutput given: [case5] a revoke names one peer twice when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 waved them off
+
+💧 phone.contacts del
+   ├─ revoked: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   ├─ contacts: 1
+   └─ 1 repeated --address dropped; each peer is one revoke"
+`;

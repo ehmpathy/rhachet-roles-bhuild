@@ -1,5 +1,4 @@
 import { promises as fs } from 'fs';
-import { MalfunctionError } from 'helpful-errors';
 import { join } from 'path';
 import { z } from 'zod';
 
@@ -17,14 +16,15 @@ const getMeterPath = (input: { treeDir: string }): string =>
   join(input.treeDir, '.meter', 'phone.contacts.uses.jsonc');
 
 /**
- * .what = reads the meter
+ * .what = reads the meter as it lies on disk, `unreadable` where its shape is unknown
+ * .why = the setter must overwrite an unreadable meter, so the read that it does first may not
+ *        throw; every gate reads through `getOnePhoneContactsUses`, which fails loud on it
  */
-const getOne = async (input: {
+const getOneAsFound = async (input: {
   treeDir: string;
-}): Promise<PhoneContactsUsesState> => {
-  const path = getMeterPath(input);
+}): Promise<PhoneContactsUsesState | 'unreadable'> => {
   const text = await fs
-    .readFile(path, 'utf8')
+    .readFile(getMeterPath(input), 'utf8')
     .catch((error: NodeJS.ErrnoException) => {
       if (error.code === 'ENOENT') return null;
       throw error;
@@ -40,14 +40,7 @@ const getOne = async (input: {
       }
     })(),
   );
-  if (!parsed.success)
-    throw new MalfunctionError(
-      'phone.contacts.uses meter has an unknown shape',
-      {
-        path,
-      },
-    );
-  return parsed.data.state;
+  return parsed.success ? parsed.data.state : 'unreadable';
 };
 
 /**
@@ -75,4 +68,8 @@ const set = async (input: {
   return input.state;
 };
 
-export const daoPhoneContactsUses = { getOne, set };
+export const daoPhoneContactsUses = {
+  getOneAsFound,
+  getOnePath: getMeterPath,
+  set,
+};

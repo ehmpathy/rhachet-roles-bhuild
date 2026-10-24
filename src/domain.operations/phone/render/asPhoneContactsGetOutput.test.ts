@@ -1,4 +1,4 @@
-import { given, then, when } from 'test-fns';
+import { given, then, useThen, when } from 'test-fns';
 
 import { PhoneAddress } from '@src/domain.objects/phone/PhoneAddress';
 import { PhoneSelf } from '@src/domain.objects/phone/PhoneSelf';
@@ -7,7 +7,17 @@ import { asPhoneContactsGetOutput } from './asPhoneContactsGetOutput';
 
 const DIRECTOR = 'phone://grove=bert-laptop/tree=notebook/clone=director';
 const CREW_OTHER =
-  'phone://grove=bert-laptop/tree=svc-lessons.beav.feat-coachbook/clone=mechanic';
+  'phone://grove=grove-sandpine-v20260901/tree=svc-lessons.beav.feat-coachbook/clone=mechanic';
+const CREW_LIVE =
+  'phone://grove=bert-laptop/tree=svc-lessons.beav.feat-spot-forecast-widget/clone=mechanic';
+const CREW_DEAD =
+  'phone://grove=bert-laptop/tree=svc-lessons.beav.feat-cert-ingest/clone=mechanic';
+const CREW_DEAF =
+  'phone://grove=bert-laptop/tree=svc-lessons.beav.feat-coachbook/clone=foreman';
+const CREW_GONE =
+  'phone://grove=bert-laptop/tree=svc-lessons.beav.feat-board-rentals/clone=mechanic';
+const CREW_UNBORN =
+  'phone://grove=bert-laptop/tree=svc-lessons.beav.feat-wetsuit-stock/clone=mechanic';
 
 const SELF = new PhoneSelf({
   serial: '20fa7ac9-4dfc-4cbc-be9f-7685b5672a14',
@@ -119,20 +129,51 @@ const TEST_CASES: {
     },
     expect: { contains: 'texted you' },
   },
+  {
+    description:
+      '[case5] a contact in each reach state the producer can emit: a clone state, gone, no clone yet, other grove',
+    given: {
+      self: SELF,
+      reach: {
+        contacts: [
+          CREW_LIVE,
+          CREW_DEAD,
+          CREW_DEAF,
+          CREW_GONE,
+          CREW_UNBORN,
+          CREW_OTHER,
+        ],
+        inbound: [],
+        ownTree: [],
+        contactsUnreadable: null,
+      },
+      reachStateOf: {
+        [CREW_LIVE]: 'LIVE',
+        [CREW_DEAD]: 'DEAD',
+        [CREW_DEAF]: 'DEAF',
+        [CREW_GONE]: 'gone',
+        [CREW_UNBORN]: 'no clone yet',
+        [CREW_OTHER]: 'other grove',
+      },
+    },
+    expect: { contains: '(no clone yet)' },
+  },
 ];
 
 describe('asPhoneContactsGetOutput', () => {
   TEST_CASES.map((thisCase) =>
     given(thisCase.description, () => {
       when('[t0] the output is rendered', () => {
-        const output = asPhoneContactsGetOutput(thisCase.given);
+        const rendered = useThen('it renders', () => ({
+          output: asPhoneContactsGetOutput(thisCase.given),
+        }));
 
         then('it names who this clone may reach', () => {
-          expect(output).toContain(thisCase.expect.contains);
+          expect(rendered.output).toContain(thisCase.expect.contains);
         });
 
         then('it matches the snapshot', () => {
-          expect(output).toMatchSnapshot();
+          expect(rendered.output).toMatchSnapshot();
         });
       });
     }),

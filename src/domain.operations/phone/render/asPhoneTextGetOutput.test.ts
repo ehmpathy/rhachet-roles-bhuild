@@ -1,4 +1,4 @@
-import { given, then, when } from 'test-fns';
+import { given, then, useThen, when } from 'test-fns';
 
 import type { PhoneMailboxEntry } from '@src/access/daos/daoPhoneMailbox';
 import { PhoneTextRecord } from '@src/domain.objects/phone/PhoneTextRecord';
@@ -163,14 +163,20 @@ describe('asPhoneTextGetOutput', () => {
   TEST_CASES.map((thisCase) =>
     given(thisCase.description, () => {
       when('[t0] the output is rendered', () => {
-        const output = asPhoneTextGetOutput(thisCase.given);
+        const rendered = useThen('it renders', () => ({
+          output: asPhoneTextGetOutput({ ...thisCase.given, self: DIRECTOR }),
+        }));
 
         then('it names the fact the reader needs', () => {
-          expect(output).toContain(thisCase.expect.contains);
+          expect(rendered.output).toContain(thisCase.expect.contains);
+        });
+
+        then('it names whose thread it shows', () => {
+          expect(rendered.output).toContain(`you: ${DIRECTOR}`);
         });
 
         then('it matches the snapshot', () => {
-          expect(output).toMatchSnapshot();
+          expect(rendered.output).toMatchSnapshot();
         });
       });
     }),

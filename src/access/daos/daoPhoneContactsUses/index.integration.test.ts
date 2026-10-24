@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
 import { join } from 'path';
-import { genTempDir, getError, given, then, useThen, when } from 'test-fns';
+import { genTempDir, given, then, useThen, when } from 'test-fns';
 
 import { daoPhoneContactsUses } from './index';
 
@@ -9,7 +9,7 @@ describe('daoPhoneContactsUses', () => {
     when('[t0] the meter is read', () => {
       const result = useThen('it reads unset', async () => {
         const treeDir = genTempDir({ slug: 'dao-phone-contacts-uses-case1' });
-        return { state: await daoPhoneContactsUses.getOne({ treeDir }) };
+        return { state: await daoPhoneContactsUses.getOneAsFound({ treeDir }) };
       });
 
       then('an absent meter reads unset, never allowed', () => {
@@ -23,9 +23,13 @@ describe('daoPhoneContactsUses', () => {
       const result = useThen('each write reads back', async () => {
         const treeDir = genTempDir({ slug: 'dao-phone-contacts-uses-case2' });
         await daoPhoneContactsUses.set({ treeDir, state: 'allowed' });
-        const afterAllow = await daoPhoneContactsUses.getOne({ treeDir });
+        const afterAllow = await daoPhoneContactsUses.getOneAsFound({
+          treeDir,
+        });
         await daoPhoneContactsUses.set({ treeDir, state: 'blocked' });
-        const afterBlock = await daoPhoneContactsUses.getOne({ treeDir });
+        const afterBlock = await daoPhoneContactsUses.getOneAsFound({
+          treeDir,
+        });
         const ignore = await fs.readFile(
           join(treeDir, '.meter', '.gitignore'),
           'utf8',
@@ -57,21 +61,20 @@ describe('daoPhoneContactsUses', () => {
 
   given('[case3] a meter file that is not json', () => {
     when('[t0] the meter is read', () => {
-      const result = useThen('it fails loud', async () => {
+      const result = useThen('it reads unreadable', async () => {
         const treeDir = genTempDir({ slug: 'dao-phone-contacts-uses-case3' });
         await fs.mkdir(join(treeDir, '.meter'), { recursive: true });
         await fs.writeFile(
           join(treeDir, '.meter', 'phone.contacts.uses.jsonc'),
           'allowed, trust me\n',
         );
-        const error = await getError(daoPhoneContactsUses.getOne({ treeDir }));
-        return { message: error.message };
+        return {
+          state: await daoPhoneContactsUses.getOneAsFound({ treeDir }),
+        };
       });
 
-      then('a corrupt meter is a malfunction, never read as allowed', () => {
-        expect(result.message).toContain(
-          'phone.contacts.uses meter has an unknown shape',
-        );
+      then('a corrupt meter reads unreadable, never allowed', () => {
+        expect(result.state).toEqual('unreadable');
       });
     });
   });

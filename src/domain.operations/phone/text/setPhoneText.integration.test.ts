@@ -5,6 +5,7 @@ import { genTempDir, getError, given, then, useThen, when } from 'test-fns';
 
 import { getAllPhoneMailboxEntries } from '@src/.test/utils/getAllPhoneMailboxEntries';
 import { daoPhoneContacts } from '@src/access/daos/daoPhoneContacts';
+import { daoPhoneContactsUses } from '@src/access/daos/daoPhoneContactsUses';
 import { daoPhoneMailbox } from '@src/access/daos/daoPhoneMailbox';
 import { getOnePhoneCacheDir } from '@src/access/daos/getOnePhoneCacheDir';
 import type { RhachetCloneSayRaw } from '@src/access/sdks/sdkRhachetClone';
@@ -16,6 +17,7 @@ import type { PhoneTreeClone } from '@src/domain.objects/phone/PhoneTreeClone';
 import { setPhoneDeliveriesOfTree } from '../daemon/setPhoneDeliveriesOfTree';
 import type { PhoneContext } from '../PhoneContext';
 import { getOnePhoneReach } from '../peer/getOnePhoneReach';
+import { isPhoneRefusal } from '../render/isPhoneRefusal';
 import { delPhoneText } from './delPhoneText';
 import { getOnePhoneTextByRef } from './getOnePhoneTextByRef';
 import { setPhoneText } from './setPhoneText';
@@ -522,6 +524,88 @@ describe('setPhoneText', () => {
         expect(result.mailbox).toEqual([]);
       });
     });
+
+    when(
+      '[t9] it texts the director, unknown to it, once a human has lifted its tree meter',
+      () => {
+        const result = useThen(
+          'the send is refused, and names one grant step',
+          async () => {
+            const scene = await genScene({ slug: 'phone-text-case2-t9' });
+            await daoPhoneContactsUses.set({
+              treeDir: scene.treeCrew,
+              state: 'allowed',
+            });
+            const fake = genFakeSdkClone({
+              rosters: scene.rosters,
+              sayAs: sayReleased,
+            });
+            const context = asContext({
+              gitRoot: scene.gitRoot,
+              sdkClone: fake.sdkClone,
+            });
+            const error = await getError(
+              setPhoneText(
+                { to: [DIRECTOR], what: 'hi', re: null, self: scene.mechanic },
+                context,
+              ),
+            );
+            return { message: error.message };
+          },
+        );
+
+        then('the grant names only the step this clone still owes', () => {
+          expect(result.message).toContain('is not a contact');
+          expect(result.message).toContain(
+            `grant it, as this clone: rhx phone.contacts set --address ${DIRECTOR}`,
+          );
+          expect(result.message).not.toContain('rhx phone.contacts.uses allow');
+        });
+      },
+    );
+
+    when(
+      '[t10] it replies with a --re that names no text in its mailbox',
+      () => {
+        const result = useThen('the send is refused', async () => {
+          const scene = await genScene({ slug: 'phone-text-case2-t10' });
+          const fake = genFakeSdkClone({
+            rosters: scene.rosters,
+            sayAs: sayReleased,
+          });
+          const context = asContext({
+            gitRoot: scene.gitRoot,
+            sdkClone: fake.sdkClone,
+          });
+          const error = await getError(
+            setPhoneText(
+              {
+                to: ['@:foreman'],
+                what: 'got it',
+                re: 'deadbeef',
+                self: scene.mechanic,
+              },
+              context,
+            ),
+          );
+          const mailbox = await getAllPhoneMailboxEntries({
+            treeDir: scene.treeCrew,
+            clone: 'mechanic',
+          });
+          return { message: error.message, mailbox };
+        });
+
+        then(
+          'the refusal names the unknown text, and no record is written',
+          () => {
+            expect(result.message).toContain(
+              'no text deadbeef in this mailbox',
+            );
+            expect(result.mailbox).toEqual([]);
+          },
+        );
+      },
+    );
   });
 
   given('[case3] a director who texts a group of two', () => {
@@ -1529,7 +1613,7 @@ describe('setPhoneText', () => {
         );
         const path = queued.entries[0]!.path;
 
-        // the first say can not spawn rhachet at all, as on a box out of pids
+        // the first say can not spawn rhachet at all, as on a grove out of pids
         const sdkCloneNoSpawn: PhoneContext['sdkClone'] = {
           getAllClones: fake.sdkClone.getAllClones,
           say: async () => {
@@ -1677,6 +1761,63 @@ describe('setPhoneText', () => {
       then('the bad record is named, never dropped in silence', () => {
         expect(result.unreadable).toEqual([true]);
       });
+    });
+
+    when('[t5] two texts in the mailbox share an alias', () => {
+      const result = useThen('the alias is refused, both listed', async () => {
+        const scene = await genScene({ slug: 'phone-text-case11-alias' });
+        const fake = genFakeSdkClone({
+          rosters: scene.rosters,
+          sayAs: sayReleased,
+        });
+        const context = asContext({
+          gitRoot: scene.gitRoot,
+          sdkClone: fake.sdkClone,
+        });
+        const first = await setPhoneText(
+          { to: ['@:foreman'], what: 'one', re: null, self: scene.mechanic },
+          context,
+        );
+        const second = await setPhoneText(
+          { to: ['@:foreman'], what: 'two', re: null, self: scene.mechanic },
+          context,
+        );
+
+        // a forged record: the second text's uuid now leads with the first text's alias
+        const alias = first.entries[0]!.record.uuid.slice(0, 8);
+        const uuidForged = `${alias}${second.entries[0]!.record.uuid.slice(8)}`;
+        const pathSecond = second.entries[0]!.path;
+        const recordSecond = JSON.parse(await fs.readFile(pathSecond, 'utf8'));
+        await fs.writeFile(
+          pathSecond,
+          JSON.stringify({ ...recordSecond, uuid: uuidForged }),
+        );
+
+        const error = await getError(
+          getOnePhoneTextByRef({ raw: alias, self: scene.mechanic }),
+        );
+        return {
+          error,
+          uuidFirst: first.entries[0]!.record.uuid,
+          uuidForged,
+        };
+      });
+
+      then('the alias is refused as a phone refusal', () => {
+        expect(isPhoneRefusal(result.error)).toEqual(true);
+        expect(result.error.message).toContain(
+          'matches 2 texts in this mailbox',
+        );
+      });
+
+      then(
+        'the refusal lists both texts by full uuid, and names the cure',
+        () => {
+          expect(result.error.message).toContain(result.uuidFirst);
+          expect(result.error.message).toContain(result.uuidForged);
+          expect(result.error.message).toContain('name one by its full uuid');
+        },
+      );
     });
   });
 
