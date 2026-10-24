@@ -1442,7 +1442,7 @@ describe('syncwork', () => {
    *    read as exit 1, so [t1] failed on `toBe(0)` with no word of a kill, and
    *    a case that expects a non-zero exit would have passed on one.
    */
-  given('[case9] a sync that outlives its budget', () => {
+  given('[case10] a sync that outlives its budget', () => {
     const world = useBeforeAll(async () => genWorld({ slug: 'killed' }));
 
     when('[t0] the driver is killed mid-run', () => {
