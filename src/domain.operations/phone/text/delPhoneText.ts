@@ -5,6 +5,7 @@ import {
 import type { PhoneSelf } from '@src/domain.objects/phone/PhoneSelf';
 import type { PhoneTextStatus } from '@src/domain.objects/phone/PhoneTextStatus';
 
+import { asPhoneTextSettledNodes } from '../render/asPhoneTextSettledNodes';
 import { genPhoneRefusal } from '../render/genPhoneRefusal';
 import { asPhoneTextAlias } from './asPhoneTextAlias';
 import { getOnePhoneTextByRef } from './getOnePhoneTextByRef';
@@ -102,22 +103,11 @@ const delPhoneTextClaimed = async (input: {
     throw genPhoneRefusal({
       vibe: "that one's downstream",
       headline: `text ${alias} was already ${statusBefore}`,
-      nodes: [
-        {
-          text:
-            statusBefore === 'DELIVERED'
-              ? 'a delivered text can not be unsaid'
-              : 'a settled text can not be withdrawn',
-        },
-        {
-          text: 'send a correction',
-          children: [
-            {
-              text: `rhx phone.text set --to ${entry.record.to} --re ${alias} --what '...'`,
-            },
-          ],
-        },
-      ],
+      nodes: asPhoneTextSettledNodes({
+        status: statusBefore,
+        to: entry.record.to,
+        alias,
+      }),
     });
 
   // withdraw it

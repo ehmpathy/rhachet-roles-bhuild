@@ -1,5 +1,4 @@
 import { daoPhoneContacts } from '@src/access/daos/daoPhoneContacts';
-import { daoPhoneContactsUses } from '@src/access/daos/daoPhoneContactsUses';
 import type { PhoneAddress } from '@src/domain.objects/phone/PhoneAddress';
 import type { PhoneSelf } from '@src/domain.objects/phone/PhoneSelf';
 
@@ -13,6 +12,7 @@ import { genPhoneRefusal } from '../render/genPhoneRefusal';
 import { isPhoneRefusal } from '../render/isPhoneRefusal';
 import { asPhoneContactFormsOfPeer } from './asPhoneContactFormsOfPeer';
 import { asPhoneContactsWithout } from './asPhoneContactsWithout';
+import { getOnePhoneContactsUses } from './getOnePhoneContactsUses';
 import { isPhoneContactOfShortSerial } from './isPhoneContactOfShortSerial';
 import { isPhoneContactsMutable } from './isPhoneContactsMutable';
 
@@ -38,7 +38,7 @@ export const setPhoneContact = async (
   // read, so a meter file no reader can parse never blocks the human who repairs it
   const meter = input.isHuman
     ? null
-    : await daoPhoneContactsUses.getOne({ treeDir: self.treeDir });
+    : await getOnePhoneContactsUses({ treeDir: self.treeDir });
   if (meter && !isPhoneContactsMutable({ isHuman: input.isHuman, meter }))
     throw genPhoneContactsMeterRefusal({ meter });
 

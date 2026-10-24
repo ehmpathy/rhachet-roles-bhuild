@@ -20,7 +20,7 @@ this package, at `ehmpathy/rhachet-roles-bhuild:.agent/repo=.this/role=any/brief
 | **tree** | one worktree = one branch = one pr, on one grove — the unit a crew works in | repo, branch, checkout, workspace |
 | **clone** | one worker in a tree, named by its role slug, or by its serial when it has none | agent, bot, session, seat |
 | **crew** | the set of clones that work ONE tree | team, pod, worker set |
-| **crew.reflector** | the third seat in the standard crew, beside mechanic and foreman | reviewer, critic, auditor |
+| **crew.reflector** | the third clone in the standard crew, beside mechanic and foreman | reviewer, critic, auditor |
 | **duct** | an addressable channel to one worker's keyboard, named by a uri | terminal, tab, session, pane |
 | **term** | one window a human reads — the VIEW half of a crew | console, screen, duct |
 | **ledger** | a durable record that a subject EXISTED, apart from whether it is live | cache, manifest |

@@ -15,6 +15,16 @@ export interface RhachetStubClone {
    * - `unconfirmed` = the say ran and could not confirm it landed (exit 0, no sure verdict)
    */
   say?: 'withheld' | 'unconfirmed';
+
+  /**
+   * the reason a `withheld` say names, as rhachet names it; absent = `modal-holds-focus`
+   */
+  sayReason?: 'modal-holds-focus' | 'input-region-dirty' | 'focus-unrecognized';
+
+  /**
+   * the reach state `clone list` reports for it; absent = LIVE
+   */
+  reachState?: 'LIVE' | 'DEAF' | 'DEAD';
 }
 
 /**
@@ -45,7 +55,7 @@ const [noun, verb, target] = process.argv.slice(2);
 if (noun === 'clone' && verb === 'list') {
   fs.appendFileSync(process.env.STUB_RHACHET_LISTED, JSON.stringify({ cwd }) + '\\n');
   process.stdout.write(JSON.stringify({
-    actors: [{ clones: roster.map((clone) => ({ ...clone, reachState: 'LIVE' })) }],
+    actors: [{ clones: roster.map((clone) => ({ reachState: 'LIVE', ...clone })) }],
   }));
   process.exit(0);
 }
@@ -61,7 +71,7 @@ if (noun === 'clone' && verb === 'say') {
     fs.appendFileSync(process.env.STUB_RHACHET_WITHHELD, JSON.stringify({ to: clone.slug, cwd }) + '\\n');
     process.stderr.write(JSON.stringify({
       message: 'say withheld',
-      metadata: { verdict: 'withheld', reason: 'modal-holds-focus' },
+      metadata: { verdict: 'withheld', reason: clone.sayReason || 'modal-holds-focus' },
     }));
     process.exit(2);
   }

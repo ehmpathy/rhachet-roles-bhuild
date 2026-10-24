@@ -28,3 +28,11 @@
 | F24 | a revived clone keeps its seat: mailbox and contacts key by the slug, the serial only where a clone has none | clean | ruled by the director: per seat, never per serial; built in round i009 | 100% |
 | F25 | a `clone socket auth error … auth-denied` line in this clone's pane is rhachet's socket server, not the phone daemon; the phone writes no pane but by `clone say` | clean | best-guessed; raised by the surdirector | 70% |
 | F26 | nine extant `describe.skip` suites outside the phone (brain + gh.issues lanes), untouched since origin/main, stay skipped; a dream un-skips them | dirty | best-guessed | 70% |
+| F27 | a multi-address `phone.contacts set\|del` prints one block per address, since each address converges alone | clean | best-guessed | 80% |
+| F28 | the acceptance refusal snapshots hold stdout and stderr merged, so rhachet's 🪨 header shows twice, as a terminal shows it | clean | best-guessed | 80% |
+| F29 | `phone.daemon set` exit 1 on an unconfirmed start is proven below the cli (the outcome with a real spawn, the render); no production knob to force a start failure | clean | best-guessed | 75% |
+| F30 | the acceptance journey budget (10 min) and the daemon start wait (30s) are sized for a loaded grove; each inner wait stays short and fails loud with its cause | clean | best-guessed | 80% |
+| F31 | `phone.daemon set` UNCONFIRMED reads as a phone refusal: the vision's 🦫 vibe, then the 💥 header and its tree; the HEAD shape is reversed | clean | best-guessed; named in pr #572 for the commander's review | 70% |
+| F32 | the concurrency paths (eight writers, two daemon claims) are proven at the dao where the race is forced; one crashed-lock reclaim walks the cli | clean | best-guessed | 80% |
+| F33 | a malfunction's stack frames keep node's 4-space indent under the 3-space tree, via the one shared printer | clean | best-guessed | 75% |
+| F34 | the meter pitch prints only on the verbs the meter governs (`phone.contacts set`, `del`); the `(none)` grant hints sit beside it as peers | clean | best-guessed; named in pr #572 for the commander's review | 85% |

@@ -16,6 +16,7 @@
  */
 import { z } from 'zod';
 
+import { asPhoneAddressString } from '@src/domain.operations/phone/address/asPhoneAddressString';
 import { genPhoneDaemon } from '@src/domain.operations/phone/daemon/genPhoneDaemon';
 import { getOnePhoneDaemon } from '@src/domain.operations/phone/daemon/getOnePhoneDaemon';
 import { asPhoneTextDelOutput } from '@src/domain.operations/phone/render/asPhoneTextDelOutput';
@@ -64,12 +65,23 @@ const HELP_TEXT = `
    │  ├─ phone.text get [--text <uuid>]                                      this clone's thread, or one text
    │  └─ phone.text del --text <uuid>                                        withdraw a QUEUED text
    │
+   ├─ the inputs
+   │  ├─ --to <address>     a peer; repeat it to text a group (each peer gets its own text)
+   │  ├─ --what <text>      the words; --what @stdin reads them from a pipe
+   │  ├─ --re <uuid>        optional: the text this one answers; the peer sees the link
+   │  └─ --text <uuid>      the text to read (get) or to withdraw (del)
+   │
+   ├─ for example
+   │  ├─ rhx phone.text set --to @:foreman --what 'the slot shape changed'
+   │  └─ echo 'got it' | rhx phone.text set --to @:mechanic --re 7f3e9a02 --what @stdin
+   │
    ├─ the address
    │  ├─ phone://grove=<grove>/tree=<tree>/clone=<clone>
    │  ├─ phone://grove=local/tree=<tree>/clone=<clone>   (local = this grove)
    │  └─ @:<clone>                                       (a clone in your own tree)
    │
-   └─ a text is named by its uuid: the first 8 chars (7f3e9a02) or the whole
+   └─ the text's name
+      └─ its uuid: the first 8 chars (7f3e9a02) or the whole
 `.trim();
 
 const _cliPhoneText = async (): Promise<void> => {
@@ -105,7 +117,8 @@ const _cliPhoneText = async (): Promise<void> => {
           skill: 'phone.text',
           verb: 'del',
           flag: 'text',
-          value: asPhoneFlagValue(named.text),
+          raw: named.text,
+          takes: "the text's uuid (its first 8 chars, or the whole)",
           usage: 'del --text <uuid>',
         })
       : null;
@@ -116,7 +129,7 @@ const _cliPhoneText = async (): Promise<void> => {
     roster: 'memo',
   });
   const self = await getOnePhoneSelf(
-    { serial: process.env.RHACHET_CLONE_SERIAL || null },
+    { serial: process.env.RHACHET_CLONE_SERIAL || null, pitch: null },
     context,
   );
 
@@ -131,6 +144,20 @@ const _cliPhoneText = async (): Promise<void> => {
   if (verb === 'set') {
     const what =
       named.what === '@stdin' ? getOneStdinText() : (named.what ?? '');
+
+    // a --re that is passed must name a text; bare or blank (parsed as a flag) is refused
+    const re =
+      named.re !== undefined
+        ? assertPhoneFlagGiven({
+            skill: 'phone.text',
+            verb: 'set',
+            flag: 're',
+            raw: named.re,
+            takes:
+              'the uuid of the text it answers (its first 8 chars, or the whole)',
+            usage: "set --to <address> --what '...' --re <uuid>",
+          })
+        : null;
     const { entries, duplicates } = await setPhoneText(
       {
         to: getAllCliArgValuesOrOne({
@@ -139,7 +166,7 @@ const _cliPhoneText = async (): Promise<void> => {
           parsed: asPhoneFlagValue(named.to),
         }),
         what,
-        re: asPhoneFlagValue(named.re) ?? null,
+        re,
         self,
       },
       context,
@@ -160,7 +187,8 @@ const _cliPhoneText = async (): Promise<void> => {
           skill: 'phone.text',
           verb: 'get',
           flag: 'text',
-          value: asPhoneFlagValue(named.text),
+          raw: named.text,
+          takes: "the text's uuid (its first 8 chars, or the whole)",
           usage: 'get --text <uuid>',
         });
   const { entries, unreadable } =
@@ -176,6 +204,7 @@ const _cliPhoneText = async (): Promise<void> => {
       entries,
       unreadable,
       daemon: lock?.state === 'LIVE' ? 'LIVE' : 'DOWN',
+      self: asPhoneAddressString(self.address),
     }),
   );
 };

@@ -12,10 +12,12 @@ import { getOnePollCount } from './getOnePollCount';
 /**
  * .what = how long a start waits to see the new daemon's lock, and how often it looks
  * .why = the daemon is a fresh node process that loads the whole package before it claims the
- *        lock; on a loaded host that takes seconds, and a wait shorter than it reports a daemon
- *        that did start as one that did not (measured: >3s on a loaded 2026-10-23 host)
+ *        lock; on a loaded grove that takes seconds, and a wait shorter than it reports a daemon
+ *        that did start as one that did not (measured 2026-10-23: >3s at moderate load, >10s at
+ *        a load average of ~90). the wait ends the moment the lock shows, so a long bound costs
+ *        naught where the start is fast, and is paid in full only where no daemon came up
  */
-const START_WAIT: IsoDuration = { seconds: 10 };
+const START_WAIT: IsoDuration = { seconds: 30 };
 const START_POLL: IsoDuration = { milliseconds: 150 };
 
 /**

@@ -29,4 +29,6 @@ this delivery despite the deadline.
 
 ## .verdict
 
-(awaits council)
+ruled by director: lean stands (2026-10-23). A ships; the grove leg is a later delivery. so the
+catalog holds the cross-grove critipaths (S10, G1–G4) as itemized, not demoed, and the one
+cross-grove act this delivery owns, the loud refusal (S36), is demoed.

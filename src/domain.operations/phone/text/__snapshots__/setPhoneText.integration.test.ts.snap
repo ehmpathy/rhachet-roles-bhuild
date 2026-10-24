@@ -6,9 +6,9 @@ exports[`setPhoneText given: [case1] a director with the crew mechanic as a cont
 where is book-a-lesson?
 blocked on aught?
 
-   └─ reply
-      ├─ rhx phone.text set --to phone://grove=bert-laptop/tree=notebook/clone=director --re 7f3e9a02 --what '...'
-      └─ words with quotes or newlines? pipe them in: --what @stdin"
+💧 reply
+   ├─ rhx phone.text set --to phone://grove=bert-laptop/tree=notebook/clone=director --re 7f3e9a02 --what '...'
+   └─ words with quotes or newlines? pipe them in: --what @stdin"
 `;
 
 exports[`setPhoneText given: [case2] a mechanic with no contacts when: [t1] it texts the director, unknown to it then: the refusal lists who it may reach and how to grant 1`] = `
@@ -68,9 +68,10 @@ exports[`setPhoneText given: [case5] a QUEUED text and a DELIVERED text when: [t
 
 exports[`setPhoneText given: [case6] references that name no one text, and texts not the sender to take back when: [t0] each is looked up, or withdrawn then: a REFUSED text can not be withdrawn 1`] = `
 "✋ ConstraintError: text 9c8b7a6d was already REFUSED
-   ├─ a settled text can not be withdrawn
-   └─ send a correction
-      └─ rhx phone.text set --to phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=foreman --re 9c8b7a6d --what '...'"
+   ├─ a refused text never reached the peer; naught to take back
+   └─ fix the address, then send it fresh
+      ├─ see who you may reach: rhx phone.contacts get
+      └─ rhx phone.text set --to <address> --what '...'"
 `;
 
 exports[`setPhoneText given: [case6] references that name no one text, and texts not the sender to take back when: [t0] each is looked up, or withdrawn then: a name that matches no text is refused, with the cure 1`] = `
@@ -105,7 +106,7 @@ exports[`setPhoneText given: [case7] a withdraw that lands while the daemon is m
 
 exports[`setPhoneText given: [case8] a claim left behind by a dead process when: [t1] the dead holder was a daemon mid-say, and the sender withdraws then: it can not be withdrawn as never said 1`] = `
 "✋ ConstraintError: text d03e6f91 was already FAULTED
-   ├─ a settled text can not be withdrawn
-   └─ send a correction
+   ├─ a faulted say may or may not have landed; it can not be unsaid
+   └─ ask the peer before a resend, linked to this text
       └─ rhx phone.text set --to phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=foreman --re d03e6f91 --what '...'"
 `;

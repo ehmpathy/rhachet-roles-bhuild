@@ -11,7 +11,7 @@ between clones via the phone.
 - `radio.task.pull` - receive tasks from a channel
 - `radio.task.held` - show tasks held for the radio (a blocked push is held, then delivered by the next push that gets through)
 
-### phone — text a peer clone
+### phone — text peer clones
 
 - `phone.text` - send a text to a peer clone or a group, read this clone's thread, or withdraw a QUEUED text
 - `phone.contacts` - read, grant, or revoke the peers this clone may text beyond its own tree
