@@ -1,5 +1,7 @@
 # rule.require.co-author-signature
 
+> ⚠️ `rule.require.co-author-signature.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
+
 ## .what
 
 every durable artifact a clone authors ends with a **co-author signature**: the act, the human,

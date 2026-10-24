@@ -1,0 +1,5 @@
+# define.invariant.crew.inflight-implies-sponsored
+`tree.inflight ⟹ tree.priority.sponsored (⭐)` — if it is not sponsored, it should not be inflight.
+kind: nurture — the grove is concurrency-capped by token budget; every slot an unfunded tree holds, a funded star cannot have. lift the cap and it becomes a preference; overturned too if ⭐ stops to mark committed budget.
+tool consequence: `rhx git.crew.poll` default-scopes to the ⭐ trees · `--all` reads every crew, for husk cleanup and fell/heal sweeps (a merged tree often sheds its sponsor before close) · an unsponsored INFLIGHT tree is surfaced ⚠️ — fell it, free its slot, or sponsor it; an unsponsored IDLE tree holds no slot and is hidden.
+blocker: a default poll that ranks every crew · an unsponsored tree left inflight, not surfaced · a fell or heal sweep on the default scope (they owe `--all`).

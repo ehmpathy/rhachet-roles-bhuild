@@ -1,0 +1,9 @@
+# rule.require.tree-del-before-duct-close
+before you stop a crew, send `git tree del <branch>` into the FOREMAN seat (a bare shell the supervisor drives). if it cannot delete the worktree, the crew is not ready to stop — it is a SAFETY gate: it refuses on unstaged work or an unmerged pr.
+1. `rhx git.crew.read --tree $tree --who mechanic` — released?
+2. `rhx git.crew.send --tree $tree --who foreman --what "git tree del $branch"` — the branch, read off the foreman's prompt (`on beav/…`), not the tree slug
+3. `rhx git.crew.read --tree $tree --who foreman` + check filesystem and ledger — the verdict is not the completion
+4. only then `rhx git.crew.stop --tree $tree`
+a failed `tree del` → do not stop; find what is unfinished.
+supervisor-driven: an idle post-merge foreman is your cue, in the tick it is found.
+blocker: a crew stopped with no prior `tree del` · `tree del` reported done with no read-back · a fellable tree left idle. nitpick: `tree del` sent with no branch.

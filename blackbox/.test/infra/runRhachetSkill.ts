@@ -1,4 +1,5 @@
 import { execSync } from 'child_process';
+import { MalfunctionError } from 'helpful-errors';
 
 export interface SkillResult {
   stdout: string;
@@ -49,10 +50,22 @@ export const runRhachetSkill = (input: {
     const execError = error as {
       stdout?: Buffer | string;
       stderr?: Buffer | string;
-      status?: number;
+      status?: number | null;
+      signal?: string | null;
     };
     const stdout = (execError.stdout ?? '').toString().trim();
     const stderr = (execError.stderr ?? '').toString().trim();
+
+    // a killed run has no exit code; fail loud, never fake one, else a case
+    // that expects a non-zero exit passes on a kill
+    if (execError.status === null || execError.status === undefined)
+      throw new MalfunctionError(`rhachet skill ${input.skill} was killed`, {
+        signal: execError.signal ?? null,
+        timeout,
+        stdout,
+        stderr,
+        hint: 'the box may be loaded; raise the timeout input, and keep it under the jest limit of the test',
+      });
 
     // debug: log errors during test development
     if (stderr) console.error('stderr:', stderr);
@@ -62,7 +75,7 @@ export const runRhachetSkill = (input: {
       stdout,
       stderr,
       output: [stdout, stderr].filter(Boolean).join('\n'),
-      exitCode: execError.status ?? 1,
+      exitCode: execError.status,
     };
   }
 };

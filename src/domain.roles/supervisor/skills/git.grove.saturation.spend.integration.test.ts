@@ -7,6 +7,7 @@
  */
 import { spawnSync } from 'child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { getError, MalfunctionError } from 'helpful-errors';
 import { join } from 'path';
 import { given, then, useThen, when } from 'test-fns';
 
@@ -251,12 +252,33 @@ const genPsShim = (input: { dir: string; kind: KindFixture }): string => {
 };
 
 /**
+ * .what = the probe's budget, in seconds, and the spawn slack above it
+ * .why  = the probe costs 14–25s on a quiet box and was measured at 59s, 77s,
+ *         and 94s under load. a 90s budget expired at 94s with exit 124, under
+ *         a jest limit of 90s that could never have held it anyway. so the
+ *         budget sits at 6× the quiet cost, and this file's jest limit sits
+ *         above the spawn that carries it.
+ */
+const SECONDS_PROBE_BUDGET = 150;
+
+const SECONDS_PROBE_SPAWN_SLACK = 20;
+
+const MS_PROBE_JEST_LIMIT =
+  (SECONDS_PROBE_BUDGET + SECONDS_PROBE_SPAWN_SLACK + 10) * 1000;
+
+jest.setTimeout(MS_PROBE_JEST_LIMIT);
+
+/**
  * .what = run the probe payload once, with the shim first on PATH
  * .why  = `__sat_ps` calls bare `ps`, so PATH is the seam. the payload itself
  *         is untouched — read from source, byte-identical, exactly as [case1]
  *         and [case2] run it.
  */
-const runProbeWithShim = (input: { shim: KindFixture | 'none' }): string => {
+const runProbeWithShim = (input: {
+  shim: KindFixture | 'none';
+  budgetSeconds?: number;
+}): string => {
+  const budgetSeconds = input.budgetSeconds ?? SECONDS_PROBE_BUDGET;
   const dir = tempDirs.genOne({ slug: 'sat-rank' });
   const pathProbe = join(dir, 'probe.sh');
   writeFileSync(pathProbe, getProbePayload());
@@ -266,11 +288,32 @@ const runProbeWithShim = (input: { shim: KindFixture | 'none' }): string => {
     genPsShim({ dir: join(dir, 'bin'), kind: input.shim });
     lines.push(`export PATH="${join(dir, 'bin')}:$PATH"`);
   }
-  lines.push(`timeout 90 bash ${pathProbe}`);
+  lines.push(`timeout ${budgetSeconds} bash ${pathProbe}`);
   const out = spawnSync('bash', ['-c', lines.join('\n')], {
     encoding: 'utf8',
-    timeout: 180_000,
+    timeout: (budgetSeconds + SECONDS_PROBE_SPAWN_SLACK) * 1000,
   });
+
+  // a kill of the spawn itself has no exit code; never read it as one
+  if (out.status === null)
+    throw new MalfunctionError('the probe spawn was killed', {
+      signal: out.signal,
+      budgetSeconds,
+      stdout: out.stdout,
+      stderr: out.stderr,
+    });
+
+  // exit 124 is `timeout`'s own word: the probe outlived its budget
+  if (out.status === 124)
+    throw new MalfunctionError(
+      `the probe outlived its budget of ${budgetSeconds}s (exit 124)`,
+      {
+        budgetSeconds,
+        stdout: out.stdout,
+        stderr: out.stderr,
+        hint: 'the box may be loaded; the budget sits in SECONDS_PROBE_BUDGET',
+      },
+    );
   if (out.status !== 0)
     throw new Error(
       `the probe exited ${out.status} — a clamp on its OUTPUT cannot run: ${out.stderr}`,
@@ -670,6 +713,31 @@ given(
         );
       },
     );
+
+    /**
+     * 🔴 the clamp for the load red of [t1]: a probe budget of 90s expired at
+     *    94s under load, exit 124, and the red read only "the probe exited 124".
+     *    the budget sat at the jest limit of 90s, so no budget fit could hold.
+     */
+    when('[t2] the probe outlives its budget', () => {
+      then('🔴 the red names the budget, never a bare exit code', async () => {
+        const error = await getError(async () =>
+          runProbeWithShim({ shim: 'none', budgetSeconds: 1 }),
+        );
+        expect(error).toBeInstanceOf(MalfunctionError);
+        expect(error.message).toContain(
+          'the probe outlived its budget of 1s (exit 124)',
+        );
+      });
+
+      then('the budget fits under the jest limit of this file', () => {
+        // 6× the quiet cost of 14–25s, and above the 94s measured under load
+        expect(SECONDS_PROBE_BUDGET).toBeGreaterThanOrEqual(6 * 25);
+        expect(
+          (SECONDS_PROBE_BUDGET + SECONDS_PROBE_SPAWN_SLACK) * 1000,
+        ).toBeLessThan(MS_PROBE_JEST_LIMIT);
+      });
+    });
 
     afterAll(() => tempDirs.delAll());
   },

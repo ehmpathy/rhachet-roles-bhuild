@@ -39,6 +39,7 @@ import {
   statSync,
   writeFileSync,
 } from 'fs';
+import { MalfunctionError } from 'helpful-errors';
 import { tmpdir } from 'os';
 import { join } from 'path';
 
@@ -53,6 +54,15 @@ export const DIR_WORK = __dirname;
 export const PATH_CREWWORK = join(DIR_WORK, 'crewwork.sh');
 export const PATH_DUCTWORK = join(DIR_WORK, 'ductwork.sh');
 export const PATH_TERMWORK = join(DIR_WORK, 'termwork.sh');
+
+/**
+ * .what = how long one bash driver may run before the harness ends it
+ * .why  = 30s fit an idle box, and a full integration run saturates it: one
+ *         ductwork file took 208s there and its first duct.open outran 30s.
+ *         60s keeps the bound under the 90s hook timeout (jest.integration.env.ts),
+ *         so a stuck driver still ends before its hook does
+ */
+const MS_DRIVER_TIMEOUT = 60_000;
 
 // ---------------------------------------------------------------------------
 // the failure allowlists — what a step may swallow, and naught else
@@ -123,12 +133,21 @@ export interface RunResult {
   calls: string[];
 }
 
-const runDriver = (input: {
-  body: string;
-  dir: string;
-  env: Record<string, string>;
-  pathLog: string | null;
-}): RunResult => {
+/**
+ * .what = write a bash driver to a dir, run it, and hand back its streams
+ * .why  = the one spawn every helper here shares. exported so its own clamp
+ *         (work.harness.integration.test.ts) can prove a killed driver fails loud
+ */
+export const runDriver = (
+  input: {
+    body: string;
+    dir: string;
+    env: Record<string, string>;
+    pathLog: string | null;
+  },
+  options?: { timeoutMs?: number },
+): RunResult => {
+  const timeoutMs = options?.timeoutMs ?? MS_DRIVER_TIMEOUT;
   const pathDriver = join(input.dir, 'driver.sh');
   writeFileSync(pathDriver, input.body, { mode: 0o755 });
 
@@ -143,12 +162,27 @@ const runDriver = (input: {
   const spawned = spawnSync('bash', [pathDriver], {
     encoding: 'utf8',
     env: { ...process.env, ...input.env },
-    timeout: 30_000,
+    timeout: timeoutMs,
   });
 
   const stdout = spawned.stdout ?? '';
   const stderr = spawned.stderr ?? '';
-  const exit = spawned.status ?? 1;
+
+  // 🔴 a driver the timeout killed has no exit code, and `?? 1` once read that
+  //    as an ordinary exit 1. under a full-suite load a duct.open outran the
+  //    bound, and the clamp reported "exit 1" — the shape of a real ductwork
+  //    fault, with no word that the HARNESS ended the run. so a kill fails loud
+  //    here, with the streams so far, and never reaches a clamp as a verdict
+  if (spawned.status === null)
+    throw new MalfunctionError('the bash driver did not exit on its own', {
+      signal: spawned.signal,
+      error: spawned.error?.message ?? null,
+      timeoutMs: timeoutMs,
+      stdout,
+      stderr,
+      hint: 'a kill at the timeout means the box was saturated; rerun the file alone to tell load from defect',
+    });
+  const exit = spawned.status;
 
   const calls =
     input.pathLog && existsSync(input.pathLog)

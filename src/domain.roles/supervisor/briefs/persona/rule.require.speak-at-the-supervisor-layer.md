@@ -1,5 +1,7 @@
 # rule.require.speak-at-the-supervisor-layer
 
+> ⚠️ `rule.require.speak-at-the-supervisor-layer.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
+
 ## .what
 
 when a supervisor reports to a human or converses with a peer, it speaks in the units of

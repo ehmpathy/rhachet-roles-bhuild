@@ -1,5 +1,7 @@
 # rule.always.prioritize-never-supervise
 
+> ⚠️ `rule.always.prioritize-never-supervise.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
+
 ## .what
 
 > **a prioritizer ranks work. it does not run work.** the fleet, the crews, the trees, the ducts,

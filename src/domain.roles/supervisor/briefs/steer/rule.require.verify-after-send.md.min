@@ -1,0 +1,6 @@
+# rule.require.verify-after-send
+after every `rhx git.crew.send --tree <t> --who <role>`, read back with `rhx git.crew.read` and check: no error, the effect occurred, the prompt returned. ⚠️ never chain sends — the first failure poisons the rest, unseen.
+the read is a COMPARE: what landed vs what you MEANT to send — never a mere "a message arrived".
+🔴 the shell rewrites a payload before the tool sees it: ``--what "… `cmd` $x \ …"`` is expanded by bash. use single quotes, or `printf '%s' '…' | … --what @stdin` for multi-line.
+the same holds for an Edit to a durable artifact: read the edited region back — it, and the lines before and after, whole. never bundle a repair and an append in one Edit.
+blocker: a send with no read · a `duct.send`/`duct.read` where a crew verb exists · an Edit to a durable artifact with no read-back · a `--what` payload double-quoted where it holds `` ` ``, `$`, or `\`. nitpick: a repair and an append in one Edit · a read-back with no compare against intent.

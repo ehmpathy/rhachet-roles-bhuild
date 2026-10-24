@@ -1,5 +1,7 @@
 # glossary
 
+> ⚠️ `glossary.of=supervisor.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
+
 ## .what
 
 the supervisor's vocabulary — one row per word: what it IS, and the synonyms it forbids.

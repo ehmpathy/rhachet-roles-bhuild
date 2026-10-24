@@ -1,0 +1,9 @@
+# surgoal.polish-the-supervisor-and-prioritizer-tools
+> every defect you find in a supervisor or prioritizer tool is cured IN THE TOOL and CLAMPED by a test of the exact case, before the tick moves on. this is the single most important objective.
+a surgoal: carried every tick, never closed. governs `git.crew.*`, `git.grove.*`, `duct.*`, `term.*`, the ledger, the pane classifiers, and `eco.priority` with its rank machinery.
+the move: (1) reproduce the exact case as a fixture · (2) watch it fail un-fixed (teeth) · (3) cure in the tool, never by hand or around it · (4) re-run green, then the tick moves on.
+accrue the corpus: every real pane a classifier judges — right or wrong — is a fixture; capture real stdout to `.test/.assets/*.log` via `rhx teesafe`, never a hand-typed string.
+why: these tools fail QUIET — a confident wrong verdict (a 429 wedge read `😶 at work`, a husk read healthy). the recurrence is the defect.
+bias: a false detect costs one nudge; a miss costs a sponsored clone idle for hours. unsure → detect.
+bound: a wrong verdict or a byhand finish — never a rank you disagree with, a slower-but-right render, or an unmeasured tune.
+blocker: those of `rule.always.clamp-the-production-defect-you-just-saw` · a classifier biased to miss.

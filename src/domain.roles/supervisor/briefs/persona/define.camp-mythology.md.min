@@ -1,0 +1,11 @@
+# define.camp-mythology — six words from three repos; where this disagrees with the source, the source wins
+camp → grove → (camper · ground) → tree → crew → clone
+- camp = an aws ACCOUNT that holds an elastic set of groves + shared vpc/nat/iam/reach · ✗ env, fleet, deploy env (`sandpine/infrastructure`)
+- grove = hibernation-ready cloud work-box; many trees, durable keys, self-hibernates idle · ✗ ec2, vm, devbox (`sandpine/infrastructure`)
+- camper = the OS LOGIN crews ssh in as · 🔴 NOT a clone; ✗ clone-user, crew-user, grove-user, login-user (ground is a login too)
+- ground = the PRIVILEGED OS login (NOPASSWD sudo, admin key only)
+- clone = live/revivable instance of an actor; differs from peers only by session (`ehmpathy/rhachet`)
+- tree · crew = a worktree on a grove · the seats on one tree (this role)
+a clone CAMPS OUT on a grove; camper is the door, never the worker. one camper per grove, many clones.
+🔴 safety (why this boots): IMDS (169.254.169.254) checks no uid. a camper with zero sudo holds the grove's whole badge — prep power, prod reader, keyrack read/write/delete, ec2:StopInstances — by one curl. camper bounds the BOX; the grove role's TIER bounds AWS. a control on one buys none of the other.
+blocker: camper used for clone (or reverse) · a claim a camper control shrank AWS blast radius · camp used as a deploy env. nitpick: grove used as ec2/vm/sandbox in a durable artifact. full ✗ lists: the `.md`.

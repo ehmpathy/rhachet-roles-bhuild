@@ -1,0 +1,60 @@
+# glossary — one word per concept; a synonym in a verdict, command, or brief = drift
+each term forbids its synonyms, listed in the full `.md` beside this file — read it before you coin a word.
+
+## layers
+grove = machine a tree's crew runs on — local · house://<slug> · cloud://<slug>
+grove.house = grove the house owns and runs, reached over a wire
+grove.tunnel = ssm port-forward that carries every reach to one grove
+grove.purpose = what a grove is FOR, so whether a crew may live on it
+crew = clones that work ONE tree · crew.reflector = third seat beside mechanic and foreman
+duct = addressable channel to one worker's keyboard, by uri
+term = one window a human reads — the VIEW half of a crew
+ledger = durable record a subject EXISTED, apart from live
+tree.achievement = tree booted with a clone on a stated goal, no route
+
+## dispatch
+sprout · seed = `define.sprout-vs-seed`
+fell = end a tree for good — worktree, branch, every dependent record
+
+## crew state
+at-work = crew holds ≥1 live duct · down = no live duct, worktree still on disk
+asleep = grove did not answer this sweep; no claim about the crew
+park = clone's deliberate rest at a gate it may not open
+crew.status = whose move it is — who owes the next act
+husk = dir under `_worktrees/` git does not own · phantom = record whose subject is gone
+
+## box and pane — what a read can see
+duct.box.quiet = box empty, unchanged for `--stall-mins` · duct.box.unread = capture came back empty; no claim about the box
+duct.box.ghost = dim autocomplete the clone never typed · duct.box.inflight = text a human has not finished, cursor in it
+duct.box.modal = a program holds the keyboard, awaits a list choice · duct.box.covered = claude live, another program drawn over its box
+duct.pane.cap = vendor usage-limit line (`resets <time>`); may be stale · duct.pane.husk = claude exited; chrome above a live shell prompt
+duct.pane.plea = clone printed the human-only command (`--as approved`) · duct.pane.relic = line kept after the state it named has passed
+duct.program.wedge = program alive, answers no input · route.stone.clipped = stone whose verdict word the render width cut
+
+## acts on a clone
+read = observe a surface we do not own, one moment, no touch
+send = put a payload into a destination not ours · duct.submit = press Enter after text; a paste swallows the Enter
+nudge = one message that restores a parked clone's MOTION on its plan
+steer = hand a clone a compliant path it did not see; the choice stays its own
+ask = message that hands the reader the work of an answer · escalate = transfer a decision not yours to the human
+crew.resume = return a clone to work, prior context intact
+duct.reboot = replace the program in a pane; duct, name, cwd survive · duct.refresh = repaint attached terminals — a VIEW repair
+auth = sign a brain in on a grove · auth.swap = replace the account a machine is signed in as
+mech = WHICH machinery a verb uses where it has several roads (`--mech`)
+
+## fleet and grove
+poll = read over a whole fleet at once, derived live, one verdict per subject · poll.flap = verdict that alternates while its subject holds still
+grove.saturation = how much work WAITS on cpu, memory, io — a queue, never % busy · .stall = share of wall-clock work waited on a resource
+grove.prune = end runaway processes of one name, spare the rest
+grove.process.unsignalable = process in `State: D`; a signal queues, never lands
+
+## failure shapes of a report
+false-report = normal success shape, full confidence, wrong content
+partial-audit = subject set narrower than the claim, auditor unaware
+volunteered-diagnosis = guess printed beside a measurement in its voice
+substituted-criterion = verdict against a standard the assessor swapped in
+replication = a party that could NOT have read the record reaches the same distinction
+spiral = loop where the effort to escape deepens the trap
+braid = second path laid beside a serviceable one, its author did not look
+clamp = test that holds a repaired defect shut — red while present, green once fixed
+factory-upgrade = change to the tools that build the work

@@ -18,15 +18,44 @@
 #         the dated evidence live in this repo's `.agent/repo=.this/role=any/briefs/`
 #         and are NOT published — an enrolled brain gets the word, not the record.
 
+# .budget = the shipped boot payload, in o200k tokens, as a consumer seat renders it.
+#   a director-seat cap of 10k: the boot fits it via `.md.min` cues (each full `.md`
+#   beside it holds the argument), a `not:` per directory, and one catalog that names
+#   every brief left out. the boot-budget clamp turns red the moment the boot outgrows it.
+#   measure: `npx rhachet roles cost --what src/domain.roles/supervisor/boot.yml`
+budget:
+  tokens: 10_000
+
 always:
   briefs:
     ref:
       # dated evidence halves, if any brief grows one again
       - briefs/**/*.reason.md
 
+    # every brief that does not boot leaves the roster; the catalog names each one in a
+    # line per directory, at a fraction of the roster's per-path cost. each glob keeps the
+    # said briefs of its directory, so a brief added later drops out by default — and the
+    # clamp turns red until the catalog names it. `not` wins over `say`: to say a brief,
+    # add its name to its directory's glob too, or it boots nowhere (the clamp turns red).
+    # each glob also spares `*.reason`, so a refout's argument stays at ref.
+    not:
+      - briefs/close/!(rule.require.tree-del-before-duct-close|*.reason).md
+      - briefs/dispatch/!(define.sprout-vs-seed|rule.require.behaviors-over-adhoc|rule.require.confirm-behavior-size-above-nano|rule.require.one-pr-per-worktree|*.reason).md
+      - briefs/gates/!(rule.forbid.self-grant-human-gates|*.reason).md
+      - briefs/grove/!(surgoal.squeeze-the-grove|*.reason).md
+      - briefs/heal/!(*.reason).md
+      - briefs/persona/!(im_a.bhuild_supervisor|define.camp-mythology|rule.require.speak-at-the-supervisor-layer|rule.always.forward-a-skill-render-verbatim|rule.require.co-author-signature|*.reason).md
+      - briefs/sponsor/!(rule.always.read-stars-as-sponsored-priorities|define.invariant.crew.inflight-implies-sponsored|*.reason).md
+      - briefs/steer/!(rule.require.verify-after-send|*.reason).md
+      - briefs/tick/!(rule.require.babysit-cron-per-dispatch-fleet|rule.always.read-both-crew-halves|rule.require.list-ducts-before-decisions|*.reason).md
+      - briefs/tools/!(rule.always.entool-the-layer-you-drop-below|surgoal.polish-the-supervisor-and-prioritizer-tools|rule.always.clamp-the-production-defect-you-just-saw|rule.always.capture-clamp-then-verify-in-prod|*.reason).md
+
     say:
       # the vocabulary — one row per word
       - briefs/glossary.of=supervisor.md
+
+      # the index of every brief that does not boot
+      - briefs/catalog.of=supervisor.briefs.md
 
       # persona + voice. the two layer rules sit together: one governs SPEECH, one
       # governs OPERATION. adopt only the first and you report in crews and act in ducts.
@@ -66,7 +95,13 @@ always:
       - briefs/close/rule.require.tree-del-before-duct-close.md
 
   skills:
-    say:
-      # the one instrument whose flag contract (--what vs --keys vs --anyway) cannot be
-      # recovered from a failure: a wrong pick fabricates an approval and reports success
-      - skills/git.crew.send.sh
+    # no skill is said: the one flag contract that cannot be recovered from a failure
+    # (`git.crew.send` --what vs --keys vs --anyway vs --submit) is said in
+    # `rule.always.entool-the-layer-you-drop-below.md.min` instead, at a tenth the cost
+    say: []
+    # the readme names every verb family and the catalog names where to list them; a
+    # per-path roster of ~50 verbs and their libraries and fixtures does not earn a boot
+    not:
+      - skills/**
+      # a glob skips dot dirs, so the fixture corpus needs its own line
+      - skills/work/.test/.assets/*.log

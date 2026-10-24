@@ -1,5 +1,7 @@
 # rule.require.list-ducts-before-decisions
 
+> ⚠️ `rule.require.list-ducts-before-decisions.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
+
 ## .what
 
 run `rhx git.crew.list` before any decision that spans more than one crew.

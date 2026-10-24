@@ -1,5 +1,7 @@
 # rule.require.babysit-cron-per-dispatch-fleet
 
+> ⚠️ `rule.require.babysit-cron-per-dispatch-fleet.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
+
 ## .what
 
 whenever you have one or more live dispatchees (mechanic ducts), keep ONE cron

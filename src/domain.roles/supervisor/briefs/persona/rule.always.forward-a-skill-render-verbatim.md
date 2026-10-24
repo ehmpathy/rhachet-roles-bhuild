@@ -1,5 +1,7 @@
 # rule.always.forward-a-skill-render-verbatim
 
+> ⚠️ `rule.always.forward-a-skill-render-verbatim.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
+
 ## .what
 
 when a skill answers a human's question, paste its stdout verbatim into your reply. do not

@@ -1,0 +1,6 @@
+# rule.require.co-author-signature
+every durable artifact a clone authors ends with `---`, a blank line, then `<verb> by human + <mascot> <emoji>` — always LAST, human first, lowercase, one mascot, emoji required.
+verb: `written by` (brief, term cluster, rule, howto) · `dispatched by` (dispatch body, seed, handoff — it was SENT to you).
+mascot = the role's lens: 🦫 beaver bhuild (supervisor, dispatcher, behaver) · 🐢 seaturtle ehmpathy (mechanic, architect, ergonomist) · 🦉 owl bhrain · 🐙 octopus rhachet.
+why: the signature CLAIMS a human was in the loop — earned, never stamped. it goes only on an artifact a human shaped.
+blocker: a signature that claims a human co-author where none shaped it (fabricated authorship). nitpick: no signature · wrong verb, mascot, or absent emoji.

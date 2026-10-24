@@ -1,0 +1,6 @@
+# rule.always.clamp-the-production-defect-you-just-saw
+> a supervisor or prioritizer tool renders a wrong verdict in production → cure it IN THE TOOL and CLAMP the exact case, before the tick moves on.
+the reflex of `surgoal.polish-the-supervisor-and-prioritizer-tools`; its five-step move applies. a byhand diagnosis cures one tick; a clamp cures every tick after it.
+cues: a human says a verdict is WRONG (sharpest) · you diagnosed a wedge/husk/cap/modal BY HAND — that is step 1 of a clamp · "why AGAIN" = the prior fix had no clamp · about to work around and move on → stop · a fix lands with no test → the lesson is lost · unsure between two states → bias to DETECT.
+test: if I close this tick now, will the TOOL catch this case next time, or only my memory?
+blocker: a production defect worked around and unclamped · a toothless clamp · a cure by hand where the tool has or could have one · a recurrence with no clamp the prior time.
