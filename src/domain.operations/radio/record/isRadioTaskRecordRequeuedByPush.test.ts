@@ -71,6 +71,14 @@ const TEST_CASES = [
     },
     expect: { output: true },
   },
+  {
+    description: 'a delivered task re-pushed with no body asks for no change',
+    given: {
+      before: genRecord({ recordStatus: RadioTaskRecordStatus.DELIVERED }),
+      description: null,
+    },
+    expect: { output: false },
+  },
 ];
 
 describe('isRadioTaskRecordRequeuedByPush', () => {

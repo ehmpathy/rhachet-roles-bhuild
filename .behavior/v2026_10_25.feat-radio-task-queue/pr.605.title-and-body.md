@@ -43,4 +43,8 @@ measured 2026-10-25: one held update refused on bhuild#599 held every push to th
 - integration (real gh): drain past a faulted head, rate-limit halt and lift, not-found, auth override, 401
 - acceptance: get, drain at a shut gate, del, set, title refusal, drain at an open gate; every step snapped
 
+### .proof by ci
+
+the gh-issues push acceptance suite (`skill.radio.task.push.via-gh-issues`) needs `EHMPATH_BEAVER_GITHUB_TOKEN`, a credential the author's host keyrack does not hold; locally it holds every push at `upstream:auth`. ci holds the credential, and its green shard `test-shards-acceptance (explicit, 2, skill.radio.task.push.via-gh-issues)` is the proof for that suite.
+
 🤖 Generated with [Claude Code](https://claude.com/claude-code)

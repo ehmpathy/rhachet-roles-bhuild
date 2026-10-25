@@ -50,15 +50,16 @@ exports[`radio.task.push via gh.issues — usage contract given: [case9] --help 
 
 🎙️ radio.task.push --help
    ├─ usage
-   │  ├─ radio.task.push --via gh.issues --into owner/repo --title "..." --description "..."
-   │  ├─ radio.task.push --via os.fileops --into @this --exid 123 --status CLAIMED
-   │  └─ echo "details" | radio.task.push --via gh.issues --into @this --title "..." --description @stdin
+   │  ├─ rhx radio.task.push --via gh.issues --into owner/repo --title "..." --description "..."
+   │  ├─ rhx radio.task.push --via os.fileops --into @this --exid 123 --status CLAIMED
+   │  └─ echo "details" | rhx radio.task.push --via gh.issues --into @this --title "..." --description @stdin
    │
    ├─ held, never lost
    │  ├─ every push is recorded first, into $route/.radio/ (or .behavior/.radio/)
    │  ├─ a shut gate or an upstream fault holds it QUEUED, exit 2
    │  ├─ the next push that gets through delivers the backlog first, oldest first
-   │  └─ see what waits: radio.task.queue get
+   │  ├─ see what waits: rhx radio.task.queue get
+   │  └─ lift a shut gate (human): rhx radio.uses allow
    │
    └─ options
       ├─ --via         channel: gh.issues or os.fileops (required)

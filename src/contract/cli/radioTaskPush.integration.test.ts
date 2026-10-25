@@ -1,6 +1,6 @@
 import { mkdtempSync } from 'fs';
 import * as fs from 'fs/promises';
-import { BadRequestError } from 'helpful-errors';
+import { ConstraintError } from 'helpful-errors';
 import type { IsoDateStamp } from 'iso-time';
 import * as os from 'os';
 import * as path from 'path';
@@ -224,11 +224,11 @@ describe('radio.task.push.integration — CLI contract', () => {
 
   given('[case2] no --via arg', () => {
     when('[t0] the push skill runs', () => {
-      then('fails with a BadRequestError that names the channels', async () => {
+      then('fails with a ConstraintError that names the channels', async () => {
         const error = await runPushError({
           argvTail: ['--into', 'test-owner/example'],
         });
-        expect(error).toBeInstanceOf(BadRequestError);
+        expect(error).toBeInstanceOf(ConstraintError);
         expect(error.message).toContain('--via is required');
         expect(error.message).toContain('--via gh.issues or --via os.fileops');
         expect(error.message).not.toContain('{');
@@ -437,6 +437,37 @@ describe('radio.task.push.integration — CLI contract', () => {
           expect(result.stdout).toMatchSnapshot();
         },
       );
+    });
+  });
+
+  given('[case11] no --into arg', () => {
+    when('[t0] the push skill runs', () => {
+      then('fails before any record, and names how to set --into', async () => {
+        const error = await runPushError({
+          argvTail: ['--via', 'os.fileops', '--title', 'surf report'],
+        });
+        expect(error.message).toContain('--into is required');
+        expect(error.message).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case12] a new task with no --title', () => {
+    when('[t0] the push skill runs', () => {
+      then('fails before any record, and names the flag', async () => {
+        const error = await runPushError({
+          argvTail: [
+            '--via',
+            'os.fileops',
+            '--into',
+            'test-owner/example',
+            '--description',
+            'wax the longboards',
+          ],
+        });
+        expect(error.message).toContain('--title required');
+        expect(error.message).toMatchSnapshot();
+      });
     });
   });
 });

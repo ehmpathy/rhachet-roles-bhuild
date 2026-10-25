@@ -11,7 +11,8 @@ import { isRadioTaskRecordRequeuedByPush } from './isRadioTaskRecordRequeuedByPu
  * .what = the record a push transcribes into, given the extant record for its identity
  * .why = one place states what a re-push keeps and what it resets
  *
- * .note = the push's own fields (channel, auth, body, status) always win.
+ * .note = the push's own fields (channel, auth, body, status) always win; a push with
+ *         no body keeps the extant body, so an omitted --description never wipes it.
  *         heldSeq is the caller's to decide (setRadioTaskRecordFromPush: kept from the extant
  *         record, else minted), so one place owns that rule.
  *         the fate (status, reason, deliveredExid) is kept only when the push
@@ -43,6 +44,7 @@ export const asRadioTaskRecordFromPush = (input: {
     key: input.key,
     kind: input.push.exid === null ? 'create' : 'update',
     ...input.push,
+    description: input.push.description ?? input.before?.description ?? null,
     heldSeq: input.heldSeq,
     recordStatus: fate?.recordStatus ?? RadioTaskRecordStatus.QUEUED,
     reason: fate?.reason ?? null,

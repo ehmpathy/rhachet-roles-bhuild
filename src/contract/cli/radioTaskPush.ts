@@ -28,7 +28,7 @@
  *   echo "detailed task" | radio.task.push --via gh.issues --into @this --title "..." --description @stdin
  */
 
-import { BadRequestError } from 'helpful-errors';
+import { ConstraintError } from 'helpful-errors';
 import { z } from 'zod';
 
 import { IdempotencyMode } from '@src/domain.objects/IdempotencyMode';
@@ -38,14 +38,15 @@ import { getBranchBehaviorBind } from '@src/domain.operations/behavior/bind/getB
 import { asPushTaskFromArgs } from '@src/domain.operations/radio/cli/asPushTaskFromArgs';
 import { getOneRadioTaskRepoFromCliArg } from '@src/domain.operations/radio/cli/getOneRadioTaskRepoFromCliArg';
 import { asRadioPushOutput } from '@src/domain.operations/radio/record/asRadioPushOutput';
+import { asRadioPushSavedNotice } from '@src/domain.operations/radio/record/asRadioPushSavedNotice';
 import { asRadioTaskRecordHomeFromCwd } from '@src/domain.operations/radio/record/asRadioTaskRecordHomeFromCwd';
-import { getAllRadioTaskRecordsHeld } from '@src/domain.operations/radio/record/getAllRadioTaskRecordsHeld';
+import { getOneRadioPushDrainWithBacklog } from '@src/domain.operations/radio/record/getOneRadioPushDrainWithBacklog';
 import { getOneRadioTaskRecordHome } from '@src/domain.operations/radio/record/getOneRadioTaskRecordHome';
 import { isRadioPushDelivered } from '@src/domain.operations/radio/record/isRadioPushDelivered';
 import { setRadioTaskRecordFromPush } from '@src/domain.operations/radio/record/setRadioTaskRecordFromPush';
-import { setRadioTaskRecordsDrainedByPush } from '@src/domain.operations/radio/record/setRadioTaskRecordsDrainedByPush';
 import { getCliArgs } from '@src/infra/cli';
 import { getOneStdinText } from '@src/infra/cli/getOneStdinText';
+import { withFaultNotice } from '@src/infra/cli/withFaultNotice';
 import { isGitRepoAt } from '@src/infra/git/isGitRepoAt';
 import { shx } from '@src/infra/shell/shx';
 
@@ -124,15 +125,16 @@ const HELP_TEXT = `
 
 🎙️ radio.task.push --help
    ├─ usage
-   │  ├─ radio.task.push --via gh.issues --into owner/repo --title "..." --description "..."
-   │  ├─ radio.task.push --via os.fileops --into @this --exid 123 --status CLAIMED
-   │  └─ echo "details" | radio.task.push --via gh.issues --into @this --title "..." --description @stdin
+   │  ├─ rhx radio.task.push --via gh.issues --into owner/repo --title "..." --description "..."
+   │  ├─ rhx radio.task.push --via os.fileops --into @this --exid 123 --status CLAIMED
+   │  └─ echo "details" | rhx radio.task.push --via gh.issues --into @this --title "..." --description @stdin
    │
    ├─ held, never lost
    │  ├─ every push is recorded first, into $route/.radio/ (or .behavior/.radio/)
    │  ├─ a shut gate or an upstream fault holds it QUEUED, exit 2
    │  ├─ the next push that gets through delivers the backlog first, oldest first
-   │  └─ see what waits: radio.task.queue get
+   │  ├─ see what waits: rhx radio.task.queue get
+   │  └─ lift a shut gate (human): rhx radio.uses allow
    │
    └─ options
       ├─ --via         channel: gh.issues or os.fileops (required)
@@ -158,7 +160,7 @@ export const cliRadioTaskPush = async (): Promise<void> => {
   // validate required --via arg (not validated by schema to allow --help without it)
   // .note = the fix rides in the message, never in metadata — helpful-errors prints metadata as a raw json block
   if (!named.via)
-    throw new BadRequestError(
+    throw new ConstraintError(
       '--via is required; specify a channel: --via gh.issues or --via os.fileops',
     );
 
@@ -213,24 +215,12 @@ export const cliRadioTaskPush = async (): Promise<void> => {
     context,
   );
 
-  // hold at a shut gate, or drain the backlog through an open one; then count what still waits
-  // note: any fault past the transcribe (an unreadable record, a bad gate config) still fails
-  //       loud, but first says this push is saved, since the transcribe above returned. the
-  //       caller then knows a fix + re-push delivers it, not a second transcribe
-  const { pushed, others, backlog } = await (async () => {
-    try {
-      const drained = await setRadioTaskRecordsDrainedByPush(
-        { record, dir },
-        context,
-      );
-      return { ...drained, backlog: getAllRadioTaskRecordsHeld({}, context) };
-    } catch (error) {
-      console.error(
-        `🦫 this push is saved, as ${record.recordStatus} in ${homeOfRecord.dir}/. fix the fault below, then push again to deliver it\n`,
-      );
-      throw error;
-    }
-  })();
+  // hold at a shut gate, or drain the backlog through an open one, then count what still waits;
+  // a fault in either (an unreadable record, a bad gate config) first says the push is saved
+  const { pushed, others, backlog } = await withFaultNotice({
+    logic: () => getOneRadioPushDrainWithBacklog({ record, dir }, context),
+    notice: asRadioPushSavedNotice({ record, dir: homeOfRecord.dir }),
+  });
 
   // report the fate of this push, and of the backlog it carried
   console.log(
