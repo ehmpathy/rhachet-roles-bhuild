@@ -22,6 +22,7 @@ import { extractTaskFromGhIssues } from '../../../domain.operations/radio/task/f
 import { asExecErrorMessage } from '../../../infra/shell/asExecErrorMessage';
 import { getGithubAuthFailureMessage } from './getGithubAuthFailureMessage';
 import { isGithubAuthFailure } from './isGithubAuthFailure';
+import { isGithubRepoUnreachable } from './isGithubRepoUnreachable';
 
 const execAsync = promisify(exec);
 const writeFileAsync = promisify(fs.writeFile);
@@ -107,12 +108,13 @@ export const daoRadioTaskViaGhIssues = {
             author: { login: string };
           };
 
-          // verify this is a radio task
+          // verify this is a radio task; the radio never rewrites an issue outside its frame
+          // .note = the fix rides in the message, since a refusal shows only its headline
           if (!issue.title.startsWith('🎙️ task -')) {
-            throw new BadRequestError('issue is not a radio task', {
-              exid: input.exid,
-              title: issue.title,
-            });
+            throw new BadRequestError(
+              `issue #${input.exid} is not a radio task; the radio edits only its own 🎙️ task issues, so edit or close #${input.exid} by hand`,
+              { exid: input.exid, title: issue.title },
+            );
           }
 
           return extractTaskFromGhIssues({
@@ -131,6 +133,12 @@ export const daoRadioTaskViaGhIssues = {
             error instanceof Error ? error.message : String(error);
           const stderr = (error as { stderr?: string })?.stderr ?? '';
           const fullError = `${errorMessage} ${stderr}`;
+
+          // a repo the auth cannot see is a fault of this send, never an absent issue:
+          // another auth may reach it, so it must not close the record as refused
+          if (isGithubRepoUnreachable({ text: fullError })) throw error;
+
+          // an absent issue in a reachable repo is a true absence
           if (fullError.includes('Could not resolve')) return null;
           if (fullError.includes('not found')) return null;
           throw error;

@@ -2,7 +2,7 @@
 
 | case | title | rework | status | confidence |
 |---|---|---|---|---|
-| F1 | halt scope: a transient fault halts the drain, as today (#511); every other fault sets one record aside | clean | best-guessed | 85% |
+| F1 | halt scope: a transient fault halts the drain, as today (#511); every other fault sets one record aside — an exception to the wish's "no head-of-line block", flagged to the wisher | clean | best-guessed, [wisher] | 85% |
 | F2 | a set-aside record retries once on every drain | clean | best-guessed | 70% |
 | F3 | a send replays with the record's own auth; `drain --auth` overrides per drain; a push's implicit drain does not lend its auth | clean | best-guessed | 65% |
 | F4 | `del` marks the record DROPPED in place, body + why kept; no archive dir | clean | best-guessed | 75% |

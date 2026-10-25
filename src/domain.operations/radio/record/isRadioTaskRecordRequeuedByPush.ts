@@ -6,7 +6,7 @@ import { RadioTaskRecordStatus } from '@src/domain.objects/RadioTaskRecordStatus
  * .why = a new push is queued; a verbatim re-push of a delivered task is a no-op (C3);
  *        a re-push that changes the body is a new request, and upstream decides it
  *        (findsert finds, upsert updates); a refused record re-queues, since a human
- *        re-ran it on purpose (F10)
+ *        re-ran it on purpose (F10); a dropped record re-queues for the same reason (F4)
  */
 export const isRadioTaskRecordRequeuedByPush = (input: {
   before: RadioTaskRecord | null;
@@ -14,6 +14,7 @@ export const isRadioTaskRecordRequeuedByPush = (input: {
 }): boolean => {
   if (!input.before) return true;
   if (input.before.recordStatus === RadioTaskRecordStatus.REFUSED) return true;
+  if (input.before.recordStatus === RadioTaskRecordStatus.DROPPED) return true;
   if (input.before.recordStatus !== RadioTaskRecordStatus.DELIVERED)
     return false;
   return input.before.description !== input.push.description;

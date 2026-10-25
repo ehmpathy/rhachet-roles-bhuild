@@ -13,7 +13,7 @@ exports[`radio.task.push.integration — CLI contract given: [case1] --help (the
    │  ├─ every push is recorded first, into $route/.radio/ (or .behavior/.radio/)
    │  ├─ a shut gate or an upstream fault holds it QUEUED, exit 2
    │  ├─ the next push that gets through delivers the backlog first, oldest first
-   │  └─ see what waits: radio.task.held
+   │  └─ see what waits: radio.task.queue get
    │
    └─ options
       ├─ --via         channel: gh.issues or os.fileops (required)
@@ -66,7 +66,7 @@ exports[`radio.task.push.integration — CLI contract given: [case5] -h (the sho
    │  ├─ every push is recorded first, into $route/.radio/ (or .behavior/.radio/)
    │  ├─ a shut gate or an upstream fault holds it QUEUED, exit 2
    │  ├─ the next push that gets through delivers the backlog first, oldest first
-   │  └─ see what waits: radio.task.held
+   │  └─ see what waits: radio.task.queue get
    │
    └─ options
       ├─ --via         channel: gh.issues or os.fileops (required)
@@ -89,6 +89,8 @@ exports[`radio.task.push.integration — CLI contract given: [case6] --auth as-r
    ├─ backlog = 1 await the radio
    └─ fix it: ✋ ConstraintError: --auth as-robot:env(MY_TOKEN) specified but MY_TOKEN is not set
       ├─ hint: set MY_TOKEN in the environment
+      ├─ amend it: rhx radio.task.queue set --key dd897bb8344f779a --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --key dd897bb8344f779a --why "<why>"
       └─ then the next push delivers the backlog first"
 `;
 
@@ -100,6 +102,8 @@ exports[`radio.task.push.integration — CLI contract given: [case7] --auth as-h
    ├─ held at = .behavior/.radio/ (no route bound to this branch)
    ├─ backlog = 1 await the radio
    └─ fix it: ✋ ConstraintError: --auth as-human is forbidden in test environment. use --auth as-robot:env(TOKEN_VAR) or --auth as-robot:shx(command) instead.
+      ├─ amend it: rhx radio.task.queue set --key dd897bb8344f779a --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --key dd897bb8344f779a --why "<why>"
       └─ then the next push delivers the backlog first"
 `;
 
@@ -112,6 +116,8 @@ exports[`radio.task.push.integration — CLI contract given: [case8] --auth as-r
    ├─ backlog = 1 await the radio
    └─ fix it: ✋ ConstraintError: --auth as-robot:shx(...) command failed: exit 1
       ├─ hint: check the command runs and prints a token to stdout
+      ├─ amend it: rhx radio.task.queue set --key dd897bb8344f779a --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --key dd897bb8344f779a --why "<why>"
       └─ then the next push delivers the backlog first"
 `;
 
@@ -123,6 +129,8 @@ exports[`radio.task.push.integration — CLI contract given: [case9] --auth as-r
    ├─ held at = .behavior/.radio/ (no route bound to this branch)
    ├─ backlog = 1 await the radio
    └─ fix it: ✋ ConstraintError: --auth as-robot:shx(...) command produced no output. stderr: (empty)
+      ├─ amend it: rhx radio.task.queue set --key dd897bb8344f779a --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --key dd897bb8344f779a --why "<why>"
       └─ then the next push delivers the backlog first"
 `;
 
@@ -143,5 +151,7 @@ exports[`radio.task.push.integration — CLI contract given: [case10] --auth wit
       │  │     use token from environment variable
       │  └─ as-human
       │        use gh cli logged-in session (interactive)
+      ├─ amend it: rhx radio.task.queue set --key dd897bb8344f779a --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --key dd897bb8344f779a --why "<why>"
       └─ then the next push delivers the backlog first"
 `;

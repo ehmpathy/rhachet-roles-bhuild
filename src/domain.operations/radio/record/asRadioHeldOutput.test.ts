@@ -84,7 +84,7 @@ describe('asRadioHeldOutput', () => {
         expect(output).toContain('a → ehmpathy/rhachet');
         expect(output).not.toContain('lift it (human):');
         expect(output).toContain(
-          'the radio is open, so the next push delivers the backlog first',
+          'the radio is open, so the next push, or `rhx radio.task.queue drain`, delivers the backlog',
         );
         expect(output).toMatchSnapshot();
       });

@@ -28,13 +28,13 @@ exports[`radio.task.push — the radio.recorder given: [case1] a clone on a bran
 `;
 
 exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t3] a human lists the held tasks then: it lists both held tasks 1`] = `
-"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.held
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
 
 🦫 held for the radio
-   ├─ fix flaky test → recorder-acpt/repo-<run> (radio.uses:blocked — default)
-   ├─ guard absent sponsor → recorder-acpt/repo-<run> (radio.uses:blocked — default)
+   ├─ 64a3469d081f50ca fix flaky test → recorder-acpt/repo-<run> (radio.uses:blocked — default)
+   ├─ b607603213bcab7a guard absent sponsor → recorder-acpt/repo-<run> (radio.uses:blocked — default)
    ├─ lift it (human): rhx radio.uses allow
-   └─ then the next push delivers the backlog first"
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;
 
 exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t4] the clone pushes a third task through the open radio (C4) then: the backlog drains first, oldest first, then the new task 1`] = `
@@ -251,4 +251,13 @@ exports[`radio.task.push — the radio.recorder given: [case5] two clones run on
   "deliveredExid": "<exid>"
 }
 "
+`;
+
+exports[`radio.task.push — the radio.recorder given: [case6] a clone reads, drops, and drains the queue (#604, case=2, case=4, case=5) when: [t4] the human opens the radio and the clone drains then: exit 0: the held record delivers, the dropped one stays unsent 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 back in the river! drained the radio
+   ├─ drained
+   │  └─ #<exid> wetsuit inventory
+   └─ backlog = 0"
 `;

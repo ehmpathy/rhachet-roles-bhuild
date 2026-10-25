@@ -1,10 +1,14 @@
-import { MalfunctionError } from 'helpful-errors';
-
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 import { asTaskDetailOutput } from '@src/domain.operations/radio/cli/asTaskDetailOutput';
 
+import {
+  asRadioDeliveredExid,
+  asRadioDeliveredLine,
+} from './asRadioDeliveredLine';
+import { asRadioDrainSections } from './asRadioDrainSections';
 import { asRadioErrorHeadline } from './asRadioErrorHeadline';
 import { asRadioErrorHintLines } from './asRadioErrorHintLines';
+import { asRadioQueueFixLines } from './asRadioQueueFixLines';
 import { asRadioTaskRecordLabel } from './asRadioTaskRecordLabel';
 import { asRadioTaskRepoSlug } from './asRadioTaskRepoSlug';
 import { asRadioTreeLines } from './asRadioTreeLines';
@@ -32,86 +36,11 @@ const asHomeLine = (input: {
 };
 
 /**
- * .what = the exid upstream gave a delivered record
- * .why = every delivery sets it; a delivered record without one is malformed, and
- *        must fail loud rather than print `#null` as though it were an exid
- */
-const asDeliveredExid = (input: { record: RadioTaskRecord }): string => {
-  if (input.record.deliveredExid !== null) return input.record.deliveredExid;
-  throw new MalfunctionError('delivered radio task record lacks its exid', {
-    key: input.record.key,
-    hint: 'fix or remove the malformed record file in the .radio dir',
-  });
-};
-
-/**
- * .what = a delivered record as one line: exid + label
- * .why = a create reads by its new exid; an update already names its exid
- */
-const asDeliveredLine = (input: { record: RadioTaskRecord }): string => {
-  const label = asRadioTaskRecordLabel(input);
-  if (input.record.kind === 'update') return label;
-  return `#${asDeliveredExid(input)} ${label}`;
-};
-
-/**
  * .what = a record's target as owner/name
  * .why = one read for every line that names a target
  */
 const asTarget = (input: { record: RadioTaskRecord }): string =>
   asRadioTaskRepoSlug({ repo: input.record.repo });
-
-/**
- * .what = the sections every drain reports on the records besides this push
- * .why = the drain rides this push; the human sees what else went, what closed, what waits.
- *        the sections come back keyed, so a caller places `drained` by name, never by label
- */
-const asOthersSections = (input: {
-  others: RadioTaskRecordFate[];
-}): { drained: RadioTreeBranch[]; closedOrHeld: RadioTreeBranch[] } => {
-  // the drained lines print in drain order, so their order alone is the place in line
-  const drained = input.others.flatMap((fate) =>
-    fate.fate === 'delivered'
-      ? [
-          fate.outcome === 'found'
-            ? `${asDeliveredLine(fate)} (already upstream — marked delivered)`
-            : asDeliveredLine(fate),
-        ]
-      : [],
-  );
-  const refused = input.others.flatMap((fate) =>
-    fate.fate === 'refused'
-      ? [`${asRadioTaskRecordLabel(fate)} — ${fate.detail}`]
-      : [],
-  );
-  const held = input.others.flatMap((fate) =>
-    fate.fate === 'held'
-      ? [
-          `${asRadioTaskRecordLabel(fate)} → ${asTarget(fate)} (${fate.record.reason ?? 'not reached'})`,
-        ]
-      : [],
-  );
-  const lifts = [
-    ...new Set(
-      input.others.flatMap((fate) =>
-        fate.fate === 'held' && fate.lift
-          ? [`lift it (human): ${fate.lift}`]
-          : [],
-      ),
-    ),
-  ];
-  return {
-    drained: drained.length ? [{ line: 'drained', children: drained }] : [],
-    closedOrHeld: [
-      ...(refused.length
-        ? [{ line: 'refused — closed, never retried', children: refused }]
-        : []),
-      ...(held.length
-        ? [{ line: 'still held', children: [...held, ...lifts] }]
-        : []),
-    ],
-  };
-};
 
 /**
  * .what = the backlog line
@@ -150,11 +79,13 @@ const asHeldFixBranch = (input: {
 }): RadioTreeBranch => {
   const { lift, detail, record } = input.held;
   const next = 'then the next push delivers the backlog first';
+  const queue = asRadioQueueFixLines({ record });
   if (lift) return { line: `lift it (human): ${lift}`, children: [next] };
-  if (!detail) return { line: `fix it: ${record.reason}`, children: [next] };
+  if (!detail)
+    return { line: `fix it: ${record.reason}`, children: [...queue, next] };
   return {
     line: `fix it: ${asRadioErrorHeadline({ message: detail })}`,
-    children: [...asRadioErrorHintLines({ message: detail }), next],
+    children: [...asRadioErrorHintLines({ message: detail }), ...queue, next],
   };
 };
 
@@ -174,7 +105,7 @@ export const asRadioPushOutput = (input: {
   backlog: number;
 }): string => {
   const { pushed, others, home, backlog } = input;
-  const othersSections = asOthersSections({ others });
+  const othersSections = asRadioDrainSections({ fates: others });
   const othersAll = [...othersSections.drained, ...othersSections.closedOrHeld];
   const facts = [
     { line: `task    = ${asRadioTaskRecordLabel(pushed)}`, children: [] },
@@ -189,7 +120,7 @@ export const asRadioPushOutput = (input: {
       ...asRadioTreeLines({
         branches: [
           ...facts,
-          { line: `exid    = #${asDeliveredExid(pushed)}`, children: [] },
+          { line: `exid    = #${asRadioDeliveredExid(pushed)}`, children: [] },
           ...othersAll,
           ...(othersAll.length ? [asBacklogBranch({ backlog })] : []),
         ],
@@ -254,7 +185,7 @@ export const asRadioPushOutput = (input: {
         ...othersSections.drained,
         {
           line: 'pushed',
-          children: [`${asDeliveredLine(pushed)} (${pushed.outcome})`],
+          children: [`${asRadioDeliveredLine(pushed)} (${pushed.outcome})`],
         },
         ...othersSections.closedOrHeld,
         asBacklogBranch({ backlog }),

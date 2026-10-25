@@ -82,12 +82,12 @@ const getOnStopHookCommandFromSettings = (input: {
   const command = (settings.hooks?.Stop ?? [])
     .flatMap((entry) => entry.hooks ?? [])
     .map((hook) => hook.command)
-    .find((cmd) => cmd.includes('radioTaskHeld'));
+    .find((cmd) => cmd.includes('radioTaskQueue'));
   if (!command)
     throw new MalfunctionError(
       `dispatcher onStop hook absent from ${REPO_CLAUDE_SETTINGS_PATH}`,
       {
-        hint: 'rhachet roles init --role dispatcher must bind onBrain.onStop for radio.task.held',
+        hint: 'rhachet roles init --role dispatcher must bind onBrain.onStop for radio.task.queue get',
         hooks: settings.hooks,
       },
     );
@@ -221,8 +221,8 @@ describe('radio.task.push — the radio.recorder', () => {
         runDispatcherSkill({
           ...scene,
           repoDir: scene.consumer.repoDir,
-          skill: 'radio.task.held',
-          args: '',
+          skill: 'radio.task.queue',
+          args: 'get',
         }),
       );
 
@@ -844,6 +844,138 @@ describe('radio.task.push — the radio.recorder', () => {
           .replace(/(^\s+at .*$\n?)+/m, '    at <stack>\n')
           .trim();
         expect(stderrStable).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case6] a clone reads, drops, and drains the queue (#604, case=2, case=4, case=5)', () => {
+    const target = `recorder-acpt-queue/repo-${Date.now()}`;
+    const scene = useBeforeAll(async () => {
+      const consumer = genConsumerRepoWithDispatcher({
+        prefix: 'radio-queue-acpt-',
+        branchName: 'feat/queue',
+      });
+      const homeDir = path.join(consumer.repoDir, '.home');
+      fs.mkdirSync(homeDir);
+      return { consumer, homeDir };
+    });
+    const getKeyOf = (input: { title: string }): string => {
+      const dir = path.join(scene.consumer.repoDir, '.behavior', '.radio');
+      const record = fs
+        .readdirSync(dir)
+        .filter((f) => f.startsWith('record.'))
+        .map((f) => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf-8')))
+        .find((r) => r.title === input.title);
+      if (!record)
+        throw new MalfunctionError('no record for title', { title: input.title });
+      return record.key;
+    };
+
+    when('[t0] two pushes are held at the shut gate, then the clone reads the queue', () => {
+      const result = useThen('the pushes and the read run', () => {
+        runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.push',
+          args: `--via os.fileops --into ${target} --title "wetsuit inventory" --description "count the 4/3s"`,
+        });
+        runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.push',
+          args: `--via os.fileops --into ${target} --title "old lesson reminder" --description "moot now"`,
+        });
+        return runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.queue',
+          args: 'get',
+        });
+      });
+
+      then('it lists each record with its key, task, and reason, exit 0', () => {
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain(
+          `${getKeyOf({ title: 'old lesson reminder' })} old lesson reminder`,
+        );
+        expect(result.stdout).toContain('radio.uses:blocked');
+      });
+    });
+
+    when('[t1] the clone drains while the gate is shut (case=4)', () => {
+      const result = useThen('the drain runs', () =>
+        runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.queue',
+          args: 'drain',
+        }),
+      );
+
+      then('exit 2: naught is sent, and the output names the lift', () => {
+        expect(result.exitCode).toBe(2);
+        expect(result.stdout).toContain('lift it (human): rhx radio.uses allow');
+        expect(result.stdout).toContain('backlog = 2 await the radio');
+      });
+    });
+
+    when('[t2] the clone drops the moot record with a why (case=2)', () => {
+      const result = useThen('the del runs', () =>
+        runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.queue',
+          args: `del --key ${getKeyOf({ title: 'old lesson reminder' })} --why "superseded by #604"`,
+        }),
+      );
+
+      then('exit 0; it names the why and where the body is kept', () => {
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain('dropped from the radio, never sent');
+        expect(result.stdout).toContain('why     = dropped: superseded by #604');
+        expect(result.stdout).toContain('kept at = ');
+      });
+    });
+
+    when('[t3] the clone drops it again', () => {
+      const result = useThen('the del runs', () =>
+        runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.queue',
+          args: `del --key ${getKeyOf({ title: 'old lesson reminder' })} --why "again"`,
+        }),
+      );
+
+      then('exit 2: the record is settled, and the output says so', () => {
+        expect(result.exitCode).toBe(2);
+        expect(result.stderr).toContain('is DROPPED, not held');
+      });
+    });
+
+    when('[t4] the human opens the radio and the clone drains', () => {
+      const result = useThen('allow, then drain', () => {
+        runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.uses',
+          args: 'allow',
+          asHuman: true,
+        });
+        return runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.queue',
+          args: 'drain',
+        });
+      });
+
+      then('exit 0: the held record delivers, the dropped one stays unsent', () => {
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain('wetsuit inventory');
+        expect(result.stdout).not.toContain('old lesson reminder');
+        expect(result.stdout).toContain('backlog = 0');
+        expect(asStableOutput({ output: result.stdout })).toMatchSnapshot();
       });
     });
   });

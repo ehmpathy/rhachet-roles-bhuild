@@ -33,6 +33,8 @@ exports[`asRadioPushOutput given: [case3] an unbound push held by an upstream fa
    ├─ backlog = 1 await the radio
    └─ fix it: github auth failed: the robot token was rejected by github (401)
       ├─ unblock now — re-run as human: --auth as-human
+      ├─ amend it: rhx radio.task.queue set --key k --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --key k --why "<why>"
       └─ then the next push delivers the backlog first"
 `;
 
@@ -60,6 +62,8 @@ exports[`asRadioPushOutput given: [case3] an unbound push held by an upstream fa
       │  │     use token from environment variable
       │  └─ as-human
       │        use gh cli logged-in session (interactive)
+      ├─ amend it: rhx radio.task.queue set --key k --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --key k --why "<why>"
       └─ then the next push delivers the backlog first"
 `;
 

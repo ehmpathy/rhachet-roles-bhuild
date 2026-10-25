@@ -11,7 +11,7 @@ import type { ShellExecutor } from './ShellExecutor';
  *        be derived now, it is held, not lost. any other throw is a defect, so it rethrows
  */
 export const getOneRadioContextForRecord = async (
-  input: { record: RadioTaskRecord },
+  input: { record: RadioTaskRecord; authOverride: string | null },
   context: { env: NodeJS.ProcessEnv; shx: ShellExecutor },
 ): Promise<
   | { radioContext: Awaited<ReturnType<typeof getOneRadioContextFromCliArgs>> }
@@ -23,7 +23,7 @@ export const getOneRadioContextForRecord = async (
         {
           via: input.record.via,
           repo: input.record.repo,
-          auth: input.record.auth,
+          auth: input.authOverride ?? input.record.auth,
         },
         context,
       ),

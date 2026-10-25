@@ -132,7 +132,7 @@ const HELP_TEXT = `
    │  ├─ every push is recorded first, into $route/.radio/ (or .behavior/.radio/)
    │  ├─ a shut gate or an upstream fault holds it QUEUED, exit 2
    │  ├─ the next push that gets through delivers the backlog first, oldest first
-   │  └─ see what waits: radio.task.held
+   │  └─ see what waits: radio.task.queue get
    │
    └─ options
       ├─ --via         channel: gh.issues or os.fileops (required)

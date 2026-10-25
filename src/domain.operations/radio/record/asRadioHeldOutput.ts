@@ -1,6 +1,7 @@
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 
 import { asRadioHeldUpstreamFaults } from './asRadioHeldUpstreamFaults';
+import { asRadioQueueFixLines } from './asRadioQueueFixLines';
 import { asRadioTaskRecordLabel } from './asRadioTaskRecordLabel';
 import { asRadioTaskRepoSlug } from './asRadioTaskRepoSlug';
 import { asRadioTreeLines } from './asRadioTreeLines';
@@ -45,8 +46,8 @@ export const asRadioHeldOutput = (input: {
     ...asRadioTreeLines({
       branches: [
         ...held.map(({ record }) => ({
-          line: `${asRadioTaskRecordLabel({ record })} → ${asRadioTaskRepoSlug({ repo: record.repo })} (${record.reason ?? 'not reached'})`,
-          children: [],
+          line: `${record.key} ${asRadioTaskRecordLabel({ record })} → ${asRadioTaskRepoSlug({ repo: record.repo })} (${record.reason ?? 'not reached'})`,
+          children: asRadioQueueFixLines({ record }),
         })),
         ...(lifts.length
           ? [{ line: `lift it (human): ${lifts.join(' + ')}`, children: [] }]
@@ -56,8 +57,8 @@ export const asRadioHeldOutput = (input: {
           : []),
         {
           line: frees.length
-            ? 'then the next push delivers the backlog first'
-            : 'the radio is open, so the next push delivers the backlog first',
+            ? 'then the next push, or `rhx radio.task.queue drain`, delivers the backlog'
+            : 'the radio is open, so the next push, or `rhx radio.task.queue drain`, delivers the backlog',
           children: [],
         },
       ],

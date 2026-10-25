@@ -11,6 +11,7 @@ import { asRadioUpstreamReason } from './asRadioUpstreamReason';
 import { getOneRadioContextForRecord } from './getOneRadioContextForRecord';
 import { isRadioReplayRefusal } from './isRadioReplayRefusal';
 import { isRadioTaskRecordRepushedSince } from './isRadioTaskRecordRepushedSince';
+import { isRadioUpstreamReasonHalt } from './isRadioUpstreamReasonHalt';
 import type { RadioTaskRecordFate } from './RadioTaskRecordFate';
 import type { ShellExecutor } from './ShellExecutor';
 import { setRadioTaskRecordHeldAtGate } from './setRadioTaskRecordHeldAtGate';
@@ -54,6 +55,9 @@ const setRecord = (input: {
  * .what = send one record upstream on its own terms, then settle its fate
  * .why = each record meets its own target's gate (X1) and its own channel + auth (C22);
  *        delivery reuses the extant upstream findsert, so a re-send never doubles (X2)
+ *
+ * .note = context.authOverride (a `drain --auth`) sends this record under that auth for
+ *         this drain only; the record on disk keeps its own auth (F3)
  */
 export const setRadioTaskRecordUpstream = async (
   input: { record: RadioTaskRecord; dir: string },
@@ -62,6 +66,7 @@ export const setRadioTaskRecordUpstream = async (
     homeDir: string | undefined;
     env: NodeJS.ProcessEnv;
     shx: ShellExecutor;
+    authOverride?: string | null;
   },
 ): Promise<RadioTaskRecordFate> => {
   const { record, dir } = input;
@@ -77,7 +82,10 @@ export const setRadioTaskRecordUpstream = async (
   if (!gate.allowed) return setRadioTaskRecordHeldAtGate({ record, dir, gate });
 
   // derive this record's own credentials; hold if they cannot be derived now
-  const auth = await getOneRadioContextForRecord({ record }, context);
+  const auth = await getOneRadioContextForRecord(
+    { record, authOverride: context.authOverride ?? null },
+    context,
+  );
   if ('fault' in auth)
     return {
       fate: 'held',
@@ -109,24 +117,21 @@ export const setRadioTaskRecordUpstream = async (
       detail: asRadioErrorHeadline({ message: send.fault.message }),
     };
 
-  // a fault holds it, and halts the drain behind it
-  if ('fault' in send)
+  // a fault holds it; a wall (rate limit, outage) halts the drain behind it, and any
+  // other fault sets this one record aside so the rest still deliver (#511)
+  if ('fault' in send) {
+    const reason = asRadioUpstreamReason({ message: send.fault.message });
     return {
       fate: 'held',
-      record: setRecord({
-        dir,
-        record,
-        change: {
-          reason: asRadioUpstreamReason({ message: send.fault.message }),
-        },
-      }),
+      record: setRecord({ dir, record, change: { reason } }),
       lift: null,
       detail: asRadioErrorDetail({
         message: send.fault.message,
         hint: asRadioErrorHint({ error: send.fault }),
       }),
-      halt: true,
+      halt: isRadioUpstreamReasonHalt({ reason }),
     };
+  }
 
   // mark it delivered, with the exid upstream holds it under
   return {

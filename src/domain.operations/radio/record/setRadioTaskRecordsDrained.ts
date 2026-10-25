@@ -13,6 +13,7 @@ type DrainContext = {
   homeDir: string | undefined;
   env: NodeJS.ProcessEnv;
   shx: ShellExecutor;
+  authOverride?: string | null;
 };
 
 type HeldFate = Extract<RadioTaskRecordFate, { fate: 'held' }>;
@@ -69,8 +70,9 @@ const setRadioTaskRecordsInLine = async (
  *
  * .note = this push is held like the rest, so it goes in its place in line: last when
  *         new, in its first place when it re-types a held task (C5).
- *         an upstream fault halts the drain; the records after it stay held, in order,
- *         so a fault that likely hits them all is reported once, never reordered around.
+ *         a wall (rate limit, outage) halts the drain; the records after it stay held, in
+ *         order, so a fault that hits them all is reported once, never reordered around.
+ *         any other fault sets its one record aside, and the rest still deliver (#511).
  *         a record already DELIVERED is never re-sent: its local mark answers first (C3).
  *         after the line, any record a prior version stamped with a clock is written back
  *         without it, settled ones included, so every drain leaves the record dirs clock-free

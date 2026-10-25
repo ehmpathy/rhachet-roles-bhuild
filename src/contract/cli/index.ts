@@ -94,6 +94,8 @@ const loadRadioPull = (): typeof import('./radioTaskPull') =>
   require('./radioTaskPull');
 const loadRadioPush = (): typeof import('./radioTaskPush') =>
   require('./radioTaskPush');
+const loadRadioQueue = (): typeof import('./radioTaskQueue') =>
+  require('./radioTaskQueue');
 const loadReflect = (): typeof import('./reflect.on.reviews.self') =>
   require('./reflect.on.reviews.self');
 const loadReview = (): typeof import('./review.behavior') =>
@@ -112,6 +114,7 @@ export const cli = {
   radioTaskHeld: asLazyCli(() => loadRadioHeld().cliRadioTaskHeld),
   radioTaskPull: asLazyCli(() => loadRadioPull().cliRadioTaskPull),
   radioTaskPush: asLazyCli(() => loadRadioPush().cliRadioTaskPush),
+  radioTaskQueue: asLazyCli(() => loadRadioQueue().cliRadioTaskQueue),
   reflectOnReviewsSelf: asLazyCli(() => loadReflect().reflectOnReviewsSelf),
   reviewBehavior: asLazyCli(() => loadReview().reviewBehavior),
 };
