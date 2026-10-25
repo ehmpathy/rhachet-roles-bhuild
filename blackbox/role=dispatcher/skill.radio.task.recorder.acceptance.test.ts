@@ -901,6 +901,7 @@ describe('radio.task.push — the radio.recorder', () => {
           `${getKeyOf({ title: 'old lesson reminder' })} old lesson reminder`,
         );
         expect(result.stdout).toContain('radio.uses:blocked');
+        expect(asStableOutput({ output: result.stdout })).toMatchSnapshot();
       });
     });
 
@@ -918,6 +919,7 @@ describe('radio.task.push — the radio.recorder', () => {
         expect(result.exitCode).toBe(2);
         expect(result.stdout).toContain('lift it (human): rhx radio.uses allow');
         expect(result.stdout).toContain('backlog = 2 await the radio');
+        expect(asStableOutput({ output: result.stdout })).toMatchSnapshot();
       });
     });
 
@@ -936,6 +938,43 @@ describe('radio.task.push — the radio.recorder', () => {
         expect(result.stdout).toContain('dropped from the radio, never sent');
         expect(result.stdout).toContain('why     = dropped: superseded by #604');
         expect(result.stdout).toContain('kept at = ');
+        expect(asStableOutput({ output: result.stdout })).toMatchSnapshot();
+      });
+    });
+
+    when('[t2.1] the clone amends the body of the held record (case=3)', () => {
+      const result = useThen('the set runs', () =>
+        runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.queue',
+          args: `set --key ${getKeyOf({ title: 'wetsuit inventory' })} --description "count the 4/3s and the 3/2s"`,
+        }),
+      );
+
+      then('exit 0; it names the field changed and that naught was sent', () => {
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain('amended the held record');
+        expect(result.stdout).toContain('description: amended');
+        expect(result.stdout).toContain('naught sent; its place in line is kept');
+        expect(asStableOutput({ output: result.stdout })).toMatchSnapshot();
+      });
+    });
+
+    when('[t2.2] the clone tries to retitle the held record (F5)', () => {
+      const result = useThen('the set runs', () =>
+        runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.queue',
+          args: `set --key ${getKeyOf({ title: 'wetsuit inventory' })} --title "wetsuit count"`,
+        }),
+      );
+
+      then('exit 2: a title cannot be amended, and the fix is named', () => {
+        expect(result.exitCode).toBe(2);
+        expect(result.stderr).toContain('--title cannot be amended');
+        expect(result.stderr).toContain('`queue del` it and re-push');
       });
     });
 
@@ -952,6 +991,7 @@ describe('radio.task.push — the radio.recorder', () => {
       then('exit 2: the record is settled, and the output says so', () => {
         expect(result.exitCode).toBe(2);
         expect(result.stderr).toContain('is DROPPED, not held');
+        expect(asStableOutput({ output: result.stderr })).toMatchSnapshot();
       });
     });
 

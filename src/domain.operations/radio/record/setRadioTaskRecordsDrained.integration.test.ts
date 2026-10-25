@@ -142,8 +142,14 @@ const getAllRecords = (input: { cwd: string }) =>
  * .what = every task file the os.fileops store holds for a target
  * .why = assert what landed upstream, apart from the local records
  */
-const getAllTasksUpstream = (repo: RadioTaskRepo): string[] => {
-  const dir = path.join(os.homedir(), 'git', '.radio', repo.owner, repo.name);
+const getAllTasksUpstream = (input: { repo: RadioTaskRepo }): string[] => {
+  const dir = path.join(
+    os.homedir(),
+    'git',
+    '.radio',
+    input.repo.owner,
+    input.repo.name,
+  );
   if (!fs.existsSync(dir)) return [];
   return fs.readdirSync(dir).filter((name) => name.endsWith('._.md'));
 };
@@ -213,7 +219,7 @@ describe('radio.task.queue — drain, set, del', () => {
             key: held.key,
             ...drained,
             heldStored: getAllRadioTaskRecordsHeld({}, scene),
-            tasksUpstream: getAllTasksUpstream(repoFile),
+            tasksUpstream: getAllTasksUpstream({ repo: repoFile }),
           };
         });
 
@@ -501,7 +507,10 @@ describe('radio.task.queue — drain, set, del', () => {
         expect(result.record.description).toEqual(
           'details for old lesson reminder',
         );
-        expect(fs.existsSync(result.path)).toEqual(true);
+        expect(result.path).toEqual(
+          `.behavior/.radio/record.${pushed.key}.json`,
+        );
+        expect(fs.existsSync(path.join(scene.cwd, result.path))).toEqual(true);
       });
 
       then('it leaves the queue', () => {
@@ -567,15 +576,22 @@ describe('radio.task.queue — drain, set, del', () => {
           via: RadioChannel.OS_FILEOPS,
           title: 'surf report digest',
         });
-        return setRadioTaskRecordsDrained(
+        const tasksUpstreamBefore = getAllTasksUpstream({ repo: repoFile });
+        const drained = await setRadioTaskRecordsDrained(
           {},
           { ...scene, env: process.env, shx },
         );
+        return {
+          fates: drained.fates,
+          tasksUpstreamBefore,
+          tasksUpstreamAfter: getAllTasksUpstream({ repo: repoFile }),
+        };
       });
 
       then(
         'naught is sent; the record is held at the gate, with its lift',
         () => {
+          expect(result.tasksUpstreamAfter).toEqual(result.tasksUpstreamBefore);
           const [fate] = result.fates;
           expect(result.fates).toHaveLength(1);
           expect(fate?.fate).toEqual('held');

@@ -18,7 +18,7 @@
  *   - hook.onStop never blocks the stop (never exit 2)
  */
 
-import { BadRequestError } from 'helpful-errors';
+import { ConstraintError } from 'helpful-errors';
 import { z } from 'zod';
 
 import { asGithubAuthMode } from '@src/domain.operations/radio/auth/asGithubAuthMode';
@@ -100,7 +100,7 @@ const HELP_TEXT = `
 const asAuthFromArg = (input: { raw: string | undefined }): string | null => {
   if (input.raw === undefined) return null;
   if (asGithubAuthMode({ auth: input.raw }).kind === 'unknown')
-    throw new BadRequestError(
+    throw new ConstraintError(
       `--auth "${input.raw}" is not an auth mode; use as-human, as-robot:via-keyrack(owner), as-robot:env(VAR), or as-robot:shx(cmd)`,
     );
   return input.raw;
@@ -112,11 +112,15 @@ const asAuthFromArg = (input: { raw: string | undefined }): string | null => {
  */
 const asKeyFromArg = (input: { raw: string | undefined }): string => {
   if (input.raw) return input.raw;
-  throw new BadRequestError(
+  throw new ConstraintError(
     '--key is required; run `rhx radio.task.queue get` to list the keys',
   );
 };
 
+/**
+ * .what = read the verb, then run get, set, del, or drain
+ * .why  = one skill entry for the queue; each verb is a short paragraph over its domain op
+ */
 const _cliRadioTaskQueue = async (): Promise<void> => {
   const { named, ordered } = getCliArgs({ schema: schemaOfArgs });
 
@@ -146,7 +150,7 @@ const _cliRadioTaskQueue = async (): Promise<void> => {
   // set: amend the auth or body of one held record
   if (verb === 'set') {
     if (named.title !== undefined)
-      throw new BadRequestError(
+      throw new ConstraintError(
         '--title cannot be amended: a title names a create; `queue del` it and re-push to retitle',
       );
     const amended = await setRadioTaskRecordAmended(
@@ -185,7 +189,7 @@ const _cliRadioTaskQueue = async (): Promise<void> => {
   }
 
   // any other verb: name the four
-  throw new BadRequestError(
+  throw new ConstraintError(
     `"${verb}" is not a queue verb; use get, set, del, or drain (see --help)`,
   );
 };

@@ -1,5 +1,5 @@
 import { ConstraintError } from 'helpful-errors';
-import { join } from 'path';
+import { join, relative } from 'path';
 
 import { daoRadioTaskRecord } from '@src/access/daos/daoRadioTaskRecord';
 import { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
@@ -41,7 +41,12 @@ const _setRadioTaskRecordDropped = async (
       reason: `dropped: ${input.why.trim()}`,
     }),
   });
-  return { record: dropped, path: join(dir, `record.${record.key}.json`) };
+
+  // name where its words are kept, from the repo root, as the push names `held at`
+  return {
+    record: dropped,
+    path: relative(context.cwd, join(dir, `record.${record.key}.json`)),
+  };
 };
 
 export const setRadioTaskRecordDropped = withRadioDrainLock(

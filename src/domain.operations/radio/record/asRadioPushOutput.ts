@@ -1,10 +1,8 @@
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 import { asTaskDetailOutput } from '@src/domain.operations/radio/cli/asTaskDetailOutput';
 
-import {
-  asRadioDeliveredExid,
-  asRadioDeliveredLine,
-} from './asRadioDeliveredLine';
+import { asRadioDeliveredExid } from './asRadioDeliveredExid';
+import { asRadioDeliveredLine } from './asRadioDeliveredLine';
 import { asRadioDrainSections } from './asRadioDrainSections';
 import { asRadioErrorHeadline } from './asRadioErrorHeadline';
 import { asRadioErrorHintLines } from './asRadioErrorHintLines';

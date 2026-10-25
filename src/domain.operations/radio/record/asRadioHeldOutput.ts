@@ -30,18 +30,16 @@ const asStateCountPhrases = (input: {
   held: { record: RadioTaskRecord; lift: string | null }[];
 }): string[] => {
   const states = input.held.map((one) => asRadioTaskRecordState(one));
-  const phraseOf = {
-    'held at gate': 'at a gate',
-    'set aside': 'set aside',
-    halted: 'halted',
-    'not reached': 'not reached',
-  } as const;
-  return (Object.keys(phraseOf) as (keyof typeof phraseOf)[]).flatMap(
-    (state) => {
-      const n = states.filter((one) => one === state).length;
-      return n ? [`${n} ${phraseOf[state]}`] : [];
-    },
-  );
+  const phrases: [ReturnType<typeof asRadioTaskRecordState>, string][] = [
+    ['held at gate', 'at a gate'],
+    ['set aside', 'set aside'],
+    ['halted', 'halted'],
+    ['not reached', 'not reached'],
+  ];
+  return phrases.flatMap(([state, phrase]) => {
+    const n = states.filter((one) => one === state).length;
+    return n ? [`${n} ${phrase}`] : [];
+  });
 };
 
 /**
