@@ -1380,7 +1380,9 @@ describe('phone skills', () => {
           (one) => one.record.uuid?.startsWith(alias ?? '-'),
         )?.record.uuid;
         const readHeldWhole = runAs({ skill: 'phone.text', args: `get --text ${uuid}` });
-        const withdrawn = runAs({ skill: 'phone.text', args: `del --text ${alias}` });
+        const withdrawn = await getWithdrawnWhen({
+          run: () => runAs({ skill: 'phone.text', args: `del --text ${alias}` }),
+        });
         const withdrawnAgain = runAs({ skill: 'phone.text', args: `del --text ${uuid}` });
         const readWithdrawn = runAs({ skill: 'phone.text', args: `get --text ${alias}` });
 
@@ -1789,7 +1791,7 @@ describe('phone skills', () => {
         stub.setRosters(roster('focus-unrecognized'));
         const threadUnread = await getThreadWhen({
           run: () => runAs({ skill: 'phone.text', args: 'get' }),
-          has: 'peer screen unrecognized',
+          has: 'peer not at its prompt (mid-turn, or an unrecognized screen)',
         });
         const saidBefore = stub.getAllSaid().length;
         stub.setRosters(roster(null));
@@ -1808,7 +1810,7 @@ describe('phone skills', () => {
       });
 
       then('the text waits QUEUED, the unread-screen reason named', () => {
-        expect(result.threadUnread.stdout).toContain('QUEUED · peer screen unrecognized');
+        expect(result.threadUnread.stdout).toContain('QUEUED · peer not at its prompt (mid-turn, or an unrecognized screen)');
       });
 
       then('once the foreman can take it, it is said once', () => {
@@ -2015,6 +2017,23 @@ const getThreadWhen = async (input: {
     await new Promise((done) => setTimeout(done, 1000));
   }
   throw new Error(`the thread never read '${input.has}' within 60s`);
+};
+
+/**
+ * .what = runs a withdraw until the daemon is not mid-say on the text, or fails loud
+ * .why = a held text is retried each tick; while that say is in flight the daemon holds a claim,
+ *        and a withdraw then is refused by design (S38). on a loaded grove the say takes longer,
+ *        so a blind withdraw can land inside it. only that one refusal is waited out
+ */
+const getWithdrawnWhen = async (input: {
+  run: () => ReturnType<typeof runRhachetSkill>;
+}): Promise<ReturnType<typeof runRhachetSkill>> => {
+  for (let attempt = 0; attempt < 60; attempt++) {
+    const withdrawn = input.run();
+    if (!withdrawn.output.includes('is mid-say right now')) return withdrawn;
+    await new Promise((done) => setTimeout(done, 250));
+  }
+  throw new Error('the daemon stayed mid-say on the text for 15s');
 };
 
 const SERIAL_MECHANIC = '4c1e8b27-9f0a-4d3b-8e61-2a7c5d90f314';

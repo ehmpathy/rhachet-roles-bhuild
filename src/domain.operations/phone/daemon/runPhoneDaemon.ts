@@ -117,10 +117,13 @@ const setPhoneTicksUntilRest = async (
       { ...context, log: (line: string) => context.log({ text: line }) },
     );
 
-    // a QUEUED text keeps the daemon awake; only a quiet tree counts toward idle
-    if (!(await isMailboxQuiet({ treeDir: input.treeDir })))
-      idle.exitAt = getOnePhoneIdleExitAt(input);
-    if (input.state.isStopped || isPast({ at: idle.exitAt })) return;
+    // a QUEUED text keeps the daemon awake; only a quiet tree counts toward idle, and only a
+    // quiet tree may rest. a rest with a text still held would release the lock, find the text,
+    // and reclaim it, once per tick, for as long as the text waits
+    const isQuiet = await isMailboxQuiet({ treeDir: input.treeDir });
+    if (!isQuiet) idle.exitAt = getOnePhoneIdleExitAt(input);
+    if (input.state.isStopped) return;
+    if (isQuiet && isPast({ at: idle.exitAt })) return;
     await sleep(input.tick);
   }
 };

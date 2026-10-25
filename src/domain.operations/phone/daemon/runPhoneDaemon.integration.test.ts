@@ -212,6 +212,82 @@ describe('runPhoneDaemon', () => {
     },
   );
 
+  given(
+    '[case5] a tree whose one text is held, since its peer withholds every say',
+    () => {
+      when(
+        '[t0] the daemon runs past its idle span, then gets a stop signal',
+        () => {
+          const result = useThen(
+            'the daemon holds the text and ticks on',
+            async () => {
+              const scene = await genScene({ slug: 'phone-daemon-run-case5' });
+              const contextBase = asContext({ gitRoot: scene.gitRoot });
+              const context: PhoneContext = {
+                ...contextBase,
+                sdkClone: {
+                  ...contextBase.sdkClone,
+                  say: async (): Promise<RhachetCloneSayRaw> => ({
+                    exitCode: 2,
+                    stdout: '',
+                    stderr: JSON.stringify({
+                      class: 'ConstraintError',
+                      message: 'withheld',
+                      hint: null,
+                      reachState: null,
+                      reachCause: null,
+                      metadata: {
+                        verdict: 'withheld',
+                        reason: 'focus-unrecognized',
+                      },
+                    }),
+                  }),
+                },
+              };
+
+              // the idle span is already past at each tick; a held text must still keep the lock
+              const run = runPhoneDaemon(
+                {
+                  treeDir: scene.treeDir,
+                  tick: TICK_TEST,
+                  idleExit: IDLE_SHORT,
+                },
+                context,
+              );
+              await sleep({ milliseconds: 800 });
+              process.emit('SIGTERM');
+              const { outcome } = await run;
+              const [entry] = await getAllPhoneMailboxEntries({
+                treeDir: scene.treeDir,
+                clone: 'mechanic',
+              });
+              const log = await fs.readFile(
+                daoPhoneDaemon.getOneLogPath({ treeDir: scene.treeDir }),
+                'utf8',
+              );
+              return { outcome, status: entry!.record.status, log };
+            },
+          );
+
+          then('the text stays QUEUED, never dropped', () => {
+            expect(result.status).toEqual('QUEUED');
+          });
+
+          then('the daemon ends on the stop signal, not on idle', () => {
+            expect(result.outcome).toEqual('stopped');
+          });
+
+          then(
+            'the daemon never releases and reclaims its lock while a text waits',
+            () => {
+              expect(result.log).not.toContain('lock reclaimed');
+            },
+          );
+        },
+      );
+    },
+  );
+
   given('[case4] a tree whose mailbox root can not be read', () => {
     when('[t0] the daemon runs', () => {
       const result = useThen('the fault fails loud', async () => {
