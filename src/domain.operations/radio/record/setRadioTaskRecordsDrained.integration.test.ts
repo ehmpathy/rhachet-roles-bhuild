@@ -20,7 +20,7 @@ import { shx } from '@src/infra/shell/shx';
 
 import { getAllRadioTaskRecordDirs } from './getAllRadioTaskRecordDirs';
 import { getAllRadioTaskRecordsHeld } from './getAllRadioTaskRecordsHeld';
-import { getOneRadioTaskRecordInWorktree } from './getOneRadioTaskRecordInWorktree';
+import { getOneRadioTaskRecordByKey } from './getOneRadioTaskRecordByKey';
 import { setRadioTaskRecordAmended } from './setRadioTaskRecordAmended';
 import { setRadioTaskRecordDropped } from './setRadioTaskRecordDropped';
 import { setRadioTaskRecordFromPush } from './setRadioTaskRecordFromPush';
@@ -261,7 +261,7 @@ describe('radio.task.queue — drain, set, del', () => {
           return {
             amended,
             drained,
-            after: getOneRadioTaskRecordInWorktree({ key }, scene),
+            after: getOneRadioTaskRecordByKey({ key, dirHome: null }, scene),
           };
         });
 
@@ -441,7 +441,10 @@ describe('radio.task.queue — drain, set, del', () => {
           );
           return {
             drained,
-            after: getOneRadioTaskRecordInWorktree({ key: held.key }, scene),
+            after: getOneRadioTaskRecordByKey(
+              { key: held.key, dirHome: null },
+              scene,
+            ),
           };
         });
 

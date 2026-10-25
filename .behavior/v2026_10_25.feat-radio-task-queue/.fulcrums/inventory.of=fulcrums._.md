@@ -11,3 +11,4 @@
 | F7 | the pr closes #604, #511, #513, #603; each part left named on its line | clean | set by the director | — |
 | F8 | new reasons `upstream:access` (403 / not accessible), `upstream:not-found`, `upstream:transient` (network, 5xx) | clean | best-guessed | 80% |
 | F9 | an `--exid` update to a non-radio issue stays refused, now named plainly; a verbatim edit is out of v1 | clean | best-guessed | 55% |
+| F10 | `queue get` shows each record's last fault as its reason code (`upstream:access`), not gh's verbatim stderr; the drain output still prints the verbatim text when it happens | clean | best-guessed | 75% |

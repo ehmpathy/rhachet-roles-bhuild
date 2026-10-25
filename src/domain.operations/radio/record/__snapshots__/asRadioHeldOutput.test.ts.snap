@@ -1,29 +1,36 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`asRadioHeldOutput given: [case1] three tasks held, the gate shut (S2) when: [t0] the stop reminder renders then: it is one line with the count and the lift 1`] = `"🦫 3 tasks held for the radio · lift: rhx radio.uses --global allow · next push delivers them"`;
+exports[`asRadioHeldOutput given: [case1] three tasks held, the gate shut (S2) when: [t0] the stop reminder renders then: it is one line with the count by state and the lift 1`] = `"🦫 3 tasks held for the radio · 3 at a gate · lift: rhx radio.uses --global allow · next push delivers them"`;
 
-exports[`asRadioHeldOutput given: [case1] three tasks held, the gate shut (S2) when: [t1] the list renders then: it lists each held task and the lift 1`] = `
+exports[`asRadioHeldOutput given: [case1] three tasks held, the gate shut (S2) when: [t1] the list renders then: it lists each held task with its state and its lift 1`] = `
 "🦫 held for the radio
-   ├─ a a → ehmpathy/rhachet (radio.uses:blocked — global)
-   ├─ b b → ehmpathy/rhachet (radio.uses:blocked — global)
-   ├─ c c → ehmpathy/rhachet (radio.uses:blocked — global)
-   ├─ lift it (human): rhx radio.uses --global allow
+   ├─ a a → ehmpathy/rhachet
+   │  ├─ state: held at gate (radio.uses:blocked — global)
+   │  └─ lift it (human): rhx radio.uses --global allow
+   ├─ b b → ehmpathy/rhachet
+   │  ├─ state: held at gate (radio.uses:blocked — global)
+   │  └─ lift it (human): rhx radio.uses --global allow
+   ├─ c c → ehmpathy/rhachet
+   │  ├─ state: held at gate (radio.uses:blocked — global)
+   │  └─ lift it (human): rhx radio.uses --global allow
    └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;
 
-exports[`asRadioHeldOutput given: [case2.1] tasks held on an upstream fault, the gate open when: [t0] the stop reminder renders then: it names the fault once beside the lift, never "the radio is open" 1`] = `"🦫 3 tasks held for the radio · lift: rhx radio.uses --global allow · fix: upstream:auth · next push delivers them"`;
+exports[`asRadioHeldOutput given: [case2.1] tasks held on an upstream fault, the gate open when: [t0] the stop reminder renders then: it names the fault once beside the lift, never "the radio is open" 1`] = `"🦫 3 tasks held for the radio · 1 at a gate · 2 set aside · lift: rhx radio.uses --global allow · fix: upstream:auth · next push delivers them"`;
 
-exports[`asRadioHeldOutput given: [case2.1] tasks held on an upstream fault, the gate open when: [t1] the list renders then: it names the fault to fix beside the lift 1`] = `
+exports[`asRadioHeldOutput given: [case2.1] tasks held on an upstream fault, the gate open when: [t1] the list renders then: it names each set-aside record with its fault and its fixes 1`] = `
 "🦫 held for the radio
-   ├─ a a → ehmpathy/rhachet (upstream:auth)
+   ├─ a a → ehmpathy/rhachet
+   │  ├─ state: set aside (upstream:auth)
    │  ├─ amend it: rhx radio.task.queue set --key a --auth as-human (needs a gh login on this host)
    │  └─ or drop it: rhx radio.task.queue del --key a --why "<why>"
-   ├─ b b → ehmpathy/rhachet (upstream:auth)
+   ├─ b b → ehmpathy/rhachet
+   │  ├─ state: set aside (upstream:auth)
    │  ├─ amend it: rhx radio.task.queue set --key b --auth as-human (needs a gh login on this host)
    │  └─ or drop it: rhx radio.task.queue del --key b --why "<why>"
-   ├─ c c → ehmpathy/rhachet (radio.uses:blocked — global)
-   ├─ lift it (human): rhx radio.uses --global allow
-   ├─ fix it: upstream:auth
+   ├─ c c → ehmpathy/rhachet
+   │  ├─ state: held at gate (radio.uses:blocked — global)
+   │  └─ lift it (human): rhx radio.uses --global allow
    └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;
 
@@ -31,7 +38,8 @@ exports[`asRadioHeldOutput given: [case2] one task held, the gate open (S3) when
 
 exports[`asRadioHeldOutput given: [case2] one task held, the gate open (S3) when: [t1] the list renders (L3) then: it lists the task with no lift, and says the radio is open 1`] = `
 "🦫 held for the radio
-   ├─ a a → ehmpathy/rhachet (radio.uses:blocked — global)
+   ├─ a a → ehmpathy/rhachet
+   │  └─ state: not reached (radio.uses:blocked — global)
    └─ the radio is open, so the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;
 

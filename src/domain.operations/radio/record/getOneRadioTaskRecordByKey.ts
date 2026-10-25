@@ -9,17 +9,22 @@ import { getAllRadioTaskRecordDirs } from './getAllRadioTaskRecordDirs';
  * .why = a push held while the branch was unbound lives in `.behavior/.radio/`; after a route bind,
  *        the home moves to `$route/.radio/`. a re-push must still find its record there, or it
  *        writes a second record for one task, and the queue shows it twice
+ *
+ * .note = dirHome null = no home to prefer: `queue set` and `queue del` name a record by the
+ *         key `queue get` prints, from whichever record dir holds it
  */
 export const getOneRadioTaskRecordByKey = (
-  input: { key: string; dirHome: string },
+  input: { key: string; dirHome: string | null },
   context: { cwd: string },
 ): { record: RadioTaskRecord; dir: string } | null => {
-  // the home dir answers first
-  const atHome = daoRadioTaskRecord.get.one.byUnique({
-    dir: input.dirHome,
-    key: input.key,
-  });
-  if (atHome) return { record: atHome, dir: input.dirHome };
+  // the home dir answers first, when there is one
+  const atHome = input.dirHome
+    ? daoRadioTaskRecord.get.one.byUnique({
+        dir: input.dirHome,
+        key: input.key,
+      })
+    : null;
+  if (atHome && input.dirHome) return { record: atHome, dir: input.dirHome };
 
   // else the first other record dir that holds it
   const [found] = getAllRadioTaskRecordDirs({}, context)

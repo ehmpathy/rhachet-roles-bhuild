@@ -13,12 +13,12 @@ exports[`radio.task.push — the radio.recorder given: [case1] a clone on a bran
       └─ then the next push delivers the backlog first"
 `;
 
-exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t2.1] the dispatcher onStop hook command runs, as claude runs it then: its whole stdout is the json claude parses 1`] = `"{"systemMessage":"🦫 2 tasks held for the radio · lift: rhx radio.uses allow · next push delivers them"}"`;
+exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t2.1] the dispatcher onStop hook command runs, as claude runs it then: its whole stdout is the json claude parses 1`] = `"{"systemMessage":"🦫 2 tasks held for the radio · 2 at a gate · lift: rhx radio.uses allow · next push delivers them"}"`;
 
 exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t2] the clone stops (S2) then: it prints one systemMessage line with the count and the lift 1`] = `
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.held
 
-{"systemMessage":"🦫 2 tasks held for the radio · lift: rhx radio.uses allow · next push delivers them"}"
+{"systemMessage":"🦫 2 tasks held for the radio · 2 at a gate · lift: rhx radio.uses allow · next push delivers them"}"
 `;
 
 exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t3.1] the human opens the radio, then the clone stops before any push (S3) then: it prints one line: both still held, the radio open, no lift 1`] = `
@@ -31,9 +31,12 @@ exports[`radio.task.push — the radio.recorder given: [case1] a clone on a bran
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
 
 🦫 held for the radio
-   ├─ <key> fix flaky test → recorder-acpt/repo-<run> (radio.uses:blocked — default)
-   ├─ <key> guard absent sponsor → recorder-acpt/repo-<run> (radio.uses:blocked — default)
-   ├─ lift it (human): rhx radio.uses allow
+   ├─ <key> fix flaky test → recorder-acpt/repo-<run>
+   │  ├─ state: held at gate (radio.uses:blocked — default)
+   │  └─ lift it (human): rhx radio.uses allow
+   ├─ <key> guard absent sponsor → recorder-acpt/repo-<run>
+   │  ├─ state: held at gate (radio.uses:blocked — default)
+   │  └─ lift it (human): rhx radio.uses allow
    └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;
 

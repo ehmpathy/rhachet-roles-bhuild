@@ -1,3 +1,5 @@
+import { isGithubRepoUnreachable } from '@src/access/daos/daoRadioTask/isGithubRepoUnreachable';
+
 /**
  * .what = does this error text report a rejected credential
  * .why = a 401 must be read as a status, never as any "401" in the text
@@ -17,15 +19,6 @@ const isAccessRefusedText = (input: { text: string }): boolean =>
   input.text.includes('resource not accessible') ||
   input.text.includes('must have admin rights') ||
   /\bhttp[ /.\d]*403\b|\bstatus:? ?403\b|\(403\)/.test(input.text);
-
-/**
- * .what = does this error text report a repo the credential cannot see at all
- * .why = github answers "... to a Repository with the name ..." both for an absent repo
- *        and for one the auth may not read, so it is a fault of this record, never a true
- *        absence of the issue
- */
-const isRepoUnreachableText = (input: { text: string }): boolean =>
-  input.text.includes('to a repository with the name');
 
 /**
  * .what = does this error text report a fault of the network or of github itself
@@ -55,7 +48,7 @@ export const asRadioUpstreamReason = (input: { message: string }): string => {
   const text = input.message.toLowerCase();
   if (isAuthRejectedText({ text })) return 'upstream:401';
   if (text.includes('rate limit')) return 'upstream:rate-limit';
-  if (isRepoUnreachableText({ text })) return 'upstream:not-found';
+  if (isGithubRepoUnreachable({ text })) return 'upstream:not-found';
   if (isAccessRefusedText({ text })) return 'upstream:access';
   if (isTransientText({ text })) return 'upstream:transient';
   return 'upstream:fault';

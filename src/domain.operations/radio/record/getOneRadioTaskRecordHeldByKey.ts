@@ -2,7 +2,7 @@ import { ConstraintError } from 'helpful-errors';
 
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 
-import { getOneRadioTaskRecordInWorktree } from './getOneRadioTaskRecordInWorktree';
+import { getOneRadioTaskRecordByKey } from './getOneRadioTaskRecordByKey';
 import { isRadioTaskRecordHeld } from './isRadioTaskRecordHeld';
 
 /**
@@ -15,7 +15,10 @@ export const getOneRadioTaskRecordHeldByKey = (
   context: { cwd: string },
 ): { record: RadioTaskRecord; dir: string } => {
   // the key must name a record in this worktree
-  const found = getOneRadioTaskRecordInWorktree({ key: input.key }, context);
+  const found = getOneRadioTaskRecordByKey(
+    { key: input.key, dirHome: null },
+    context,
+  );
   if (!found)
     throw new ConstraintError(
       `no radio record with key ${input.key} in this worktree; run \`rhx radio.task.queue get\` to list the keys`,

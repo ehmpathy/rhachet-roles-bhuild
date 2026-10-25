@@ -38,9 +38,9 @@ describe('asRadioHeldOutput', () => {
     when('[t0] the stop reminder renders', () => {
       const output = asRadioHeldOutput({ held, mode: 'hook.onStop' });
 
-      then('it is one line with the count and the lift', () => {
+      then('it is one line with the count by state and the lift', () => {
         expect(output).toEqual(
-          '🦫 3 tasks held for the radio · lift: rhx radio.uses --global allow · next push delivers them',
+          '🦫 3 tasks held for the radio · 3 at a gate · lift: rhx radio.uses --global allow · next push delivers them',
         );
         expect(output).toMatchSnapshot();
       });
@@ -49,10 +49,14 @@ describe('asRadioHeldOutput', () => {
     when('[t1] the list renders', () => {
       const output = asRadioHeldOutput({ held, mode: 'list' });
 
-      then('it lists each held task and the lift', () => {
+      then('it lists each held task with its state and its lift', () => {
         expect(output).toContain('🦫 held for the radio');
+        expect(output).toContain('a a → ehmpathy/rhachet');
         expect(output).toContain(
-          'a → ehmpathy/rhachet (radio.uses:blocked — global)',
+          'state: held at gate (radio.uses:blocked — global)',
+        );
+        expect(output).toContain(
+          'lift it (human): rhx radio.uses --global allow',
         );
         expect(output).toMatchSnapshot();
       });
@@ -82,6 +86,9 @@ describe('asRadioHeldOutput', () => {
 
       then('it lists the task with no lift, and says the radio is open', () => {
         expect(output).toContain('a → ehmpathy/rhachet');
+        expect(output).toContain(
+          'state: not reached (radio.uses:blocked — global)',
+        );
         expect(output).not.toContain('lift it (human):');
         expect(output).toContain(
           'the radio is open, so the next push, or `rhx radio.task.queue drain`, delivers the backlog',
@@ -114,7 +121,7 @@ describe('asRadioHeldOutput', () => {
         'it names the fault once beside the lift, never "the radio is open"',
         () => {
           expect(output).toEqual(
-            '🦫 3 tasks held for the radio · lift: rhx radio.uses --global allow · fix: upstream:auth · next push delivers them',
+            '🦫 3 tasks held for the radio · 1 at a gate · 2 set aside · lift: rhx radio.uses --global allow · fix: upstream:auth · next push delivers them',
           );
           expect(output).not.toContain('the radio is open');
           expect(output).toMatchSnapshot();
@@ -125,11 +132,20 @@ describe('asRadioHeldOutput', () => {
     when('[t1] the list renders', () => {
       const output = asRadioHeldOutput({ held, mode: 'list' });
 
-      then('it names the fault to fix beside the lift', () => {
-        expect(output).toContain('fix it: upstream:auth');
-        expect(output).not.toContain('the radio is open');
-        expect(output).toMatchSnapshot();
-      });
+      then(
+        'it names each set-aside record with its fault and its fixes',
+        () => {
+          expect(output).toContain('state: set aside (upstream:auth)');
+          expect(output).toContain(
+            'amend it: rhx radio.task.queue set --key a',
+          );
+          expect(output).toContain(
+            'lift it (human): rhx radio.uses --global allow',
+          );
+          expect(output).not.toContain('the radio is open');
+          expect(output).toMatchSnapshot();
+        },
+      );
     });
   });
 

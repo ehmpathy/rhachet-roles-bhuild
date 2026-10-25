@@ -189,7 +189,7 @@ describe('radio.task.push — the radio.recorder', () => {
         const line = result.stdout.split('\n').find((l) => l.startsWith('{'));
         expect(JSON.parse(line ?? '{}')).toEqual({
           systemMessage:
-            '🦫 2 tasks held for the radio · lift: rhx radio.uses allow · next push delivers them',
+            '🦫 2 tasks held for the radio · 2 at a gate · lift: rhx radio.uses allow · next push delivers them',
         });
         expect(asStableOutput({ output: result.stdout })).toMatchSnapshot();
       });
@@ -212,7 +212,7 @@ describe('radio.task.push — the radio.recorder', () => {
       then('its whole stdout is the json claude parses', () => {
         expect(JSON.parse(result.stdout)).toEqual({
           systemMessage:
-            '🦫 2 tasks held for the radio · lift: rhx radio.uses allow · next push delivers them',
+            '🦫 2 tasks held for the radio · 2 at a gate · lift: rhx radio.uses allow · next push delivers them',
         });
         expect(result.stdout).toMatchSnapshot();
       });
