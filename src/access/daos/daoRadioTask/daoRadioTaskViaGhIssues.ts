@@ -22,6 +22,7 @@ import { extractTaskFromGhIssues } from '../../../domain.operations/radio/task/f
 import { asExecErrorMessage } from '../../../infra/shell/asExecErrorMessage';
 import { getGithubAuthFailureMessage } from './getGithubAuthFailureMessage';
 import { isGithubAuthFailure } from './isGithubAuthFailure';
+import { isGithubIssueAbsent } from './isGithubIssueAbsent';
 import { isGithubRepoUnreachable } from './isGithubRepoUnreachable';
 
 const execAsync = promisify(exec);
@@ -138,9 +139,8 @@ export const daoRadioTaskViaGhIssues = {
           // another auth may reach it, so it must not close the record as refused
           if (isGithubRepoUnreachable({ text: fullError })) throw error;
 
-          // an absent issue in a reachable repo is a true absence
-          if (fullError.includes('Could not resolve')) return null;
-          if (fullError.includes('not found')) return null;
+          // an absent issue in a reachable repo is a true absence; all else is a fault
+          if (isGithubIssueAbsent({ text: fullError })) return null;
           throw error;
         }
       },

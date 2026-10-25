@@ -38,15 +38,13 @@ const asCli =
         error instanceof ConstraintError ||
         error instanceof BadRequestError
       ) {
-        const metadata = error.metadata as Record<string, unknown> | undefined;
-        const hint = metadata?.hint as string | undefined;
+        const hintFound: unknown = error.metadata?.hint;
+        const hint = typeof hintFound === 'string' ? hintFound : null;
         // check if helpful-errors already added the emoji prefix
         const alreadyHasEmoji = error.message.includes('✋');
         const prefix = alreadyHasEmoji ? '' : '✋ ';
         console.error(`${prefix}${error.message}`);
-        // surface the hint as a final line ONLY when the message does not
-        // already carry it. helpful-errors embeds metadata (incl. the hint)
-        // into error.message, so an unconditional print would duplicate it
+        // print the hint last, unless error.message already embeds it
         if (hint && !isHintInErrorMessage({ message: error.message, hint })) {
           console.error('');
           console.error(hint);

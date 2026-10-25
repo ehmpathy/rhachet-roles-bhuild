@@ -12,3 +12,5 @@
 | F8 | new reasons `upstream:access` (403 / not accessible), `upstream:not-found`, `upstream:transient` (network, 5xx) | clean | best-guessed | 80% |
 | F9 | an `--exid` update to a non-radio issue stays refused, now named plainly; a verbatim edit is out of v1 | clean | best-guessed | 55% |
 | F10 | `queue get` shows each record's last fault as its reason code (`upstream:access`), not gh's verbatim stderr; the drain output still prints the verbatim text when it happens | clean | best-guessed | 75% |
+| F11 | the fault-path clamps live at integration grain (stub gh), not in the os.fileops acceptance journey | clean | best-guessed | 80% |
+| F12 | 5.1 peer concerns held as-is: pre-extant shapes outside the diff, the role-file convention, the onStop exit semantics, two misreads | clean | best-guessed | 80% |

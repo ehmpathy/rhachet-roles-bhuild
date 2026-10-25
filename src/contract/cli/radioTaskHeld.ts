@@ -1,6 +1,7 @@
 /**
  * .what = cli entry point for radio.task.held skill — an alias of `radio.task.queue get`
- *         for one release; it says the new name on stderr, so a hook's stdout stays clean
+ *         (deprecated); a human who lists sees the new name atop the list, while a
+ *         stop hook prints only its json line
  * .why  = shows the tasks held for the radio in this worktree; at stop, the clone
  *         reminds the human in one line what waits and how to free it
  *
@@ -67,11 +68,11 @@ const _cliRadioTaskHeld = async (): Promise<void> => {
     return;
   }
 
-  // the new name, on stderr, for a human who lists; a stop hook stays quiet
+  // the new name, atop the list (stdout: `rhachet run` drops stderr on exit 0); a stop hook stays quiet
   const mode = named.when === 'hook.onStop' ? 'hook.onStop' : 'list';
   if (mode === 'list')
-    console.error(
-      '🦫 radio.task.held is now `rhx radio.task.queue get`; this name lives one more release',
+    console.log(
+      '🦫 radio.task.held is now `rhx radio.task.queue get`; the old name is deprecated',
     );
 
   // read the held records and the gate of each, from local files only

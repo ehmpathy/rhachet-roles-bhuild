@@ -117,8 +117,7 @@ export const setRadioTaskRecordUpstream = async (
       detail: asRadioErrorHeadline({ message: send.fault.message }),
     };
 
-  // a fault holds it; a wall (rate limit, outage) halts the drain behind it, and any
-  // other fault sets this one record aside so the rest still deliver (#511)
+  // a fault holds it: a wall halts the drain; any other sets this one aside (#511)
   if ('fault' in send) {
     const reason = asRadioUpstreamReason({ message: send.fault.message });
     return {

@@ -861,46 +861,76 @@ describe('radio.task.push — the radio.recorder', () => {
       fs.mkdirSync(homeDir);
       return { consumer, homeDir };
     });
-    const getKeyOf = (input: { title: string }): string => {
-      const dir = path.join(scene.consumer.repoDir, '.behavior', '.radio');
-      const record = fs
-        .readdirSync(dir)
-        .filter((f) => f.startsWith('record.'))
-        .map((f) => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf-8')))
-        .find((r) => r.title === input.title);
-      if (!record)
-        throw new MalfunctionError('no record for title', { title: input.title });
-      return record.key;
+    // the keys a clone reads off `queue get`, the contract, as each held record's row
+    const keys = new Map<string, string>();
+    const getOneKeyOf = (input: { title: string }): string => {
+      const key = keys.get(input.title);
+      if (!key)
+        throw new MalfunctionError('no key read off `queue get` for title', {
+          title: input.title,
+          hint: 'the [t0] `queue get` must list this title before a later step asks for its key',
+        });
+      return key;
     };
 
     when('[t0] two pushes are held at the shut gate, then the clone reads the queue', () => {
       const result = useThen('the pushes and the read run', () => {
-        runDispatcherSkill({
-          ...scene,
-          repoDir: scene.consumer.repoDir,
-          skill: 'radio.task.push',
-          args: `--via os.fileops --into ${target} --title "wetsuit inventory" --description "count the 4/3s"`,
-        });
-        runDispatcherSkill({
-          ...scene,
-          repoDir: scene.consumer.repoDir,
-          skill: 'radio.task.push',
-          args: `--via os.fileops --into ${target} --title "old lesson reminder" --description "moot now"`,
-        });
-        return runDispatcherSkill({
+        const pushes = [
+          { title: 'wetsuit inventory', description: 'count the 4/3s' },
+          { title: 'old lesson reminder', description: 'moot now' },
+        ].map((push) =>
+          runDispatcherSkill({
+            ...scene,
+            repoDir: scene.consumer.repoDir,
+            skill: 'radio.task.push',
+            args: `--via os.fileops --into ${target} --title "${push.title}" --description "${push.description}"`,
+          }),
+        );
+        const get = runDispatcherSkill({
           ...scene,
           repoDir: scene.consumer.repoDir,
           skill: 'radio.task.queue',
           args: 'get',
         });
+
+        // read each key off its row: `<key> <title> → <repo>`
+        for (const title of ['wetsuit inventory', 'old lesson reminder']) {
+          const row = new RegExp(`([0-9a-f]{16}) ${title} →`).exec(get.stdout);
+          if (row?.[1]) keys.set(title, row[1]);
+        }
+        return { pushes, get };
+      });
+
+      then('each push is held at the shut gate, exit 2', () => {
+        expect(result.pushes.map((push) => push.exitCode)).toEqual([2, 2]);
       });
 
       then('it lists each record with its key, task, and reason, exit 0', () => {
+        expect(result.get.exitCode).toBe(0);
+        expect(getOneKeyOf({ title: 'wetsuit inventory' })).toMatch(/^[0-9a-f]{16}$/);
+        expect(getOneKeyOf({ title: 'old lesson reminder' })).toMatch(/^[0-9a-f]{16}$/);
+        expect(result.get.stdout).toContain('radio.uses:blocked');
+        expect(asStableOutput({ output: result.get.stdout })).toMatchSnapshot();
+      });
+    });
+
+    when('[t0.1] the human lists the queue by its old name', () => {
+      const result = useThen('the alias runs', () =>
+        runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.held',
+          args: '',
+        }),
+      );
+
+      then('exit 0: the same list, under the rename notice', () => {
         expect(result.exitCode).toBe(0);
         expect(result.stdout).toContain(
-          `${getKeyOf({ title: 'old lesson reminder' })} old lesson reminder`,
+          'radio.task.held is now `rhx radio.task.queue get`',
         );
-        expect(result.stdout).toContain('radio.uses:blocked');
+        expect(result.stdout).toContain('wetsuit inventory');
+        expect(result.stdout).toContain('old lesson reminder');
         expect(asStableOutput({ output: result.stdout })).toMatchSnapshot();
       });
     });
@@ -929,7 +959,7 @@ describe('radio.task.push — the radio.recorder', () => {
           ...scene,
           repoDir: scene.consumer.repoDir,
           skill: 'radio.task.queue',
-          args: `del --key ${getKeyOf({ title: 'old lesson reminder' })} --why "superseded by #604"`,
+          args: `del --key ${getOneKeyOf({ title: 'old lesson reminder' })} --why "superseded by #604"`,
         }),
       );
 
@@ -948,7 +978,7 @@ describe('radio.task.push — the radio.recorder', () => {
           ...scene,
           repoDir: scene.consumer.repoDir,
           skill: 'radio.task.queue',
-          args: `set --key ${getKeyOf({ title: 'wetsuit inventory' })} --description "count the 4/3s and the 3/2s"`,
+          args: `set --key ${getOneKeyOf({ title: 'wetsuit inventory' })} --description "count the 4/3s and the 3/2s"`,
         }),
       );
 
@@ -967,7 +997,7 @@ describe('radio.task.push — the radio.recorder', () => {
           ...scene,
           repoDir: scene.consumer.repoDir,
           skill: 'radio.task.queue',
-          args: `set --key ${getKeyOf({ title: 'wetsuit inventory' })} --title "wetsuit count"`,
+          args: `set --key ${getOneKeyOf({ title: 'wetsuit inventory' })} --title "wetsuit count"`,
         }),
       );
 
@@ -975,6 +1005,7 @@ describe('radio.task.push — the radio.recorder', () => {
         expect(result.exitCode).toBe(2);
         expect(result.stderr).toContain('--title cannot be amended');
         expect(result.stderr).toContain('`queue del` it and re-push');
+        expect(asStableOutput({ output: result.stderr })).toMatchSnapshot();
       });
     });
 
@@ -984,7 +1015,7 @@ describe('radio.task.push — the radio.recorder', () => {
           ...scene,
           repoDir: scene.consumer.repoDir,
           skill: 'radio.task.queue',
-          args: `del --key ${getKeyOf({ title: 'old lesson reminder' })} --why "again"`,
+          args: `del --key ${getOneKeyOf({ title: 'old lesson reminder' })} --why "again"`,
         }),
       );
 
@@ -997,27 +1028,42 @@ describe('radio.task.push — the radio.recorder', () => {
 
     when('[t4] the human opens the radio and the clone drains', () => {
       const result = useThen('allow, then drain', () => {
-        runDispatcherSkill({
+        const allow = runDispatcherSkill({
           ...scene,
           repoDir: scene.consumer.repoDir,
           skill: 'radio.uses',
           args: 'allow',
           asHuman: true,
         });
-        return runDispatcherSkill({
+        const drain = runDispatcherSkill({
           ...scene,
           repoDir: scene.consumer.repoDir,
           skill: 'radio.task.queue',
           args: 'drain',
         });
+        return { allow, drain };
+      });
+
+      then('the human opens the gate, exit 0', () => {
+        expect(result.allow.exitCode).toBe(0);
       });
 
       then('exit 0: the held record delivers, the dropped one stays unsent', () => {
-        expect(result.exitCode).toBe(0);
-        expect(result.stdout).toContain('wetsuit inventory');
-        expect(result.stdout).not.toContain('old lesson reminder');
-        expect(result.stdout).toContain('backlog = 0');
-        expect(asStableOutput({ output: result.stdout })).toMatchSnapshot();
+        expect(result.drain.exitCode).toBe(0);
+        expect(result.drain.stdout).toContain('wetsuit inventory');
+        expect(result.drain.stdout).not.toContain('old lesson reminder');
+        expect(result.drain.stdout).toContain('backlog = 0');
+        expect(asStableOutput({ output: result.drain.stdout })).toMatchSnapshot();
+      });
+
+      then('the amended body is the one that lands upstream ([t2.1])', () => {
+        const dir = path.join(scene.homeDir, 'git', '.radio', ...target.split('/'));
+        const bodies = fs
+          .readdirSync(dir)
+          .filter((name) => name.endsWith('._.md'))
+          .map((name) => fs.readFileSync(path.join(dir, name), 'utf-8'));
+        expect(bodies).toHaveLength(1);
+        expect(bodies[0]).toContain('count the 4/3s and the 3/2s');
       });
     });
   });

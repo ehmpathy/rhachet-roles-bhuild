@@ -1,67 +1,9 @@
-import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
-
 import { getAllRadioTaskRecordsHeld } from './getAllRadioTaskRecordsHeld';
 import type { RadioTaskRecordFate } from './RadioTaskRecordFate';
 import type { ShellExecutor } from './ShellExecutor';
-import { setRadioTaskRecordHeldBehindHalt } from './setRadioTaskRecordHeldBehindHalt';
 import { setRadioTaskRecordsClockShed } from './setRadioTaskRecordsClockShed';
-import { setRadioTaskRecordUpstream } from './setRadioTaskRecordUpstream';
+import { setRadioTaskRecordsInLine } from './setRadioTaskRecordsInLine';
 import { withRadioDrainLock } from './withRadioDrainLock';
-
-type DrainContext = {
-  cwd: string;
-  homeDir: string | undefined;
-  env: NodeJS.ProcessEnv;
-  shx: ShellExecutor;
-  authOverride?: string | null;
-};
-
-type HeldFate = Extract<RadioTaskRecordFate, { fate: 'held' }>;
-type LineProgress = { fates: RadioTaskRecordFate[]; halter: HeldFate | null };
-
-/**
- * .what = send each record in line, one at a time; stop at the first fault that halts
- * .why = records after a halt stay held in their place, behind the fault
- *
- * .note = a promise fold, not recursion: the stack depth stays constant however large
- *         the backlog a long block leaves behind
- */
-const setRadioTaskRecordsInLine = async (
-  input: { line: { record: RadioTaskRecord; dir: string }[] },
-  context: DrainContext,
-): Promise<RadioTaskRecordFate[]> => {
-  const progressStart = (async (): Promise<LineProgress> => ({
-    fates: [],
-    halter: null,
-  }))();
-  const progress = await input.line.reduce<Promise<LineProgress>>(
-    async (priorPromise, entry) => {
-      const prior = await priorPromise;
-
-      // behind a halt: held in place with the halter's reason, unsent
-      if (prior.halter)
-        return {
-          fates: [
-            ...prior.fates,
-            setRadioTaskRecordHeldBehindHalt({
-              ...entry,
-              halter: prior.halter,
-            }),
-          ],
-          halter: prior.halter,
-        };
-
-      // otherwise, send it; a fault that halts holds the line after it
-      const fate = await setRadioTaskRecordUpstream(entry, context);
-      return {
-        fates: [...prior.fates, fate],
-        halter: fate.fate === 'held' && fate.halt ? fate : null,
-      };
-    },
-    progressStart,
-  );
-  return progress.fates;
-};
 
 /**
  * .what = deliver every held record whose own gate is open, oldest first
@@ -74,18 +16,25 @@ const setRadioTaskRecordsInLine = async (
  *         order, so a fault that hits them all is reported once, never reordered around.
  *         any other fault sets its one record aside, and the rest still deliver (#511).
  *         a record already DELIVERED is never re-sent: its local mark answers first (C3).
- *         after the line, any record a prior version stamped with a clock is written back
- *         without it, settled ones included, so every drain leaves the record dirs clock-free
+ *         after the line, any record that holds a legacy clock field (`heldAt`, `settledAt`)
+ *         is written back without it, settled ones included, so a drain that completes
+ *         leaves the record dirs clock-free
  */
 const _setRadioTaskRecordsDrained = async (
   input: Record<string, never>,
-  context: DrainContext,
+  context: {
+    cwd: string;
+    homeDir: string | undefined;
+    env: NodeJS.ProcessEnv;
+    shx: ShellExecutor;
+    authOverride?: string | null;
+  },
 ): Promise<{ fates: RadioTaskRecordFate[] }> => {
   // send the held line, oldest first
   const line = getAllRadioTaskRecordsHeld({}, context);
   const fates = await setRadioTaskRecordsInLine({ line }, context);
 
-  // write back any record a prior version stamped that the line did not rewrite
+  // write back any record that still holds a legacy clock field
   setRadioTaskRecordsClockShed({}, context);
   return { fates };
 };

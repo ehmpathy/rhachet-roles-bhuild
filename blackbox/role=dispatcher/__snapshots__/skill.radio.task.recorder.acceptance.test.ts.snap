@@ -55,6 +55,7 @@ exports[`radio.task.push — the radio.recorder given: [case1] a clone on a bran
 exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t5.0] a human lists the held tasks, the backlog drained then: it reads naught held, and exits 0 1`] = `
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.held
 
+🦫 radio.task.held is now \`rhx radio.task.queue get\`; the old name is deprecated
 🦫 naught held for the radio"
 `;
 
@@ -256,6 +257,20 @@ exports[`radio.task.push — the radio.recorder given: [case5] two clones run on
 "
 `;
 
+exports[`radio.task.push — the radio.recorder given: [case6] a clone reads, drops, and drains the queue (#604, case=2, case=4, case=5) when: [t0.1] the human lists the queue by its old name then: exit 0: the same list, under the rename notice 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.held
+
+🦫 radio.task.held is now \`rhx radio.task.queue get\`; the old name is deprecated
+🦫 held for the radio
+   ├─ <key> wetsuit inventory → recorder-acpt-queue/repo-<run>
+   │  ├─ state: held at gate (radio.uses:blocked — default)
+   │  └─ lift it (human): rhx radio.uses allow
+   ├─ <key> old lesson reminder → recorder-acpt-queue/repo-<run>
+   │  ├─ state: held at gate (radio.uses:blocked — default)
+   │  └─ lift it (human): rhx radio.uses allow
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+`;
+
 exports[`radio.task.push — the radio.recorder given: [case6] a clone reads, drops, and drains the queue (#604, case=2, case=4, case=5) when: [t0] two pushes are held at the shut gate, then the clone reads the queue then: it lists each record with its key, task, and reason, exit 0 1`] = `
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
 
@@ -289,6 +304,14 @@ exports[`radio.task.push — the radio.recorder given: [case6] a clone reads, dr
    ├─ changed
    │  └─ description: amended
    └─ naught sent; its place in line is kept, and the next push or \`rhx radio.task.queue drain\` sends it"
+`;
+
+exports[`radio.task.push — the radio.recorder given: [case6] a clone reads, drops, and drains the queue (#604, case=2, case=4, case=5) when: [t2.2] the clone tries to retitle the held record (F5) then: exit 2: a title cannot be amended, and the fix is named 1`] = `
+"
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --title cannot be amended: a title names a create; \`queue del\` it and re-push to retitle"
 `;
 
 exports[`radio.task.push — the radio.recorder given: [case6] a clone reads, drops, and drains the queue (#604, case=2, case=4, case=5) when: [t2] the clone drops the moot record with a why (case=2) then: exit 0; it names the why and where the body is kept 1`] = `
