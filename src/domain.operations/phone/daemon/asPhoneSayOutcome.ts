@@ -6,7 +6,10 @@ import { asPhoneReasonOfPeerReach } from './asPhoneReasonOfPeerReach';
 const REASON_OF_WITHHELD: Record<string, string> = {
   'modal-holds-focus': 'peer at a modal',
   'input-region-dirty': 'peer input box holds typed text',
-  'focus-unrecognized': 'peer screen unrecognized',
+  // rhachet reads a pane mid-turn as an unrecognized screen; the reason names both, so a sender
+  // does not read a busy peer as a broken one
+  'focus-unrecognized':
+    'peer not at its prompt (mid-turn, or an unrecognized screen)',
 };
 
 /**

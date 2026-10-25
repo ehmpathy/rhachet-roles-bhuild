@@ -106,7 +106,7 @@ const TEST_CASES = [
     },
     expect: {
       status: 'QUEUED',
-      reason: 'peer screen unrecognized',
+      reason: 'peer not at its prompt (mid-turn, or an unrecognized screen)',
     },
   },
   {

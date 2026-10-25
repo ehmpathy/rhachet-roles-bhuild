@@ -1285,7 +1285,7 @@ exports[`phone skills given: [case11] a foreman at a modal, then one whose say c
    │  └─ tide is out
    ├─ <text07> → phone://grove=bert-laptop/tree=$TREE/clone=shaper    QUEUED · peer clone is DEAD
    │  └─ fins?
-   └─ <text08> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   QUEUED · peer screen unrecognized
+   └─ <text08> → phone://grove=bert-laptop/tree=$TREE/clone=foreman   QUEUED · peer not at its prompt (mid-turn, or an unrecognized screen)
       └─ wax on the rack?"
 `;
 
