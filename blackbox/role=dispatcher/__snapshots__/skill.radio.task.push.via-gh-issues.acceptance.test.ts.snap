@@ -21,8 +21,8 @@ exports[`radio.task.push via gh.issues given: [case7] auth misconfig surfaces a 
    ├─ backlog = 1 await the radio
    └─ fix it: ✋ ConstraintError: --auth as-robot:env(RADIO_ACCEPT_UNSET_TOKEN) specified but RADIO_ACCEPT_UNSET_TOKEN is not set
       ├─ hint: set RADIO_ACCEPT_UNSET_TOKEN in the environment
-      ├─ amend it: rhx radio.task.queue set --key 6a8e3fe1c53c6b77 --auth as-human (needs a gh login on this host)
-      ├─ or drop it: rhx radio.task.queue del --key 6a8e3fe1c53c6b77 --why "<why>"
+      ├─ amend it: rhx radio.task.queue set --key <key> --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --key <key> --why "<why>"
       └─ then the next push delivers the backlog first"
 `;
 
@@ -38,8 +38,8 @@ exports[`radio.task.push via gh.issues given: [case8] rejected robot token surfa
    └─ fix it: ✋ ConstraintError: github auth failed: the robot token was rejected by github (401)
       ├─ unblock now — re-run as human: --auth as-human
       ├─ or fix the robot token: check its scopes and expiry at its source
-      ├─ amend it: rhx radio.task.queue set --key c99bff5bfe13225c --auth as-human (needs a gh login on this host)
-      ├─ or drop it: rhx radio.task.queue del --key c99bff5bfe13225c --why "<why>"
+      ├─ amend it: rhx radio.task.queue set --key <key> --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --key <key> --why "<why>"
       └─ then the next push delivers the backlog first"
 `;
 

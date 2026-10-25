@@ -24,15 +24,24 @@ import {
  */
 
 /**
+ * .what = mask the record key in a held output's queue fix lines
+ * .why = the key hashes the title, and the title carries Date.now(), so the key varies per run
+ */
+const asStableRecordKey = (input: { output: string }): string =>
+  input.output.replace(/--key [0-9a-f]{16}\b/g, '--key <key>');
+
+/**
  * .what = mask the bytes of a 401 held output that vary per run
  * .why = the title carries Date.now() and the gh command names a per-run tempfile;
  *        only those bytes are masked. gh's raw stderr is NOT masked — the held output
  *        shows the headline, never the stderr, so a leak must surface as a snap diff
  */
 const asStable401Output = (input: { output: string }): string =>
-  sanitizeOutput(input.output)
-    .replace(/auth-fail 401 test \d+/g, 'auth-fail 401 test <ts>')
-    .replace(/\S*radio-task-\d+\.md/g, '<tempfile>');
+  asStableRecordKey({
+    output: sanitizeOutput(input.output)
+      .replace(/auth-fail 401 test \d+/g, 'auth-fail 401 test <ts>')
+      .replace(/\S*radio-task-\d+\.md/g, '<tempfile>'),
+  });
 
 /**
  * .what = invoke radio.uses skill to set up permissions
@@ -485,10 +494,12 @@ describe('radio.task.push via gh.issues', () => {
         // snap the skill's own stream: rhachet frames stdout and stderr each with a banner
         expect(result.stdout).toContain('🦫 held for the radio');
         expect(
-          sanitizeOutput(result.stdout).replace(
-            /auth-fail env test \d+/g,
-            'auth-fail env test <ts>',
-          ),
+          asStableRecordKey({
+            output: sanitizeOutput(result.stdout).replace(
+              /auth-fail env test \d+/g,
+              'auth-fail env test <ts>',
+            ),
+          }),
         ).toMatchSnapshot();
       });
     });

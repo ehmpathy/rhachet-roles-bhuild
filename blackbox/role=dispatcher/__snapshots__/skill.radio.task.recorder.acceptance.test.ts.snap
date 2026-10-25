@@ -31,8 +31,8 @@ exports[`radio.task.push — the radio.recorder given: [case1] a clone on a bran
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
 
 🦫 held for the radio
-   ├─ 64a3469d081f50ca fix flaky test → recorder-acpt/repo-<run> (radio.uses:blocked — default)
-   ├─ b607603213bcab7a guard absent sponsor → recorder-acpt/repo-<run> (radio.uses:blocked — default)
+   ├─ <key> fix flaky test → recorder-acpt/repo-<run> (radio.uses:blocked — default)
+   ├─ <key> guard absent sponsor → recorder-acpt/repo-<run> (radio.uses:blocked — default)
    ├─ lift it (human): rhx radio.uses allow
    └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;

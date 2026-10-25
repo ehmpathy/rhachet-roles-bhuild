@@ -96,13 +96,15 @@ const getOnStopHookCommandFromSettings = (input: {
 
 /**
  * .what = mask the parts of a drain output that vary per run
- * .why = os.fileops exids and dates differ each run; the shape is what the snapshot pins
+ * .why = os.fileops exids, dates, and record keys (a hash over the per-run repo) differ
+ *        each run; the shape is what the snapshot pins
  */
 const asStableOutput = (input: { output: string }): string =>
   sanitizeOutput(input.output)
     .replace(/#[\w-]+/g, '#<exid>')
     .replace(/exid: [\w-]+/g, 'exid: <exid>')
     .replace(/repo-\d+/g, 'repo-<run>')
+    .replace(/\b[0-9a-f]{16}\b/g, '<key>')
     .replace(/\d{4}-\d{2}-\d{2}/g, '<date>');
 
 describe('radio.task.push — the radio.recorder', () => {
