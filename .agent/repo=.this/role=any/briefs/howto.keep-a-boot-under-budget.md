@@ -2,9 +2,9 @@
 
 ## .what
 
-each director-seat role (behaver, decomposer, prioritizer, supervisor) declares
-`budget: tokens:` in its `boot.yml`. the clamp `src/domain.roles/roleArtifacts.integration.test.ts`
-boots each one at the src layout and at a linked copy, and turns red when a boot outgrows it.
+every role this repo ships declares `budget: tokens:` in its `boot.yml` — no exceptions. the
+clamp `src/domain.roles/roleArtifacts.integration.test.ts` boots each one at the src layout and at
+a linked copy, turns red when a boot outgrows it, and turns red when a role declares no boot.
 
 ## .measure
 
@@ -34,8 +34,9 @@ a brief or `boot.yml` edit imports no module, so a `--changedSince` run skips th
   start with `a` or `b`", so it spares `a.reason.md` but erases the reason file of any unsaid brief.
   each supervisor glob lists `*.reason` for that cause; `[case5][t1]` turns red if one is erased.
   ⚠️ a supervisor refout still costs one ref path line, and the supervisor sits at ~99.9% of its cap.
-- **a `.md` edit is shadowed by its `.md.min`.** each such `.md` carries a banner. carry the edit into
-  the `.min`, or the boot does not change.
+- **a `.md` edit is shadowed by its `.md.min`.** where `x.md.min` sits beside `x.md`, the `.min`
+  boots. carry the edit into the `.min`, or the boot does not change. this rule lives here once;
+  `[case9]` forbids a per-file banner that restates it.
 - **budget from the linked render, not src.** round the linked payload up to the next 100.
 - **a supervisor skill added or removed** must update the readme counts (`[case8]`).
 - **a halted boot** reds the exit check alone; fix that first, the dependent checks follow.

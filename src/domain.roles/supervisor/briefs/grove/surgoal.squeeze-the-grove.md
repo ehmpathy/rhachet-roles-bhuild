@@ -1,7 +1,5 @@
 # surgoal.squeeze-the-grove
 
-> ⚠️ `surgoal.squeeze-the-grove.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
-
 ## .what
 
 > every cpu-second and every byte on a grove is either work a human asked for, or waste. know

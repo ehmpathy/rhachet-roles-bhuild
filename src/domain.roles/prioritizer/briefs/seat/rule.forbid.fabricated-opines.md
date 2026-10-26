@@ -1,7 +1,5 @@
 # rule.forbid.fabricated-opines
 
-> ⚠️ `rule.forbid.fabricated-opines.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
-
 ## .what
 
 a clone never **authors** a human's `sev` or `urg` — not in the store, not in an example, not

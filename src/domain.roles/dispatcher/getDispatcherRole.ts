@@ -5,6 +5,7 @@ export const ROLE_DISPATCHER: Role = Role.build({
   name: 'Dispatcher',
   purpose: 'broadcast and receive tasks via radio channels',
   readme: { uri: __dirname + '/readme.md' },
+  boot: { uri: __dirname + '/boot.yml' },
   traits: [],
   skills: {
     dirs: [{ uri: __dirname + '/skills' }],

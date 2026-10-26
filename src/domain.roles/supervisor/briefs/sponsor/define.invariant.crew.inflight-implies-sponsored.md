@@ -1,7 +1,5 @@
 # define.invariant.crew.inflight-implies-sponsored
 
-> ⚠️ `define.invariant.crew.inflight-implies-sponsored.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
-
 ## .what
 
 an inflight tree must be a sponsored star. a crew runs — holds a grove slot, a duct, a

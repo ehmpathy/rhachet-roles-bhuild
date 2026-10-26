@@ -1,7 +1,5 @@
 # rule.forbid.self-grant-human-gates
 
-> ⚠️ `rule.forbid.self-grant-human-gates.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
-
 ## .what
 
 a small set of gates belong to the human ALONE. neither the supervisor nor a mechanic may

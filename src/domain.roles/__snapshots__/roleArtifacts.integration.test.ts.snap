@@ -286,6 +286,347 @@ review/rule.require.domain.bounded.md
 </also>"
 `;
 
+exports[`roleArtifacts given: [case5] each declared boot, against the budget it declares when: [t1] each declared boot is booted at the src layout then: the dispatcher boot says each cue as reviewed 1`] = `
+"<readme path="src/domain.roles/dispatcher/readme.md">
+# dispatcher
+
+the dispatcher role provides task dispatch capabilities via radio channels.
+
+## skills
+
+- \`radio.task.push\` - broadcast tasks to a channel (gh.issues, os.fileops)
+- \`radio.task.pull\` - receive tasks from a channel
+- \`radio.task.held\` - show tasks held for the radio (a blocked push is held, then delivered by the next push that gets through)
+
+## purpose
+
+enables distributed task coordination between humans and clones via broadcast channels.
+
+</readme>
+
+<skill.say path="src/domain.roles/dispatcher/skills/radio.task.held.sh">
+#!/usr/bin/env bash
+######################################################################
+# .what = show the tasks held for the radio in this worktree
+#
+# .why  = a blocked radio.task.push is held, not lost; this skill shows
+#         what waits and who can lift the gate
+#         - at stop, the clone reminds the human in one line
+#         - the next push that gets through delivers the backlog
+#
+# usage:
+#   radio.task.held.sh                       # list held tasks
+#   radio.task.held.sh --when hook.onStop    # one-line stop reminder
+#
+# guarantee:
+#   - reads local records + radio.uses only; no network, no send
+#   - hook.onStop: naught when none held; never exits 2, so never blocks the stop
+#     (an unreadable record fails loud: exit 1, cause on stderr)
+######################################################################
+
+
+# [implementation hidden - use skill to execute]
+</skill.say>
+
+<skill.say path="src/domain.roles/dispatcher/skills/radio.task.pull.sh">
+#!/usr/bin/env bash
+######################################################################
+# .what = pull tasks from a radio channel
+#
+# .why  = enables task discovery and retrieval from work queues
+#         - supports gh.issues and os.fileops channels
+#         - list all tasks or fetch specific by exid/title
+#         - filter by status (QUEUED, CLAIMED, DELIVERED)
+#         - auto-caches remote tasks to local .radio/
+#
+# usage:
+#   radio.task.pull.sh --via gh.issues --from @this --list
+#   radio.task.pull.sh --via gh.issues --from owner/repo --list
+#   radio.task.pull.sh --via os.fileops --from @this --list --status QUEUED
+#   radio.task.pull.sh --via gh.issues --from @this --exid 123
+#   radio.task.pull.sh --via os.fileops --from @this --title "fix flaky test"
+#
+# options:
+#   --via       channel: gh.issues or os.fileops (required)
+#   --from      source repo: @this (current git repo) or owner/name (required)
+#   --list      list all tasks
+#   --exid      fetch specific task by external id
+#   --title     fetch specific task by title
+#   --status    filter by status: QUEUED, CLAIMED, DELIVERED
+#   --limit     max number of tasks to return
+#   --help, -h  show usage and exit
+#
+# guarantee:
+#   - validates required args (--via, --from, --list or --exid/--title)
+#   - auto-caches remote tasks locally for offline access
+#   - fail-fast on errors
+######################################################################
+
+
+# [implementation hidden - use skill to execute]
+</skill.say>
+
+<skill.say path="src/domain.roles/dispatcher/skills/radio.task.push.sh">
+#!/usr/bin/env bash
+######################################################################
+# .what = push a task to a radio channel
+#
+# .why  = enables task broadcast to distributed work queues
+#         - supports gh.issues and os.fileops channels
+#         - creates new tasks or updates via exid
+#         - handles status transitions (QUEUED → CLAIMED → DELIVERED)
+#         - idempotent via findsert/upsert modes
+#
+# usage:
+#   radio.task.push.sh --via gh.issues --into @this --title "..." --description "..."
+#   radio.task.push.sh --via gh.issues --into owner/repo --title "..." --description "..."
+#   radio.task.push.sh --via os.fileops --into @this --exid 123 --status CLAIMED
+#   radio.task.push.sh --via gh.issues --into @this --title "..." --description "..." --idem upsert
+#   echo "detailed task" | radio.task.push.sh --via gh.issues --into @this --title "..." --description @stdin
+#   cat spec.md | radio.task.push.sh --via gh.issues --into @this --title "feat: add X" --description @stdin
+#
+# options:
+#   --via       channel: gh.issues or os.fileops (required)
+#   --into      target repo: @this (current git repo) or owner/name (required)
+#   --title     task title (required for new tasks)
+#   --description  task description (required for new tasks; use @stdin to read from pipe)
+#   --exid      external id for updates
+#   --status    task status: QUEUED, CLAIMED, DELIVERED
+#   --idem      idempotency mode: findsert or upsert
+#   --help, -h  show usage and exit
+#
+# guarantee:
+#   - records every push first, into $route/.radio/ (or .behavior/.radio/ if unbound)
+#   - a push that radio.uses blocks is held QUEUED (exit 2), never lost
+#   - the next push that gets through delivers the held backlog first, oldest first
+#   - validates required args (--via, --into, --title/--description or --exid)
+#   - enforces lifecycle order on status transitions
+#   - creates backups on edit
+#   - fail-fast on errors
+######################################################################
+
+
+# [implementation hidden - use skill to execute]
+</skill.say>
+
+<skill.say path="src/domain.roles/dispatcher/skills/radio.uses.global.sh">
+#!/usr/bin/env bash
+######################################################################
+# .what = manage global radio usage blocker
+#
+# .why  = humans can pause all radio usage across all repos
+#         with a single global circuit breaker
+#
+# usage:
+#   radio.uses.global block    # block radio globally
+#   radio.uses.global allow    # lift global blocker
+#   radio.uses.global get      # check global blocker state
+#
+# guarantee:
+#   - global blocker stored at ~/.rhachet/storage/repo=bhuild/role=dispatcher/.meter/
+#   - global blocker overrides org and local settings
+######################################################################
+
+# [implementation hidden - use skill to execute]
+</skill.say>
+
+<skill.say path="src/domain.roles/dispatcher/skills/radio.uses.local.sh">
+#!/usr/bin/env bash
+######################################################################
+# .what = manage local radio usage permission for this repo
+#
+# .why  = humans control whether radio is allowed in this specific
+#         repository, where no org or @all config is set
+#
+# usage:
+#   radio.uses.local allow     # allow radio in this repo
+#   radio.uses.local block     # block radio in this repo
+#   radio.uses.local del       # remove local config, defer to org/global
+#   radio.uses.local get       # check local state
+#
+# guarantee:
+#   - state stored in .meter/radio.uses.jsonc
+#   - local state applies only when no global block, org, or @all config is set
+######################################################################
+
+# [implementation hidden - use skill to execute]
+</skill.say>
+
+<skill.say path="src/domain.roles/dispatcher/skills/radio.uses.operations.sh">
+#!/usr/bin/env bash
+######################################################################
+# .what = shared operations for radio.uses skills
+#
+# .why  = DRY the common logic for path resolution, state reads, TTY
+#         guards across local, global, and org handlers
+#
+# usage:
+#   source "$SCRIPT_DIR/radio.uses.operations.sh"
+######################################################################
+
+# global storage paths
+
+# [implementation hidden - use skill to execute]
+</skill.say>
+
+<skill.say path="src/domain.roles/dispatcher/skills/radio.uses.org.sh">
+#!/usr/bin/env bash
+######################################################################
+# .what = manage radio usage permission per organization
+#
+# .why  = humans can allow/block radio for specific orgs (e.g., ehmpathy)
+#         or set @all as default for all orgs
+#
+# usage:
+#   radio.uses.org allow --org ehmpathy   # allow radio for ehmpathy
+#   radio.uses.org block --org sandpine     # block radio for sandpine
+#   radio.uses.org allow --org @all       # allow radio for all orgs by default
+#   radio.uses.org block --org @all       # block radio for all orgs by default
+#   radio.uses.org del --org ehmpathy    # remove org config, defer to @all
+#   radio.uses.org get                    # show all org configs
+#   radio.uses.org get --org ehmpathy    # check config for specific org
+#
+# guarantee:
+#   - state stored at ~/.rhachet/storage/repo=bhuild/role=dispatcher/.meter/radio.uses.org.jsonc
+#   - specific org config overrides @all
+#   - org and @all config override local repo config
+######################################################################
+
+# [implementation hidden - use skill to execute]
+</skill.say>
+
+<skill.say path="src/domain.roles/dispatcher/skills/radio.uses.output.sh">
+#!/usr/bin/env bash
+######################################################################
+# .what = beaver vibes output for radio.uses skills
+#
+# .why  = consistent, fun output format across all radio.uses commands
+#
+# usage:
+#   source output.sh
+#   print_beaver_header "back in the river!"
+#   print_tree_start "radio.uses"
+#   print_tree_branch "global"
+#   print_tree_leaf "blocked" "true"
+######################################################################
+
+# print beaver emoji + phrase
+# usage: print_beaver_header "back in the river!"
+
+# [implementation hidden - use skill to execute]
+</skill.say>
+
+<skill.say path="src/domain.roles/dispatcher/skills/radio.uses.sh">
+#!/usr/bin/env bash
+######################################################################
+# .what = manage radio usage permissions for dispatcher
+#
+# .why  = humans control whether radio can push tasks to repos
+#         across four levels: global > org > @all > local
+#
+# usage:
+#   radio.uses allow                         # allow in this repo (local)
+#   radio.uses block                         # block in this repo (local)
+#   radio.uses get                           # check all states
+#   radio.uses --global block                # block radio globally
+#   radio.uses --global allow                # lift global blocker
+#   radio.uses --org ehmpathy allow          # allow radio for ehmpathy org
+#   radio.uses --org @all block              # block radio for all orgs by default
+#
+# precedence (highest to lowest):
+#   1. global blocked = always blocked
+#   2. org specific = wins over @all and local
+#   3. @all = default for all orgs; wins over local
+#   4. local set = applies only when no org or @all is set
+#   5. unset = blocked (safe default)
+#
+#   a blocked push is held, not lost: the next push that gets through
+#   delivers it (see radio.task.held)
+#
+# guarantee:
+#   - local state stored in .meter/radio.uses.jsonc
+#   - global state stored at ~/.rhachet/storage/repo=bhuild/role=dispatcher/.meter/
+#   - org state stored at ~/.rhachet/storage/repo=bhuild/role=dispatcher/.meter/
+######################################################################
+
+# [implementation hidden - use skill to execute]
+</skill.say>"
+`;
+
+exports[`roleArtifacts given: [case5] each declared boot, against the budget it declares when: [t1] each declared boot is booted at the src layout then: the dispatcher manifest reads as reviewed 1`] = `
+"<readme path="src/domain.roles/dispatcher/readme.md">
+</readme>
+<skill.say path="src/domain.roles/dispatcher/skills/radio.task.held.sh">
+</skill.say>
+<skill.say path="src/domain.roles/dispatcher/skills/radio.task.pull.sh">
+</skill.say>
+<skill.say path="src/domain.roles/dispatcher/skills/radio.task.push.sh">
+</skill.say>
+<skill.say path="src/domain.roles/dispatcher/skills/radio.uses.global.sh">
+</skill.say>
+<skill.say path="src/domain.roles/dispatcher/skills/radio.uses.local.sh">
+</skill.say>
+<skill.say path="src/domain.roles/dispatcher/skills/radio.uses.operations.sh">
+</skill.say>
+<skill.say path="src/domain.roles/dispatcher/skills/radio.uses.org.sh">
+</skill.say>
+<skill.say path="src/domain.roles/dispatcher/skills/radio.uses.output.sh">
+</skill.say>
+<skill.say path="src/domain.roles/dispatcher/skills/radio.uses.sh">
+</skill.say>"
+`;
+
+exports[`roleArtifacts given: [case5] each declared boot, against the budget it declares when: [t1] each declared boot is booted at the src layout then: the dreamer boot says each cue as reviewed 1`] = `
+"<readme path="src/domain.roles/dreamer/readme.md">
+## 🌙 dreamer
+
+used to dream of and catch the behaviors we want to see in the world.
+
+---
+
+### skills
+
+#### catch.dream
+
+used to catch dreams before they disappear yet without loss of focus — catch now, build later.
+
+</readme>
+
+<skill.say path="src/domain.roles/dreamer/skills/catch.dream.sh">
+#!/usr/bin/env bash
+######################################################################
+# .what = catch a dream via findsert to .dream/ folder
+#
+# .why  = enables transient idea capture without focus loss
+#         - dreams persist in .dream/ folder
+#         - prior dreams are found by name (findsert pattern)
+#         - optional editor auto-open via --open
+#         - fuzzy match prompt for similar dreams from past week
+#
+# usage:
+#   catch.dream.sh --name <dreamname>
+#   catch.dream.sh --name <dreamname> --open codium
+#
+# guarantee:
+#   - creates .dream/ if not found
+#   - findserts dream file (creates if not found, finds if prior)
+#   - normalizes name to kebab-case
+#   - idempotent: safe to rerun
+#   - fail-fast on errors
+######################################################################
+
+
+# [implementation hidden - use skill to execute]
+</skill.say>"
+`;
+
+exports[`roleArtifacts given: [case5] each declared boot, against the budget it declares when: [t1] each declared boot is booted at the src layout then: the dreamer manifest reads as reviewed 1`] = `
+"<readme path="src/domain.roles/dreamer/readme.md">
+</readme>
+<skill.say path="src/domain.roles/dreamer/skills/catch.dream.sh">
+</skill.say>"
+`;
+
 exports[`roleArtifacts given: [case5] each declared boot, against the budget it declares when: [t1] each declared boot is booted at the src layout then: the prioritizer boot says each cue as reviewed 1`] = `
 "<readme path="src/domain.roles/prioritizer/readme.md">
 ## 🔦 prioritizer
@@ -1136,15 +1477,11 @@ exports[`roleArtifacts given: [case6] the budget clamp, on each shape it must re
 ]
 `;
 
-exports[`roleArtifacts given: [case6] the budget clamp, on each shape it must read when: [t2] the inert list drifts from the declarations then: each direction of drift names its fix 1`] = `
+exports[`roleArtifacts given: [case6] the budget clamp, on each shape it must read when: [t2] a role declares no boot then: each undeclared role names its fix — no list exempts it 1`] = `
 [
   {
-    "fix": "write its \`boot.yml\` (say · ref · not, with \`budget: tokens:\`) and declare it in the role registry (\`boot: { uri }\`), or add it to ROLES_WITH_INERT_BOOT with the reason no seat boots it",
+    "fix": "write its \`boot.yml\` (say · ref · not, with \`budget: tokens:\`), declare it in the role registry (\`boot: { uri }\`), and add it to ROLES_WITH_BUDGET",
     "role": "sandpine",
-  },
-  {
-    "fix": "its boot is now declared — drop it from ROLES_WITH_INERT_BOOT",
-    "role": "dispatcher",
   },
 ]
 `;

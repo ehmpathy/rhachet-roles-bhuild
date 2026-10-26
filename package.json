@@ -104,7 +104,7 @@
     "rhachet-brains-xai": "0.3.3",
     "rhachet-roles-bhrain": "0.42.1",
     "rhachet-roles-bhuild": "link:.",
-    "rhachet-roles-ehmpathy": "1.39.7",
+    "rhachet-roles-ehmpathy": "1.39.9",
     "rhachet-roles-rhachet": "0.1.7",
     "tsc-alias": "1.8.10",
     "tsx": "4.20.6",
@@ -119,6 +119,7 @@
   "packageManager": "pnpm@10.24.0",
   "pnpm": {
     "patchedDependencies": {
+      "rhachet-roles-ehmpathy@1.39.9": "patches/rhachet-roles-ehmpathy@1.39.9.patch",
       "test-fns@1.15.7": "patches/test-fns@1.15.7.patch"
     }
   }

@@ -1,7 +1,5 @@
 # define.sprout-vs-seed
 
-> ⚠️ `define.sprout-vs-seed.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
-
 ## .what
 
 two verbs for two dispatch shapes. one word each, so a human names the mechanism in one

@@ -1,7 +1,5 @@
 # rule.always.clamp-the-production-defect-you-just-saw
 
-> ⚠️ `rule.always.clamp-the-production-defect-you-just-saw.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
-
 > **when a supervisor or prioritizer tool renders a wrong verdict in production, cure it IN THE
 > TOOL and CLAMP it with a test that reproduces the exact case — before the tick moves on.**
 

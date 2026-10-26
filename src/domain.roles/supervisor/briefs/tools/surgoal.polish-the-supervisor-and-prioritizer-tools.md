@@ -1,7 +1,5 @@
 # surgoal.polish-the-supervisor-and-prioritizer-tools
 
-> ⚠️ `surgoal.polish-the-supervisor-and-prioritizer-tools.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
-
 ## .what
 
 > **every defect you find in a supervisor or prioritizer tool is cured IN THE TOOL and

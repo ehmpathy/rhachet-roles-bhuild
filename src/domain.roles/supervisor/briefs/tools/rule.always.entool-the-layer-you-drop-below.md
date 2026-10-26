@@ -1,7 +1,5 @@
 # rule.always.entool-the-layer-you-drop-below
 
-> ⚠️ `rule.always.entool-the-layer-you-drop-below.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
-
 ## .what
 
 a supervisor operates at the **grove and crew** layer. every drill-in and every steer goes

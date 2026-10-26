@@ -1,7 +1,5 @@
 # rule.require.one-pr-per-worktree
 
-> ⚠️ `rule.require.one-pr-per-worktree.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
-
 ## .what
 
 worktree ↔ branch ↔ pr is strictly 1:1:1. each worktree produces exactly one pr. work that

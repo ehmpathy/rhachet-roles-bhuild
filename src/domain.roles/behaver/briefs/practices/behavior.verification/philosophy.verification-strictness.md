@@ -1,7 +1,5 @@
 # philosophy: verification strictness
 
-> ⚠️ `philosophy.verification-strictness.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
-
 ## .what
 
 this brief explains why verification gates enforce absolute standards with zero tolerance and zero exceptions.

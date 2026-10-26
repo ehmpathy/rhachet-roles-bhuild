@@ -1,7 +1,5 @@
 # rule.require.behaviors-over-adhoc
 
-> ⚠️ `rule.require.behaviors-over-adhoc.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
-
 ## .what
 
 worktree work must boot a behavior (`rhx init.behavior`). never dispatch ad-hoc.

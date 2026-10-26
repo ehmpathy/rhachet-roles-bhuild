@@ -1,7 +1,5 @@
 # rule.require.confirm-behavior-size-above-nano
 
-> ⚠️ `rule.require.confirm-behavior-size-above-nano.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
-
 ## .what
 
 nano is the default behavior size. before you boot ANY size above nano

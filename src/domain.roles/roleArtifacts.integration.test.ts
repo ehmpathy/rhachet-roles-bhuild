@@ -62,10 +62,12 @@ const PATH_RHACHET_BIN = join(DIR_REPO, 'node_modules', '.bin', 'rhachet');
 // this timeout, never later
 const MS_BOOT_TIMEOUT = 85_000;
 
-// the roles that boot in a director seat, each under a declared budget
+// every role this package ships, each under a declared budget — no exceptions
 const ROLES_WITH_BUDGET = [
   'behaver',
   'decomposer',
+  'dispatcher',
+  'dreamer',
   'prioritizer',
   'supervisor',
 ] as const;
@@ -508,26 +510,17 @@ const asBootBudgetFix = (input: {
 };
 
 /**
- * .what = each role whose declaration drifted from the named inert list, with its fix
- * .why  = the list is a closed allowlist; a drift in either direction must name its remedy
+ * .what = each role with no declared boot, with its fix
+ * .why  = every role boots under a declared budget, no exceptions; a role with no declared
+ *         boot boots WHOLE and uncapped, so it must name its remedy, never sit on a list
  */
-const asInertBootDrift = (input: {
+const asBootUndeclaredFixes = (input: {
   undeclared: string[];
-  inert: string[];
-}): { role: string; fix: string }[] => [
-  ...input.undeclared
-    .filter((role) => !input.inert.includes(role))
-    .map((role) => ({
-      role,
-      fix: 'write its `boot.yml` (say · ref · not, with `budget: tokens:`) and declare it in the role registry (`boot: { uri }`), or add it to ROLES_WITH_INERT_BOOT with the reason no seat boots it',
-    })),
-  ...input.inert
-    .filter((role) => !input.undeclared.includes(role))
-    .map((role) => ({
-      role,
-      fix: 'its boot is now declared — drop it from ROLES_WITH_INERT_BOOT',
-    })),
-];
+}): { role: string; fix: string }[] =>
+  input.undeclared.map((role) => ({
+    role,
+    fix: 'write its `boot.yml` (say · ref · not, with `budget: tokens:`), declare it in the role registry (`boot: { uri }`), and add it to ROLES_WITH_BUDGET',
+  }));
 
 /**
  * .what = boot one spec via the real `rhachet roles boot`, from the given seat
@@ -659,24 +652,6 @@ const GLYPH_BY_ROLE: Record<string, string> = {
  */
 const ROLES_WITHOUT_GLYPH = ['dispatcher'];
 
-/**
- * 🔴 .what = the roles whose `boot.yml` is on disk and NOT declared
- *
- * .why  = this is a DEBT, named here rather than hidden. both files predate the
- *         supervisor/prioritizer lift and their curation has never once booted.
- *         the repair is a one-line `boot:` per role — but it changes what those
- *         roles load for every consumer, which is a behavior change outside the
- *         lift that found it (rule.always.fix-forward-under-scouts-honor: safe
- *         but unclean is a defer).
- *
- * ⇒ the allowlist is what makes the debt LOUD: a new role that drops its `boot:`
- *   fails this clamp, and these two cannot be quietly joined by a third.
- *
- * ⇒ tracked at `.dream/2026_09_22.fix-inert-bootyml-dispatcher-dreamer.dream.md`
- *   and as fulcrum `F7`. delete a row here when its `boot:` lands.
- */
-const ROLES_WITH_INERT_BOOT = ['dispatcher', 'dreamer'];
-
 /** .what = the role dirs on disk — a dir that holds a `get*Role.ts` */
 const getAllRoleDirs = (): string[] =>
   readdirSync(DIR_ROLES)
@@ -791,11 +766,11 @@ describe('roleArtifacts', () => {
         expect(sceneBoot.onDisk.length).toBeGreaterThan(0);
       });
 
-      then('every boot.yml on disk is declared, but for the named debt', () => {
+      then('🔴 every boot.yml on disk is declared', () => {
         const inert = sceneBoot.onDisk.filter(
           (role) => !sceneBoot.declared.includes(role),
         );
-        expect(inert).toEqual(ROLES_WITH_INERT_BOOT);
+        expect(inert).toEqual([]);
       });
 
       // the mirror: a `boot:` that points at an absent file fails at boot time,
@@ -969,32 +944,20 @@ describe('roleArtifacts', () => {
 
     when('[t0] the declarations are read', () => {
       // ANTI-VACUITY: a registry that declared no boot would pass every claim below.
-      // exact, both ways: a fifth role with a boot must join ROLES_WITH_BUDGET, or its
+      // exact, both ways: a new role with a boot must join ROLES_WITH_BUDGET, or its
       // manifest would be exit-checked yet never snapped
       then('the declared boots are exactly the curated seats', () => {
         expect(sceneBudget.declared).toEqual([...ROLES_WITH_BUDGET]);
       });
 
-      // 🔴 a new role must curate its boot under a budget, or join the named
-      //    debt list with a reason. a role with no declared boot boots WHOLE —
-      //    the most uncapped boot there is — so it cannot slip by in silence
-      then('every role declares a boot, but for the named debt', () => {
+      // 🔴 every role curates its boot under a budget — no exceptions, no debt list.
+      //    a role with no declared boot boots WHOLE, the most uncapped boot there is,
+      //    so it cannot slip by in silence
+      then('🔴 every role declares a boot', () => {
         const undeclared = scene.dirs.filter(
           (dir) => !sceneBudget.declared.includes(dir),
         );
-        expect(
-          asInertBootDrift({ undeclared, inert: ROLES_WITH_INERT_BOOT }),
-        ).toEqual([]);
-      });
-
-      // an inert role is exempt from a budget only while it has no curation to grow; a
-      // brief dropped into one would grow every seat that boots it whole, unseen
-      then('🔴 every inert role ships no briefs', () => {
-        expect(
-          ROLES_WITH_INERT_BOOT.filter((role) =>
-            existsSync(join(DIR_ROLES, role, 'briefs')),
-          ),
-        ).toEqual([]);
+        expect(asBootUndeclaredFixes({ undeclared })).toEqual([]);
       });
 
       then('🔴 every declared boot declares `budget: tokens:`', () => {
@@ -1124,9 +1087,13 @@ describe('roleArtifacts', () => {
           .filter(({ role }) => role in booted.manifests)
           .map(({ role }) => ({
             role,
-            reasons: readdirSync(join(DIR_ROLES, role, 'briefs'), {
-              recursive: true,
-            })
+            // a role that ships no briefs (dispatcher, dreamer) has no reason to list
+            reasons: (existsSync(join(DIR_ROLES, role, 'briefs'))
+              ? readdirSync(join(DIR_ROLES, role, 'briefs'), {
+                  recursive: true,
+                })
+              : []
+            )
               .map((path) => `briefs/${String(path)}`)
               .filter((path) => path.endsWith('.reason.md')),
           }));
@@ -1496,23 +1463,15 @@ describe('roleArtifacts', () => {
       );
     });
 
-    when('[t2] the inert list drifts from the declarations', () => {
-      then('each direction of drift names its fix', () => {
-        const drift = asInertBootDrift({
-          undeclared: ['dreamer', 'sandpine'],
-          inert: ['dispatcher', 'dreamer'],
-        });
-        expect(drift.map(({ role }) => role)).toEqual([
-          'sandpine',
-          'dispatcher',
-        ]);
+    when('[t2] a role declares no boot', () => {
+      then('each undeclared role names its fix — no list exempts it', () => {
+        const fixes = asBootUndeclaredFixes({ undeclared: ['sandpine'] });
+        expect(fixes.map(({ role }) => role)).toEqual(['sandpine']);
         // the red rows a human reads, exact
-        expect(drift).toMatchSnapshot();
+        expect(fixes).toMatchSnapshot();
       });
-      then('no drift names naught', () => {
-        expect(
-          asInertBootDrift({ undeclared: ['dreamer'], inert: ['dreamer'] }),
-        ).toEqual([]);
+      then('every role declared names naught', () => {
+        expect(asBootUndeclaredFixes({ undeclared: [] })).toEqual([]);
       });
     });
 
@@ -1805,52 +1764,47 @@ describe('roleArtifacts', () => {
     '[case9] each `.md.min`, against the full `.md` it boots in place of',
     () => {
       // 🔴 a `.min` boots in place of its `.md`, so an edit to the `.md` alone changes no
-      //    boot. the banner atop the `.md` says so; a `.min` with no banner restores the
-      //    trap, and a banner whose `.min` is gone makes a false claim
+      //    boot. the pair rule lives once, in this repo's boot-budget howto — never as a
+      //    banner restated in every `.md` (a reviewer struck that copy from #554)
       when('[t0] every brief file of every role is read', () => {
         const scenePairs = useBeforeAll(async () => {
           const files = readdirSync(DIR_ROLES, { recursive: true })
             .map((path) => String(path))
             .filter((path) => path.includes('/briefs/'));
           const mins = files.filter((path) => path.endsWith('.md.min')).sort();
-          const bannered = files
-            .filter((path) => path.endsWith('.md'))
+          const mds = files.filter((path) => path.endsWith('.md')).sort();
+          const bannered = mds
             .filter((path) =>
               readFileSync(join(DIR_ROLES, path), 'utf8').includes(
                 'boots in place of this file',
               ),
             )
             .sort();
-          return { mins, bannered };
+          return { mins, mds, bannered };
         });
 
         then('the subject exists — the roles ship `.min` cues', () => {
           expect(scenePairs.mins.length).toBeGreaterThan(20);
         });
 
-        then(
-          '🔴 every `.md.min` has its `.md` beside it, with the banner',
-          () => {
-            expect(
-              scenePairs.mins
-                .map((min) => min.replace(/\.min$/, ''))
-                .filter((md) => !scenePairs.bannered.includes(md))
-                .map((md) => ({
-                  md,
-                  fix: `add under its title: > ⚠️ \`${md.split('/').pop()}.min\` boots in place of this file — an edit here changes no boot until the \`.min\` carries it too.`,
-                })),
-            ).toEqual([]);
-          },
-        );
-
-        then('🔴 every banner names a `.md.min` that exists', () => {
+        then('🔴 every `.md.min` has its full `.md` beside it', () => {
           expect(
-            scenePairs.bannered
-              .filter((md) => !scenePairs.mins.includes(`${md}.min`))
+            scenePairs.mins
+              .map((min) => min.replace(/\.min$/, ''))
+              .filter((md) => !scenePairs.mds.includes(md))
               .map((md) => ({
                 md,
-                fix: 'its `.md.min` is gone: drop the banner',
+                fix: 'restore the full `.md` beside its `.min`; the `.min` condenses it, never replaces it',
               })),
+          ).toEqual([]);
+        });
+
+        then('🔴 no `.md` restates the per-file shadow banner', () => {
+          expect(
+            scenePairs.bannered.map((md) => ({
+              md,
+              fix: 'drop the banner; the pair rule lives in howto.keep-a-boot-under-budget',
+            })),
           ).toEqual([]);
         });
       });

@@ -1,7 +1,5 @@
 # rule.always.hunt-the-serialization-when-you-rank
 
-> ⚠️ `rule.always.hunt-the-serialization-when-you-rank.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
-
 ## .what
 
 every time you rank a goal, hunt the neighborhood for work that runs in SERIES and could run in

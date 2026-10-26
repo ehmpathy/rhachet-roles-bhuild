@@ -1,7 +1,5 @@
 # rule.always.capture-clamp-then-verify-in-prod
 
-> ⚠️ `rule.always.capture-clamp-then-verify-in-prod.md.min` boots in place of this file — an edit here changes no boot until the `.min` carries it too.
-
 > **three steps, in order, every time you cure a tool defect:**
 >
 > **1. CAPTURE** the raw production artifact into a `.test/.assets/` fixture, verbatim.
