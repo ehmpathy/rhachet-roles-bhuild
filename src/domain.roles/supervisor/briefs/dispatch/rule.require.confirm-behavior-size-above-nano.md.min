@@ -1,0 +1,7 @@
+# rule.require.confirm-behavior-size-above-nano
+nano is the default. before you boot mini / medi / mega / giga: state the size + a one-line reason, then get an explicit human ok BEFORE the boot.
+why: each step up adds stones and gates, costly to undo once bound. a nano tree that later proves to need a blueprint gets one then, on evidence.
+a task with a given signature + a pattern to mirror is nano, even with tests or error handlers.
+`git.tree.behavior` exits 2 on a non-nano `--size` with no `--size-why '<reason>'`. 🔴 `--size-why` passes the TOOL gate; it never replaces the human ok.
+sequence: draft size + reason → "this is <size> because <reason> — ok to boot?" → only on ok, boot. unsure → ask.
+blocker: a mini+ boot with no prior human ok · `--size-why` used as a self-grant.

@@ -1,0 +1,69 @@
+diff --git a/dist/domain.operations/genTempDir/pruneStale.js b/dist/domain.operations/genTempDir/pruneStale.js
+index af583e2a0d86a598a78e63a66bdbb75d1abe7f42..5fc698ee2ddb8879291edd3750fb639c4b2342ab 100644
+--- a/dist/domain.operations/genTempDir/pruneStale.js
++++ b/dist/domain.operations/genTempDir/pruneStale.js
+@@ -56,6 +56,11 @@ const pruneStale = async (input) => {
+     // remove stale directories
+     for (const dir of staleDirs) {
+         try {
++            // a name is a claim of age a faked clock can forge; the fs mtime is a fact.
++            // a dir the fs saw touched inside the window is live, whatever its name reads
++            const mtimeMs = fs.statSync(dir.path).mtimeMs;
++            if (Date.now() - mtimeMs <= maxAgeMs)
++                continue;
+             fs.rmSync(dir.path, { recursive: true, force: true });
+         }
+         catch {
+diff --git a/dist/infra/isomorph.fs/initGitRepo.js b/dist/infra/isomorph.fs/initGitRepo.js
+index d7a1d1d19d791d6f5efa63dc45f7136a1e340cba..59770483393638d7fb3764c06ef7c32528cd661c 100644
+--- a/dist/infra/isomorph.fs/initGitRepo.js
++++ b/dist/infra/isomorph.fs/initGitRepo.js
+@@ -2,6 +2,28 @@
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.initGitRepo = void 0;
+ const node_child_process_1 = require("node:child_process");
++/**
++ * .what = run one git command in dir; throw if it did not exit 0
++ * .why = a spawnSync result is data, never an error: a failed `git init`
++ *        (a spawn the box could not afford, a kill, a non-zero exit) was
++ *        swallowed and surfaced later, far from its cause, at `git add`
++ */
++const runGitOrThrow = (input) => {
++    const result = (0, node_child_process_1.spawnSync)('git', input.args, {
++        cwd: input.dir,
++        stdio: 'pipe',
++    });
++    if (result.status === 0)
++        return;
++    throw new Error([
++        `initGitRepo: git ${input.args.join(' ')} failed in ${input.dir}`,
++        `status=${result.status} signal=${result.signal}`,
++        result.error ? `error=${result.error.message}` : null,
++        `stderr=${result.stderr ? result.stderr.toString().trim() : ''}`,
++    ]
++        .filter((line) => line !== null)
++        .join('\n'));
++};
+ /**
+  * .what = initializes a git repository with repo-local user config
+  * .why = enables ci-safe git repos without global git config dependency
+@@ -14,16 +36,9 @@ const initGitRepo = (input) => {
+     const userName = input.user?.name ?? 'test-fns';
+     const userEmail = input.user?.email ?? 'test-fns@test.local';
+     // initialize git repo
+-    (0, node_child_process_1.spawnSync)('git', ['init'], { cwd: input.dir, stdio: 'pipe' });
++    runGitOrThrow({ dir: input.dir, args: ['init'] });
+     // configure repo-local user identity (ci-safe)
+-    (0, node_child_process_1.spawnSync)('git', ['config', 'user.name', userName], {
+-        cwd: input.dir,
+-        stdio: 'pipe',
+-    });
+-    (0, node_child_process_1.spawnSync)('git', ['config', 'user.email', userEmail], {
+-        cwd: input.dir,
+-        stdio: 'pipe',
+-    });
++    runGitOrThrow({ dir: input.dir, args: ['config', 'user.name', userName] });
++    runGitOrThrow({ dir: input.dir, args: ['config', 'user.email', userEmail] });
+ };
+ exports.initGitRepo = initGitRepo;
+-//# sourceMappingURL=initGitRepo.js.map

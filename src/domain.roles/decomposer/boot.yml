@@ -1,3 +1,10 @@
+# .budget = the shipped boot payload, in o200k tokens, as a consumer seat renders it;
+#   frozen at its cost when declared, rounded up to the next 100. the boot-budget
+#   clamp turns red the moment the boot outgrows it.
+#   measure: `npx rhachet roles cost --what src/domain.roles/decomposer/boot.yml`
+budget:
+  tokens: 500
+
 always:
   briefs:
     say: []
@@ -20,3 +27,11 @@ always:
       # only once it meets a goal tree, and a reader who suspects it exists can fetch
       # it by name — the boot manifest's own test for ref-level legitimacy.
       - briefs/define.decomposer-prioritizer-intersection.md
+
+  skills:
+    # the tests and their fixture repos never ship, so they never boot; listed here so a
+    # `roles cost` on the src spec reads what a seat is handed
+    not:
+      - skills/**/*.test.ts
+      # a glob skips dot dirs, so the fixture repos' `.behavior/` needs its own segment
+      - skills/.test/assets/example.repo/*/.behavior/*/*.md

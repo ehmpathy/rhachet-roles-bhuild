@@ -1,0 +1,6 @@
+# rule.require.behaviors-over-adhoc
+worktree work must boot a behavior; never an ad-hoc `claude … "do the task"` dispatch. a behavior gives a bound wish, automated reviewers, yield files, route stones.
+sizes: nano = wish → vision → execute (one concern) · mini = + blueprint (clear scope, design unsettled) · medi = + research, distill… (research, or spans phases/repos). size unknown → ask, never guess.
+pattern: author the wish under the daily stream, then `rhx git.tree.behavior --into org/repo --name beav/fix-… --size nano --wish src/stream/$Q/$date.dispatch.repo=$repo.behavior=….wish.md`.
+⚠️ bare `git.tree.duct` boots NO behavior — only where a human explicitly permits (e.g. `declapract.upgrade`).
+blocker: ad-hoc dispatch with no behavior, absent explicit human permission.

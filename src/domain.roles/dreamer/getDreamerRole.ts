@@ -5,6 +5,7 @@ export const ROLE_DREAMER: Role = Role.build({
   name: 'Dreamer',
   purpose: 'capture transient ideas without loss of focus',
   readme: { uri: __dirname + '/readme.md' },
+  boot: { uri: __dirname + '/boot.yml' },
   traits: [],
   skills: {
     dirs: [{ uri: __dirname + '/skills' }],

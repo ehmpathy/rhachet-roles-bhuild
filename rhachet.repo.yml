@@ -27,6 +27,7 @@ roles:
       dirs: dist/domain.roles/dispatcher/skills
     inits:
       dirs: dist/domain.roles/dispatcher/inits
+    boot: dist/domain.roles/dispatcher/boot.yml
     keyrack: dist/domain.roles/dispatcher/keyrack.yml
   - slug: dreamer
     readme: dist/domain.roles/dreamer/readme.md
@@ -34,6 +35,7 @@ roles:
       dirs: []
     skills:
       dirs: dist/domain.roles/dreamer/skills
+    boot: dist/domain.roles/dreamer/boot.yml
   - slug: prioritizer
     readme: dist/domain.roles/prioritizer/readme.md
     briefs:

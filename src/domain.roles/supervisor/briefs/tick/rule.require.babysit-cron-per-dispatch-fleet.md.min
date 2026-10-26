@@ -1,0 +1,11 @@
+# rule.require.babysit-cron-per-dispatch-fleet
+while ≥1 dispatchee lives, keep ONE omnibus cron, ~15 min, off :00/:30 (`9,24,39,54 * * * *`), `durable: false` — never one per tree.
+why: a mechanic's prompts fire at a keyboard no human watches — safe prompts stall, typed text sits unsent, verified work never hears "release into prod"; the human becomes the blocker.
+⚠️ copy the cron prompt verbatim from the full `.md`. the tick:
+0. `rhx git.grove.saturation` FIRST. 🔴 cpu stall → halt sprouts — a halted sprout is not cancelled: author its wish into `src/stream/` and SEED it (a blocked `radio.uses` stops the push, never the file); fell what `git.crew.poll --fellable` names; 0 fellable on a 🔴 grove = a PROVISION decision for the human. 🔴 cpu + full run queue → `git.grove.prune <grove> --process nvim` (plan) before any fell; high load + empty runq = memory, no prune.
+1. `rhx git.crew.poll --live --stones` — ONE call; never a crew.read loop or `duct.poll`. 🙋 = the human's, surface once · ✋ 🔍 = yours: converge; ⛔ never `route.guard.budget --add` · 🚧 = a decision to render.
+2. `git.crew.poll --fellable` + `--healable` — act on the EMITTED lines; run each `git.crew.heal` line verbatim and read the cure it picks.
+3. act: approve / steer / escalate (`rule.require.babysit-permission-approval`); nudge parked clones; tell verified+granted trees "release into prod". every drill-in and steer is a crew verb by tree + role, never `duct.*`. 🚧prompt: approve `--keys 1` (bare `Yes`) · decline `--keys 3` (the last, `No`) — NEVER 2, a grant beyond this run · unsure → escalate. transcript-share prompt: REJECT via its decline key; never dismiss with 0. ✍️PREFILLED → `--keys Enter` after a `--raw` ghost check; ⛔ 📬QUEUED: leave it.
+4. `git.crew.read` after every send. 5. no work needed → say so and stop.
+procedure: `howto.run-a-babysit-tick.md`. lifecycle: first dispatch → create · last dispatchee closed → `CronDelete`.
+blocker: live dispatchees with no babysit cron · a cron that hardcodes the fleet. nitpick: one cron per tree · a cron alive after the fleet empties.

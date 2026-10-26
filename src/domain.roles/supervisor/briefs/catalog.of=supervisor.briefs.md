@@ -1,0 +1,17 @@
+# catalog.of=supervisor.briefs
+
+briefs that do not boot; read `briefs/<dir>/<name>.md` when its cue fires. `a.{b · c}` = `a.b`, `a.c`.
+each `.md.min` that boots keeps its full `.md` beside it.
+
+- **close/** — rule.always.check-unstaged-before-restore-from-index · rule.forbid.adhoc-worktree-actions · rule.require.verify-released-before-close
+- **dispatch/** — howto.{declapract-upgrade-libraries · dispatch-dependency-upgrades · dispatch-workers · upgrade-best-practices · upgrade.scope=node-package} · rule.always.{carry-the-slug-in-a-dispatch-title · seed-when-the-grove-is-saturated · sprout-on-a-grove-never-local} · rule.forbid.prescribe-how-on-dispatch · rule.require.{amend-dispatches-via-radio · clarify-radio-push-vs-pull · handoffs-at-source · justify-a-feat-classification · one-goal-per-tree · single-purpose-worktrees · wish-outcome-over-proposal}
+- **gates/** — define.cost-gain-matrix · rule.always.test-the-gate-before-you-defer · rule.forbid.budget-top-ups · rule.prefer.rank-human-gates-by-cost-gain-not-age · rule.require.respect-git-commit-uses
+- **grove/** — catalog.of=saturator.{_ · axis=cpu · axis=ram} · define.usecase.review-a-grove-tree-locally · rule.always.{grade-infra-on-unattended-operation · re-measure-a-lever-before-you-rank-it} · rule.require.{bound-grove-concurrency-by-saturation · prune-runaways-before-you-blame-the-grove}
+- **heal/** — define.invariant.crew.{husk.discriminator-parity · revive-is-incomplete-without-a-nudge} · define.invariant.crew.ratelimit.{healable-transient · live-cap-healable-via-swap · one-active-clone-refutes-every-cap-on-its-grove} · rule.forbid.{byhand-fix-that-burns-the-live-proof · byhand-heal · remedies-that-mimic-the-defect} · rule.require.{a-cure-path-for-every-named-husk-shape · resume-quota-capped-clones}
+- **persona/** — define.work-primitive-hierarchy · rule.forbid.{emoji-checkmark · term=property}
+- **sponsor/** — rule.require.spend-only-on-sponsored-trees
+- **steer/** — howto.{review-permission-requests · supervise-routes} · rule.always.{break-the-zero-commit-review-spiral · entool-the-permission-modal-cycle · reject-transcript-share-prompts} · rule.forbid.steer-a-clone-beyond-a-permission-key · rule.prefer.release-into-prod-phrase · rule.require.{abandon-poisoned-conversations · ask-why-the-reviewer-wont-agree · babysit-permission-approval · brief-a-crew-you-hide · distinguish-prefilled-from-suggested · nudge-parked-clones}
+- **tick/** — define.invariant.crew.{poll.completeness · view.all-or-naught} · howto.run-a-babysit-tick · rule.always.{parallel-not-sequential-per-tree-drill-ins · poll-the-fell-and-heal-sets} · rule.forbid.{clipped-sweeps · self-appointed-babysit} · rule.require.{bulk-over-byhand · poll-recommends-every-cure-heal-has · report-stone-with-status · throttle-babysit-cron-by-idle-streak}
+- **tools/** — pattern.terminal-remote-control · ref.fixture-corpus-census · rule.always.{act-on-a-broken-or-incomplete-tool · clamp-the-verbatim-pane-your-classifier-judged · cure-detected-defects-same-tick · do-the-adjacent-fix-rather-than-dream-it · fix-the-verb-that-left-you-the-gap · pave-on-second-repeat · share-one-probe-across-guards · teach-both-crew-birth-paths · upgrade-crew-tools-as-you-use-them · vouch-for-what-you-just-wrote} · rule.forbid.{bind-a-costly-act-to-a-cheap-one · direct-tmux-duct-term} · rule.require.{conform-toward-what-you-do-not-own · duct-name-pattern · roles-own-skills-any-carries-contract-points}
+
+skills: `tree .agent/repo=bhuild/role=supervisor/skills` · each verb's contract: `rhx <verb> --help`.

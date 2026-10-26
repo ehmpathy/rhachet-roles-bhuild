@@ -12,6 +12,18 @@ import { given, then, useBeforeAll, useThen, when } from 'test-fns';
 import { genConsumerRepo, runRhachetSkill, sanitizeOutput } from '../.test/infra';
 
 /**
+ * .what = the per-call kill budgets, and the jest limit sized to hold them
+ * .why = each step spawns the real cli (`npx rhachet run`), measured at 15-30s
+ *        a call on a loaded box (2026-10-23). the 90s default jest limit held
+ *        a 30s / 60s budget with no room, so a slow step was killed mid-run.
+ *        a kill throws (runRhachetSkill), so a budget too tight reds loud;
+ *        the room here is for the cost of a real spawn, never a hidden hang
+ */
+const MS_RADIO_USES_TIMEOUT = 60_000;
+const MS_RADIO_TASK_PUSH_TIMEOUT = 120_000;
+jest.setTimeout(2 * MS_RADIO_USES_TIMEOUT + MS_RADIO_TASK_PUSH_TIMEOUT);
+
+/**
  * .what = invoke radio.uses skill
  * .why = test helper for acceptance tests
  */
@@ -30,7 +42,7 @@ const runRadioUses = (input: {
       __I_AM_HUMAN: 'true',
       ...(input.homeDir ? { HOME: input.homeDir } : {}),
     },
-    timeout: 30000,
+    timeout: MS_RADIO_USES_TIMEOUT,
   });
   return {
     stdout: result.output,
@@ -59,7 +71,8 @@ const runRadioTaskPush = (input: {
     args,
     repoDir: input.repoDir,
     env: input.homeDir ? { HOME: input.homeDir } : {},
-    timeout: 30000,
+    // a push may deliver a held backlog, so it holds the larger budget
+    timeout: MS_RADIO_TASK_PUSH_TIMEOUT,
   });
   // keep the streams apart: rhachet frames each with its own banner, so a merged capture reads it twice
   return {

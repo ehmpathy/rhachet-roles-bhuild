@@ -1,0 +1,10 @@
+# rule.always.entool-the-layer-you-drop-below
+operate at the grove and crew layer: every drill-in and steer is a CREW verb, by TREE and ROLE. `duct.*` / `term.*` / `tmux` / `ssh <grove>` / a hand-typed host is substrate; a supervisor never types one.
+map: duct.read|send → `git.crew.read|send --tree <t> --who <role>` · duct.poll|list → `git.crew.poll|list` · duct.open|stop → `git.crew.boot|stop` · duct.refresh|reboot → `git.crew.refresh --tree` · `git.crew.reboot --tree --who` · term.open → `git.crew.show|hide` · tmux/ssh → a crew verb; it derives the box.
+🔴 the one that gets missed is a byhand CYCLE, not a drop: crew.read → count options → `crew.send --keys N` → crew.read. use `git.crew.modal --tree <t> --who <role> --answer approve|decline` — it derives the key (`2` is `No` on a 2-option modal, "don't ask again" on a 3-option one); approve vs decline stays your call.
+what dies: refresh = view only · reboot = the program (duct, name, cwd survive; refuses `--who all`) · stop = the duct.
+`git.crew.send`: read `--help` first. `--what` = text + Enter (`@stdin` for multi-line) · `--keys` = raw keys, no Enter · `--anyway` = into a busy pane, does NOT submit · `--submit` = multi-line paste then Enter. a wrong pick fabricates an approval and reports success.
+a needed verb absent from the map = a GAP: add the crew verb and its map entry, then use it, the same round. carve-out: `rhx term.audit` — name its localhost-only blind spot on every use.
+why: a hand-built uri re-derives host, tmux name, uri shape — a TRUTHFUL answer about the WRONG box, no tell. a crew verb derives its grove from the ledger, never defaults to local.
+🔴 a BROKEN crew verb is a defect to repair, never a license to drop. a believed human gate is not a gate — try it. legit drop: while you entool it · substrate IS the subject · mid-diagnosis said out loud.
+blocker: any `duct.*`/`term.*` call where the map names a crew verb (no first-one-free) · a broken crew verb routed around via its duct call · a repeat drop with no verb added · a crew verb that defaults its grove to local. nitpick: a verb that does not say which box it chose.

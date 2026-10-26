@@ -18,6 +18,14 @@
 #         the dated evidence live in this repo's `.agent/repo=.this/role=any/briefs/`
 #         and are NOT published.
 
+# .budget = the shipped boot payload, in o200k tokens, as a consumer seat renders it;
+#   a director seat caps it at 10k, and it is frozen at its cost under that cap,
+#   rounded up to the next 100. each said rule boots as a `.md.min` cue, its full `.md`
+#   beside it. the boot-budget clamp turns red the moment the boot outgrows it.
+#   measure: `npx rhachet roles cost --what src/domain.roles/prioritizer/boot.yml`
+budget:
+  tokens: 5_500
+
 always:
   briefs:
     ref:
@@ -42,3 +50,8 @@ always:
 
   skills:
     say: []
+    # the two verbs stay in the roster; the library beneath them and every test and
+    # snapshot do not earn a boot (each file stays on disk for a direct read)
+    not:
+      - skills/work/**
+      - skills/**/*.ts

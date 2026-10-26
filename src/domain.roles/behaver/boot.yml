@@ -1,3 +1,10 @@
+# .budget = the shipped boot payload, in o200k tokens, as a consumer seat renders it
+#   (`.agent/repo=bhuild/role=behaver/`, a little more than `src/`), rounded up to the
+#   next 100. the boot-budget clamp turns red the moment the boot outgrows it.
+#   measure: `npx rhachet roles cost --what src/domain.roles/behaver/boot.yml`
+budget:
+  tokens: 2_200
+
 always:
   briefs:
     say:
@@ -8,6 +15,9 @@ always:
       - briefs/practices/behavior.vision/rule.require.experience-catalog-evolution.md
 
     ref:
+      # the argument behind the said catalog-evolution cue — fetched to dispute or teach it
+      - briefs/practices/behavior.vision/rule.require.experience-catalog-evolution.reason.md
+
       # definitions
       - briefs/practices/behavior.criteria/define.behavior-thoughtroute-hierarchy.md
       - briefs/practices/behavior.criteria/define.criteria-blackbox.md
