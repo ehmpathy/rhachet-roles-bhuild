@@ -155,7 +155,7 @@ exports[`radio.task.queue.integration — a journey across faults, via a stub gh
    ├─ pushedAt: 2026-10-20
    ├─ claimedBy: <gh-login>
    ├─ claimedAt: <today>
-   ├─ branch: main
+   ├─ branch: <branch>
    ├─ via: gh.issues
    └─ recorded: .behavior/.radio/"
 `;

@@ -1094,11 +1094,13 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
           ).toEqual(true);
           expect(result.calls.join('\n')).toContain('issue edit');
 
-          // the claim stamps today and the host's gh login; mask both so the snap holds
+          // the claim stamps today, the host's gh login, and the temp repo's default branch
+          // (main or master, per the host's git config); mask all three so the snap holds
           expect(
             asMaskedStdout(result)
               .replace(/claimedAt: \d{4}-\d{2}-\d{2}/, 'claimedAt: <today>')
-              .replace(/claimedBy: \S+/, 'claimedBy: <gh-login>'),
+              .replace(/claimedBy: \S+/, 'claimedBy: <gh-login>')
+              .replace(/branch: \S+/, 'branch: <branch>'),
           ).toMatchSnapshot();
         });
       });
