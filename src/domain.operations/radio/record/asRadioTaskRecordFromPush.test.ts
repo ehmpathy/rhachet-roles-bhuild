@@ -1,3 +1,4 @@
+import { IdempotencyMode } from '@src/domain.objects/IdempotencyMode';
 import { RadioChannel } from '@src/domain.objects/RadioChannel';
 import { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 import { RadioTaskRecordStatus } from '@src/domain.objects/RadioTaskRecordStatus';
@@ -96,4 +97,34 @@ describe('asRadioTaskRecordFromPush', () => {
       expect(record.heldSeq).toEqual(3);
     }),
   );
+
+  test('a bare re-push keeps the auth and idem a `queue set` amended', () => {
+    const before = new RadioTaskRecord({
+      ...genRecord({ recordStatus: RadioTaskRecordStatus.QUEUED }),
+      auth: 'as-human',
+      idem: IdempotencyMode.UPSERT,
+    });
+    const record = asRadioTaskRecordFromPush({
+      key: 'a1b2c3d4e5f60718',
+      push: { ...genPush({ description: null }), auth: null, idem: null },
+      before,
+      heldSeq: 3,
+    });
+    expect(record.auth).toEqual('as-human');
+    expect(record.idem).toEqual(IdempotencyMode.UPSERT);
+  });
+
+  test('a re-push that names its own auth wins over the amend', () => {
+    const before = new RadioTaskRecord({
+      ...genRecord({ recordStatus: RadioTaskRecordStatus.QUEUED }),
+      auth: 'as-human',
+    });
+    const record = asRadioTaskRecordFromPush({
+      key: 'a1b2c3d4e5f60718',
+      push: { ...genPush({ description: null }), auth: 'as-robot:env(TOKEN)' },
+      before,
+      heldSeq: 3,
+    });
+    expect(record.auth).toEqual('as-robot:env(TOKEN)');
+  });
 });

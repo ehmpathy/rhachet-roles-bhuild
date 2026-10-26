@@ -1,8 +1,21 @@
 import { execSync, spawn } from 'child_process';
 import * as fs from 'fs';
+import { ConstraintError } from 'helpful-errors';
 import { sleep } from 'iso-time';
 import * as path from 'path';
-import { genTempDir, given, then, useBeforeAll, useThen, when } from 'test-fns';
+import {
+  genTempDir,
+  getError,
+  given,
+  then,
+  useBeforeAll,
+  useThen,
+  when,
+} from 'test-fns';
+import {
+  SimpleMutexAcquireTimeoutError,
+  SimpleMutexLeaseExpiredError,
+} from 'with-simple-mutex';
 
 import { withRadioDrainLock } from './withRadioDrainLock';
 
@@ -21,6 +34,38 @@ const genTracedDrain = () => {
     },
   );
   return { trace, drain };
+};
+
+/**
+ * .what = a drain whose logic throws once it holds the lock
+ */
+const genDrainFailed = () =>
+  withRadioDrainLock(
+    async (_input: Record<string, never>, _context: { cwd: string }) => {
+      throw new Error('upstream exploded');
+    },
+  );
+
+/**
+ * .what = a drain that holds the lock for a span, plus a promise that resolves once it has entered
+ * .why = a waiter must start only after the holder owns the lock; a sleep cannot prove that, a
+ *        signal from inside the lock can
+ */
+const genHolderSignaled = (input: { holdMs: number }) => {
+  const entry: { signal: () => void } = { signal: () => undefined };
+  const entered = new Promise<void>((done) => {
+    entry.signal = done;
+  });
+  const holder = withRadioDrainLock(
+    async (
+      _input: Record<string, never>,
+      _context: { cwd: string; onLockWait?: () => void },
+    ) => {
+      entry.signal();
+      await sleep({ milliseconds: input.holdMs });
+    },
+  );
+  return { holder, entered };
 };
 
 /**
@@ -126,30 +171,46 @@ describe('withRadioDrainLock', () => {
       ...genTracedDrain(),
     }));
 
-    when('[t0] the drain fails, then another drain starts', () => {
-      const result = useThen('the error surfaces', async () => {
-        const drainFailed = withRadioDrainLock(
-          async (_input: Record<string, never>, _context: { cwd: string }) => {
-            throw new Error('upstream exploded');
-          },
-        );
-        const failure = await drainFailed({}, { cwd: scene.cwd }).then(
+    when('[t0] the drain throws', () => {
+      const result = useThen('the error surfaces', async () => ({
+        failure: await genDrainFailed()({}, { cwd: scene.cwd }).then(
           () => ({ message: null }),
           (error: Error) => ({ message: error.message }),
-        );
-        const startedAt = Date.now();
-        const next = await scene.drain({ name: 'next' }, { cwd: scene.cwd });
-        return { failure, next, waitedMs: Date.now() - startedAt };
-      });
+        ),
+      }));
 
       then('the error is not swallowed', () => {
         expect(result.failure.message).toEqual('upstream exploded');
       });
+    });
 
-      then('the lock is released, so the next drain runs at once', () => {
-        expect(result.next.name).toEqual('next');
-        expect(result.waitedMs).toBeLessThan(5_000);
+    when('[t1] another drain starts after a failed drain', () => {
+      const result = useThen('the next drain enters', async () => {
+        await getError(genDrainFailed()({}, { cwd: scene.cwd }));
+        const next = withRadioDrainLock(
+          async (
+            _input: Record<string, never>,
+            _context: {
+              cwd: string;
+              lockAcquireTimeout: { milliseconds: number };
+            },
+          ) => 'entered',
+        );
+        return {
+          entered: await next(
+            {},
+            { cwd: scene.cwd, lockAcquireTimeout: { milliseconds: 1_000 } },
+          ),
+        };
       });
+
+      then(
+        'the lock is released, so the next drain enters with no wait',
+        () => {
+          // a held lock would refuse this short acquire bound with a ConstraintError
+          expect(result.entered).toEqual('entered');
+        },
+      );
     });
   });
 
@@ -197,4 +258,124 @@ describe('withRadioDrainLock', () => {
       });
     },
   );
+
+  given('[case5] a drain that holds the lock past the acquire bound', () => {
+    const scene = useBeforeAll(async () => ({
+      cwd: genTempDir({ slug: 'radio-drain-lock-timeout', git: true }),
+    }));
+
+    when('[t0] a second drain waits on the held lock and gives up', () => {
+      const result = useThen('the wait gives up', async () => {
+        const { holder, entered } = genHolderSignaled({ holdMs: 1_500 });
+        const waiter = withRadioDrainLock(
+          async (
+            _input: Record<string, never>,
+            _context: {
+              cwd: string;
+              lockAcquireTimeout: { milliseconds: number };
+            },
+          ) => 'entered',
+        );
+        const held = holder({}, { cwd: scene.cwd });
+        await entered; // the holder owns the lock before the waiter tries it
+        const error = await getError(
+          waiter(
+            {},
+            { cwd: scene.cwd, lockAcquireTimeout: { milliseconds: 300 } },
+          ),
+        );
+        await held;
+        return { error };
+      });
+
+      then('it fails as a constraint the caller can act on', () => {
+        expect(result.error).toBeInstanceOf(ConstraintError);
+        expect(result.error).not.toBeInstanceOf(SimpleMutexAcquireTimeoutError);
+      });
+
+      then('the message names the fix, not the mutex internals', () => {
+        expect(result.error.message).toContain('another drain holds the radio');
+        expect(result.error.message).toContain('rhx radio.task.queue get');
+        expect(result.error.message).not.toContain('acquire.timeout');
+      });
+    });
+  });
+
+  given('[case5.1] a caller blocked on the lock, and one that is not', () => {
+    const scene = useBeforeAll(async () => ({
+      cwd: genTempDir({ slug: 'radio-drain-lock-wait-notice', git: true }),
+    }));
+
+    when('[t0] a second caller waits on a held lock, then enters', () => {
+      const result = useThen('both complete', async () => {
+        // each caller owns its own notice log; neither reads the other's
+        const noticesHolder: string[] = [];
+        const noticesWaiter: string[] = [];
+        const { holder, entered: holderEntered } = genHolderSignaled({
+          holdMs: 2_000,
+        });
+        const waiter = withRadioDrainLock(
+          async (
+            _input: Record<string, never>,
+            _context: { cwd: string; onLockWait: () => void },
+          ) => 'entered',
+        );
+        const held = holder(
+          {},
+          { cwd: scene.cwd, onLockWait: () => noticesHolder.push('wait') },
+        );
+        await holderEntered; // the holder owns the lock before the waiter tries it
+        const entered = await waiter(
+          {},
+          { cwd: scene.cwd, onLockWait: () => noticesWaiter.push('wait') },
+        );
+        await held;
+        return { entered, noticesHolder, noticesWaiter };
+      });
+
+      then('the blocked caller says it waits, once', () => {
+        expect(result.entered).toEqual('entered');
+        expect(result.noticesWaiter).toEqual(['wait']);
+      });
+
+      then(
+        'the caller that entered at once says naught, though it ran long',
+        () => {
+          expect(result.noticesHolder).toEqual([]);
+        },
+      );
+    });
+  });
+
+  given('[case6] a drain that runs past its lock lease', () => {
+    const scene = useBeforeAll(async () => ({
+      cwd: genTempDir({ slug: 'radio-drain-lock-lease', git: true }),
+    }));
+
+    when('[t0] the drain work outlasts a short lease', () => {
+      const result = useThen('the lease expires', async () => {
+        const slow = withRadioDrainLock(
+          async (
+            _input: Record<string, never>,
+            _context: { cwd: string; lockLease: { milliseconds: number } },
+          ) => sleep({ milliseconds: 1_200 }),
+        );
+        const error = await getError(
+          slow({}, { cwd: scene.cwd, lockLease: { milliseconds: 300 } }),
+        );
+        return { error };
+      });
+
+      then('it fails as a constraint the caller can act on', () => {
+        expect(result.error).toBeInstanceOf(ConstraintError);
+        expect(result.error).not.toBeInstanceOf(SimpleMutexLeaseExpiredError);
+      });
+
+      then('the message names the fix: drain again', () => {
+        expect(result.error.message).toContain('ran past its lock lease');
+        expect(result.error.message).toContain('rhx radio.task.queue drain');
+        expect(result.error.message).not.toContain('lease.duration');
+      });
+    });
+  });
 });

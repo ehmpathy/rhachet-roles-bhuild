@@ -1,3 +1,5 @@
+import { ConstraintError } from 'helpful-errors';
+
 import { daoRadioTaskRecord } from '@src/access/daos/daoRadioTaskRecord';
 import type { IdempotencyMode } from '@src/domain.objects/IdempotencyMode';
 import type { RadioChannel } from '@src/domain.objects/RadioChannel';
@@ -43,6 +45,14 @@ export const setRadioTaskRecordFromPush = (
     { cwd: context.cwd },
   );
   const before = extant?.record ?? null;
+
+  // refuse a push over another channel: its key names the extant record, so a merge would flip
+  // the channel under a settled fate and the push would read as landed with naught sent
+  if (before && before.via !== input.push.via)
+    throw new ConstraintError(
+      `this push matches record ${key}, which goes via ${before.via}, not via ${input.push.via}; a record keeps one channel. to send over ${input.push.via}, use a distinct title, or drop the record first: rhx radio.task.queue del --key ${key} --why "resend via ${input.push.via}"`,
+      { key, viaExtant: before.via, viaPush: input.push.via },
+    );
 
   // a repeat push lands where its record lives, even after a bind moved the home
   const dir = extant?.dir ?? context.dir;

@@ -19,12 +19,13 @@
  *   --exid        external id for updates
  *   --status      task status: QUEUED, CLAIMED, DELIVERED
  *   --idem        idempotency mode: findsert or upsert
- *   --auth        auth mode: "as-human" or "as-robot:ENV_VAR_NAME"
+ *   --auth        as-human | as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd)
  *   --help        show usage and exit
  *
  * usage:
  *   radio.task.push --via gh.issues --into @this --title "..." --description "..."
  *   radio.task.push --via os.fileops --into @this --exid 123 --status CLAIMED
+ *   radio.task.push --via gh.issues --into owner/repo --exid 599 --status CLAIMED --auth as-human
  *   echo "detailed task" | radio.task.push --via gh.issues --into @this --title "..." --description @stdin
  */
 
@@ -37,6 +38,7 @@ import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
 import { getBranchBehaviorBind } from '@src/domain.operations/behavior/bind/getBranchBehaviorBind';
 import { asPushTaskFromArgs } from '@src/domain.operations/radio/cli/asPushTaskFromArgs';
 import { getOneRadioTaskRepoFromCliArg } from '@src/domain.operations/radio/cli/getOneRadioTaskRepoFromCliArg';
+import { asRadioLockWaitNotice } from '@src/domain.operations/radio/record/asRadioLockWaitNotice';
 import { asRadioPushOutput } from '@src/domain.operations/radio/record/asRadioPushOutput';
 import { asRadioPushSavedNotice } from '@src/domain.operations/radio/record/asRadioPushSavedNotice';
 import { asRadioTaskRecordHomeFromCwd } from '@src/domain.operations/radio/record/asRadioTaskRecordHomeFromCwd';
@@ -45,7 +47,7 @@ import { getOneRadioTaskRecordHome } from '@src/domain.operations/radio/record/g
 import { isRadioPushDelivered } from '@src/domain.operations/radio/record/isRadioPushDelivered';
 import { setRadioTaskRecordFromPush } from '@src/domain.operations/radio/record/setRadioTaskRecordFromPush';
 import { getCliArgs } from '@src/infra/cli';
-import { getOneStdinText } from '@src/infra/cli/getOneStdinText';
+import { getOneArgOrStdinText } from '@src/infra/cli/getOneArgOrStdinText';
 import { withFaultNotice } from '@src/infra/cli/withFaultNotice';
 import { isGitRepoAt } from '@src/infra/git/isGitRepoAt';
 import { shx } from '@src/infra/shell/shx';
@@ -65,17 +67,6 @@ const getOneBranchBindForRecord = (input: {
   // outside a git repo, no branch can bind a route
   if (!isGitRepoAt({ dir: input.cwd })) return null;
   return getBranchBehaviorBind({}, { cwd: input.cwd });
-};
-
-/**
- * .what = derive description from arg, @stdin sentinel becomes stdin content
- * .why  = extract decode-friction from orchestrator
- */
-const getOneDescriptionFromArg = (input: {
-  raw: string | null;
-}): string | null => {
-  if (input.raw === '@stdin') return getOneStdinText();
-  return input.raw;
 };
 
 // ────────────────────────────────────────────────────────────────────
@@ -127,6 +118,7 @@ const HELP_TEXT = `
    ├─ usage
    │  ├─ rhx radio.task.push --via gh.issues --into owner/repo --title "..." --description "..."
    │  ├─ rhx radio.task.push --via os.fileops --into @this --exid 123 --status CLAIMED
+   │  ├─ rhx radio.task.push --via gh.issues --into owner/repo --exid 599 --status CLAIMED --auth as-human
    │  └─ echo "details" | rhx radio.task.push --via gh.issues --into @this --title "..." --description @stdin
    │
    ├─ held, never lost
@@ -164,6 +156,12 @@ export const cliRadioTaskPush = async (): Promise<void> => {
       '--via is required; specify a channel: --via gh.issues or --via os.fileops',
     );
 
+  // validate required --into arg, the same way, so the fix reads in the header line
+  if (!named.into)
+    throw new ConstraintError(
+      '--into is required; use --into @this (current git repo) or --into owner/name',
+    );
+
   // derive repo from --into arg (required)
   const repo = await getOneRadioTaskRepoFromCliArg({
     arg: named.into ?? null,
@@ -175,7 +173,7 @@ export const cliRadioTaskPush = async (): Promise<void> => {
   });
 
   // read the push whole before the gate: the record needs its body
-  const description = getOneDescriptionFromArg({
+  const description = getOneArgOrStdinText({
     raw: named.description ?? null,
   });
   const task = asPushTaskFromArgs({
@@ -194,6 +192,8 @@ export const cliRadioTaskPush = async (): Promise<void> => {
     homeDir: process.env.HOME,
     env: process.env,
     shx,
+    // a push blocked on another drain says so once, on stdout: rhachet drops stderr on exit 0
+    onLockWait: () => console.log(asRadioLockWaitNotice()),
   };
   const bind = getOneBranchBindForRecord({ cwd: context.cwd });
   const home = getOneRadioTaskRecordHome({ bind }, context);
@@ -218,7 +218,11 @@ export const cliRadioTaskPush = async (): Promise<void> => {
   // hold at a shut gate, or drain the backlog through an open one, then count what still waits;
   // a fault in either (an unreadable record, a bad gate config) first says the push is saved
   const { pushed, others, backlog } = await withFaultNotice({
-    logic: () => getOneRadioPushDrainWithBacklog({ record, dir }, context),
+    logic: () =>
+      getOneRadioPushDrainWithBacklog(
+        { record, dir, authTyped: named.auth ?? null },
+        context,
+      ),
     notice: asRadioPushSavedNotice({ record, dir: homeOfRecord.dir }),
   });
 

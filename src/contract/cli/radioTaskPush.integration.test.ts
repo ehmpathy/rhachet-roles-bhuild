@@ -74,6 +74,7 @@ describe('radio.task.push.integration — CLI contract', () => {
     const argvBefore = process.argv;
     const envBefore = process.env;
     const cwdBefore = process.cwd();
+    const exitCodeBefore = process.exitCode;
     process.argv = ['node', ...input.argvTail];
     // isolate HOME + cwd → the temp home so the radio permission gate reads no
     // ambient config. the CLI honors $HOME (standard convention), so the global
@@ -88,6 +89,7 @@ describe('radio.task.push.integration — CLI contract', () => {
       process.argv = argvBefore;
       process.env = envBefore;
       process.chdir(cwdBefore);
+      process.exitCode = exitCodeBefore;
     }
   };
 
@@ -103,6 +105,7 @@ describe('radio.task.push.integration — CLI contract', () => {
     const argvBefore = process.argv;
     const envBefore = process.env;
     const cwdBefore = process.cwd();
+    const exitCodeBefore = process.exitCode;
     const lines: string[] = [];
     const logSpy = jest
       .spyOn(console, 'log')
@@ -132,6 +135,7 @@ describe('radio.task.push.integration — CLI contract', () => {
       process.argv = argvBefore;
       process.env = envBefore;
       process.chdir(cwdBefore);
+      process.exitCode = exitCodeBefore;
       logSpy.mockRestore();
     }
   };
@@ -446,7 +450,10 @@ describe('radio.task.push.integration — CLI contract', () => {
         const error = await runPushError({
           argvTail: ['--via', 'os.fileops', '--title', 'surf report'],
         });
+        expect(error).toBeInstanceOf(ConstraintError);
         expect(error.message).toContain('--into is required');
+        expect(error.message).toContain('--into @this');
+        expect(error.message).not.toContain('{');
         expect(error.message).toMatchSnapshot();
       });
     });

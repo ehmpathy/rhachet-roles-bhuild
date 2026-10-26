@@ -2,151 +2,90 @@
 
 🗿 route.stone.set
    ├─ stone = 5.1.execution.from_vision
-   ├─ passage = malfunction
-   ├─ reason = 1 of 9 reviewers malfunctioned; 3 reviewers rejected and await your answer
-   ├─ still yours to clear
-   │  ├─ 💥 lane arch-smell-scopeleaks (r5) broke
-   │  │  └─ cause = review timed out after 20 minutes (transient)
-   │  └─ next
-   │     ├─ 1. read each given for its cause, and fix what you can
-   │     ├─ 2. answer each broken lane, like a rejected one
-   │     │  └─ rhx route.stone.set --stone 5.1.execution.from_vision --as absorbed --that arch-smell-scopeleaks
-   │     ├─ 3. re-arrive
-   │     │  └─ rhx route.stone.set --stone 5.1.execution.from_vision --as arrived
-   │     └─ ask a human only for a grant you cannot make (an absent credential, a permission, etc)
-   ├─ options
-   │  ├─ converge with the reviewer — yours to run, and the levels above stay unlocked
-   │  │  └─ rhx route.stone.set --stone 5.1.execution.from_vision --as absorbed --that <reviewer>
-   │  ├─ overrule the malfunction — a human must grant
-   │  │  └─ rhx route.stone.set --stone 5.1.execution.from_vision --as overruled
-   │  ├─ or fix the reviewer, then retry
-   │  └─ a broken level never halts the drive — converge the level above it
-   └─ guard
-      ├─ artifacts
-      │   ├─ $route/5.1.execution.from_vision.yield.md
-      │   └─ src/**/*
-      ├─ reviews
-      │   ├─ r1: repo-rules (l1, 3/3)
-      │   │   ├─ approved 34.1s
-      │   │   ├─ 0 blockers ✓
-      │   │   ├─ 0 nitpicks ✓
-      │   │   ├─ given: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r001._.given.by_peer.repo-rules.md
-      │   │   └─ taken: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r001._.taken.by_self.repo-rules.md
-      │   ├─ r2: mech-failhides (l1, 3/3)
-      │   │   ├─ approved 622.3s
-      │   │   ├─ 0 blockers ✓
-      │   │   ├─ 1 nitpick 🟠
-      │   │   ├─ given: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r002._.given.by_peer.mech-failhides.md
-      │   │   └─ taken: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r002._.taken.by_self.mech-failhides.md
-      │   ├─ r3: mech-decode-friction (l1, 3/3)
-      │   │   ├─ approved 395.9s
-      │   │   ├─ 0 blockers ✓
-      │   │   ├─ 0 nitpicks ✓
-      │   │   ├─ given: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r003._.given.by_peer.mech-decode-friction.md
-      │   │   └─ taken: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r003._.taken.by_self.mech-decode-friction.md
-      │   ├─ r4: arch-opport-decomposition (l1, 2/3)
-      │   │   ├─ rejected 484.1s
-      │   │   ├─ 1 blocker 🔴
-      │   │   ├─ 1 nitpick 🟠
-      │   │   ├─ given: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r004._.given.by_peer.arch-opport-decomposition.md
-      │   │   └─ taken: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r004._.taken.by_self.arch-opport-decomposition.md
-      │   ├─ r5: arch-smell-scopeleaks (l1, 2/3)
-      │   │   ├─ malfunction 💥
-      │   │   ├─ terminal — does not block higher levels
-      │   │   ├─ given: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r005._.given.by_peer.arch-smell-scopeleaks.md
-      │   │   └─ taken: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r005._.taken.by_self.arch-smell-scopeleaks.md
-      │   ├─ r6: arch-hazards-maintenance (l1, 3/3)
-      │   │   ├─ approved 697.1s
-      │   │   ├─ 0 blockers ✓
-      │   │   ├─ 3 nitpicks 🟠
-      │   │   ├─ given: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r006._.given.by_peer.arch-hazards-maintenance.md
-      │   │   └─ taken: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r006._.taken.by_self.arch-hazards-maintenance.md
-      │   ├─ r7: arch-hazards-behavior (l1, 3/3)
-      │   │   ├─ rejected 513.4s
-      │   │   ├─ 1 blocker 🔴
-      │   │   ├─ 1 nitpick 🟠
-      │   │   ├─ given: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r007._.given.by_peer.arch-hazards-behavior.md
-      │   │   └─ taken: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r007._.taken.by_self.arch-hazards-behavior.md
-      │   ├─ r8: behavior-intent-coverage (l1, 3/3)
-      │   │   ├─ approved 375.9s
-      │   │   ├─ 0 blockers ✓
-      │   │   ├─ 1 nitpick 🟠
-      │   │   ├─ given: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r008._.given.by_peer.behavior-intent-coverage.md
-      │   │   └─ taken: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r008._.taken.by_self.behavior-intent-coverage.md
-      │   ├─ r9: ergo-friction-hazards (l1, 3/3)
-      │   │   ├─ rejected 800.5s
-      │   │   ├─ 4 blockers 🔴
-      │   │   ├─ 2 nitpicks 🟠
-      │   │   ├─ given: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r009._.given.by_peer.ergo-friction-hazards.md
-      │   │   └─ taken: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r009._.taken.by_self.ergo-friction-hazards.md
-      │   ├─ r10: enroll-impl-behavior-intent (l3, 0/3)
-      │   │   └─ awaits l1 terminal
-      │   └─ r11: enroll-impl-arch-defects (l3, 0/3)
-      │       └─ awaits l1 terminal
-      └─ judges
-          └─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 7
-              ├─ finished 2.1s ✗
-              └─ reason: blockers exceed threshold (7 > 0)
-
-────────────────────────────────────────────────────────────────
-
-🔎 review 5
-   ├─ stdout
-   │  ├─
-   │  │
-   │  │  🪨 run solid skill repo=bhrain/role=reviewer/skill=review
-   │  │
-   │  │  🦉 let's review
-   │  │     ├─ brain: openrouter/deepseek/flash
-   │  │     ├─ focus: push
-   │  │     └─ scope
-   │  │        ├─ diffs: since-main
-   │  │        ├─ paths: **/*.{ts,sh,md,snap}
-   │  │        └─ join: intersect
-   │  │
-   │  │  🔭 metrics.expected
-   │  │     ├─ files
-   │  │     │  ├─ rules: 1
-   │  │     │  ├─ refs: 23
-   │  │     │  ├─ conversation: 6
-   │  │     │  └─ targets: 53
-   │  │     ├─ tokens
-   │  │     │  ├─ estimate: 116,963
-   │  │     │  └─ context: 11.7%
-   │  │     └─ cost
-   │  │        └─ estimate: $0.058480900
-   │  │
-   │  │  🪵 logs
-   │  │     ├─ scope: .log/bhrain/review/2026-10-25T20-26-08-589Z.pid3124490.68655bcf-2149-4a2b-844a-7162628e394b/input.scope.json
-   │  │     ├─ metrics: .log/bhrain/review/2026-10-25T20-26-08-589Z.pid3124490.68655bcf-2149-4a2b-844a-7162628e394b/metrics.expected.json
-   │  │     └─ tokens: .log/bhrain/review/2026-10-25T20-26-08-589Z.pid3124490.68655bcf-2149-4a2b-844a-7162628e394b/tokens.expected.md
-   │  │        ├─ rules: .agent (454, 100%)
-   │  │        └─ targets: src (65.4k, 66.61%), blackbox (27.5k, 28%), .behavior (5.3k, 5.39%)
-   │  │
-   │  └─
-   ├─ stderr
-   │  ├─
-   │  │
-   │  │  🪨 run solid skill repo=bhrain/role=reviewer/skill=review
-   │  │     └─ 💥 failed with an error
-   │  │
-   │  │  /home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-radio-task-queue/node_modules/.pnpm/rhachet-roles-bhrain@0.42.1_@types+node@22.15.21_rhachet-brains-openrouter@0.1.4_rhache_39f9ffd97ef153bdd30971e5c14a9219/node_modules/rhachet-roles-bhrain/dist/domain.operations/review/withDeadline.js:30
-   │  │              reject(new ReviewTimeoutError_1.ReviewTimeoutError({
-   │  │                     ^
-   │  │
-   │  │  MalfunctionError [ReviewTimeoutError]: 💥 MalfunctionError: review timed out after 20 minutes
-   │  │
-   │  │  {
-   │  │    "timeoutMs": 1200000,
-   │  │    "hint": "raise RHACHET_REVIEW_TIMEOUT_MS to extend it. under a guard or review.by, the brain call is bound a tenth (at most one minute) below the value you set, so this figure may read below it"
-   │  │  }
-   │  │      at Timeout.<anonymous> (/home/camper/git/ehmpathy/_worktrees/rhachet-roles-bhuild.beav.feat-radio-task-queue/node_modules/.pnpm/rhachet-roles-bhrain@0.42.1_@types+node@22.15.21_rhachet-brains-openrouter@0.1.4_rhache_39f9ffd97ef153bdd30971e5c14a9219/node_modules/rhachet-roles-bhrain/dist/domain.operations/review/withDeadline.js:30:20)
-   │  │      at listOnTimeout (node:internal/timers:685:17)
-   │  │      at process.processTimers (node:internal/timers:618:7)
-   │  │
-   │  │  Node.js v24.20.0
-   │  │
-   │  └─
-   └─ passage blocked
-      ├─ blocked by malfunction
-      └─ exit code: 1 💥
+   ├─ passage = allowed
+   ├─ guard
+   │  ├─ artifacts
+   │  │   ├─ $route/5.1.execution.from_vision.yield.md
+   │  │   └─ src/**/*
+   │  ├─ reviews
+   │  │   ├─ r1: repo-rules (l1, 3/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r001._.given.by_peer.repo-rules.md
+   │  │   │   └─ taken: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r001._.taken.by_self.repo-rules.md
+   │  │   ├─ r2: mech-failhides (l1, 3/3)
+   │  │   │   ├─ approved, cached — set aside by dispute
+   │  │   │   ├─ disputed 🌙 — skipped this generation, no round spent
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 1 nitpick, 1 disputed → 0 tallied ✓
+   │  │   │   ├─ given: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r002._.given.by_peer.mech-failhides.md
+   │  │   │   └─ taken: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r002._.taken.by_self.mech-failhides.md
+   │  │   ├─ r3: mech-decode-friction (l1, 3/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r003._.given.by_peer.mech-decode-friction.md
+   │  │   │   └─ taken: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r003._.taken.by_self.mech-decode-friction.md
+   │  │   ├─ r4: arch-opport-decomposition (l1, 3/3)
+   │  │   │   ├─ approved, cached — set aside by dispute
+   │  │   │   ├─ disputed 🌙 — skipped this generation, no round spent
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 2 nitpicks, 2 disputed → 0 tallied ✓
+   │  │   │   ├─ given: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i004.c608c04733e1164024.r004._.given.by_peer.arch-opport-decomposition.md
+   │  │   │   └─ taken: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i004.c608c04733e1164024.r004._.taken.by_self.arch-opport-decomposition.md
+   │  │   ├─ r5: arch-smell-scopeleaks (l1, 3/3)
+   │  │   │   ├─ approved, cached
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i004.c608c04733e1164024.r005._.given.by_peer.arch-smell-scopeleaks.md
+   │  │   │   └─ taken: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i004.c608c04733e1164024.r005._.taken.by_self.arch-smell-scopeleaks.md
+   │  │   ├─ r6: arch-hazards-maintenance (l1, 3/3)
+   │  │   │   ├─ approved, cached — set aside by dispute
+   │  │   │   ├─ disputed 🌙 — skipped this generation, no round spent
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 3 nitpicks, 3 disputed → 0 tallied ✓
+   │  │   │   ├─ given: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r006._.given.by_peer.arch-hazards-maintenance.md
+   │  │   │   └─ taken: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r006._.taken.by_self.arch-hazards-maintenance.md
+   │  │   ├─ r7: arch-hazards-behavior (l1, 6/6)
+   │  │   │   ├─ exhausted 🌙, cached
+   │  │   │   ├─ terminal — does not block higher levels
+   │  │   │   ├─ 2 blockers, 1 disputed → 1 tallied 🔴
+   │  │   │   ├─ 4 nitpicks, 4 disputed → 0 tallied ✓
+   │  │   │   ├─ given: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i012.2333d8876253252089.r007._.given.by_peer.arch-hazards-behavior.md
+   │  │   │   └─ taken: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i012.2333d8876253252089.r007._.taken.by_self.arch-hazards-behavior.md
+   │  │   ├─ r8: behavior-intent-coverage (l1, 3/3)
+   │  │   │   ├─ approved, cached — set aside by dispute
+   │  │   │   ├─ disputed 🌙 — skipped this generation, no round spent
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 1 nitpick, 1 disputed → 0 tallied ✓
+   │  │   │   ├─ given: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r008._.given.by_peer.behavior-intent-coverage.md
+   │  │   │   └─ taken: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i003.ec970841f722c3d600.r008._.taken.by_self.behavior-intent-coverage.md
+   │  │   ├─ r9: ergo-friction-hazards (l1, 6/6)
+   │  │   │   ├─ exhausted 🌙, cached — set aside by dispute
+   │  │   │   ├─ disputed 🌙 — skipped this generation, no round spent
+   │  │   │   ├─ terminal — does not block higher levels
+   │  │   │   ├─ 2 blockers, 2 disputed → 0 tallied ✓
+   │  │   │   ├─ 4 nitpicks, 1 disputed → 3 tallied 🟠
+   │  │   │   ├─ given: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i012.2333d8876253252089.r009._.given.by_peer.ergo-friction-hazards.md
+   │  │   │   └─ taken: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i012.2333d8876253252089.r009._.taken.by_self.ergo-friction-hazards.md
+   │  │   ├─ r10: enroll-impl-behavior-intent (l3, 9/9)
+   │  │   │   ├─ exhausted 🌙, cached
+   │  │   │   ├─ terminal — does not block higher levels
+   │  │   │   ├─ 1 blocker 🔴
+   │  │   │   ├─ 8 nitpicks, 6 disputed → 2 tallied 🟠
+   │  │   │   ├─ given: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i012.2333d8876253252089.r010._.given.by_peer.enroll-impl-behavior-intent.md
+   │  │   │   └─ taken: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i012.2333d8876253252089.r010._.taken.by_self.enroll-impl-behavior-intent.md
+   │  │   └─ r11: enroll-impl-arch-defects (l3, 9/9)
+   │  │       ├─ approved, cached — set aside by dispute
+   │  │       ├─ disputed 🌙 — skipped this generation, no round spent
+   │  │       ├─ 0 blockers ✓
+   │  │       ├─ 4 nitpicks, 4 disputed → 0 tallied ✓
+   │  │       ├─ given: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i012.2333d8876253252089.r011._.given.by_peer.enroll-impl-arch-defects.md
+   │  │       └─ taken: .behavior/v2026_10_25.feat-radio-task-queue/.reviews/peer/5.1.execution.from_vision._.review.i012.2333d8876253252089.r011._.taken.by_self.enroll-impl-arch-defects.md
+   │  └─ judges
+   │      └─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 7
+   │          └─ finished 1.0s ✓
+   │
+   └─ the way continues, run
+      └─ rhx route.drive

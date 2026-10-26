@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asRadioDropOutput given: [case1] a dropped update, the #599 shape when: [t0] the drop renders then: it names the task, the why, and where its words are kept 1`] = `
+"🦫 dropped from the radio, never sent
+   ├─ key     = a1b2c3d4e5f60718
+   ├─ task    = deliver #599 → sandpine/svc-lessons
+   ├─ why     = dropped: superseded by #604
+   ├─ kept at = .behavior/.radio/record.a1b2c3d4e5f60718.json
+   └─ a re-push of the same task queues it again"
+`;
+
+exports[`asRadioDropOutput given: [case2] a dropped claim with two updates behind it when: [t0] the drop renders then: it says the updates behind it now send 1`] = `
+"🦫 dropped from the radio, never sent
+   ├─ key     = a1b2c3d4e5f60718
+   ├─ task    = claim #599 → sandpine/svc-lessons
+   ├─ why     = dropped: claim moot, the issue is closed
+   ├─ kept at = .behavior/.radio/record.a1b2c3d4e5f60718.json
+   ├─ 2 updates to #599 wait behind it; they send next drain
+   └─ a re-push of the same task queues it again"
+`;
+
+exports[`asRadioDropOutput given: [case3] a retry of a drop already made when: [t0] the drop renders then: it says naught changed and keeps the first why 1`] = `
+"🦫 already dropped, never sent; naught changed
+   ├─ key     = a1b2c3d4e5f60718
+   ├─ why     = dropped: claim moot, the issue is closed (kept)
+   └─ kept at = .behavior/.radio/record.a1b2c3d4e5f60718.json"
+`;
+
+exports[`asRadioDropOutput given: [case4] a dropped claim with its deliver behind it (case=10 [t2]) when: [t0] the drop renders then: it warns the deliver needs a claim, and names both fixes 1`] = `
+"🦫 dropped from the radio, never sent
+   ├─ key     = a1b2c3d4e5f60718
+   ├─ task    = claim #599 → sandpine/svc-lessons
+   ├─ why     = dropped: claim moot, the issue is closed
+   ├─ kept at = .behavior/.radio/record.a1b2c3d4e5f60718.json
+   ├─ 1 update to #599 waits behind it; it sends next drain
+   ├─ ⚠️ the deliver of #599 behind it needs a claim; if #599 is not claimed upstream, the next drain refuses it for good
+   │  ├─ re-push the claim: rhx radio.task.push --via gh.issues --into sandpine/svc-lessons --exid 599 --status CLAIMED
+   │  └─ or drop the deliver too: rhx radio.task.queue del --key f0e1d2c3b4a59687 --why "its claim was dropped"
+   └─ a re-push of the same task queues it again"
+`;

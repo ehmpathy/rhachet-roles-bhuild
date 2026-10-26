@@ -20,6 +20,7 @@
 import { withEmojiSpaceShim } from 'emoji-space-shim';
 import { BadRequestError, ConstraintError, HelpfulError } from 'helpful-errors';
 
+import { asCliHintText } from '../../infra/cli/asCliHintText';
 import { asCliMalfunctionOutput } from '../../infra/cli/asCliMalfunctionOutput';
 import { isHintInErrorMessage } from '../../infra/cli/isHintInErrorMessage';
 
@@ -39,7 +40,7 @@ const asCli =
         error instanceof BadRequestError
       ) {
         const hintFound: unknown = error.metadata?.hint;
-        const hint = typeof hintFound === 'string' ? hintFound : null;
+        const hint = asCliHintText({ hint: hintFound });
         // check if helpful-errors already added the emoji prefix
         const alreadyHasEmoji = error.message.includes('✋');
         const prefix = alreadyHasEmoji ? '' : '✋ ';

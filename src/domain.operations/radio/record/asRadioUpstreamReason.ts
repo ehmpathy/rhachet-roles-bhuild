@@ -21,6 +21,23 @@ const isAccessRefusedText = (input: { text: string }): boolean =>
   /\bhttp[ /.\d]*403\b|\bstatus:? ?403\b|\(403\)/.test(input.text);
 
 /**
+ * .what = does this error text report a rate limit
+ * .why = a limit binds the token, so the drain halts on it (F1); a bare 429 carries no
+ *        "rate limit" phrase, and must not set one record aside while the drain sends on
+ * .note = github's secondary limit answers 403 with "abuse detection" or "retry later" text; that
+ *         is a limit on the token, not a write the token may not make, so it halts like a 429
+ */
+const isRateLimitText = (input: { text: string }): boolean =>
+  input.text.includes('rate limit') ||
+  input.text.includes('too many requests') ||
+  input.text.includes('abuse detection') ||
+  input.text.includes('retry later') ||
+  input.text.includes('again later') ||
+  /\bhttp[ /.\d]*429\b|\bstatus:? ?429\b|\(429\)|\bcode: ?429\b/.test(
+    input.text,
+  );
+
+/**
  * .what = does this error text report a fault of the network or of github itself
  * .why = a wall every record behind would meet too; the drain halts on it (F1)
  */
@@ -47,7 +64,7 @@ const isTransientText = (input: { text: string }): boolean =>
 export const asRadioUpstreamReason = (input: { message: string }): string => {
   const text = input.message.toLowerCase();
   if (isAuthRejectedText({ text })) return 'upstream:401';
-  if (text.includes('rate limit')) return 'upstream:rate-limit';
+  if (isRateLimitText({ text })) return 'upstream:rate-limit';
   if (isGithubRepoUnreachable({ text })) return 'upstream:not-found';
   if (isAccessRefusedText({ text })) return 'upstream:access';
   if (isTransientText({ text })) return 'upstream:transient';

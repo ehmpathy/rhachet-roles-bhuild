@@ -252,6 +252,10 @@ describe('radio.task.queue — drain, set, del', () => {
       when('[t1] its auth is amended, then the queue is drained again', () => {
         const result = useThen('set then drain run', async () => {
           const key = getAllRadioTaskRecordsHeld({}, scene)[0]!.record.key;
+          const amendedBody = await setRadioTaskRecordAmended(
+            { key, auth: null, description: 'details, reworded' },
+            scene,
+          );
           const amended = await setRadioTaskRecordAmended(
             {
               key,
@@ -265,6 +269,7 @@ describe('radio.task.queue — drain, set, del', () => {
             'ghp_radioQueueTestTokenHuman00000';
           const drained = await setRadioTaskRecordsDrained({}, context());
           return {
+            amendedBody,
             amended,
             drained,
             after: getOneRadioTaskRecordByKey({ key, dirHome: null }, scene),
@@ -282,6 +287,24 @@ describe('radio.task.queue — drain, set, del', () => {
             result.amended.before.description,
           );
         });
+
+        then(
+          'a body-only set keeps the fault, since it cures no auth fault',
+          () => {
+            expect(result.amendedBody.after.description).toEqual(
+              'details, reworded',
+            );
+            expect(result.amendedBody.after.reason).toEqual('upstream:access');
+          },
+        );
+
+        then(
+          'an auth set clears the old fault, so `get` stops its stale advice',
+          () => {
+            expect(result.amended.before.reason).toEqual('upstream:access');
+            expect(result.amended.after.reason).toEqual(null);
+          },
+        );
 
         then('the next drain delivers it under the new auth', () => {
           expect(result.drained.fates.map((fate) => fate.fate)).toEqual([
@@ -519,14 +542,19 @@ describe('radio.task.queue — drain, set, del', () => {
     });
 
     when('[t2] del runs again on the dropped record', () => {
-      const error = useThen('it is refused', async () =>
-        getErrorMessage(
-          setRadioTaskRecordDropped({ key: pushed.key, why: 'again' }, scene),
-        ),
+      const result = useThen('it succeeds as a no-op', async () =>
+        setRadioTaskRecordDropped({ key: pushed.key, why: 'again' }, scene),
       );
 
-      then('it fails loud: the record is DROPPED, not held', () => {
-        expect(error.message).toContain('is DROPPED, not held');
+      then('it reports the record already dropped', () => {
+        expect(result.isAlreadyDropped).toEqual(true);
+      });
+
+      then('the first why is kept; the retry changes naught', () => {
+        expect(result.record.recordStatus).toEqual(
+          RadioTaskRecordStatus.DROPPED,
+        );
+        expect(result.record.reason).toEqual('dropped: superseded by #604');
       });
     });
 
@@ -602,4 +630,79 @@ describe('radio.task.queue — drain, set, del', () => {
       );
     });
   });
+
+  given(
+    '[case7] a drain whose send budget is spent (the lock lease bound, X2)',
+    () => {
+      const scene = useBeforeAll(async () => genScene({ slug: 'queue-case7' }));
+      const titles = ['lesson slot a', 'lesson slot b', 'lesson slot c'];
+
+      when('[t0] the queue is drained with a budget already spent', () => {
+        const result = useThen('the drain runs', async () => {
+          setLocalGate({ cwd: scene.cwd, state: 'allowed' });
+          titles.map((title) =>
+            holdPush({
+              cwd: scene.cwd,
+              repo: repoFile,
+              via: RadioChannel.OS_FILEOPS,
+              title,
+            }),
+          );
+          const tasksUpstreamBefore = getAllTasksUpstream({ repo: repoFile });
+          const drained = await setRadioTaskRecordsDrained(
+            {},
+            {
+              ...scene,
+              env: process.env,
+              shx,
+              drainSendBudget: { milliseconds: 0 },
+            },
+          );
+          return {
+            fates: drained.fates,
+            tasksUpstreamBefore,
+            tasksUpstreamAfter: getAllTasksUpstream({ repo: repoFile }),
+            held: getAllRadioTaskRecordsHeld({}, scene).length,
+          };
+        });
+
+        then('no send starts; every record stays queued, in place', () => {
+          expect(result.tasksUpstreamAfter).toEqual(result.tasksUpstreamBefore);
+          expect(result.fates.map((fate) => fate.fate)).toEqual([
+            'held',
+            'held',
+            'held',
+          ]);
+          expect(result.fates.map((fate) => fate.record.recordStatus)).toEqual([
+            RadioTaskRecordStatus.QUEUED,
+            RadioTaskRecordStatus.QUEUED,
+            RadioTaskRecordStatus.QUEUED,
+          ]);
+          expect(result.held).toEqual(3);
+        });
+
+        then('each names the one move: drain again', () => {
+          result.fates.map((fate) =>
+            expect(fate.fate === 'held' ? fate.detail : null).toContain(
+              'rhx radio.task.queue drain again',
+            ),
+          );
+        });
+      });
+
+      when('[t1] the queue is drained again with the default budget', () => {
+        const result = useThen('the drain runs', async () =>
+          setRadioTaskRecordsDrained({}, { ...scene, env: process.env, shx }),
+        );
+
+        then('the records left by the spent budget all deliver', () => {
+          expect(result.fates.map((fate) => fate.fate)).toEqual([
+            'delivered',
+            'delivered',
+            'delivered',
+          ]);
+        });
+      });
+    },
+  );
 });

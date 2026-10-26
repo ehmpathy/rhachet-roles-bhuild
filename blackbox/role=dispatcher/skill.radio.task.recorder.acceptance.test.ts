@@ -2,7 +2,7 @@ import { execSync, spawnSync } from 'child_process';
 import fs from 'fs';
 import { MalfunctionError } from 'helpful-errors';
 import path from 'path';
-import { given, then, useBeforeAll, useThen, when } from 'test-fns';
+import { genTempDir, given, then, useBeforeAll, useThen, when } from 'test-fns';
 
 import { getTimestampFound } from '../../src/.test/utils/getTimestampFound';
 import {
@@ -32,6 +32,7 @@ const runDispatcherSkill = (input: {
   skill: string;
   args: string;
   asHuman?: boolean;
+  env?: Record<string, string | undefined>;
 }) =>
   runRhachetSkill({
     repo: 'bhuild',
@@ -42,9 +43,45 @@ const runDispatcherSkill = (input: {
     env: {
       HOME: input.homeDir,
       ...(input.asHuman ? { __I_AM_HUMAN: 'true' } : {}),
+      ...input.env,
     },
     timeout: 30000,
   });
+
+/**
+ * .mock = the gh cli, via a stub `gh` first on PATH
+ * .why  = an update the robot may not write, and a human gh session, are states a test cannot
+ *         provoke on demand against real github; the stub replays gh's own stderr text per
+ *         target repo, and logs which token each call carried
+ * .real = src/domain.operations/radio/record/setRadioTaskRecordsDrainedByPush.integration.test.ts
+ *         [case7] (a peer file; not this file's [case7], which uses this stub) runs the 401 path
+ *         against real github with a rejected token, and
+ *         skill.radio.task.push.via-gh-issues [case1]-[case6] create and update real issues with
+ *         the keyrack token (ci shard `test-shards-acceptance (explicit, 2, ...)`)
+ * .note = the stub token is a marker the stub logs, never a credential: no call it carries
+ *         reaches github, so no real token is owed here
+ */
+const STUB_GH = `#!/usr/bin/env bash
+args="$*"
+repo="$(printf '%s' "$args" | grep -oE -- '--repo [^ ]+' | cut -d' ' -f2 | tr '/' '_')"
+echo "\${GH_TOKEN:-<gh-session>} $1 $2 $repo" >> "$STUB_GH_DIR/calls.log"
+mode="ok"
+if [ -n "$repo" ] && [ -f "$STUB_GH_DIR/mode.$repo" ]; then mode="$(cat "$STUB_GH_DIR/mode.$repo")"; fi
+case "$1 $2" in
+  "api user") echo "stubbot"; exit 0 ;;
+esac
+if [ "$mode" = "access-update" ] && [ "$1 $2" = "issue edit" ]; then echo "GraphQL: Resource not accessible by integration (updateIssue)" >&2; exit 1; fi
+if [ "$mode" = "access-update" ] && [ "$1 $2" = "issue close" ]; then echo "GraphQL: Resource not accessible by integration (updateIssue)" >&2; exit 1; fi
+case "$1 $2" in
+  "issue view") echo '{"number":599,"title":"🎙️ task - board rentals open friday","body":"**description**\\n\\nboard rentals open friday","state":"OPEN","assignees":[{"login":"stubbot"}],"createdAt":"2026-10-20T00:00:00Z","author":{"login":"stubbot"}}' ;;
+  "issue edit"|"issue close") echo "https://github.com/stub/stub/issues/599" ;;
+  "issue list") echo "[]" ;;
+  "issue create")
+    n="$(cat "$STUB_GH_DIR/seq" 2>/dev/null || echo 700)"; n=$((n + 1)); echo "$n" > "$STUB_GH_DIR/seq"
+    echo "https://github.com/stub/stub/issues/$n" ;;
+  *) echo "stub gh: unexpected call: $args" >&2; exit 1 ;;
+esac
+`;
 
 /**
  * .what = a consumer repo with the dispatcher role initialized, as a human sets it up
@@ -171,7 +208,7 @@ describe('radio.task.push — the radio.recorder', () => {
       });
     });
 
-    when('[t2] the clone stops (S2)', () => {
+    when('[t2] the clone stops, via a hook still wired to the deprecated radio.task.held (S2)', () => {
       const result = useThen('the stop hook runs', () =>
         runDispatcherSkill({
           ...scene,
@@ -189,13 +226,13 @@ describe('radio.task.push — the radio.recorder', () => {
         const line = result.stdout.split('\n').find((l) => l.startsWith('{'));
         expect(JSON.parse(line ?? '{}')).toEqual({
           systemMessage:
-            '🦫 2 tasks held for the radio · 2 at a gate · lift: rhx radio.uses allow · next push delivers them',
+            '🦫 2 tasks held for the radio · 2 at a gate · lift: rhx radio.uses allow · next push delivers them · radio.task.held is deprecated; run `rhx radio.task.queue get --when hook.onStop` instead',
         });
         expect(asStableOutput({ output: result.stdout })).toMatchSnapshot();
       });
     });
 
-    when('[t2.1] the dispatcher onStop hook command runs, as claude runs it', () => {
+    when('[t2.1] the dispatcher onStop hook command runs, as claude runs it (radio.task.queue get, so no rename notice)', () => {
       const result = useThen('the hook command runs', () => {
         const command = getOnStopHookCommandFromSettings({
           repoDir: scene.consumer.repoDir,
@@ -214,6 +251,10 @@ describe('radio.task.push — the radio.recorder', () => {
           systemMessage:
             '🦫 2 tasks held for the radio · 2 at a gate · lift: rhx radio.uses allow · next push delivers them',
         });
+        expect(result.stdout).not.toContain('deprecated');
+        expect(getOnStopHookCommandFromSettings({ repoDir: scene.consumer.repoDir })).toContain(
+          'cli.radioTaskQueue()',
+        );
         expect(result.stdout).toMatchSnapshot();
       });
     });
@@ -235,7 +276,7 @@ describe('radio.task.push — the radio.recorder', () => {
       });
     });
 
-    when('[t3.1] the human opens the radio, then the clone stops before any push (S3)', () => {
+    when('[t3.1] the human opens the radio, then the clone stops before any push, via the deprecated radio.task.held hook (S3)', () => {
       const result = useThen('allow, then the stop hook runs', () => {
         runDispatcherSkill({
           ...scene,
@@ -260,7 +301,7 @@ describe('radio.task.push — the radio.recorder', () => {
         const line = result.stdout.split('\n').find((l) => l.startsWith('{'));
         const message: string = JSON.parse(line ?? '{}').systemMessage ?? '';
         expect(message).toEqual(
-          '🦫 2 tasks held, the radio is open · next push delivers them',
+          '🦫 2 tasks held, the radio is open · next push delivers them · radio.task.held is deprecated; run `rhx radio.task.queue get --when hook.onStop` instead',
         );
         expect(asStableOutput({ output: result.stdout })).toMatchSnapshot();
       });
@@ -435,6 +476,33 @@ describe('radio.task.push — the radio.recorder', () => {
           expect(content).not.toContain('heldAt');
           expect(content).not.toContain('settledAt');
         });
+      });
+    });
+
+    when('[t7] the clone re-pushes the refused claim (case=2 [t4.2]: a re-push re-queues a REFUSED record)', () => {
+      const result = useThen('the re-push runs', () =>
+        runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.push',
+          args: `--via os.fileops --into ${target} --exid absent-999 --status CLAIMED`,
+        }),
+      );
+
+      then('the refusal did not bury it: the re-push sends it again, and upstream refuses it again, exit 2', () => {
+        expect(result.exitCode).toBe(2);
+        expect(result.stdout).toContain('🦫 refused upstream');
+        expect(asStableOutput({ output: result.stdout })).toMatchSnapshot();
+      });
+
+      then('the one record for the claim is REFUSED once more; no second record is minted', () => {
+        const dirRecords = path.join(scene.consumer.repoDir, routeRel, '.radio');
+        const statuses = fs
+          .readdirSync(dirRecords)
+          .filter((f) => f.startsWith('record.'))
+          .map((f) => JSON.parse(fs.readFileSync(path.join(dirRecords, f), 'utf-8')).recordStatus);
+        expect(statuses.filter((status) => status === 'REFUSED')).toHaveLength(1);
+        expect(statuses).toHaveLength(5);
       });
     });
   });
@@ -927,7 +995,7 @@ describe('radio.task.push — the radio.recorder', () => {
       then('exit 0: the same list, under the rename notice', () => {
         expect(result.exitCode).toBe(0);
         expect(result.stdout).toContain(
-          'radio.task.held is now `rhx radio.task.queue get`',
+          'radio.task.held is deprecated; run `rhx radio.task.queue get` instead',
         );
         expect(result.stdout).toContain('wetsuit inventory');
         expect(result.stdout).toContain('old lesson reminder');
@@ -972,7 +1040,7 @@ describe('radio.task.push — the radio.recorder', () => {
       });
     });
 
-    when('[t2.1] the clone amends the body of the held record (case=3)', () => {
+    when('[t2.1] the clone amends the body of the held record (case=_ grid 3: set | held, --description)', () => {
       const result = useThen('the set runs', () =>
         runDispatcherSkill({
           ...scene,
@@ -1004,7 +1072,7 @@ describe('radio.task.push — the radio.recorder', () => {
       then('exit 2: a title cannot be amended, and the fix is named', () => {
         expect(result.exitCode).toBe(2);
         expect(result.stderr).toContain('--title cannot be amended');
-        expect(result.stderr).toContain('`queue del` it and re-push');
+        expect(result.stderr).toContain('to retitle, run `rhx radio.task.queue del --key <key>` and push again');
         expect(asStableOutput({ output: result.stderr })).toMatchSnapshot();
       });
     });
@@ -1019,10 +1087,11 @@ describe('radio.task.push — the radio.recorder', () => {
         }),
       );
 
-      then('exit 2: the record is settled, and the output says so', () => {
-        expect(result.exitCode).toBe(2);
-        expect(result.stderr).toContain('is DROPPED, not held');
-        expect(asStableOutput({ output: result.stderr })).toMatchSnapshot();
+      then('exit 0: the drop converged, so a retry is a no-op that says so', () => {
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain('already dropped, never sent; naught changed');
+        expect(result.stdout).toContain('dropped: superseded by #604');
+        expect(asStableOutput({ output: result.stdout })).toMatchSnapshot();
       });
     });
 
@@ -1064,6 +1133,299 @@ describe('radio.task.push — the radio.recorder', () => {
           .map((name) => fs.readFileSync(path.join(dir, name), 'utf-8'));
         expect(bodies).toHaveLength(1);
         expect(bodies[0]).toContain('count the 4/3s and the 3/2s');
+      });
+    });
+
+    when('[t5] the clone re-pushes the dropped task, as the del output promised', () => {
+      const result = useThen('the re-push runs', () =>
+        runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.push',
+          args: `--via os.fileops --into ${target} --title "old lesson reminder" --description "moot now"`,
+        }),
+      );
+
+      then('exit 0: the drop did not bury it; the re-push queues it again and it delivers', () => {
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain('old lesson reminder');
+        expect(asStableOutput({ output: result.stdout })).toMatchSnapshot();
+      });
+
+      then('the dropped task now lands upstream beside the first', () => {
+        const dir = path.join(scene.homeDir, 'git', '.radio', ...target.split('/'));
+        const bodies = fs
+          .readdirSync(dir)
+          .filter((name) => name.endsWith('._.md'))
+          .map((name) => fs.readFileSync(path.join(dir, name), 'utf-8'));
+        expect(bodies).toHaveLength(2);
+        expect(bodies.some((body) => body.includes('moot now'))).toBe(true);
+      });
+    });
+
+    when('[t6] the clone reads, then drains, the queue it emptied (case=5, an empty queue)', () => {
+      const result = useThen('get, then drain', () => {
+        const get = runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.queue',
+          args: 'get',
+        });
+        const drain = runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.queue',
+          args: 'drain',
+        });
+        const stop = runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.queue',
+          args: 'get --when hook.onStop',
+        });
+        return { get, drain, stop };
+      });
+
+      then('the stop hook on the queue verb exits 0 and prints no systemMessage', () => {
+        expect(result.stop.exitCode).toBe(0);
+        expect(result.stop.stdout).not.toContain('systemMessage');
+        expect(result.stop.stdout).not.toContain('held');
+      });
+
+      then('get exits 0 and reads naught held, with no rename notice', () => {
+        expect(result.get.exitCode).toBe(0);
+        expect(result.get.stdout).toContain('naught held for the radio');
+        expect(result.get.stdout).not.toContain('deprecated');
+        expect(asStableOutput({ output: result.get.stdout })).toMatchSnapshot();
+      });
+
+      then('drain exits 0 and reads naught held; naught is sent', () => {
+        expect(result.drain.exitCode).toBe(0);
+        expect(result.drain.stdout).toContain('naught held for the radio');
+        expect(result.drain.stdout).not.toContain('drained');
+        expect(asStableOutput({ output: result.drain.stdout })).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case7] a drain crosses a fault through rhachet, via a stub gh (#511, #513, case=5, case=7)', () => {
+    const authEnv = 'as-robot:env(RADIO_ACPT_JOURNEY_TOKEN)';
+    const tokenStub = 'ghp_radioAcptJourneyTokenStub0000000';
+    const scene = useBeforeAll(async () => {
+      const consumer = genConsumerRepoWithDispatcher({
+        prefix: 'radio-fault-acpt-',
+        branchName: 'feat/fault',
+      });
+      const homeDir = path.join(consumer.repoDir, '.home');
+      fs.mkdirSync(homeDir);
+      const stubDir = genTempDir({ slug: 'radio-fault-acpt-stub-gh' });
+      fs.writeFileSync(path.join(stubDir, 'gh'), STUB_GH, { mode: 0o755 });
+      return { consumer, homeDir, stubDir };
+    });
+
+    /**
+     * .what = the env each skill run in this case carries: the stub gh first on PATH, its log dir,
+     *         and the token the env auth mode reads
+     * .why = rhachet spreads this env onto the skill's process, so the stub stands in for gh there
+     */
+    const getEnvWithStub = (input: { asHumanSession: boolean }) => ({
+      PATH: `${scene.stubDir}:${process.env.PATH}`,
+      STUB_GH_DIR: scene.stubDir,
+      RADIO_ACPT_JOURNEY_TOKEN: tokenStub,
+      // an as-human run drops the test-env markers; the stub gh stands in for the human gh session
+      ...(input.asHumanSession
+        ? { NODE_ENV: undefined, JEST_WORKER_ID: undefined }
+        : {}),
+    });
+
+    /**
+     * .what = set how the stub gh answers for one target repo, and the org gate in the scene home
+     */
+    const setStubMode = (input: { repo: string; mode: 'ok' | 'access-update' }) =>
+      fs.writeFileSync(
+        path.join(scene.stubDir, `mode.${input.repo.replace('/', '_')}`),
+        input.mode,
+      );
+    const setGate = (input: { gate: 'allowed' | 'blocked' }) => {
+      const dirMeter = path.join(
+        scene.homeDir,
+        '.rhachet/storage/repo=bhuild/role=dispatcher/.meter',
+      );
+      fs.mkdirSync(dirMeter, { recursive: true });
+      fs.writeFileSync(
+        path.join(dirMeter, 'radio.uses.org.jsonc'),
+        JSON.stringify({ orgs: { sandpine: input.gate } }),
+      );
+    };
+
+    /**
+     * .what = the gh calls the stub saw, each with the token it carried
+     */
+    const getStubCalls = (): string[] => {
+      const file = path.join(scene.stubDir, 'calls.log');
+      if (!fs.existsSync(file)) return [];
+      return fs.readFileSync(file, 'utf8').split('\n').filter(Boolean);
+    };
+
+    /**
+     * .what = each record on disk, by the shape a clone would read off its file
+     */
+    const getRecordsOnDisk = (): {
+      key: string;
+      exid: string | null;
+      title: string | null;
+      auth: string | null;
+      recordStatus: string;
+      reason: string | null;
+    }[] => {
+      const dir = path.join(scene.consumer.repoDir, '.behavior', '.radio');
+      return fs
+        .readdirSync(dir)
+        .filter((name) => /^record\.[a-z0-9-]+\.json$/.test(name))
+        .map((name) => JSON.parse(fs.readFileSync(path.join(dir, name), 'utf-8')));
+    };
+    const getOneRecordOnDisk = (input: { exid: string | null; title: string | null }) => {
+      const record = getRecordsOnDisk().find(
+        (one) => one.exid === input.exid && one.title === input.title,
+      );
+      if (!record)
+        throw new MalfunctionError('no record on disk for this push', { ...input });
+      return record;
+    };
+
+    when('[t0] two gh pushes are held at a shut gate, then the gate opens and the clone drains; the robot may not write the update', () => {
+      const result = useThen('the pushes and the drain run', () => {
+        setGate({ gate: 'blocked' });
+        const pushes = [
+          `--via gh.issues --into sandpine/svc-lessons --exid 599 --status DELIVERED --description "board rentals open friday" --auth "${authEnv}"`,
+          `--via gh.issues --into sandpine/svc-rentals --title "wetsuit sizes" --description "count the 4/3s" --auth "${authEnv}"`,
+        ].map((args) =>
+          runDispatcherSkill({
+            ...scene,
+            repoDir: scene.consumer.repoDir,
+            skill: 'radio.task.push',
+            args,
+            env: getEnvWithStub({ asHumanSession: false }),
+          }),
+        );
+        const callsAfterPushes = getStubCalls().length;
+        setGate({ gate: 'allowed' });
+        setStubMode({ repo: 'sandpine/svc-lessons', mode: 'access-update' });
+        setStubMode({ repo: 'sandpine/svc-rentals', mode: 'ok' });
+        const drain = runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.queue',
+          args: 'drain',
+          env: getEnvWithStub({ asHumanSession: false }),
+        });
+        return { pushes, callsAfterPushes, drain, calls: getStubCalls() };
+      });
+
+      then('each push is held at the shut gate, exit 2, and no gh call is made', () => {
+        expect(result.pushes.map((push) => push.exitCode)).toEqual([2, 2]);
+        expect(result.callsAfterPushes).toEqual(0);
+      });
+
+      then('the drain exits 2, since one record still waits', () => {
+        expect(result.drain.exitCode).toEqual(2);
+      });
+
+      then('the update is set aside, named, with its fault and its fix', () => {
+        expect(result.drain.stdout).toContain(
+          'fault: GraphQL: Resource not accessible by integration (updateIssue)',
+        );
+        expect(result.drain.stdout).toContain('amend it: rhx radio.task.queue set');
+        const update = getOneRecordOnDisk({ exid: '599', title: null });
+        expect(update.recordStatus).toEqual('QUEUED');
+        expect(update.reason).toEqual('upstream:access');
+      });
+
+      then('the create behind it still delivers (no head-of-line block)', () => {
+        const create = getOneRecordOnDisk({ exid: null, title: 'wetsuit sizes' });
+        expect(create.recordStatus).toEqual('DELIVERED');
+      });
+
+      then('every gh call carried the robot token', () => {
+        expect(result.calls.length).toBeGreaterThan(0);
+        expect(result.calls.every((call) => call.startsWith(`${tokenStub} `))).toEqual(true);
+      });
+
+      then('the stdout reads as a human sees it', () => {
+        // the mask hides every exid in the snap, so pin the stub's fixed issue number by text
+        expect(result.drain.stdout).toContain('deliver #599 → sandpine/svc-lessons');
+        expect(asStableOutput({ output: result.drain.stdout })).toMatchSnapshot();
+      });
+    });
+
+    when('[t1] the clone drains with a flag the verb does not read', () => {
+      const result = useThen('the drain runs', () => {
+        const callsBefore = getStubCalls().length;
+        const update = getOneRecordOnDisk({ exid: '599', title: null });
+        const drain = runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.queue',
+          args: `drain --key ${update.key} --auth as-human`,
+          env: getEnvWithStub({ asHumanSession: true }),
+        });
+        return { drain, calls: getStubCalls().slice(callsBefore) };
+      });
+
+      then('exit 2: it refuses, names the flags drain reads, and sends naught', () => {
+        expect(result.drain.exitCode).toEqual(2);
+        expect(result.drain.stderr).toContain('drain does not read --key');
+        expect(result.calls).toEqual([]);
+        expect(asStableOutput({ output: result.drain.stderr })).toMatchSnapshot();
+      });
+    });
+
+    when('[t2] the clone amends the set-aside update to as-human, then drains (#513, #603)', () => {
+      const result = useThen('the set and the drain run', () => {
+        const update = getOneRecordOnDisk({ exid: '599', title: null });
+        const set = runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.queue',
+          args: `set --key ${update.key} --auth as-human`,
+          env: getEnvWithStub({ asHumanSession: true }),
+        });
+        setStubMode({ repo: 'sandpine/svc-lessons', mode: 'ok' });
+        const callsBefore = getStubCalls().length;
+        const drain = runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.queue',
+          args: 'drain',
+          env: getEnvWithStub({ asHumanSession: true }),
+        });
+        return {
+          set,
+          drain,
+          calls: getStubCalls().slice(callsBefore),
+          onDisk: getOneRecordOnDisk({ exid: '599', title: null }),
+        };
+      });
+
+      then('the set exits 0 and names the auth change', () => {
+        expect(result.set.exitCode).toEqual(0);
+        expect(result.set.stdout).toContain(`auth: ${authEnv} → as-human`);
+        expect(asStableOutput({ output: result.set.stdout })).toMatchSnapshot();
+      });
+
+      then('the drain exits 0: the queue is empty', () => {
+        expect(result.drain.exitCode).toEqual(0);
+        expect(asStableOutput({ output: result.drain.stdout })).toMatchSnapshot();
+      });
+
+      then('the update went out on the gh session, never the robot token', () => {
+        expect(result.calls.length).toBeGreaterThan(0);
+        expect(result.calls.every((call) => call.startsWith('<gh-session> '))).toEqual(true);
+      });
+
+      then('the record on disk is DELIVERED, with the as-human auth it was amended to', () => {
+        expect(result.onDisk.recordStatus).toEqual('DELIVERED');
+        expect(result.onDisk.auth).toEqual('as-human');
       });
     });
   });

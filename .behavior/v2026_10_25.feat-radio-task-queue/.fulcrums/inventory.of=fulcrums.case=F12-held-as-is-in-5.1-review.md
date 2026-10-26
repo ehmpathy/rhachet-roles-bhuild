@@ -26,6 +26,19 @@
 | i002 · arch-hazards-maintenance · nitpick.2 — an upstream fault exits 2 | pre-extant push contract: a held push exits 2 whatever held it ("a shut gate or an upstream fault holds it QUEUED, exit 2"), since the caller's next move is the fix |
 | i002 · ergo-friction-hazards · nitpick.2 — a shut-gate drain's still-held rows lack the key | a gated row prints its one fix (`lift it (human): …`), which takes no key; a set-aside row prints `amend it` / `or drop it` with its key |
 
+| i004 · enroll-impl-behavior-intent · smaller — the `held` alias prints no rename notice in hook mode | no longer held: repaired in i005 — the rename rides inside the one `systemMessage` line, so the json stays one line |
+| i004 · enroll-impl-behavior-intent · smaller — a malformed record blocks every verb | fail-loud by design (`rule.forbid.failhide`): a record the dao cannot read is a corrupt queue, and a verb that skipped it could send the line out of order. the error names the file and its fix |
+| i004 · enroll-impl-arch-defects · #7 — `radioTaskHeld.ts` re-implements `get` | the deprecated alias shares every transformer `get` uses; it adds only the rename notice, and dies with the alias |
+
+| i005 · arch-hazards-behavior · blocker.2 — the re-push check runs after the settle write | misread: `setRadioTaskRecordSettled` reads and checks before it writes, and returns the re-pushed record unwritten; the outer check excludes fate fields, so a settle never trips it (clamps: Settled [case1], Upstream [case1]) |
+| i005 · arch-hazards-behavior · nitpick.2 — `repoGhDemo` not cleaned | it sends only over gh.issues with a rejected token; naught is written |
+| i005 · arch-hazards-behavior · nitpick.3 — stage operations share one index | read then stage in one step (lines 1050, 1055); the other stage runs in a scratch dir |
+| i005 · arch-hazards-behavior · nitpick.4 — a nested mutex timeout mislabeled | `withRadioDrainLock` holds the one `withSimpleMutex` call in `src` |
+
+| i005 · enroll-impl-behavior-intent · nitpick (8) and enroll-impl-arch-defects · nitpick.5 — `push --auth <garbage>` is stored | by the push contract every push is recorded first; a bad mode is held as `upstream:auth`, the error lists all four modes (push cli [case10]) and the fix line names `queue set --auth`. `queue set` and `drain` refuse it at once, since they record naught new |
+| i005 · enroll-impl-behavior-intent · nitpick (6) — `get` omits the last fault text | F10: the record keeps the reason code, never gh's stderr, which can carry a temp path or a token fragment into a tracked file; the drain prints the first line at the moment of the fault |
+| i005 · enroll-impl-behavior-intent · nitpick (8) — `set` cannot reset auth to the default | no reset value exists in the auth grammar; a reset is `queue del` + re-push, or `set --auth <the robot mode>` |
+
 - **rework**: clean — each is a local edit if a reviewer or the wisher prefers (b)
 - **confidence**: 80%
 - **where**: 5.1 peer review i001, i002, i003

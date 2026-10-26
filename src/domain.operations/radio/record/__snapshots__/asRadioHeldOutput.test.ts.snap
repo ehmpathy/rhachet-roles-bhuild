@@ -4,43 +4,152 @@ exports[`asRadioHeldOutput given: [case1] three tasks held, the gate shut (S2) w
 
 exports[`asRadioHeldOutput given: [case1] three tasks held, the gate shut (S2) when: [t1] the list renders then: it lists each held task with its state and its lift 1`] = `
 "🦫 held for the radio
-   ├─ a a → ehmpathy/rhachet
+   ├─ a task a → ehmpathy/rhachet
    │  ├─ state: held at gate (radio.uses:blocked — global)
+   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
    │  └─ lift it (human): rhx radio.uses --global allow
-   ├─ b b → ehmpathy/rhachet
+   ├─ b task b → ehmpathy/rhachet
    │  ├─ state: held at gate (radio.uses:blocked — global)
+   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
    │  └─ lift it (human): rhx radio.uses --global allow
-   ├─ c c → ehmpathy/rhachet
+   ├─ c task c → ehmpathy/rhachet
    │  ├─ state: held at gate (radio.uses:blocked — global)
+   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
    │  └─ lift it (human): rhx radio.uses --global allow
    └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;
 
-exports[`asRadioHeldOutput given: [case2.1] tasks held on an upstream fault, the gate open when: [t0] the stop reminder renders then: it names the fault once beside the lift, never "the radio is open" 1`] = `"🦫 3 tasks held for the radio · 1 at a gate · 2 set aside · lift: rhx radio.uses --global allow · fix: upstream:auth · next push delivers them"`;
+exports[`asRadioHeldOutput given: [case2.1] two tasks set aside on an upstream fault, a third held at a shut gate when: [t0] the stop reminder renders then: it names the fault once beside the lift, never "the radio is open" 1`] = `"🦫 3 tasks held for the radio · 1 at a gate · 2 set aside (upstream:auth) · lift: rhx radio.uses --global allow · see each fix: rhx radio.task.queue get"`;
 
-exports[`asRadioHeldOutput given: [case2.1] tasks held on an upstream fault, the gate open when: [t1] the list renders then: it names each set-aside record with its fault and its fixes 1`] = `
+exports[`asRadioHeldOutput given: [case2.1] two tasks set aside on an upstream fault, a third held at a shut gate when: [t1] the list renders then: it names each set-aside record with its fault and its fixes 1`] = `
 "🦫 held for the radio
-   ├─ a a → ehmpathy/rhachet
+   ├─ a task a → ehmpathy/rhachet
    │  ├─ state: set aside (upstream:auth)
+   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
    │  ├─ amend it: rhx radio.task.queue set --key a --auth as-human (needs a gh login on this host)
    │  └─ or drop it: rhx radio.task.queue del --key a --why "<why>"
-   ├─ b b → ehmpathy/rhachet
+   ├─ b task b → ehmpathy/rhachet
    │  ├─ state: set aside (upstream:auth)
+   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
    │  ├─ amend it: rhx radio.task.queue set --key b --auth as-human (needs a gh login on this host)
    │  └─ or drop it: rhx radio.task.queue del --key b --why "<why>"
-   ├─ c c → ehmpathy/rhachet
+   ├─ c task c → ehmpathy/rhachet
    │  ├─ state: held at gate (radio.uses:blocked — global)
+   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
    │  └─ lift it (human): rhx radio.uses --global allow
    └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;
+
+exports[`asRadioHeldOutput given: [case2.2] a task halted on a rate limit, the gate open when: [t0] the stop reminder renders then: it counts it halted, with no bare code as a fix 1`] = `"🦫 1 task held for the radio · 1 halted (upstream:rate-limit) · the next drain retries it"`;
+
+exports[`asRadioHeldOutput given: [case2.2] a task halted on a rate limit, the gate open when: [t1] the list renders then: it names the halt, with no amend or drop lines 1`] = `
+"🦫 held for the radio
+   ├─ a task a → ehmpathy/rhachet
+   │  ├─ state: halted (upstream:rate-limit)
+   │  └─ auth: default (as-robot:via-keyrack(ehmpath))
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+`;
+
+exports[`asRadioHeldOutput given: [case2.3] two updates to one issue, the first set aside when: [t0] the list renders, the record ahead still held then: the record behind names the record ahead, never gate words 1`] = `
+"🦫 held for the radio
+   ├─ a1a1a1a1a1a1a1a1 update #599 → ehmpathy/rhachet
+   │  ├─ state: set aside (upstream:access)
+   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  ├─ amend it: rhx radio.task.queue set --key a1a1a1a1a1a1a1a1 --auth as-human (needs a gh login on this host)
+   │  └─ or drop it: rhx radio.task.queue del --key a1a1a1a1a1a1a1a1 --why "<why>"
+   ├─ b2b2b2b2b2b2b2b2 update #599 → ehmpathy/rhachet
+   │  ├─ state: waits behind a1a1a1a1a1a1a1a1 (same issue #599)
+   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  └─ fix a1a1a1a1a1a1a1a1 above (amend, lift, or drop it); this one sends on the next drain after
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+`;
+
+exports[`asRadioHeldOutput given: [case2.3] two updates to one issue, the first set aside when: [t1] the stop reminder renders, the record ahead still held then: it counts the record behind as a wait, not a fault 1`] = `"🦫 2 tasks held for the radio · 1 set aside (upstream:access) · 1 behind an earlier update to the same issue · see each fix: rhx radio.task.queue get"`;
+
+exports[`asRadioHeldOutput given: [case2.3] two updates to one issue, the first set aside when: [t2] the list renders, the record ahead since dropped then: the stale wait reads as re-checked on next drain 1`] = `
+"🦫 held for the radio
+   ├─ b2b2b2b2b2b2b2b2 update #599 → ehmpathy/rhachet
+   │  ├─ state: not reached (was behind a1a1a1a1a1a1a1a1, no longer held; re-checked on next drain)
+   │  └─ auth: default (as-robot:via-keyrack(ehmpath))
+   └─ the radio is open, so the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+`;
+
+exports[`asRadioHeldOutput given: [case2.3] two updates to one issue, the first set aside when: [t3] the list renders, the record ahead just amended (no fault on it) then: the record behind says it sends right after, never to fix it again 1`] = `
+"🦫 held for the radio
+   ├─ a1a1a1a1a1a1a1a1 update #599 → ehmpathy/rhachet
+   │  ├─ state: not reached (no fault on record; the next drain sends it)
+   │  └─ auth: as-human
+   ├─ b2b2b2b2b2b2b2b2 update #599 → ehmpathy/rhachet
+   │  ├─ state: waits behind a1a1a1a1a1a1a1a1 (same issue #599)
+   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  └─ sends right after a1a1a1a1a1a1a1a1 on the next drain
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+`;
+
+exports[`asRadioHeldOutput given: [case2.4] a halter and a record held unsent behind it when: [t0] the list renders then: only the first reads halted; the second reads behind the halt 1`] = `
+"🦫 held for the radio
+   ├─ a task a → ehmpathy/rhachet
+   │  ├─ state: halted (upstream:rate-limit)
+   │  └─ auth: default (as-robot:via-keyrack(ehmpath))
+   ├─ b task b → ehmpathy/rhachet
+   │  ├─ state: behind the halt (upstream:rate-limit): unsent, still in line; the next drain sends it once the halt clears
+   │  └─ auth: default (as-robot:via-keyrack(ehmpath))
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+`;
+
+exports[`asRadioHeldOutput given: [case2.4] a halter and a record held unsent behind it when: [t1] the stop reminder renders then: it counts the halter and the record behind it apart 1`] = `"🦫 2 tasks held for the radio · 1 halted (upstream:rate-limit) · 1 behind the halt · the next drain retries them"`;
 
 exports[`asRadioHeldOutput given: [case2] one task held, the gate open (S3) when: [t0] the stop reminder renders then: it says the radio is open and the next push delivers it 1`] = `"🦫 1 task held, the radio is open · next push delivers it"`;
 
 exports[`asRadioHeldOutput given: [case2] one task held, the gate open (S3) when: [t1] the list renders (L3) then: it lists the task with no lift, and says the radio is open 1`] = `
 "🦫 held for the radio
-   ├─ a a → ehmpathy/rhachet
-   │  └─ state: not reached (radio.uses:blocked — global)
+   ├─ a task a → ehmpathy/rhachet
+   │  ├─ state: not reached (last held: radio.uses:blocked — global; since opened)
+   │  └─ auth: default (as-robot:via-keyrack(ehmpath))
    └─ the radio is open, so the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;
 
 exports[`asRadioHeldOutput given: [case3] no task held (S1) when: [t1] the list renders then: it says naught is held 1`] = `"🦫 naught held for the radio"`;
+
+exports[`asRadioHeldOutput given: [case9] held records with a stored auth, one of which no drain will replay when: [t0] the list renders then: the row whose auth will not replay says so once, with an amend line that holds a placeholder 1`] = `
+"🦫 held for the radio
+   ├─ amended task amended → ehmpathy/rhachet
+   │  ├─ state: held at gate (radio.uses:blocked — global)
+   │  ├─ auth: as-human
+   │  └─ lift it (human): rhx radio.uses --global allow
+   ├─ shelled task shelled → ehmpathy/rhachet
+   │  ├─ state: held at gate (radio.uses:blocked — global)
+   │  ├─ auth: as-robot:shx(…), will not replay
+   │  ├─ lift it (human): rhx radio.uses --global allow
+   │  └─ amend its auth (human): rhx radio.task.queue set --key shelled --auth <auth>
+   ├─ plain task plain → ehmpathy/rhachet
+   │  ├─ state: held at gate (radio.uses:blocked — global)
+   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  └─ lift it (human): rhx radio.uses --global allow
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+`;
+
+exports[`asRadioHeldOutput given: [case10] a held record merged in with a planted shell auth (r10 blocker.1) when: [t0] the list renders then: no line carries the planted command, in a fix or a display 1`] = `
+"🦫 held for the radio
+   ├─ planted task planted → ehmpathy/rhachet
+   │  ├─ state: held at gate (radio.uses:blocked — global)
+   │  ├─ auth: as-robot:shx(…), will not replay
+   │  ├─ lift it (human): rhx radio.uses --global allow
+   │  └─ amend its auth (human): rhx radio.task.queue set --key planted --auth <auth>
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+`;
+
+exports[`asRadioHeldOutput given: [case11] two set-aside records whose fix is not an amend: one already as-human, one an unknown fault when: [t0] the list renders then: the unknown-fault row says the drain retries it, and that a drain writes 1`] = `
+"🦫 held for the radio
+   ├─ human task human → ehmpathy/rhachet
+   │  ├─ state: set aside (upstream:401)
+   │  ├─ auth: as-human
+   │  ├─ check the gh login on this host: gh auth status (else: gh auth login), then: rhx radio.task.queue drain
+   │  └─ or drop it: rhx radio.task.queue del --key human --why "<why>"
+   ├─ odd task odd → ehmpathy/rhachet
+   │  ├─ state: set aside (upstream:fault)
+   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  ├─ retry it and print its fault: rhx radio.task.queue drain (this sends every held record whose gate is open)
+   │  └─ or drop it: rhx radio.task.queue del --key odd --why "<why>"
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+`;

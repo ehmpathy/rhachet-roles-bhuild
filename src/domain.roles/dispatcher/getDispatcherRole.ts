@@ -26,7 +26,7 @@ export const ROLE_DISPATCHER: Role = Role.build({
       onStop: [
         // remind the human of held radio tasks in one line; direct cli call, no rhachet header in the hook json
         {
-          command: `node -e "import('rhachet-roles-bhuild').then(m => m.cli.radioTaskQueue())" -- get --when hook.onStop`,
+          command: `node -e "import('rhachet-roles-bhuild/cli').then(m => m.cli.radioTaskQueue())" -- get --when hook.onStop`,
           timeout: 'PT10S',
         },
       ],

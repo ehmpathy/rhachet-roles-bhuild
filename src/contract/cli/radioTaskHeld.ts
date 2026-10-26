@@ -50,12 +50,13 @@ const HELP_TEXT = `
 🦫 let's check the meter...
 
 🎙️ radio.task.held --help
+   ├─ radio.task.held is deprecated; run \`rhx radio.task.queue get\` instead (stop hook: \`rhx radio.task.queue get --when hook.onStop\`)
    ├─ usage
    │  ├─ radio.task.held                       list the tasks held for the radio
    │  └─ radio.task.held --when hook.onStop    one-line stop reminder (naught when none)
    │
    └─ options
-      ├─ --when      hook.onStop
+      ├─ --when      hook.onStop: print one claude systemMessage line, or naught when none held
       └─ --help, -h  show this help
 `.trim();
 
@@ -72,7 +73,7 @@ const _cliRadioTaskHeld = async (): Promise<void> => {
   const mode = named.when === 'hook.onStop' ? 'hook.onStop' : 'list';
   if (mode === 'list')
     console.log(
-      '🦫 radio.task.held is now `rhx radio.task.queue get`; the old name is deprecated',
+      'radio.task.held is deprecated; run `rhx radio.task.queue get` instead',
     );
 
   // read the held records and the gate of each, from local files only
@@ -88,9 +89,14 @@ const _cliRadioTaskHeld = async (): Promise<void> => {
     return;
   }
 
-  // stop mode: one line to the human via claude's systemMessage, or naught
+  // stop mode: one line to the human via claude's systemMessage, or naught; the rename rides
+  // inside that one line, so a hook still wired to the old name learns of its retirement
   if (output === null) return;
-  console.log(JSON.stringify({ systemMessage: output }));
+  console.log(
+    JSON.stringify({
+      systemMessage: `${output} · radio.task.held is deprecated; run \`rhx radio.task.queue get --when hook.onStop\` instead`,
+    }),
+  );
 };
 
 export const cliRadioTaskHeld = withStopHookNeverBlocks(_cliRadioTaskHeld);

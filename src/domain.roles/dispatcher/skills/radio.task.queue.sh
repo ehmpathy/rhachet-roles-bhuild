@@ -12,14 +12,15 @@
 # usage:
 #   radio.task.queue.sh get                                 # what waits
 #   radio.task.queue.sh get --when hook.onStop              # one-line stop reminder
-#   radio.task.queue.sh set --key K --auth as-human         # amend one held record
-#   radio.task.queue.sh del --key K --why "superseded"      # drop one, why kept
+#   radio.task.queue.sh set --key <key> --auth as-human     # amend one held record
+#   radio.task.queue.sh del --key <key> --why "<why>"       # drop one, why kept
 #   radio.task.queue.sh drain [--auth as-human]             # deliver now
 #
 # guarantee:
 #   - get reads local records + radio.uses only; no network, no send
 #   - set and del send naught, and never land mid-drain (drain lock)
-#   - drain meets each record's radio.uses gate; exit 2 while any waits
+#   - drain meets each record's radio.uses gate; exit 2 while any waits, or if it refused one
+#   - a flag or positional a verb does not read is refused before it acts
 #   - a rate limit or outage halts the drain; any other fault sets one aside
 #   - hook.onStop never exits 2, so never blocks the stop
 ######################################################################

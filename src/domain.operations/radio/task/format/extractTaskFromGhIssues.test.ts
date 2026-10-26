@@ -153,5 +153,15 @@ timeout in ci needs attention`,
         expect(task.branch).toEqual('foreman/fix-flaky-test');
       });
     });
+
+    when(
+      '[t1] the same body on an issue still open (a deliver cut short at its close)',
+      () => {
+        then('status is CLAIMED, so a replay sends the close again', () => {
+          const task = extractTaskFromGhIssues({ ...issueData, state: 'open' });
+          expect(task.status).toEqual(RadioTaskStatus.CLAIMED);
+        });
+      },
+    );
   });
 });

@@ -2,7 +2,7 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
-import { BadRequestError } from 'helpful-errors';
+import { UnexpectedCodePathError } from 'helpful-errors';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
@@ -172,12 +172,17 @@ describe('radio.task.push via gh.issues', () => {
     const homeDir = path.join(consumer.repoDir, '.home');
     fs.mkdirSync(homeDir);
 
-    // allow radio usage for @all orgs
-    runRadioUses({
+    // allow radio usage for @all orgs; a failed grant fails here, not as a later held push
+    const allowed = runRadioUses({
       repoDir: consumer.repoDir,
       args: '--org @all allow',
       homeDir,
     });
+    if (allowed.exitCode !== 0)
+      throw new UnexpectedCodePathError('radio.uses allow failed in the scene', {
+        exitCode: allowed.exitCode,
+        output: allowed.stdout,
+      });
 
     return { consumer, homeDir };
   });
@@ -258,9 +263,13 @@ describe('radio.task.push via gh.issues', () => {
           description: 'for status transition test',
         });
 
-        // extract issue exid from output
+        // extract issue exid from output; a miss fails here, never as a later exid-less push
         const match = result.output.match(/exid: (\d+)/);
-        if (match) issueNumber = match[1]!;
+        if (!match?.[1])
+          throw new UnexpectedCodePathError('create output names no exid', {
+            output: result.output,
+          });
+        issueNumber = match[1];
 
         return result;
       });
@@ -496,6 +505,18 @@ describe('radio.task.push via gh.issues', () => {
         expect(
           asStableRecordKey({
             output: sanitizeOutput(result.stdout).replace(
+              /auth-fail env test \d+/g,
+              'auth-fail env test <ts>',
+            ),
+          }),
+        ).toMatchSnapshot();
+      });
+
+      then('the stderr stream matches snapshot', () => {
+        // snapped apart from stdout, so a leak onto stderr surfaces as a snap diff
+        expect(
+          asStableRecordKey({
+            output: sanitizeOutput(result.stderr).replace(
               /auth-fail env test \d+/g,
               'auth-fail env test <ts>',
             ),

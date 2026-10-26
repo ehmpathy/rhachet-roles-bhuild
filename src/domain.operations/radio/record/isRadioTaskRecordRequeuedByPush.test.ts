@@ -32,7 +32,7 @@ const TEST_CASES = [
     expect: { output: true },
   },
   {
-    description: 'a refused record re-queues, since a human re-ran it',
+    description: 'a refused record re-queues on any push of the same task',
     given: {
       before: genRecord({ recordStatus: RadioTaskRecordStatus.REFUSED }),
       description: 'remind each surfer a day ahead',
@@ -40,7 +40,7 @@ const TEST_CASES = [
     expect: { output: true },
   },
   {
-    description: 'a dropped record re-queues, since a human re-ran it',
+    description: 'a dropped record re-queues on any push of the same task',
     given: {
       before: genRecord({ recordStatus: RadioTaskRecordStatus.DROPPED }),
       description: 'remind each surfer a day ahead',

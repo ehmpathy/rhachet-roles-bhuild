@@ -63,6 +63,22 @@ const STATE_CASES = [
     expect: { output: 'halted' },
   },
   {
+    description: 'an earlier update to the same issue holds it behind',
+    given: {
+      reason: 'behind:b2c3d4e5f6071829 (same issue #599)',
+      lift: null,
+    },
+    expect: { output: 'waits behind' },
+  },
+  {
+    description: 'a shut gate wins over a wait behind the same issue',
+    given: {
+      reason: 'behind:b2c3d4e5f6071829 (same issue #599)',
+      lift: 'rhx radio.uses --org sandpine allow',
+    },
+    expect: { output: 'held at gate' },
+  },
+  {
     description: 'a gate since opened leaves it not reached',
     given: { reason: 'radio.uses:blocked — default', lift: null },
     expect: { output: 'not reached' },

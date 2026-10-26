@@ -1,3 +1,4 @@
+import type { RadioDrainDeadline } from './genRadioDrainDeadline';
 import { getAllRadioTaskRecordsHeld } from './getAllRadioTaskRecordsHeld';
 import type { RadioTaskRecordFate } from './RadioTaskRecordFate';
 import type { ShellExecutor } from './ShellExecutor';
@@ -28,6 +29,15 @@ const _setRadioTaskRecordsDrained = async (
     env: NodeJS.ProcessEnv;
     shx: ShellExecutor;
     authOverride?: string | null;
+    authLive?: { key: string; auth: string | null } | null;
+    drainSendBudget?: { milliseconds: number };
+    drainSendLimit?: {
+      perCall: { milliseconds: number };
+      perSend: { milliseconds: number };
+    };
+    lockAcquireTimeout?: { milliseconds: number };
+    lockLease?: { milliseconds: number };
+    drainDeadline: RadioDrainDeadline;
   },
 ): Promise<{ fates: RadioTaskRecordFate[] }> => {
   // send the held line, oldest first
@@ -42,7 +52,10 @@ const _setRadioTaskRecordsDrained = async (
 /**
  * .note = one drain at a time per worktree: the held line is read under the lock, so a
  *         concurrent drain waits, then finds the first drain's records delivered (X2, C19)
+ * .note = the lock supplies drainDeadline, so the caller's context omits it
  */
-export const setRadioTaskRecordsDrained = withRadioDrainLock(
-  _setRadioTaskRecordsDrained,
-);
+export const setRadioTaskRecordsDrained = withRadioDrainLock<
+  Record<string, never>,
+  Omit<Parameters<typeof _setRadioTaskRecordsDrained>[1], 'drainDeadline'>,
+  { fates: RadioTaskRecordFate[] }
+>(_setRadioTaskRecordsDrained);

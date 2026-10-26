@@ -24,17 +24,74 @@ exports[`asRadioPushOutput given: [case2] a push blocked by radio.uses (C10) whe
       └─ then the next push delivers the backlog first"
 `;
 
+exports[`asRadioPushOutput given: [case3.2] a push held behind an earlier update to its issue when: [t0] the record ahead is set aside in the same drain then: it points to the record ahead, and promises a send only once that one lands or is dropped 1`] = `
+"🦫 held for the radio
+   ├─ task    = deliver #599
+   ├─ into    = ehmpathy/rhachet
+   ├─ status  = QUEUED (waits behind a1b2c3d4e5f60718, same issue #599)
+   ├─ held at = .behavior/v2026_09_28.fix-radio-recorder/.radio/
+   ├─ still held
+   │  └─ a1b2c3d4e5f60718 claim #599 → ehmpathy/rhachet (upstream:access)
+   │     ├─ fault: GraphQL: Resource not accessible by integration (updateIssue)
+   │     ├─ amend it: rhx radio.task.queue set --key a1b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
+   │     └─ or drop it: rhx radio.task.queue del --key a1b2c3d4e5f60718 --why "<why>"
+   ├─ backlog = 2 await the radio
+   └─ fix the earlier update first: --key a1b2c3d4e5f60718
+      ├─ see its fix: rhx radio.task.queue get
+      └─ this one sends on the next drain once that one lands or is dropped"
+`;
+
+exports[`asRadioPushOutput given: [case3.3] a push held behind a halt, never sent itself when: [t0] an earlier record in the drain hit a rate limit then: it names the wait, never the wall fault it never met 1`] = `
+"🦫 held for the radio
+   ├─ task    = fix flaky keyrack test
+   ├─ into    = ehmpathy/rhachet
+   ├─ status  = QUEUED (upstream:rate-limit)
+   ├─ held at = .behavior/v2026_09_28.fix-radio-recorder/.radio/
+   ├─ still held
+   │  └─ a1b2c3d4e5f60718 wetsuit sizes → ehmpathy/rhachet (upstream:rate-limit)
+   │     ├─ fault: API rate limit exceeded for installation ID 1
+   │     ├─ halted: the line stops here
+   │     └─ wait, then: rhx radio.task.queue drain
+   ├─ backlog = 2 await the radio
+   └─ waits behind the halt (upstream:rate-limit): unsent, still in line
+      └─ naught to fix on this one; the next drain sends it once the halt clears"
+`;
+
+exports[`asRadioPushOutput given: [case3.4] a push held with no fault detail, the gate open when: [t0] its record carries a reason but no detail then: the fix line names the reason, never null 1`] = `
+"🦫 held for the radio
+   ├─ task    = fix flaky keyrack test
+   ├─ into    = ehmpathy/rhachet
+   ├─ status  = QUEUED (upstream:access)
+   ├─ held at = .behavior/v2026_09_28.fix-radio-recorder/.radio/
+   ├─ backlog = 1 awaits the radio
+   └─ fix it: upstream:access
+      ├─ amend it: rhx radio.task.queue set --key f0e1d2c3b4a59687 --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --key f0e1d2c3b4a59687 --why "<why>"
+      └─ then the next push delivers the backlog first"
+`;
+
+exports[`asRadioPushOutput given: [case3.4] a push held with no fault detail, the gate open when: [t1] its record carries no reason at all then: it says naught to fix, never \`fix it: null\` 1`] = `
+"🦫 held for the radio
+   ├─ task    = fix flaky keyrack test
+   ├─ into    = ehmpathy/rhachet
+   ├─ status  = QUEUED (not reached)
+   ├─ held at = .behavior/v2026_09_28.fix-radio-recorder/.radio/
+   ├─ backlog = 1 awaits the radio
+   └─ naught to fix: no fault on record
+      └─ then the next push delivers the backlog first"
+`;
+
 exports[`asRadioPushOutput given: [case3] an unbound push held by an upstream fault (R2, C13) when: [t0] the token was rejected then: it names the place and the fix 1`] = `
 "🦫 held for the radio
    ├─ task    = fix flaky keyrack test
    ├─ into    = ehmpathy/rhachet
    ├─ status  = QUEUED (upstream:401)
    ├─ held at = .behavior/.radio/ (no route bound to this branch)
-   ├─ backlog = 1 await the radio
+   ├─ backlog = 1 awaits the radio
    └─ fix it: github auth failed: the robot token was rejected by github (401)
       ├─ unblock now — re-run as human: --auth as-human
-      ├─ amend it: rhx radio.task.queue set --key k --auth as-human (needs a gh login on this host)
-      ├─ or drop it: rhx radio.task.queue del --key k --why "<why>"
+      ├─ amend it: rhx radio.task.queue set --key f0e1d2c3b4a59687 --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --key f0e1d2c3b4a59687 --why "<why>"
       └─ then the next push delivers the backlog first"
 `;
 
@@ -44,7 +101,7 @@ exports[`asRadioPushOutput given: [case3] an unbound push held by an upstream fa
    ├─ into    = ehmpathy/rhachet
    ├─ status  = QUEUED (radio.uses:blocked — default)
    ├─ held at = .behavior/.radio/ (branch bound to 2 routes: .behavior/v2026_01_01.alpha, .behavior/v2026_01_02.beta)
-   ├─ backlog = 1 await the radio
+   ├─ backlog = 1 awaits the radio
    └─ lift it (human): rhx radio.uses allow
       └─ then the next push delivers the backlog first"
 `;
@@ -55,15 +112,15 @@ exports[`asRadioPushOutput given: [case3] an unbound push held by an upstream fa
    ├─ into    = ehmpathy/rhachet
    ├─ status  = QUEUED (upstream:auth)
    ├─ held at = .behavior/.radio/ (no route bound to this branch)
-   ├─ backlog = 1 await the radio
+   ├─ backlog = 1 awaits the radio
    └─ fix it: unrecognized --auth mode: some-unknown-mode
       ├─ supported modes:
       │  ├─ as-robot:env(VAR)
       │  │     use token from environment variable
       │  └─ as-human
       │        use gh cli logged-in session (interactive)
-      ├─ amend it: rhx radio.task.queue set --key k --auth as-human (needs a gh login on this host)
-      ├─ or drop it: rhx radio.task.queue del --key k --why "<why>"
+      ├─ amend it: rhx radio.task.queue set --key f0e1d2c3b4a59687 --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --key f0e1d2c3b4a59687 --why "<why>"
       └─ then the next push delivers the backlog first"
 `;
 
@@ -73,12 +130,12 @@ exports[`asRadioPushOutput given: [case4] an open push that drains a backlog (C4
    │  └─ #412 fix flaky keyrack test
    ├─ pushed
    │  └─ #415 retry race in route.bounce (created)
-   ├─ refused — closed, never retried
+   ├─ refused — closed, never retried; rhx radio.task.queue get lists it no more, and its reason stays in its record file
    │  └─ claim #411 — task already claimed by different branch
    ├─ still held
-   │  ├─ guard gateway → sandpine/svc-reservations (radio.uses:blocked — org)
-   │  └─ lift it (human): rhx radio.uses --org sandpine allow
-   └─ backlog = 1 await the radio"
+   │  └─ c3c3c3c3c3c3c3c3 guard gateway → sandpine/svc-reservations (radio.uses:blocked — org)
+   │     └─ lift it (human): rhx radio.uses --org sandpine allow
+   └─ backlog = 1 awaits the radio"
 `;
 
 exports[`asRadioPushOutput given: [case5] a delivered push re-pushed while the gate is shut (C9) when: [t0] the record already landed then: it says already delivered, with the exid 1`] = `
@@ -114,7 +171,19 @@ exports[`asRadioPushOutput given: [case8] a refused push through an open gate, w
    ├─ drained
    │  └─ #412 fix flaky keyrack test
    ├─ still held
-   │  ├─ guard gateway → sandpine/svc-reservations (radio.uses:blocked — org)
-   │  └─ lift it (human): rhx radio.uses --org sandpine allow
-   └─ backlog = 1 await the radio"
+   │  └─ c3c3c3c3c3c3c3c3 guard gateway → sandpine/svc-reservations (radio.uses:blocked — org)
+   │     └─ lift it (human): rhx radio.uses --org sandpine allow
+   └─ backlog = 1 awaits the radio"
+`;
+
+exports[`asRadioPushOutput given: [case20] a push held at a shut gate, under an auth no drain will replay when: [t0] the hold renders then: it names two human acts side by side, the lift and an auth amend with a placeholder auth 1`] = `
+"🦫 held for the radio
+   ├─ task    = fix flaky keyrack test
+   ├─ into    = sandpine/svc-reservations
+   ├─ status  = QUEUED (radio.uses:blocked — org)
+   ├─ held at = .behavior/v2026_09_28.fix-radio-recorder/.radio/
+   ├─ backlog = 1 awaits the radio
+   ├─ lift it (human): rhx radio.uses --org sandpine allow
+   └─ amend its auth (human): rhx radio.task.queue set --key f0e1d2c3b4a59687 --auth <auth>
+      └─ auth: as-robot:shx(…), will not replay"
 `;

@@ -1,8 +1,11 @@
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 
+import type { RadioDrainDeadline } from './genRadioDrainDeadline';
+import { getOneRadioFateAheadOnIssue } from './getOneRadioFateAheadOnIssue';
 import type { RadioTaskRecordFate } from './RadioTaskRecordFate';
 import type { ShellExecutor } from './ShellExecutor';
 import { setRadioTaskRecordHeldBehindHalt } from './setRadioTaskRecordHeldBehindHalt';
+import { setRadioTaskRecordHeldBehindOnIssue } from './setRadioTaskRecordHeldBehindOnIssue';
 import { setRadioTaskRecordUpstream } from './setRadioTaskRecordUpstream';
 
 type HeldFate = Extract<RadioTaskRecordFate, { fate: 'held' }>;
@@ -31,6 +34,12 @@ export const setRadioTaskRecordNextInLine = async (
     env: NodeJS.ProcessEnv;
     shx: ShellExecutor;
     authOverride?: string | null;
+    authLive?: { key: string; auth: string | null } | null;
+    drainSendLimit?: {
+      perCall: { milliseconds: number };
+      perSend: { milliseconds: number };
+    };
+    drainDeadline: RadioDrainDeadline;
   },
 ): Promise<RadioTaskRecordLineProgress> => {
   // behind a halt: held in place with the halter's reason, unsent
@@ -45,6 +54,23 @@ export const setRadioTaskRecordNextInLine = async (
         }),
       ],
       halter: halterPrior,
+    };
+
+  // behind an earlier update to the same issue that still waits: held, unsent, in order
+  const aheadOnIssue = getOneRadioFateAheadOnIssue({
+    record: input.entry.record,
+    fates: input.prior.fates,
+  });
+  if (aheadOnIssue)
+    return {
+      fates: [
+        ...input.prior.fates,
+        setRadioTaskRecordHeldBehindOnIssue({
+          ...input.entry,
+          ahead: aheadOnIssue,
+        }),
+      ],
+      halter: null,
     };
 
   // otherwise, send it; a fault that halts holds the line after it

@@ -11,7 +11,7 @@ import { setRadioTaskRecordsDrainedByPush } from './setRadioTaskRecordsDrainedBy
  *        left behind, as one result
  */
 export const getOneRadioPushDrainWithBacklog = async (
-  input: { record: RadioTaskRecord; dir: string },
+  input: { record: RadioTaskRecord; dir: string; authTyped: string | null },
   context: {
     cwd: string;
     homeDir: string | undefined;

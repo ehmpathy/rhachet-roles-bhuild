@@ -1,8 +1,7 @@
 import { asRadioDeliveredLine } from './asRadioDeliveredLine';
-import { asRadioNestedLines } from './asRadioNestedLines';
-import { asRadioQueueFixLines } from './asRadioQueueFixLines';
+import { asRadioDrainHeldRow } from './asRadioDrainHeldRow';
+import { asRadioRefusalText } from './asRadioRefusalText';
 import { asRadioTaskRecordLabel } from './asRadioTaskRecordLabel';
-import { asRadioTaskRepoSlug } from './asRadioTaskRepoSlug';
 import type { RadioTaskRecordFate } from './RadioTaskRecordFate';
 
 type RadioTreeBranch = { line: string; children: string[] };
@@ -12,11 +11,12 @@ type RadioTreeBranch = { line: string; children: string[] };
  * .why = a push that rides a drain and a `queue drain` show one shape; the sections come
  *        back keyed, so a caller places `drained` by name, never by label
  *
- * .note = each record still held names its next move (asRadioQueueFixLines), so a record
+ * .note = each record still held names its next move (asRadioDrainHeldRow), so a record
  *         set aside is never a dead end
  */
 export const asRadioDrainSections = (input: {
   fates: RadioTaskRecordFate[];
+  authOverride: string | null;
 }): { drained: RadioTreeBranch[]; closedOrHeld: RadioTreeBranch[] } => {
   // the drained lines print in drain order, so their order alone is the place in line
   const drained = input.fates.flatMap((fate) =>
@@ -30,37 +30,29 @@ export const asRadioDrainSections = (input: {
   );
   const refused = input.fates.flatMap((fate) =>
     fate.fate === 'refused'
-      ? [`${asRadioTaskRecordLabel(fate)} — ${fate.detail}`]
+      ? [
+          `${asRadioTaskRecordLabel(fate)} — ${asRadioRefusalText({ detail: fate.detail })}`,
+        ]
       : [],
   );
   const held = input.fates.flatMap((fate) =>
     fate.fate === 'held'
-      ? [
-          asRadioNestedLines({
-            head: `${asRadioTaskRecordLabel(fate)} → ${asRadioTaskRepoSlug({ repo: fate.record.repo })} (${fate.record.reason ?? 'not reached'})`,
-            lines: asRadioQueueFixLines(fate),
-          }),
-        ]
+      ? [asRadioDrainHeldRow({ fate, authOverride: input.authOverride })]
       : [],
   );
-  const lifts = [
-    ...new Set(
-      input.fates.flatMap((fate) =>
-        fate.fate === 'held' && fate.lift
-          ? [`lift it (human): ${fate.lift}`]
-          : [],
-      ),
-    ),
-  ];
   return {
     drained: drained.length ? [{ line: 'drained', children: drained }] : [],
     closedOrHeld: [
       ...(refused.length
-        ? [{ line: 'refused — closed, never retried', children: refused }]
+        ? [
+            {
+              // the note rides on the section head, so no child reads as one more refused record
+              line: 'refused — closed, never retried; rhx radio.task.queue get lists it no more, and its reason stays in its record file',
+              children: refused,
+            },
+          ]
         : []),
-      ...(held.length
-        ? [{ line: 'still held', children: [...held, ...lifts] }]
-        : []),
+      ...(held.length ? [{ line: 'still held', children: held }] : []),
     ],
   };
 };

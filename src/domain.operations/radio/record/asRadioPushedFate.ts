@@ -1,14 +1,15 @@
 import { MalfunctionError } from 'helpful-errors';
 
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
-import { RadioTaskRecordStatus } from '@src/domain.objects/RadioTaskRecordStatus';
 
+import { asRadioFateFromSettledRecord } from './asRadioFateFromSettledRecord';
 import type { RadioTaskRecordFate } from './RadioTaskRecordFate';
 
 /**
  * .what = the fate of this push, from the fates the drain reported
- * .why = a push that already landed is not in the drain, and reads as landed (C3, C6).
- *        a held push the drain never saw is a defect: it must fail loud, never read as delivered
+ * .why = a push that already landed is not in the drain, and reads as landed (C3, C6); one a
+ *        concurrent drain refused, or a `queue del` dropped, reads as refused with its why.
+ *        a still-queued push the drain never saw is a defect: it must fail loud
  */
 export const asRadioPushedFate = (input: {
   fates: RadioTaskRecordFate[];
@@ -20,11 +21,11 @@ export const asRadioPushedFate = (input: {
   );
   if (found) return found;
 
-  // not in the drain because it already landed
-  if (input.record.recordStatus === RadioTaskRecordStatus.DELIVERED)
-    return { fate: 'landed', record: input.record };
+  // not in the drain because another writer settled it: it landed, was refused, or was dropped
+  const settled = asRadioFateFromSettledRecord({ record: input.record });
+  if (settled) return settled;
 
-  // not in the drain, yet held: the sweep missed it
+  // not in the drain, yet still queued: the sweep missed it
   throw new MalfunctionError('push was held, yet the drain never reached it', {
     key: input.record.key,
     recordStatus: input.record.recordStatus,

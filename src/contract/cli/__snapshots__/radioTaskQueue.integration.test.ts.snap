@@ -1,0 +1,200 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`radio.task.queue.integration — CLI contract given: [case1] --help when: [t0] the queue skill runs then: prints the usage contract for all four verbs 1`] = `
+"🦫 let's check the meter...
+
+🎙️ radio.task.queue --help
+   ├─ usage
+   │  ├─ rhx radio.task.queue get                                   what waits: key · task · reason · fix
+   │  ├─ rhx radio.task.queue get --when hook.onStop                one-line stop reminder (naught when none)
+   │  ├─ rhx radio.task.queue set   --key <key> --auth as-human     amend one held record (or --description)
+   │  ├─ rhx radio.task.queue del   --key <key> --why "<why>"       drop one, its body and why kept
+   │  └─ rhx radio.task.queue drain [--auth as-human]               deliver now; a fault sets one record aside
+   │
+   ├─ the line
+   │  ├─ a rate limit or a github outage halts the drain; the rest wait in order
+   │  ├─ any other fault sets its one record aside; the rest still deliver
+   │  └─ a later update to the same issue waits behind it, unsent, until it lands or is dropped
+   │
+   ├─ exit codes
+   │  ├─ drain
+   │  │  ├─ 0  naught waits, naught refused
+   │  │  └─ 2  a record still waits, or this drain refused one (its why is in the output)
+   │  └─ get, set, del
+   │     └─ 0  done, even with records held; 2 only on a bad call
+   │
+   └─ options
+      ├─ --key          the record key \`get\` prints (set, del)
+      ├─ --auth         as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd) | as-human
+      │  ├─ set:   amends the one record --key names
+      │  └─ drain: sends every held record under this auth, this drain only
+      ├─ --description  the new body (set; supports @stdin)
+      ├─ --why          why the record is dropped (del, required)
+      ├─ --when         hook.onStop (get)
+      └─ --help, -h     show this help"
+`;
+
+exports[`radio.task.queue.integration — CLI contract given: [case3] an unknown verb when: [t0] the queue skill runs then: fails with a constraint that names the four verbs 1`] = `"✋ ConstraintError: "flush" is not a queue verb; use get, set, del, or drain (see --help)"`;
+
+exports[`radio.task.queue.integration — CLI contract given: [case4] set with no field to amend when: [t0] the queue skill runs then: fails with a constraint that names the two fields 1`] = `"✋ ConstraintError: naught to amend; pass --auth and/or --description"`;
+
+exports[`radio.task.queue.integration — CLI contract given: [case5] set with no --key when: [t0] the queue skill runs then: fails with a constraint that names how to list keys 1`] = `"✋ ConstraintError: --key is required; run \`rhx radio.task.queue get\` to list the keys"`;
+
+exports[`radio.task.queue.integration — CLI contract given: [case6] del with no --key when: [t0] the queue skill runs then: fails with a constraint that names how to list keys 1`] = `"✋ ConstraintError: --key is required; run \`rhx radio.task.queue get\` to list the keys"`;
+
+exports[`radio.task.queue.integration — CLI contract given: [case7] del with no --why when: [t0] the queue skill runs then: fails with a constraint that shows a --why to pass 1`] = `"✋ ConstraintError: --why is required; say why this record is dropped, e.g. --why "superseded by #604""`;
+
+exports[`radio.task.queue.integration — CLI contract given: [case8] an --auth value that is not an auth mode when: [t0] set runs with it then: fails with a constraint that lists the four modes 1`] = `"✋ ConstraintError: --auth "as-surfer" is not an auth mode; use as-human, as-robot:via-keyrack(owner), as-robot:env(VAR), or as-robot:shx(cmd)"`;
+
+exports[`radio.task.queue.integration — CLI contract given: [case8] an --auth value that is not an auth mode when: [t1] drain runs with it then: fails the same way, before any send 1`] = `"✋ ConstraintError: --auth "as-surfer" is not an auth mode; use as-human, as-robot:via-keyrack(owner), as-robot:env(VAR), or as-robot:shx(cmd)"`;
+
+exports[`radio.task.queue.integration — CLI contract given: [case9] set with a --title when: [t0] the queue skill runs then: fails with a constraint that names the del + re-push path 1`] = `"✋ ConstraintError: --title cannot be amended: the title is what the push creates; to retitle, run \`rhx radio.task.queue del --key <key>\` and push again"`;
+
+exports[`radio.task.queue.integration — CLI contract given: [case10] set on a key no record holds when: [t0] the queue skill runs then: fails with a constraint that names how to list keys 1`] = `"✋ ConstraintError: no radio record with key a1b2c3d4e5f60718 in this worktree; run \`rhx radio.task.queue get\` to list the keys"`;
+
+exports[`radio.task.queue.integration — CLI contract given: [case14] a verb with a flag it does not read when: [t0] drain runs with --key, as though it scoped the drain then: it refuses before any send, and names what drain reads 1`] = `"✋ ConstraintError: drain does not read --key. drop it, then run again. drain reads --auth (see --help). to act on one record, run \`rhx radio.task.queue set --key <key>\` or \`rhx radio.task.queue del --key <key>\`."`;
+
+exports[`radio.task.queue.integration — CLI contract given: [case14] a verb with a flag it does not read when: [t1] drain runs with --mode plan, as though it previewed then: it refuses rather than send for real 1`] = `"✋ ConstraintError: drain does not read --mode. drop it, then run again. drain reads --auth (see --help)."`;
+
+exports[`radio.task.queue.integration — CLI contract given: [case15] set with a blank --description when: [t0] the queue skill runs then: it refuses to blank the body 1`] = `"✋ ConstraintError: --description is empty; pass the new body, e.g. --description "reminder: lesson at 9am", or pipe it via @stdin"`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case11] an update the robot may not write, and a create behind it when: [t0] drain runs then: the stdout reads as a human sees it 1`] = `
+"🦫 back in the river! part of the backlog is delivered
+   ├─ drained
+   │  └─ #701 wetsuit sizes
+   ├─ still held
+   │  └─ <key> deliver #599 → sandpine/svc-lessons (upstream:access)
+   │     ├─ fault: GraphQL: Resource not accessible by integration (updateIssue)
+   │     ├─ amend it: rhx radio.task.queue set --key <key> --auth as-human (needs a gh login on this host)
+   │     └─ or drop it: rhx radio.task.queue del --key <key> --why "<why>"
+   └─ backlog = 1 awaits the radio"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case11] an update the robot may not write, and a create behind it when: [t1] set --auth as-human on the set-aside update then: it succeeds and names the change 1`] = `
+"🦫 amended the held record
+   ├─ key     = <key>
+   ├─ task    = deliver #599 → sandpine/svc-lessons
+   ├─ changed
+   │  └─ auth: as-robot:env(RADIO_QUEUE_JOURNEY_TOKEN) → as-human
+   ├─ kept at = .behavior/.radio/record.<key>.json
+   └─ naught sent; its place in line is kept, and the next push, or \`rhx radio.task.queue drain\`, sends it"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case11] an update the robot may not write, and a create behind it when: [t2] drain --auth as-human, once the human may write the update then: the notice prints before the drain output 1`] = `
+"🦫 this drain sent under --auth as-human
+🦫 back in the river! the backlog is delivered
+   ├─ drained
+   │  ├─ deliver #599
+   │  └─ #702 board rental hours
+   └─ backlog = 0"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case12] a set-aside update, an update behind it on one issue, and a rate limit when: [t0] get runs after the drain then: the rows read as a human sees them 1`] = `
+"🦫 held for the radio
+   ├─ <key> claim #599 → sandpine/svc-lessons
+   │  ├─ state: set aside (upstream:access)
+   │  ├─ auth: as-robot:env(RADIO_QUEUE_JOURNEY_TOKEN)
+   │  ├─ amend it: rhx radio.task.queue set --key <key> --auth as-human (needs a gh login on this host)
+   │  └─ or drop it: rhx radio.task.queue del --key <key> --why "<why>"
+   ├─ <key> deliver #599 → sandpine/svc-lessons
+   │  ├─ state: waits behind <key> (same issue #599)
+   │  ├─ auth: as-robot:env(RADIO_QUEUE_JOURNEY_TOKEN)
+   │  └─ fix <key> above (amend, lift, or drop it); this one sends on the next drain after
+   ├─ <key> tide widget → sandpine/spot-forecast
+   │  ├─ state: halted (upstream:rate-limit)
+   │  └─ auth: as-robot:env(RADIO_QUEUE_JOURNEY_TOKEN)
+   ├─ <key> swell alerts → sandpine/spot-forecast
+   │  ├─ state: behind the halt (upstream:rate-limit): unsent, still in line; the next drain sends it once the halt clears
+   │  └─ auth: as-robot:env(RADIO_QUEUE_JOURNEY_TOKEN)
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case12] a set-aside update, an update behind it on one issue, and a rate limit when: [t1] get --when hook.onStop runs then: it prints the one-line reminder, never exit 2 1`] = `"{"systemMessage":"🦫 4 tasks held for the radio · 1 set aside (upstream:access) · 1 halted (upstream:rate-limit) · 1 behind the halt · 1 behind an earlier update to the same issue · see each fix: rhx radio.task.queue get"}"`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case13] a set-aside update amended to as-human, then a plain drain (the headline path) when: [t0] set --auth with a shell command then: it refuses to store it, and names the drain --auth path 1`] = `"✋ ConstraintError: --auth as-robot:shx(echo pwned) cannot be stored on a record; a drain never replays a stored auth that runs a shell or names an unsafe owner or var. pass it to the drain instead: rhx radio.task.queue drain --auth 'as-robot:shx(echo pwned)'"`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case13] a set-aside update amended to as-human, then a plain drain (the headline path) when: [t1] set --auth as-human, then a plain drain with no --auth then: it sent under the record own as-human auth, no override 1`] = `
+"🦫 back in the river! the backlog is delivered
+   ├─ drained
+   │  └─ deliver #599
+   └─ backlog = 0"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case16] set --description @stdin with a multi-line body when: [t0] the pipe holds a multi-line body then: it amends the body and names where the record is kept 1`] = `
+"🦫 amended the held record
+   ├─ key     = <key>
+   ├─ task    = wetsuit sizes → sandpine/svc-rentals
+   ├─ changed
+   │  └─ description: amended
+   ├─ kept at = .behavior/.radio/record.<key>.json
+   └─ naught sent; its place in line is kept, and the next push, or \`rhx radio.task.queue drain\`, sends it"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case17] an update to an issue the radio may not edit (case=8 [t0] [t1]) when: [t0] the issue is not a radio task (filed by hand) then: it names why, and that the fix is by hand 1`] = `
+"🦫 naught delivered; upstream refused what the drain sent
+   ├─ refused — closed, never retried; rhx radio.task.queue get lists it no more, and its reason stays in its record file
+   │  └─ deliver #599 — issue #599 is not a radio task; the radio edits only its own 🎙️ task issues, so edit or close #599 by hand
+   └─ backlog = 0"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case17] an update to an issue the radio may not edit (case=8 [t0] [t1]) when: [t1] the issue is absent from a reachable repo then: it names a true absence, never a raw gh dump 1`] = `
+"🦫 naught delivered; upstream refused what the drain sent
+   ├─ refused — closed, never retried; rhx radio.task.queue get lists it no more, and its reason stays in its record file
+   │  └─ deliver #599 — task not found
+   └─ backlog = 0"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case18] push --exid 599 --status CLAIMED --auth as-human (#603, the push form) when: [t0] the gate is open then: every gh call went out on the gh session, never a token 1`] = `
+"🦫 onto the pile!
+
+🎙️ updated: board rentals open friday
+   ├─ exid: 599
+   ├─ status: CLAIMED
+   ├─ repo: sandpine/svc-rentals
+   ├─ pushedBy: stubbot
+   ├─ pushedAt: 2026-10-20
+   ├─ claimedBy: <gh-login>
+   ├─ claimedAt: <today>
+   ├─ branch: main
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case18] push --exid 599 --status CLAIMED --auth as-human (#603, the push form) when: [t1] the gate is shut at push, then a later drain replays the stored as-human then: the drain replays as-human: gh session calls, delivered, exit 0 1`] = `
+"🦫 back in the river! the backlog is delivered
+   ├─ drained
+   │  └─ claim #599
+   └─ backlog = 0"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case18] push --exid 599 --status CLAIMED --auth as-human (#603, the push form) when: [t1] the gate is shut at push, then a later drain replays the stored as-human then: the push is held at the gate, exit 2, with its as-human auth kept 1`] = `
+"🦫 held for the radio
+   ├─ task    = claim #599
+   ├─ into    = sandpine/svc-rentals
+   ├─ status  = QUEUED (radio.uses:blocked — org)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ backlog = 1 awaits the radio
+   └─ lift it (human): rhx radio.uses --org sandpine allow
+      └─ then the next push delivers the backlog first"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case19] a verb given a positional, as though it named one record when: [t0] drain <key> then: it refuses before any send: no gh call, the record still held 1`] = `"✋ ConstraintError: drain takes no positional (got: <key>); name one record by --key with set or del, or run \`rhx radio.task.queue get\` to list the keys"`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case19] a verb given a positional, as though it named one record when: [t1] drain --auth as-human <key> then: it refuses before any send: no gh call, the record still held 1`] = `"✋ ConstraintError: drain takes no positional (got: <key>); name one record by --key with set or del, or run \`rhx radio.task.queue get\` to list the keys"`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case19] a verb given a positional, as though it named one record when: [t2] get x then: it refuses before any send: no gh call, the record still held 1`] = `"✋ ConstraintError: get takes no positional (got: x); name one record by --key with set or del, or run \`rhx radio.task.queue get\` to list the keys"`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case20] a del retried on a record already dropped when: [t0] del runs again on the same key then: it is a no-op: exit 0, the first why kept 1`] = `
+"🦫 already dropped, never sent; naught changed
+   ├─ key     = <key>
+   ├─ why     = dropped: superseded (kept)
+   └─ kept at = .behavior/.radio/record.<key>.json"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case22] del or set on a DELIVERED record when: [t0] del runs on its key then: it refuses, names the state, and leaves the record as is 1`] = `"✋ ConstraintError: radio record <key> is DELIVERED, not held; \`queue del\` acts only on a held record"`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case22] del or set on a DELIVERED record when: [t1] set runs on its key then: it refuses, names the state, and leaves the record as is 1`] = `"✋ ConstraintError: radio record <key> is DELIVERED, not held; \`queue set\` acts only on a held record"`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case22] del or set on a REFUSED record when: [t0] del runs on its key then: it refuses, names the state, and leaves the record as is 1`] = `"✋ ConstraintError: radio record <key> is REFUSED, not held; \`queue del\` acts only on a held record"`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case22] del or set on a REFUSED record when: [t1] set runs on its key then: it refuses, names the state, and leaves the record as is 1`] = `"✋ ConstraintError: radio record <key> is REFUSED, not held; \`queue set\` acts only on a held record"`;

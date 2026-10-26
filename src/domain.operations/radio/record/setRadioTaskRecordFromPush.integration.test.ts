@@ -1,5 +1,14 @@
 import * as fs from 'fs';
-import { genTempDir, given, then, useBeforeAll, useThen, when } from 'test-fns';
+import { ConstraintError } from 'helpful-errors';
+import {
+  genTempDir,
+  getError,
+  given,
+  then,
+  useBeforeAll,
+  useThen,
+  when,
+} from 'test-fns';
 
 import { daoRadioTaskRecord } from '@src/access/daos/daoRadioTaskRecord';
 import { RadioChannel } from '@src/domain.objects/RadioChannel';
@@ -241,4 +250,69 @@ describe('setRadioTaskRecordFromPush', () => {
       });
     },
   );
+
+  given('[case6] one task pushed over two channels', () => {
+    // .note = the key hashes (repo, title) only, so both pushes name one record
+    const scene = useBeforeAll(async () => {
+      const cwd = genTempDir({ slug: 'radio-record-via-flip', git: true });
+      const dir = `${cwd}/.behavior/.radio`;
+      const { record } = setRadioTaskRecordFromPush(
+        { push: asPush({ title: 'book-a-lesson reminder' }) },
+        { dir, cwd },
+      );
+      daoRadioTaskRecord.set.upsert({
+        dir,
+        record: new RadioTaskRecord({
+          ...record,
+          recordStatus: RadioTaskRecordStatus.DELIVERED,
+          deliveredExid: 'book-a-lesson-reminder',
+        }),
+      });
+      return { dir, cwd, key: record.key };
+    });
+
+    when(
+      '[t0] the same title is pushed via gh.issues after it landed via os.fileops',
+      () => {
+        const result = useThen('the push is refused', async () => ({
+          error: await getError(() =>
+            setRadioTaskRecordFromPush(
+              {
+                push: {
+                  ...asPush({ title: 'book-a-lesson reminder' }),
+                  via: RadioChannel.GH_ISSUES,
+                },
+              },
+              { dir: scene.dir, cwd: scene.cwd },
+            ),
+          ),
+        }));
+
+        then(
+          'it is a ConstraintError that names both channels and the fix',
+          () => {
+            expect(result.error).toBeInstanceOf(ConstraintError);
+            expect(result.error.message).toContain(
+              'via os.fileops, not via gh.issues',
+            );
+            expect(result.error.message).toContain(
+              `rhx radio.task.queue del --key ${scene.key}`,
+            );
+          },
+        );
+
+        then(
+          'the first record is unchanged on disk: its channel and fate stand',
+          () => {
+            const found = daoRadioTaskRecord.get
+              .all({ dirs: [scene.dir] })
+              .map(({ record }) => [record.via, record.recordStatus]);
+            expect(found).toEqual([
+              [RadioChannel.OS_FILEOPS, RadioTaskRecordStatus.DELIVERED],
+            ]);
+          },
+        );
+      },
+    );
+  });
 });

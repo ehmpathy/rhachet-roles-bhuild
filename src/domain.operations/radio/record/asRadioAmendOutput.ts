@@ -1,5 +1,6 @@
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 
+import { asRadioAuthShown } from './asRadioAuthShown';
 import { asRadioTaskRecordLabel } from './asRadioTaskRecordLabel';
 import { asRadioTaskRepoSlug } from './asRadioTaskRepoSlug';
 import { asRadioTreeLines } from './asRadioTreeLines';
@@ -11,11 +12,16 @@ import { asRadioTreeLines } from './asRadioTreeLines';
 export const asRadioAmendOutput = (input: {
   before: RadioTaskRecord;
   after: RadioTaskRecord;
+  path: string;
 }): string => {
   const { before, after } = input;
   const changes = [
     ...(before.auth !== after.auth
-      ? [`auth: ${before.auth ?? '(default)'} → ${after.auth ?? '(default)'}`]
+      ? // each side shows through asRadioAuthShown: a stored auth may be a planted shx(...) text,
+        // and no stored auth names the default it resolves to
+        [
+          `auth: ${asRadioAuthShown({ auth: before.auth })} → ${asRadioAuthShown({ auth: after.auth })}`,
+        ]
       : []),
     ...(before.description !== after.description
       ? ['description: amended']
@@ -34,8 +40,10 @@ export const asRadioAmendOutput = (input: {
           line: changes.length ? 'changed' : 'changed naught',
           children: changes,
         },
+        // the amended body is not echoed; the path is where to read it whole
+        { line: `kept at = ${input.path}`, children: [] },
         {
-          line: 'naught sent; its place in line is kept, and the next push or `rhx radio.task.queue drain` sends it',
+          line: 'naught sent; its place in line is kept, and the next push, or `rhx radio.task.queue drain`, sends it',
           children: [],
         },
       ],

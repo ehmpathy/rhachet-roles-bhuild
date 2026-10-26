@@ -7,13 +7,14 @@ import {
   rmSync,
   writeFileSync,
 } from 'fs';
-import { MalfunctionError } from 'helpful-errors';
-import { join } from 'path';
+import { ConstraintError, MalfunctionError } from 'helpful-errors';
+import { basename, join } from 'path';
 import { z } from 'zod';
 
 import { IdempotencyMode } from '../../../domain.objects/IdempotencyMode';
 import { RadioChannel } from '../../../domain.objects/RadioChannel';
 import { RadioTaskRecord } from '../../../domain.objects/RadioTaskRecord';
+import { RADIO_TASK_RECORD_KEY_PATTERN } from '../../../domain.objects/RadioTaskRecordKeyGrammar';
 import { RadioTaskRecordStatus } from '../../../domain.objects/RadioTaskRecordStatus';
 import { RadioTaskStatus } from '../../../domain.objects/RadioTaskStatus';
 import { asExecErrorMessage } from '../../../infra/shell/asExecErrorMessage';
@@ -66,11 +67,24 @@ const withRecordMalfunction =
   };
 
 /**
+ * .what = the grammar a record key must fit (RADIO_TASK_RECORD_KEY_PATTERN)
+ * .why = the key names a file in the record dir; a key with a slash or a dot could
+ *        climb out of it (`../`), so no such key may reach a path
+ */
+const RECORD_KEY_PATTERN = RADIO_TASK_RECORD_KEY_PATTERN;
+
+/**
  * .what = file name of a record, keyed by its identity
  * .why = one file per push identity makes the local findsert a path lookup
  */
-const asRecordFileName = (input: { key: string }): string =>
-  `record.${input.key}.json`;
+const asRecordFileName = (input: { key: string }): string => {
+  if (!RECORD_KEY_PATTERN.test(input.key))
+    throw new ConstraintError(
+      `record key "${input.key}" is not a record key; a key is lowercase letters, digits, and dashes, e.g. a1b2c3d4e5f60718. run \`rhx radio.task.queue get\` to list the keys`,
+      { key: input.key },
+    );
+  return `record.${input.key}.json`;
+};
 
 /**
  * .what = is this dir entry a record file
@@ -78,6 +92,15 @@ const asRecordFileName = (input: { key: string }): string =>
  */
 const isRecordFileName = (input: { name: string }): boolean =>
   input.name.startsWith('record.') && input.name.endsWith('.json');
+
+/**
+ * .what = the key a record file is named for: `record.<key>.json` → `<key>`
+ * .why = the read checks the name against the key the file holds
+ */
+const asRecordKeyFromFileName = (input: { path: string }): string =>
+  basename(input.path)
+    .replace(/^record\./, '')
+    .replace(/\.json$/, '');
 
 /**
  * .what = the shape a record file must hold
@@ -89,7 +112,7 @@ const isRecordFileName = (input: { name: string }): boolean =>
  *         (`heldAt`, `settledAt`) never reach the domain object, nor the next write
  */
 const schemaOfRecordFile = z.object({
-  key: z.string(),
+  key: z.string().regex(RECORD_KEY_PATTERN),
   kind: z.enum(['create', 'update']),
   repo: z.object({ owner: z.string(), name: z.string() }),
   via: z.nativeEnum(RadioChannel),
@@ -199,10 +222,16 @@ const asRecordFromText = withRecordMalfunction(
     text: string;
   }): { record: RadioTaskRecord; isClockHeld: boolean } => {
     const json: unknown = JSON.parse(input.text);
-    return {
-      record: asRecordFromFileJson({ json }),
-      isClockHeld: isRecordJsonClockHeld({ json }),
-    };
+    const record = asRecordFromFileJson({ json });
+
+    // the file must be named for the key it holds, or a settle writes elsewhere and this
+    // file replays on every drain
+    const keyOfFile = asRecordKeyFromFileName({ path: input.path });
+    if (keyOfFile !== record.key)
+      throw new MalfunctionError(
+        `the record holds key "${record.key}" but its file is named for "${keyOfFile}"`,
+      );
+    return { record, isClockHeld: isRecordJsonClockHeld({ json }) };
   },
   {
     message: 'radio task record could not be read',
@@ -366,13 +395,25 @@ const _upsert = (input: {
  * .what = write a record whole, or fail loud
  * .why = a failed write is a loud malfunction (X3): the push is not recorded, so it must not proceed
  */
-const upsert = withRecordMalfunction(_upsert, {
+const upsertOrMalfunction = withRecordMalfunction(_upsert, {
   message: 'radio task record could not be written',
   context: (input) => ({
     where: join(input.dir, asRecordFileName({ key: input.record.key })),
-    fix: null,
+    fix: `make ${input.dir} a writable directory, then run the command again: this record was not written`,
   }),
 });
+
+/**
+ * .what = write a record whole, once its key is proven path-safe
+ * .why = a bad key is the caller's fault (ConstraintError), never an io malfunction
+ */
+const upsert = (input: {
+  dir: string;
+  record: RadioTaskRecord;
+}): RadioTaskRecord => {
+  asRecordFileName({ key: input.record.key });
+  return upsertOrMalfunction(input);
+};
 
 export const daoRadioTaskRecord = {
   get: {
@@ -381,6 +422,8 @@ export const daoRadioTaskRecord = {
     allReadable: getAllReadable,
     allClockHeld: getAllClockHeld,
     dirs: getAllDirs,
+    path: (input: { dir: string; key: string }): string =>
+      join(input.dir, asRecordFileName({ key: input.key })),
   },
   set: { upsert },
 };

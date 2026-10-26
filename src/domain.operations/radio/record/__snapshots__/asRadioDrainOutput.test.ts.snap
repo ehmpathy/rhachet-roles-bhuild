@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asRadioDrainOutput given: [case2] one delivered past a set-aside head (#511) when: [t0] the drain renders then: it says part of the backlog went, the head named with its fix 1`] = `
+"🦫 back in the river! part of the backlog is delivered
+   ├─ drained
+   │  └─ #603 board rentals
+   ├─ still held
+   │  └─ a1b2c3d4e5f60718 deliver #599 → sandpine/svc-lessons (upstream:access)
+   │     ├─ fault: GraphQL: Resource not accessible by integration (updateIssue)
+   │     ├─ amend it: rhx radio.task.queue set --key a1b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
+   │     └─ or drop it: rhx radio.task.queue del --key a1b2c3d4e5f60718 --why "<why>"
+   └─ backlog = 1 awaits the radio"
+`;
+
+exports[`asRadioDrainOutput given: [case3] a halt, naught through when: [t0] the drain renders then: it says naught was delivered and counts the backlog 1`] = `
+"🦫 naught delivered; the backlog still waits
+   ├─ still held
+   │  ├─ a1b2c3d4e5f60718 lesson reminders → sandpine/svc-lessons (upstream:rate-limit)
+   │  │  ├─ fault: API rate limit exceeded
+   │  │  ├─ halted: the line stops here
+   │  │  └─ wait, then: rhx radio.task.queue drain
+   │  └─ b1b2c3d4e5f60718 board rentals → sandpine/svc-lessons (upstream:rate-limit)
+   │     └─ behind the halt: unsent, still in line
+   └─ backlog = 2 await the radio"
+`;
+
+exports[`asRadioDrainOutput given: [case4] a gate-held record at a clear drain when: [t0] the drain renders then: it names the lift for a human 1`] = `
+"🦫 naught delivered; the backlog still waits
+   ├─ still held
+   │  └─ a1b2c3d4e5f60718 lesson reminders → sandpine/svc-lessons (radio.uses:blocked — org)
+   │     └─ lift it (human): rhx radio.uses --org sandpine allow
+   └─ backlog = 1 awaits the radio"
+`;
+
+exports[`asRadioDrainOutput given: [case5] every record delivered when: [t0] the drain renders then: it says the backlog is delivered, the same words a push uses, and the count is clear 1`] = `
+"🦫 back in the river! the backlog is delivered
+   ├─ drained
+   │  └─ #603 lesson reminders
+   └─ backlog = 0"
+`;
+
+exports[`asRadioDrainOutput given: [case6] the only record the drain sent was refused when: [t0] the drain renders then: it never cheers: naught delivered, upstream refused 1`] = `
+"🦫 naught delivered; upstream refused what the drain sent
+   ├─ refused — closed, never retried; rhx radio.task.queue get lists it no more, and its reason stays in its record file
+   │  └─ claim #999 — task not found
+   └─ backlog = 0"
+`;
+
+exports[`asRadioDrainOutput given: [case7] a drain whose send budget ran out (T) when: [t0] the drain renders then: the record left reads not attempted, with the one move: drain again 1`] = `
+"🦫 back in the river! part of the backlog is delivered
+   ├─ drained
+   │  └─ #603 lesson reminders
+   ├─ still held
+   │  └─ b1b2c3d4e5f60718 wetsuit sizes → sandpine/svc-lessons (not attempted)
+   │     └─ not attempted: this drain spent its send budget; run rhx radio.task.queue drain again
+   └─ backlog = 1 awaits the radio"
+`;
+
+exports[`asRadioDrainOutput given: [case8] a record a re-push rewrote mid-send when: [t0] the drain renders then: it says the prior copy went and the new request waits, never not attempted or faulted 1`] = `
+"🦫 a prior copy went upstream; its new request still waits
+   ├─ still held
+   │  └─ a1b2c3d4e5f60718 wetsuit sizes → sandpine/svc-lessons (prior copy sent; new request waits)
+   │     └─ a re-push rewrote this record while its prior copy was sent; the next drain sends the new request
+   └─ backlog = 1 awaits the radio"
+`;
