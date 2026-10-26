@@ -9,8 +9,10 @@
 #   cost when declared, rounded up to the next 100. the boot-budget clamp turns red
 #   the moment the boot outgrows it.
 #   measure: `npx rhachet roles cost --what src/domain.roles/dispatcher/boot.yml`
+#   raised from 2_800 for the `radio.task.queue` verb (~400 tokens), net of the two
+#   radio.uses internals it no longer boots.
 budget:
-  tokens: 2_800
+  tokens: 3_100
 
 always:
   briefs:
@@ -21,7 +23,10 @@ always:
     say:
       - skills/*.sh
     # the tests and their snapshots never ship, so they never boot; listed here so a
-    # `roles cost` on the src spec reads what a seat is handed
+    # `roles cost` on the src spec reads what a seat is handed.
+    # the radio.uses internals are sourced by the radio.uses verbs, never run by a seat
     not:
       - skills/**/*.ts
       - skills/__snapshots__/**
+      - skills/radio.uses.operations.sh
+      - skills/radio.uses.output.sh
