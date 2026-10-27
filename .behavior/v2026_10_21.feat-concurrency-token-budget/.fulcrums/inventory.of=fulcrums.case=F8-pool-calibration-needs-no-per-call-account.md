@@ -43,6 +43,13 @@ contract.
 - the pool spans groves: burn on local counts against the same accounts, so the director's local
   reads are part of the fleet burn, not optional
 
+## .risk: low
+
+none ships: a calibration method over a gitignored ledger the statusline already receives; no
+credential, no prod write. if wrong, a join added to the same rows. the untaken fallback
+(`/api/oauth/usage`) would read an account credential; if the ledger ever forces it, that becomes
+its own call, graded then
+
 ## .where
 
 - appendix `measure.grove=0901.census.md` → `.accounts`

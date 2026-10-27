@@ -4,5 +4,6 @@
 - **taken**: (a). saturation answers "does a task wait?"; capacity answers "how many fit?" — two questions, two verbs. (c) decays by the next release
 - **rework**: clean — a rename, or a fold into saturation as a flag, ripples to no caller yet
 - **confidence**: 80%
+- **risk**: low — none ships: a read-only verb name and shape; no credential, no prod write. if wrong, a rename with no caller yet
 - **where**: `1.vision.yield.md` · contract
 - **verdict**: —
