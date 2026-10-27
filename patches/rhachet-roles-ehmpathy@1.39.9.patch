@@ -1,32 +1,2489 @@
 diff --git a/dist/domain.roles/mechanic/boot.yml b/dist/domain.roles/mechanic/boot.yml
-index b1fa7a75..1a4baf71 100644
+deleted file mode 100644
+index b1fa7a7..0000000
 --- a/dist/domain.roles/mechanic/boot.yml
++++ /dev/null
+@@ -1,321 +0,0 @@
+-# .what = cap on this role's boot, in o200k_base tokens
+-# .why  = a lean boot leaves context for the work; growth past the cap fails loud
+-#         (`repo introspect` halts the build; boot.budget.integration.test.ts fails)
+-# .note = measure via `npx rhachet roles cost --all`; to add a say brief, condense or demote
+-#         another first — raise this cap only as a deliberate, reviewed call
+-budget:
+-  tokens: 30_000
+-always:
+-  briefs:
+-    say:
+-      # identity & tone
+-      - briefs/practices/lang.tones/rule.im_an.ehmpathy_seaturtle.md
+-      - briefs/practices/lang.tones/rule.prefer.lowercase.md
+-      - briefs/practices/lang.tones/rule.require.term-human.md
+-      - briefs/practices/lang.tones/rule.prefer.chill-nature-emojis.md
+-      - briefs/practices/lang.tones/rule.forbid.buzzwords.md
+-      - briefs/practices/lang.tones/rule.forbid.shouts.md
+-      - briefs/practices/lang.tones/define.why-seaturtles-love-software.md
+-
+-      # foundational terms
+-      - briefs/practices/lang.terms/define.directives.terms=forbid_avoid_prefer_require.md
+-      - briefs/practices/lang.terms/rule.forbid.gerunds.md
+-      - briefs/practices/lang.terms/rule.require.order.noun_adj.md
+-      - briefs/practices/lang.terms/rule.require.ubiqlang.md
+-      - briefs/practices/lang.terms/rule.require.treestruct.md
+-
+-      # prose overlay — simplified technical english (asd-ste100, telegraphic)
+-      - briefs/practices/lang.prose/define.wick-dense.md
+-      - briefs/practices/lang.prose/define.simplified-technical-english.md
+-      - briefs/practices/lang.prose/rule.require.brevity.md
+-      - briefs/practices/lang.prose/rule.forbid.rambles.md
+-      - briefs/practices/lang.prose/rule.forbid.chronological-accretion.md
+-      - briefs/practices/lang.prose/rule.prefer.short-sentences.md
+-      - briefs/practices/lang.prose/rule.avoid.passive-voice.md
+-      - briefs/practices/lang.prose/rule.avoid.articles-copulas.md
+-      - briefs/practices/lang.prose/rule.prefer.one-instruction-per-sentence.md
+-      - briefs/practices/lang.prose/rule.prefer.active-simple-tense.md
+-      - briefs/practices/lang.prose/rule.prefer.wickup-touched-prose.md
+-
+-    ref:
+-      # filename enforcement via hooks — ref only (hooks already block violations)
+-      - briefs/practices/lang.tones/rule.forbid.shouted-readme.md
+-
+-      # term enforcement via hooks — ref only (hooks already block violations)
+-      - briefs/practices/lang.terms/rule.forbid.term-dryrun.md
+-      - briefs/practices/lang.terms/rule.forbid.term=dryrun.md
+-      - briefs/practices/lang.terms/rule.forbid.term=existing.md
+-      - briefs/practices/lang.terms/rule.forbid.term=helpers.md
+-      - briefs/practices/lang.terms/rule.forbid.term=normalize.md
+-      - briefs/practices/lang.terms/rule.forbid.term=resolve.md
+-      - briefs/practices/lang.terms/rule.forbid.term-script.md
+-
+-      # supplements and references
+-      - briefs/practices/lang.terms/rule.prefer.term-supplier.md
+-      - briefs/practices/lang.terms/rule.prefer.kind-over-type.md
+-      - briefs/practices/lang.terms/rule.require.order.noun_adj.md.pt2.md
+-      - briefs/practices/lang.terms/define.exec-vs-apply.md
+-      - briefs/practices/lang.terms/define.prodcode-testcode.terms=prodcode_vs_testcode.md
+-
+-  skills:
+-    say:
+-      # claude tools — the bulk edit tool; the hooks name the other safe tools when they block
+-      - skills/claude.tools/sedreplace.sh
+-
+-      # package docs
+-      - skills/get.package.docs.sh
+-
+-      # git commit
+-      - skills/git.commit/git.commit.push.sh
+-      - skills/git.commit/git.commit.set.sh
+-
+-      # git branch
+-      - skills/git.branch.rebase/git.branch.rebase.sh
+-
+-      # git release
+-      - skills/git.release/git.release.sh
+-
+-      # git repo
+-      - skills/git.repo.get/git.repo.get.sh
+-      - skills/git.repo.test/git.repo.test.sh
+-
+-      # git stage
+-      - skills/git.stage/git.stage.add.sh
+-
+-      # github actions
+-      - skills/show.gh.test.errors.sh
+-
+-      # permissions: the pre-approved commands, on demand
+-      - skills/permissions.get.sh
+-
+-    ref:
+-      # claude tools — each hook that blocks a raw command names its safe twin
+-      - skills/claude.tools/cpsafe.sh
+-      - skills/claude.tools/mvsafe.sh
+-      - skills/claude.tools/rmsafe.sh
+-      - skills/claude.tools/symlink.sh
+-      - skills/claude.tools/teesafe.sh
+-
+-      # package management — rare, deliberate acts
+-      - skills/declapract.upgrade.sh
+-      - skills/set.package/set.package.install.sh
+-      - skills/set.package/set.package.upgrade.sh
+-
+-      # git commit — human-run grants (bind, quota)
+-      - skills/git.commit/git.commit.bind.sh
+-      - skills/git.commit/git.commit.uses.sh
+-
+-      # github actions — show.gh.test.errors covers the common case
+-      - skills/show.gh.action.logs.sh
+-
+-      # cicd — a route, run on purpose
+-      - skills/cicd.deflake.sh
+-
+-      # permissions: what the nudge has recorded
+-      - skills/permissions.nudges.sh
+-
+-subject.code.prod:
+-  briefs:
+-    say:
+-      # procedures
+-      - briefs/practices/code.prod/evolvable.procedures/rule.require.input-context-pattern.md.pt1.md
+-      - briefs/practices/code.prod/evolvable.procedures/rule.require.arrow-only.md
+-      - briefs/practices/code.prod/evolvable.procedures/rule.require.clear-contracts.md
+-      - briefs/practices/code.prod/evolvable.procedures/rule.require.dependency-injection.md.pt1.md
+-      - briefs/practices/code.prod/evolvable.procedures/rule.require.named-args.md
+-      - briefs/practices/code.prod/evolvable.procedures/rule.require.single-responsibility.md
+-      - briefs/practices/code.prod/evolvable.procedures/rule.forbid.io-as-domain-objects.md
+-      - briefs/practices/code.prod/evolvable.procedures/rule.forbid.positional-args.md.pt1.md
+-
+-      # domain objects
+-      - briefs/practices/code.prod/evolvable.domain.objects/rule.forbid.nullable-without-reason.md
+-      - briefs/practices/code.prod/evolvable.domain.objects/rule.forbid.undefined-attributes.md
+-      - briefs/practices/code.prod/evolvable.domain.objects/rule.require.immutable-refs.md
+-
+-      # domain operations
+-      - briefs/practices/code.prod/evolvable.domain.operations/rule.require.sync-filename-opname.md
+-      - briefs/practices/code.prod/evolvable.domain.operations/rule.require.get-set-gen-verbs.md
+-
+-      # repo structure
+-      - briefs/practices/code.prod/evolvable.repo.structure/rule.forbid.barrel-exports.md
+-      - briefs/practices/code.prod/evolvable.repo.structure/rule.forbid.index-ts.md
+-
+-      # errors — the most important rules
+-      - briefs/practices/code.prod/pitofsuccess.errors/rule.forbid.failhide.md.pt1.md
+-      - briefs/practices/code.prod/pitofsuccess.errors/rule.require.failfast.md
+-      - briefs/practices/code.prod/pitofsuccess.errors/rule.require.failloud.md
+-      - briefs/practices/code.prod/pitofsuccess.errors/rule.prefer.helpful-error-wrap.md
+-      - briefs/practices/code.prod/pitofsuccess.errors/rule.require.exit-code-semantics.md
+-      - briefs/practices/code.prod/pitofsuccess.errors/rule.require.qualified-error-headers.md
+-
+-      # procedures (pit of success)
+-      - briefs/practices/code.prod/pitofsuccess.procedures/rule.forbid.nonidempotent-mutations.md
+-      - briefs/practices/code.prod/pitofsuccess.procedures/rule.forbid.undefined-inputs.md
+-      - briefs/practices/code.prod/pitofsuccess.procedures/rule.require.idempotent-procedures.md
+-      - briefs/practices/code.prod/pitofsuccess.procedures/rule.require.immutable-vars.md
+-
+-      # typedefs
+-      - briefs/practices/code.prod/pitofsuccess.typedefs/rule.forbid.as-cast.md
+-      - briefs/practices/code.prod/pitofsuccess.typedefs/rule.require.shapefit.md
+-
+-      # readability
+-      - briefs/practices/code.prod/readable.comments/rule.require.what-why-headers.md
+-      - briefs/practices/code.prod/readable.comments/rule.require.timeless-comments.md
+-      - briefs/practices/code.prod/readable.narrative/rule.require.narrative-flow.md
+-      - briefs/practices/code.prod/readable.narrative/rule.avoid.unnecessary-ifs.md
+-      - briefs/practices/code.prod/readable.narrative/rule.forbid.else-branches.md
+-      - briefs/practices/code.prod/readable.narrative/rule.forbid.inline-decode-friction.md
+-
+-      # artifacts
+-      - briefs/practices/code.prod/consistent.artifacts/rule.require.pinned-versions.md
+-
+-      # glossaries — the forbid pole of each pair; each names the iso types + ops to reach for
+-      - briefs/practices/code.prod/consistent.glossaries/rule.forbid.any-time.md
+-      - briefs/practices/code.prod/consistent.glossaries/rule.forbid.any-price.md
+-
+-      # remote resources + domain objects — the shapes a mechanic builds on
+-      - briefs/practices/code.prod/readable.persistence/rule.prefer.declastruct.[demo].md
+-      - briefs/practices/code.prod/evolvable.domain.objects/ref.package.domain-objects.[ref].md
+-
+-    ref:
+-      # procedure peers — the say rules above carry the core of each
+-      - briefs/practices/code.prod/evolvable.procedures/rule.require.input-options-pattern.md
+-      - briefs/practices/code.prod/evolvable.procedures/rule.require.hook-wrapper-pattern.md
+-      - briefs/practices/code.prod/evolvable.procedures/rule.forbid.io-as-interfaces.md
+-      - briefs/practices/code.prod/evolvable.domain.operations/define.domain-operation-core-variants.md
+-
+-      # architecture — the architect role says these; mechanic reads them on demand
+-      - briefs/practices/code.prod/evolvable.architecture/rule.prefer.wet-over-dry.md
+-      - briefs/practices/code.prod/evolvable.architecture/rule.require.bounded-contexts.md
+-      - briefs/practices/code.prod/evolvable.architecture/rule.require.domain-driven-design.md
+-      - briefs/practices/code.prod/evolvable.repo.structure/rule.require.directional-deps.md
+-
+-      # require twins — the forbid peer stays say (it names the violation; it carries the cure)
+-      - briefs/practices/code.prod/pitofsuccess.typedefs/rule.require.assure-via-type-checks.md
+-      - briefs/practices/code.prod/readable.narrative/rule.require.named-transformers.md
+-
+-      # glossaries — the require pole, full detail; the forbid pole above is say
+-      - briefs/practices/code.prod/consistent.glossaries/rule.require.iso-time.md
+-      - briefs/practices/code.prod/consistent.glossaries/rule.require.iso-price.md
+-
+-      # procedure supplements
+-      - briefs/practices/code.prod/evolvable.procedures/rule.require.input-context-pattern.md.pt2.md
+-      - briefs/practices/code.prod/evolvable.procedures/rule.require.dependency-injection.md.pt2.md
+-      - briefs/practices/code.prod/evolvable.procedures/rule.forbid.positional-args.md.pt2.md
+-
+-      # repo structure
+-      - briefs/practices/code.prod/evolvable.repo.structure/rule.prefer.dot-dirs.md
+-
+-      # errors
+-      - briefs/practices/code.prod/pitofsuccess.errors/rule.forbid.failhide.md.pt2.md
+-      - briefs/practices/code.prod/pitofsuccess.errors/rule.require.failfast.[seed].md
+-      - briefs/practices/code.prod/pitofsuccess.errors/rule.require.failfast.[demo].shell.md
+-
+-      # procedures
+-      - briefs/practices/code.prod/pitofsuccess.procedures/rule.forbid.magic-values.md
+-      - briefs/practices/code.prod/pitofsuccess.procedures/rule.require.idempotency.[seed].md
+-      - briefs/practices/code.prod/pitofsuccess.procedures/rule.require.pitofsuccess.md
+-      - briefs/practices/code.prod/pitofsuccess.procedures/ref.reviewer.test-infrastructure-context.md
+-      - briefs/practices/code.prod/pitofsuccess.procedures/rule.forbid.hidden-side-effects.md
+-      - briefs/practices/code.prod/pitofsuccess.procedures/rule.forbid.order-dependence.md
+-      - briefs/practices/code.prod/pitofsuccess.procedures/rule.forbid.race-conditions.md
+-      - briefs/practices/code.prod/pitofsuccess.procedures/rule.forbid.time-assumptions.md
+-      - briefs/practices/code.prod/pitofsuccess.procedures/rule.forbid.unexpected-defaults.md
+-
+-      # typedefs
+-      - briefs/practices/code.prod/pitofsuccess.typedefs/define.bivariance-for-generics.[lesson].md
+-
+-      # readability
+-      - briefs/practices/code.prod/readable.comments/rule.require.what-why-headers.v1.md
+-      - briefs/practices/code.prod/readable.narrative/rule.forbid.else-branches.[demo].md
+-      - briefs/practices/code.prod/readable.narrative/rule.prefer.early-returns.[demo].md
+-      - briefs/practices/code.prod/readable.narrative/rule.prefer.transformers-over-conditionals.[lesson].md
+-
+-      # contracts
+-      - briefs/practices/code.prod/consistent.contracts/ref.package.as-command.[ref].md
+-
+-      # lint
+-      - briefs/practices/code.prod/pitofsuccess.lint/rule.forbid.dpdm-exclude-change.md
+-
+-subject.code.test:
+-  briefs:
+-    say:
+-      # errors — the most important rules
+-      - briefs/practices/code.test/pitofsuccess.errors/rule.forbid.failhide.md
+-      - briefs/practices/code.test/pitofsuccess.errors/rule.require.failfast.md
+-      - briefs/practices/code.test/pitofsuccess.errors/rule.require.failloud.md
+-
+-      # privacy — a fixture is committed, so a real identity in one is published
+-      - briefs/practices/code.test/pitofsuccess.privacy/rule.forbid.real-identities-in-fixtures.md
+-
+-      - briefs/practices/code.test/frames.behavior/rule.require.given-when-then.md
+-      - briefs/practices/code.test/frames.behavior/rule.forbid.redundant-expensive-operations.md
+-      - briefs/practices/code.test/frames.caselist/rule.prefer.data-driven.md
+-      - briefs/practices/code.test/lessons.howto/howto.write.[lesson].md.pt1.md
+-      - briefs/practices/code.test/lessons.howto/howto.write.[lesson].md.pt2.md
+-      - briefs/practices/code.test/lessons.howto/howto.write.[lesson].md.pt3.md
+-      - briefs/practices/code.test/lessons.howto/rule.require.snapshots.[lesson].md
+-      - briefs/practices/code.test/scope.integration/rule.forbid.integration.mocks.md
+-      - briefs/practices/code.test/scope.unit/rule.forbid.unit.remote-boundaries.md
+-
+-    ref:
+-      # peers of the say rules — the forbid twin stays say (redundant-expensive-operations carries
+-      # the useThen cure; integration.mocks carries the acceptance ban)
+-      - briefs/practices/code.test/frames.behavior/rule.require.useThen-useWhen-for-shared-results.md
+-      - briefs/practices/code.test/frames.behavior/howto.write-bdd.[lesson].md
+-      - briefs/practices/code.test/scope.acceptance/rule.require.acceptance.blackbox.md
+-      - briefs/practices/code.test/scope.acceptance/rule.forbid.acceptance.mocks.md
+-      - briefs/practices/code.test/scope.coverage/rule.require.test-coverage-by-grain.md
+-
+-      - briefs/practices/code.test/consistent.contracts/ref.package.test-fns.[ref].md
+-      - briefs/practices/code.test/frames.behavior/howto.write-bdd.[lesson].pt2.md
+-      - briefs/practices/code.test/lessons.howto/howto.diagnose.[lesson].md
+-      - briefs/practices/code.test/lessons.howto/howto.run.[lesson].md
+-      - briefs/practices/code.test/lessons.howto/howto.run-tests.[lesson].md
+-      - briefs/practices/code.test/lessons.howto/howto.use.[lesson].md
+-      - briefs/practices/code.test/pitofsuccess.portability/rule.forbid.bare-host-deps.md
+-      - briefs/practices/code.test/pitofsuccess.portability/rule.require.hermetic-tests.md
+-      - briefs/practices/code.test/pitofsuccess.portability/rule.forbid.adhoc-gentempdir-reimpl.md
+-      - briefs/practices/code.test/pitofsuccess.portability/rule.forbid.test-assets-dunder.md
+-      - briefs/practices/code.test/pitofsuccess.portability/rule.require.blackbox-via-selflink.md
+-
+-subject.arch:
+-  briefs:
+-    say:
+-      # overlap with code.prod is intentional
+-      - briefs/practices/code.prod/evolvable.domain.objects/rule.forbid.nullable-without-reason.md
+-      - briefs/practices/code.prod/evolvable.domain.objects/rule.forbid.undefined-attributes.md
+-      - briefs/practices/code.prod/evolvable.domain.objects/rule.require.immutable-refs.md
+-
+-    ref:
+-      - briefs/practices/code.prod/evolvable.architecture/rule.prefer.wet-over-dry.md
+-      - briefs/practices/code.prod/evolvable.repo.structure/rule.require.directional-deps.md
+-
+-subject.flow:
+-  briefs:
+-    say:
+-      - briefs/practices/work.flow/rule.require.trust-but-verify.md
+-      - briefs/practices/work.flow/rule.prefer.scouts-honor.md
+-      - briefs/practices/work.flow/diagnose/rule.require.clamp-edge-cases.md
+-      - briefs/practices/work.flow/refactor/rule.require.review-test-changes.md
+-      - briefs/practices/work.flow/release/rule.require.commit-scopes.md
+-      - briefs/practices/work.flow/release/rule.require.watch-release-after-push.md
+-      - briefs/practices/work.flow/release/rule.require.git-release-confidence.md
+-      - briefs/practices/work.flow/tools/rule.prefer.terraform.md.pt1.md
+-      - briefs/practices/work.flow/tools/rule.require.externalized-knowledge.md
+-      - briefs/practices/work.flow/tools/rule.require.read-package-docs-before-use.md
+-      - briefs/practices/work.flow/tools/howto.git-commit-set.[lesson].md
+-      - briefs/practices/work.flow/tools/howto.keyrack.[lesson].md
+-
+-    ref:
+-      # peers — clamp-edge-cases carries test-covered-repairs; the sedreplace skill carries its rule
+-      - briefs/practices/work.flow/diagnose/rule.require.test-covered-repairs.md
+-      - briefs/practices/work.flow/refactor/rule.prefer.sedreplace-for-renames.md
+-
+-      - briefs/practices/work.flow/diagnose/howto.bisect.[lesson].md
+-      - briefs/practices/work.flow/diagnose/howto.logservation.[lesson].md
+-      - briefs/practices/work.flow/release/howto.git-release.[lesson].md
+-      - briefs/practices/work.flow/tools/howto.fix-declapract-upgrade-failures.[lesson].md
+-      - briefs/practices/work.flow/tools/rule.prefer.allowlist-examples.[lesson].md
+-      - briefs/practices/work.flow/tools/rule.prefer.jq.[demo].md
+-      - briefs/practices/work.flow/tools/rule.prefer.terraform.md.pt2.md
+diff --git a/dist/domain.roles/mechanic/boot.yml b/dist/domain.roles/mechanic/boot.yml
+new file mode 100644
+index 0000000..1a4baf7
+--- /dev/null
 +++ b/dist/domain.roles/mechanic/boot.yml
-@@ -85,6 +85,11 @@ always:
-       # github actions
-       - skills/show.gh.test.errors.sh
- 
+@@ -0,0 +1,329 @@
++# .what = cap on this role's boot, in o200k_base tokens
++# .why  = a lean boot leaves context for the work; growth past the cap fails loud
++#         (`repo introspect` halts the build; boot.budget.integration.test.ts fails)
++# .note = measure via `npx rhachet roles cost --all`; to add a say brief, condense or demote
++#         another first — raise this cap only as a deliberate, reviewed call
++budget:
++  tokens: 30_000
++always:
++  briefs:
++    say:
++      # identity & tone
++      - briefs/practices/lang.tones/rule.im_an.ehmpathy_seaturtle.md
++      - briefs/practices/lang.tones/rule.prefer.lowercase.md
++      - briefs/practices/lang.tones/rule.require.term-human.md
++      - briefs/practices/lang.tones/rule.prefer.chill-nature-emojis.md
++      - briefs/practices/lang.tones/rule.forbid.buzzwords.md
++      - briefs/practices/lang.tones/rule.forbid.shouts.md
++      - briefs/practices/lang.tones/define.why-seaturtles-love-software.md
++
++      # foundational terms
++      - briefs/practices/lang.terms/define.directives.terms=forbid_avoid_prefer_require.md
++      - briefs/practices/lang.terms/rule.forbid.gerunds.md
++      - briefs/practices/lang.terms/rule.require.order.noun_adj.md
++      - briefs/practices/lang.terms/rule.require.ubiqlang.md
++      - briefs/practices/lang.terms/rule.require.treestruct.md
++
++      # prose overlay — simplified technical english (asd-ste100, telegraphic)
++      - briefs/practices/lang.prose/define.wick-dense.md
++      - briefs/practices/lang.prose/define.simplified-technical-english.md
++      - briefs/practices/lang.prose/rule.require.brevity.md
++      - briefs/practices/lang.prose/rule.forbid.rambles.md
++      - briefs/practices/lang.prose/rule.forbid.chronological-accretion.md
++      - briefs/practices/lang.prose/rule.prefer.short-sentences.md
++      - briefs/practices/lang.prose/rule.avoid.passive-voice.md
++      - briefs/practices/lang.prose/rule.avoid.articles-copulas.md
++      - briefs/practices/lang.prose/rule.prefer.one-instruction-per-sentence.md
++      - briefs/practices/lang.prose/rule.prefer.active-simple-tense.md
++      - briefs/practices/lang.prose/rule.prefer.wickup-touched-prose.md
++
++    ref:
++      # filename enforcement via hooks — ref only (hooks already block violations)
++      - briefs/practices/lang.tones/rule.forbid.shouted-readme.md
++
++      # term enforcement via hooks — ref only (hooks already block violations)
++      - briefs/practices/lang.terms/rule.forbid.term-dryrun.md
++      - briefs/practices/lang.terms/rule.forbid.term=dryrun.md
++      - briefs/practices/lang.terms/rule.forbid.term=existing.md
++      - briefs/practices/lang.terms/rule.forbid.term=helpers.md
++      - briefs/practices/lang.terms/rule.forbid.term=normalize.md
++      - briefs/practices/lang.terms/rule.forbid.term=resolve.md
++      - briefs/practices/lang.terms/rule.forbid.term-script.md
++
++      # supplements and references
++      - briefs/practices/lang.terms/rule.prefer.term-supplier.md
++      - briefs/practices/lang.terms/rule.prefer.kind-over-type.md
++      - briefs/practices/lang.terms/rule.require.order.noun_adj.md.pt2.md
++      - briefs/practices/lang.terms/define.exec-vs-apply.md
++      - briefs/practices/lang.terms/define.prodcode-testcode.terms=prodcode_vs_testcode.md
++
++  skills:
++    say:
++      # claude tools — the bulk edit tool; the hooks name the other safe tools when they block
++      - skills/claude.tools/sedreplace.sh
++
++      # package docs
++      - skills/get.package.docs.sh
++
++      # git commit
++      - skills/git.commit/git.commit.push.sh
++      - skills/git.commit/git.commit.set.sh
++
++      # git branch
++      - skills/git.branch.rebase/git.branch.rebase.sh
++
++      # git release
++      - skills/git.release/git.release.sh
++
++      # git repo
++      - skills/git.repo.get/git.repo.get.sh
++      - skills/git.repo.test/git.repo.test.sh
++
++      # git stage
++      - skills/git.stage/git.stage.add.sh
++
++      # github actions
++      - skills/show.gh.test.errors.sh
++
 +      # github pr comments: read, upsert by key, delete
 +      - skills/git.pull.comment/git.pull.comment.get.sh
 +      - skills/git.pull.comment/git.pull.comment.set.sh
 +      - skills/git.pull.comment/git.pull.comment.del.sh
 +
-       # permissions: the pre-approved commands, on demand
-       - skills/permissions.get.sh
- 
-@@ -111,6 +116,9 @@ always:
-       # cicd — a route, run on purpose
-       - skills/cicd.deflake.sh
- 
++      # permissions: the pre-approved commands, on demand
++      - skills/permissions.get.sh
++
++    ref:
++      # claude tools — each hook that blocks a raw command names its safe twin
++      - skills/claude.tools/cpsafe.sh
++      - skills/claude.tools/mvsafe.sh
++      - skills/claude.tools/rmsafe.sh
++      - skills/claude.tools/symlink.sh
++      - skills/claude.tools/teesafe.sh
++
++      # package management — rare, deliberate acts
++      - skills/declapract.upgrade.sh
++      - skills/set.package/set.package.install.sh
++      - skills/set.package/set.package.upgrade.sh
++
++      # git commit — human-run grants (bind, quota)
++      - skills/git.commit/git.commit.bind.sh
++      - skills/git.commit/git.commit.uses.sh
++
++      # github actions — show.gh.test.errors covers the common case
++      - skills/show.gh.action.logs.sh
++
++      # cicd — a route, run on purpose
++      - skills/cicd.deflake.sh
++
 +      # git pull comment — the spaced-verb dispatcher (git.pull.comment get|set|del)
 +      - skills/git.pull.comment/git.pull.comment.sh
 +
-       # permissions: what the nudge has recorded
-       - skills/permissions.nudges.sh
- 
++      # permissions: what the nudge has recorded
++      - skills/permissions.nudges.sh
++
++subject.code.prod:
++  briefs:
++    say:
++      # procedures
++      - briefs/practices/code.prod/evolvable.procedures/rule.require.input-context-pattern.md.pt1.md
++      - briefs/practices/code.prod/evolvable.procedures/rule.require.arrow-only.md
++      - briefs/practices/code.prod/evolvable.procedures/rule.require.clear-contracts.md
++      - briefs/practices/code.prod/evolvable.procedures/rule.require.dependency-injection.md.pt1.md
++      - briefs/practices/code.prod/evolvable.procedures/rule.require.named-args.md
++      - briefs/practices/code.prod/evolvable.procedures/rule.require.single-responsibility.md
++      - briefs/practices/code.prod/evolvable.procedures/rule.forbid.io-as-domain-objects.md
++      - briefs/practices/code.prod/evolvable.procedures/rule.forbid.positional-args.md.pt1.md
++
++      # domain objects
++      - briefs/practices/code.prod/evolvable.domain.objects/rule.forbid.nullable-without-reason.md
++      - briefs/practices/code.prod/evolvable.domain.objects/rule.forbid.undefined-attributes.md
++      - briefs/practices/code.prod/evolvable.domain.objects/rule.require.immutable-refs.md
++
++      # domain operations
++      - briefs/practices/code.prod/evolvable.domain.operations/rule.require.sync-filename-opname.md
++      - briefs/practices/code.prod/evolvable.domain.operations/rule.require.get-set-gen-verbs.md
++
++      # repo structure
++      - briefs/practices/code.prod/evolvable.repo.structure/rule.forbid.barrel-exports.md
++      - briefs/practices/code.prod/evolvable.repo.structure/rule.forbid.index-ts.md
++
++      # errors — the most important rules
++      - briefs/practices/code.prod/pitofsuccess.errors/rule.forbid.failhide.md.pt1.md
++      - briefs/practices/code.prod/pitofsuccess.errors/rule.require.failfast.md
++      - briefs/practices/code.prod/pitofsuccess.errors/rule.require.failloud.md
++      - briefs/practices/code.prod/pitofsuccess.errors/rule.prefer.helpful-error-wrap.md
++      - briefs/practices/code.prod/pitofsuccess.errors/rule.require.exit-code-semantics.md
++      - briefs/practices/code.prod/pitofsuccess.errors/rule.require.qualified-error-headers.md
++
++      # procedures (pit of success)
++      - briefs/practices/code.prod/pitofsuccess.procedures/rule.forbid.nonidempotent-mutations.md
++      - briefs/practices/code.prod/pitofsuccess.procedures/rule.forbid.undefined-inputs.md
++      - briefs/practices/code.prod/pitofsuccess.procedures/rule.require.idempotent-procedures.md
++      - briefs/practices/code.prod/pitofsuccess.procedures/rule.require.immutable-vars.md
++
++      # typedefs
++      - briefs/practices/code.prod/pitofsuccess.typedefs/rule.forbid.as-cast.md
++      - briefs/practices/code.prod/pitofsuccess.typedefs/rule.require.shapefit.md
++
++      # readability
++      - briefs/practices/code.prod/readable.comments/rule.require.what-why-headers.md
++      - briefs/practices/code.prod/readable.comments/rule.require.timeless-comments.md
++      - briefs/practices/code.prod/readable.narrative/rule.require.narrative-flow.md
++      - briefs/practices/code.prod/readable.narrative/rule.avoid.unnecessary-ifs.md
++      - briefs/practices/code.prod/readable.narrative/rule.forbid.else-branches.md
++      - briefs/practices/code.prod/readable.narrative/rule.forbid.inline-decode-friction.md
++
++      # artifacts
++      - briefs/practices/code.prod/consistent.artifacts/rule.require.pinned-versions.md
++
++      # glossaries — the forbid pole of each pair; each names the iso types + ops to reach for
++      - briefs/practices/code.prod/consistent.glossaries/rule.forbid.any-time.md
++      - briefs/practices/code.prod/consistent.glossaries/rule.forbid.any-price.md
++
++      # remote resources + domain objects — the shapes a mechanic builds on
++      - briefs/practices/code.prod/readable.persistence/rule.prefer.declastruct.[demo].md
++      - briefs/practices/code.prod/evolvable.domain.objects/ref.package.domain-objects.[ref].md
++
++    ref:
++      # procedure peers — the say rules above carry the core of each
++      - briefs/practices/code.prod/evolvable.procedures/rule.require.input-options-pattern.md
++      - briefs/practices/code.prod/evolvable.procedures/rule.require.hook-wrapper-pattern.md
++      - briefs/practices/code.prod/evolvable.procedures/rule.forbid.io-as-interfaces.md
++      - briefs/practices/code.prod/evolvable.domain.operations/define.domain-operation-core-variants.md
++
++      # architecture — the architect role says these; mechanic reads them on demand
++      - briefs/practices/code.prod/evolvable.architecture/rule.prefer.wet-over-dry.md
++      - briefs/practices/code.prod/evolvable.architecture/rule.require.bounded-contexts.md
++      - briefs/practices/code.prod/evolvable.architecture/rule.require.domain-driven-design.md
++      - briefs/practices/code.prod/evolvable.repo.structure/rule.require.directional-deps.md
++
++      # require twins — the forbid peer stays say (it names the violation; it carries the cure)
++      - briefs/practices/code.prod/pitofsuccess.typedefs/rule.require.assure-via-type-checks.md
++      - briefs/practices/code.prod/readable.narrative/rule.require.named-transformers.md
++
++      # glossaries — the require pole, full detail; the forbid pole above is say
++      - briefs/practices/code.prod/consistent.glossaries/rule.require.iso-time.md
++      - briefs/practices/code.prod/consistent.glossaries/rule.require.iso-price.md
++
++      # procedure supplements
++      - briefs/practices/code.prod/evolvable.procedures/rule.require.input-context-pattern.md.pt2.md
++      - briefs/practices/code.prod/evolvable.procedures/rule.require.dependency-injection.md.pt2.md
++      - briefs/practices/code.prod/evolvable.procedures/rule.forbid.positional-args.md.pt2.md
++
++      # repo structure
++      - briefs/practices/code.prod/evolvable.repo.structure/rule.prefer.dot-dirs.md
++
++      # errors
++      - briefs/practices/code.prod/pitofsuccess.errors/rule.forbid.failhide.md.pt2.md
++      - briefs/practices/code.prod/pitofsuccess.errors/rule.require.failfast.[seed].md
++      - briefs/practices/code.prod/pitofsuccess.errors/rule.require.failfast.[demo].shell.md
++
++      # procedures
++      - briefs/practices/code.prod/pitofsuccess.procedures/rule.forbid.magic-values.md
++      - briefs/practices/code.prod/pitofsuccess.procedures/rule.require.idempotency.[seed].md
++      - briefs/practices/code.prod/pitofsuccess.procedures/rule.require.pitofsuccess.md
++      - briefs/practices/code.prod/pitofsuccess.procedures/ref.reviewer.test-infrastructure-context.md
++      - briefs/practices/code.prod/pitofsuccess.procedures/rule.forbid.hidden-side-effects.md
++      - briefs/practices/code.prod/pitofsuccess.procedures/rule.forbid.order-dependence.md
++      - briefs/practices/code.prod/pitofsuccess.procedures/rule.forbid.race-conditions.md
++      - briefs/practices/code.prod/pitofsuccess.procedures/rule.forbid.time-assumptions.md
++      - briefs/practices/code.prod/pitofsuccess.procedures/rule.forbid.unexpected-defaults.md
++
++      # typedefs
++      - briefs/practices/code.prod/pitofsuccess.typedefs/define.bivariance-for-generics.[lesson].md
++
++      # readability
++      - briefs/practices/code.prod/readable.comments/rule.require.what-why-headers.v1.md
++      - briefs/practices/code.prod/readable.narrative/rule.forbid.else-branches.[demo].md
++      - briefs/practices/code.prod/readable.narrative/rule.prefer.early-returns.[demo].md
++      - briefs/practices/code.prod/readable.narrative/rule.prefer.transformers-over-conditionals.[lesson].md
++
++      # contracts
++      - briefs/practices/code.prod/consistent.contracts/ref.package.as-command.[ref].md
++
++      # lint
++      - briefs/practices/code.prod/pitofsuccess.lint/rule.forbid.dpdm-exclude-change.md
++
++subject.code.test:
++  briefs:
++    say:
++      # errors — the most important rules
++      - briefs/practices/code.test/pitofsuccess.errors/rule.forbid.failhide.md
++      - briefs/practices/code.test/pitofsuccess.errors/rule.require.failfast.md
++      - briefs/practices/code.test/pitofsuccess.errors/rule.require.failloud.md
++
++      # privacy — a fixture is committed, so a real identity in one is published
++      - briefs/practices/code.test/pitofsuccess.privacy/rule.forbid.real-identities-in-fixtures.md
++
++      - briefs/practices/code.test/frames.behavior/rule.require.given-when-then.md
++      - briefs/practices/code.test/frames.behavior/rule.forbid.redundant-expensive-operations.md
++      - briefs/practices/code.test/frames.caselist/rule.prefer.data-driven.md
++      - briefs/practices/code.test/lessons.howto/howto.write.[lesson].md.pt1.md
++      - briefs/practices/code.test/lessons.howto/howto.write.[lesson].md.pt2.md
++      - briefs/practices/code.test/lessons.howto/howto.write.[lesson].md.pt3.md
++      - briefs/practices/code.test/lessons.howto/rule.require.snapshots.[lesson].md
++      - briefs/practices/code.test/scope.integration/rule.forbid.integration.mocks.md
++      - briefs/practices/code.test/scope.unit/rule.forbid.unit.remote-boundaries.md
++
++    ref:
++      # peers of the say rules — the forbid twin stays say (redundant-expensive-operations carries
++      # the useThen cure; integration.mocks carries the acceptance ban)
++      - briefs/practices/code.test/frames.behavior/rule.require.useThen-useWhen-for-shared-results.md
++      - briefs/practices/code.test/frames.behavior/howto.write-bdd.[lesson].md
++      - briefs/practices/code.test/scope.acceptance/rule.require.acceptance.blackbox.md
++      - briefs/practices/code.test/scope.acceptance/rule.forbid.acceptance.mocks.md
++      - briefs/practices/code.test/scope.coverage/rule.require.test-coverage-by-grain.md
++
++      - briefs/practices/code.test/consistent.contracts/ref.package.test-fns.[ref].md
++      - briefs/practices/code.test/frames.behavior/howto.write-bdd.[lesson].pt2.md
++      - briefs/practices/code.test/lessons.howto/howto.diagnose.[lesson].md
++      - briefs/practices/code.test/lessons.howto/howto.run.[lesson].md
++      - briefs/practices/code.test/lessons.howto/howto.run-tests.[lesson].md
++      - briefs/practices/code.test/lessons.howto/howto.use.[lesson].md
++      - briefs/practices/code.test/pitofsuccess.portability/rule.forbid.bare-host-deps.md
++      - briefs/practices/code.test/pitofsuccess.portability/rule.require.hermetic-tests.md
++      - briefs/practices/code.test/pitofsuccess.portability/rule.forbid.adhoc-gentempdir-reimpl.md
++      - briefs/practices/code.test/pitofsuccess.portability/rule.forbid.test-assets-dunder.md
++      - briefs/practices/code.test/pitofsuccess.portability/rule.require.blackbox-via-selflink.md
++
++subject.arch:
++  briefs:
++    say:
++      # overlap with code.prod is intentional
++      - briefs/practices/code.prod/evolvable.domain.objects/rule.forbid.nullable-without-reason.md
++      - briefs/practices/code.prod/evolvable.domain.objects/rule.forbid.undefined-attributes.md
++      - briefs/practices/code.prod/evolvable.domain.objects/rule.require.immutable-refs.md
++
++    ref:
++      - briefs/practices/code.prod/evolvable.architecture/rule.prefer.wet-over-dry.md
++      - briefs/practices/code.prod/evolvable.repo.structure/rule.require.directional-deps.md
++
++subject.flow:
++  briefs:
++    say:
++      - briefs/practices/work.flow/rule.require.trust-but-verify.md
++      - briefs/practices/work.flow/rule.prefer.scouts-honor.md
++      - briefs/practices/work.flow/diagnose/rule.require.clamp-edge-cases.md
++      - briefs/practices/work.flow/refactor/rule.require.review-test-changes.md
++      - briefs/practices/work.flow/release/rule.require.commit-scopes.md
++      - briefs/practices/work.flow/release/rule.require.watch-release-after-push.md
++      - briefs/practices/work.flow/release/rule.require.git-release-confidence.md
++      - briefs/practices/work.flow/tools/rule.prefer.terraform.md.pt1.md
++      - briefs/practices/work.flow/tools/rule.require.externalized-knowledge.md
++      - briefs/practices/work.flow/tools/rule.require.read-package-docs-before-use.md
++      - briefs/practices/work.flow/tools/howto.git-commit-set.[lesson].md
++      - briefs/practices/work.flow/tools/howto.keyrack.[lesson].md
++
++    ref:
++      # peers — clamp-edge-cases carries test-covered-repairs; the sedreplace skill carries its rule
++      - briefs/practices/work.flow/diagnose/rule.require.test-covered-repairs.md
++      - briefs/practices/work.flow/refactor/rule.prefer.sedreplace-for-renames.md
++
++      - briefs/practices/work.flow/diagnose/howto.bisect.[lesson].md
++      - briefs/practices/work.flow/diagnose/howto.logservation.[lesson].md
++      - briefs/practices/work.flow/release/howto.git-release.[lesson].md
++      - briefs/practices/work.flow/tools/howto.fix-declapract-upgrade-failures.[lesson].md
++      - briefs/practices/work.flow/tools/rule.prefer.allowlist-examples.[lesson].md
++      - briefs/practices/work.flow/tools/rule.prefer.jq.[demo].md
++      - briefs/practices/work.flow/tools/rule.prefer.terraform.md.pt2.md
+diff --git a/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.abort.sh b/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.abort.sh
+deleted file mode 100755
+index 0fa173c..0000000
+--- a/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.abort.sh
++++ /dev/null
+@@ -1,71 +0,0 @@
+-#!/usr/bin/env bash
+-######################################################################
+-# .what = abort a rebase and restore to pre-rebase state
+-#
+-# .why  = mechanics can escape from a stuck rebase and try again
+-#
+-# usage:
+-#   rhx git.branch.rebase abort
+-#
+-# guarantee:
+-#   - requires a rebase in progress
+-#   - restores branch to state before rebase started
+-######################################################################
+-set -euo pipefail
+-
+-SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+-COMMIT_SKILL_DIR="$(cd "$SKILL_DIR/../git.commit" && pwd)"
+-
+-# source shared utils
+-source "$COMMIT_SKILL_DIR/output.sh"
+-source "$SKILL_DIR/git.branch.rebase.operations.sh"
+-
+-######################################################################
+-# parse arguments
+-######################################################################
+-while [[ $# -gt 0 ]]; do
+-  case $1 in
+-    # rhachet passes these - ignore them
+-    --skill|--repo|--role)
+-      shift 2
+-      ;;
+-    --help|-h)
+-      echo "usage: git.branch.rebase abort"
+-      echo ""
+-      echo "abort a rebase and restore to pre-rebase state"
+-      exit 0
+-      ;;
+-    *)
+-      echo "unknown argument: $1"
+-      exit 1
+-      ;;
+-  esac
+-done
+-
+-######################################################################
+-# guards
+-######################################################################
+-
+-# guard: must be in a rebase
+-if ! is_rebase_in_progress; then
+-  print_turtle_header "hold up dude..."
+-  print_tree_start "git.branch.rebase abort"
+-  echo "   └─ error: no rebase in progress"
+-  exit 1
+-fi
+-
+-######################################################################
+-# execute abort
+-######################################################################
+-if git rebase --abort 2>&1; then
+-  print_turtle_header "no worries dude"
+-  print_tree_start "git.branch.rebase abort"
+-  echo "   └─ status: restored to pre-rebase state"
+-  exit 0
+-fi
+-
+-# abort failed somehow
+-print_turtle_header "hold up dude..."
+-print_tree_start "git.branch.rebase abort"
+-echo "   └─ error: abort failed"
+-exit 1
+diff --git a/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.abort.sh b/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.abort.sh
+new file mode 100755
+index 0000000..87c0060
+--- /dev/null
++++ b/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.abort.sh
+@@ -0,0 +1,90 @@
++#!/usr/bin/env bash
++######################################################################
++# .what = abort a rebase and restore to pre-rebase state
++#
++# .why  = mechanics can escape from a stuck rebase and try again
++#
++# usage:
++#   rhx git.branch.rebase abort
++#
++# guarantee:
++#   - requires a rebase in progress
++#   - restores branch to state before rebase started
++######################################################################
++set -euo pipefail
++
++SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
++COMMIT_SKILL_DIR="$(cd "$SKILL_DIR/../git.commit" && pwd)"
++
++# source shared utils
++source "$COMMIT_SKILL_DIR/output.sh"
++source "$SKILL_DIR/git.branch.rebase.operations.sh"
++
++######################################################################
++# parse arguments
++######################################################################
++while [[ $# -gt 0 ]]; do
++  case $1 in
++    # rhachet passes these - ignore them
++    --skill|--repo|--role)
++      shift 2
++      ;;
++    --help|-h)
++      echo "usage: git.branch.rebase abort"
++      echo ""
++      echo "abort a rebase and restore to pre-rebase state"
++      exit 0
++      ;;
++    *)
++      echo "unknown argument: $1"
++      exit 1
++      ;;
++  esac
++done
++
++######################################################################
++# guards
++######################################################################
++
++# paths held by begin --unstaged ignore, if any
++HELD_FILES=$(get_unstaged_held_files)
++
++# guard: must be in a rebase; a hold left behind with none in flight is put back
++if ! is_rebase_in_progress; then
++  if [[ -n "$HELD_FILES" ]]; then
++    put_unstaged_back
++    print_turtle_header "no worries dude"
++    print_tree_start "git.branch.rebase abort"
++    echo "   ├─ status: no rebase in progress"
++    echo "   └─ unstaged: put back as they were"
++    print_files_tree "      " "$HELD_FILES"
++    exit 0
++  fi
++  print_turtle_header "hold up dude..."
++  print_tree_start "git.branch.rebase abort"
++  echo "   └─ error: no rebase in progress"
++  exit 1
++fi
++
++######################################################################
++# execute abort
++######################################################################
++if git rebase --abort 2>&1; then
++  put_unstaged_back
++  print_turtle_header "no worries dude"
++  print_tree_start "git.branch.rebase abort"
++  if [[ -n "$HELD_FILES" ]]; then
++    echo "   ├─ status: restored to pre-rebase state"
++    echo "   └─ unstaged: put back as they were"
++    print_files_tree "      " "$HELD_FILES"
++    exit 0
++  fi
++  echo "   └─ status: restored to pre-rebase state"
++  exit 0
++fi
++
++# abort failed somehow
++print_turtle_header "hold up dude..."
++print_tree_start "git.branch.rebase abort"
++echo "   └─ error: abort failed"
++exit 1
+diff --git a/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.begin.sh b/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.begin.sh
+deleted file mode 100755
+index 47aa3e1..0000000
+--- a/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.begin.sh
++++ /dev/null
+@@ -1,297 +0,0 @@
+-#!/usr/bin/env bash
+-######################################################################
+-# .what = begin a rebase onto origin/main
+-#
+-# .why  = mechanics can rebase their feature branch onto main
+-#         when push permission is granted
+-#
+-# usage:
+-#   rhx git.branch.rebase begin                    # plan mode (preview)
+-#   rhx git.branch.rebase begin --mode apply       # execute rebase
+-#
+-# guarantee:
+-#   - requires quota from git.commit.uses (rebase = commit)
+-#   - requires push permission via .meter/git.commit.uses.jsonc
+-#   - decrements uses on successful rebase
+-#   - cannot rebase main/master
+-#   - cannot rebase with dirty work tree
+-#   - plan mode shows preview (default)
+-#   - apply mode executes rebase
+-######################################################################
+-set -euo pipefail
+-
+-SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+-COMMIT_SKILL_DIR="$(cd "$SKILL_DIR/../git.commit" && pwd)"
+-
+-# source shared utils
+-source "$COMMIT_SKILL_DIR/output.sh"
+-source "$SKILL_DIR/git.branch.rebase.operations.sh"
+-
+-######################################################################
+-# meter state
+-######################################################################
+-REPO_ROOT=$(git rev-parse --show-toplevel)
+-METER_DIR="$REPO_ROOT/.meter"
+-STATE_FILE="$METER_DIR/git.commit.uses.jsonc"
+-
+-######################################################################
+-# parse arguments
+-######################################################################
+-MODE="plan"  # default to plan mode
+-
+-while [[ $# -gt 0 ]]; do
+-  case $1 in
+-    # rhachet passes these - ignore them
+-    --skill|--repo|--role)
+-      shift 2
+-      ;;
+-    --mode)
+-      MODE="$2"
+-      shift 2
+-      ;;
+-    --help|-h)
+-      echo "usage: git.branch.rebase begin [--mode plan|apply]"
+-      echo ""
+-      echo "options:"
+-      echo "  --mode plan    preview what will be rebased (default)"
+-      echo "  --mode apply   execute the rebase"
+-      exit 0
+-      ;;
+-    *)
+-      echo "unknown argument: $1"
+-      exit 1
+-      ;;
+-  esac
+-done
+-
+-######################################################################
+-# guards
+-######################################################################
+-
+-# guard: meter state file must exist
+-if [[ ! -f "$STATE_FILE" ]]; then
+-  print_turtle_header "hold up dude..."
+-  print_tree_start "git.branch.rebase begin"
+-  echo "   └─ error: no commit quota set"
+-  echo ""
+-  echo "ask your human to grant permission:"
+-  echo "  $ rhx git.commit.uses set --quant N --push allow"
+-  exit 1
+-fi
+-
+-# read meter state
+-USES=$(jq -r '.uses' "$STATE_FILE")
+-PUSH_ALLOWED=$(jq -r '.push' "$STATE_FILE")
+-
+-# guard: push permission required
+-if [[ "$PUSH_ALLOWED" != "allow" ]]; then
+-  print_turtle_header "hold up dude..."
+-  print_tree_start "git.branch.rebase begin"
+-  echo "   └─ error: rebase requires push permission"
+-  echo ""
+-  echo "ask your human to grant permission:"
+-  echo "  $ rhx git.commit.uses set --quant N --push allow"
+-  exit 1
+-fi
+-
+-# guard: uses > 0 for apply mode (plan is free, infinite is allowed)
+-if [[ "$USES" != "infinite" && "$USES" -le 0 && "$MODE" == "apply" ]]; then
+-  print_turtle_header "hold up dude..."
+-  print_tree_start "git.branch.rebase begin"
+-  echo "   └─ error: no commit uses left"
+-  echo ""
+-  echo "ask your human to grant more:"
+-  echo "  $ rhx git.commit.uses set --quant N --push allow"
+-  exit 1
+-fi
+-
+-# guard: cannot rebase main/master
+-if is_base_branch; then
+-  print_turtle_header "hold up dude..."
+-  print_tree_start "git.branch.rebase begin"
+-  echo "   └─ error: cannot rebase main/master"
+-  exit 1
+-fi
+-
+-# guard: dirty work tree
+-if is_worktree_dirty; then
+-  print_turtle_header "hold up dude..."
+-  print_tree_start "git.branch.rebase begin"
+-  echo "   └─ error: unstaged changes found"
+-  echo ""
+-  echo "commit or stash your changes first"
+-  exit 1
+-fi
+-
+-# guard: rebase already in progress
+-if is_rebase_in_progress; then
+-  print_turtle_header "hold up dude..."
+-  print_tree_start "git.branch.rebase begin"
+-  echo "   └─ error: rebase already in progress"
+-  echo ""
+-  echo "to continue: rhx git.branch.rebase continue"
+-  echo "to abort:    rhx git.branch.rebase abort"
+-  exit 1
+-fi
+-
+-######################################################################
+-# detect default branch (main, master, or trunk)
+-######################################################################
+-if git rev-parse --verify origin/main &>/dev/null; then
+-  DEFAULT_BRANCH="main"
+-elif git rev-parse --verify origin/master &>/dev/null; then
+-  DEFAULT_BRANCH="master"
+-else
+-  print_turtle_header "hold up dude..."
+-  print_tree_start "git.branch.rebase begin"
+-  echo "   └─ error: no main or master branch found on origin"
+-  exit 1
+-fi
+-
+-######################################################################
+-# fetch latest from origin
+-######################################################################
+-git fetch origin "$DEFAULT_BRANCH" 2>/dev/null || {
+-  print_turtle_header "hold up dude..."
+-  print_tree_start "git.branch.rebase begin"
+-  echo "   └─ error: failed to fetch origin/$DEFAULT_BRANCH"
+-  echo ""
+-  echo "check your network connection and try again"
+-  exit 1
+-}
+-
+-######################################################################
+-# get rebase info
+-######################################################################
+-COMMITS_TO_REBASE=$(get_commits_to_rebase "origin/$DEFAULT_BRANCH")
+-COMMIT_COUNT=$(echo "$COMMITS_TO_REBASE" | grep -c . || echo "0")
+-BEHIND_COUNT=$(get_behind_count "origin/$DEFAULT_BRANCH")
+-COMMITS_BEHIND=$(get_commits_behind "origin/$DEFAULT_BRANCH")
+-
+-# guard: already up to date
+-if [[ "$COMMIT_COUNT" -eq 0 ]]; then
+-  print_turtle_header "already up to date"
+-  print_tree_start "git.branch.rebase begin"
+-  echo "   └─ no commits to rebase"
+-  exit 0
+-fi
+-
+-# guard: already up to date (no commits behind)
+-if [[ "$BEHIND_COUNT" -eq 0 ]]; then
+-  print_turtle_header "already up to date"
+-  print_tree_start "git.branch.rebase begin"
+-  echo "   ├─ commits: $COMMIT_COUNT (ahead)"
+-  echo "   └─ behind: 0"
+-  echo ""
+-  echo "no rebase needed, ready to push"
+-  exit 0
+-fi
+-
+-######################################################################
+-# plan mode: preview
+-######################################################################
+-if [[ "$MODE" == "plan" ]]; then
+-  print_turtle_header "heres the wave..."
+-  print_tree_start "git.branch.rebase begin --mode plan"
+-  echo "   ├─ rebase"
+-  echo "   │  ├─ target: origin/$DEFAULT_BRANCH"
+-
+-  # show commits ahead (to be rebased)
+-  echo "   │  ├─ ahead: $COMMIT_COUNT commits"
+-  AHEAD_LINES=()
+-  while IFS= read -r line; do
+-    [[ -n "$line" ]] && AHEAD_LINES+=("$line")
+-  done <<< "$COMMITS_TO_REBASE"
+-  for i in "${!AHEAD_LINES[@]}"; do
+-    echo "   │  │  ├─ ${AHEAD_LINES[$i]}"
+-  done
+-
+-  # show commits behind (what main has)
+-  echo "   │  └─ behind: $BEHIND_COUNT commits"
+-  BEHIND_LINES=()
+-  while IFS= read -r line; do
+-    [[ -n "$line" ]] && BEHIND_LINES+=("$line")
+-  done <<< "$COMMITS_BEHIND"
+-  LAST_IDX=$((${#BEHIND_LINES[@]} - 1))
+-  for i in "${!BEHIND_LINES[@]}"; do
+-    if [[ $i -eq $LAST_IDX ]]; then
+-      echo "   │     └─ ${BEHIND_LINES[$i]}"
+-    else
+-      echo "   │     ├─ ${BEHIND_LINES[$i]}"
+-    fi
+-  done
+-  echo "   └─ meter"
+-  echo "      ├─ commits: allowed"
+-  echo "      └─ push: allowed"
+-  echo ""
+-  echo "run with --mode apply to execute"
+-  exit 0
+-fi
+-
+-######################################################################
+-# apply mode: execute rebase
+-######################################################################
+-if [[ "$MODE" == "apply" ]]; then
+-  # set seaturtle identity (committer only - preserve original author)
+-  export GIT_COMMITTER_NAME="seaturtle[bot]"
+-  export GIT_COMMITTER_EMAIL="seaturtle@ehmpath.com"
+-
+-  # capture git output
+-  GIT_OUTPUT=$(git pull origin "$DEFAULT_BRANCH" --rebase 2>&1) || true
+-  GIT_EXIT_CODE=$?
+-
+-  # check if rebase succeeded
+-  if [[ $GIT_EXIT_CODE -eq 0 ]] && ! is_rebase_in_progress; then
+-    # success!
+-    print_turtle_header "righteous!"
+-    print_tree_start "git.branch.rebase begin --mode apply"
+-    echo "   ├─ rebase"
+-    echo "   │  ├─ target: origin/$DEFAULT_BRANCH"
+-    echo "   │  ├─ commits: $COMMIT_COUNT ✓"
+-    echo "   │  └─ status: clean"
+-    echo "   └─ git.output"
+-    print_git_output_tree "$GIT_OUTPUT"
+-    echo ""
+-    echo "🌊 ready to push"
+-    echo "   └─ rhx git.commit.push"
+-    exit 0
+-  fi
+-
+-  # check if we hit conflicts
+-  if is_rebase_in_progress; then
+-    CONFLICT_FILES=$(get_conflict_files)
+-    CONFLICT_COMMIT=$(get_conflict_commit)
+-
+-    print_turtle_header "hang tight..."
+-    print_tree_start "git.branch.rebase begin --mode apply"
+-    echo "   ├─ rebase"
+-    echo "   │  ├─ target: origin/$DEFAULT_BRANCH"
+-    echo "   │  ├─ commits: $COMMIT_COUNT"
+-    echo "   │  └─ status: conflict"
+-    echo "   ├─ conflict"
+-    if [[ -n "$CONFLICT_COMMIT" ]]; then
+-      echo "   │  ├─ commit: $CONFLICT_COMMIT"
+-    fi
+-    echo "   │  └─ files"
+-    print_files_tree "   │     " "$CONFLICT_FILES"
+-    echo "   ├─ next steps"
+-    echo "   │  ├─ settle conflicts in files above"
+-    echo "   │  └─ rhx git.branch.rebase continue"
+-    echo "   └─ git.output"
+-    print_git_output_tree "$GIT_OUTPUT"
+-    exit 1
+-  fi
+-
+-  # some other failure
+-  print_turtle_header "hold up dude..."
+-  print_tree_start "git.branch.rebase begin --mode apply"
+-  echo "   ├─ error: rebase failed"
+-  echo "   └─ git.output"
+-  print_git_output_tree "$GIT_OUTPUT"
+-  exit 1
+-fi
+-
+-# invalid mode
+-echo "error: unknown mode '$MODE'"
+-echo "valid modes: plan, apply"
+-exit 1
+diff --git a/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.begin.sh b/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.begin.sh
+new file mode 100755
+index 0000000..d8f1687
+--- /dev/null
++++ b/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.begin.sh
+@@ -0,0 +1,355 @@
++#!/usr/bin/env bash
++######################################################################
++# .what = begin a rebase onto origin/main
++#
++# .why  = mechanics can rebase their feature branch onto main
++#         when push permission is granted
++#
++# usage:
++#   rhx git.branch.rebase begin                    # plan mode (preview)
++#   rhx git.branch.rebase begin --mode apply       # execute rebase
++#   rhx git.branch.rebase begin --mode apply --unstaged ignore
++#                                                  # hold unstaged paths aside, rebase,
++#                                                  # then put them back as they were
++#
++# guarantee:
++#   - requires quota from git.commit.uses (rebase = commit)
++#   - requires push permission via .meter/git.commit.uses.jsonc
++#   - decrements uses on successful rebase
++#   - cannot rebase main/master
++#   - cannot rebase with dirty work tree, unless --unstaged ignore
++#   - --unstaged ignore puts each held path back byte for byte, link for
++#     link, once the rebase ends (here, or at continue or abort)
++#   - plan mode shows preview (default)
++#   - apply mode executes rebase
++######################################################################
++set -euo pipefail
++
++SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
++COMMIT_SKILL_DIR="$(cd "$SKILL_DIR/../git.commit" && pwd)"
++
++# source shared utils
++source "$COMMIT_SKILL_DIR/output.sh"
++source "$SKILL_DIR/git.branch.rebase.operations.sh"
++
++######################################################################
++# meter state
++######################################################################
++REPO_ROOT=$(git rev-parse --show-toplevel)
++METER_DIR="$REPO_ROOT/.meter"
++STATE_FILE="$METER_DIR/git.commit.uses.jsonc"
++
++######################################################################
++# parse arguments
++######################################################################
++MODE="plan"  # default to plan mode
++UNSTAGED=""  # default: refuse a dirty tree
++
++while [[ $# -gt 0 ]]; do
++  case $1 in
++    # rhachet passes these - ignore them
++    --skill|--repo|--role)
++      shift 2
++      ;;
++    --mode)
++      MODE="$2"
++      shift 2
++      ;;
++    --unstaged)
++      UNSTAGED="${2:-}"
++      shift 2
++      ;;
++    --help|-h)
++      echo "usage: git.branch.rebase begin [--mode plan|apply] [--unstaged ignore]"
++      echo ""
++      echo "options:"
++      echo "  --mode plan        preview what will be rebased (default)"
++      echo "  --mode apply       execute the rebase"
++      echo "  --unstaged ignore  hold unstaged paths aside for the rebase, then put"
++      echo "                     each back as it was (content, or symlink target)"
++      exit 0
++      ;;
++    *)
++      echo "unknown argument: $1"
++      exit 1
++      ;;
++  esac
++done
++
++######################################################################
++# guards
++######################################################################
++
++# guard: meter state file must exist
++if [[ ! -f "$STATE_FILE" ]]; then
++  print_turtle_header "hold up dude..."
++  print_tree_start "git.branch.rebase begin"
++  echo "   └─ error: no commit quota set"
++  echo ""
++  echo "ask your human to grant permission:"
++  echo "  $ rhx git.commit.uses set --quant N --push allow"
++  exit 1
++fi
++
++# read meter state
++USES=$(jq -r '.uses' "$STATE_FILE")
++PUSH_ALLOWED=$(jq -r '.push' "$STATE_FILE")
++
++# guard: push permission required
++if [[ "$PUSH_ALLOWED" != "allow" ]]; then
++  print_turtle_header "hold up dude..."
++  print_tree_start "git.branch.rebase begin"
++  echo "   └─ error: rebase requires push permission"
++  echo ""
++  echo "ask your human to grant permission:"
++  echo "  $ rhx git.commit.uses set --quant N --push allow"
++  exit 1
++fi
++
++# guard: uses > 0 for apply mode (plan is free, infinite is allowed)
++if [[ "$USES" != "infinite" && "$USES" -le 0 && "$MODE" == "apply" ]]; then
++  print_turtle_header "hold up dude..."
++  print_tree_start "git.branch.rebase begin"
++  echo "   └─ error: no commit uses left"
++  echo ""
++  echo "ask your human to grant more:"
++  echo "  $ rhx git.commit.uses set --quant N --push allow"
++  exit 1
++fi
++
++# guard: cannot rebase main/master
++if is_base_branch; then
++  print_turtle_header "hold up dude..."
++  print_tree_start "git.branch.rebase begin"
++  echo "   └─ error: cannot rebase main/master"
++  exit 1
++fi
++
++# guard: --unstaged takes one value
++if [[ -n "$UNSTAGED" && "$UNSTAGED" != "ignore" ]]; then
++  print_turtle_header "hold up dude..."
++  print_tree_start "git.branch.rebase begin"
++  echo "   └─ error: --unstaged takes 'ignore', got '$UNSTAGED'"
++  exit 2
++fi
++
++# guard: a prior hold was never put back
++if is_unstaged_held; then
++  print_turtle_header "hold up dude..."
++  print_tree_start "git.branch.rebase begin"
++  echo "   ├─ error: unstaged paths are still held from a prior rebase"
++  echo "   ├─ held"
++  print_files_tree "   │  " "$(get_unstaged_held_files)"
++  echo "   └─ hold: $(get_unstaged_hold_dir)"
++  echo ""
++  echo "finish that rebase first: rhx git.branch.rebase continue | abort"
++  exit 2
++fi
++
++# guard: dirty work tree, unless held aside
++if is_worktree_dirty && [[ "$UNSTAGED" != "ignore" ]]; then
++  print_turtle_header "hold up dude..."
++  print_tree_start "git.branch.rebase begin"
++  echo "   ├─ error: unstaged changes found"
++  echo "   └─ unstaged"
++  print_files_tree "      " "$(get_unstaged_files)"
++  echo ""
++  echo "commit them, or hold them aside for the rebase and get them back after:"
++  echo "  $ rhx git.branch.rebase begin --mode $MODE --unstaged ignore"
++  exit 2
++fi
++
++# guard: rebase already in progress
++if is_rebase_in_progress; then
++  print_turtle_header "hold up dude..."
++  print_tree_start "git.branch.rebase begin"
++  echo "   └─ error: rebase already in progress"
++  echo ""
++  echo "to continue: rhx git.branch.rebase continue"
++  echo "to abort:    rhx git.branch.rebase abort"
++  exit 1
++fi
++
++######################################################################
++# detect default branch (main, master, or trunk)
++######################################################################
++if git rev-parse --verify origin/main &>/dev/null; then
++  DEFAULT_BRANCH="main"
++elif git rev-parse --verify origin/master &>/dev/null; then
++  DEFAULT_BRANCH="master"
++else
++  print_turtle_header "hold up dude..."
++  print_tree_start "git.branch.rebase begin"
++  echo "   └─ error: no main or master branch found on origin"
++  exit 1
++fi
++
++######################################################################
++# fetch latest from origin
++######################################################################
++git fetch origin "$DEFAULT_BRANCH" 2>/dev/null || {
++  print_turtle_header "hold up dude..."
++  print_tree_start "git.branch.rebase begin"
++  echo "   └─ error: failed to fetch origin/$DEFAULT_BRANCH"
++  echo ""
++  echo "check your network connection and try again"
++  exit 1
++}
++
++######################################################################
++# get rebase info
++######################################################################
++COMMITS_TO_REBASE=$(get_commits_to_rebase "origin/$DEFAULT_BRANCH")
++COMMIT_COUNT=$(echo "$COMMITS_TO_REBASE" | grep -c . || echo "0")
++BEHIND_COUNT=$(get_behind_count "origin/$DEFAULT_BRANCH")
++COMMITS_BEHIND=$(get_commits_behind "origin/$DEFAULT_BRANCH")
++
++# guard: already up to date
++if [[ "$COMMIT_COUNT" -eq 0 ]]; then
++  print_turtle_header "already up to date"
++  print_tree_start "git.branch.rebase begin"
++  echo "   └─ no commits to rebase"
++  exit 0
++fi
++
++# guard: already up to date (no commits behind)
++if [[ "$BEHIND_COUNT" -eq 0 ]]; then
++  print_turtle_header "already up to date"
++  print_tree_start "git.branch.rebase begin"
++  echo "   ├─ commits: $COMMIT_COUNT (ahead)"
++  echo "   └─ behind: 0"
++  echo ""
++  echo "no rebase needed, ready to push"
++  exit 0
++fi
++
++######################################################################
++# plan mode: preview
++######################################################################
++if [[ "$MODE" == "plan" ]]; then
++  print_turtle_header "heres the wave..."
++  print_tree_start "git.branch.rebase begin --mode plan"
++  echo "   ├─ rebase"
++  echo "   │  ├─ target: origin/$DEFAULT_BRANCH"
++
++  # show commits ahead (to be rebased)
++  echo "   │  ├─ ahead: $COMMIT_COUNT commits"
++  AHEAD_LINES=()
++  while IFS= read -r line; do
++    [[ -n "$line" ]] && AHEAD_LINES+=("$line")
++  done <<< "$COMMITS_TO_REBASE"
++  for i in "${!AHEAD_LINES[@]}"; do
++    echo "   │  │  ├─ ${AHEAD_LINES[$i]}"
++  done
++
++  # show commits behind (what main has)
++  echo "   │  └─ behind: $BEHIND_COUNT commits"
++  BEHIND_LINES=()
++  while IFS= read -r line; do
++    [[ -n "$line" ]] && BEHIND_LINES+=("$line")
++  done <<< "$COMMITS_BEHIND"
++  LAST_IDX=$((${#BEHIND_LINES[@]} - 1))
++  for i in "${!BEHIND_LINES[@]}"; do
++    if [[ $i -eq $LAST_IDX ]]; then
++      echo "   │     └─ ${BEHIND_LINES[$i]}"
++    else
++      echo "   │     ├─ ${BEHIND_LINES[$i]}"
++    fi
++  done
++  if is_worktree_dirty; then
++    echo "   ├─ unstaged: held aside on apply, then put back as they were"
++    print_files_tree "   │  " "$(get_unstaged_files)"
++  fi
++  echo "   └─ meter"
++  echo "      ├─ commits: allowed"
++  echo "      └─ push: allowed"
++  echo ""
++  echo "run with --mode apply to execute"
++  exit 0
++fi
++
++######################################################################
++# apply mode: execute rebase
++######################################################################
++if [[ "$MODE" == "apply" ]]; then
++  # set seaturtle identity (committer only - preserve original author)
++  export GIT_COMMITTER_NAME="seaturtle[bot]"
++  export GIT_COMMITTER_EMAIL="seaturtle@ehmpath.com"
++
++  # hold unstaged paths aside, so the rebase sees a clean tree
++  if is_worktree_dirty; then
++    set_unstaged_aside
++  fi
++  HELD_FILES=$(get_unstaged_held_files)
++
++  # capture git output
++  GIT_OUTPUT=$(git pull origin "$DEFAULT_BRANCH" --rebase 2>&1) || true
++  GIT_EXIT_CODE=$?
++
++  # check if rebase succeeded
++  if [[ $GIT_EXIT_CODE -eq 0 ]] && ! is_rebase_in_progress; then
++    # put held paths back as they were
++    put_unstaged_back
++
++    # success!
++    print_turtle_header "righteous!"
++    print_tree_start "git.branch.rebase begin --mode apply"
++    echo "   ├─ rebase"
++    echo "   │  ├─ target: origin/$DEFAULT_BRANCH"
++    echo "   │  ├─ commits: $COMMIT_COUNT ✓"
++    echo "   │  └─ status: clean"
++    if [[ -n "$HELD_FILES" ]]; then
++      echo "   ├─ unstaged: put back as they were"
++      print_files_tree "   │  " "$HELD_FILES"
++    fi
++    echo "   └─ git.output"
++    print_git_output_tree "$GIT_OUTPUT"
++    echo ""
++    echo "🌊 ready to push"
++    echo "   └─ rhx git.commit.push"
++    exit 0
++  fi
++
++  # check if we hit conflicts
++  if is_rebase_in_progress; then
++    CONFLICT_FILES=$(get_conflict_files)
++    CONFLICT_COMMIT=$(get_conflict_commit)
++
++    print_turtle_header "hang tight..."
++    print_tree_start "git.branch.rebase begin --mode apply"
++    echo "   ├─ rebase"
++    echo "   │  ├─ target: origin/$DEFAULT_BRANCH"
++    echo "   │  ├─ commits: $COMMIT_COUNT"
++    echo "   │  └─ status: conflict"
++    echo "   ├─ conflict"
++    if [[ -n "$CONFLICT_COMMIT" ]]; then
++      echo "   │  ├─ commit: $CONFLICT_COMMIT"
++    fi
++    echo "   │  └─ files"
++    print_files_tree "   │     " "$CONFLICT_FILES"
++    if [[ -n "$HELD_FILES" ]]; then
++      echo "   ├─ unstaged: held aside; put back at continue or abort"
++      print_files_tree "   │  " "$HELD_FILES"
++    fi
++    echo "   ├─ next steps"
++    echo "   │  ├─ settle conflicts in files above"
++    echo "   │  └─ rhx git.branch.rebase continue"
++    echo "   └─ git.output"
++    print_git_output_tree "$GIT_OUTPUT"
++    exit 1
++  fi
++
++  # some other failure: put held paths back first
++  put_unstaged_back
++  print_turtle_header "hold up dude..."
++  print_tree_start "git.branch.rebase begin --mode apply"
++  echo "   ├─ error: rebase failed"
++  echo "   └─ git.output"
++  print_git_output_tree "$GIT_OUTPUT"
++  exit 1
++fi
++
++# invalid mode
++echo "error: unknown mode '$MODE'"
++echo "valid modes: plan, apply"
++exit 1
+diff --git a/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.continue.sh b/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.continue.sh
+deleted file mode 100755
+index 2a23b24..0000000
+--- a/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.continue.sh
++++ /dev/null
+@@ -1,172 +0,0 @@
+-#!/usr/bin/env bash
+-######################################################################
+-# .what = continue a rebase after conflicts are settled
+-#
+-# .why  = mechanics can continue rebase after they fix conflicts
+-#         and stage the settled files
+-#
+-# usage:
+-#   rhx git.branch.rebase continue
+-#
+-# guarantee:
+-#   - requires a rebase in progress
+-#   - requires all conflicts to be settled (staged)
+-#   - preserves original commit authors
+-#   - sets committer to seaturtle[bot]
+-######################################################################
+-set -euo pipefail
+-
+-SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+-COMMIT_SKILL_DIR="$(cd "$SKILL_DIR/../git.commit" && pwd)"
+-
+-# source shared utils
+-source "$COMMIT_SKILL_DIR/output.sh"
+-source "$SKILL_DIR/git.branch.rebase.operations.sh"
+-
+-######################################################################
+-# parse arguments
+-######################################################################
+-while [[ $# -gt 0 ]]; do
+-  case $1 in
+-    # rhachet passes these - ignore them
+-    --skill|--repo|--role)
+-      shift 2
+-      ;;
+-    --help|-h)
+-      echo "usage: git.branch.rebase continue"
+-      echo ""
+-      echo "continue a rebase after settle conflicts"
+-      exit 0
+-      ;;
+-    *)
+-      echo "unknown argument: $1"
+-      exit 1
+-      ;;
+-  esac
+-done
+-
+-######################################################################
+-# guards
+-######################################################################
+-
+-# guard: must be in a rebase
+-if ! is_rebase_in_progress; then
+-  print_turtle_header "hold up dude..."
+-  print_tree_start "git.branch.rebase continue"
+-  echo "   └─ error: no rebase in progress"
+-  exit 1
+-fi
+-
+-# guard: conflicts must be settled
+-CONFLICT_FILES=$(get_conflict_files)
+-if [[ -n "$CONFLICT_FILES" ]]; then
+-  CONFLICT_COMMIT=$(get_conflict_commit)
+-  print_turtle_header "hang tight..."
+-  print_tree_start "git.branch.rebase continue"
+-  echo "   ├─ rebase"
+-  echo "   │  └─ status: conflict"
+-  echo "   ├─ conflict"
+-  if [[ -n "$CONFLICT_COMMIT" ]]; then
+-    echo "   │  ├─ commit: $CONFLICT_COMMIT"
+-  fi
+-  echo "   │  └─ files"
+-  print_files_tree "   │     " "$CONFLICT_FILES"
+-  echo "   └─ next steps"
+-  echo "      ├─ settle conflicts in files above"
+-  echo "      └─ rhx git.branch.rebase continue"
+-  exit 1
+-fi
+-
+-######################################################################
+-# set seaturtle identity (committer only - preserve original author)
+-######################################################################
+-export GIT_COMMITTER_NAME="seaturtle[bot]"
+-export GIT_COMMITTER_EMAIL="seaturtle@ehmpath.com"
+-
+-######################################################################
+-# get progress info before continue
+-######################################################################
+-COMMITS_LEFT=$(get_commits_left)
+-TOTAL_COMMITS=$(get_total_commits)
+-CURRENT_NUM=$(get_current_commit_num)
+-
+-######################################################################
+-# execute continue
+-######################################################################
+-# note: git rebase --continue may prompt for commit message
+-# use GIT_EDITOR=true to auto-accept default message
+-export GIT_EDITOR="true"
+-
+-# capture git output
+-GIT_OUTPUT=$(git rebase --continue 2>&1) || true
+-GIT_EXIT_CODE=$?
+-
+-# check if still in progress (more commits to process) or complete
+-if ! is_rebase_in_progress; then
+-  # rebase complete!
+-  print_turtle_header "righteous!"
+-  print_tree_start "git.branch.rebase continue"
+-  echo "   ├─ rebase"
+-  echo "   │  ├─ commits: $TOTAL_COMMITS ✓"
+-  echo "   │  └─ status: complete"
+-  echo "   ├─ meter"
+-  echo "   │  └─ push: allowed"
+-  echo "   └─ git.output"
+-  print_git_output_tree "$GIT_OUTPUT"
+-  echo ""
+-  echo "🌊 ready to push"
+-  echo "   └─ rhx git.commit.push"
+-  exit 0
+-fi
+-
+-# still in progress - check for conflicts
+-NEW_CONFLICTS=$(get_conflict_files)
+-if [[ -n "$NEW_CONFLICTS" ]]; then
+-  CONFLICT_COMMIT=$(get_conflict_commit)
+-  print_turtle_header "hang tight..."
+-  print_tree_start "git.branch.rebase continue"
+-  echo "   ├─ rebase"
+-  echo "   │  └─ status: conflict"
+-  echo "   ├─ conflict"
+-  if [[ -n "$CONFLICT_COMMIT" ]]; then
+-    echo "   │  ├─ commit: $CONFLICT_COMMIT"
+-  fi
+-  echo "   │  └─ files"
+-  print_files_tree "   │     " "$NEW_CONFLICTS"
+-  echo "   ├─ next steps"
+-  echo "   │  ├─ settle conflicts in files above"
+-  echo "   │  └─ rhx git.branch.rebase continue"
+-  echo "   └─ git.output"
+-  print_git_output_tree "$GIT_OUTPUT"
+-  exit 1
+-fi
+-
+-# check for unstaged modifications that block continue
+-UNSTAGED_FILES=$(get_unstaged_files)
+-if [[ -n "$UNSTAGED_FILES" ]]; then
+-  print_turtle_header "hang tight..."
+-  print_tree_start "git.branch.rebase continue"
+-  echo "   ├─ rebase"
+-  echo "   │  └─ status: blocked"
+-  echo "   ├─ unstaged"
+-  echo "   │  └─ files"
+-  print_files_tree "   │     " "$UNSTAGED_FILES"
+-  echo "   ├─ next steps"
+-  echo "   │  ├─ git diff"
+-  echo "   │  ├─ rhx git.stage.add <files>"
+-  echo "   │  └─ rhx git.branch.rebase continue"
+-  echo "   └─ git.output"
+-  print_git_output_tree "$GIT_OUTPUT"
+-  exit 1
+-fi
+-
+-# in progress but no conflicts or unstaged - show progress
+-NEW_COMMITS_LEFT=$(get_commits_left)
+-print_turtle_header "righteous!"
+-print_tree_start "git.branch.rebase continue"
+-echo "   ├─ rebase"
+-echo "   │  └─ status: in progress"
+-echo "   ├─ left: $NEW_COMMITS_LEFT commits"
+-echo "   └─ git.output"
+-print_git_output_tree "$GIT_OUTPUT"
+-exit 0
+diff --git a/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.continue.sh b/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.continue.sh
+new file mode 100755
+index 0000000..72226c8
+--- /dev/null
++++ b/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.continue.sh
+@@ -0,0 +1,180 @@
++#!/usr/bin/env bash
++######################################################################
++# .what = continue a rebase after conflicts are settled
++#
++# .why  = mechanics can continue rebase after they fix conflicts
++#         and stage the settled files
++#
++# usage:
++#   rhx git.branch.rebase continue
++#
++# guarantee:
++#   - requires a rebase in progress
++#   - requires all conflicts to be settled (staged)
++#   - preserves original commit authors
++#   - sets committer to seaturtle[bot]
++######################################################################
++set -euo pipefail
++
++SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
++COMMIT_SKILL_DIR="$(cd "$SKILL_DIR/../git.commit" && pwd)"
++
++# source shared utils
++source "$COMMIT_SKILL_DIR/output.sh"
++source "$SKILL_DIR/git.branch.rebase.operations.sh"
++
++######################################################################
++# parse arguments
++######################################################################
++while [[ $# -gt 0 ]]; do
++  case $1 in
++    # rhachet passes these - ignore them
++    --skill|--repo|--role)
++      shift 2
++      ;;
++    --help|-h)
++      echo "usage: git.branch.rebase continue"
++      echo ""
++      echo "continue a rebase after settle conflicts"
++      exit 0
++      ;;
++    *)
++      echo "unknown argument: $1"
++      exit 1
++      ;;
++  esac
++done
++
++######################################################################
++# guards
++######################################################################
++
++# guard: must be in a rebase
++if ! is_rebase_in_progress; then
++  print_turtle_header "hold up dude..."
++  print_tree_start "git.branch.rebase continue"
++  echo "   └─ error: no rebase in progress"
++  exit 1
++fi
++
++# guard: conflicts must be settled
++CONFLICT_FILES=$(get_conflict_files)
++if [[ -n "$CONFLICT_FILES" ]]; then
++  CONFLICT_COMMIT=$(get_conflict_commit)
++  print_turtle_header "hang tight..."
++  print_tree_start "git.branch.rebase continue"
++  echo "   ├─ rebase"
++  echo "   │  └─ status: conflict"
++  echo "   ├─ conflict"
++  if [[ -n "$CONFLICT_COMMIT" ]]; then
++    echo "   │  ├─ commit: $CONFLICT_COMMIT"
++  fi
++  echo "   │  └─ files"
++  print_files_tree "   │     " "$CONFLICT_FILES"
++  echo "   └─ next steps"
++  echo "      ├─ settle conflicts in files above"
++  echo "      └─ rhx git.branch.rebase continue"
++  exit 1
++fi
++
++######################################################################
++# set seaturtle identity (committer only - preserve original author)
++######################################################################
++export GIT_COMMITTER_NAME="seaturtle[bot]"
++export GIT_COMMITTER_EMAIL="seaturtle@ehmpath.com"
++
++######################################################################
++# get progress info before continue
++######################################################################
++COMMITS_LEFT=$(get_commits_left)
++TOTAL_COMMITS=$(get_total_commits)
++CURRENT_NUM=$(get_current_commit_num)
++
++######################################################################
++# execute continue
++######################################################################
++# note: git rebase --continue may prompt for commit message
++# use GIT_EDITOR=true to auto-accept default message
++export GIT_EDITOR="true"
++
++# capture git output
++GIT_OUTPUT=$(git rebase --continue 2>&1) || true
++GIT_EXIT_CODE=$?
++
++# check if still in progress (more commits to process) or complete
++if ! is_rebase_in_progress; then
++  # put paths held by begin --unstaged ignore back as they were
++  HELD_FILES=$(get_unstaged_held_files)
++  put_unstaged_back
++
++  # rebase complete!
++  print_turtle_header "righteous!"
++  print_tree_start "git.branch.rebase continue"
++  echo "   ├─ rebase"
++  echo "   │  ├─ commits: $TOTAL_COMMITS ✓"
++  echo "   │  └─ status: complete"
++  if [[ -n "$HELD_FILES" ]]; then
++    echo "   ├─ unstaged: put back as they were"
++    print_files_tree "   │  " "$HELD_FILES"
++  fi
++  echo "   ├─ meter"
++  echo "   │  └─ push: allowed"
++  echo "   └─ git.output"
++  print_git_output_tree "$GIT_OUTPUT"
++  echo ""
++  echo "🌊 ready to push"
++  echo "   └─ rhx git.commit.push"
++  exit 0
++fi
++
++# still in progress - check for conflicts
++NEW_CONFLICTS=$(get_conflict_files)
++if [[ -n "$NEW_CONFLICTS" ]]; then
++  CONFLICT_COMMIT=$(get_conflict_commit)
++  print_turtle_header "hang tight..."
++  print_tree_start "git.branch.rebase continue"
++  echo "   ├─ rebase"
++  echo "   │  └─ status: conflict"
++  echo "   ├─ conflict"
++  if [[ -n "$CONFLICT_COMMIT" ]]; then
++    echo "   │  ├─ commit: $CONFLICT_COMMIT"
++  fi
++  echo "   │  └─ files"
++  print_files_tree "   │     " "$NEW_CONFLICTS"
++  echo "   ├─ next steps"
++  echo "   │  ├─ settle conflicts in files above"
++  echo "   │  └─ rhx git.branch.rebase continue"
++  echo "   └─ git.output"
++  print_git_output_tree "$GIT_OUTPUT"
++  exit 1
++fi
++
++# check for unstaged modifications that block continue
++UNSTAGED_FILES=$(get_unstaged_files)
++if [[ -n "$UNSTAGED_FILES" ]]; then
++  print_turtle_header "hang tight..."
++  print_tree_start "git.branch.rebase continue"
++  echo "   ├─ rebase"
++  echo "   │  └─ status: blocked"
++  echo "   ├─ unstaged"
++  echo "   │  └─ files"
++  print_files_tree "   │     " "$UNSTAGED_FILES"
++  echo "   ├─ next steps"
++  echo "   │  ├─ git diff"
++  echo "   │  ├─ rhx git.stage.add <files>"
++  echo "   │  └─ rhx git.branch.rebase continue"
++  echo "   └─ git.output"
++  print_git_output_tree "$GIT_OUTPUT"
++  exit 1
++fi
++
++# in progress but no conflicts or unstaged - show progress
++NEW_COMMITS_LEFT=$(get_commits_left)
++print_turtle_header "righteous!"
++print_tree_start "git.branch.rebase continue"
++echo "   ├─ rebase"
++echo "   │  └─ status: in progress"
++echo "   ├─ left: $NEW_COMMITS_LEFT commits"
++echo "   └─ git.output"
++print_git_output_tree "$GIT_OUTPUT"
++exit 0
+diff --git a/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.operations.sh b/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.operations.sh
+deleted file mode 100755
+index 516f20a..0000000
+--- a/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.operations.sh
++++ /dev/null
+@@ -1,264 +0,0 @@
+-#!/usr/bin/env bash
+-######################################################################
+-# .what = shared domain operations for git.branch.rebase skills
+-#
+-# .why  = single source of truth for rebase state detection
+-#         avoids duplication between git.branch.rebase.begin/continue/abort
+-#
+-# usage:
+-#   source "$SKILL_DIR/git.branch.rebase.operations.sh"
+-#   if is_rebase_in_progress; then ...
+-#   CONFLICT_FILES=$(get_conflict_files)
+-######################################################################
+-
+-######################################################################
+-# get git directory (works in both regular repos and worktrees)
+-# returns: path to .git or worktree git dir
+-######################################################################
+-get_git_dir() {
+-  git rev-parse --git-dir 2>/dev/null
+-}
+-
+-######################################################################
+-# detect if a rebase is currently in progress
+-# returns: 0 if in progress, 1 if idle
+-######################################################################
+-is_rebase_in_progress() {
+-  local git_dir
+-  git_dir=$(get_git_dir)
+-  if [[ -d "$git_dir/rebase-merge" ]] || [[ -d "$git_dir/rebase-apply" ]]; then
+-    return 0  # true
+-  fi
+-  return 1  # false
+-}
+-
+-######################################################################
+-# get list of files with unresolved conflicts
+-# returns: newline-separated list of file paths
+-######################################################################
+-get_conflict_files() {
+-  git diff --name-only --diff-filter=U 2>/dev/null
+-}
+-
+-######################################################################
+-# get count of commits left to rebase
+-# returns: number (0 if not in rebase or done)
+-######################################################################
+-get_commits_left() {
+-  local git_dir
+-  git_dir=$(get_git_dir)
+-  local total=0
+-  local done=0
+-
+-  if [[ -f "$git_dir/rebase-merge/end" ]]; then
+-    total=$(cat "$git_dir/rebase-merge/end")
+-  elif [[ -f "$git_dir/rebase-apply/last" ]]; then
+-    total=$(cat "$git_dir/rebase-apply/last")
+-  fi
+-
+-  if [[ -f "$git_dir/rebase-merge/msgnum" ]]; then
+-    done=$(cat "$git_dir/rebase-merge/msgnum")
+-  elif [[ -f "$git_dir/rebase-apply/next" ]]; then
+-    done=$(($(cat "$git_dir/rebase-apply/next") - 1))
+-  fi
+-
+-  echo $((total - done))
+-}
+-
+-######################################################################
+-# get current commit number in rebase (1-indexed)
+-# returns: number (0 if not in rebase)
+-######################################################################
+-get_current_commit_num() {
+-  local git_dir
+-  git_dir=$(get_git_dir)
+-  if [[ -f "$git_dir/rebase-merge/msgnum" ]]; then
+-    cat "$git_dir/rebase-merge/msgnum"
+-  elif [[ -f "$git_dir/rebase-apply/next" ]]; then
+-    cat "$git_dir/rebase-apply/next"
+-  else
+-    echo "0"
+-  fi
+-}
+-
+-######################################################################
+-# get total commits in rebase
+-# returns: number (0 if not in rebase)
+-######################################################################
+-get_total_commits() {
+-  local git_dir
+-  git_dir=$(get_git_dir)
+-  if [[ -f "$git_dir/rebase-merge/end" ]]; then
+-    cat "$git_dir/rebase-merge/end"
+-  elif [[ -f "$git_dir/rebase-apply/last" ]]; then
+-    cat "$git_dir/rebase-apply/last"
+-  else
+-    echo "0"
+-  fi
+-}
+-
+-######################################################################
+-# get the commit hash and subject that caused the conflict
+-# returns: "hash subject" or empty if not in conflict
+-######################################################################
+-get_conflict_commit() {
+-  local git_dir
+-  git_dir=$(get_git_dir)
+-  if [[ -f "$git_dir/rebase-merge/stopped-sha" ]]; then
+-    local sha
+-    sha=$(cat "$git_dir/rebase-merge/stopped-sha")
+-    local subject
+-    subject=$(git log -1 --format=%s "$sha" 2>/dev/null)
+-    echo "${sha:0:7} $subject"
+-  fi
+-}
+-
+-######################################################################
+-# get commits that will be rebased (ahead of target)
+-# returns: newline-separated "hash subject" lines
+-######################################################################
+-get_commits_to_rebase() {
+-  local target="${1:-origin/main}"
+-  git log --oneline "${target}..HEAD" 2>/dev/null
+-}
+-
+-######################################################################
+-# get count of commits behind target
+-# returns: number
+-######################################################################
+-get_behind_count() {
+-  local target="${1:-origin/main}"
+-  git rev-list --count "HEAD..${target}" 2>/dev/null || echo "0"
+-}
+-
+-######################################################################
+-# get commits behind target (what main has that we don't)
+-# returns: newline-separated "hash subject" lines
+-######################################################################
+-get_commits_behind() {
+-  local target="${1:-origin/main}"
+-  git log --oneline "HEAD..${target}" 2>/dev/null
+-}
+-
+-######################################################################
+-# get current branch name
+-# returns: branch name or HEAD if detached
+-######################################################################
+-get_current_branch() {
+-  git rev-parse --abbrev-ref HEAD 2>/dev/null
+-}
+-
+-######################################################################
+-# check if current branch is main/master/trunk
+-# returns: 0 if main/master/trunk, 1 otherwise
+-######################################################################
+-is_base_branch() {
+-  local branch
+-  branch=$(get_current_branch)
+-  if [[ "$branch" == "main" || "$branch" == "master" ]]; then
+-    return 0
+-  fi
+-  return 1
+-}
+-
+-######################################################################
+-# check if work tree has unstaged changes
+-# returns: 0 if dirty, 1 if clean
+-######################################################################
+-is_worktree_dirty() {
+-  local changes
+-  changes=$(git diff --name-only 2>/dev/null)
+-  if [[ -n "$changes" ]]; then
+-    return 0  # dirty
+-  fi
+-  return 1  # clean
+-}
+-
+-######################################################################
+-# get list of files with unstaged modifications
+-# returns: newline-separated list of file paths
+-######################################################################
+-get_unstaged_files() {
+-  git diff --name-only 2>/dev/null
+-}
+-
+-######################################################################
+-# check if push is allowed in meter
+-# returns: 0 if allowed, 1 if blocked
+-######################################################################
+-is_push_allowed() {
+-  local meter_file=".meter/git.commit.uses.jsonc"
+-  if [[ ! -f "$meter_file" ]]; then
+-    return 1  # no meter = no permission
+-  fi
+-
+-  local push_status
+-  push_status=$(jq -r '.push // "block"' "$meter_file" 2>/dev/null)
+-  if [[ "$push_status" == "allow" ]]; then
+-    return 0
+-  fi
+-  return 1
+-}
+-
+-######################################################################
+-# print git output as sub.bucket with proper format
+-# opens with ├─, content with │, closes with └─
+-# args: git_output (raw output from git command)
+-######################################################################
+-print_git_output_tree() {
+-  local git_output="$1"
+-
+-  # clean and split on both newlines and carriage returns
+-  # remove ANSI escape sequences and control chars
+-  local cleaned
+-  cleaned=$(echo "$git_output" | \
+-    sed 's/\x1b\[[0-9;]*[A-Za-z]//g' | \
+-    tr '\r' '\n' | \
+-    sed 's/[[:cntrl:]]//g')
+-
+-  # collect non-empty lines
+-  local lines=()
+-  while IFS= read -r line; do
+-    if [[ -n "$line" ]]; then
+-      lines+=("$line")
+-    fi
+-  done <<< "$cleaned"
+-
+-  # print sub.bucket format: open, blank, content, blank, close
+-  if [[ ${#lines[@]} -gt 0 ]]; then
+-    echo "      ├─"
+-    echo "      │"
+-    for line in "${lines[@]}"; do
+-      echo "      │  $line"
+-    done
+-    echo "      │"
+-    echo "      └─"
+-  fi
+-}
+-
+-######################################################################
+-# print files in tree format with proper termination
+-# args: prefix (e.g., "   │  │  "), files (newline-separated)
+-# last item with └─ instead of ├─
+-######################################################################
+-print_files_tree() {
+-  local prefix="$1"
+-  local files="$2"
+-  local count
+-  local i=0
+-
+-  # count non-empty lines
+-  count=$(echo "$files" | grep -c . || echo "0")
+-
+-  # print with proper termination
+-  while IFS= read -r file; do
+-    if [[ -n "$file" ]]; then
+-      ((i++)) || true
+-      if [[ $i -eq $count ]]; then
+-        echo "${prefix}└─ $file"
+-      else
+-        echo "${prefix}├─ $file"
+-      fi
+-    fi
+-  done <<< "$files"
+-}
+diff --git a/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.operations.sh b/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.operations.sh
+new file mode 100755
+index 0000000..ff89716
+--- /dev/null
++++ b/dist/domain.roles/mechanic/skills/git.branch.rebase/git.branch.rebase.operations.sh
+@@ -0,0 +1,344 @@
++#!/usr/bin/env bash
++######################################################################
++# .what = shared domain operations for git.branch.rebase skills
++#
++# .why  = single source of truth for rebase state detection
++#         avoids duplication between git.branch.rebase.begin/continue/abort
++#
++# usage:
++#   source "$SKILL_DIR/git.branch.rebase.operations.sh"
++#   if is_rebase_in_progress; then ...
++#   CONFLICT_FILES=$(get_conflict_files)
++######################################################################
++
++######################################################################
++# get git directory (works in both regular repos and worktrees)
++# returns: path to .git or worktree git dir
++######################################################################
++get_git_dir() {
++  git rev-parse --git-dir 2>/dev/null
++}
++
++######################################################################
++# detect if a rebase is currently in progress
++# returns: 0 if in progress, 1 if idle
++######################################################################
++is_rebase_in_progress() {
++  local git_dir
++  git_dir=$(get_git_dir)
++  if [[ -d "$git_dir/rebase-merge" ]] || [[ -d "$git_dir/rebase-apply" ]]; then
++    return 0  # true
++  fi
++  return 1  # false
++}
++
++######################################################################
++# get list of files with unresolved conflicts
++# returns: newline-separated list of file paths
++######################################################################
++get_conflict_files() {
++  git diff --name-only --diff-filter=U 2>/dev/null
++}
++
++######################################################################
++# get count of commits left to rebase
++# returns: number (0 if not in rebase or done)
++######################################################################
++get_commits_left() {
++  local git_dir
++  git_dir=$(get_git_dir)
++  local total=0
++  local done=0
++
++  if [[ -f "$git_dir/rebase-merge/end" ]]; then
++    total=$(cat "$git_dir/rebase-merge/end")
++  elif [[ -f "$git_dir/rebase-apply/last" ]]; then
++    total=$(cat "$git_dir/rebase-apply/last")
++  fi
++
++  if [[ -f "$git_dir/rebase-merge/msgnum" ]]; then
++    done=$(cat "$git_dir/rebase-merge/msgnum")
++  elif [[ -f "$git_dir/rebase-apply/next" ]]; then
++    done=$(($(cat "$git_dir/rebase-apply/next") - 1))
++  fi
++
++  echo $((total - done))
++}
++
++######################################################################
++# get current commit number in rebase (1-indexed)
++# returns: number (0 if not in rebase)
++######################################################################
++get_current_commit_num() {
++  local git_dir
++  git_dir=$(get_git_dir)
++  if [[ -f "$git_dir/rebase-merge/msgnum" ]]; then
++    cat "$git_dir/rebase-merge/msgnum"
++  elif [[ -f "$git_dir/rebase-apply/next" ]]; then
++    cat "$git_dir/rebase-apply/next"
++  else
++    echo "0"
++  fi
++}
++
++######################################################################
++# get total commits in rebase
++# returns: number (0 if not in rebase)
++######################################################################
++get_total_commits() {
++  local git_dir
++  git_dir=$(get_git_dir)
++  if [[ -f "$git_dir/rebase-merge/end" ]]; then
++    cat "$git_dir/rebase-merge/end"
++  elif [[ -f "$git_dir/rebase-apply/last" ]]; then
++    cat "$git_dir/rebase-apply/last"
++  else
++    echo "0"
++  fi
++}
++
++######################################################################
++# get the commit hash and subject that caused the conflict
++# returns: "hash subject" or empty if not in conflict
++######################################################################
++get_conflict_commit() {
++  local git_dir
++  git_dir=$(get_git_dir)
++  if [[ -f "$git_dir/rebase-merge/stopped-sha" ]]; then
++    local sha
++    sha=$(cat "$git_dir/rebase-merge/stopped-sha")
++    local subject
++    subject=$(git log -1 --format=%s "$sha" 2>/dev/null)
++    echo "${sha:0:7} $subject"
++  fi
++}
++
++######################################################################
++# get commits that will be rebased (ahead of target)
++# returns: newline-separated "hash subject" lines
++######################################################################
++get_commits_to_rebase() {
++  local target="${1:-origin/main}"
++  git log --oneline "${target}..HEAD" 2>/dev/null
++}
++
++######################################################################
++# get count of commits behind target
++# returns: number
++######################################################################
++get_behind_count() {
++  local target="${1:-origin/main}"
++  git rev-list --count "HEAD..${target}" 2>/dev/null || echo "0"
++}
++
++######################################################################
++# get commits behind target (what main has that we don't)
++# returns: newline-separated "hash subject" lines
++######################################################################
++get_commits_behind() {
++  local target="${1:-origin/main}"
++  git log --oneline "HEAD..${target}" 2>/dev/null
++}
++
++######################################################################
++# get current branch name
++# returns: branch name or HEAD if detached
++######################################################################
++get_current_branch() {
++  git rev-parse --abbrev-ref HEAD 2>/dev/null
++}
++
++######################################################################
++# check if current branch is main/master/trunk
++# returns: 0 if main/master/trunk, 1 otherwise
++######################################################################
++is_base_branch() {
++  local branch
++  branch=$(get_current_branch)
++  if [[ "$branch" == "main" || "$branch" == "master" ]]; then
++    return 0
++  fi
++  return 1
++}
++
++######################################################################
++# check if work tree has unstaged changes
++# returns: 0 if dirty, 1 if clean
++######################################################################
++is_worktree_dirty() {
++  local changes
++  changes=$(git diff --name-only 2>/dev/null)
++  if [[ -n "$changes" ]]; then
++    return 0  # dirty
++  fi
++  return 1  # clean
++}
++
++######################################################################
++# get list of files with unstaged modifications
++# returns: newline-separated list of file paths
++######################################################################
++get_unstaged_files() {
++  git diff --name-only 2>/dev/null
++}
++
++######################################################################
++# where unstaged paths are held while a rebase runs (--unstaged ignore)
++# .note = inside this worktree's own git dir, so no commit, stash, or
++#         peer worktree can ever see it
++######################################################################
++get_unstaged_hold_dir() {
++  echo "$(git rev-parse --absolute-git-dir)/rebase-unstaged-hold"
++}
++
++######################################################################
++# check if unstaged paths are held for a rebase in flight
++# returns: 0 if held, 1 if none
++######################################################################
++is_unstaged_held() {
++  [[ -f "$(get_unstaged_hold_dir)/manifest" ]]
++}
++
++######################################################################
++# set each unstaged path aside: back it up (content, or symlink target),
++# then restore it from the index, so the rebase sees a clean tree
++######################################################################
++set_unstaged_aside() {
++  local root hold idx path abs
++  root=$(git rev-parse --show-toplevel)
++  hold=$(get_unstaged_hold_dir)
++  mkdir -p "$hold"
++  : > "$hold/manifest.partial"
++  idx=0
++  while IFS= read -r path; do
++    [[ -z "$path" ]] && continue
++    idx=$((idx + 1))
++    abs="$root/$path"
++    if [[ -L "$abs" ]]; then
++      readlink "$abs" > "$hold/$idx.link"
++      printf '%s\tlink\t%s\n' "$idx" "$path" >> "$hold/manifest.partial"
++    elif [[ -e "$abs" ]]; then
++      cp -p "$abs" "$hold/$idx.file"
++      printf '%s\tfile\t%s\n' "$idx" "$path" >> "$hold/manifest.partial"
++    else
++      printf '%s\tabsent\t%s\n' "$idx" "$path" >> "$hold/manifest.partial"
++    fi
++  done <<< "$(get_unstaged_files)"
++
++  # the manifest lands whole, only once every backup is on disk
++  mv "$hold/manifest.partial" "$hold/manifest"
++
++  # restore each held path from the index
++  while IFS=$'\t' read -r idx kind path; do
++    git -C "$root" checkout -- "$path"
++  done < "$hold/manifest"
++}
++
++######################################################################
++# put each held path back as it was: byte for byte, link for link
++######################################################################
++put_unstaged_back() {
++  local root hold idx kind path abs
++  is_unstaged_held || return 0
++  root=$(git rev-parse --show-toplevel)
++  hold=$(get_unstaged_hold_dir)
++  while IFS=$'\t' read -r idx kind path; do
++    abs="$root/$path"
++    rm -f "$abs"
++    case "$kind" in
++      link) ln -s "$(cat "$hold/$idx.link")" "$abs" ;;
++      file) mkdir -p "$(dirname "$abs")" && cp -p "$hold/$idx.file" "$abs" ;;
++      absent) ;;
++    esac
++  done < "$hold/manifest"
++  rm -rf "$hold"
++}
++
++######################################################################
++# list the held paths, one per line
++######################################################################
++get_unstaged_held_files() {
++  is_unstaged_held || return 0
++  cut -f3 "$(get_unstaged_hold_dir)/manifest"
++}
++
++######################################################################
++# check if push is allowed in meter
++# returns: 0 if allowed, 1 if blocked
++######################################################################
++is_push_allowed() {
++  local meter_file=".meter/git.commit.uses.jsonc"
++  if [[ ! -f "$meter_file" ]]; then
++    return 1  # no meter = no permission
++  fi
++
++  local push_status
++  push_status=$(jq -r '.push // "block"' "$meter_file" 2>/dev/null)
++  if [[ "$push_status" == "allow" ]]; then
++    return 0
++  fi
++  return 1
++}
++
++######################################################################
++# print git output as sub.bucket with proper format
++# opens with ├─, content with │, closes with └─
++# args: git_output (raw output from git command)
++######################################################################
++print_git_output_tree() {
++  local git_output="$1"
++
++  # clean and split on both newlines and carriage returns
++  # remove ANSI escape sequences and control chars
++  local cleaned
++  cleaned=$(echo "$git_output" | \
++    sed 's/\x1b\[[0-9;]*[A-Za-z]//g' | \
++    tr '\r' '\n' | \
++    sed 's/[[:cntrl:]]//g')
++
++  # collect non-empty lines
++  local lines=()
++  while IFS= read -r line; do
++    if [[ -n "$line" ]]; then
++      lines+=("$line")
++    fi
++  done <<< "$cleaned"
++
++  # print sub.bucket format: open, blank, content, blank, close
++  if [[ ${#lines[@]} -gt 0 ]]; then
++    echo "      ├─"
++    echo "      │"
++    for line in "${lines[@]}"; do
++      echo "      │  $line"
++    done
++    echo "      │"
++    echo "      └─"
++  fi
++}
++
++######################################################################
++# print files in tree format with proper termination
++# args: prefix (e.g., "   │  │  "), files (newline-separated)
++# last item with └─ instead of ├─
++######################################################################
++print_files_tree() {
++  local prefix="$1"
++  local files="$2"
++  local count
++  local i=0
++
++  # count non-empty lines
++  count=$(echo "$files" | grep -c . || echo "0")
++
++  # print with proper termination
++  while IFS= read -r file; do
++    if [[ -n "$file" ]]; then
++      ((i++)) || true
++      if [[ $i -eq $count ]]; then
++        echo "${prefix}└─ $file"
++      else
++        echo "${prefix}├─ $file"
++      fi
++    fi
++  done <<< "$files"
++}
 diff --git a/dist/domain.roles/mechanic/skills/git.pull.comment/git.pull.comment.del.sh b/dist/domain.roles/mechanic/skills/git.pull.comment/git.pull.comment.del.sh
 new file mode 100755
-index 00000000..45e7e7da
+index 0000000..45e7e7d
 --- /dev/null
 +++ b/dist/domain.roles/mechanic/skills/git.pull.comment/git.pull.comment.del.sh
 @@ -0,0 +1,218 @@
@@ -251,7 +2708,7 @@ index 00000000..45e7e7da
 \ No newline at end of file
 diff --git a/dist/domain.roles/mechanic/skills/git.pull.comment/git.pull.comment.get.sh b/dist/domain.roles/mechanic/skills/git.pull.comment/git.pull.comment.get.sh
 new file mode 100755
-index 00000000..08184aab
+index 0000000..08184aa
 --- /dev/null
 +++ b/dist/domain.roles/mechanic/skills/git.pull.comment/git.pull.comment.get.sh
 @@ -0,0 +1,271 @@
@@ -529,7 +2986,7 @@ index 00000000..08184aab
 \ No newline at end of file
 diff --git a/dist/domain.roles/mechanic/skills/git.pull.comment/git.pull.comment.operations.sh b/dist/domain.roles/mechanic/skills/git.pull.comment/git.pull.comment.operations.sh
 new file mode 100755
-index 00000000..d64e0fe8
+index 0000000..d64e0fe
 --- /dev/null
 +++ b/dist/domain.roles/mechanic/skills/git.pull.comment/git.pull.comment.operations.sh
 @@ -0,0 +1,899 @@
@@ -1434,7 +3891,7 @@ index 00000000..d64e0fe8
 +}
 diff --git a/dist/domain.roles/mechanic/skills/git.pull.comment/git.pull.comment.set.sh b/dist/domain.roles/mechanic/skills/git.pull.comment/git.pull.comment.set.sh
 new file mode 100755
-index 00000000..342c6a21
+index 0000000..342c6a2
 --- /dev/null
 +++ b/dist/domain.roles/mechanic/skills/git.pull.comment/git.pull.comment.set.sh
 @@ -0,0 +1,338 @@
@@ -1779,7 +4236,7 @@ index 00000000..342c6a21
 \ No newline at end of file
 diff --git a/dist/domain.roles/mechanic/skills/git.pull.comment/git.pull.comment.sh b/dist/domain.roles/mechanic/skills/git.pull.comment/git.pull.comment.sh
 new file mode 100755
-index 00000000..795ccc00
+index 0000000..064f9bb
 --- /dev/null
 +++ b/dist/domain.roles/mechanic/skills/git.pull.comment/git.pull.comment.sh
 @@ -0,0 +1,25 @@

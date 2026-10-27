@@ -22,6 +22,7 @@
 #     read-only files (mode 0555) refuses an in-place hunk with
 #     ERR_PNPM_PATCH_FAILED, but its dir is writable, so a delete and a fresh
 #     add apply. run it after a commit that failed so, then it installs
+#   - rewrite writes an added or deleted dir file by file, so none is lost
 #   - fail-fast on errors
 ######################################################################
 set -euo pipefail
@@ -156,6 +157,18 @@ case "$SUBCOMMAND" in
       -e "s#^Files ${PRISTINE_DIR}/(.*) and ${EDIT_DIR}/.* differ\$#changed\t\1#" \
       -e "s#^Only in ${EDIT_DIR}(/?)(.*): (.*)\$#added\t\2\1\3#" \
       -e "s#^Only in ${PRISTINE_DIR}(/?)(.*): (.*)\$#deleted\t\2\1\3#")" || true
+
+    # diff -rq names an added or deleted dir once; expand it to each file inside
+    CHANGED="$(while IFS=$'\t' read -r kind rel; do
+      [[ -z "$rel" ]] && continue
+      base="$EDIT_DIR"
+      [[ "$kind" == "deleted" ]] && base="$PRISTINE_DIR"
+      if [[ "$kind" != "changed" && -d "${base}/${rel}" ]]; then
+        (cd "$base" && find "$rel" -type f | sort | sed "s#^#${kind}\t#")
+        continue
+      fi
+      printf '%s\t%s\n' "$kind" "$rel"
+    done <<< "$CHANGED")"
 
     # write the patch: every changed file as a delete, then an add
     PATCH_TMP="${PATCH_FILE}.tmp"

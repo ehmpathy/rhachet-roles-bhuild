@@ -1,6 +1,6 @@
 /**
  * .what = clamps on `git.branch.rebase --unstaged ignore`, which this repo adds to
- *         rhachet-roles-ehmpathy via patches/rhachet-roles-ehmpathy@1.39.7.patch
+ *         rhachet-roles-ehmpathy via patches/rhachet-roles-ehmpathy@1.39.9.patch
  *         until ehmpathy/rhachet-roles-ehmpathy#1189 ships it
  *
  * .why  = a clone tree always holds two unstaged ambient settings files (a symlink
