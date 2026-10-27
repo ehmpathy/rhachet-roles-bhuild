@@ -6,13 +6,14 @@
 #
 # .budget = the shipped boot payload, in o200k tokens, as a consumer seat renders it
 #   (`.agent/repo=bhuild/role=dispatcher/`, a little more than `src/`), frozen at its
-#   cost when declared, rounded up to the next 100. the boot-budget clamp turns red
-#   the moment the boot outgrows it.
+#   cost, rounded up to the next 100. the boot-budget clamp turns red the moment the
+#   boot outgrows it. it covers the `radio.task.queue` verb (net of the two radio.uses
+#   internals and the retired `radio.task.held` alias it no longer boots) and the four
+#   phone verbs (text, contacts, contacts.uses, daemon), whose headers boot in full,
+#   like each radio verb's.
 #   measure: `npx rhachet roles cost --what src/domain.roles/dispatcher/boot.yml`
-#   raised from 2_800 for the `radio.task.queue` verb (~400 tokens), net of the two
-#   radio.uses internals and the retired `radio.task.held` alias it no longer boots.
 budget:
-  tokens: 3_000
+  tokens: 4_000
 
 always:
   briefs:

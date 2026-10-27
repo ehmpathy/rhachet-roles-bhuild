@@ -23,8 +23,8 @@ importers:
         specifier: 1.7.3
         version: 1.7.3
       iso-time:
-        specifier: 1.11.3
-        version: 1.11.3
+        specifier: 1.11.7
+        version: 1.11.7
       simple-on-disk-cache:
         specifier: 1.8.1
         version: 1.8.1(with-simple-cache@0.15.1)
@@ -11453,7 +11453,7 @@ snapshots:
       domain-glossary-procedure: 1.0.0
       domain-objects: 0.31.9
       helpful-errors: 1.5.3
-      iso-time: 1.11.3
+      iso-time: 1.11.7
       type-fns: 1.21.0
 
   simple-on-disk-cache@1.7.10:

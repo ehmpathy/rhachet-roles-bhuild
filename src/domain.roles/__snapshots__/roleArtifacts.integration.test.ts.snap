@@ -150,8 +150,10 @@ behavior.wish/rule.prefer.clear-desires.md
   practices/behavior.vision/howto.experience.decompose.md
   practices/behavior.vision/howto.experience.demonstrate.md
   practices/behavior.vision/howto.experience.enumerate.md
+  practices/behavior.vision/rule.forbid.vision-without-rendered-stdout.md
   practices/behavior.vision/rule.require.dimensional-decomposition.md
   practices/behavior.vision/rule.require.experience-coverage.md
+  practices/behavior.vision/rule.require.vision-renders-stdout.md
   </briefs.ref>
 
   <skills.ref base="src/domain.roles/behaver/skills/">
@@ -221,8 +223,10 @@ behavior.wish/rule.prefer.clear-desires.md
   practices/behavior.vision/howto.experience.decompose.md
   practices/behavior.vision/howto.experience.demonstrate.md
   practices/behavior.vision/howto.experience.enumerate.md
+  practices/behavior.vision/rule.forbid.vision-without-rendered-stdout.md
   practices/behavior.vision/rule.require.dimensional-decomposition.md
   practices/behavior.vision/rule.require.experience-coverage.md
+  practices/behavior.vision/rule.require.vision-renders-stdout.md
   </briefs.ref>
   <skills.ref base="src/domain.roles/behaver/skills/">
   bind.behavior.sh
@@ -290,18 +294,128 @@ exports[`roleArtifacts given: [case5] each declared boot, against the budget it 
 "<readme path="src/domain.roles/dispatcher/readme.md">
 # dispatcher
 
-the dispatcher role sends tasks to, and receives tasks from, a radio channel (gh.issues or os.fileops).
+the dispatcher role dispatches work two ways: tasks via radio channels, and plain directed text
+between clones via the phone.
 
 ## skills
+
+### radio — broadcast tasks
 
 - \`radio.task.push\` - broadcast tasks to a channel (gh.issues, os.fileops)
 - \`radio.task.pull\` - receive tasks from a channel
 - \`radio.task.queue\` - read, amend, drop, and drain the tasks held for the radio: \`get | set | del | drain\` (a blocked push is held, then delivered by the next push or drain that gets through; a record that upstream refuses or faults on is set aside and the rest still deliver; a record file that cannot be read fails loud, named, with its fix, and is never skipped)
+
+### phone — text peer clones
+
+- \`phone.text\` - send a text to a peer clone or a group, read this clone's thread, or withdraw a QUEUED text
+- \`phone.contacts\` - read, grant, or revoke the peers this clone may text beyond its own tree
+- \`phone.contacts.uses\` - the meter on whether this tree's clones may manage their own contacts (a human sets it)
+- \`phone.daemon\` - check, start, or stop the tree's daemon, which delivers each text over \`rhx clone say\`
+
 ## purpose
 
-lets humans and clones hand tasks to each other: one pushes a task onto a channel, another pulls it, claims it, and delivers it.
+enables distributed coordination between humans and clones: tasks via broadcast channels, and
+direct text between a director and its crews, both ways, with no pane keystroke.
 
 </readme>
+
+<skill.say path="src/domain.roles/dispatcher/skills/phone.contacts.sh">
+#!/usr/bin/env bash
+######################################################################
+# .what = read, grant, or revoke the peers this clone may text
+#
+# .why  = a clone texts only a contact, a clone in its own tree, or a
+#         peer that texted it first; contacts are per clone
+#
+# usage:
+#   phone.contacts.sh get
+#   phone.contacts.sh set --address phone://grove=local/tree=<tree>/clone=<clone>
+#   phone.contacts.sh del --address phone://grove=local/tree=<tree>/clone=<clone>
+#
+# guarantee:
+#   - changes the contacts of the clone that runs it, and no other
+#   - set checks the peer's grove and tree exist; set and del are idempotent
+#   - a clone's set or del needs its tree meter allowed (phone.contacts.uses),
+#     else exit 2; a human may always set or del
+######################################################################
+
+
+# [implementation hidden - use skill to execute]
+</skill.say>
+
+<skill.say path="src/domain.roles/dispatcher/skills/phone.contacts.uses.sh">
+#!/usr/bin/env bash
+######################################################################
+# .what = the meter on whether this tree's clones may manage their own contacts
+#
+# .why  = who a clone may reach is the booter's call; a human lifts the
+#         meter where a clone (a director) must grant its own contacts
+#
+# usage:
+#   phone.contacts.uses.sh get
+#   phone.contacts.uses.sh allow     # human only
+#   phone.contacts.uses.sh block     # human only
+#
+# guarantee:
+#   - state in .meter/phone.contacts.uses.jsonc; unset reads as blocked
+#   - allow and block need a tty, or __I_AM_HUMAN=true; else exit 2
+######################################################################
+
+
+# [implementation hidden - use skill to execute]
+</skill.say>
+
+<skill.say path="src/domain.roles/dispatcher/skills/phone.daemon.sh">
+#!/usr/bin/env bash
+######################################################################
+# .what = check, start, or stop this tree's phone daemon
+#
+# .why  = one daemon per tree delivers every clone's QUEUED texts over
+#         \`rhx clone say\`; \`phone.text set\` starts it on its own
+#
+# usage:
+#   phone.daemon.sh get     # is a daemon live here?
+#   phone.daemon.sh set     # find the live daemon, or start one
+#   phone.daemon.sh del     # stop it; no text is lost
+#
+# guarantee:
+#   - one daemon per tree, held by a lock; a second start is a no-op
+#   - the files are the queue: a stop or a crash loses no text
+######################################################################
+
+
+# [implementation hidden - use skill to execute]
+</skill.say>
+
+<skill.say path="src/domain.roles/dispatcher/skills/phone.text.sh">
+#!/usr/bin/env bash
+######################################################################
+# .what = send a text to a peer clone, read this clone's thread, or withdraw a QUEUED text
+#
+# .why  = plain directed text between clones, both ways, with no pane keystroke
+#         - a director texts its crew; the crew texts back
+#         - every text a file on disk: ordered, delivered once, the audit trail
+#         - the tree's daemon delivers it over \`rhx clone say\`, never --force
+#
+# usage:
+#   phone.text.sh set --to phone://grove=local/tree=<tree>/clone=<clone> --what '...'
+#   phone.text.sh set --to @:foreman --to @:mechanic --what @stdin
+#   phone.text.sh set --to <address> --re 7f3e9a02 --what '...'
+#   phone.text.sh get
+#   phone.text.sh get --text 7f3e9a02
+#   phone.text.sh del --text 7f3e9a02
+#
+# guarantee:
+#   - runs only inside an enrolled clone; reads and writes that clone's mailbox alone
+#   - a peer must be a contact, a clone in this tree, or a peer that texted first
+#   - a group send admits every peer or none; each text returns QUEUED; the daemon is findserted
+#   - a text holds at most 8000 chars; a longer one is refused, never cut
+#   - a refusal exits 2 and names the fix
+######################################################################
+
+
+# [implementation hidden - use skill to execute]
+</skill.say>
 
 <skill.say path="src/domain.roles/dispatcher/skills/radio.task.pull.sh">
 #!/usr/bin/env bash
@@ -527,6 +641,14 @@ lets humans and clones hand tasks to each other: one pushes a task onto a channe
 exports[`roleArtifacts given: [case5] each declared boot, against the budget it declares when: [t1] each declared boot is booted at the src layout then: the dispatcher manifest reads as reviewed 1`] = `
 "<readme path="src/domain.roles/dispatcher/readme.md">
 </readme>
+<skill.say path="src/domain.roles/dispatcher/skills/phone.contacts.sh">
+</skill.say>
+<skill.say path="src/domain.roles/dispatcher/skills/phone.contacts.uses.sh">
+</skill.say>
+<skill.say path="src/domain.roles/dispatcher/skills/phone.daemon.sh">
+</skill.say>
+<skill.say path="src/domain.roles/dispatcher/skills/phone.text.sh">
+</skill.say>
 <skill.say path="src/domain.roles/dispatcher/skills/radio.task.pull.sh">
 </skill.say>
 <skill.say path="src/domain.roles/dispatcher/skills/radio.task.push.sh">
