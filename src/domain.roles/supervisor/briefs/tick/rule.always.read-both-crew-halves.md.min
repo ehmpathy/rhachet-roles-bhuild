@@ -1,0 +1,6 @@
+# rule.always.read-both-crew-halves
+"is this crew alright?" → read BOTH halves before any pane: `rhx git.crew.poll --live --stones` (WORK — ducts up?) · `rhx term.audit` (VIEW — each duct has a tab?)
+why: the axes are disjoint. a closed tab over a live duct reads `😶 at work` — healthy on the axis the poll measures, unwatched in fact. a crew.read is blind to the tab; never a health check.
+cues: human says malformed / not booted / no tab → `term.audit` FIRST · after `crew.show` / `crew.boot` · a grove dropped (every tab died) · poll says at-work, human says otherwise → the human reads the view.
+⚠️ `term.audit` is localhost-only — it silently omits grove crews; for one, read `rhx git.crew.show --tree <t>` (proves the open, not the state) and say the gap.
+blocker: health judged from the poll alone where a tab could be the defect · a crew.read (or duct.read) as the health check. nitpick: a show/boot reported done with no audit · the localhost omission left unsaid.

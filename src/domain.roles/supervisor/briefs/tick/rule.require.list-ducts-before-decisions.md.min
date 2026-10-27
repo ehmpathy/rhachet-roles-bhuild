@@ -1,0 +1,4 @@
+# rule.require.list-ducts-before-decisions
+before any decision that spans more than one crew — stop, fell, "which one did the human mean", "all of them" — read the FULL set first. the verb is a crew verb (`rhx git.crew.list`), never `duct.list`.
+⚠️ `crew.list` is localhost-only (once printed 2 crews over a fleet of 29). full set, every grove → `rhx git.crew.ledger` · with live state → `rhx git.crew.poll --live` · local liveness alone → `crew.list`, and say the bound.
+blocker: a cross-crew decision with no read of the full set · a decision off `crew.list` alone where a grove crew could be in scope. nitpick: the localhost bound left unsaid.

@@ -1,0 +1,6 @@
+# rule.require.one-pr-per-worktree
+worktree ↔ branch ↔ pr is strictly 1:1:1 (the chain: crew ↔ tree ↔ branch ↔ pr ↔ goal). work that splits into several prs splits into several worktrees.
+why: one deliverable per pr keeps review, merge, revert independent, and lets `git tree del` close it; a half-released batch cannot.
+the unit is the deliverable, never the file count: 7 peer fixes → 7 worktrees · one fix over 5 files → 1 · feature + its docs → 1.
+⚠️ shared files are no reason to batch — dispatch in dependency order, rebase the later tree once the earlier merges.
+blocker: a second pr from one worktree.

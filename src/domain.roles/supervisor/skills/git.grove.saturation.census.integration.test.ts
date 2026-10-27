@@ -8,7 +8,7 @@
 import { spawn, spawnSync } from 'child_process';
 import { mkdirSync, readFileSync } from 'fs';
 import { join } from 'path';
-import { given, then, useThen, when } from 'test-fns';
+import { getError, given, then, useThen, when } from 'test-fns';
 
 import { tempDirs } from '../../.test/tempDirs';
 import {
@@ -17,6 +17,47 @@ import {
   runPayload,
   SLUG_SIBLING,
 } from './git.grove.saturation.harness';
+
+/**
+ * .what = the probe budget the WHOLE-SKILL arm hands `--timeout`
+ * .why = the skill's default (20s) is a wall clock a loaded box outlives; then
+ *        the skill reports `error=timeout` and exits 1, by design. 60s leaves
+ *        room for load and sits, with the spawn budget, under the 90s jest cap
+ */
+const SECONDS_PROBE_BUDGET_WHOLE_SKILL = 60;
+
+/**
+ * .what = runs the whole skill against local alone, in a hermetic forest
+ * .why = one place owns the budget and the failure message; a red quotes
+ *        stdout too, since the skill names a timeout there and leaves stderr empty
+ */
+const runWholeSkillOnLocal = (input: {
+  timeoutSeconds: number;
+}): { emitted: string } => {
+  const forest = tempDirs.genOne({ slug: 'sat-kin-forest' });
+  mkdirSync(join(forest, 'groves'), { recursive: true });
+  const out = spawnSync(
+    'bash',
+    [
+      PATH_SAT,
+      '--only',
+      'local',
+      '--json',
+      '--timeout',
+      String(input.timeoutSeconds),
+    ],
+    {
+      encoding: 'utf8',
+      timeout: (input.timeoutSeconds + 20) * 1000,
+      env: { ...process.env, GIT_FOREST_DIR: forest },
+    },
+  );
+  if (out.status !== 0)
+    throw new Error(
+      `the skill exited ${out.status} — a clamp on its OUTPUT cannot run:\n--- stdout ---\n${out.stdout}\n--- stderr ---\n${out.stderr}`,
+    );
+  return { emitted: out.stdout };
+};
 
 given('[case1] the saturation probe must not COUNT ITSELF', () => {
   /**
@@ -475,24 +516,15 @@ given('[case2] the saturation probe must not count its SIBLING probes', () => {
   });
 
   when('[t4] the WHOLE SKILL runs, fan-out and all', () => {
-    const ran = useThen('the skill exits clean', () => {
-      // ⚠️ `--only local`, so this stays HERMETIC — no ssh, no network, no
-      //    grove touched (rule.require.hermetic-tests). the sibling topology is
-      //    proven in t3; what THIS arm proves is that the seam is wired in the
-      //    fan-out, which is the gap the defect actually lived in.
-      const forest = tempDirs.genOne({ slug: 'sat-kin-forest' });
-      mkdirSync(join(forest, 'groves'), { recursive: true });
-      const out = spawnSync('bash', [PATH_SAT, '--only', 'local', '--json'], {
-        encoding: 'utf8',
-        timeout: 180_000,
-        env: { ...process.env, GIT_FOREST_DIR: forest },
-      });
-      if (out.status !== 0)
-        throw new Error(
-          `the skill exited ${out.status} — a clamp on its OUTPUT cannot run: ${out.stderr}`,
-        );
-      return { emitted: out.stdout };
-    });
+    // ⚠️ `--only local`, so this stays HERMETIC — no ssh, no network, no
+    //    grove touched (rule.require.hermetic-tests). the sibling topology is
+    //    proven in t3; what THIS arm proves is that the seam is wired in the
+    //    fan-out, which is the gap the defect actually lived in.
+    const ran = useThen('the skill exits clean', () =>
+      runWholeSkillOnLocal({
+        timeoutSeconds: SECONDS_PROBE_BUDGET_WHOLE_SKILL,
+      }),
+    );
 
     then('it read local, and local alone', () => {
       // the fixture forest holds no grove json, so no other key may appear —
@@ -511,6 +543,31 @@ given('[case2] the saturation probe must not count its SIBLING probes', () => {
       const kin = ran.emitted.match(/^procs_kin=(\d+)$/m);
       expect(kin).not.toBeNull();
       expect(Number(kin![1])).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  when('[t5] the local probe outlives its budget, as on a loaded box', () => {
+    // 🔴 the measured red, 2026-10-23: under load t4 read "the skill exited 1 —
+    //    a clamp on its OUTPUT cannot run:" and naught more. the probe had
+    //    outlived the skill's default 20s, the skill had said so on STDOUT, and
+    //    the arm quoted only the empty stderr. a 1s budget reproduces that red
+    //    on any box: the probe alone takes a 1s vmstat sample.
+    then(
+      'the red names its cause — the timeout the skill reported',
+      async () => {
+        const error = await getError(async () =>
+          runWholeSkillOnLocal({ timeoutSeconds: 1 }),
+        );
+        expect(error.message).toContain('the skill exited 1');
+        expect(error.message).toMatch(/^error=timeout$/m);
+      },
+    );
+
+    then('the t4 budget sits above the default and under the jest cap', () => {
+      expect(SECONDS_PROBE_BUDGET_WHOLE_SKILL).toBeGreaterThan(20);
+      expect((SECONDS_PROBE_BUDGET_WHOLE_SKILL + 20) * 1000).toBeLessThan(
+        90_000,
+      );
     });
   });
 });

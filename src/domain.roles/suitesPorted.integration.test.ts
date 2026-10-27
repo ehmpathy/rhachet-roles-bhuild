@@ -58,6 +58,7 @@ const DIR_ROLES = __dirname;
  *         | F13 | supervisor | 5 → 7 | `ductwork` cut into `.verbs` / `.pane` / `.signal` parts, so one reviewer can hold each whole |
  *         | F13 | supervisor | 7 → 14 | `crewwork` cut into eight parts by subject — verbs, husk, heal, pane, modal, fell, poll, grove |
  *         | F13 | supervisor | 14 → 23 | `work.surface` cut into ten parts by subject — layout, remote, auth, classify, poll, rows, scope, heal, stones, alerts |
+ *         | boot-budget | supervisor | 23 → 24 | `work.harness` — clamps that a driver the timeout killed throws, never reads as `exit 1` |
  *         | F13 | prioritizer | 2 → 8 | `ecowork` cut into seven parts by subject — quant, goal, migrate, graph, render, mirror, commit |
  *
  * 🔴 .and the comment at [t0] used to say "a ratchet floor rather than an
@@ -69,7 +70,7 @@ const DIR_ROLES = __dirname;
  *         header is a cache, and this one had gone stale against its own line.
  */
 const SUITES_PORTED = [
-  { role: 'supervisor', inWork: true, quant: 23 },
+  { role: 'supervisor', inWork: true, quant: 24 },
   { role: 'prioritizer', inWork: true, quant: 8 },
 ];
 

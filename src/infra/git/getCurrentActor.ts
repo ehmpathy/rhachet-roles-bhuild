@@ -2,8 +2,15 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 
 import type { ContextGithubAuth } from '../../domain.objects/RadioContext';
+import { asCurrentActor } from './asCurrentActor';
 
 const execAsync = promisify(exec);
+
+/**
+ * .what = the longest the gh login lookup may take before git answers instead
+ * .why = callers and tests derive their own bound from this worst case
+ */
+export const MS_GH_LOGIN_TIMEOUT = 5000;
 
 /**
  * .what = get current git/gh user
@@ -24,26 +31,23 @@ export const getCurrentActor = async (
     return { ...envWithoutToken, GH_TOKEN: context.github.auth.token };
   })();
 
-  try {
-    // try gh cli first (gets github username)
-    const { stdout } = await execAsync('gh api user -q .login', {
-      env,
-      timeout: 5000,
-    });
-    const login = stdout.trim();
-    if (login) return login;
-  } catch {
-    // fallback to git config
-  }
+  // ask gh for the github login; a failure means gh did not answer
+  const ghLogin = await execAsync('gh api user -q .login', {
+    env,
+    timeout: MS_GH_LOGIN_TIMEOUT,
+  }).then(
+    ({ stdout }) => stdout,
+    () => null,
+  );
 
-  try {
-    // fallback: git config user name
-    const { stdout } = await execAsync('git config user.name');
-    const name = stdout.trim();
-    if (name) return name;
-  } catch {
-    // no git config
-  }
+  // ask git for the local name; a failure means no git config
+  const gitName = ghLogin?.trim()
+    ? null
+    : await execAsync('git config user.name').then(
+        ({ stdout }) => stdout,
+        () => null,
+      );
 
-  return 'unknown';
+  // pick the actor by the declared fallback order
+  return asCurrentActor({ ghLogin, gitName });
 };

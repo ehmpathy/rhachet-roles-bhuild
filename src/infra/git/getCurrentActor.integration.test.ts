@@ -1,6 +1,11 @@
 import { given, then, when } from 'test-fns';
 
-import { getCurrentActor } from './getCurrentActor';
+import { getCurrentActor, MS_GH_LOGIN_TIMEOUT } from './getCurrentActor';
+
+// the bound for one real lookup: the declared gh cap, then the git read. the
+// operation may spend its whole gh cap before git answers, so a bound at or under
+// that cap fails on a slow box while the code is correct
+jest.setTimeout(MS_GH_LOGIN_TIMEOUT + 10_000);
 
 describe('getCurrentActor', () => {
   given('[case1] inside a git repo with config', () => {

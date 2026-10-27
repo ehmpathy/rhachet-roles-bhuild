@@ -1,4 +1,22 @@
+# .what = curates what this role boots, and caps it
+#
+# .why  = every role this repo ships boots under a declared budget, no exceptions.
+#         this file declares the boot the role already had: its readme, and its one
+#         skill header said in full.
+#
+# .budget = the shipped boot payload, in o200k tokens, as a consumer seat renders it
+#   (`.agent/repo=bhuild/role=dreamer/`, a little more than `src/`), frozen at its
+#   cost when declared, rounded up to the next 100. the boot-budget clamp turns red
+#   the moment the boot outgrows it.
+#   measure: `npx rhachet roles cost --what src/domain.roles/dreamer/boot.yml`
+budget:
+  tokens: 500
+
 always:
   briefs:
     say: []
     ref: []
+
+  skills:
+    say:
+      - skills/*.sh

@@ -1,0 +1,5 @@
+# rule.always.read-stars-as-sponsored-priorities
+"stars" / "how are our stars" = the ⭐ SPONSORED priorities — answer from `rhx eco.priority get`, its ⭐ rows. NEVER a crew poll of the furthest-along trees: a poll measures MOTION, not funded budget.
+"star this" / "sponsor this" = an `eco.priority --sponsor` toggle, never a crew act. "how's the fleet" / "what's stuck" = THAT is the crew poll. a named tree → read that crew.
+test: does STAR / ⭐ appear? the subject is the sponsored set — `eco.priority`, never `crew.poll`.
+blocker: "stars" answered with a `git.crew.poll` read · "star this" read as a crew act.

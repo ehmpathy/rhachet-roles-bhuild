@@ -1,0 +1,10 @@
+# surgoal.squeeze-the-grove
+> every cpu-second and byte on a grove is work a human asked for, or waste. know which. cut the second. always.
+a surgoal: carried every tick, never complete (not the tree-relation `surgoal`; rename owed, maybe `evergoal`).
+why: `ps` sees only live processes; measured on one grove, dead processes = 91.4% of cpu. a `zsh` at 0% had reaped 16.7 cpu-h of children.
+sample COUNTERS (monotonic since boot), never GAUGES (`ps %cpu`, load, `free`); diff a counter over a window. a census that forks per process IS a saturator (~38,600 forks for one probe); a counter costs one read.
+counters, no root: `/proc/<pid>/stat` cutime+cstime · `<cgroup>/cpu.stat` · `/proc/stat` processes, ctxt · `memory.{peak,events,stat}` · `{cpu,memory,io}.pressure`.
+ask every read: work or waste? · churn climbs? · who reaps? · thrash or full? · did the box oom_kill a clone?
+cpu is a FLOW (tmux/zsh/systemd ~89%), ram a STOCK (claude ~89%) — read the axis first: `catalog.of=saturator._.md`.
+bound: never cut work a human asked for; a tune needs a measured before and after.
+blocker: a decision off a gauge where a counter was available · a cut to asked-for compute sold as efficiency · a cut the axis inventory does not back · a population probe on a 🔴 box · a rate from an unmeasured window · a cut priced from config, not the live box. nitpick: a health report with no waste question · `⚪ not measured` where a cgroup counter answers.

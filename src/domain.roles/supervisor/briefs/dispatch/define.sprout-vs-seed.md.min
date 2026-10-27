@@ -1,0 +1,7 @@
+# define.sprout-vs-seed
+sprout = dispatch a TREE (worktree + ducts + bound behavior); work starts now → `rhx git.tree.behavior --into $org/$repo --name beav/… --size … --wish …`
+seed = dispatch a radio TASK (gh issue, queued); work waits → `rhx radio.task.push --via gh.issues --into $org/$repo --title … --description @stdin`
+🔴 the default is SEED. the OBJECT authorizes a boot: "sprout a tree" · "dispatch a tree" · "boot a crew" → SPROUT. all else — a bare "dispatch", "send a task", "queue this" → SEED, never a question. ask only when the human names a tree-shaped outcome and withholds the word. the glossary binds contracts, never the wisher's speech.
+why: a wrong seed costs a gh issue and one message ("sprout it"); a wrong sprout costs a branch, worktree, ducts, install, a bound route, and a fell (`git.tree.del` refuses while the tree holds work).
+a sprout still owes a bound behavior and a human ok above nano. verify from `rhx git.crew.list` + the filesystem.
+blocker: a tree booted where the human never named a tree · a sprout answered as a seed, or the reverse. nitpick: a question asked in place of a bare-"dispatch" seed.
