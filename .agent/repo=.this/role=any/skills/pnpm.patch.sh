@@ -12,11 +12,16 @@
 #   pnpm.patch.sh commit --package test-fns@1.15.7    # write the patch from it
 #   pnpm.patch.sh sync                                # install against the extant lock
 #   pnpm.patch.sh sync --frozen                       # prove the lock installs as ci does
+#   pnpm.patch.sh rewrite --package test-fns@1.15.7   # rewrite the patch for a read-only package
 #
 # guarantee:
 #   - --package must be an exact name@version
 #   - the edit dir is .temp/pnpm.patch/<name@version>, inside the repo
 #   - begin refuses if the edit dir already exists (commit or remove it first)
+#   - rewrite writes each changed file as delete-then-add: a package that ships
+#     read-only files (mode 0555) refuses an in-place hunk with
+#     ERR_PNPM_PATCH_FAILED, but its dir is writable, so a delete and a fresh
+#     add apply. run it after a commit that failed so, then it installs
 #   - fail-fast on errors
 ######################################################################
 set -euo pipefail
@@ -43,7 +48,7 @@ while [[ $# -gt 0 ]]; do
       sed -n '2,19p' "$0"
       exit 0
       ;;
-    begin|commit|sync)
+    begin|commit|sync|rewrite)
       SUBCOMMAND="$1"
       shift
       ;;
@@ -125,8 +130,54 @@ case "$SUBCOMMAND" in
 
     echo "🐢 patch written for ${PACKAGE}"
     ;;
+  rewrite)
+    # refuse a rewrite with no edit dir
+    if [[ ! -d "$EDIT_DIR" ]]; then
+      echo "✋ ConstraintError: no edit dir at ${EDIT_DIR}" >&2
+      echo "   fix: pnpm.patch.sh begin --package ${PACKAGE}" >&2
+      exit 2
+    fi
+
+    # refuse a rewrite before a commit has registered the patch
+    PATCH_FILE="${GIT_ROOT}/patches/${PACKAGE}.patch"
+    if [[ ! -f "$PATCH_FILE" ]]; then
+      echo "✋ ConstraintError: no patch at ${PATCH_FILE}" >&2
+      echo "   fix: pnpm.patch.sh commit --package ${PACKAGE} first; it registers the patch" >&2
+      exit 2
+    fi
+
+    # a pristine copy of the package, to diff the edit dir against
+    PRISTINE_DIR="${GIT_ROOT}/.temp/pnpm.patch/${PACKAGE}.pristine"
+    rm -rf "$PRISTINE_DIR"
+    pnpm patch "$PACKAGE" --edit-dir "$PRISTINE_DIR" --ignore-existing
+
+    # each file that differs, as a path relative to the package root
+    CHANGED="$(diff -rq "$PRISTINE_DIR" "$EDIT_DIR" | sed -E \
+      -e "s#^Files ${PRISTINE_DIR}/(.*) and ${EDIT_DIR}/.* differ\$#changed\t\1#" \
+      -e "s#^Only in ${EDIT_DIR}(/?)(.*): (.*)\$#added\t\2\1\3#" \
+      -e "s#^Only in ${PRISTINE_DIR}(/?)(.*): (.*)\$#deleted\t\2\1\3#")" || true
+
+    # write the patch: every changed file as a delete, then an add
+    PATCH_TMP="${PATCH_FILE}.tmp"
+    : > "$PATCH_TMP"
+    while IFS=$'\t' read -r kind rel; do
+      [[ -z "$rel" ]] && continue
+      if [[ "$kind" == "changed" || "$kind" == "deleted" ]]; then
+        (cd "$PRISTINE_DIR" && git diff --no-index -- "$rel" /dev/null >> "$PATCH_TMP") || [[ $? -eq 1 ]]
+      fi
+      if [[ "$kind" == "changed" || "$kind" == "added" ]]; then
+        (cd "$EDIT_DIR" && git diff --no-index -- /dev/null "$rel" >> "$PATCH_TMP") || [[ $? -eq 1 ]]
+      fi
+    done <<< "$CHANGED"
+    mv "$PATCH_TMP" "$PATCH_FILE"
+    rm -rf "$PRISTINE_DIR"
+
+    # install with the rewritten patch
+    pnpm install
+    echo "🐢 patch rewritten as delete-then-add for ${PACKAGE}, and installed"
+    ;;
   *)
-    echo "✋ ConstraintError: subcommand must be begin or commit, got: '${SUBCOMMAND}'" >&2
+    echo "✋ ConstraintError: subcommand must be begin, commit, rewrite, or sync, got: '${SUBCOMMAND}'" >&2
     exit 2
     ;;
 esac
