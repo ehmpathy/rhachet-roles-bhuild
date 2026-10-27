@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 ######################################################################
 # .what = read-only census of the grove this runs on: cpu, ram,
-#         pressure, fork rate, and per-crew ram + token burn
+#         pressure, fork rate, per-crew ram + token burn, and the
+#         boot toll (what a seat or fork pays before its first word)
 #
 # .why  = the concurrency budget needs measured per-crew costs per grove
 #         - git.crew.tokens is absent on this grove, and blind to actor dirs
@@ -21,6 +22,9 @@
 #   - prints no clock time; only window lengths and a datestamp
 #   - usage is deduped per api message id (one call spans many lines)
 #   - a crew = the worktree a seat's cwd sits in
+#   - a boot = the first api call of a transcript begun in the span; a
+#     fork = a transcript under subagents/; a resume also counts, so
+#     boots are an upper bound
 #   - cost weight is an estimate (api price ratios): input 1,
 #     cache write 5m 1.25, cache write 1h 2, cache read 0.1, output 5
 ######################################################################
@@ -232,7 +236,10 @@ read_account() {
   echo "unknown"
 }
 
-TOKEN_LINES=$(
+# one pass over every transcript touched in the span; each row is tagged:
+#   use  = an api call inside the span (burn)
+#   boot = the transcript's true first api call (the boot toll); kept below only if it began in the span
+SPAN_LINES=$(
   for cfg in "${CONFIG_DIRS[@]}"; do
     actor=$(echo "$cfg" | sed -n 's#.*/\.actors/\([^/]*\)/brain/\.claude$#\1#p')
     account=$(read_account "$cfg")
@@ -241,11 +248,51 @@ TOKEN_LINES=$(
       [[ "$file" == */subagents/* ]] && fork=true
       jq -c --arg since "$SINCE" --arg until "$UNTIL" --arg actor "${actor:-home}" --arg account "$account" --argjson fork "$fork" '
         select(.timestamp? != null and .timestamp >= $since and .timestamp < $until and .message.usage? != null)
-        | { id: (.message.id // .uuid), cwd: (.cwd // ""), actor: $actor, account: $account, fork: $fork,
+        | { t: "use", id: (.message.id // .uuid), cwd: (.cwd // ""), actor: $actor, account: $account, fork: $fork,
             session: (.sessionId // ""), u: .message.usage }
       ' "$file" 2>/dev/null || true
+      (jq -c --argjson fork "$fork" '
+        select(.message.usage? != null and .timestamp? != null)
+        | { t: "boot", at: .timestamp, fork: $fork, u: .message.usage }
+      ' "$file" 2>/dev/null || true) | head -n 1
     done
   done
+)
+TOKEN_LINES=$(printf '%s\n' "$SPAN_LINES" | jq -c 'select(.t? == "use")')
+
+# the boot toll: what a seat or fork pays before its first word (a fresh cache write)
+# .note = a "boot" = the first api call of a transcript file; a fork = a transcript under
+#         subagents/. a resume continues an older transcript and also counts, so boots are an upper bound
+BOOT_MD_JSON=$(
+  for cfg in "${CONFIG_DIRS[@]}"; do
+    size=0
+    [[ -f "$cfg/boot.md" ]] && size=$(wc -c < "$cfg/boot.md")
+    printf '%s\n' "$size"
+  done | jq -s -c 'sort | { dirs: length, with_boot: (map(select(. > 0)) | length),
+    median_bytes: (if length == 0 then 0 else .[(length / 2 | floor)] end), max_bytes: (max // 0) }'
+)
+BOOTS_JSON=$(
+  printf '%s\n' "$SPAN_LINES" | jq -s -c --arg since "$SINCE" --arg until "$UNTIL" --argjson window "$WINDOW_MIN" --argjson bootMd "$BOOT_MD_JSON" '
+    def n($x): ($x // 0);
+    map(select(.t? == "boot" and .at >= $since and .at < $until)
+      | .u as $u
+      | { fork,
+          input: n($u.input_tokens),
+          cw1h: n($u.cache_creation.ephemeral_1h_input_tokens),
+          cw5: (n($u.cache_creation_input_tokens) - n($u.cache_creation.ephemeral_1h_input_tokens)),
+          cr: n($u.cache_read_input_tokens) }) as $all
+    | def median($xs): ($xs | sort) as $s | if ($s | length) == 0 then 0 else $s[($s | length / 2 | floor)] end;
+    def stats($rows):
+      ($rows | map(.input + .cw5 * 1.25 + .cw1h * 2 + .cr * 0.1)) as $wt
+      | { boots: ($rows | length),
+          prompt_median: median($rows | map(.input + .cw5 + .cw1h + .cr)),
+          cache_write_median: median($rows | map(.cw5 + .cw1h)),
+          weighted_total: ($wt | add // 0 | floor),
+          weighted_per_hour: (if $window == 0 then 0 else (($wt | add // 0) * 60 / $window | floor) end) };
+    { boot_md: $bootMd,
+      seats: stats($all | map(select(.fork | not))),
+      forks: stats($all | map(select(.fork))) }
+  '
 )
 
 # burn per account, by the account each config dir is signed in to now
@@ -267,8 +314,8 @@ ACCOUNT_TOKENS_JSON=$(
 
 CREW_TOKENS_JSON=$(
   echo "$TOKEN_LINES" | jq -s --argjson hours "$(echo "scale=4; $WINDOW_MIN / 60" | bc)" '
-    # a reviewer brain ask runs in a temp dir that names no crew: pool them in one row
-    def crew($cwd): if ($cwd | test("brain-claude-ask")) then "(brain asks, crew unknown)"
+    # the brain smoke test (initBehaviorDir.brain.claude) asks claude from a temp dir that names no crew: pool them in one row
+    def crew($cwd): if ($cwd | test("brain-claude-ask")) then "(brain smoke test, crew unknown)"
       else (($cwd | capture("^(?<root>.*/_worktrees/[^/]+)") .root) // $cwd) end;
     def n($x): ($x // 0);
     unique_by(.id)
@@ -303,7 +350,7 @@ RECORD=$(jq -n \
   --arg psiCpu "$PSI_CPU_SOME_60" --arg psiMemSome "$PSI_MEM_SOME_60" --arg psiMemFull "$PSI_MEM_FULL_60" \
   --argjson forksPerSec "$FORKS_PER_SEC" --argjson sampleSec "$SAMPLE_SEC" --argjson windowMin "$WINDOW_MIN" \
   --argjson coresBusy "$CORES_BUSY" --argjson accounts "$ACCOUNT_TOKENS_JSON" \
-  --argjson ram "$CREW_RAM_JSON" --argjson tokens "$CREW_TOKENS_JSON" --argjson outside "$CREW_OUTSIDE_JSON" '
+  --argjson ram "$CREW_RAM_JSON" --argjson tokens "$CREW_TOKENS_JSON" --argjson outside "$CREW_OUTSIDE_JSON" --argjson boots "$BOOTS_JSON" '
   { grove: $host, date: $date,
     cpu: { count: $cpus, busy_cores: $coresBusy, load1: $load1, load5: $load5, psi_some_avg60: $psiCpu,
            outside_crews: $outside },
@@ -312,7 +359,8 @@ RECORD=$(jq -n \
     forks: { per_sec: $forksPerSec, sample_sec: $sampleSec },
     window_min: $windowMin,
     accounts: $accounts,
-    crews: ([$ram[].crew, $tokens[].crew] | unique | map(. as $c | {
+    boots: $boots,
+    crews:([$ram[].crew, $tokens[].crew] | unique | map(. as $c | {
       crew: ($c | split("/") | last),
       ram_gb: (([$ram[] | select(.crew == $c) | .pss_kb] | add // 0) / 1048576 * 100 | floor / 100),
       seats_live: ([$ram[] | select(.crew == $c) | .seats] | add // 0),
@@ -332,6 +380,8 @@ fi
 # .note = the account rows read "signed in now", never "burned by"; see read_account
 echo "$RECORD" | jq -r '
   def mtok($x): "\(($x // 0) / 1000000 * 10 | floor / 10)M";
+  def ktok($x): "\(($x // 0) / 1000 | floor)K";
+  def atok($x): if ($x // 0) >= 1000000 then mtok($x) else ktok($x) end;
   "🐚 grove.census",
   "   ├─ grove: \(.grove) (\(.date))",
   "   ├─ cpu: \(.cpu.busy_cores) of \(.cpu.count) cores busy over \(.forks.sample_sec)s · load \(.cpu.load1) / \(.cpu.load5) · psi some avg60 \(.cpu.psi_some_avg60)%",
@@ -340,7 +390,13 @@ echo "$RECORD" | jq -r '
   "   ├─ forks: \(.forks.per_sec)/s over \(.forks.sample_sec)s",
   "   ├─ account burn over \(.window_min) min: \(mtok([.crews[].tokens.weighted // 0] | add)) weighted · \(mtok([.crews[].tokens.raw // 0] | add)) raw",
   "   ├─ accounts (signed in now — a swap inside the span misattributes)",
-  ( .accounts[] | "   │  ├─ \(.account): \(mtok(.weighted)) weighted · \(.config_dirs) config dirs" ),
+  ( .accounts | length as $len | to_entries[] |
+    (if .key == ($len - 1) then "   │  └─ " else "   │  ├─ " end)
+    + "\(.value.account): \(mtok(.value.weighted)) weighted · \(.value.config_dirs) config dirs" ),
+  "   ├─ boot toll over the \(.window_min) min span (first call of each transcript begun in it; resumes count, so an upper bound)",
+  "   │  ├─ boot.md: \(.boots.boot_md.with_boot) of \(.boots.boot_md.dirs) config dirs · median \(.boots.boot_md.median_bytes / 1024 | floor)KB · max \(.boots.boot_md.max_bytes / 1024 | floor)KB",
+  "   │  ├─ seats: \(.boots.seats.boots) boots · first prompt median \(ktok(.boots.seats.prompt_median)) · written fresh median \(ktok(.boots.seats.cache_write_median)) · toll \(atok(.boots.seats.weighted_total)) (\(atok(.boots.seats.weighted_per_hour))/h)",
+  "   │  └─ forks: \(.boots.forks.boots) boots · first prompt median \(ktok(.boots.forks.prompt_median)) · written fresh median \(ktok(.boots.forks.cache_write_median)) · toll \(atok(.boots.forks.weighted_total)) (\(atok(.boots.forks.weighted_per_hour))/h)",
   "   └─ crews (ram now · tokens over the \(.window_min) min span, cost-weighted)",
   ( .crews | sort_by(-(.tokens.weighted // 0)) | length as $len | to_entries[] |
     (if .key == ($len - 1) then "      └─ " else "      ├─ " end)

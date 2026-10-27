@@ -51,6 +51,11 @@ read, not inferred. Max 5x vs 20x would still need the ledger.
 - Max has two sizes (5x, 20x); one-plan says naught about which, and a mix is plausible for
   accounts bought at different times
 
+## .risk: low
+
+none ships: an assumption inside a calibration; no credential, no prod write. if wrong, the pool
+reads low (conservative), and the same ledger rows correct it
+
 ## .where
 
 - `.fulcrums/inventory.of=fulcrums.case=F8-pool-calibration-needs-no-per-call-account.md`, which

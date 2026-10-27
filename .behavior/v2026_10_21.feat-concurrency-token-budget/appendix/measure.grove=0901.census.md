@@ -45,19 +45,43 @@ it reads `/proc` for cpu, ram, pressure, and forks, and every claude config dir 
 - a second 60 min read, hours later: **49.6 – 54.5M** weighted (~292 – 315M raw), 10 crews that
   burned. the top crew alone (a route-upgrade crew at a review ladder) burned **20.3M/h**, 3 seats
 
-## .a token lever seen in the reads — reviewer brain asks write, never read
+## .a token lever seen in the reads — a one-word smoke test loads the boot briefs
 
-the reviewer's `brain-claude-ask` calls run in a temp config dir, one dir per ask, so the census
-pools them in one row (`(brain asks, crew unknown)`). over one 60 min span:
+the `brain-claude-ask` rows are not reviewer asks. they are this repo's brain smoke test
+(`initBehaviorDir.brain.claude.integration.test.ts`): it spawns `claude -p 'reply with exactly
+the word: ok'` per prescribed brain, from a fresh temp cwd. over one 60 min span:
 
 | calls | cache write 5m | cache read | weighted |
 |---|---|---|---|
 | 15 | **3.45M** | 0.11M | **4.3M** (~9% of the grove's hour) |
 
-⇒ each ask writes its whole prompt to cache fresh (~230K) and no later ask reads it back. a
-cache write weighs 1.25, a read 0.1: were the shared prefix (rubric + briefs) read rather than
-rewritten, the same 15 asks would cost ~0.5M. **estimated gain: ~3.8M/h on 0901**, about the burn
-of one crew at work. one read; the ask's prompt layout must be checked before this ranks
+⇒ cause: the spawn inherited `CLAUDE_CONFIG_DIR`, so each ask loaded the actor's `CLAUDE.md →
+@boot.md` (648KB, ~216K tokens) as user memory. the temp cwd varies per ask and the asks
+alternate models, so no ask read another's cache: ~230K written fresh, every attempt.
+
+⇒ **cured in this branch**: the spawn now gets an empty `CLAUDE_CONFIG_DIR`. the suite passes
+(4/4, 13s). gain ≈ the whole row, **~4M weighted per hour that crews run integration tests**.
+
+⇒ the wider lesson, for every crew: **any `claude` spawn that inherits an actor's config dir pays
+~216K tokens of boot briefs before its first word.** the real `rhx review` does not — it calls
+the api (or the agent sdk) with a static-first prompt, never the cli
+
+## .the boot toll — what a seat or fork pays before its first word
+
+instrument: `rhx grove.boot.cost` (since folded into `rhx grove.census`, its `boot toll` branch) — the first api call of every transcript on the grove.
+boot briefs: 93 of 121 config dirs carry a `boot.md`, median 384KB, max 950KB.
+
+| window | seat boots | fork boots | first prompt, median | written fresh, median | toll, weighted |
+|---|---|---|---|---|---|
+| 24h | 56 | 55 | 169 – 174K | 158 – 161K | **1.1M/h** |
+| 7d | 446 | 111 | 163 – 168K | 155 – 156K | **0.69M/h** |
+
+- each boot, seat or fork, writes **~160K tokens** fresh: **~0.2M weighted per boot**. a fork
+  pays the same as a seat, so a fork costs its parent's whole context, never a slice of it
+- per hour it is small: **~1 – 2% of the grove's 40 – 55M/h** burn. a slimmer boot lowers the
+  toll per clone, not the fleet's cap — it ranks as a lever only for short-lived seats
+  (review lanes, forks, probes), where ~0.2M is a large share of the seat's whole life
+- the boot count is an upper bound: a resumed transcript counts once more
 
 ## .accounts — the grove burns on seven, and swaps between them
 
@@ -117,6 +141,34 @@ seven caps, less whatever the swaps leave unused.
 ⇒ crews at a gate or idle cost ~0 cpu and ~0 tokens; each holds ~0.2–0.4G of ram, which does not
 bind. so on 0901 a fell or park of idle crews buys **+0 crews** (the aha, measured once).
 
+## .read 2 — 2026-10-26, under heavy load
+
+one `rhx grove.census --window 180 --sample 5`. a 5s cpu sample is too short to rank cpu per
+crew; the grove-wide rows and the 180 min token rows stand.
+
+| measure | read 1 (2026-10-21) | read 2 (2026-10-26) |
+|---|---|---|
+| cpu busy | 3.84 of 4 | **4.01 of 4** |
+| load (1m / 5m) | up to 12.34 / 7.97 | **23.11 / 24.75** |
+| cpu psi some avg60 | 40 – 63% | **96.6%** |
+| ram avail | 9.5 – 11.1G | 13G · psi some 2.3%, full 0.06% |
+| forks | 86 – 172/s | 226/s |
+| live crews | 42 | 31 worktrees with a live seat |
+| burn, 180 min | 117.8M weighted · 728M raw · 12 crews | **124.2M** weighted · 848M raw · 10 crews |
+| top crews, weighted/h | up to 12.5M/h | 5 – 6.3M/h each, 6 crews |
+| cpu in crews / outside | 2.5 / 0.05 (a later read) | 2.04 / 0.36 |
+
+- the grove burns **~41M/h weighted** again, on fewer crews: a second read in another condition
+  for the grove's burn (39M/h in read 1). the cpu wall reads harder: pegged, psi near 100%
+- ram does not bind on either read
+- the boot toll over this span: 91 seat boots, 1 fork boot. **first prompt median 11K, written
+  fresh median 5K** — far below read 1's ~160K. toll 6.6M (2.2M/h). the median cannot tell a slim
+  boot from a resume (a resume counts as a boot, and pays only its tail); the per-boot drop is
+  unexplained, so the boot lever stays unranked
+- a 30 min read right after (load 29.9, psi 98.6%): 5 seat boots, first prompt median **111K**,
+  written fresh median **96K**, 2.5M/h. near read 1's per-boot size, so the 180 min span's 11K
+  median likely holds a wave of resumes, not a slimmer boot
+
 ## .caveats
 
 - **one read.** cpu per crew is one 60s sample; the crew mix moves minute to minute. a second
@@ -140,8 +192,8 @@ bind. so on 0901 a fell or park of idle crews buys **+0 crews** (the aha, measur
 
 ## .reads owed next
 
-1. two more 0901 census reads at other loads (`--window 60 --sample 60`), to promote cpu/crew
-   from one read to measured
+1. one more 0901 census read with a full cpu sample (`--window 60 --sample 60`), to promote
+   cpu/crew from one read to measured (read 2 confirms grove burn and the cpu wall, not cpu/crew)
 2. ~~one probe: does this grove's claude (2.1.280) hand `rate_limits` to the statusline?~~ the
    static probe (`rhx claude.statusline.probe`) reads yes: the 2.1.280 statusline input builds
    `...(five_hour || seven_day || spend_limit) && { rate_limits }`, so the field arrives whenever

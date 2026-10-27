@@ -131,7 +131,11 @@ const askClaudeOnBrainOnce = (
   stderr: string;
   error: string | null;
 } => {
-  const cwd = genTempDir({ slug: 'brain-claude-ask' }); // no repo hooks or settings
+  // an empty cwd and an empty config dir: no repo hooks, no user memory.
+  // an inherited CLAUDE_CONFIG_DIR loads that actor's boot briefs (~216K
+  // tokens) into a one-word ask, a fresh cache write on every attempt
+  const cwd = genTempDir({ slug: 'brain-claude-ask' });
+  const configDir = genTempDir({ slug: 'brain-claude-ask.config' });
   const result = spawnSync(
     'npx',
     [
@@ -148,7 +152,11 @@ const askClaudeOnBrainOnce = (
       cwd,
       encoding: 'utf-8',
       timeout: ASK_ATTEMPT_TIMEOUT_MS,
-      env: { ...process.env, ANTHROPIC_API_KEY: context.apiKey },
+      env: {
+        ...process.env,
+        ANTHROPIC_API_KEY: context.apiKey,
+        CLAUDE_CONFIG_DIR: configDir,
+      },
     },
   );
   return {
