@@ -1,0 +1,48 @@
+# provenance = self-referential source template; enables `rhx route.guard.upgrade` idempotency
+provenance:
+  uri: node_modules/rhachet-roles-bhuild/dist/domain.operations/behavior/init/templates/7.reflect.guard
+
+# brain = the brain the driver runs on for this stone; reflection is design work, so it drives on opus
+brain: claude-opus-5-5[1m]
+
+# guard for the reflect stone
+#
+# self-reviews only: no peer lane and no judges.
+artifacts:
+  - "$route/7.reflect.yield.md"
+
+reviews:
+  self:
+    - slug: has-read-the-record-not-memory
+      say: |
+        double-check: is each item drawn from the record, not from memory?
+
+        - for each item, can you cite where it shows: a review file, a passage line, a yield, a dream?
+        - did you read the peer rounds per stone, the re-raised blockers, the halts and holds?
+        - if you wrote "naught to improve", what in the record backs it?
+
+    - slug: has-gone-three-whys-deep
+      say: |
+        double-check: does every item go three whys deep?
+
+        - is each layer a deeper cause, or a restatement of the one above?
+        - would a fourth why change the cure? if so, the third layer was not the root
+
+    - slug: has-placed-each-cure-in-its-owner-repo
+      say: |
+        double-check: does each lesson and each cure land in the repo that owns it?
+
+        - this repo → is the cure in the diff?
+        - another repo → is there a `rhx radio.task.push --into <repo>` and a dream symlinked in the route?
+        - did you edit another repo by hand? (forbidden)
+
+    - slug: has-rewatched-after-a-cure
+      say: |
+        double-check: if a cure landed in this repo, is the pull still green?
+
+        - did the full suite pass, and did the cure push onto the same pull?
+        - paste `git rev-parse HEAD` and `gh pr view --json headRefOid,statusCheckRollup`: do the
+          shas match, and is every check green?
+        - a refused commit is held under `## .held`, never a halt
+
+  peer: []
