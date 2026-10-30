@@ -32,6 +32,10 @@ exports[`init.behavior.wish given: [case1] --wish with inline content when: [t0]
    ├─ + 5.3.verification.stone
    ├─ + 5.5.playtest.guard
    ├─ + 5.5.playtest.stone
+   ├─ + 6.preship.guard
+   ├─ + 6.preship.stone
+   ├─ + 7.reflect.guard
+   ├─ + 7.reflect.stone
    └─ + refs/template.[feedback].v1.[given].by_human.md
 
 🌲 go on then,
@@ -76,6 +80,10 @@ exports[`init.behavior.wish given: [case2] --wish @stdin with piped content when
    ├─ + 5.3.verification.stone
    ├─ + 5.5.playtest.guard
    ├─ + 5.5.playtest.stone
+   ├─ + 6.preship.guard
+   ├─ + 6.preship.stone
+   ├─ + 7.reflect.guard
+   ├─ + 7.reflect.stone
    └─ + refs/template.[feedback].v1.[given].by_human.md
 
 🌲 go on then,
@@ -140,6 +148,10 @@ exports[`init.behavior.wish given: [case5] --wish idempotent with same content w
    ├─ ✓ 5.3.verification.stone
    ├─ ✓ 5.5.playtest.guard
    ├─ ✓ 5.5.playtest.stone
+   ├─ ✓ 6.preship.guard
+   ├─ ✓ 6.preship.stone
+   ├─ ✓ 7.reflect.guard
+   ├─ ✓ 7.reflect.stone
    └─ ✓ refs/template.[feedback].v1.[given].by_human.md
 
 🌲 go on then,
@@ -184,6 +196,10 @@ exports[`init.behavior.wish given: [case6] --wish combined with --open when: [t0
    ├─ + 5.3.verification.stone
    ├─ + 5.5.playtest.guard
    ├─ + 5.5.playtest.stone
+   ├─ + 6.preship.guard
+   ├─ + 6.preship.stone
+   ├─ + 7.reflect.guard
+   ├─ + 7.reflect.stone
    └─ + refs/template.[feedback].v1.[given].by_human.md
 wish =
 

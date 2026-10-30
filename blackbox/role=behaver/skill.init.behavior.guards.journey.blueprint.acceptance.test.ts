@@ -74,9 +74,10 @@ describe('skill.init.behavior.guards.journey.blueprint', () => {
       });
 
       // drop the stones this suite never walks, so the drive's frontier is the roadmap
+      // .note = the ship tail (6.*, 7.*) goes too: its text asks for a real commit and push
       setStonesDeleted({
         ...behavior,
-        stones: ['1.*', '2.*', '3.1.*', '3.2.*'],
+        stones: ['1.*', '2.*', '3.1.*', '3.2.*', '6.*', '7.*'],
       });
 
       // enter the roadmap: the blueprint boundary, where bhrain switches to sonnet (case=2)

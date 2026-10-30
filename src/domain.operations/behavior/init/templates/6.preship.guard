@@ -1,0 +1,55 @@
+# provenance = self-referential source template; enables `rhx route.guard.upgrade` idempotency
+provenance:
+  uri: node_modules/rhachet-roles-bhuild/dist/domain.operations/behavior/init/templates/6.preship.guard
+
+# brain = the brain the driver runs on for this stone; ship work drives on sonnet
+brain: claude-sonnet-5-5[1m]
+
+# guard for the preship stone
+#
+# self-reviews only: no peer lane and no judges. the commander's gate is the merge, so a peer
+# round here would only re-read a pull the commander reads anyway.
+artifacts:
+  - "$route/6.preship.yield.md"
+
+reviews:
+  self:
+    - slug: has-full-suite-green-locally
+      say: |
+        double-check: did the full suite pass locally before the commit?
+
+        paste, for each suite, verbatim from your terminal:
+        - the exact command you ran
+        - the final summary line (counts)
+        - the exit code
+
+        a claim with no paste is a feigned review. red anywhere → you did not commit.
+
+    - slug: has-watched-the-head-green
+      say: |
+        double-check: is the pull green for the commit you pushed — not an older one?
+
+        paste, verbatim:
+        - `git rev-parse HEAD`
+        - `gh pr view --json headRefOid,statusCheckRollup`
+
+        do the two shas match? is the rollup non-empty, and is every check green?
+        `rhx git.release --watch` alone does not prove it: it can report done before github
+        registers the checks for your push.
+
+    - slug: has-held-not-bypassed
+      say: |
+        double-check: did any commit or push refuse?
+
+        - is each refusal pasted verbatim under `## .held`, with the grant it asks for?
+        - did you reach for raw git, a new branch, --no-verify, or a force push? (forbidden)
+        - did you go on, rather than halt? a refusal is held, never a halt
+
+    - slug: has-left-the-merge-to-the-commander
+      say: |
+        double-check: did you leave the merge to the commander?
+
+        - did you run `--apply`, or merge, or enable automerge? (forbidden)
+        - the stone ends at a green watch. the commander merges at the release gate
+
+  peer: []
