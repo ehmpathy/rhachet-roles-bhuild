@@ -416,7 +416,7 @@ exports[`phone skills given: [case9] a mechanic and a foreman in one tree, on a 
 
 💧 phone.text set
    ├─ from: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
-   ├─ to: phone://grove=bert-laptop/tree=$TREE/clone=foreman
+   ├─ into: phone://grove=bert-laptop/tree=$TREE/clone=foreman
    ├─ text: <text01>
    ├─ 1 repeated --to dropped; each peer gets one text
    └─ status: QUEUED → a daemon started (was down); it carries it
@@ -438,7 +438,7 @@ exports[`phone skills given: [case9] a mechanic and a foreman in one tree, on a 
 
 💧 phone.text set
    ├─ from: phone://grove=bert-laptop/tree=$TREE/clone=foreman
-   ├─ to: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
+   ├─ into: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
    ├─ text: <text02>, re <text01>
    └─ status: QUEUED → the daemon carries it
       └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get
@@ -521,7 +521,7 @@ exports[`phone skills given: [case10] a director tree and a crew tree on one gro
 
 💧 phone.text set
    ├─ from: phone://grove=bert-laptop/tree=$TREE_DIRECTOR/clone=director
-   ├─ to: phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic
+   ├─ into: phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic
    ├─ text: <text01>
    └─ status: QUEUED → a daemon started (was down); it carries it
       └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get
@@ -532,7 +532,7 @@ exports[`phone skills given: [case10] a director tree and a crew tree on one gro
 
 💧 phone.text set
    ├─ from: phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic
-   ├─ to: phone://grove=bert-laptop/tree=$TREE_DIRECTOR/clone=director
+   ├─ into: phone://grove=bert-laptop/tree=$TREE_DIRECTOR/clone=director
    ├─ text: <text02>, re <text01>
    └─ status: QUEUED → a daemon started (was down); it carries it
       └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get
@@ -780,7 +780,7 @@ exports[`phone skills given: [case10] a director tree and a crew tree on one gro
 
 💧 phone.text set
    ├─ from: phone://grove=bert-laptop/tree=$TREE_DIRECTOR/clone=director
-   ├─ to: phone://grove=bert-laptop/tree=$TREE_DIRECTOR/clone=ghost
+   ├─ into: phone://grove=bert-laptop/tree=$TREE_DIRECTOR/clone=ghost
    ├─ text: <text03>
    └─ status: QUEUED → the daemon carries it
       └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get
@@ -836,7 +836,7 @@ exports[`phone skills given: [case10] a director tree and a crew tree on one gro
       └─ rhx phone.text set --to phone://grove=bert-laptop/tree=$TREE_CREW/clone=mechanic --re <text01> --what '...'
 ---
 🦫🔔 text <text03> was REFUSED
-   ├─ to: phone://grove=bert-laptop/tree=$TREE_DIRECTOR/clone=ghost
+   ├─ into: phone://grove=bert-laptop/tree=$TREE_DIRECTOR/clone=ghost
    ├─ reason: no clone answers to @:ghost in that tree
    └─ next: rhx phone.contacts get, then text a peer that answers"
 `;
@@ -848,7 +848,7 @@ exports[`phone skills given: [case11] a foreman at a modal, then one whose say c
 
 💧 phone.text set
    ├─ from: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
-   ├─ to: phone://grove=bert-laptop/tree=$TREE/clone=foreman
+   ├─ into: phone://grove=bert-laptop/tree=$TREE/clone=foreman
    ├─ text: <text01>
    └─ status: QUEUED → a daemon started (was down); it carries it
       └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get
@@ -893,7 +893,7 @@ exports[`phone skills given: [case11] a foreman at a modal, then one whose say c
       └─ board count?
 ---
 🦫🔔 text <text02> was FAULTED
-   ├─ to: phone://grove=bert-laptop/tree=$TREE/clone=foreman
+   ├─ into: phone://grove=bert-laptop/tree=$TREE/clone=foreman
    ├─ reason: unconfirmed: no echo seen
    └─ next: rhx phone.text get, then decide: resend, or let it rest (a resend may say it twice)"
 `;
@@ -954,7 +954,7 @@ exports[`phone skills given: [case11] a foreman at a modal, then one whose say c
 
 💧 phone.text set
    ├─ from: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
-   ├─ to: phone://grove=bert-laptop/tree=$TREE/clone=foreman
+   ├─ into: phone://grove=bert-laptop/tree=$TREE/clone=foreman
    ├─ text: <text01>
    └─ status: QUEUED → the daemon carries it
       └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get
@@ -1034,7 +1034,7 @@ exports[`phone skills given: [case11] a foreman at a modal, then one whose say c
 
 💧 phone.text set
    ├─ from: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
-   ├─ to: phone://grove=bert-laptop/tree=$TREE/clone=foreman
+   ├─ into: phone://grove=bert-laptop/tree=$TREE/clone=foreman
    ├─ text: <text03>
    └─ status: QUEUED → the daemon carries it
       └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get
@@ -1055,7 +1055,7 @@ exports[`phone skills given: [case11] a foreman at a modal, then one whose say c
 
 💧 phone.text set
    ├─ from: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
-   ├─ to: phone://grove=bert-laptop/tree=$TREE/clone=foreman
+   ├─ into: phone://grove=bert-laptop/tree=$TREE/clone=foreman
    ├─ text: <text01>
    └─ status: QUEUED → the daemon carries it
       └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get
@@ -1176,7 +1176,7 @@ exports[`phone skills given: [case11] a foreman at a modal, then one whose say c
 
 💧 phone.text set
    ├─ from: phone://grove=bert-laptop/tree=$TREE/clone=mechanic
-   ├─ to: phone://grove=bert-laptop/tree=$TREE/clone=shaper
+   ├─ into: phone://grove=bert-laptop/tree=$TREE/clone=shaper
    ├─ text: <text01>
    └─ status: QUEUED → the daemon carries it
       └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get
@@ -1304,7 +1304,7 @@ exports[`phone skills given: [case12] a director and a crew tree found by the sh
 
 💧 phone.text set
    ├─ from: phone://grove=$GROVE/tree=$TREE_DIRECTOR/clone=director
-   ├─ to: phone://grove=$GROVE/tree=$TREE_CREW/clone=mechanic
+   ├─ into: phone://grove=$GROVE/tree=$TREE_CREW/clone=mechanic
    ├─ text: <text01>
    └─ status: QUEUED → a daemon started (was down); it carries it
       └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get

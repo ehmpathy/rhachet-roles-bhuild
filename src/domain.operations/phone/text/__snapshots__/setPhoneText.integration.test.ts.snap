@@ -54,7 +54,7 @@ exports[`setPhoneText given: [case2] a mechanic with no contacts when: [t8] it c
 
 exports[`setPhoneText given: [case4] a peer at a modal, then a peer that does not exist when: [t0] the daemon ticks over both then: the sender is told of the refusal in its own session 1`] = `
 "🦫🔔 text d03e6f91 was REFUSED
-   ├─ to: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanik
+   ├─ into: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanik
    ├─ reason: no clone answers to @:mechanik in that tree
    └─ next: rhx phone.contacts get, then text a peer that answers"
 `;
