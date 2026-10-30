@@ -64,7 +64,7 @@ export const asPhoneTextSetOutput = (input: {
       root: 'phone.text set',
       nodes: [
         { text: `from: ${record.from}` },
-        { text: `to: ${record.to}` },
+        { text: `into: ${record.to}` },
         { text: `text: ${asPhoneTextAlias({ uuid: record.uuid })}${reTail}` },
         ...duplicateNodes,
         statusNode,

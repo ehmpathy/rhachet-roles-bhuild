@@ -21,7 +21,7 @@ export const asPhoneTextFailNotice = (input: {
     `🦫🔔 text ${asPhoneTextAlias({ uuid: record.uuid })} was ${record.status}`,
     ...asPhoneTreeLines({
       nodes: [
-        { text: `to: ${record.to}` },
+        { text: `into: ${record.to}` },
         { text: `reason: ${record.reason ?? 'none given'}` },
         { text: `next: ${next}` },
       ],
