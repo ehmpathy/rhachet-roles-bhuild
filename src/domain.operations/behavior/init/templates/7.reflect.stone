@@ -1,0 +1,49 @@
+reflect: what could we have done better, and what should we generalize?
+
+---
+
+## .what
+
+this is the last stone. the work has shipped to a pull. now you turn the route's friction into
+lessons and tools, so the next route goes smoother.
+
+## .why
+
+a lesson that stays in one session dies with it. a lesson enbriefed, and a cure entooled in the
+repo that owns it, reaches every route after this one.
+
+## .the steps
+
+1. **name what went worse than it could have.** read the record, not memory:
+   - the peer rounds per stone, and the blockers raised more than once
+   - the halts, the holds, the fulcrums, the dreams caught
+   - the preship yield: red runs, flakes, refusals
+
+   "naught to improve" is a claim; the record must back it.
+
+2. **per item, go three whys deep**: the why, the why of why, the why of why of why.
+   each layer is a deeper cause, never a restatement.
+
+3. **at each layer, enbrief the lesson and entool the cure — in the repo that owns it.**
+   - this repo → the cure lands in this diff: run the full suite, commit, push onto the same pull,
+     and re-watch to green before you pass. a refused commit is held, as in 6.preship.
+   - another repo → `rhx radio.task.push --into <repo>` with the cure's shape, and catch a dream
+     symlinked at $BEHAVIOR_DIR_REL/dreams/. never edit another repo by hand.
+   - no owner found → say so, and catch a dream that names the gap.
+
+## .emit
+
+emit to
+- $BEHAVIOR_DIR_REL/7.reflect.yield.md
+
+```
+## reflect
+
+### item: {what went worse than it could have}
+- evidence: {where in the record}
+- why: ...
+- why of why: ...
+- why of why of why: ...
+- lesson: {the brief, and where it went}
+- cure: {the tool, the repo that owns it, and the commit or task that carries it}
+```

@@ -1,0 +1,73 @@
+ship the route's work: green locally on the full suite, then a green pull. never merge.
+
+---
+
+## .what
+
+this is the ship gate. the route's work leaves the local tree here.
+
+this stone **asks for a commit**. it is the warrant `rule.forbid.commits-the-route-did-not-ask-for`
+names: a stone that names a commit as its deliverable.
+
+## .why
+
+a route that ends at verification or playtest leaves its work on the box: suite green, nobody can
+see it, nobody can merge it. the pull is how the work reaches the commander.
+
+## .the steps
+
+1. **run the full suite**: `rhx git.repo.test --what all --mode apply`.
+   paste each command, its summary line, and its exit code into the yield.
+   red → fix the cause, then run it again. no commit on red.
+
+2. **commit at the done gate**: `rhx git.commit.set -m @stdin --mode apply --push`.
+   the push opens the pull, or updates the one an earlier checkpoint opened.
+
+3. **watch the pull**: `rhx git.release --watch`. then prove the watch saw your push:
+   `gh pr view --json headRefOid,statusCheckRollup` — `headRefOid` must equal `git rev-parse HEAD`,
+   and the rollup must be non-empty and all green. either fails → watch again.
+   a green on an older head (an earlier checkpoint's) does not count.
+   - red → `rhx show.gh.test.errors`, fix the cause, commit, push, watch again
+   - a flake → `rhx cicd.deflake init`, never a blind re-run
+
+4. **stop**. never `--apply`, never merge. the commander merges at the release gate.
+
+## .when a commit is refused
+
+a refused commit is **held, never a halt**:
+
+- paste the refusal verbatim into the yield, under `## .held`
+- name the grant it asks for, as printed
+- name what is held: the done work, uncommitted
+- go on to the next stone. the director lands a held commit when the switch opens
+
+never route around a refusal: no raw `git commit`, no new branch, no `--no-verify`, no force push,
+no wait loop.
+
+## .when a push is refused
+
+the same hold, with one exception: a hook failure you can fix (a lint the local suite skipped) is
+fixed, committed, and pushed again — the hook passes on its own terms, never bypassed.
+
+any other refusal (a grant only a human holds, a protected ref, a branch another party pushed to)
+is pasted verbatim under `## .held`, with the grant or the party it needs, and you go on.
+
+## .emit
+
+emit to
+- $BEHAVIOR_DIR_REL/6.preship.yield.md
+
+```
+## preship
+
+### suite
+- the full suite, each command + summary + exit code, verbatim
+
+### pull
+- the pull url
+- the pushed sha (`git rev-parse HEAD`)
+- the `headRefOid` and rollup, verbatim
+
+### held
+- each refusal verbatim, the grant it needs, and what it holds (or: none)
+```
