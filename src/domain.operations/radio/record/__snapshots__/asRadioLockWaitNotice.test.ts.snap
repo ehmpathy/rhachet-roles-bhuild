@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asRadioLockWaitNotice given: [case1] a caller blocked on the radio lock when: [t0] the notice renders then: it says the caller waits, why, and for how long at most 1`] = `"🦫 waits for the radio lock; another drain holds it (up to 2 min)"`;

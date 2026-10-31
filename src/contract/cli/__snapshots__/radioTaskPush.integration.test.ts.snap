@@ -5,15 +5,17 @@ exports[`radio.task.push.integration — CLI contract given: [case1] --help (the
 
 🎙️ radio.task.push --help
    ├─ usage
-   │  ├─ radio.task.push --via gh.issues --into owner/repo --title "..." --description "..."
-   │  ├─ radio.task.push --via os.fileops --into @this --exid 123 --status CLAIMED
-   │  └─ echo "details" | radio.task.push --via gh.issues --into @this --title "..." --description @stdin
+   │  ├─ rhx radio.task.push --via gh.issues --into owner/repo --title "..." --description "..."
+   │  ├─ rhx radio.task.push --via os.fileops --into @this --exid 123 --status CLAIMED
+   │  ├─ rhx radio.task.push --via gh.issues --into owner/repo --exid 599 --status CLAIMED --auth as-human
+   │  └─ echo "details" | rhx radio.task.push --via gh.issues --into @this --title "..." --description @stdin
    │
    ├─ held, never lost
    │  ├─ every push is recorded first, into $route/.radio/ (or .behavior/.radio/)
    │  ├─ a shut gate or an upstream fault holds it QUEUED, exit 2
    │  ├─ the next push that gets through delivers the backlog first, oldest first
-   │  └─ see what waits: radio.task.held
+   │  ├─ see what waits: rhx radio.task.queue get
+   │  └─ lift a shut gate (human): rhx radio.uses allow
    │
    └─ options
       ├─ --via         channel: gh.issues or os.fileops (required)
@@ -27,7 +29,7 @@ exports[`radio.task.push.integration — CLI contract given: [case1] --help (the
       └─ --help, -h    show this help"
 `;
 
-exports[`radio.task.push.integration — CLI contract given: [case2] no --via arg when: [t0] the push skill runs then: fails with a BadRequestError that names the channels 1`] = `"BadRequestError: --via is required; specify a channel: --via gh.issues or --via os.fileops"`;
+exports[`radio.task.push.integration — CLI contract given: [case2] no --via arg when: [t0] the push skill runs then: fails with a ConstraintError that names the channels 1`] = `"✋ ConstraintError: --via is required; specify a channel: --via gh.issues or --via os.fileops"`;
 
 exports[`radio.task.push.integration — CLI contract given: [case3] permission unset (the safe-default blocked gate, push-specific) when: [t0] the push skill runs against an ungranted repo then: holds the push QUEUED, exit 2, and names the grant command 1`] = `
 "🦫 held for the radio
@@ -35,7 +37,7 @@ exports[`radio.task.push.integration — CLI contract given: [case3] permission 
    ├─ into    = test-owner/test-repo-push-blocked
    ├─ status  = QUEUED (radio.uses:blocked — default)
    ├─ held at = .behavior/.radio/ (no route bound to this branch)
-   ├─ backlog = 1 await the radio
+   ├─ backlog = 1 awaits the radio
    └─ lift it (human): rhx radio.uses allow
       └─ then the next push delivers the backlog first"
 `;
@@ -58,15 +60,17 @@ exports[`radio.task.push.integration — CLI contract given: [case5] -h (the sho
 
 🎙️ radio.task.push --help
    ├─ usage
-   │  ├─ radio.task.push --via gh.issues --into owner/repo --title "..." --description "..."
-   │  ├─ radio.task.push --via os.fileops --into @this --exid 123 --status CLAIMED
-   │  └─ echo "details" | radio.task.push --via gh.issues --into @this --title "..." --description @stdin
+   │  ├─ rhx radio.task.push --via gh.issues --into owner/repo --title "..." --description "..."
+   │  ├─ rhx radio.task.push --via os.fileops --into @this --exid 123 --status CLAIMED
+   │  ├─ rhx radio.task.push --via gh.issues --into owner/repo --exid 599 --status CLAIMED --auth as-human
+   │  └─ echo "details" | rhx radio.task.push --via gh.issues --into @this --title "..." --description @stdin
    │
    ├─ held, never lost
    │  ├─ every push is recorded first, into $route/.radio/ (or .behavior/.radio/)
    │  ├─ a shut gate or an upstream fault holds it QUEUED, exit 2
    │  ├─ the next push that gets through delivers the backlog first, oldest first
-   │  └─ see what waits: radio.task.held
+   │  ├─ see what waits: rhx radio.task.queue get
+   │  └─ lift a shut gate (human): rhx radio.uses allow
    │
    └─ options
       ├─ --via         channel: gh.issues or os.fileops (required)
@@ -86,9 +90,11 @@ exports[`radio.task.push.integration — CLI contract given: [case6] --auth as-r
    ├─ into    = test-owner/example
    ├─ status  = QUEUED (upstream:auth)
    ├─ held at = .behavior/.radio/ (no route bound to this branch)
-   ├─ backlog = 1 await the radio
+   ├─ backlog = 1 awaits the radio
    └─ fix it: ✋ ConstraintError: --auth as-robot:env(MY_TOKEN) specified but MY_TOKEN is not set
       ├─ hint: set MY_TOKEN in the environment
+      ├─ amend it: rhx radio.task.queue set --uuid dd897bb8344f779a --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --uuid dd897bb8344f779a --why "<why>"
       └─ then the next push delivers the backlog first"
 `;
 
@@ -98,8 +104,10 @@ exports[`radio.task.push.integration — CLI contract given: [case7] --auth as-h
    ├─ into    = test-owner/example
    ├─ status  = QUEUED (upstream:auth)
    ├─ held at = .behavior/.radio/ (no route bound to this branch)
-   ├─ backlog = 1 await the radio
+   ├─ backlog = 1 awaits the radio
    └─ fix it: ✋ ConstraintError: --auth as-human is forbidden in test environment. use --auth as-robot:env(TOKEN_VAR) or --auth as-robot:shx(command) instead.
+      ├─ the test-env guard refuses as-human; amend it to a robot auth: rhx radio.task.queue set --uuid dd897bb8344f779a --auth 'as-robot:env(GH_TOKEN)'
+      ├─ or drop it: rhx radio.task.queue del --uuid dd897bb8344f779a --why "<why>"
       └─ then the next push delivers the backlog first"
 `;
 
@@ -109,9 +117,11 @@ exports[`radio.task.push.integration — CLI contract given: [case8] --auth as-r
    ├─ into    = test-owner/example
    ├─ status  = QUEUED (upstream:auth)
    ├─ held at = .behavior/.radio/ (no route bound to this branch)
-   ├─ backlog = 1 await the radio
+   ├─ backlog = 1 awaits the radio
    └─ fix it: ✋ ConstraintError: --auth as-robot:shx(...) command failed: exit 1
       ├─ hint: check the command runs and prints a token to stdout
+      ├─ amend it: rhx radio.task.queue set --uuid dd897bb8344f779a --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --uuid dd897bb8344f779a --why "<why>"
       └─ then the next push delivers the backlog first"
 `;
 
@@ -121,8 +131,10 @@ exports[`radio.task.push.integration — CLI contract given: [case9] --auth as-r
    ├─ into    = test-owner/example
    ├─ status  = QUEUED (upstream:auth)
    ├─ held at = .behavior/.radio/ (no route bound to this branch)
-   ├─ backlog = 1 await the radio
+   ├─ backlog = 1 awaits the radio
    └─ fix it: ✋ ConstraintError: --auth as-robot:shx(...) command produced no output. stderr: (empty)
+      ├─ amend it: rhx radio.task.queue set --uuid dd897bb8344f779a --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --uuid dd897bb8344f779a --why "<why>"
       └─ then the next push delivers the backlog first"
 `;
 
@@ -132,7 +144,7 @@ exports[`radio.task.push.integration — CLI contract given: [case10] --auth wit
    ├─ into    = test-owner/example
    ├─ status  = QUEUED (upstream:auth)
    ├─ held at = .behavior/.radio/ (no route bound to this branch)
-   ├─ backlog = 1 await the radio
+   ├─ backlog = 1 awaits the radio
    └─ fix it: ✋ ConstraintError: unrecognized --auth mode: some-unknown-mode
       ├─ supported modes:
       │  ├─ as-robot:via-keyrack(owner)
@@ -143,5 +155,11 @@ exports[`radio.task.push.integration — CLI contract given: [case10] --auth wit
       │  │     use token from environment variable
       │  └─ as-human
       │        use gh cli logged-in session (interactive)
+      ├─ amend it: rhx radio.task.queue set --uuid dd897bb8344f779a --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --uuid dd897bb8344f779a --why "<why>"
       └─ then the next push delivers the backlog first"
 `;
+
+exports[`radio.task.push.integration — CLI contract given: [case11] no --into arg when: [t0] the push skill runs then: fails before any record, and names how to set --into 1`] = `"✋ ConstraintError: --into is required; use --into @this (current git repo) or --into owner/name"`;
+
+exports[`radio.task.push.integration — CLI contract given: [case12] a new task with no --title when: [t0] the push skill runs then: fails before any record, and names the flag 1`] = `"✋ ConstraintError: --title required for new tasks; add --title "..." or use --exid to update an extant task"`;

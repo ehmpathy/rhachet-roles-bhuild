@@ -290,43 +290,18 @@ exports[`roleArtifacts given: [case5] each declared boot, against the budget it 
 "<readme path="src/domain.roles/dispatcher/readme.md">
 # dispatcher
 
-the dispatcher role provides task dispatch capabilities via radio channels.
+the dispatcher role sends tasks to, and receives tasks from, a radio channel (gh.issues or os.fileops).
 
 ## skills
 
 - \`radio.task.push\` - broadcast tasks to a channel (gh.issues, os.fileops)
 - \`radio.task.pull\` - receive tasks from a channel
-- \`radio.task.held\` - show tasks held for the radio (a blocked push is held, then delivered by the next push that gets through)
-
+- \`radio.task.queue\` - read, amend, drop, and drain the tasks held for the radio: \`get | set | del | drain\` (a blocked push is held, then delivered by the next push or drain that gets through; a record that upstream refuses or faults on is set aside and the rest still deliver; a record file that cannot be read fails loud, named, with its fix, and is never skipped)
 ## purpose
 
-enables distributed task coordination between humans and clones via broadcast channels.
+lets humans and clones hand tasks to each other: one pushes a task onto a channel, another pulls it, claims it, and delivers it.
 
 </readme>
-
-<skill.say path="src/domain.roles/dispatcher/skills/radio.task.held.sh">
-#!/usr/bin/env bash
-######################################################################
-# .what = show the tasks held for the radio in this worktree
-#
-# .why  = a blocked radio.task.push is held, not lost; this skill shows
-#         what waits and who can lift the gate
-#         - at stop, the clone reminds the human in one line
-#         - the next push that gets through delivers the backlog
-#
-# usage:
-#   radio.task.held.sh                       # list held tasks
-#   radio.task.held.sh --when hook.onStop    # one-line stop reminder
-#
-# guarantee:
-#   - reads local records + radio.uses only; no network, no send
-#   - hook.onStop: naught when none held; never exits 2, so never blocks the stop
-#     (an unreadable record fails loud: exit 1, cause on stderr)
-######################################################################
-
-
-# [implementation hidden - use skill to execute]
-</skill.say>
 
 <skill.say path="src/domain.roles/dispatcher/skills/radio.task.pull.sh">
 #!/usr/bin/env bash
@@ -381,6 +356,7 @@ enables distributed task coordination between humans and clones via broadcast ch
 #   radio.task.push.sh --via gh.issues --into @this --title "..." --description "..."
 #   radio.task.push.sh --via gh.issues --into owner/repo --title "..." --description "..."
 #   radio.task.push.sh --via os.fileops --into @this --exid 123 --status CLAIMED
+#   radio.task.push.sh --via gh.issues --into owner/repo --exid 599 --status CLAIMED --auth as-human
 #   radio.task.push.sh --via gh.issues --into @this --title "..." --description "..." --idem upsert
 #   echo "detailed task" | radio.task.push.sh --via gh.issues --into @this --title "..." --description @stdin
 #   cat spec.md | radio.task.push.sh --via gh.issues --into @this --title "feat: add X" --description @stdin
@@ -393,6 +369,7 @@ enables distributed task coordination between humans and clones via broadcast ch
 #   --exid      external id for updates
 #   --status    task status: QUEUED, CLAIMED, DELIVERED
 #   --idem      idempotency mode: findsert or upsert
+#   --auth      as-human | as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd)
 #   --help, -h  show usage and exit
 #
 # guarantee:
@@ -403,6 +380,38 @@ enables distributed task coordination between humans and clones via broadcast ch
 #   - enforces lifecycle order on status transitions
 #   - creates backups on edit
 #   - fail-fast on errors
+######################################################################
+
+
+# [implementation hidden - use skill to execute]
+</skill.say>
+
+<skill.say path="src/domain.roles/dispatcher/skills/radio.task.queue.sh">
+#!/usr/bin/env bash
+######################################################################
+# .what = read, amend, drop, and drain the records held for the radio
+#
+# .why  = a held push is never lost, and never stuck: one record that
+#         faults is set aside, named, and the rest still deliver
+#         - get:   what waits, each with its key, reason, and fix
+#         - set:   amend a held record's auth or body (e.g. as-human)
+#         - del:   drop a held record, its body and the why kept
+#         - drain: deliver now, oldest first, past any set-aside record
+#
+# usage:
+#   radio.task.queue.sh get                                 # what waits
+#   radio.task.queue.sh get --when hook.onStop              # one-line stop reminder
+#   radio.task.queue.sh set --uuid <uuid> --auth as-human   # amend one held record
+#   radio.task.queue.sh del --uuid <uuid> --why "<why>"     # drop one, why kept
+#   radio.task.queue.sh drain [--auth as-human]             # deliver now
+#
+# guarantee:
+#   - get reads local records + radio.uses only; no network, no send
+#   - set and del send naught, and never land mid-drain (drain lock)
+#   - drain meets each record's radio.uses gate; exit 2 while any waits, or if it refused one
+#   - a flag or positional a verb does not read is refused before it acts
+#   - a rate limit or outage halts the drain; any other fault sets one aside
+#   - hook.onStop never exits 2, so never blocks the stop
 ######################################################################
 
 
@@ -452,23 +461,6 @@ enables distributed task coordination between humans and clones via broadcast ch
 # [implementation hidden - use skill to execute]
 </skill.say>
 
-<skill.say path="src/domain.roles/dispatcher/skills/radio.uses.operations.sh">
-#!/usr/bin/env bash
-######################################################################
-# .what = shared operations for radio.uses skills
-#
-# .why  = DRY the common logic for path resolution, state reads, TTY
-#         guards across local, global, and org handlers
-#
-# usage:
-#   source "$SCRIPT_DIR/radio.uses.operations.sh"
-######################################################################
-
-# global storage paths
-
-# [implementation hidden - use skill to execute]
-</skill.say>
-
 <skill.say path="src/domain.roles/dispatcher/skills/radio.uses.org.sh">
 #!/usr/bin/env bash
 ######################################################################
@@ -491,27 +483,6 @@ enables distributed task coordination between humans and clones via broadcast ch
 #   - specific org config overrides @all
 #   - org and @all config override local repo config
 ######################################################################
-
-# [implementation hidden - use skill to execute]
-</skill.say>
-
-<skill.say path="src/domain.roles/dispatcher/skills/radio.uses.output.sh">
-#!/usr/bin/env bash
-######################################################################
-# .what = beaver vibes output for radio.uses skills
-#
-# .why  = consistent, fun output format across all radio.uses commands
-#
-# usage:
-#   source output.sh
-#   print_beaver_header "back in the river!"
-#   print_tree_start "radio.uses"
-#   print_tree_branch "global"
-#   print_tree_leaf "blocked" "true"
-######################################################################
-
-# print beaver emoji + phrase
-# usage: print_beaver_header "back in the river!"
 
 # [implementation hidden - use skill to execute]
 </skill.say>
@@ -541,7 +512,7 @@ enables distributed task coordination between humans and clones via broadcast ch
 #   5. unset = blocked (safe default)
 #
 #   a blocked push is held, not lost: the next push that gets through
-#   delivers it (see radio.task.held)
+#   delivers it (see radio.task.queue)
 #
 # guarantee:
 #   - local state stored in .meter/radio.uses.jsonc
@@ -556,21 +527,17 @@ enables distributed task coordination between humans and clones via broadcast ch
 exports[`roleArtifacts given: [case5] each declared boot, against the budget it declares when: [t1] each declared boot is booted at the src layout then: the dispatcher manifest reads as reviewed 1`] = `
 "<readme path="src/domain.roles/dispatcher/readme.md">
 </readme>
-<skill.say path="src/domain.roles/dispatcher/skills/radio.task.held.sh">
-</skill.say>
 <skill.say path="src/domain.roles/dispatcher/skills/radio.task.pull.sh">
 </skill.say>
 <skill.say path="src/domain.roles/dispatcher/skills/radio.task.push.sh">
+</skill.say>
+<skill.say path="src/domain.roles/dispatcher/skills/radio.task.queue.sh">
 </skill.say>
 <skill.say path="src/domain.roles/dispatcher/skills/radio.uses.global.sh">
 </skill.say>
 <skill.say path="src/domain.roles/dispatcher/skills/radio.uses.local.sh">
 </skill.say>
-<skill.say path="src/domain.roles/dispatcher/skills/radio.uses.operations.sh">
-</skill.say>
 <skill.say path="src/domain.roles/dispatcher/skills/radio.uses.org.sh">
-</skill.say>
-<skill.say path="src/domain.roles/dispatcher/skills/radio.uses.output.sh">
 </skill.say>
 <skill.say path="src/domain.roles/dispatcher/skills/radio.uses.sh">
 </skill.say>"

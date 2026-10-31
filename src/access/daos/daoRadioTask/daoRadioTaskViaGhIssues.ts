@@ -1,14 +1,5 @@
-import { exec } from 'child_process';
-import * as fs from 'fs';
-import {
-  BadRequestError,
-  ConstraintError,
-  UnexpectedCodePathError,
-} from 'helpful-errors';
+import { BadRequestError, UnexpectedCodePathError } from 'helpful-errors';
 import { asIsoDateStamp } from 'iso-time';
-import * as os from 'os';
-import * as path from 'path';
-import { promisify } from 'util';
 
 import type {
   ContextGithubAuth,
@@ -19,62 +10,33 @@ import type { RadioTaskRepo } from '../../../domain.objects/RadioTaskRepo';
 import { RadioTaskStatus } from '../../../domain.objects/RadioTaskStatus';
 import { composeTaskIntoGhIssues } from '../../../domain.operations/radio/task/format/composeTaskIntoGhIssues';
 import { extractTaskFromGhIssues } from '../../../domain.operations/radio/task/format/extractTaskFromGhIssues';
-import { asExecErrorMessage } from '../../../infra/shell/asExecErrorMessage';
-import { getGithubAuthFailureMessage } from './getGithubAuthFailureMessage';
-import { isGithubAuthFailure } from './isGithubAuthFailure';
-
-const execAsync = promisify(exec);
-const writeFileAsync = promisify(fs.writeFile);
-const unlinkAsync = promisify(fs.unlink);
+import { asGhIssueNumber } from './asGhIssueNumber';
+import { genGhBodyTempFile } from './genGhBodyTempFile';
+import { getOneGhCallTimeout } from './getOneGhCallTimeout';
+import { isGithubIssueAbsent } from './isGithubIssueAbsent';
+import { isGithubRepoUnreachable } from './isGithubRepoUnreachable';
+import { runGhCommand } from './runGhCommand';
 
 /**
- * .what = run gh cli command and return stdout
- * .why = wraps exec with proper error handler and explicit token auth
- *
- * .critical = never use default env's GH_TOKEN; must be explicitly provided
+ * .what = run one gh call, as argv, under the radio's send bound
+ * .why = every call in this dao shares one auth env (runGhCommand); its timeout is the
+ *        per-call bound, cut to what the send has left when a drain sets a send limit
  */
-const runGhCommand = async (
-  command: string,
-  context: ContextGithubAuth,
-): Promise<string> => {
-  // strip default env tokens to prevent accidental use
-  const {
-    GH_TOKEN: _removed,
-    GITHUB_TOKEN: _removed2,
-    ...envWithoutToken
-  } = process.env;
+const runGh = (args: string[], context: ContextGithubAuth): Promise<string> =>
+  runGhCommand(
+    {
+      args,
+      timeout: getOneGhCallTimeout({ limit: context.github.send ?? null }),
+    },
+    context,
+  );
 
-  // build env: explicit token or unset for gh cli session auth
-  const env =
-    context.github.auth.token !== null
-      ? { ...envWithoutToken, GH_TOKEN: context.github.auth.token }
-      : envWithoutToken; // as-human: no GH_TOKEN, use gh cli session
-
-  try {
-    const { stdout } = await execAsync(command, { env });
-    return stdout.trim();
-  } catch (error: unknown) {
-    // decode the cross-realm exec cause one way (shared infra transformer);
-    // `.stderr` is a separate exec field, read inline below
-    const message = asExecErrorMessage({ error });
-    const stderr = (error as { stderr?: string })?.stderr ?? '';
-    const text = `${message}\n${stderr}`;
-
-    // graceful nudge on a github auth rejection (401), branched by auth role
-    if (isGithubAuthFailure({ text }))
-      throw new ConstraintError(
-        getGithubAuthFailureMessage({ role: context.github.auth.role }),
-        {
-          command,
-          role: context.github.auth.role,
-          detail: stderr.trim() || message, // keep the raw cause for debug
-        },
-      );
-
-    // otherwise, let the original error bubble (callers like byPrimary inspect it)
-    throw error;
-  }
-};
+/**
+ * .what = the `--json` fields every issue read asks gh for
+ * .why = one list, so each read parses the same shape
+ */
+const GH_ISSUE_JSON_FIELDS =
+  'number,title,body,state,assignees,createdAt,author';
 
 /**
  * .what = dao for github issues channel
@@ -91,10 +53,19 @@ export const daoRadioTaskViaGhIssues = {
       ): Promise<RadioTask | null> => {
         const { repo } = context.git;
         const repoSlug = `${repo.owner}/${repo.name}`;
+        const exid = asGhIssueNumber({ exid: input.exid });
 
         try {
-          const json = await runGhCommand(
-            `gh issue view ${input.exid} --repo ${repoSlug} --json number,title,body,state,assignees,createdAt,author`,
+          const json = await runGh(
+            [
+              'issue',
+              'view',
+              exid,
+              '--repo',
+              repoSlug,
+              '--json',
+              GH_ISSUE_JSON_FIELDS,
+            ],
             context,
           );
           const issue = JSON.parse(json) as {
@@ -107,12 +78,13 @@ export const daoRadioTaskViaGhIssues = {
             author: { login: string };
           };
 
-          // verify this is a radio task
+          // verify this is a radio task; the radio never rewrites an issue outside its frame
+          // .note = the fix rides in the message, since a refusal shows only its headline
           if (!issue.title.startsWith('🎙️ task -')) {
-            throw new BadRequestError('issue is not a radio task', {
-              exid: input.exid,
-              title: issue.title,
-            });
+            throw new BadRequestError(
+              `issue #${input.exid} is not a radio task; the radio edits only its own 🎙️ task issues, so edit or close #${input.exid} by hand`,
+              { exid: input.exid, title: issue.title },
+            );
           }
 
           return extractTaskFromGhIssues({
@@ -131,8 +103,13 @@ export const daoRadioTaskViaGhIssues = {
             error instanceof Error ? error.message : String(error);
           const stderr = (error as { stderr?: string })?.stderr ?? '';
           const fullError = `${errorMessage} ${stderr}`;
-          if (fullError.includes('Could not resolve')) return null;
-          if (fullError.includes('not found')) return null;
+
+          // a repo the auth cannot see is a fault of this send, never an absent issue:
+          // another auth may reach it, so it must not close the record as refused
+          if (isGithubRepoUnreachable({ text: fullError })) throw error;
+
+          // an absent issue in a reachable repo is a true absence; all else is a fault
+          if (isGithubIssueAbsent({ text: fullError })) return null;
           throw error;
         }
       },
@@ -150,8 +127,19 @@ export const daoRadioTaskViaGhIssues = {
         // just-created issue can take seconds-to-minutes to appear, so findsert
         // would miss it and create a duplicate. the direct list is strongly
         // consistent, so a prior task is found the instant it exists.
-        const json = await runGhCommand(
-          `gh issue list --repo ${repoSlug} --state all --json number,title,body,state,assignees,createdAt,author --limit 100`,
+        const json = await runGh(
+          [
+            'issue',
+            'list',
+            '--repo',
+            repoSlug,
+            '--state',
+            'all',
+            '--json',
+            GH_ISSUE_JSON_FIELDS,
+            '--limit',
+            '100',
+          ],
           context,
         );
         const issues = JSON.parse(json) as Array<{
@@ -192,18 +180,27 @@ export const daoRadioTaskViaGhIssues = {
       const repoSlug = `${input.repo.owner}/${input.repo.name}`;
       const limit = input.limit ?? 100;
 
-      const stateFlag =
-        input.filter?.status === RadioTaskStatus.DELIVERED
-          ? '--state closed'
-          : '--state all';
+      const state =
+        input.filter?.status === RadioTaskStatus.DELIVERED ? 'closed' : 'all';
 
       // list issues directly (REST list endpoint), then keep only the radio
       // tasks by their title prefix in code. we deliberately AVOID `--search
       // "... in:title"`: that routes through github's eventually-consistent
       // search index, so a just-created task can be absent for seconds-to-
       // minutes. the direct list is strongly consistent.
-      const json = await runGhCommand(
-        `gh issue list --repo ${repoSlug} ${stateFlag} --json number,title,body,state,assignees,createdAt,author --limit ${limit}`,
+      const json = await runGh(
+        [
+          'issue',
+          'list',
+          '--repo',
+          repoSlug,
+          '--state',
+          state,
+          '--json',
+          GH_ISSUE_JSON_FIELDS,
+          '--limit',
+          String(limit),
+        ],
         context,
       );
       const issues = JSON.parse(json) as Array<{
@@ -257,13 +254,21 @@ export const daoRadioTaskViaGhIssues = {
       // create new issue
       const { title, body } = composeTaskIntoGhIssues({ task: input.task });
 
-      // write body to temp file to preserve newlines
-      const tempFile = path.join(os.tmpdir(), `radio-task-${Date.now()}.md`);
-      await writeFileAsync(tempFile, body);
+      // write body to a private temp file to preserve newlines
+      const { file: tempFile, cleanup } = await genGhBodyTempFile({ body });
 
       try {
-        const output = await runGhCommand(
-          `gh issue create --repo ${repoSlug} --title "${title.replace(/"/g, '\\"')}" --body-file "${tempFile}"`,
+        const output = await runGh(
+          [
+            'issue',
+            'create',
+            '--repo',
+            repoSlug,
+            '--title',
+            title,
+            '--body-file',
+            tempFile,
+          ],
           context,
         );
 
@@ -280,7 +285,7 @@ export const daoRadioTaskViaGhIssues = {
           exid: issueNumberMatch[1]!,
         });
       } finally {
-        await unlinkAsync(tempFile).catch(() => {});
+        await cleanup();
       }
     },
 
@@ -307,22 +312,29 @@ export const daoRadioTaskViaGhIssues = {
       }
 
       // update issue
+      const exidFound = asGhIssueNumber({ exid: taskFound.exid });
       const { title, body } = composeTaskIntoGhIssues({ task: input.task });
 
-      // write body to temp file to preserve newlines
-      const tempFile = path.join(
-        os.tmpdir(),
-        `radio-task-edit-${Date.now()}.md`,
-      );
-      await writeFileAsync(tempFile, body);
+      // write body to a private temp file to preserve newlines
+      const { file: tempFile, cleanup } = await genGhBodyTempFile({ body });
 
       try {
-        await runGhCommand(
-          `gh issue edit ${taskFound.exid} --repo ${repoSlug} --title "${title.replace(/"/g, '\\"')}" --body-file "${tempFile}"`,
+        await runGh(
+          [
+            'issue',
+            'edit',
+            exidFound,
+            '--repo',
+            repoSlug,
+            '--title',
+            title,
+            '--body-file',
+            tempFile,
+          ],
           context,
         );
       } finally {
-        await unlinkAsync(tempFile).catch(() => {});
+        await cleanup();
       }
 
       // add assignee for CLAIMED status (best-effort — may fail for app tokens or invalid users)
@@ -331,8 +343,16 @@ export const daoRadioTaskViaGhIssues = {
         input.task.claimedBy
       ) {
         try {
-          await runGhCommand(
-            `gh issue edit ${taskFound.exid} --repo ${repoSlug} --add-assignee "${input.task.claimedBy}"`,
+          await runGh(
+            [
+              'issue',
+              'edit',
+              exidFound,
+              '--repo',
+              repoSlug,
+              '--add-assignee',
+              input.task.claimedBy,
+            ],
             context,
           );
         } catch (error: unknown) {
@@ -353,10 +373,7 @@ export const daoRadioTaskViaGhIssues = {
 
       // close issue for DELIVERED status
       if (input.task.status === RadioTaskStatus.DELIVERED) {
-        await runGhCommand(
-          `gh issue close ${taskFound.exid} --repo ${repoSlug}`,
-          context,
-        );
+        await runGh(['issue', 'close', exidFound, '--repo', repoSlug], context);
       }
 
       return new RadioTask({
@@ -373,8 +390,9 @@ export const daoRadioTaskViaGhIssues = {
     const { repo } = context.git;
     const repoSlug = `${repo.owner}/${repo.name}`;
 
-    await runGhCommand(
-      `gh issue close ${input.exid} --repo ${repoSlug} --reason "not planned"`,
+    const exid = asGhIssueNumber({ exid: input.exid });
+    await runGh(
+      ['issue', 'close', exid, '--repo', repoSlug, '--reason', 'not planned'],
       context,
     );
   },

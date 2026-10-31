@@ -1,0 +1,183 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asRadioDrainSections given: [case1] a created and a found delivery when: [t0] the sections render then: both are drained, in drain order, the found one marked 1`] = `
+{
+  "closedOrHeld": [],
+  "drained": [
+    {
+      "children": [
+        "#601 lesson reminders",
+        "#602 board rentals (already upstream — marked delivered)",
+      ],
+      "line": "drained",
+    },
+  ],
+}
+`;
+
+exports[`asRadioDrainSections given: [case2] a refused record when: [t0] the sections render then: it is closed, with its detail, and says get will not recall it 1`] = `
+{
+  "closedOrHeld": [
+    {
+      "children": [
+        "lesson reminders — cannot findsert; entity exists with diff attributes",
+      ],
+      "line": "refused — closed, never retried; rhx radio.task.queue get lists it no more, and its reason stays in its record file",
+    },
+  ],
+  "drained": [],
+}
+`;
+
+exports[`asRadioDrainSections given: [case3.1] a record at a shut gate beside a record set aside on auth when: [t0] the sections render then: the lift sits under the gated row only, never beside the faulted one 1`] = `
+{
+  "closedOrHeld": [
+    {
+      "children": [
+        "a1b2c3d4e5f60718 lesson reminders → sandpine/svc-lessons (radio.uses:blocked — default)
+└─ lift it (human): rhx radio.uses allow",
+        "b1b2c3d4e5f60718 board rentals → sandpine/svc-lessons (upstream:auth)
+├─ fault: github auth failed: the robot token was rejected (401)
+├─ amend it: rhx radio.task.queue set --uuid b1b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
+└─ or drop it: rhx radio.task.queue del --uuid b1b2c3d4e5f60718 --why "<why>"",
+      ],
+      "line": "still held",
+    },
+  ],
+  "drained": [],
+}
+`;
+
+exports[`asRadioDrainSections given: [case3] two records held at a shut gate when: [t0] the sections render then: each is held, each with its lift under its own row 1`] = `
+{
+  "closedOrHeld": [
+    {
+      "children": [
+        "a1b2c3d4e5f60718 lesson reminders → sandpine/svc-lessons (radio.uses:blocked — global)
+└─ lift it (human): rhx radio.uses --global allow",
+        "b1b2c3d4e5f60718 board rentals → sandpine/svc-lessons (radio.uses:blocked — global)
+└─ lift it (human): rhx radio.uses --global allow",
+      ],
+      "line": "still held",
+    },
+  ],
+  "drained": [],
+}
+`;
+
+exports[`asRadioDrainSections given: [case4] records set aside, one per fault reason when: [t0] the sections render then: the auth-cured reasons name amend + drop; a bare fault, drop only 1`] = `
+{
+  "closedOrHeld": [
+    {
+      "children": [
+        "01b2c3d4e5f60718 task upstream:access → sandpine/svc-lessons (upstream:access)
+├─ fault: GraphQL: Resource not accessible by integration (updateIssue)
+├─ amend it: rhx radio.task.queue set --uuid 01b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
+└─ or drop it: rhx radio.task.queue del --uuid 01b2c3d4e5f60718 --why "<why>"",
+        "11b2c3d4e5f60718 task upstream:not-found → sandpine/svc-lessons (upstream:not-found)
+├─ fault: HTTP 404: Not Found (repos/sandpine/svc-gone)
+├─ amend it: rhx radio.task.queue set --uuid 11b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
+└─ or drop it: rhx radio.task.queue del --uuid 11b2c3d4e5f60718 --why "<why>"",
+        "21b2c3d4e5f60718 task upstream:401 → sandpine/svc-lessons (upstream:401)
+├─ fault: HTTP 401: Bad credentials
+├─ amend it: rhx radio.task.queue set --uuid 21b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
+└─ or drop it: rhx radio.task.queue del --uuid 21b2c3d4e5f60718 --why "<why>"",
+        "31b2c3d4e5f60718 task upstream:auth → sandpine/svc-lessons (upstream:auth)
+├─ fault: no token in env var GH_TOKEN
+├─ amend it: rhx radio.task.queue set --uuid 31b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
+└─ or drop it: rhx radio.task.queue del --uuid 31b2c3d4e5f60718 --why "<why>"",
+        "41b2c3d4e5f60718 task upstream:fault → sandpine/svc-lessons (upstream:fault)
+├─ fault: unexpected EOF
+└─ or drop it: rhx radio.task.queue del --uuid 41b2c3d4e5f60718 --why "<why>"",
+      ],
+      "line": "still held",
+    },
+  ],
+  "drained": [],
+}
+`;
+
+exports[`asRadioDrainSections given: [case5] a rate-limit halt with records behind it when: [t0] the sections render then: the halter names its fault; no row names an amend or a drop 1`] = `
+{
+  "closedOrHeld": [
+    {
+      "children": [
+        "a1b2c3d4e5f60718 lesson reminders → sandpine/svc-lessons (upstream:rate-limit)
+├─ fault: API rate limit exceeded for installation
+├─ halted: the line stops here
+└─ wait, then: rhx radio.task.queue drain",
+        "b1b2c3d4e5f60718 board rentals → sandpine/svc-lessons (upstream:rate-limit)
+└─ behind the halt: unsent, still in line",
+      ],
+      "line": "still held",
+    },
+  ],
+  "drained": [],
+}
+`;
+
+exports[`asRadioDrainSections given: [case6] a record already as-human, set aside on a 401 when: [t0] the sections render then: it names the gh login, never a second as-human amend 1`] = `
+{
+  "closedOrHeld": [
+    {
+      "children": [
+        "a1b2c3d4e5f60718 lesson reminders → sandpine/svc-lessons (upstream:401)
+├─ fault: HTTP 401: Bad credentials
+├─ check the gh login on this host: gh auth status (else: gh auth login), then: rhx radio.task.queue drain
+└─ or drop it: rhx radio.task.queue del --uuid a1b2c3d4e5f60718 --why "<why>"",
+      ],
+      "line": "still held",
+    },
+  ],
+  "drained": [],
+}
+`;
+
+exports[`asRadioDrainSections given: [case7] two updates to one issue, the first set aside when: [t0] the sections render then: the record ahead still names its fault and its fixes 1`] = `
+{
+  "closedOrHeld": [
+    {
+      "children": [
+        "a1b2c3d4e5f60718 claim #599 → sandpine/svc-lessons (upstream:access)
+├─ fault: GraphQL: Resource not accessible by integration (updateIssue)
+├─ amend it: rhx radio.task.queue set --uuid a1b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
+└─ or drop it: rhx radio.task.queue del --uuid a1b2c3d4e5f60718 --why "<why>"",
+        "b1b2c3d4e5f60718 deliver #599 → sandpine/svc-lessons (same issue #599)
+└─ behind claim #599 on the same issue: unsent, sends once it lands or is dropped",
+      ],
+      "line": "still held",
+    },
+  ],
+  "drained": [],
+}
+`;
+
+exports[`asRadioDrainSections given: [case8] a record the drain did not reach on its budget when: [t0] the sections render, with a prior fault still on record then: it reads not attempted, with no stale fault and no fix 1`] = `
+{
+  "closedOrHeld": [
+    {
+      "children": [
+        "a1b2c3d4e5f60718 lesson reminders → sandpine/svc-lessons (not attempted)
+└─ not attempted: this drain spent its send budget; run rhx radio.task.queue drain again",
+      ],
+      "line": "still held",
+    },
+  ],
+  "drained": [],
+}
+`;
+
+exports[`asRadioDrainSections given: [case9] a record a re-push rewrote mid-send when: [t0] the sections render, with a prior fault still on record then: it reads prior copy sent, with no stale fault and no fix 1`] = `
+{
+  "closedOrHeld": [
+    {
+      "children": [
+        "a1b2c3d4e5f60718 lesson reminders → sandpine/svc-lessons (prior copy sent; new request waits)
+└─ a re-push rewrote this record while its prior copy was sent; the next drain sends the new request",
+      ],
+      "line": "still held",
+    },
+  ],
+  "drained": [],
+}
+`;

@@ -20,6 +20,7 @@
 import { withEmojiSpaceShim } from 'emoji-space-shim';
 import { BadRequestError, ConstraintError, HelpfulError } from 'helpful-errors';
 
+import { asCliHintText } from '../../infra/cli/asCliHintText';
 import { asCliMalfunctionOutput } from '../../infra/cli/asCliMalfunctionOutput';
 import { isHintInErrorMessage } from '../../infra/cli/isHintInErrorMessage';
 
@@ -38,15 +39,13 @@ const asCli =
         error instanceof ConstraintError ||
         error instanceof BadRequestError
       ) {
-        const metadata = error.metadata as Record<string, unknown> | undefined;
-        const hint = metadata?.hint as string | undefined;
+        const hintFound: unknown = error.metadata?.hint;
+        const hint = asCliHintText({ hint: hintFound });
         // check if helpful-errors already added the emoji prefix
         const alreadyHasEmoji = error.message.includes('✋');
         const prefix = alreadyHasEmoji ? '' : '✋ ';
         console.error(`${prefix}${error.message}`);
-        // surface the hint as a final line ONLY when the message does not
-        // already carry it. helpful-errors embeds metadata (incl. the hint)
-        // into error.message, so an unconditional print would duplicate it
+        // print the hint last, unless error.message already embeds it
         if (hint && !isHintInErrorMessage({ message: error.message, hint })) {
           console.error('');
           console.error(hint);
@@ -88,12 +87,12 @@ const loadFeedbackTakeSet = (): typeof import('./feedback.take.set') =>
   require('./feedback.take.set');
 const loadInit = (): typeof import('./init.behavior') =>
   require('./init.behavior');
-const loadRadioHeld = (): typeof import('./radioTaskHeld') =>
-  require('./radioTaskHeld');
 const loadRadioPull = (): typeof import('./radioTaskPull') =>
   require('./radioTaskPull');
 const loadRadioPush = (): typeof import('./radioTaskPush') =>
   require('./radioTaskPush');
+const loadRadioQueue = (): typeof import('./radioTaskQueue') =>
+  require('./radioTaskQueue');
 const loadReflect = (): typeof import('./reflect.on.reviews.self') =>
   require('./reflect.on.reviews.self');
 const loadReview = (): typeof import('./review.behavior') =>
@@ -109,9 +108,9 @@ export const cli = {
   feedbackTakeSet: asLazyCli(() => loadFeedbackTakeSet().feedbackTakeSet),
   giveFeedback: asLazyCli(() => loadFeedbackGive().feedbackGive), // backwards compat
   initBehavior: asLazyCli(() => loadInit().initBehavior),
-  radioTaskHeld: asLazyCli(() => loadRadioHeld().cliRadioTaskHeld),
   radioTaskPull: asLazyCli(() => loadRadioPull().cliRadioTaskPull),
   radioTaskPush: asLazyCli(() => loadRadioPush().cliRadioTaskPush),
+  radioTaskQueue: asLazyCli(() => loadRadioQueue().cliRadioTaskQueue),
   reflectOnReviewsSelf: asLazyCli(() => loadReflect().reflectOnReviewsSelf),
   reviewBehavior: asLazyCli(() => loadReview().reviewBehavior),
 };

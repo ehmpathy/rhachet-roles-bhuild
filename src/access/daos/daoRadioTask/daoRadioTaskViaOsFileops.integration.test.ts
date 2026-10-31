@@ -255,6 +255,20 @@ describe('daoRadioTaskViaOsFileops', () => {
       branch: 'worker/branch',
     });
 
+    const taskDelivered = new RadioTask({
+      exid: 'test-006',
+      title: 'delivered task for filter',
+      description: 'test',
+      status: RadioTaskStatus.DELIVERED,
+      repo: testRepo,
+      pushedBy: 'tester',
+      pushedAt: '2026-01-30' as IsoDateStamp,
+      claimedBy: 'worker',
+      claimedAt: '2026-01-31' as IsoDateStamp,
+      deliveredAt: '2026-02-01' as IsoDateStamp,
+      branch: 'worker/branch',
+    });
+
     useBeforeAll(async () => {
       const t1 = await daoRadioTaskViaOsFileops.set.findsert(
         { task: taskEnqueued },
@@ -264,7 +278,11 @@ describe('daoRadioTaskViaOsFileops', () => {
         { task: taskClaimed },
         context,
       );
-      return { t1, t2 };
+      const t3 = await daoRadioTaskViaOsFileops.set.findsert(
+        { task: taskDelivered },
+        context,
+      );
+      return { t1, t2, t3 };
     });
 
     when('[t0] get.all with status=QUEUED', () => {
@@ -290,6 +308,22 @@ describe('daoRadioTaskViaOsFileops', () => {
         // test-002 was also claimed in case3
         expect(exids).toContain('test-002');
       });
+    });
+
+    when('[t2] get.all with status=DELIVERED', () => {
+      then(
+        'returns the DELIVERED tasks, though a delivered task carries no flag file',
+        async () => {
+          const result = await daoRadioTaskViaOsFileops.get.all(
+            { repo: testRepo, filter: { status: RadioTaskStatus.DELIVERED } },
+            context,
+          );
+          const exids = result.map((t) => t.exid);
+          expect(exids).toContain('test-006');
+          expect(exids).not.toContain('test-003');
+          expect(exids).not.toContain('test-004');
+        },
+      );
     });
   });
 
