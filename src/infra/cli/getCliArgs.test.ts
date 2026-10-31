@@ -1,6 +1,66 @@
+import { given, then, useThen, when } from 'test-fns';
 import { z } from 'zod';
 
-import { genCliArgsErrorStdout } from './getCliArgs';
+import { genCliArgsErrorStdout, getCliArgs } from './getCliArgs';
+
+describe('getCliArgs', () => {
+  const schema = z.object({
+    named: z.object({
+      what: z.string().optional(),
+      to: z.string().optional(),
+      repo: z.string().optional(),
+      role: z.string().optional(),
+      skill: z.string().optional(),
+      s: z.string().optional(),
+    }),
+    ordered: z.array(z.string()).default([]),
+  });
+
+  const TEST_CASES = [
+    {
+      description: '[case1] a free-text key takes an empty value as a string',
+      argv: ['set', '--to', '@:foreman', '--what', ''],
+      expect: { what: '', to: '@:foreman', ordered: ['set'] },
+    },
+    {
+      description: '[case2] a free-text key takes a value that leads with --',
+      argv: ['set', '--what', '--apply is blocked', '--to', '@:foreman'],
+      expect: { what: '--apply is blocked', to: '@:foreman', ordered: ['set'] },
+    },
+    {
+      description:
+        '[case3] a free-text key with no value after it reads as absent',
+      argv: ['set', '--to', '@:foreman', '--what'],
+      expect: { what: undefined, to: '@:foreman', ordered: ['set'] },
+    },
+  ];
+
+  TEST_CASES.map((thisCase) =>
+    given(thisCase.description, () => {
+      when('[t0] the args are read with --what kept raw', () => {
+        const args = useThen('the args are read', () =>
+          getCliArgs({
+            schema,
+            argv: thisCase.argv,
+            valueRawKeys: ['what'],
+          }),
+        );
+
+        then('the free-text value reads as typed', () => {
+          expect(args.named.what).toEqual(thisCase.expect.what);
+        });
+
+        then('the other flags read as usual', () => {
+          expect(args.named.to).toEqual(thisCase.expect.to);
+        });
+
+        then('the verb reads as usual', () => {
+          expect(args.ordered).toEqual(thisCase.expect.ordered);
+        });
+      });
+    }),
+  );
+});
 
 /**
  * helper to extract real Zod issues from schema validation

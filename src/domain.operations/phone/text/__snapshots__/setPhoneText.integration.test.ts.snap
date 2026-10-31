@@ -1,0 +1,112 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`setPhoneText given: [case1] a director with the crew mechanic as a contact when: [t0] the director texts the mechanic, the daemon ticks, the mechanic replies then: the said message is signed and carries the exact reply command 1`] = `
+"🦫🔔 text 7f3e9a02 from phone://grove=bert-laptop/tree=notebook/clone=director
+
+where is book-a-lesson?
+blocked on aught?
+
+💧 reply
+   ├─ rhx phone.text set --to phone://grove=bert-laptop/tree=notebook/clone=director --re 7f3e9a02 --what '...'
+   └─ words with quotes or newlines? pipe them in: --what @stdin"
+`;
+
+exports[`setPhoneText given: [case2] a mechanic with no contacts when: [t1] it texts the director, unknown to it then: the refusal lists who it may reach and how to grant 1`] = `
+"✋ ConstraintError: phone://grove=bert-laptop/tree=notebook/clone=director is not a contact
+   ├─ you may reach
+   │  └─ @:foreman   (own tree)
+   └─ grant it, in two steps
+      ├─ a human, from any shell in this tree: rhx phone.contacts.uses allow
+      └─ then this clone: rhx phone.contacts set --address phone://grove=bert-laptop/tree=notebook/clone=director"
+`;
+
+exports[`setPhoneText given: [case2] a mechanic with no contacts when: [t3] it texts itself then: the refusal names its own number 1`] = `
+"✋ ConstraintError: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic is this clone
+   └─ text a peer: rhx phone.contacts get"
+`;
+
+exports[`setPhoneText given: [case2] a mechanic with no contacts when: [t4] it names no peer then: the refusal says a text must name a peer, and how 1`] = `
+"✋ ConstraintError: a text must name a peer
+   └─ pass one or more: --to <address>; see who: rhx phone.contacts get"
+`;
+
+exports[`setPhoneText given: [case2] a mechanic with no contacts when: [t5] it carries no words then: the refusal says a text must carry words, and how 1`] = `
+"✋ ConstraintError: a text must carry words
+   └─ pass words: --what '...', or pipe them: --what @stdin"
+`;
+
+exports[`setPhoneText given: [case2] a mechanic with no contacts when: [t6] it texts a peer on another known grove then: the refusal says the grove leg rides a later delivery 1`] = `
+"✋ ConstraintError: phone://grove=grove-sandpine-v20260901/tree=notebook/clone=director is on another grove
+   ├─ this grove: bert-laptop
+   └─ texts across groves ride a later delivery; text a peer on this grove"
+`;
+
+exports[`setPhoneText given: [case2] a mechanic with no contacts when: [t7] it texts a peer on an unknown grove then: the refusal names the grove, and how to list the known ones 1`] = `
+"✋ ConstraintError: no grove nowhere is known on bert-laptop
+   ├─ this grove: bert-laptop
+   └─ see the known groves: rhx git.grove.list"
+`;
+
+exports[`setPhoneText given: [case2] a mechanic with no contacts when: [t8] it carries more words than a text may hold then: the refusal names the bound and the size, and how 1`] = `
+"✋ ConstraintError: a text holds at most 8000 chars; this one holds 8001
+   └─ send the gist, and name a file in the tree for the rest"
+`;
+
+exports[`setPhoneText given: [case4] a peer at a modal, then a peer that does not exist when: [t0] the daemon ticks over both then: the sender is told of the refusal in its own session 1`] = `
+"🦫🔔 text d03e6f91 was REFUSED
+   ├─ into: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanik
+   ├─ reason: no clone answers to @:mechanik in that tree
+   └─ next: rhx phone.contacts get, then text a peer that answers"
+`;
+
+exports[`setPhoneText given: [case5] a QUEUED text and a DELIVERED text when: [t0] each is withdrawn then: a delivered text can not be unsaid 1`] = `
+"✋ ConstraintError: text d03e6f91 was already DELIVERED
+   ├─ a delivered text can not be unsaid
+   └─ send a correction
+      └─ rhx phone.text set --to phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=foreman --re d03e6f91 --what '...'"
+`;
+
+exports[`setPhoneText given: [case6] references that name no one text, and texts not the sender to take back when: [t0] each is looked up, or withdrawn then: a REFUSED text can not be withdrawn 1`] = `
+"✋ ConstraintError: text 9c8b7a6d was already REFUSED
+   ├─ a refused text never reached the peer; naught to take back
+   └─ fix the address, then send it fresh
+      ├─ see who you may reach: rhx phone.contacts get
+      └─ rhx phone.text set --to <address> --what '...'"
+`;
+
+exports[`setPhoneText given: [case6] references that name no one text, and texts not the sender to take back when: [t0] each is looked up, or withdrawn then: a name that matches no text is refused, with the cure 1`] = `
+"✋ ConstraintError: no text abcdef01 in this mailbox
+   └─ see each text with its name: rhx phone.text get"
+`;
+
+exports[`setPhoneText given: [case6] references that name no one text, and texts not the sender to take back when: [t0] each is looked up, or withdrawn then: a number is refused: texts go by name 1`] = `
+"✋ ConstraintError: 3 is not a text reference
+   ├─ a text is named by its uuid: the first 8 chars (7f3e9a02) or the whole
+   └─ see each text with its name: rhx phone.text get"
+`;
+
+exports[`setPhoneText given: [case6] references that name no one text, and texts not the sender to take back when: [t0] each is looked up, or withdrawn then: a shared alias is refused, both listed by full uuid 1`] = `
+"✋ ConstraintError: 7f3e9a02 matches 2 texts in this mailbox
+   ├─ 7f3e9a02-41c6-4b0e-9d2a-0c5e8f1a3b77 → phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=foreman
+   ├─ 7f3e9a02-d9b8-4e15-a6c3-71f20e4d9c05 → phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=foreman
+   └─ name one by its full uuid"
+`;
+
+exports[`setPhoneText given: [case6] references that name no one text, and texts not the sender to take back when: [t0] each is looked up, or withdrawn then: a text that came in can not be withdrawn by its receiver 1`] = `
+"✋ ConstraintError: text 1a2b3c4d came in from phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=foreman
+   └─ only its sender may withdraw a text"
+`;
+
+exports[`setPhoneText given: [case7] a withdraw that lands while the daemon is mid-say when: [t0] the sender withdraws mid-say then: the withdraw is refused: the text is in the daemon paws 1`] = `
+"✋ ConstraintError: text d03e6f91 is mid-say right now
+   ├─ a text the daemon is mid-say on can not be withdrawn
+   └─ read its fate in a moment
+      └─ rhx phone.text get --text d03e6f91"
+`;
+
+exports[`setPhoneText given: [case8] a claim left behind by a dead process when: [t1] the dead holder was a daemon mid-say, and the sender withdraws then: it can not be withdrawn as never said 1`] = `
+"✋ ConstraintError: text d03e6f91 was already FAULTED
+   ├─ a faulted say may or may not have landed; it can not be unsaid
+   └─ ask the peer before a resend, linked to this text
+      └─ rhx phone.text set --to phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=foreman --re d03e6f91 --what '...'"
+`;

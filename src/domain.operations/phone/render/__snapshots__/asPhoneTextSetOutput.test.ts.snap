@@ -1,0 +1,113 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asPhoneTextSetOutput given: [case1] one peer, the daemon found live when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 tail slapped!
+
+💧 phone.text set
+   ├─ from: phone://grove=bert-laptop/tree=notebook/clone=director
+   ├─ into: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   ├─ text: 7f3e9a02
+   └─ status: QUEUED → the daemon carries it
+      └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get"
+`;
+
+exports[`asPhoneTextSetOutput given: [case2] one peer, no daemon seen when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 tail slapped!
+
+💧 phone.text set
+   ├─ from: phone://grove=bert-laptop/tree=notebook/clone=director
+   ├─ into: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   ├─ text: 7f3e9a02
+   └─ status: QUEUED, but no daemon was seen to swim
+      └─ start one: rhx phone.daemon set"
+`;
+
+exports[`asPhoneTextSetOutput given: [case3] one peer, a reply when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 tail slapped!
+
+💧 phone.text set
+   ├─ from: phone://grove=bert-laptop/tree=notebook/clone=director
+   ├─ into: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   ├─ text: 7f3e9a02, re a1b2c3d4
+   └─ status: QUEUED → the daemon carries it
+      └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get"
+`;
+
+exports[`asPhoneTextSetOutput given: [case4] a group of two when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 tail slapped, x2!
+
+💧 phone.text set
+   ├─ from: phone://grove=bert-laptop/tree=notebook/clone=director
+   ├─ group: 2 peers
+   │  ├─ 7f3e9a02 → phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   │  └─ a1b2c3d4 → phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=foreman
+   └─ status: QUEUED → the daemon carries them
+      └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get"
+`;
+
+exports[`asPhoneTextSetOutput given: [case5] no entries when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 naught to send
+
+💧 phone.text set
+   └─ status: naught sent; no peer was named"
+`;
+
+exports[`asPhoneTextSetOutput given: [case6] one peer, the send started the daemon when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 tail slapped!
+
+💧 phone.text set
+   ├─ from: phone://grove=bert-laptop/tree=notebook/clone=director
+   ├─ into: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   ├─ text: 7f3e9a02
+   └─ status: QUEUED → a daemon started (was down); it carries it
+      └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get"
+`;
+
+exports[`asPhoneTextSetOutput given: [case7] one peer named twice when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 tail slapped!
+
+💧 phone.text set
+   ├─ from: phone://grove=bert-laptop/tree=notebook/clone=director
+   ├─ into: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   ├─ text: 7f3e9a02
+   ├─ 1 repeated --to dropped; each peer gets one text
+   └─ status: QUEUED → the daemon carries it
+      └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get"
+`;
+
+exports[`asPhoneTextSetOutput given: [case8] a group of two, the send started the daemon when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 tail slapped, x2!
+
+💧 phone.text set
+   ├─ from: phone://grove=bert-laptop/tree=notebook/clone=director
+   ├─ group: 2 peers
+   │  ├─ 7f3e9a02 → phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   │  └─ a1b2c3d4 → phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=foreman
+   └─ status: QUEUED → a daemon started (was down); it carries them
+      └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get"
+`;
+
+exports[`asPhoneTextSetOutput given: [case9] a group of two, no daemon seen when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 tail slapped, x2!
+
+💧 phone.text set
+   ├─ from: phone://grove=bert-laptop/tree=notebook/clone=director
+   ├─ group: 2 peers
+   │  ├─ 7f3e9a02 → phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   │  └─ a1b2c3d4 → phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=foreman
+   └─ status: QUEUED, but no daemon was seen to swim
+      └─ start one: rhx phone.daemon set"
+`;
+
+exports[`asPhoneTextSetOutput given: [case10] a group of two, a reply, one peer named twice when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 tail slapped, x2!
+
+💧 phone.text set
+   ├─ from: phone://grove=bert-laptop/tree=notebook/clone=director
+   ├─ group: 2 peers, re c41d8e5b
+   │  ├─ 7f3e9a02 → phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   │  └─ a1b2c3d4 → phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=foreman
+   ├─ 1 repeated --to dropped; each peer gets one text
+   └─ status: QUEUED → the daemon carries them
+      └─ a text that cannot land yet is held, or refused, with the reason: rhx phone.text get"
+`;
