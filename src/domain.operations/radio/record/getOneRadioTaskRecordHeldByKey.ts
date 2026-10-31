@@ -21,7 +21,7 @@ export const getOneRadioTaskRecordHeldByKey = (
   );
   if (!found)
     throw new ConstraintError(
-      `no radio record with key ${input.key} in this worktree; run \`rhx radio.task.queue get\` to list the keys`,
+      `no radio record with uuid ${input.key} in this worktree; run \`rhx radio.task.queue get\` to list the uuids`,
     );
 
   // the record must still wait; a settled one is past any amend or drop

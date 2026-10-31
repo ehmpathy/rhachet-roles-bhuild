@@ -19,6 +19,6 @@ export const asRadioReplayWarnLines = (input: {
   const { auth, key } = input.record;
   if (auth === null || isRadioRecordAuthReplayable({ auth })) return [];
   return [
-    `amend its auth (human): rhx radio.task.queue set --key ${key} --auth <auth>`,
+    `amend its auth (human): rhx radio.task.queue set --uuid ${key} --auth <auth>`,
   ];
 };

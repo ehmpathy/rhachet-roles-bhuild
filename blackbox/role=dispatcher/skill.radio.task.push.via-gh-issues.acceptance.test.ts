@@ -24,11 +24,11 @@ import {
  */
 
 /**
- * .what = mask the record key in a held output's queue fix lines
+ * .what = mask the record uuid in a held output's queue fix lines
  * .why = the key hashes the title, and the title carries Date.now(), so the key varies per run
  */
 const asStableRecordKey = (input: { output: string }): string =>
-  input.output.replace(/--key [0-9a-f]{16}\b/g, '--key <key>');
+  input.output.replace(/--uuid [0-9a-f]{16}\b/g, '--uuid <uuid>');
 
 /**
  * .what = mask the bytes of a 401 held output that vary per run

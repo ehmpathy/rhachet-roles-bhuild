@@ -2,9 +2,9 @@ import { getAllRadioQueueFlagsUnread } from './getAllRadioQueueFlagsUnread';
 
 const TEST_CASES = [
   {
-    description: 'drain with a --key it would ignore',
-    given: { verb: 'drain' as const, flags: ['key', 'auth'] },
-    expect: { unread: ['key'], accepted: ['auth'] },
+    description: 'drain with a --uuid it would ignore',
+    given: { verb: 'drain' as const, flags: ['uuid', 'auth'] },
+    expect: { unread: ['uuid'], accepted: ['auth'] },
   },
   {
     description: 'drain with a --mode it would ignore',
@@ -13,13 +13,21 @@ const TEST_CASES = [
   },
   {
     description: 'set with every flag it reads',
-    given: { verb: 'set' as const, flags: ['key', 'auth', 'description'] },
-    expect: { unread: [], accepted: ['key', 'auth', 'description', 'title'] },
+    given: { verb: 'set' as const, flags: ['uuid', 'auth', 'description'] },
+    expect: { unread: [], accepted: ['uuid', 'auth', 'description', 'title'] },
+  },
+  {
+    description: 'set with the old --key name, which it no longer reads',
+    given: { verb: 'set' as const, flags: ['key', 'auth'] },
+    expect: {
+      unread: ['key'],
+      accepted: ['uuid', 'auth', 'description', 'title'],
+    },
   },
   {
     description: 'del with a --description it would ignore',
-    given: { verb: 'del' as const, flags: ['key', 'why', 'description'] },
-    expect: { unread: ['description'], accepted: ['key', 'why'] },
+    given: { verb: 'del' as const, flags: ['uuid', 'why', 'description'] },
+    expect: { unread: ['description'], accepted: ['uuid', 'why'] },
   },
   {
     description: 'get with the rhachet dispatch args and help',

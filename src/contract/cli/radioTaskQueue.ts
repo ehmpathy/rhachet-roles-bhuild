@@ -4,10 +4,10 @@
  *         this worktree, so no held record ever needs a hand move of its file (#604)
  *
  * usage:
- *   radio.task.queue get                                  what waits: key · task · reason · fix
+ *   radio.task.queue get                                  what waits: uuid · task · reason · fix
  *   radio.task.queue get --when hook.onStop               one-line stop reminder (naught when none)
- *   radio.task.queue set   --key <key> --auth as-human    amend one held record (or --description)
- *   radio.task.queue del   --key <key> --why "<why>"      drop one, its body and why kept
+ *   radio.task.queue set   --uuid <uuid> --auth as-human  amend one held record (or --description)
+ *   radio.task.queue del   --uuid <uuid> --why "<why>"    drop one, its body and why kept
  *   radio.task.queue drain [--auth as-human]              deliver now; a fault sets one record aside
  *
  * guarantee:
@@ -51,8 +51,8 @@ const schemaOfArgs = z.object({
       // get: hook mode
       when: z.enum(['hook.onStop']).optional(),
 
-      // set | del: the record to act on
-      key: z.string().optional(),
+      // set | del: the record to act on, by the uuid `get` prints
+      uuid: z.string().optional(),
 
       // set | drain: the auth to send under
       auth: z.string().optional(),
@@ -82,10 +82,10 @@ const HELP_TEXT = `
 
 🎙️ radio.task.queue --help
    ├─ usage
-   │  ├─ rhx radio.task.queue get                                   what waits: key · task · reason · fix
+   │  ├─ rhx radio.task.queue get                                   what waits: uuid · task · reason · fix
    │  ├─ rhx radio.task.queue get --when hook.onStop                one-line stop reminder (naught when none)
-   │  ├─ rhx radio.task.queue set   --key <key> --auth as-human     amend one held record (or --description)
-   │  ├─ rhx radio.task.queue del   --key <key> --why "<why>"       drop one, its body and why kept
+   │  ├─ rhx radio.task.queue set   --uuid <uuid> --auth as-human   amend one held record (or --description)
+   │  ├─ rhx radio.task.queue del   --uuid <uuid> --why "<why>"     drop one, its body and why kept
    │  └─ rhx radio.task.queue drain [--auth as-human]               deliver now; a fault sets one record aside
    │
    ├─ the line
@@ -101,9 +101,9 @@ const HELP_TEXT = `
    │     └─ 0  done, even with records held; 2 only on a bad call
    │
    └─ options
-      ├─ --key          the record key \`get\` prints (set, del)
+      ├─ --uuid         the record uuid \`get\` prints (set, del)
       ├─ --auth         as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd) | as-human
-      │  ├─ set:   amends the one record --key names
+      │  ├─ set:   amends the one record --uuid names
       │  └─ drain: sends every held record under this auth, this drain only
       ├─ --description  the new body (set; supports @stdin)
       ├─ --why          why the record is dropped (del, required)
@@ -125,19 +125,19 @@ const asAuthFromArg = (input: { raw: string | undefined }): string | null => {
 };
 
 /**
- * .what = the --key value, or a constraint that names how to find one
- * .why  = set and del act on one record; the key is how the caller names it
+ * .what = the --uuid value, or a constraint that names how to find one
+ * .why  = set and del act on one record; its uuid is how the caller names it
  */
-const asKeyFromArg = (input: { raw: string | undefined }): string => {
+const asUuidFromArg = (input: { raw: string | undefined }): string => {
   if (input.raw) return input.raw;
   throw new ConstraintError(
-    '--key is required; run `rhx radio.task.queue get` to list the keys',
+    '--uuid is required; run `rhx radio.task.queue get` to list the uuids',
   );
 };
 
 /**
  * .what = refuse a flag the verb would ignore, before the verb acts
- * .why  = an ignored flag is a silent surprise: `drain --key K` sends the whole line, and
+ * .why  = an ignored flag is a silent surprise: `drain --uuid K` sends the whole line, and
  *         `drain --mode plan` sends for real; the caller hears it before any send
  */
 const assertRadioQueueFlagsRead = (input: {
@@ -153,9 +153,9 @@ const assertRadioQueueFlagsRead = (input: {
   });
   if (unread.length === 0) return;
 
-  // name the next move: drop the flag; a --key on drain means the caller wanted one record
-  const hintOneRecord = unread.includes('key')
-    ? ' to act on one record, run `rhx radio.task.queue set --key <key>` or `rhx radio.task.queue del --key <key>`.'
+  // name the next move: drop the flag; a --uuid on drain means the caller wanted one record
+  const hintOneRecord = unread.includes('uuid')
+    ? ' to act on one record, run `rhx radio.task.queue set --uuid <uuid>` or `rhx radio.task.queue del --uuid <uuid>`.'
     : '';
   throw new ConstraintError(
     `${input.verb} does not read ${unread.map((flag) => `--${flag}`).join(', ')}. drop it, then run again. ${input.verb} reads ${accepted.map((flag) => `--${flag}`).join(', ')} (see --help).${hintOneRecord}`,
@@ -164,8 +164,8 @@ const assertRadioQueueFlagsRead = (input: {
 
 /**
  * .what = refuse a positional after the verb, before the verb acts
- * .why  = `drain <key>` reads as "drain this one" yet would send every held record; a verb
- *         names its record by --key, never by position, so a positional is always a mistake
+ * .why  = `drain <uuid>` reads as "drain this one" yet would send every held record; a verb
+ *         names its record by --uuid, never by position, so a positional is always a mistake
  */
 const assertRadioQueuePositionalsAbsent = (input: {
   verb: 'get' | 'set' | 'del' | 'drain';
@@ -174,7 +174,7 @@ const assertRadioQueuePositionalsAbsent = (input: {
   const positionals = input.ordered.slice(1);
   if (positionals.length === 0) return;
   throw new ConstraintError(
-    `${input.verb} takes no positional (got: ${positionals.join(' ')}); name one record by --key with set or del, or run \`rhx radio.task.queue get\` to list the keys`,
+    `${input.verb} takes no positional (got: ${positionals.join(' ')}); name one record by --uuid with set or del, or run \`rhx radio.task.queue get\` to list the uuids`,
   );
 };
 
@@ -235,11 +235,11 @@ const _cliRadioTaskQueue = async (): Promise<void> => {
   if (verb === 'set') {
     if (named.title !== undefined)
       throw new ConstraintError(
-        '--title cannot be amended: the title is what the push creates; to retitle, run `rhx radio.task.queue del --key <key>` and push again',
+        '--title cannot be amended: the title is what the push creates; to retitle, run `rhx radio.task.queue del --uuid <uuid>` and push again',
       );
     const amended = await setRadioTaskRecordAmended(
       {
-        key: asKeyFromArg({ raw: named.key }),
+        key: asUuidFromArg({ raw: named.uuid }),
         auth: asAuthFromArg({ raw: named.auth }),
         description: asDescriptionFromArg({ raw: named.description }),
       },
@@ -251,7 +251,7 @@ const _cliRadioTaskQueue = async (): Promise<void> => {
   // del: drop one held record, with a why
   if (verb === 'del') {
     const dropped = await setRadioTaskRecordDropped(
-      { key: asKeyFromArg({ raw: named.key }), why: named.why ?? '' },
+      { key: asUuidFromArg({ raw: named.uuid }), why: named.why ?? '' },
       context,
     );
     return void console.log(asRadioDropOutput(dropped));

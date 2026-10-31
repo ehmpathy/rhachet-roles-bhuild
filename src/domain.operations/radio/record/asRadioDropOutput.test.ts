@@ -161,7 +161,7 @@ describe('asRadioDropOutput', () => {
             're-push the claim: rhx radio.task.push --via gh.issues --into sandpine/svc-lessons --exid 599 --status CLAIMED',
           );
           expect(output).toContain(
-            'or drop the deliver too: rhx radio.task.queue del --key f0e1d2c3b4a59687 --why "its claim was dropped"',
+            'or drop the deliver too: rhx radio.task.queue del --uuid f0e1d2c3b4a59687 --why "its claim was dropped"',
           );
           expect(output).toMatchSnapshot();
         });

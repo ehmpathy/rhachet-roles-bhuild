@@ -133,7 +133,7 @@ const getOnStopHookCommandFromSettings = (input: {
 
 /**
  * .what = mask the parts of a drain output that vary per run
- * .why = os.fileops exids, dates, and record keys (a hash over the per-run repo) differ
+ * .why = os.fileops exids, dates, and record uuids (a hash over the per-run repo) differ
  *        each run; the shape is what the snapshot pins
  */
 const asStableOutput = (input: { output: string }): string =>
@@ -141,7 +141,7 @@ const asStableOutput = (input: { output: string }): string =>
     .replace(/#[\w-]+/g, '#<exid>')
     .replace(/exid: [\w-]+/g, 'exid: <exid>')
     .replace(/repo-\d+/g, 'repo-<run>')
-    .replace(/\b[0-9a-f]{16}\b/g, '<key>')
+    .replace(/\b[0-9a-f]{16}\b/g, '<uuid>')
     .replace(/\d{4}-\d{2}-\d{2}/g, '<date>');
 
 describe('radio.task.push — the radio.recorder', () => {
@@ -208,31 +208,7 @@ describe('radio.task.push — the radio.recorder', () => {
       });
     });
 
-    when('[t2] the clone stops, via a hook still wired to the deprecated radio.task.held (S2)', () => {
-      const result = useThen('the stop hook runs', () =>
-        runDispatcherSkill({
-          ...scene,
-          repoDir: scene.consumer.repoDir,
-          skill: 'radio.task.held',
-          args: '--when hook.onStop',
-        }),
-      );
-
-      then('exit code is 0 — the stop is never blocked', () => {
-        expect(result.exitCode).toBe(0);
-      });
-
-      then('it prints one systemMessage line with the count and the lift', () => {
-        const line = result.stdout.split('\n').find((l) => l.startsWith('{'));
-        expect(JSON.parse(line ?? '{}')).toEqual({
-          systemMessage:
-            '🦫 2 tasks held for the radio · 2 at a gate · lift: rhx radio.uses allow · next push delivers them · radio.task.held is deprecated; run `rhx radio.task.queue get --when hook.onStop` instead',
-        });
-        expect(asStableOutput({ output: result.stdout })).toMatchSnapshot();
-      });
-    });
-
-    when('[t2.1] the dispatcher onStop hook command runs, as claude runs it (radio.task.queue get, so no rename notice)', () => {
+    when('[t2.1] the dispatcher onStop hook command runs, as claude runs it (S2)', () => {
       const result = useThen('the hook command runs', () => {
         const command = getOnStopHookCommandFromSettings({
           repoDir: scene.consumer.repoDir,
@@ -242,7 +218,7 @@ describe('radio.task.push — the radio.recorder', () => {
           env: { ...process.env, HOME: scene.homeDir },
         })
           .toString()
-          .trim(); // trimmed like [t2], so both stop-hook snaps read alike
+          .trim(); // trimmed, so the snap holds only the json claude parses
         return { stdout };
       });
 
@@ -276,7 +252,7 @@ describe('radio.task.push — the radio.recorder', () => {
       });
     });
 
-    when('[t3.1] the human opens the radio, then the clone stops before any push, via the deprecated radio.task.held hook (S3)', () => {
+    when('[t3.1] the human opens the radio, then the clone stops before any push (S3)', () => {
       const result = useThen('allow, then the stop hook runs', () => {
         runDispatcherSkill({
           ...scene,
@@ -288,8 +264,8 @@ describe('radio.task.push — the radio.recorder', () => {
         return runDispatcherSkill({
           ...scene,
           repoDir: scene.consumer.repoDir,
-          skill: 'radio.task.held',
-          args: '--when hook.onStop',
+          skill: 'radio.task.queue',
+          args: 'get --when hook.onStop',
         });
       });
 
@@ -301,7 +277,7 @@ describe('radio.task.push — the radio.recorder', () => {
         const line = result.stdout.split('\n').find((l) => l.startsWith('{'));
         const message: string = JSON.parse(line ?? '{}').systemMessage ?? '';
         expect(message).toEqual(
-          '🦫 2 tasks held, the radio is open · next push delivers them · radio.task.held is deprecated; run `rhx radio.task.queue get --when hook.onStop` instead',
+          '🦫 2 tasks held, the radio is open · next push delivers them',
         );
         expect(asStableOutput({ output: result.stdout })).toMatchSnapshot();
       });
@@ -343,8 +319,8 @@ describe('radio.task.push — the radio.recorder', () => {
         runDispatcherSkill({
           ...scene,
           repoDir: scene.consumer.repoDir,
-          skill: 'radio.task.held',
-          args: '--when hook.onStop',
+          skill: 'radio.task.queue',
+          args: 'get --when hook.onStop',
         }),
       );
 
@@ -353,7 +329,7 @@ describe('radio.task.push — the radio.recorder', () => {
         expect(result.stdout).not.toContain('systemMessage');
         // the one line is rhachet's entry banner — the skill itself adds no byte
         expect(asStableOutput({ output: result.stdout })).toEqual(
-          '🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.held',
+          '🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue',
         );
         expect(asStableOutput({ output: result.stdout })).toMatchSnapshot();
       });
@@ -364,8 +340,8 @@ describe('radio.task.push — the radio.recorder', () => {
         runDispatcherSkill({
           ...scene,
           repoDir: scene.consumer.repoDir,
-          skill: 'radio.task.held',
-          args: '',
+          skill: 'radio.task.queue',
+          args: 'get',
         }),
       );
 
@@ -855,19 +831,19 @@ describe('radio.task.push — the radio.recorder', () => {
       });
     });
 
-    when('[t1] a human asks radio.task.held for help', () => {
+    when('[t1] a human asks radio.task.queue for help', () => {
       const result = useThen('help runs', () =>
         runDispatcherSkill({
           ...scene,
           repoDir: scene.consumer.repoDir,
-          skill: 'radio.task.held',
+          skill: 'radio.task.queue',
           args: '--help',
         }),
       );
 
       then('it shows usage and options, exit 0, and reads no records', () => {
         expect(result.exitCode).toBe(0);
-        expect(result.stdout).toContain('radio.task.held --when hook.onStop');
+        expect(result.stdout).toContain('get --when hook.onStop');
         expect(sanitizeOutput(result.stdout)).toMatchSnapshot();
       });
     });
@@ -961,7 +937,7 @@ describe('radio.task.push — the radio.recorder', () => {
           args: 'get',
         });
 
-        // read each key off its row: `<key> <title> → <repo>`
+        // read each uuid off its row: `<uuid> <title> → <repo>`
         for (const title of ['wetsuit inventory', 'old lesson reminder']) {
           const row = new RegExp(`([0-9a-f]{16}) ${title} →`).exec(get.stdout);
           if (row?.[1]) keys.set(title, row[1]);
@@ -979,27 +955,6 @@ describe('radio.task.push — the radio.recorder', () => {
         expect(getOneKeyOf({ title: 'old lesson reminder' })).toMatch(/^[0-9a-f]{16}$/);
         expect(result.get.stdout).toContain('radio.uses:blocked');
         expect(asStableOutput({ output: result.get.stdout })).toMatchSnapshot();
-      });
-    });
-
-    when('[t0.1] the human lists the queue by its old name', () => {
-      const result = useThen('the alias runs', () =>
-        runDispatcherSkill({
-          ...scene,
-          repoDir: scene.consumer.repoDir,
-          skill: 'radio.task.held',
-          args: '',
-        }),
-      );
-
-      then('exit 0: the same list, under the rename notice', () => {
-        expect(result.exitCode).toBe(0);
-        expect(result.stdout).toContain(
-          'radio.task.held is deprecated; run `rhx radio.task.queue get` instead',
-        );
-        expect(result.stdout).toContain('wetsuit inventory');
-        expect(result.stdout).toContain('old lesson reminder');
-        expect(asStableOutput({ output: result.stdout })).toMatchSnapshot();
       });
     });
 
@@ -1027,7 +982,7 @@ describe('radio.task.push — the radio.recorder', () => {
           ...scene,
           repoDir: scene.consumer.repoDir,
           skill: 'radio.task.queue',
-          args: `del --key ${getOneKeyOf({ title: 'old lesson reminder' })} --why "superseded by #604"`,
+          args: `del --uuid ${getOneKeyOf({ title: 'old lesson reminder' })} --why "superseded by #604"`,
         }),
       );
 
@@ -1046,7 +1001,7 @@ describe('radio.task.push — the radio.recorder', () => {
           ...scene,
           repoDir: scene.consumer.repoDir,
           skill: 'radio.task.queue',
-          args: `set --key ${getOneKeyOf({ title: 'wetsuit inventory' })} --description "count the 4/3s and the 3/2s"`,
+          args: `set --uuid ${getOneKeyOf({ title: 'wetsuit inventory' })} --description "count the 4/3s and the 3/2s"`,
         }),
       );
 
@@ -1065,14 +1020,14 @@ describe('radio.task.push — the radio.recorder', () => {
           ...scene,
           repoDir: scene.consumer.repoDir,
           skill: 'radio.task.queue',
-          args: `set --key ${getOneKeyOf({ title: 'wetsuit inventory' })} --title "wetsuit count"`,
+          args: `set --uuid ${getOneKeyOf({ title: 'wetsuit inventory' })} --title "wetsuit count"`,
         }),
       );
 
       then('exit 2: a title cannot be amended, and the fix is named', () => {
         expect(result.exitCode).toBe(2);
         expect(result.stderr).toContain('--title cannot be amended');
-        expect(result.stderr).toContain('to retitle, run `rhx radio.task.queue del --key <key>` and push again');
+        expect(result.stderr).toContain('to retitle, run `rhx radio.task.queue del --uuid <uuid>` and push again');
         expect(asStableOutput({ output: result.stderr })).toMatchSnapshot();
       });
     });
@@ -1083,7 +1038,7 @@ describe('radio.task.push — the radio.recorder', () => {
           ...scene,
           repoDir: scene.consumer.repoDir,
           skill: 'radio.task.queue',
-          args: `del --key ${getOneKeyOf({ title: 'old lesson reminder' })} --why "again"`,
+          args: `del --uuid ${getOneKeyOf({ title: 'old lesson reminder' })} --why "again"`,
         }),
       );
 
@@ -1366,7 +1321,7 @@ describe('radio.task.push — the radio.recorder', () => {
           ...scene,
           repoDir: scene.consumer.repoDir,
           skill: 'radio.task.queue',
-          args: `drain --key ${update.key} --auth as-human`,
+          args: `drain --uuid ${update.key} --auth as-human`,
           env: getEnvWithStub({ asHumanSession: true }),
         });
         return { drain, calls: getStubCalls().slice(callsBefore) };
@@ -1374,7 +1329,7 @@ describe('radio.task.push — the radio.recorder', () => {
 
       then('exit 2: it refuses, names the flags drain reads, and sends naught', () => {
         expect(result.drain.exitCode).toEqual(2);
-        expect(result.drain.stderr).toContain('drain does not read --key');
+        expect(result.drain.stderr).toContain('drain does not read --uuid');
         expect(result.calls).toEqual([]);
         expect(asStableOutput({ output: result.drain.stderr })).toMatchSnapshot();
       });
@@ -1387,7 +1342,7 @@ describe('radio.task.push — the radio.recorder', () => {
           ...scene,
           repoDir: scene.consumer.repoDir,
           skill: 'radio.task.queue',
-          args: `set --key ${update.key} --auth as-human`,
+          args: `set --uuid ${update.key} --auth as-human`,
           env: getEnvWithStub({ asHumanSession: true }),
         });
         setStubMode({ repo: 'sandpine/svc-lessons', mode: 'ok' });

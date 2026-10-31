@@ -111,7 +111,7 @@ describe('asRadioDrainOutput', () => {
             'fault: GraphQL: Resource not accessible by integration (updateIssue)',
           );
           expect(output).toContain(
-            'amend it: rhx radio.task.queue set --key a1b2c3d4e5f60718',
+            'amend it: rhx radio.task.queue set --uuid a1b2c3d4e5f60718',
           );
           expect(output).toContain('backlog = 1 awaits the radio');
           expect(output).toMatchSnapshot();

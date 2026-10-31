@@ -39,12 +39,12 @@ export const asRadioQueueFixLines = (input: {
 }): string[] => {
   const { key, reason } = input.record;
   const auth = input.authOverride ?? input.record.auth;
-  const drop = `or drop it: rhx radio.task.queue del --key ${key} --why "<why>"`;
+  const drop = `or drop it: rhx radio.task.queue del --uuid ${key} --why "<why>"`;
 
   // as-human refused by the test-env guard: the gh login is fine, so name the guard and a robot auth
   if (input.detail && isRadioTestEnvGuardFault({ detail: input.detail }))
     return [
-      `the test-env guard refuses as-human; amend it to a robot auth: rhx radio.task.queue set --key ${key} --auth 'as-robot:env(GH_TOKEN)'`,
+      `the test-env guard refuses as-human; amend it to a robot auth: rhx radio.task.queue set --uuid ${key} --auth 'as-robot:env(GH_TOKEN)'`,
       drop,
     ];
 
@@ -56,7 +56,7 @@ export const asRadioQueueFixLines = (input: {
     ];
   if (reason && REASONS_CURED_BY_AUTH.has(reason))
     return [
-      `amend it: rhx radio.task.queue set --key ${key} --auth as-human (needs a gh login on this host)`,
+      `amend it: rhx radio.task.queue set --uuid ${key} --auth as-human (needs a gh login on this host)`,
       drop,
     ];
   // an unknown fault: its text is never kept on disk (F10), so a read with no detail names

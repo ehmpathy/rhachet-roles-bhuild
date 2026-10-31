@@ -26,9 +26,9 @@ const genRecord = (input: { reason: string | null }): RadioTaskRecord =>
   });
 
 const AMEND =
-  'amend it: rhx radio.task.queue set --key a1b2c3d4e5f60718 --auth as-human (needs a gh login on this host)';
+  'amend it: rhx radio.task.queue set --uuid a1b2c3d4e5f60718 --auth as-human (needs a gh login on this host)';
 const DROP =
-  'or drop it: rhx radio.task.queue del --key a1b2c3d4e5f60718 --why "<why>"';
+  'or drop it: rhx radio.task.queue del --uuid a1b2c3d4e5f60718 --why "<why>"';
 
 const FIX_CASES = [
   {
@@ -116,7 +116,7 @@ const FIX_CASES = [
     },
     expect: {
       output: [
-        "the test-env guard refuses as-human; amend it to a robot auth: rhx radio.task.queue set --key a1b2c3d4e5f60718 --auth 'as-robot:env(GH_TOKEN)'",
+        "the test-env guard refuses as-human; amend it to a robot auth: rhx radio.task.queue set --uuid a1b2c3d4e5f60718 --auth 'as-robot:env(GH_TOKEN)'",
         DROP,
       ],
     },

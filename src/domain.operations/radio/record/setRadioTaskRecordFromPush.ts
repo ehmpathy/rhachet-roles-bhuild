@@ -50,7 +50,7 @@ export const setRadioTaskRecordFromPush = (
   // the channel under a settled fate and the push would read as landed with naught sent
   if (before && before.via !== input.push.via)
     throw new ConstraintError(
-      `this push matches record ${key}, which goes via ${before.via}, not via ${input.push.via}; a record keeps one channel. to send over ${input.push.via}, use a distinct title, or drop the record first: rhx radio.task.queue del --key ${key} --why "resend via ${input.push.via}"`,
+      `this push matches record ${key}, which goes via ${before.via}, not via ${input.push.via}; a record keeps one channel. to send over ${input.push.via}, use a distinct title, or drop the record first: rhx radio.task.queue del --uuid ${key} --why "resend via ${input.push.via}"`,
       { key, viaExtant: before.via, viaPush: input.push.via },
     );
 

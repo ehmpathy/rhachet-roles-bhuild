@@ -2,7 +2,7 @@
 
 exports[`asRadioAmendOutput given: [case1] an amend of the auth when: [t0] the amend renders then: it names the auth change, before → after 1`] = `
 "🦫 amended the held record
-   ├─ key     = a1b2c3d4e5f60718
+   ├─ uuid    = a1b2c3d4e5f60718
    ├─ task    = lesson reminders → sandpine/svc-lessons
    ├─ changed
    │  └─ auth: default (as-robot:via-keyrack(ehmpath)) → as-human
@@ -12,7 +12,7 @@ exports[`asRadioAmendOutput given: [case1] an amend of the auth when: [t0] the a
 
 exports[`asRadioAmendOutput given: [case2] an amend of the body and the auth when: [t0] the amend renders then: it names both changes, and where the amended body is kept 1`] = `
 "🦫 amended the held record
-   ├─ key     = a1b2c3d4e5f60718
+   ├─ uuid    = a1b2c3d4e5f60718
    ├─ task    = lesson reminders → sandpine/svc-lessons
    ├─ changed
    │  ├─ auth: default (as-robot:via-keyrack(ehmpath)) → as-human
@@ -23,7 +23,7 @@ exports[`asRadioAmendOutput given: [case2] an amend of the body and the auth whe
 
 exports[`asRadioAmendOutput given: [case3] an amend that changes naught when: [t0] the amend renders then: it says it changed naught 1`] = `
 "🦫 amended the held record
-   ├─ key     = a1b2c3d4e5f60718
+   ├─ uuid    = a1b2c3d4e5f60718
    ├─ task    = lesson reminders → sandpine/svc-lessons
    ├─ changed naught
    ├─ kept at = .behavior/.radio/record.a1b2c3d4e5f60718.json
@@ -32,7 +32,7 @@ exports[`asRadioAmendOutput given: [case3] an amend that changes naught when: [t
 
 exports[`asRadioAmendOutput given: [case4] an amend away from a planted shx auth when: [t0] the amend renders then: it shows the stored auth by its kind, never its text 1`] = `
 "🦫 amended the held record
-   ├─ key     = a1b2c3d4e5f60718
+   ├─ uuid    = a1b2c3d4e5f60718
    ├─ task    = lesson reminders → sandpine/svc-lessons
    ├─ changed
    │  └─ auth: as-robot:shx(…), will not replay → as-human

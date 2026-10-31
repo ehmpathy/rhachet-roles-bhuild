@@ -31,7 +31,7 @@ export const asRadioAmendOutput = (input: {
     '🦫 amended the held record',
     ...asRadioTreeLines({
       branches: [
-        { line: `key     = ${after.key}`, children: [] },
+        { line: `uuid    = ${after.key}`, children: [] },
         {
           line: `task    = ${asRadioTaskRecordLabel({ record: after })} → ${asRadioTaskRepoSlug({ repo: after.repo })}`,
           children: [],

@@ -140,10 +140,10 @@ describe('asRadioHeldOutput', () => {
           () => {
             expect(output).toContain('state: set aside (upstream:auth)');
             expect(output).toContain(
-              'amend it: rhx radio.task.queue set --key a',
+              'amend it: rhx radio.task.queue set --uuid a',
             );
             expect(output).toContain(
-              'amend it: rhx radio.task.queue set --key b',
+              'amend it: rhx radio.task.queue set --uuid b',
             );
             expect(
               output!.match(/state: set aside \(upstream:auth\)/g),
@@ -224,7 +224,7 @@ describe('asRadioHeldOutput', () => {
         expect(output).toContain('fix a1a1a1a1a1a1a1a1 above');
         expect(output).not.toContain('since opened');
         expect(output).not.toContain(
-          'rhx radio.task.queue set --key b2b2b2b2b2b2b2b2',
+          'rhx radio.task.queue set --uuid b2b2b2b2b2b2b2b2',
         );
         expect(output).toMatchSnapshot();
       });
@@ -395,7 +395,7 @@ describe('asRadioHeldOutput', () => {
           'the row whose auth will not replay says so once, with an amend line that holds a placeholder',
           () => {
             expect(output).toContain(
-              `amend its auth (human): rhx radio.task.queue set --key ${held[1]!.record.key} --auth <auth>`,
+              `amend its auth (human): rhx radio.task.queue set --uuid ${held[1]!.record.key} --auth <auth>`,
             );
             expect(output).toContain('auth: as-robot:shx(…), will not replay');
             expect(output).not.toContain('gh-token');
@@ -463,7 +463,7 @@ describe('asRadioHeldOutput', () => {
             expect(output).toContain(
               'check the gh login on this host: gh auth status (else: gh auth login), then: rhx radio.task.queue drain',
             );
-            expect(output).not.toContain('--key human --auth as-human');
+            expect(output).not.toContain('--uuid human --auth as-human');
           },
         );
 

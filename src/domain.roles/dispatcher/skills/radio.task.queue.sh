@@ -12,8 +12,8 @@
 # usage:
 #   radio.task.queue.sh get                                 # what waits
 #   radio.task.queue.sh get --when hook.onStop              # one-line stop reminder
-#   radio.task.queue.sh set --key <key> --auth as-human     # amend one held record
-#   radio.task.queue.sh del --key <key> --why "<why>"       # drop one, why kept
+#   radio.task.queue.sh set --uuid <uuid> --auth as-human   # amend one held record
+#   radio.task.queue.sh del --uuid <uuid> --why "<why>"     # drop one, why kept
 #   radio.task.queue.sh drain [--auth as-human]             # deliver now
 #
 # guarantee:

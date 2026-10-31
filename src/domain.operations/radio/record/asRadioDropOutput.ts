@@ -36,7 +36,7 @@ export const asRadioDropOutput = (input: {
           line: `⚠️ the deliver of #${input.record.exid} behind it needs a claim; if #${input.record.exid} is not claimed upstream, the next drain refuses it for good`,
           children: [
             `re-push the claim: rhx radio.task.push --via ${input.record.via} --into ${asRadioTaskRepoSlug({ repo: input.record.repo })} --exid ${input.record.exid} --status CLAIMED`,
-            `or drop the deliver too: rhx radio.task.queue del --key ${deliver.key} --why "its claim was dropped"`,
+            `or drop the deliver too: rhx radio.task.queue del --uuid ${deliver.key} --why "its claim was dropped"`,
           ],
         },
       ]
@@ -48,7 +48,7 @@ export const asRadioDropOutput = (input: {
       '🦫 already dropped, never sent; naught changed',
       ...asRadioTreeLines({
         branches: [
-          { line: `key     = ${input.record.key}`, children: [] },
+          { line: `uuid    = ${input.record.key}`, children: [] },
           { line: `why     = ${input.record.reason} (kept)`, children: [] },
           { line: `kept at = ${input.path}`, children: [] },
           ...behindBranches,
@@ -61,7 +61,7 @@ export const asRadioDropOutput = (input: {
     '🦫 dropped from the radio, never sent',
     ...asRadioTreeLines({
       branches: [
-        { line: `key     = ${input.record.key}`, children: [] },
+        { line: `uuid    = ${input.record.key}`, children: [] },
         {
           line: `task    = ${asRadioTaskRecordLabel(input)} → ${asRadioTaskRepoSlug({ repo: input.record.repo })}`,
           children: [],

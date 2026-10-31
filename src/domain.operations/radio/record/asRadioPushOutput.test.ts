@@ -282,7 +282,7 @@ describe('asRadioPushOutput', () => {
         'it points to the record ahead, and promises a send only once that one lands or is dropped',
         () => {
           expect(output).toContain(
-            'fix the earlier update first: --key a1b2c3d4e5f60718',
+            'fix the earlier update first: --uuid a1b2c3d4e5f60718',
           );
           expect(output).toContain('see its fix: rhx radio.task.queue get');
           // the wait is named once, on the status line
@@ -635,7 +635,7 @@ describe('asRadioPushOutput', () => {
             );
             // the amend is a peer of the lift, never a step of it
             expect(output).toContain(
-              '└─ amend its auth (human): rhx radio.task.queue set --key f0e1d2c3b4a59687 --auth <auth>',
+              '└─ amend its auth (human): rhx radio.task.queue set --uuid f0e1d2c3b4a59687 --auth <auth>',
             );
             // the auth it fixes rides beneath it, masked; the warn is said once
             expect(output).toContain(

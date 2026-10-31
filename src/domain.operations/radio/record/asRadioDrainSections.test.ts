@@ -209,7 +209,7 @@ describe('asRadioDrainSections', () => {
             expect(gated).toContain('lift it (human): rhx radio.uses allow');
             expect(faulted).not.toContain('lift it (human)');
             expect(faulted).toContain(
-              'amend it: rhx radio.task.queue set --key b1b2c3d4e5f60718',
+              'amend it: rhx radio.task.queue set --uuid b1b2c3d4e5f60718',
             );
             expect(sections.closedOrHeld[0]?.children).toHaveLength(2);
             expect(sections).toMatchSnapshot();

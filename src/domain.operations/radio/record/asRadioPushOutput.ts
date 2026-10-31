@@ -144,7 +144,7 @@ const asHeldFixBranch = (input: {
   // the status line already names the wait; this branch names the move, by key
   if (behind)
     return {
-      line: `fix the earlier update first: --key ${behind.aheadKey}`,
+      line: `fix the earlier update first: --uuid ${behind.aheadKey}`,
       children: [
         'see its fix: rhx radio.task.queue get',
         'this one sends on the next drain once that one lands or is dropped',

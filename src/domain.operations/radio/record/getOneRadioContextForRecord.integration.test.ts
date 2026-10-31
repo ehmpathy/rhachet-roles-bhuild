@@ -75,7 +75,7 @@ describe('getOneRadioContextForRecord — a stored auth never runs a shell', () 
 
       then('it is refused as a constraint that names the fix', () => {
         expect(result.isConstraint).toEqual(true);
-        expect(result.message).toContain('rhx radio.task.queue set --key');
+        expect(result.message).toContain('rhx radio.task.queue set --uuid');
         expect(result.message).not.toContain(
           'rhx radio.task.queue drain --auth',
         );
@@ -317,7 +317,7 @@ describe('getOneRadioContextForRecord — a stored auth never runs a shell', () 
       then('it is refused as a constraint that names the fix', () => {
         expect(result.isConstraint).toEqual(true);
         expect(result.message).toContain('TOKEN segment');
-        expect(result.message).toContain('rhx radio.task.queue set --key');
+        expect(result.message).toContain('rhx radio.task.queue set --uuid');
         expect(result.message).not.toContain(
           'rhx radio.task.queue drain --auth',
         );

@@ -7,8 +7,8 @@ exports[`asRadioDrainOutput given: [case2] one delivered past a set-aside head (
    ├─ still held
    │  └─ a1b2c3d4e5f60718 deliver #599 → sandpine/svc-lessons (upstream:access)
    │     ├─ fault: GraphQL: Resource not accessible by integration (updateIssue)
-   │     ├─ amend it: rhx radio.task.queue set --key a1b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
-   │     └─ or drop it: rhx radio.task.queue del --key a1b2c3d4e5f60718 --why "<why>"
+   │     ├─ amend it: rhx radio.task.queue set --uuid a1b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
+   │     └─ or drop it: rhx radio.task.queue del --uuid a1b2c3d4e5f60718 --why "<why>"
    └─ backlog = 1 awaits the radio"
 `;
 

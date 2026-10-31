@@ -51,7 +51,7 @@ export const getOneRadioContextForRecord = async (
   if (isAuthStored && !isRadioRecordAuthReplayable(input.record))
     return {
       fault: new ConstraintError(
-        `this record's stored --auth (${asRadioAuthShown({ auth: input.record.auth })}) is never replayed from a record file (a shx command, a keyrack owner that is not plain, or an env var whose name holds no TOKEN segment); amend it to an auth you type: \`rhx radio.task.queue set --key ${input.record.key} --auth <auth>\``,
+        `this record's stored --auth (${asRadioAuthShown({ auth: input.record.auth })}) is never replayed from a record file (a shx command, a keyrack owner that is not plain, or an env var whose name holds no TOKEN segment); amend it to an auth you type: \`rhx radio.task.queue set --uuid ${input.record.key} --auth <auth>\``,
         { key: input.record.key },
       ),
     };

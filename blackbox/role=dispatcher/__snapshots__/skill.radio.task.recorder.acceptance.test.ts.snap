@@ -13,29 +13,23 @@ exports[`radio.task.push — the radio.recorder given: [case1] a clone on a bran
       └─ then the next push delivers the backlog first"
 `;
 
-exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t2.1] the dispatcher onStop hook command runs, as claude runs it (radio.task.queue get, so no rename notice) then: its whole stdout is the json claude parses 1`] = `"{"systemMessage":"🦫 2 tasks held for the radio · 2 at a gate · lift: rhx radio.uses allow · next push delivers them"}"`;
+exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t2.1] the dispatcher onStop hook command runs, as claude runs it (S2) then: its whole stdout is the json claude parses 1`] = `"{"systemMessage":"🦫 2 tasks held for the radio · 2 at a gate · lift: rhx radio.uses allow · next push delivers them"}"`;
 
-exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t2] the clone stops, via a hook still wired to the deprecated radio.task.held (S2) then: it prints one systemMessage line with the count and the lift 1`] = `
-"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.held
+exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t3.1] the human opens the radio, then the clone stops before any push (S3) then: it prints one line: both still held, the radio open, no lift 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
 
-{"systemMessage":"🦫 2 tasks held for the radio · 2 at a gate · lift: rhx radio.uses allow · next push delivers them · radio.task.held is deprecated; run \`rhx radio.task.queue get --when hook.onStop\` instead"}"
-`;
-
-exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t3.1] the human opens the radio, then the clone stops before any push, via the deprecated radio.task.held hook (S3) then: it prints one line: both still held, the radio open, no lift 1`] = `
-"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.held
-
-{"systemMessage":"🦫 2 tasks held, the radio is open · next push delivers them · radio.task.held is deprecated; run \`rhx radio.task.queue get --when hook.onStop\` instead"}"
+{"systemMessage":"🦫 2 tasks held, the radio is open · next push delivers them"}"
 `;
 
 exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t3] a human lists the held tasks then: it lists both held tasks 1`] = `
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
 
 🦫 held for the radio
-   ├─ <key> fix flaky test → recorder-acpt/repo-<run>
+   ├─ <uuid> fix flaky test → recorder-acpt/repo-<run>
    │  ├─ state: held at gate (radio.uses:blocked — default)
    │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
    │  └─ lift it (human): rhx radio.uses allow
-   ├─ <key> guard absent sponsor → recorder-acpt/repo-<run>
+   ├─ <uuid> guard absent sponsor → recorder-acpt/repo-<run>
    │  ├─ state: held at gate (radio.uses:blocked — default)
    │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
    │  └─ lift it (human): rhx radio.uses allow
@@ -55,9 +49,8 @@ exports[`radio.task.push — the radio.recorder given: [case1] a clone on a bran
 `;
 
 exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t5.0] a human lists the held tasks, the backlog drained then: it reads naught held, and exits 0 1`] = `
-"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.held
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
 
-radio.task.held is deprecated; run \`rhx radio.task.queue get\` instead
 🦫 naught held for the radio"
 `;
 
@@ -85,7 +78,7 @@ exports[`radio.task.push — the radio.recorder given: [case1] a clone on a bran
    └─ exid    = #<exid>"
 `;
 
-exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t5] the clone stops again (S1) then: the skill prints naught beyond the rhachet frame banner, and exits 0 1`] = `"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.held"`;
+exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t5] the clone stops again (S1) then: the skill prints naught beyond the rhachet frame banner, and exits 0 1`] = `"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue"`;
 
 exports[`radio.task.push — the radio.recorder given: [case1] a clone on a branch bound to a route; the radio is shut when: [t6] the clone claims a task upstream does not hold (U3) then: exit code is 2, and the record reads refused, closed 1`] = `
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
@@ -115,20 +108,40 @@ exports[`radio.task.push — the radio.recorder given: [case2] a record file on 
     at <stack>"
 `;
 
-exports[`radio.task.push — the radio.recorder given: [case2] a record file on disk that is not valid json when: [t1] a human asks radio.task.held for help then: it shows usage and options, exit 0, and reads no records 1`] = `
-"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.held
+exports[`radio.task.push — the radio.recorder given: [case2] a record file on disk that is not valid json when: [t1] a human asks radio.task.queue for help then: it shows usage and options, exit 0, and reads no records 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
 
 🦫 let's check the meter...
 
-🎙️ radio.task.held --help
-   ├─ radio.task.held is deprecated; run \`rhx radio.task.queue get\` instead (stop hook: \`rhx radio.task.queue get --when hook.onStop\`)
+🎙️ radio.task.queue --help
    ├─ usage
-   │  ├─ radio.task.held                       list the tasks held for the radio
-   │  └─ radio.task.held --when hook.onStop    one-line stop reminder (naught when none)
+   │  ├─ rhx radio.task.queue get                                   what waits: uuid · task · reason · fix
+   │  ├─ rhx radio.task.queue get --when hook.onStop                one-line stop reminder (naught when none)
+   │  ├─ rhx radio.task.queue set   --uuid <uuid> --auth as-human   amend one held record (or --description)
+   │  ├─ rhx radio.task.queue del   --uuid <uuid> --why "<why>"     drop one, its body and why kept
+   │  └─ rhx radio.task.queue drain [--auth as-human]               deliver now; a fault sets one record aside
+   │
+   ├─ the line
+   │  ├─ a rate limit or a github outage halts the drain; the rest wait in order
+   │  ├─ any other fault sets its one record aside; the rest still deliver
+   │  └─ a later update to the same issue waits behind it, unsent, until it lands or is dropped
+   │
+   ├─ exit codes
+   │  ├─ drain
+   │  │  ├─ 0  naught waits, naught refused
+   │  │  └─ 2  a record still waits, or this drain refused one (its why is in the output)
+   │  └─ get, set, del
+   │     └─ 0  done, even with records held; 2 only on a bad call
    │
    └─ options
-      ├─ --when      hook.onStop: print one claude systemMessage line, or naught when none held
-      └─ --help, -h  show this help"
+      ├─ --uuid         the record uuid \`get\` prints (set, del)
+      ├─ --auth         as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd) | as-human
+      │  ├─ set:   amends the one record --uuid names
+      │  └─ drain: sends every held record under this auth, this drain only
+      ├─ --description  the new body (set; supports @stdin)
+      ├─ --why          why the record is dropped (del, required)
+      ├─ --when         hook.onStop (get)
+      └─ --help, -h     show this help"
 `;
 
 exports[`radio.task.push — the radio.recorder given: [case2] a record file on disk that is not valid json when: [t2] the clone pushes a first task, the bad record still on disk then: stderr first says the push is saved, so the caller repairs + re-pushes 1`] = `
@@ -270,31 +283,15 @@ exports[`radio.task.push — the radio.recorder given: [case5] two clones run on
 "
 `;
 
-exports[`radio.task.push — the radio.recorder given: [case6] a clone reads, drops, and drains the queue (#604, case=2, case=4, case=5) when: [t0.1] the human lists the queue by its old name then: exit 0: the same list, under the rename notice 1`] = `
-"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.held
-
-radio.task.held is deprecated; run \`rhx radio.task.queue get\` instead
-🦫 held for the radio
-   ├─ <key> wetsuit inventory → recorder-acpt-queue/repo-<run>
-   │  ├─ state: held at gate (radio.uses:blocked — default)
-   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
-   │  └─ lift it (human): rhx radio.uses allow
-   ├─ <key> old lesson reminder → recorder-acpt-queue/repo-<run>
-   │  ├─ state: held at gate (radio.uses:blocked — default)
-   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
-   │  └─ lift it (human): rhx radio.uses allow
-   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
-`;
-
 exports[`radio.task.push — the radio.recorder given: [case6] a clone reads, drops, and drains the queue (#604, case=2, case=4, case=5) when: [t0] two pushes are held at the shut gate, then the clone reads the queue then: it lists each record with its key, task, and reason, exit 0 1`] = `
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
 
 🦫 held for the radio
-   ├─ <key> wetsuit inventory → recorder-acpt-queue/repo-<run>
+   ├─ <uuid> wetsuit inventory → recorder-acpt-queue/repo-<run>
    │  ├─ state: held at gate (radio.uses:blocked — default)
    │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
    │  └─ lift it (human): rhx radio.uses allow
-   ├─ <key> old lesson reminder → recorder-acpt-queue/repo-<run>
+   ├─ <uuid> old lesson reminder → recorder-acpt-queue/repo-<run>
    │  ├─ state: held at gate (radio.uses:blocked — default)
    │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
    │  └─ lift it (human): rhx radio.uses allow
@@ -306,9 +303,9 @@ exports[`radio.task.push — the radio.recorder given: [case6] a clone reads, dr
 
 🦫 naught delivered; the backlog still waits
    ├─ still held
-   │  ├─ <key> wetsuit inventory → recorder-acpt-queue/repo-<run> (radio.uses:blocked — default)
+   │  ├─ <uuid> wetsuit inventory → recorder-acpt-queue/repo-<run> (radio.uses:blocked — default)
    │  │  └─ lift it (human): rhx radio.uses allow
-   │  └─ <key> old lesson reminder → recorder-acpt-queue/repo-<run> (radio.uses:blocked — default)
+   │  └─ <uuid> old lesson reminder → recorder-acpt-queue/repo-<run> (radio.uses:blocked — default)
    │     └─ lift it (human): rhx radio.uses allow
    └─ backlog = 2 await the radio"
 `;
@@ -317,11 +314,11 @@ exports[`radio.task.push — the radio.recorder given: [case6] a clone reads, dr
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
 
 🦫 amended the held record
-   ├─ key     = <key>
+   ├─ uuid    = <uuid>
    ├─ task    = wetsuit inventory → recorder-acpt-queue/repo-<run>
    ├─ changed
    │  └─ description: amended
-   ├─ kept at = .behavior/.radio/record.<key>.json
+   ├─ kept at = .behavior/.radio/record.<uuid>.json
    └─ naught sent; its place in line is kept, and the next push, or \`rhx radio.task.queue drain\`, sends it"
 `;
 
@@ -330,17 +327,17 @@ exports[`radio.task.push — the radio.recorder given: [case6] a clone reads, dr
 🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
    └─ ✋ blocked by constraints
 
-✋ ConstraintError: --title cannot be amended: the title is what the push creates; to retitle, run \`rhx radio.task.queue del --key <key>\` and push again"
+✋ ConstraintError: --title cannot be amended: the title is what the push creates; to retitle, run \`rhx radio.task.queue del --uuid <uuid>\` and push again"
 `;
 
 exports[`radio.task.push — the radio.recorder given: [case6] a clone reads, drops, and drains the queue (#604, case=2, case=4, case=5) when: [t2] the clone drops the moot record with a why (case=2) then: exit 0; it names the why and where the body is kept 1`] = `
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
 
 🦫 dropped from the radio, never sent
-   ├─ key     = <key>
+   ├─ uuid    = <uuid>
    ├─ task    = old lesson reminder → recorder-acpt-queue/repo-<run>
    ├─ why     = dropped: superseded by #<exid>
-   ├─ kept at = .behavior/.radio/record.<key>.json
+   ├─ kept at = .behavior/.radio/record.<uuid>.json
    └─ a re-push of the same task queues it again"
 `;
 
@@ -348,9 +345,9 @@ exports[`radio.task.push — the radio.recorder given: [case6] a clone reads, dr
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
 
 🦫 already dropped, never sent; naught changed
-   ├─ key     = <key>
+   ├─ uuid    = <uuid>
    ├─ why     = dropped: superseded by #<exid> (kept)
-   └─ kept at = .behavior/.radio/record.<key>.json"
+   └─ kept at = .behavior/.radio/record.<uuid>.json"
 `;
 
 exports[`radio.task.push — the radio.recorder given: [case6] a clone reads, drops, and drains the queue (#604, case=2, case=4, case=5) when: [t4] the human opens the radio and the clone drains then: exit 0: the held record delivers, the dropped one stays unsent 1`] = `
@@ -396,10 +393,10 @@ exports[`radio.task.push — the radio.recorder given: [case7] a drain crosses a
    ├─ drained
    │  └─ #<exid> wetsuit sizes
    ├─ still held
-   │  └─ <key> deliver #<exid> → sandpine/svc-lessons (upstream:access)
+   │  └─ <uuid> deliver #<exid> → sandpine/svc-lessons (upstream:access)
    │     ├─ fault: GraphQL: Resource not accessible by integration (updateIssue)
-   │     ├─ amend it: rhx radio.task.queue set --key <key> --auth as-human (needs a gh login on this host)
-   │     └─ or drop it: rhx radio.task.queue del --key <key> --why "<why>"
+   │     ├─ amend it: rhx radio.task.queue set --uuid <uuid> --auth as-human (needs a gh login on this host)
+   │     └─ or drop it: rhx radio.task.queue del --uuid <uuid> --why "<why>"
    └─ backlog = 1 awaits the radio"
 `;
 
@@ -408,7 +405,7 @@ exports[`radio.task.push — the radio.recorder given: [case7] a drain crosses a
 🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
    └─ ✋ blocked by constraints
 
-✋ ConstraintError: drain does not read --key. drop it, then run again. drain reads --auth (see --help). to act on one record, run \`rhx radio.task.queue set --key <key>\` or \`rhx radio.task.queue del --key <key>\`."
+✋ ConstraintError: drain does not read --uuid. drop it, then run again. drain reads --auth (see --help). to act on one record, run \`rhx radio.task.queue set --uuid <uuid>\` or \`rhx radio.task.queue del --uuid <uuid>\`."
 `;
 
 exports[`radio.task.push — the radio.recorder given: [case7] a drain crosses a fault through rhachet, via a stub gh (#511, #513, case=5, case=7) when: [t2] the clone amends the set-aside update to as-human, then drains (#513, #603) then: the drain exits 0: the queue is empty 1`] = `
@@ -424,10 +421,10 @@ exports[`radio.task.push — the radio.recorder given: [case7] a drain crosses a
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
 
 🦫 amended the held record
-   ├─ key     = <key>
+   ├─ uuid    = <uuid>
    ├─ task    = deliver #<exid> → sandpine/svc-lessons
    ├─ changed
    │  └─ auth: as-robot:env(RADIO_ACPT_JOURNEY_TOKEN) → as-human
-   ├─ kept at = .behavior/.radio/record.<key>.json
+   ├─ kept at = .behavior/.radio/record.<uuid>.json
    └─ naught sent; its place in line is kept, and the next push, or \`rhx radio.task.queue drain\`, sends it"
 `;

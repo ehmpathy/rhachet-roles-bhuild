@@ -296,7 +296,7 @@ describe('setRadioTaskRecordFromPush', () => {
               'via os.fileops, not via gh.issues',
             );
             expect(result.error.message).toContain(
-              `rhx radio.task.queue del --key ${scene.key}`,
+              `rhx radio.task.queue del --uuid ${scene.key}`,
             );
           },
         );

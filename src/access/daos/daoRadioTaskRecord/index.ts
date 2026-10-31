@@ -80,7 +80,7 @@ const RECORD_KEY_PATTERN = RADIO_TASK_RECORD_KEY_PATTERN;
 const asRecordFileName = (input: { key: string }): string => {
   if (!RECORD_KEY_PATTERN.test(input.key))
     throw new ConstraintError(
-      `record key "${input.key}" is not a record key; a key is lowercase letters, digits, and dashes, e.g. a1b2c3d4e5f60718. run \`rhx radio.task.queue get\` to list the keys`,
+      `record uuid "${input.key}" is not a record uuid; a uuid is lowercase letters, digits, and dashes, e.g. a1b2c3d4e5f60718. run \`rhx radio.task.queue get\` to list the uuids`,
       { key: input.key },
     );
   return `record.${input.key}.json`;

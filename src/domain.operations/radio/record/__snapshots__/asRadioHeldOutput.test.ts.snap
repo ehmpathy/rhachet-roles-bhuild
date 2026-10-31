@@ -26,13 +26,13 @@ exports[`asRadioHeldOutput given: [case2.1] two tasks set aside on an upstream f
    ├─ a task a → ehmpathy/rhachet
    │  ├─ state: set aside (upstream:auth)
    │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
-   │  ├─ amend it: rhx radio.task.queue set --key a --auth as-human (needs a gh login on this host)
-   │  └─ or drop it: rhx radio.task.queue del --key a --why "<why>"
+   │  ├─ amend it: rhx radio.task.queue set --uuid a --auth as-human (needs a gh login on this host)
+   │  └─ or drop it: rhx radio.task.queue del --uuid a --why "<why>"
    ├─ b task b → ehmpathy/rhachet
    │  ├─ state: set aside (upstream:auth)
    │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
-   │  ├─ amend it: rhx radio.task.queue set --key b --auth as-human (needs a gh login on this host)
-   │  └─ or drop it: rhx radio.task.queue del --key b --why "<why>"
+   │  ├─ amend it: rhx radio.task.queue set --uuid b --auth as-human (needs a gh login on this host)
+   │  └─ or drop it: rhx radio.task.queue del --uuid b --why "<why>"
    ├─ c task c → ehmpathy/rhachet
    │  ├─ state: held at gate (radio.uses:blocked — global)
    │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
@@ -55,8 +55,8 @@ exports[`asRadioHeldOutput given: [case2.3] two updates to one issue, the first 
    ├─ a1a1a1a1a1a1a1a1 update #599 → ehmpathy/rhachet
    │  ├─ state: set aside (upstream:access)
    │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
-   │  ├─ amend it: rhx radio.task.queue set --key a1a1a1a1a1a1a1a1 --auth as-human (needs a gh login on this host)
-   │  └─ or drop it: rhx radio.task.queue del --key a1a1a1a1a1a1a1a1 --why "<why>"
+   │  ├─ amend it: rhx radio.task.queue set --uuid a1a1a1a1a1a1a1a1 --auth as-human (needs a gh login on this host)
+   │  └─ or drop it: rhx radio.task.queue del --uuid a1a1a1a1a1a1a1a1 --why "<why>"
    ├─ b2b2b2b2b2b2b2b2 update #599 → ehmpathy/rhachet
    │  ├─ state: waits behind a1a1a1a1a1a1a1a1 (same issue #599)
    │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
@@ -121,7 +121,7 @@ exports[`asRadioHeldOutput given: [case9] held records with a stored auth, one o
    │  ├─ state: held at gate (radio.uses:blocked — global)
    │  ├─ auth: as-robot:shx(…), will not replay
    │  ├─ lift it (human): rhx radio.uses --global allow
-   │  └─ amend its auth (human): rhx radio.task.queue set --key shelled --auth <auth>
+   │  └─ amend its auth (human): rhx radio.task.queue set --uuid shelled --auth <auth>
    ├─ plain task plain → ehmpathy/rhachet
    │  ├─ state: held at gate (radio.uses:blocked — global)
    │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
@@ -135,7 +135,7 @@ exports[`asRadioHeldOutput given: [case10] a held record merged in with a plante
    │  ├─ state: held at gate (radio.uses:blocked — global)
    │  ├─ auth: as-robot:shx(…), will not replay
    │  ├─ lift it (human): rhx radio.uses --global allow
-   │  └─ amend its auth (human): rhx radio.task.queue set --key planted --auth <auth>
+   │  └─ amend its auth (human): rhx radio.task.queue set --uuid planted --auth <auth>
    └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;
 
@@ -145,11 +145,11 @@ exports[`asRadioHeldOutput given: [case11] two set-aside records whose fix is no
    │  ├─ state: set aside (upstream:401)
    │  ├─ auth: as-human
    │  ├─ check the gh login on this host: gh auth status (else: gh auth login), then: rhx radio.task.queue drain
-   │  └─ or drop it: rhx radio.task.queue del --key human --why "<why>"
+   │  └─ or drop it: rhx radio.task.queue del --uuid human --why "<why>"
    ├─ odd task odd → ehmpathy/rhachet
    │  ├─ state: set aside (upstream:fault)
    │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
    │  ├─ retry it and print its fault: rhx radio.task.queue drain (this sends every held record whose gate is open)
-   │  └─ or drop it: rhx radio.task.queue del --key odd --why "<why>"
+   │  └─ or drop it: rhx radio.task.queue del --uuid odd --why "<why>"
    └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;

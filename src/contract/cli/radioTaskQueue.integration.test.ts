@@ -107,7 +107,7 @@ describe('radio.task.queue.integration — CLI contract', () => {
     when('[t0] the queue skill runs', () => {
       then('fails with a constraint that names the two fields', async () => {
         const result = await runQueue({
-          argvTail: ['set', '--key', 'a1b2c3d4e5f60718'],
+          argvTail: ['set', '--uuid', 'a1b2c3d4e5f60718'],
         });
         expect(result.error).toBeInstanceOf(ConstraintError);
         expect(result.error?.message).toContain('--auth and/or --description');
@@ -116,9 +116,9 @@ describe('radio.task.queue.integration — CLI contract', () => {
     });
   });
 
-  given('[case5] set with no --key', () => {
+  given('[case5] set with no --uuid', () => {
     when('[t0] the queue skill runs', () => {
-      then('fails with a constraint that names how to list keys', async () => {
+      then('fails with a constraint that names how to list uuids', async () => {
         const result = await runQueue({
           argvTail: ['set', '--auth', 'as-human'],
         });
@@ -129,9 +129,9 @@ describe('radio.task.queue.integration — CLI contract', () => {
     });
   });
 
-  given('[case6] del with no --key', () => {
+  given('[case6] del with no --uuid', () => {
     when('[t0] the queue skill runs', () => {
-      then('fails with a constraint that names how to list keys', async () => {
+      then('fails with a constraint that names how to list uuids', async () => {
         const result = await runQueue({
           argvTail: ['del', '--why', 'superseded by a coachbook task'],
         });
@@ -146,7 +146,7 @@ describe('radio.task.queue.integration — CLI contract', () => {
     when('[t0] the queue skill runs', () => {
       then('fails with a constraint that shows a --why to pass', async () => {
         const result = await runQueue({
-          argvTail: ['del', '--key', 'a1b2c3d4e5f60718'],
+          argvTail: ['del', '--uuid', 'a1b2c3d4e5f60718'],
         });
         expect(result.error).toBeInstanceOf(ConstraintError);
         expect(result.error?.message).toContain('--why is required');
@@ -159,7 +159,13 @@ describe('radio.task.queue.integration — CLI contract', () => {
     when('[t0] set runs with it', () => {
       then('fails with a constraint that lists the four modes', async () => {
         const result = await runQueue({
-          argvTail: ['set', '--key', 'a1b2c3d4e5f60718', '--auth', 'as-surfer'],
+          argvTail: [
+            'set',
+            '--uuid',
+            'a1b2c3d4e5f60718',
+            '--auth',
+            'as-surfer',
+          ],
         });
         expect(result.error).toBeInstanceOf(ConstraintError);
         expect(result.error?.message).toContain('as-human');
@@ -190,7 +196,7 @@ describe('radio.task.queue.integration — CLI contract', () => {
           const result = await runQueue({
             argvTail: [
               'set',
-              '--key',
+              '--uuid',
               'a1b2c3d4e5f60718',
               '--title',
               'book a lesson',
@@ -198,7 +204,7 @@ describe('radio.task.queue.integration — CLI contract', () => {
           });
           expect(result.error).toBeInstanceOf(ConstraintError);
           expect(result.error?.message).toContain(
-            'to retitle, run `rhx radio.task.queue del --key <key>` and push again',
+            'to retitle, run `rhx radio.task.queue del --uuid <uuid>` and push again',
           );
           expect(result.error?.message).toMatchSnapshot();
         },
@@ -207,21 +213,21 @@ describe('radio.task.queue.integration — CLI contract', () => {
   });
 
   given('[case14] a verb with a flag it does not read', () => {
-    when('[t0] drain runs with --key, as though it scoped the drain', () => {
+    when('[t0] drain runs with --uuid, as though it scoped the drain', () => {
       then(
         'it refuses before any send, and names what drain reads',
         async () => {
           const result = await runQueue({
             argvTail: [
               'drain',
-              '--key',
+              '--uuid',
               'a1b2c3d4e5f60718',
               '--auth',
               'as-human',
             ],
           });
           expect(result.error).toBeInstanceOf(ConstraintError);
-          expect(result.error?.message).toContain('drain does not read --key');
+          expect(result.error?.message).toContain('drain does not read --uuid');
           expect(result.error?.message).toContain('--auth');
           expect(result.error?.message).toMatchSnapshot();
         },
@@ -244,7 +250,7 @@ describe('radio.task.queue.integration — CLI contract', () => {
         const result = await runQueue({
           argvTail: [
             'del',
-            '--key',
+            '--uuid',
             'a1b2c3d4e5f60718',
             '--why',
             'moot',
@@ -256,7 +262,7 @@ describe('radio.task.queue.integration — CLI contract', () => {
         expect(result.error?.message).toContain(
           'del does not read --description',
         );
-        expect(result.error?.message).toContain('--key, --why');
+        expect(result.error?.message).toContain('--uuid, --why');
       });
     });
   });
@@ -267,7 +273,7 @@ describe('radio.task.queue.integration — CLI contract', () => {
         const result = await runQueue({
           argvTail: [
             'set',
-            '--key',
+            '--uuid',
             'a1b2c3d4e5f60718',
             '--description',
             '   ',
@@ -282,9 +288,9 @@ describe('radio.task.queue.integration — CLI contract', () => {
 
   given('[case10] set on a key no record holds', () => {
     when('[t0] the queue skill runs', () => {
-      then('fails with a constraint that names how to list keys', async () => {
+      then('fails with a constraint that names how to list uuids', async () => {
         const result = await runQueue({
-          argvTail: ['set', '--key', 'a1b2c3d4e5f60718', '--auth', 'as-human'],
+          argvTail: ['set', '--uuid', 'a1b2c3d4e5f60718', '--auth', 'as-human'],
         });
         expect(result.error).toBeInstanceOf(ConstraintError);
         expect(result.error?.message).toMatchSnapshot();
@@ -354,7 +360,7 @@ const tokenStub = 'ghp_radioQueueJourneyTokenStub000000';
  */
 const asMaskedStdout = (input: { stdout: string }): string =>
   input.stdout
-    .replace(/[0-9a-f]{16}/g, '<key>')
+    .replace(/[0-9a-f]{16}/g, '<uuid>')
     .replace(
       new RegExp(
         os.tmpdir().replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[^\\s)]*',
@@ -594,7 +600,7 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
         const result = useThen('it amends', async () =>
           runQueueInScene({
             scene,
-            argvTail: ['set', '--key', scene.update.key, '--auth', 'as-human'],
+            argvTail: ['set', '--uuid', scene.update.key, '--auth', 'as-human'],
           }),
         );
 
@@ -784,7 +790,7 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
             scene,
             argvTail: [
               'set',
-              '--key',
+              '--uuid',
               scene.update.key,
               '--auth',
               'as-robot:shx(echo pwned)',
@@ -803,7 +809,7 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
           // the message names the auth itself; no raw json block trails it
           expect(result.error?.message).not.toContain('{');
           expect(
-            result.error?.message.replace(scene.update.key, '<key>'),
+            result.error?.message.replace(scene.update.key, '<uuid>'),
           ).toMatchSnapshot();
         });
 
@@ -824,7 +830,7 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
               scene,
               argvTail: [
                 'set',
-                '--key',
+                '--uuid',
                 scene.update.key,
                 '--auth',
                 'as-human',
@@ -908,7 +914,7 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
           scene,
           argvTail: [
             'set',
-            '--key',
+            '--uuid',
             scene.create.key,
             '--description',
             '@stdin',
@@ -1187,9 +1193,9 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
       });
 
       const ARGV_CASES = [
-        { label: '[t0] drain <key>', argv: (key: string) => ['drain', key] },
+        { label: '[t0] drain <uuid>', argv: (key: string) => ['drain', key] },
         {
-          label: '[t1] drain --auth as-human <key>',
+          label: '[t1] drain --auth as-human <uuid>',
           argv: (key: string) => ['drain', '--auth', 'as-human', key],
         },
         { label: '[t2] get x', argv: (_key: string) => ['get', 'x'] },
@@ -1216,7 +1222,7 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
                 RadioTaskRecordStatus.QUEUED,
               );
               expect(
-                result.error?.message.replace(scene.create.key, '<key>'),
+                result.error?.message.replace(scene.create.key, '<uuid>'),
               ).toMatchSnapshot();
             },
           );
@@ -1235,7 +1241,7 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
       });
       const first = await runQueueInScene({
         scene: one,
-        argvTail: ['del', '--key', create.key, '--why', 'superseded'],
+        argvTail: ['del', '--uuid', create.key, '--why', 'superseded'],
       });
       return { ...one, create, first };
     });
@@ -1244,7 +1250,7 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
       const result = useThen('it runs', async () =>
         runQueueInScene({
           scene,
-          argvTail: ['del', '--key', scene.create.key, '--why', 'retry'],
+          argvTail: ['del', '--uuid', scene.create.key, '--why', 'retry'],
         }),
       );
 
@@ -1296,7 +1302,7 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
         const result = useThen('it runs', async () =>
           runQueueInScene({
             scene,
-            argvTail: ['del', '--key', scene.create.key, '--why', 'moot'],
+            argvTail: ['del', '--uuid', scene.create.key, '--why', 'moot'],
           }),
         );
 
@@ -1307,7 +1313,7 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
             thisCase.recordStatus,
           );
           expect(
-            result.error?.message.replace(scene.create.key, '<key>'),
+            result.error?.message.replace(scene.create.key, '<uuid>'),
           ).toMatchSnapshot();
         });
       });
@@ -1318,7 +1324,7 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
             scene,
             argvTail: [
               'set',
-              '--key',
+              '--uuid',
               scene.create.key,
               '--description',
               'roster moved to friday',
@@ -1333,7 +1339,7 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
           expect(onDisk?.recordStatus).toEqual(thisCase.recordStatus);
           expect(onDisk?.description).not.toEqual('roster moved to friday');
           expect(
-            result.error?.message.replace(scene.create.key, '<key>'),
+            result.error?.message.replace(scene.create.key, '<uuid>'),
           ).toMatchSnapshot();
         });
       });
@@ -1369,7 +1375,7 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
         label: '[t2] set --description',
         argv: (key: string) => [
           'set',
-          '--key',
+          '--uuid',
           key,
           '--description',
           'reminder goes out the night before',
@@ -1378,12 +1384,12 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
       },
       {
         label: '[t3] set --auth as-human',
-        argv: (key: string) => ['set', '--key', key, '--auth', 'as-human'],
+        argv: (key: string) => ['set', '--uuid', key, '--auth', 'as-human'],
         statusAfter: RadioTaskRecordStatus.QUEUED,
       },
       {
         label: '[t4] del --why',
-        argv: (key: string) => ['del', '--key', key, '--why', 'superseded'],
+        argv: (key: string) => ['del', '--uuid', key, '--why', 'superseded'],
         statusAfter: RadioTaskRecordStatus.DROPPED,
       },
     ];
