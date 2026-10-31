@@ -5,6 +5,7 @@ import { getAllStones } from 'rhachet-roles-bhrain/sdk/route';
 import { genTempDir, given, then, useBeforeAll, when } from 'test-fns';
 
 import { getAllPeerLanesWithBrain } from '../../../.test/utils/getAllPeerLanesWithBrain';
+import { RUN_BRAIN_TEST } from '../../../.test/utils/RUN_BRAIN_TEST';
 import { initBehaviorDir } from './initBehaviorDir';
 
 /**
@@ -20,6 +21,8 @@ import { initBehaviorDir } from './initBehaviorDir';
  * .note = `--model` and `/model` take the same names, aliases, and `[1m]` suffix, per
  *         https://code.claude.com/docs/en/model-config ("each entry accepts a model name or alias";
  *         "you can also use the `[1m]` suffix with model aliases or full model names")
+ * .note = a live-brain probe, not a safety guard: it runs only when targeted (`BRAIN_LIVE=true`,
+ *         see RUN_BRAIN_TEST), so a vendor catalog shift never reds an unrelated ci push
  */
 
 /**
@@ -27,7 +30,7 @@ import { initBehaviorDir } from './initBehaviorDir';
  *         `node_modules/.bin/claude` would shadow the stub `claude` the acceptance journeys
  *         bind on PATH, and route their reviewer lanes to the real, paid cli
  */
-const CLAUDE_CLI_PACKAGE = '@anthropic-ai/claude-code@2.1.280';
+const CLAUDE_CLI_PACKAGE = '@anthropic-ai/claude-code@2.1.316';
 
 /**
  * .what = every distinct claude brain string a giga route can carry, light and heavy
@@ -160,102 +163,111 @@ const askClaudeOnBrainOnce = (
 };
 
 describe('initBehaviorDir.brain.claude', () => {
-  given('[case1] every claude brain string the templates prescribe', () => {
-    const scene = useBeforeAll(async () => {
-      // fail fast: a real call needs a real key
-      const apiKey = process.env.ANTHROPIC_API_KEY;
-      if (!apiKey)
-        throw new ConstraintError('ANTHROPIC_API_KEY required for this test', {
-          hint: 'run: rhx keyrack unlock --owner ehmpath --env test',
-        });
-      const brains = await getAllClaudeBrainStrings();
-      return { apiKey, brains };
-    });
-
-    when("[t0] the strings are collected from init'd routes", () => {
-      then('both the design and the build brain are present', () => {
-        expect(scene.brains).toEqual([
-          'claude-opus-5-5[1m]',
-          'claude-sonnet-5-5[1m]',
-        ]);
-      });
-    });
-
-    when('[t1] each string is handed to the real claude cli', () => {
-      // one question at a time: never two cold npx fetches of the cli into one cache at once
-      const answers = useBeforeAll(async () => ({
-        list: await scene.brains.reduce<
-          Promise<
+  given.runIf(RUN_BRAIN_TEST)(
+    '[case1] every claude brain string the templates prescribe',
+    () => {
+      const scene = useBeforeAll(async () => {
+        // fail fast: a real call needs a real key
+        const apiKey = process.env.ANTHROPIC_API_KEY;
+        if (!apiKey)
+          throw new ConstraintError(
+            'ANTHROPIC_API_KEY required for this test',
             {
-              brain: string;
-              exitCode: number | null;
-              stdout: string;
-              stderr: string;
-            }[]
-          >
-        >(
-          async (prior, brain) => [
-            ...(await prior),
-            {
-              brain,
-              ...(await askClaudeOnBrain({ brain }, { apiKey: scene.apiKey })),
+              hint: 'run: rhx keyrack unlock --owner ehmpath --env test',
             },
-          ],
-          Promise.resolve([]),
-        ),
-      }));
-
-      then('the cli accepts every string and answers', () => {
-        const rejected = answers.list
-          .filter((answer) => answer.exitCode !== 0)
-          .map((answer) => ({
-            brain: answer.brain,
-            exitCode: answer.exitCode,
-            stderr: answer.stderr.slice(0, 500),
-            stdout: answer.stdout.slice(0, 500),
-          }));
-        expect(rejected).toEqual([]);
-      });
-
-      then('each answer ran on the model its string names', () => {
-        const offModel = answers.list
-          .map((answer) => ({
-            brain: answer.brain,
-            modelsUsed: Object.keys(
-              (JSON.parse(answer.stdout) as { modelUsage?: object })
-                .modelUsage ?? {},
-            ),
-          }))
-          .filter(
-            (answer) =>
-              !answer.modelsUsed.some((model) =>
-                model.startsWith(answer.brain.replace(/\[1m\]$/, '')),
-              ),
           );
-        expect(offModel).toEqual([]);
+        const brains = await getAllClaudeBrainStrings();
+        return { apiKey, brains };
       });
-    });
 
-    when(
-      '[t2] a renamed or mistyped id is handed to the real claude cli',
-      () => {
-        const answer = useBeforeAll(async () =>
-          askClaudeOnBrain(
-            { brain: 'claude-sonnet-9-9[1m]' },
-            { apiKey: scene.apiKey },
+      when("[t0] the strings are collected from init'd routes", () => {
+        then('both the design and the build brain are present', () => {
+          expect(scene.brains).toEqual([
+            'claude-opus-5-5[1m]',
+            'claude-sonnet-5-5[1m]',
+          ]);
+        });
+      });
+
+      when('[t1] each string is handed to the real claude cli', () => {
+        // one question at a time: never two cold npx fetches of the cli into one cache at once
+        const answers = useBeforeAll(async () => ({
+          list: await scene.brains.reduce<
+            Promise<
+              {
+                brain: string;
+                exitCode: number | null;
+                stdout: string;
+                stderr: string;
+              }[]
+            >
+          >(
+            async (prior, brain) => [
+              ...(await prior),
+              {
+                brain,
+                ...(await askClaudeOnBrain(
+                  { brain },
+                  { apiKey: scene.apiKey },
+                )),
+              },
+            ],
+            Promise.resolve([]),
           ),
-        );
+        }));
 
-        then(
-          'the cli rejects it loud, with the id it could not recognize',
-          () => {
-            // the experience a consumer meets if a template ever ships a bad id (case=7)
-            expect(answer.exitCode).not.toEqual(0);
-            expect(answer.stderr).toContain('unrecognized_model');
-            expect(answer.stderr).toContain('claude-sonnet-9-9[1m]');
-          },
-        );
-      },
-    );
-  });
+        then('the cli accepts every string and answers', () => {
+          const rejected = answers.list
+            .filter((answer) => answer.exitCode !== 0)
+            .map((answer) => ({
+              brain: answer.brain,
+              exitCode: answer.exitCode,
+              stderr: answer.stderr.slice(0, 500),
+              stdout: answer.stdout.slice(0, 500),
+            }));
+          expect(rejected).toEqual([]);
+        });
+
+        then('each answer ran on the model its string names', () => {
+          const offModel = answers.list
+            .map((answer) => ({
+              brain: answer.brain,
+              modelsUsed: Object.keys(
+                (JSON.parse(answer.stdout) as { modelUsage?: object })
+                  .modelUsage ?? {},
+              ),
+            }))
+            .filter(
+              (answer) =>
+                !answer.modelsUsed.some((model) =>
+                  model.startsWith(answer.brain.replace(/\[1m\]$/, '')),
+                ),
+            );
+          expect(offModel).toEqual([]);
+        });
+      });
+
+      when(
+        '[t2] a renamed or mistyped id is handed to the real claude cli',
+        () => {
+          const answer = useBeforeAll(async () =>
+            askClaudeOnBrain(
+              { brain: 'claude-sonnet-9-9[1m]' },
+              { apiKey: scene.apiKey },
+            ),
+          );
+
+          then(
+            'the cli rejects it loud, with the id it could not recognize',
+            () => {
+              // the experience a consumer meets if a template ever ships a bad id (case=7)
+              expect(answer.exitCode).not.toEqual(0);
+              expect(answer.stderr).toContain('unrecognized_model');
+              expect(answer.stderr).toContain('claude-sonnet-9-9[1m]');
+            },
+          );
+        },
+      );
+    },
+  );
 });
