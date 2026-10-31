@@ -30,6 +30,10 @@ exports[`init.behavior.scaffold given: [case3] direct: unbound branch when: [t0]
    ├─ + 5.3.verification.stone
    ├─ + 5.5.playtest.guard
    ├─ + 5.5.playtest.stone
+   ├─ + 6.preship.guard
+   ├─ + 6.preship.stone
+   ├─ + 7.reflect.guard
+   ├─ + 7.reflect.stone
    └─ + refs/template.[feedback].v1.[given].by_human.md
 
 🌲 go on then,
@@ -74,6 +78,10 @@ exports[`init.behavior.scaffold given: [case3] direct: unbound branch when: [t0]
    ├─ + 5.3.verification.stone
    ├─ + 5.5.playtest.guard
    ├─ + 5.5.playtest.stone
+   ├─ + 6.preship.guard
+   ├─ + 6.preship.stone
+   ├─ + 7.reflect.guard
+   ├─ + 7.reflect.stone
    └─ + refs/template.[feedback].v1.[given].by_human.md
 
 🌲 go on then,

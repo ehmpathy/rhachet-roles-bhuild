@@ -39,13 +39,15 @@ const BRAIN_OF_LANE_DEFAULT = '(bhrain default)';
 
 /**
  * .what = the brain a stone's phase prescribes, read from its numeric prefix
- * .why  = the phase rule: a stone's phase is its place in the route
+ * .why  = the phase rule: a stone's phase is its place in the route. the ship tail splits:
+ *         6.preship is build work (sonnet), 7.reflect is design work (opus) — F2
  */
 const getOneBrainForStonePhase = (input: { stoneName: string }): string => {
   const prefix = Number(input.stoneName.split('.')[0]);
   if (prefix >= 1 && prefix <= 3) return BRAIN_DESIGN;
-  if (prefix >= 4 && prefix <= 5) return BRAIN_BUILD;
-  throw new ConstraintError('stone has a prefix outside 1.–5.', {
+  if (prefix >= 4 && prefix <= 6) return BRAIN_BUILD;
+  if (prefix === 7) return BRAIN_DESIGN;
+  throw new ConstraintError('stone has a prefix outside 1.–7.', {
     stoneName: input.stoneName,
     hint: 'give the new prefix a phase in getOneBrainForStonePhase',
   });
