@@ -169,6 +169,28 @@ crew; the grove-wide rows and the 180 min token rows stand.
   written fresh median **96K**, 2.5M/h. near read 1's per-boot size, so the 180 min span's 11K
   median likely holds a wave of resumes, not a slimmer boot
 
+## .read 3 — 2026-10-31, a quiet grove, full cpu sample
+
+one `rhx grove.census --window 60 --sample 60`.
+
+| measure | read 3 |
+|---|---|
+| cpu busy | 1.37 of 4 · load 6.96 / 5.27 · psi some avg60 26.4% |
+| cpu in crews / outside | 1.43 / 0.19 |
+| ram avail | 13.8G · psi 0% |
+| forks | 63/s |
+| live crews | 37 worktrees with a seat; **1 at work** |
+| burn, 60 min | 15.7M weighted · 90.7M raw · 5 crews |
+| the crew at work | **1.07 cores** · 0.93G · 19 procs · 12.7M/h weighted |
+| boot toll | 5 seat boots · first prompt median 92K · written fresh 77K · 0.78M/h |
+
+- **cpu per crew at work: ~1.0 core, now on two reads in two conditions** — read 1 under load
+  (0.65 – 1.34, avg ~1.0, 4 at work) and read 3 quiet (1.07, 1 at work). ⇒ promoted from one read
+  to **measured**: 0901 affords **~4 crews at work at once**, and cpu binds
+- idle crews again cost ~0 cpu and ~0 tokens (36 of 37); ram does not bind on any of three reads
+- the boot toll per boot reads 77 – 96K written fresh on both short spans (read 2's 30 min, read 3),
+  so read 2's 180 min median of 5K was resumes. a seat boot pays ~80 – 160K fresh
+
 ## .caveats
 
 - **one read.** cpu per crew is one 60s sample; the crew mix moves minute to minute. a second
@@ -192,8 +214,8 @@ crew; the grove-wide rows and the 180 min token rows stand.
 
 ## .reads owed next
 
-1. one more 0901 census read with a full cpu sample (`--window 60 --sample 60`), to promote
-   cpu/crew from one read to measured (read 2 confirms grove burn and the cpu wall, not cpu/crew)
+1. ~~one more 0901 census read with a full cpu sample~~ read 3 (2026-10-31) promotes cpu per
+   crew at work to measured: ~1.0 core on two reads in two conditions
 2. ~~one probe: does this grove's claude (2.1.280) hand `rate_limits` to the statusline?~~ the
    static probe (`rhx claude.statusline.probe`) reads yes: the 2.1.280 statusline input builds
    `...(five_hour || seven_day || spend_limit) && { rate_limits }`, so the field arrives whenever

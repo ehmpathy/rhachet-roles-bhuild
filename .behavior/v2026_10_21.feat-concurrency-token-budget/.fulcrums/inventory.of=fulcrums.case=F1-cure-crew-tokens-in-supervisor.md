@@ -13,6 +13,13 @@
   `message.usage` lines, dedupe per api message id, cost-weight them). bhrain has a crew on it
   (`rhachet-roles-bhrain.beav.feat-transcript-token-inventory`). **first to land owns the shared
   usage-line reader**; the other imports it and keeps only what sits above it
+- **the bhrain branch, checked 2026-10-31** (`rhx git.repo.get files --in ehmpathy/rhachet-roles-bhrain
+  --ref beav/feat-transcript-token-inventory`): the reader is **built there, not landed**. 64 files
+  under `src/domain.operations/reflect/tokens/` (`asTranscriptCalls` dedupes per `requestId`,
+  `genTranscriptCallFold`, `asTokenPrice`, `asTokenAllocation`) and a `reflect.on.token.spend`
+  acceptance test; **none on bhrain's origin/main**. ours is a jq pass in `grove.census`, unlanded
+  as a domain operation. ⇒ bhrain is ahead on the shared piece; if it lands first, the lean imports
+  its reader and keeps only the fleet grain (config-dir scan, crew-by-worktree, account, boot toll)
 - **nheuron's `git.crew.tokens`**: read as a reference for its contract and blind spots (actor dirs,
   `_worktrees`, cost weight, EPIPE under load), never ported
 - **both options stand before the commander** (Q-B1, fleet.asks #41). his call
