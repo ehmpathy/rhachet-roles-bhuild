@@ -1,13 +1,20 @@
-import { MalfunctionError } from 'helpful-errors';
-
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 import { asTaskDetailOutput } from '@src/domain.operations/radio/cli/asTaskDetailOutput';
 
+import { asRadioAuthShown } from './asRadioAuthShown';
+import { asRadioDeliveredExid } from './asRadioDeliveredExid';
+import { asRadioDeliveredLine } from './asRadioDeliveredLine';
+import { asRadioDrainSections } from './asRadioDrainSections';
 import { asRadioErrorHeadline } from './asRadioErrorHeadline';
 import { asRadioErrorHintLines } from './asRadioErrorHintLines';
+import { asRadioQueueFixLines } from './asRadioQueueFixLines';
+import { asRadioReasonBehindOnIssue } from './asRadioReasonBehindOnIssue';
+import { asRadioRefusalText } from './asRadioRefusalText';
+import { asRadioReplayWarnLines } from './asRadioReplayWarnLines';
 import { asRadioTaskRecordLabel } from './asRadioTaskRecordLabel';
 import { asRadioTaskRepoSlug } from './asRadioTaskRepoSlug';
 import { asRadioTreeLines } from './asRadioTreeLines';
+import { isRadioFateBehindHalt } from './isRadioFateBehindHalt';
 import type { RadioTaskRecordFate } from './RadioTaskRecordFate';
 
 type RadioTreeBranch = { line: string; children: string[] };
@@ -32,29 +39,6 @@ const asHomeLine = (input: {
 };
 
 /**
- * .what = the exid upstream gave a delivered record
- * .why = every delivery sets it; a delivered record without one is malformed, and
- *        must fail loud rather than print `#null` as though it were an exid
- */
-const asDeliveredExid = (input: { record: RadioTaskRecord }): string => {
-  if (input.record.deliveredExid !== null) return input.record.deliveredExid;
-  throw new MalfunctionError('delivered radio task record lacks its exid', {
-    key: input.record.key,
-    hint: 'fix or remove the malformed record file in the .radio dir',
-  });
-};
-
-/**
- * .what = a delivered record as one line: exid + label
- * .why = a create reads by its new exid; an update already names its exid
- */
-const asDeliveredLine = (input: { record: RadioTaskRecord }): string => {
-  const label = asRadioTaskRecordLabel(input);
-  if (input.record.kind === 'update') return label;
-  return `#${asDeliveredExid(input)} ${label}`;
-};
-
-/**
  * .what = a record's target as owner/name
  * .why = one read for every line that names a target
  */
@@ -62,55 +46,14 @@ const asTarget = (input: { record: RadioTaskRecord }): string =>
   asRadioTaskRepoSlug({ repo: input.record.repo });
 
 /**
- * .what = the sections every drain reports on the records besides this push
- * .why = the drain rides this push; the human sees what else went, what closed, what waits.
- *        the sections come back keyed, so a caller places `drained` by name, never by label
+ * .what = the reason a held push shows beside QUEUED
+ * .why = a wait behind an earlier update to the same issue reads as a wait, not a code
  */
-const asOthersSections = (input: {
-  others: RadioTaskRecordFate[];
-}): { drained: RadioTreeBranch[]; closedOrHeld: RadioTreeBranch[] } => {
-  // the drained lines print in drain order, so their order alone is the place in line
-  const drained = input.others.flatMap((fate) =>
-    fate.fate === 'delivered'
-      ? [
-          fate.outcome === 'found'
-            ? `${asDeliveredLine(fate)} (already upstream — marked delivered)`
-            : asDeliveredLine(fate),
-        ]
-      : [],
-  );
-  const refused = input.others.flatMap((fate) =>
-    fate.fate === 'refused'
-      ? [`${asRadioTaskRecordLabel(fate)} — ${fate.detail}`]
-      : [],
-  );
-  const held = input.others.flatMap((fate) =>
-    fate.fate === 'held'
-      ? [
-          `${asRadioTaskRecordLabel(fate)} → ${asTarget(fate)} (${fate.record.reason ?? 'not reached'})`,
-        ]
-      : [],
-  );
-  const lifts = [
-    ...new Set(
-      input.others.flatMap((fate) =>
-        fate.fate === 'held' && fate.lift
-          ? [`lift it (human): ${fate.lift}`]
-          : [],
-      ),
-    ),
-  ];
-  return {
-    drained: drained.length ? [{ line: 'drained', children: drained }] : [],
-    closedOrHeld: [
-      ...(refused.length
-        ? [{ line: 'refused — closed, never retried', children: refused }]
-        : []),
-      ...(held.length
-        ? [{ line: 'still held', children: [...held, ...lifts] }]
-        : []),
-    ],
-  };
+const asStatusReason = (input: { record: RadioTaskRecord }): string => {
+  const behind = asRadioReasonBehindOnIssue({ reason: input.record.reason });
+  if (behind)
+    return `waits behind ${behind.aheadKey}, same issue #${behind.exid}`;
+  return input.record.reason ?? 'not reached';
 };
 
 /**
@@ -121,7 +64,7 @@ const asBacklogBranch = (input: { backlog: number }): RadioTreeBranch => ({
   line:
     input.backlog === 0
       ? 'backlog = 0'
-      : `backlog = ${input.backlog} await the radio`,
+      : `backlog = ${input.backlog} ${input.backlog === 1 ? 'awaits' : 'await'} the radio`,
   children: [],
 });
 
@@ -142,19 +85,79 @@ const asDrainHeader = (input: {
 };
 
 /**
- * .what = the final branch of a held push: who lifts the gate, or what to fix
- * .why = a gate names its lift command; a fault names its headline and hint lines
+ * .what = the final branches of a held push: who lifts the gate, or what to fix
+ * .why = a gate names its lift command; a fault names its headline and hint lines; a record
+ *        behind a halt met no wall itself, so it names the wait, never the wall's raw fault;
+ *        a record behind an earlier update to the same issue has no fix of its own, so it
+ *        points to the record ahead and promises no delivery the next push cannot make
+ */
+const asHeldFixBranches = (input: {
+  held: Extract<RadioTaskRecordFate, { fate: 'held' }>;
+}): RadioTreeBranch[] => [
+  asHeldFixBranch(input),
+  ...asHeldAmendBranches(input),
+];
+
+/**
+ * .what = the amend branch of a held push whose stored auth no drain replays
+ * .why = the amend is its own act, beside the lift, never a step of it; the auth it fixes rides
+ *        beneath it, masked as the held list shows it, and states once that it will not replay
+ */
+const asHeldAmendBranches = (input: {
+  held: Extract<RadioTaskRecordFate, { fate: 'held' }>;
+}): RadioTreeBranch[] => {
+  const { lift, record } = input.held;
+  if (!lift) return [];
+  return asRadioReplayWarnLines({ record }).map((line) => ({
+    line,
+    children: [`auth: ${asRadioAuthShown({ auth: record.auth })}`],
+  }));
+};
+
+/**
+ * .what = the first fix branch of a held push
+ * .why = see asHeldFixBranches
  */
 const asHeldFixBranch = (input: {
   held: Extract<RadioTaskRecordFate, { fate: 'held' }>;
 }): RadioTreeBranch => {
   const { lift, detail, record } = input.held;
   const next = 'then the next push delivers the backlog first';
-  if (lift) return { line: `lift it (human): ${lift}`, children: [next] };
-  if (!detail) return { line: `fix it: ${record.reason}`, children: [next] };
+  const queue = asRadioQueueFixLines({ record, authOverride: null, detail });
+  const behind = asRadioReasonBehindOnIssue({ reason: record.reason });
+  // a stored auth no drain replays needs an amend too; "the next push delivers it" would
+  // contradict it, since that push faults the record as upstream:auth until the auth is amended
+  const isReplayable = asRadioReplayWarnLines({ record }).length === 0;
+  if (lift)
+    return {
+      line: `lift it (human): ${lift}`,
+      children: isReplayable ? [next] : [],
+    };
+  if (isRadioFateBehindHalt({ fate: input.held }))
+    return {
+      line: `waits behind the halt (${record.reason}): unsent, still in line`,
+      // the `wait, then: … drain` move already sits on its still-held row; said once
+      children: [
+        'naught to fix on this one; the next drain sends it once the halt clears',
+      ],
+    };
+  // the status line already names the wait; this branch names the move, by key
+  if (behind)
+    return {
+      line: `fix the earlier update first: --uuid ${behind.aheadKey}`,
+      children: [
+        'see its fix: rhx radio.task.queue get',
+        'this one sends on the next drain once that one lands or is dropped',
+      ],
+    };
+  // no fault on record: naught to fix, it waits only for its turn
+  if (!detail && !record.reason)
+    return { line: 'naught to fix: no fault on record', children: [next] };
+  if (!detail)
+    return { line: `fix it: ${record.reason}`, children: [...queue, next] };
   return {
     line: `fix it: ${asRadioErrorHeadline({ message: detail })}`,
-    children: [...asRadioErrorHintLines({ message: detail }), next],
+    children: [...asRadioErrorHintLines({ message: detail }), ...queue, next],
   };
 };
 
@@ -174,7 +177,10 @@ export const asRadioPushOutput = (input: {
   backlog: number;
 }): string => {
   const { pushed, others, home, backlog } = input;
-  const othersSections = asOthersSections({ others });
+  const othersSections = asRadioDrainSections({
+    fates: others,
+    authOverride: null,
+  });
   const othersAll = [...othersSections.drained, ...othersSections.closedOrHeld];
   const facts = [
     { line: `task    = ${asRadioTaskRecordLabel(pushed)}`, children: [] },
@@ -189,7 +195,7 @@ export const asRadioPushOutput = (input: {
       ...asRadioTreeLines({
         branches: [
           ...facts,
-          { line: `exid    = #${asDeliveredExid(pushed)}`, children: [] },
+          { line: `exid    = #${asRadioDeliveredExid(pushed)}`, children: [] },
           ...othersAll,
           ...(othersAll.length ? [asBacklogBranch({ backlog })] : []),
         ],
@@ -204,13 +210,13 @@ export const asRadioPushOutput = (input: {
         branches: [
           ...facts,
           {
-            line: `status  = QUEUED (${pushed.record.reason ?? 'not reached'})`,
+            line: `status  = QUEUED (${asStatusReason({ record: pushed.record })})`,
             children: [],
           },
           { line: asHomeLine({ home }), children: [] },
           ...othersAll,
           asBacklogBranch({ backlog }),
-          asHeldFixBranch({ held: pushed }),
+          ...asHeldFixBranches({ held: pushed }),
         ],
       }),
     ].join('\n');
@@ -223,7 +229,7 @@ export const asRadioPushOutput = (input: {
         branches: [
           ...facts,
           {
-            line: `status  = REFUSED (${pushed.detail}) — closed, never retried`,
+            line: `status  = REFUSED (${asRadioRefusalText({ detail: pushed.detail })}) — closed, never retried`,
             children: [],
           },
           ...othersAll,
@@ -254,7 +260,7 @@ export const asRadioPushOutput = (input: {
         ...othersSections.drained,
         {
           line: 'pushed',
-          children: [`${asDeliveredLine(pushed)} (${pushed.outcome})`],
+          children: [`${asRadioDeliveredLine(pushed)} (${pushed.outcome})`],
         },
         ...othersSections.closedOrHeld,
         asBacklogBranch({ backlog }),

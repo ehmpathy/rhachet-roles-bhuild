@@ -1,6 +1,8 @@
 import { daoRadioTaskRecord } from '@src/access/daos/daoRadioTaskRecord';
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 
+import { setRadioTaskRecordClockShedIfUnchanged } from './setRadioTaskRecordClockShedIfUnchanged';
+
 /**
  * .what = write back, without its clock fields, every record whose file a prior version stamped
  * .why = the drain rewrites each held record it walks, but never one already DELIVERED or
@@ -20,7 +22,9 @@ export const setRadioTaskRecordsClockShed = (
     dirs: daoRadioTaskRecord.get.dirs({ cwd: context.cwd }),
   });
 
-  // write each back whole; the read already shed its clock fields
-  const records = found.map((entry) => daoRadioTaskRecord.set.upsert(entry));
+  // write each back, unless a push rewrote its file since the read
+  const records = found
+    .map((entry) => setRadioTaskRecordClockShedIfUnchanged({ found: entry }))
+    .flatMap(({ record }) => (record ? [record] : []));
   return { records };
 };

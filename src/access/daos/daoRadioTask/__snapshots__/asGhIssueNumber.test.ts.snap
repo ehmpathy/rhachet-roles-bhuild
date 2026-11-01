@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asGhIssueNumber given: [case3] a hash-prefixed number, as a human types it when: [t0] it is checked then: it refuses as a constraint that names the exid and the fix 1`] = `"✋ ConstraintError: exid "#599" is not a github issue number; a gh.issues exid is the issue's number, e.g. 599"`;
+
+exports[`asGhIssueNumber given: [case4] a zero up front when: [t0] it is checked then: it refuses as a constraint that names the exid and the fix 1`] = `"✋ ConstraintError: exid "0599" is not a github issue number; a gh.issues exid is the issue's number, e.g. 599"`;
+
+exports[`asGhIssueNumber given: [case5] zero when: [t0] it is checked then: it refuses as a constraint that names the exid and the fix 1`] = `"✋ ConstraintError: exid "0" is not a github issue number; a gh.issues exid is the issue's number, e.g. 599"`;
+
+exports[`asGhIssueNumber given: [case6] an os.fileops exid shape when: [t0] it is checked then: it refuses as a constraint that names the exid and the fix 1`] = `"✋ ConstraintError: exid "test-006" is not a github issue number; a gh.issues exid is the issue's number, e.g. 599"`;
+
+exports[`asGhIssueNumber given: [case7] a flag-shaped value when: [t0] it is checked then: it refuses as a constraint that names the exid and the fix 1`] = `"✋ ConstraintError: exid "--repo" is not a github issue number; a gh.issues exid is the issue's number, e.g. 599"`;
+
+exports[`asGhIssueNumber given: [case8] empty when: [t0] it is checked then: it refuses as a constraint that names the exid and the fix 1`] = `"✋ ConstraintError: exid "" is not a github issue number; a gh.issues exid is the issue's number, e.g. 599"`;

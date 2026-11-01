@@ -28,10 +28,12 @@ export const extractTaskFromGhIssues = (input: {
   const branch = branchMatch?.[1] ?? null;
 
   // determine status from state and body content
+  // .note = the close is the commit point of a deliver: a body that says delivered on an open
+  //         issue is a deliver cut short after its edit, so it reads CLAIMED, and a replay
+  //         takes CLAIMED → DELIVERED and sends the close again
   const status = (() => {
     if (input.state === 'closed') return RadioTaskStatus.DELIVERED;
-    if (branchMatch?.[0]?.includes('delivered'))
-      return RadioTaskStatus.DELIVERED;
+    if (branchMatch?.[0]?.includes('delivered')) return RadioTaskStatus.CLAIMED;
     if (branchMatch?.[0]?.includes('planted')) return RadioTaskStatus.CLAIMED;
     if (input.assignees.length > 0) return RadioTaskStatus.CLAIMED;
     return RadioTaskStatus.QUEUED;

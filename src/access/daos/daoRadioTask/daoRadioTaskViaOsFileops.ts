@@ -10,6 +10,7 @@ import type { RadioTaskRepo } from '../../../domain.objects/RadioTaskRepo';
 import { RadioTaskStatus } from '../../../domain.objects/RadioTaskStatus';
 import { composeTaskIntoOsFileops } from '../../../domain.operations/radio/task/format/composeTaskIntoOsFileops';
 import { extractTaskFromOsFileops } from '../../../domain.operations/radio/task/format/extractTaskFromOsFileops';
+import { asOsFileopsPathSegment } from './asOsFileopsPathSegment';
 
 /**
  * .what = generate a short unique id
@@ -24,7 +25,13 @@ const genShortId = (): string => {
  * .why = consistent path resolution for task storage
  */
 const getGlobalRadioDir = (repo: RadioTaskRepo): string => {
-  return path.join(os.homedir(), 'git', '.radio', repo.owner, repo.name);
+  return path.join(
+    os.homedir(),
+    'git',
+    '.radio',
+    asOsFileopsPathSegment({ value: repo.owner, of: 'owner' }),
+    asOsFileopsPathSegment({ value: repo.name, of: 'name' }),
+  );
 };
 
 /**
@@ -32,7 +39,10 @@ const getGlobalRadioDir = (repo: RadioTaskRepo): string => {
  * .why = consistent file name for task storage
  */
 const getTaskFilePath = (radioDir: string, exid: string): string => {
-  return path.join(radioDir, `task.${exid}._.md`);
+  return path.join(
+    radioDir,
+    `task.${asOsFileopsPathSegment({ value: exid, of: 'exid' })}._.md`,
+  );
 };
 
 /**
@@ -44,7 +54,10 @@ const getStatusFlagPath = (
   exid: string,
   status: RadioTaskStatus,
 ): string => {
-  return path.join(radioDir, `task.${exid}._.status=${status}.flag`);
+  return path.join(
+    radioDir,
+    `task.${asOsFileopsPathSegment({ value: exid, of: 'exid' })}._.status=${status}.flag`,
+  );
 };
 
 /**
@@ -53,7 +66,10 @@ const getStatusFlagPath = (
  */
 const getBackupFilePath = (radioDir: string, exid: string): string => {
   const isoNow = today();
-  return path.join(radioDir, `task.${exid}.bak.${isoNow}.md`);
+  return path.join(
+    radioDir,
+    `task.${asOsFileopsPathSegment({ value: exid, of: 'exid' })}.bak.${isoNow}.md`,
+  );
 };
 
 /**
@@ -151,6 +167,22 @@ export const daoRadioTaskViaOsFileops = {
       if (!(await pathExists(radioDir))) return [];
 
       const files = await fs.readdir(radioDir);
+
+      // a delivered task carries no flag file (the writers skip it), so its filter reads the task files
+      if (input.filter?.status === RadioTaskStatus.DELIVERED) {
+        const tasksAll = await Promise.all(
+          files
+            .filter((f) => f.startsWith('task.') && f.endsWith('._.md'))
+            .map(async (file) =>
+              extractTaskFromOsFileops({
+                content: await fs.readFile(path.join(radioDir, file), 'utf-8'),
+              }),
+            ),
+        );
+        return tasksAll
+          .filter((task) => task.status === RadioTaskStatus.DELIVERED)
+          .slice(0, limit);
+      }
 
       // if filter by status, use flag files for fast query
       if (input.filter?.status) {

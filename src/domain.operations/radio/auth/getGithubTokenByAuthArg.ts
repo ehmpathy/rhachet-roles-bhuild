@@ -4,6 +4,7 @@ import type { keyrack } from 'rhachet/keyrack';
 import { asExecErrorMessage } from '../../../infra/shell/asExecErrorMessage';
 import { asGithubAuthMode } from './asGithubAuthMode';
 import { genAuthFromKeyrack } from './genAuthFromKeyrack';
+import { RADIO_AUTH_DEFAULT } from './RADIO_AUTH_DEFAULT';
 
 /**
  * .what = get github token from auth argument
@@ -43,7 +44,7 @@ export const getGithubTokenByAuthArg = async (
   { token: string; role: 'as-robot' } | { token: null; role: 'as-human' }
 > => {
   // default to via-keyrack(ehmpath) if no --auth specified
-  const auth = input.auth ?? 'as-robot:via-keyrack(ehmpath)';
+  const auth = input.auth ?? RADIO_AUTH_DEFAULT;
 
   // tests must use explicit tokens, not the gh cli auto login
   const isTestEnv =

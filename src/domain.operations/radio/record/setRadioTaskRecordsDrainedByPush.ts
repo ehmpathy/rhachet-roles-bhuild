@@ -5,9 +5,9 @@ import { getOneRadioUsagePermissionDecision } from '@src/domain.operations/radio
 import { asRadioOtherFates } from './asRadioOtherFates';
 import { asRadioPushedFate } from './asRadioPushedFate';
 import { asRadioTaskRepoSlug } from './asRadioTaskRepoSlug';
+import { getOneRadioPushRecordAfterDrain } from './getOneRadioPushRecordAfterDrain';
 import type { RadioTaskRecordFate } from './RadioTaskRecordFate';
 import type { ShellExecutor } from './ShellExecutor';
-import { setRadioPushSettledAfterDrain } from './setRadioPushSettledAfterDrain';
 import { setRadioTaskRecordHeldAtGate } from './setRadioTaskRecordHeldAtGate';
 import { setRadioTaskRecordsDrained } from './setRadioTaskRecordsDrained';
 
@@ -24,7 +24,7 @@ import { setRadioTaskRecordsDrained } from './setRadioTaskRecordsDrained';
  *         naught to hold (C9)
  */
 export const setRadioTaskRecordsDrainedByPush = async (
-  input: { record: RadioTaskRecord; dir: string },
+  input: { record: RadioTaskRecord; dir: string; authTyped: string | null },
   context: {
     cwd: string;
     homeDir: string | undefined;
@@ -58,15 +58,29 @@ export const setRadioTaskRecordsDrainedByPush = async (
     };
 
   // gate open: drain the backlog; a landed push is not in it, and stays landed (C3, C6)
-  const drained = await setRadioTaskRecordsDrained({}, context);
-
-  // a concurrent drain may have carried this push ahead of its own drain (C19, X2)
-  const fates = await setRadioPushSettledAfterDrain(
-    { fates: drained.fates, ...input },
-    context,
+  // only the auth a human typed on this push is live; a bare re-push inherits the stored
+  // auth onto its record, so the record's auth is never proof the human typed it
+  const drained = await setRadioTaskRecordsDrained(
+    {},
+    {
+      ...context,
+      authLive:
+        input.authTyped === null
+          ? null
+          : { key: input.record.key, auth: input.authTyped },
+    },
   );
+
+  // a concurrent drain may have carried this push ahead of its own drain (C19, X2);
+  // its record on disk then reads as landed, and naught is re-sent
+  const { fates } = drained;
+  const record = getOneRadioPushRecordAfterDrain({
+    fates,
+    record: input.record,
+    dir: input.dir,
+  });
   return {
-    pushed: asRadioPushedFate({ fates, record: input.record }),
-    others: asRadioOtherFates({ fates, record: input.record }),
+    pushed: asRadioPushedFate({ fates, record }),
+    others: asRadioOtherFates({ fates, record }),
   };
 };

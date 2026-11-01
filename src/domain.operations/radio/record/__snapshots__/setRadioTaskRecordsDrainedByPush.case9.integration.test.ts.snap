@@ -1,0 +1,98 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`radio.task.push — case=9, one push carries a mixed backlog given: [case1] five records held across four repos, the carrier gate open when: [t0] one more push lands on the repo that faulted A then: the output names each fate and each fix 1`] = `
+"🦫 back in the river! part of the backlog is delivered
+   ├─ drained
+   │  ├─ #701 wetsuit sizes
+   │  └─ #702 coachbook ics
+   ├─ pushed
+   │  └─ #703 board rentals (created)
+   ├─ still held
+   │  ├─ ab61082f69479776 deliver #599 → sandpine/svc-lessons (upstream:access)
+   │  │  ├─ fault: GraphQL: Resource not accessible by integration (updateIssue)
+   │  │  ├─ amend it: rhx radio.task.queue set --uuid ab61082f69479776 --auth as-human (needs a gh login on this host)
+   │  │  └─ or drop it: rhx radio.task.queue del --uuid ab61082f69479776 --why "<why>"
+   │  ├─ e2517ffbceea2508 tide widget → sandpine/spot-forecast (upstream:not-found)
+   │  │  ├─ fault: GraphQL: Could not resolve to a Repository with the name 'sandpine_spot-forecast'. (repository)
+   │  │  ├─ amend it: rhx radio.task.queue set --uuid e2517ffbceea2508 --auth as-human (needs a gh login on this host)
+   │  │  └─ or drop it: rhx radio.task.queue del --uuid e2517ffbceea2508 --why "<why>"
+   │  └─ 40894ac49b747d22 cert ingest → sandpine-labs/infrastructure (radio.uses:blocked — org)
+   │     └─ lift it (human): rhx radio.uses --org sandpine-labs allow
+   └─ backlog = 3 await the radio"
+`;
+
+exports[`radio.task.push — case=9, one push carries a mixed backlog given: [case2] the same backlog, a rate limit on C when: [t2] the same carrier push then: the carrier waits too: exit 2, this push did not land 1`] = `
+"🦫 held for the radio
+   ├─ task    = board rentals
+   ├─ into    = sandpine/svc-lessons
+   ├─ status  = QUEUED (upstream:rate-limit)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ still held
+   │  ├─ ab61082f69479776 deliver #599 → sandpine/svc-lessons (upstream:access)
+   │  │  ├─ fault: GraphQL: Resource not accessible by integration (updateIssue)
+   │  │  ├─ amend it: rhx radio.task.queue set --uuid ab61082f69479776 --auth as-human (needs a gh login on this host)
+   │  │  └─ or drop it: rhx radio.task.queue del --uuid ab61082f69479776 --why "<why>"
+   │  ├─ e2517ffbceea2508 tide widget → sandpine/spot-forecast (upstream:not-found)
+   │  │  ├─ fault: GraphQL: Could not resolve to a Repository with the name 'sandpine_spot-forecast'. (repository)
+   │  │  ├─ amend it: rhx radio.task.queue set --uuid e2517ffbceea2508 --auth as-human (needs a gh login on this host)
+   │  │  └─ or drop it: rhx radio.task.queue del --uuid e2517ffbceea2508 --why "<why>"
+   │  ├─ a3fde4f1e764457e wetsuit sizes → sandpine/svc-rentals (upstream:rate-limit)
+   │  │  ├─ fault: API rate limit exceeded for installation ID 1
+   │  │  ├─ halted: the line stops here
+   │  │  └─ wait, then: rhx radio.task.queue drain
+   │  ├─ 1b9d4a9ac3d90d72 coachbook ics → sandpine/coachbook (upstream:rate-limit)
+   │  │  └─ behind the halt: unsent, still in line
+   │  └─ 40894ac49b747d22 cert ingest → sandpine-labs/infrastructure (upstream:rate-limit)
+   │     └─ behind the halt: unsent, still in line
+   ├─ backlog = 6 await the radio
+   └─ waits behind the halt (upstream:rate-limit): unsent, still in line
+      └─ naught to fix on this one; the next drain sends it once the halt clears"
+`;
+
+exports[`radio.task.push — case=9, one push carries a mixed backlog given: [case3] two updates to one issue, the first set aside (updates land in order) when: [t0] the carrier push drains them then: the output shows the wait behind #599 as a wait, never a fault 1`] = `
+"🦫 back in the river! part of the backlog is delivered
+   ├─ drained
+   │  ├─ deliver #600
+   │  └─ #704 wetsuit sizes
+   ├─ pushed
+   │  └─ #705 board rentals (created)
+   ├─ still held
+   │  ├─ 220a47a6e09fe6bc claim #599 → sandpine/svc-bookings (upstream:access)
+   │  │  ├─ fault: GraphQL: Resource not accessible by integration (updateIssue)
+   │  │  ├─ amend it: rhx radio.task.queue set --uuid 220a47a6e09fe6bc --auth as-human (needs a gh login on this host)
+   │  │  └─ or drop it: rhx radio.task.queue del --uuid 220a47a6e09fe6bc --why "<why>"
+   │  └─ ff63804f0266f329 deliver #599 → sandpine/svc-bookings (same issue #599)
+   │     └─ behind claim #599 on the same issue: unsent, sends once it lands or is dropped
+   └─ backlog = 2 await the radio"
+`;
+
+exports[`radio.task.push — case=9, one push carries a mixed backlog given: [case7] a claim and its deliver to #599 held, the issue unclaimed upstream, and the claim dropped (case=10 [t2]) when: [t0.1] the drop is retried, as after a lost output then: the retry output still carries the claim alert 1`] = `
+"🦫 already dropped, never sent; naught changed
+   ├─ uuid    = <claim-key>
+   ├─ why     = dropped: claim moot (kept)
+   ├─ kept at = .behavior/.radio/record.<claim-key>.json
+   ├─ 1 update to #599 waits behind it; it sends next drain
+   └─ ⚠️ the deliver of #599 behind it needs a claim; if #599 is not claimed upstream, the next drain refuses it for good
+      ├─ re-push the claim: rhx radio.task.push --via gh.issues --into sandpine/board-leash --exid 599 --status CLAIMED
+      └─ or drop the deliver too: rhx radio.task.queue del --uuid <deliver-key> --why "its claim was dropped""
+`;
+
+exports[`radio.task.push — case=9, one push carries a mixed backlog given: [case7] a claim and its deliver to #599 held, the issue unclaimed upstream, and the claim dropped (case=10 [t2]) when: [t0] the claim is dropped as moot then: the drop warns, and names both fixes 1`] = `
+"🦫 dropped from the radio, never sent
+   ├─ uuid    = <claim-key>
+   ├─ task    = claim #599 → sandpine/board-leash
+   ├─ why     = dropped: claim moot
+   ├─ kept at = .behavior/.radio/record.<claim-key>.json
+   ├─ 1 update to #599 waits behind it; it sends next drain
+   ├─ ⚠️ the deliver of #599 behind it needs a claim; if #599 is not claimed upstream, the next drain refuses it for good
+   │  ├─ re-push the claim: rhx radio.task.push --via gh.issues --into sandpine/board-leash --exid 599 --status CLAIMED
+   │  └─ or drop the deliver too: rhx radio.task.queue del --uuid <deliver-key> --why "its claim was dropped"
+   └─ a re-push of the same task queues it again"
+`;
+
+exports[`radio.task.push — case=9, one push carries a mixed backlog given: [case7] a claim and its deliver to #599 held, the issue unclaimed upstream, and the claim dropped (case=10 [t2]) when: [t1] a plain drain sends the deliver then: the drain says so, as snapped 1`] = `
+"🦫 naught delivered; upstream refused what the drain sent
+   ├─ refused — closed, never retried; rhx radio.task.queue get lists it no more, and its reason stays in its record file
+   │  └─ deliver #599 — cannot deliver unclaimed task
+   └─ backlog = 0"
+`;

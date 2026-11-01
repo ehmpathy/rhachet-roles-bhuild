@@ -8,7 +8,7 @@ exports[`radio.uses acceptance hint level specificity given: [case9] global bloc
    ├─ into    = ehmpathy/test-repo
    ├─ status  = QUEUED (radio.uses:blocked — global)
    ├─ held at = .behavior/.radio/ (no route bound to this branch)
-   ├─ backlog = 1 await the radio
+   ├─ backlog = 1 awaits the radio
    └─ lift it (human): rhx radio.uses --global allow
       └─ then the next push delivers the backlog first"
 `;
@@ -21,7 +21,7 @@ exports[`radio.uses acceptance hint level specificity given: [case10] org block 
    ├─ into    = ehmpathy/test-repo
    ├─ status  = QUEUED (radio.uses:blocked — org)
    ├─ held at = .behavior/.radio/ (no route bound to this branch)
-   ├─ backlog = 1 await the radio
+   ├─ backlog = 1 awaits the radio
    └─ lift it (human): rhx radio.uses --org ehmpathy allow
       └─ then the next push delivers the backlog first"
 `;
@@ -34,7 +34,7 @@ exports[`radio.uses acceptance hint level specificity given: [case11] default bl
    ├─ into    = ehmpathy/test-repo
    ├─ status  = QUEUED (radio.uses:blocked — default)
    ├─ held at = .behavior/.radio/ (no route bound to this branch)
-   ├─ backlog = 1 await the radio
+   ├─ backlog = 1 awaits the radio
    └─ lift it (human): rhx radio.uses allow
       └─ then the next push delivers the backlog first"
 `;
@@ -129,7 +129,7 @@ exports[`radio.uses acceptance precedence matrix given: [case7] org blocked over
    ├─ into    = ehmpathy/test-repo
    ├─ status  = QUEUED (radio.uses:blocked — @all)
    ├─ held at = .behavior/.radio/ (no route bound to this branch)
-   ├─ backlog = 1 await the radio
+   ├─ backlog = 1 awaits the radio
    └─ lift it (human): rhx radio.uses --org ehmpathy allow
       └─ then the next push delivers the backlog first"
 `;
@@ -142,7 +142,7 @@ exports[`radio.uses acceptance precedence matrix given: [case8] specific org ove
    ├─ into    = ehmpathy/test-repo
    ├─ status  = QUEUED (radio.uses:blocked — org)
    ├─ held at = .behavior/.radio/ (no route bound to this branch)
-   ├─ backlog = 1 await the radio
+   ├─ backlog = 1 awaits the radio
    └─ lift it (human): rhx radio.uses --org ehmpathy allow
       └─ then the next push delivers the backlog first"
 `;
@@ -155,7 +155,7 @@ exports[`radio.uses acceptance user journey given: [case12] full permission work
    ├─ into    = ehmpathy/test-repo-journey
    ├─ status  = QUEUED (radio.uses:blocked — default)
    ├─ held at = .behavior/.radio/ (no route bound to this branch)
-   ├─ backlog = 1 await the radio
+   ├─ backlog = 1 awaits the radio
    └─ lift it (human): rhx radio.uses allow
       └─ then the next push delivers the backlog first"
 `;

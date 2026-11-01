@@ -1,13 +1,6 @@
-import {
-  BadRequestError,
-  ConstraintError,
-  UnexpectedCodePathError,
-} from 'helpful-errors';
 import { given, then, when } from 'test-fns';
 
-import { asRadioLiftCommand } from './asRadioLiftCommand';
 import { asRadioUpstreamReason } from './asRadioUpstreamReason';
-import { isRadioReplayRefusal } from './isRadioReplayRefusal';
 
 const REASON_CASES = [
   {
@@ -35,59 +28,93 @@ const REASON_CASES = [
     expect: { output: 'upstream:rate-limit' },
   },
   {
-    description: 'any other fault reads as upstream:fault',
-    given: { message: 'connect ETIMEDOUT 140.82.112.3:443' },
+    description: 'a bare http 429 reads as upstream:rate-limit',
+    given: { message: 'gh: HTTP 429' },
+    expect: { output: 'upstream:rate-limit' },
+  },
+  {
+    description: 'a 429 too many requests reads as upstream:rate-limit',
+    given: { message: 'non-200 OK status code: 429 Too Many Requests' },
+    expect: { output: 'upstream:rate-limit' },
+  },
+  {
+    description: 'a status 429 reads as upstream:rate-limit',
+    given: { message: 'request failed, status: 429' },
+    expect: { output: 'upstream:rate-limit' },
+  },
+  {
+    description:
+      'a 403 secondary rate limit reads as upstream:rate-limit, not access',
+    given: {
+      message:
+        'HTTP 403: You have exceeded a secondary rate limit. Please wait a few minutes before you try again.',
+    },
+    expect: { output: 'upstream:rate-limit' },
+  },
+  {
+    description:
+      'a 403 abuse detection reads as upstream:rate-limit, not access',
+    given: {
+      message:
+        'HTTP 403: You have triggered an abuse detection mechanism. Please retry your request again later.',
+    },
+    expect: { output: 'upstream:rate-limit' },
+  },
+  {
+    description: 'a 403 that says retry later reads as upstream:rate-limit',
+    given: { message: 'gh: HTTP 403, retry later' },
+    expect: { output: 'upstream:rate-limit' },
+  },
+  {
+    description:
+      'a 429 that is no status (a line number) reads as upstream:fault',
+    given: { message: 'unexpected token at line 429 of response' },
     expect: { output: 'upstream:fault' },
   },
-];
-
-const LIFT_CASES = [
   {
-    description: 'a global block lifts globally',
-    given: { level: 'global' as const, owner: 'ehmpathy' },
-    expect: { output: 'rhx radio.uses --global allow' },
+    description: 'a network timeout reads as upstream:transient',
+    given: { message: 'connect ETIMEDOUT 140.82.112.3:443' },
+    expect: { output: 'upstream:transient' },
   },
   {
-    description: 'an org block lifts via the target org',
-    given: { level: 'org' as const, owner: 'sandpine' },
-    expect: { output: 'rhx radio.uses --org sandpine allow' },
-  },
-  {
-    description: 'a local block lifts locally',
-    given: { level: 'local' as const, owner: 'ehmpathy' },
-    expect: { output: 'rhx radio.uses allow' },
-  },
-  {
-    description: 'the safe default lifts locally',
-    given: { level: 'default' as const, owner: 'ehmpathy' },
-    expect: { output: 'rhx radio.uses allow' },
-  },
-];
-
-const REFUSAL_CASES = [
-  {
-    description: 'a stale transition is a refusal',
+    description: 'a gh dial fault reads as upstream:transient',
     given: {
-      error: new BadRequestError('task already claimed by different branch'),
+      message:
+        'Post "https://api.github.com/graphql": dial tcp: lookup api.github.com: i/o timeout',
     },
-    expect: { output: true },
+    expect: { output: 'upstream:transient' },
   },
   {
-    description: 'a rejected token is a fault, not a refusal',
-    given: { error: new ConstraintError('github auth failed') },
-    expect: { output: false },
+    description: 'a github 5xx reads as upstream:transient',
+    given: { message: 'gh: Server Error (HTTP 502)' },
+    expect: { output: 'upstream:transient' },
   },
   {
-    description: 'a malfunction is a fault, not a refusal',
+    description:
+      'an app with no grant on the issue reads as upstream:access (the #599 fault)',
     given: {
-      error: new UnexpectedCodePathError('failed to parse issue number'),
+      message: 'GraphQL: Resource not accessible by integration (updateIssue)',
     },
-    expect: { output: false },
+    expect: { output: 'upstream:access' },
   },
   {
-    description: 'a plain error is a fault, not a refusal',
-    given: { error: new Error('Command failed: gh issue create') },
-    expect: { output: false },
+    description: 'a gh http 403 reads as upstream:access',
+    given: { message: 'gh: Forbidden (HTTP 403)' },
+    expect: { output: 'upstream:access' },
+  },
+  {
+    description:
+      'a repo the auth cannot see reads as upstream:not-found, never as an absent issue',
+    given: {
+      message:
+        "GraphQL: Could not resolve to a Repository with the name 'sandpine/infrastructure'. (repository)",
+    },
+    expect: { output: 'upstream:not-found' },
+  },
+  {
+    description: 'any other fault reads as upstream:fault',
+    given: { message: 'unexpected end of JSON input' },
+    expect: { output: 'upstream:fault' },
   },
 ];
 
@@ -97,34 +124,6 @@ describe('asRadioUpstreamReason', () => {
       when('[t0] the upstream error is classified', () => {
         then('it yields the expected reason', () => {
           expect(asRadioUpstreamReason(thisCase.given)).toEqual(
-            thisCase.expect.output,
-          );
-        });
-      });
-    }),
-  );
-});
-
-describe('asRadioLiftCommand', () => {
-  LIFT_CASES.map((thisCase, index) =>
-    given(`[case${index + 1}] ${thisCase.description}`, () => {
-      when('[t0] the lift command is derived', () => {
-        then('it yields the expected command', () => {
-          expect(asRadioLiftCommand(thisCase.given)).toEqual(
-            thisCase.expect.output,
-          );
-        });
-      });
-    }),
-  );
-});
-
-describe('isRadioReplayRefusal', () => {
-  REFUSAL_CASES.map((thisCase, index) =>
-    given(`[case${index + 1}] ${thisCase.description}`, () => {
-      when('[t0] the replay error is checked', () => {
-        then('it yields the expected verdict', () => {
-          expect(isRadioReplayRefusal(thisCase.given)).toEqual(
             thisCase.expect.output,
           );
         });

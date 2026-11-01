@@ -12,7 +12,22 @@ export type ContextGithubAuth = {
     auth:
       | { token: string; role: 'as-robot' }
       | { token: null; role: 'as-human' };
+
+    /**
+     * .what = the bound on one send's gh calls, set by a drain (absent: per-call default only)
+     */
+    send?: RadioGhSendLimit;
   };
+};
+
+/**
+ * .what = the time bound on one send: a cap per gh call, and the time left on the send
+ * .why = one send makes several gh calls; a drain lease must outlast the whole send, so
+ *        each call is cut to what the send has left
+ */
+export type RadioGhSendLimit = {
+  perCall: { milliseconds: number };
+  getMillisecondsLeft: () => number;
 };
 
 /**

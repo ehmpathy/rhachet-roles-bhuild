@@ -17,6 +17,7 @@ import { shx } from '@src/infra/shell/shx';
 import { getAllRadioTaskRecordDirs } from './getAllRadioTaskRecordDirs';
 import { getAllRadioTaskRecordsHeld } from './getAllRadioTaskRecordsHeld';
 import { getOneRadioTaskRecordHome } from './getOneRadioTaskRecordHome';
+import { isRadioPushDelivered } from './isRadioPushDelivered';
 import { setRadioTaskRecordFromPush } from './setRadioTaskRecordFromPush';
 import { setRadioTaskRecordsDrainedByPush } from './setRadioTaskRecordsDrainedByPush';
 
@@ -100,7 +101,7 @@ const pushViaRecorder = async (input: {
     { dir: home.dir, cwd: input.cwd },
   );
   const dispatched = await setRadioTaskRecordsDrainedByPush(
-    { record, dir: home.dir },
+    { record, dir: home.dir, authTyped: input.auth ?? null },
     context,
   );
   return { home, ...dispatched };
@@ -196,8 +197,9 @@ const getOneHookVerdictOnTasksUpstream = (input: {
 };
 
 describe('setRadioTaskRecordsDrainedByPush', () => {
-  // unique os.fileops targets per run; the os.fileops store lives under the real home
-  const runId = Date.now();
+  // unique os.fileops targets per run; the os.fileops store lives under the real home.
+  // the pid joins the clock, so two workers that start in one millisecond still differ
+  const runId = `${Date.now()}${process.pid}`;
   const repoOpen = new RadioTaskRepo({
     owner: 'recorder-open',
     name: `repo-${runId}`,
@@ -250,15 +252,16 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
       repoClock,
       repoLegacy,
     ].forEach((repo) =>
-      fs.rmSync(path.join(os.homedir(), 'git', '.radio', repo.owner), {
-        recursive: true,
-        force: true,
-      }),
+      // only this run's repo dir; a peer run's dir under the same owner is left alone
+      fs.rmSync(
+        path.join(os.homedir(), 'git', '.radio', repo.owner, repo.name),
+        { recursive: true, force: true },
+      ),
     );
   });
 
   given(
-    '[case1] an unbound repo; the radio starts shut (C7, C10, C11, C4, C9, R2)',
+    '[case1] an unbound repo; the radio shut by its default gate (C7, C10, C11, C4, C9, R2)',
     () => {
       const scene = useBeforeAll(async () =>
         genScene({ slug: 'recorder-case1' }),
@@ -335,6 +338,12 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
           'every record is DELIVERED with its exid, and the backlog is empty',
           () => {
             const records = getAllRecords(scene).map(({ record }) => record);
+            // all three tasks were written back, so the checks below are never vacuous
+            expect(records.map((r) => r.title).sort()).toEqual([
+              'task a',
+              'task b',
+              'task c',
+            ]);
             expect(
               records.every(
                 (r) => r.recordStatus === RadioTaskRecordStatus.DELIVERED,
@@ -655,7 +664,7 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
       genScene({ slug: 'recorder-case6' }),
     );
 
-    when('[t0] the held task is pushed again once the radio opens', () => {
+    when('[t0] the radio opens, and the held task is pushed again', () => {
       const result = useThen('both pushes run', async () => {
         await pushViaRecorder({ ...scene, repo: repoRetype, title: 'task x' });
         setLocalGate({ cwd: scene.cwd, state: 'allowed' });
@@ -725,11 +734,11 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
           });
 
           then(
-            'the gh record is held as upstream:401 and halts the drain',
+            'the gh record is set aside as upstream:401, and does not halt the drain (#511)',
             () => {
               expect(result.others[0]).toMatchObject({
                 fate: 'held',
-                halt: true,
+                halt: false,
                 record: expect.objectContaining({
                   title: 'task gh',
                   reason: 'upstream:401',
@@ -739,7 +748,7 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
           );
 
           then(
-            'the records behind it stay held, in order, and are never sent',
+            'the records behind it still deliver, in order — no head-of-line block (#511)',
             () => {
               expect(
                 [...result.others, result.pushed].map((fate) => [
@@ -748,42 +757,34 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
                 ]),
               ).toEqual([
                 ['held', 'task gh'],
-                ['held', 'task after'],
-                ['held', 'task probe'],
+                ['delivered', 'task after'],
+                ['delivered', 'task probe'],
               ]);
-              expect(result.tasksUpstream).toEqual([]);
+              expect(result.tasksUpstream).toHaveLength(2);
             },
           );
 
           then(
-            'the store holds the halter reason for each record behind it, as the drain printed',
+            'only the faulted record still waits, with its own reason',
             () => {
               const reasonsStored = result.heldStored.map(({ record }) => [
                 record.title,
                 record.reason,
               ]);
-              expect(reasonsStored).toEqual([
-                ['task gh', 'upstream:401'],
-                ['task after', 'upstream:401'],
-                ['task probe', 'upstream:401'],
-              ]);
+              expect(reasonsStored).toEqual([['task gh', 'upstream:401']]);
             },
           );
-
-          then('every record is still QUEUED on disk', () => {
-            expect(result.heldStored).toHaveLength(3);
-          });
         },
       );
 
       when(
-        '[t1] a held task is re-pushed while upstream still faults (C17)',
+        '[t1] a later push drains while upstream still faults on the gh record (C17)',
         () => {
           const result = useThen('it is dispatched', async () => {
             const pushed = await pushViaRecorder({
               ...scene,
               repo: repoFault,
-              title: 'task after',
+              title: 'task later',
               env: envTokenRejected,
             });
             return {
@@ -794,31 +795,67 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
             };
           });
 
-          then(
-            'the re-push lands on its held record — no second record',
-            () => {
-              expect(result.recordsStored).toHaveLength(3);
-              expect(
-                result.recordsStored.filter(
-                  ({ record }) => record.title === 'task after',
-                ),
-              ).toHaveLength(1);
-            },
-          );
+          then('the set-aside record is retried, and set aside again', () => {
+            expect(
+              result.others.map((fate) => [fate.fate, fate.record.title]),
+            ).toEqual([['held', 'task gh']]);
+            expect(result.heldStored.map(({ record }) => record.title)).toEqual(
+              ['task gh'],
+            );
+          });
+
+          then('the new push delivers past it', () => {
+            expect(result.pushed.fate).toEqual('delivered');
+            expect(result.tasksUpstream).toHaveLength(3);
+          });
+
+          then('no record is doubled', () => {
+            // each title once: a duplicate beside a loss would still total four
+            expect(
+              result.recordsStored.map(({ record }) => record.title).sort(),
+            ).toEqual(['task after', 'task gh', 'task later', 'task probe']);
+          });
+        },
+      );
+
+      when(
+        '[t2] the faulted task itself is re-pushed while upstream still faults (C17)',
+        () => {
+          const result = useThen('it is dispatched', async () => {
+            // the same task as [t0]: same repo, channel, auth, and title
+            const pushed = await pushViaRecorder({
+              ...scene,
+              repo: repoGhDemo,
+              via: RadioChannel.GH_ISSUES,
+              auth: 'as-robot:env(RADIO_RECORDER_TEST_TOKEN_REJECTED)',
+              title: 'task gh',
+              env: envTokenRejected,
+            });
+            return {
+              ...pushed,
+              recordsStored: getAllRecords(scene),
+              heldStored: getAllRadioTaskRecordsHeld({}, scene),
+            };
+          });
 
           then(
-            'it stays held behind the halter, with the upstream reason',
+            'it lands on its held record and stays held, its reason kept',
             () => {
-              expect(result.pushed.fate).toEqual('held');
-              expect(result.pushed.record.reason).toEqual('upstream:401');
+              // toMatchObject matches the nested record in part
+              expect(result.pushed).toMatchObject({
+                fate: 'held',
+                record: { title: 'task gh', reason: 'upstream:401' },
+              });
               expect(
                 result.heldStored.map(({ record }) => record.title),
-              ).toEqual(['task gh', 'task after', 'task probe']);
+              ).toEqual(['task gh']);
             },
           );
 
-          then('naught is sent upstream', () => {
-            expect(result.tasksUpstream).toEqual([]);
+          then('no second record is minted for it', () => {
+            expect(
+              result.recordsStored.map(({ record }) => record.title).sort(),
+            ).toEqual(['task after', 'task gh', 'task later', 'task probe']);
           });
         },
       );
@@ -865,7 +902,7 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
           });
 
           then(
-            'the first delivers, the second halts, the probe waits behind it — in order',
+            'the first delivers, the second is set aside, the probe still delivers — in order (#511)',
             () => {
               expect(
                 [...result.others, result.pushed].map((fate) => [
@@ -875,7 +912,7 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
               ).toEqual([
                 ['delivered', 'task first'],
                 ['held', 'task gh'],
-                ['held', 'task probe'],
+                ['delivered', 'task probe'],
               ]);
             },
           );
@@ -887,20 +924,20 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
             expect(recordFirst?.record.recordStatus).toEqual(
               RadioTaskRecordStatus.DELIVERED,
             );
-            expect(result.tasksUpstream).toHaveLength(1);
+            expect(result.tasksUpstream).toHaveLength(2);
           });
 
-          then('the rest are still QUEUED with the halter reason', () => {
-            expect(
-              getAllRadioTaskRecordsHeld({}, scene).map(({ record }) => [
-                record.title,
-                record.reason,
-              ]),
-            ).toEqual([
-              ['task gh', 'upstream:401'],
-              ['task probe', 'upstream:401'],
-            ]);
-          });
+          then(
+            'only the faulted record is still QUEUED, with its reason',
+            () => {
+              expect(
+                getAllRadioTaskRecordsHeld({}, scene).map(({ record }) => [
+                  record.title,
+                  record.reason,
+                ]),
+              ).toEqual([['task gh', 'upstream:401']]);
+            },
+          );
         },
       );
     },
@@ -1005,16 +1042,21 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
           return { pushes, tasksUpstream: getAllTasksUpstream(repoRace) };
         });
 
-        then('each push is delivered', () => {
+        // the race picks which drain carries which push: a push its own drain sent reads
+        // delivered; a push the other drain carried reads landed (already delivered, its
+        // exid on disk), never re-sent. both exit 0
+        then('each push is delivered, or landed by the other drain', () => {
           expect(
             result.pushes.map(({ pushed }) => [
-              pushed.fate,
+              ['delivered', 'landed'].includes(pushed.fate),
+              isRadioPushDelivered({ pushed }),
+              pushed.record.recordStatus,
               pushed.record.reason,
               'detail' in pushed ? pushed.detail : null,
             ]),
           ).toEqual([
-            ['delivered', null, null],
-            ['delivered', null, null],
+            [true, true, RadioTaskRecordStatus.DELIVERED, null, null],
+            [true, true, RadioTaskRecordStatus.DELIVERED, null, null],
           ]);
         });
 
@@ -1187,6 +1229,7 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
         const recordsAfterDeliver = getAllRecordsStageable({ cwd: scene.cwd });
         await pushViaRecorder({ ...scene, repo: repoOpen, title: 'task c' });
         return {
+          cwd: scene.cwd,
           records: getAllRecordsStageable({ cwd: scene.cwd }),
           recordsAfterDeliver,
           sceneDirName: path.basename(scene.cwd),

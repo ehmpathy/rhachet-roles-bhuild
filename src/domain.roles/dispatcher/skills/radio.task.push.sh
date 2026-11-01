@@ -12,6 +12,7 @@
 #   radio.task.push.sh --via gh.issues --into @this --title "..." --description "..."
 #   radio.task.push.sh --via gh.issues --into owner/repo --title "..." --description "..."
 #   radio.task.push.sh --via os.fileops --into @this --exid 123 --status CLAIMED
+#   radio.task.push.sh --via gh.issues --into owner/repo --exid 599 --status CLAIMED --auth as-human
 #   radio.task.push.sh --via gh.issues --into @this --title "..." --description "..." --idem upsert
 #   echo "detailed task" | radio.task.push.sh --via gh.issues --into @this --title "..." --description @stdin
 #   cat spec.md | radio.task.push.sh --via gh.issues --into @this --title "feat: add X" --description @stdin
@@ -24,6 +25,7 @@
 #   --exid      external id for updates
 #   --status    task status: QUEUED, CLAIMED, DELIVERED
 #   --idem      idempotency mode: findsert or upsert
+#   --auth      as-human | as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd)
 #   --help, -h  show usage and exit
 #
 # guarantee:

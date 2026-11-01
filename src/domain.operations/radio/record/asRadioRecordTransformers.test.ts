@@ -4,8 +4,9 @@ import {
   MalfunctionError,
   UnexpectedCodePathError,
 } from 'helpful-errors';
-import { given, then, when } from 'test-fns';
+import { given, then, useBeforeAll, when } from 'test-fns';
 
+import { RadioGhSendTimeoutError } from '@src/access/daos/daoRadioTask/RadioGhSendTimeoutError';
 import { RadioChannel } from '@src/domain.objects/RadioChannel';
 import { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 import { RadioTaskRecordStatus } from '@src/domain.objects/RadioTaskRecordStatus';
@@ -145,6 +146,17 @@ const TEST_CASES = [
     when: (): unknown =>
       asRadioUpstreamFault({ error: new MalfunctionError('bug') }),
     expect: null,
+  },
+  {
+    description:
+      'fault: a RadioGhSendTimeoutError (a stalled gh call) is a send fault, kept as is',
+    when: (): unknown => {
+      const error = new RadioGhSendTimeoutError(
+        'gh call timed out after 60s (etimedout)',
+      );
+      return asRadioUpstreamFault({ error }) === error;
+    },
+    expect: true,
   },
   {
     description:
@@ -412,8 +424,10 @@ describe('radio record transformers', () => {
   TEST_CASES.map((thisCase, index) =>
     given(`[case${index + 1}] ${thisCase.description}`, () => {
       when('[t0] the transformer runs', () => {
-        then('it yields the expected value', () => {
-          expect(thisCase.when()).toEqual(thisCase.expect);
+        const result = useBeforeAll(async () => ({ output: thisCase.when() }));
+
+        then(`it yields what the case names: ${thisCase.description}`, () => {
+          expect(result.output).toEqual(thisCase.expect);
         });
       });
     }),

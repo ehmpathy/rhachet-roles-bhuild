@@ -2,7 +2,7 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
-import { BadRequestError } from 'helpful-errors';
+import { UnexpectedCodePathError } from 'helpful-errors';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
@@ -24,15 +24,24 @@ import {
  */
 
 /**
+ * .what = mask the record uuid in a held output's queue fix lines
+ * .why = the key hashes the title, and the title carries Date.now(), so the key varies per run
+ */
+const asStableRecordKey = (input: { output: string }): string =>
+  input.output.replace(/--uuid [0-9a-f]{16}\b/g, '--uuid <uuid>');
+
+/**
  * .what = mask the bytes of a 401 held output that vary per run
  * .why = the title carries Date.now() and the gh command names a per-run tempfile;
  *        only those bytes are masked. gh's raw stderr is NOT masked — the held output
  *        shows the headline, never the stderr, so a leak must surface as a snap diff
  */
 const asStable401Output = (input: { output: string }): string =>
-  sanitizeOutput(input.output)
-    .replace(/auth-fail 401 test \d+/g, 'auth-fail 401 test <ts>')
-    .replace(/\S*radio-task-\d+\.md/g, '<tempfile>');
+  asStableRecordKey({
+    output: sanitizeOutput(input.output)
+      .replace(/auth-fail 401 test \d+/g, 'auth-fail 401 test <ts>')
+      .replace(/\S*radio-task-\d+\.md/g, '<tempfile>'),
+  });
 
 /**
  * .what = invoke radio.uses skill to set up permissions
@@ -163,12 +172,17 @@ describe('radio.task.push via gh.issues', () => {
     const homeDir = path.join(consumer.repoDir, '.home');
     fs.mkdirSync(homeDir);
 
-    // allow radio usage for @all orgs
-    runRadioUses({
+    // allow radio usage for @all orgs; a failed grant fails here, not as a later held push
+    const allowed = runRadioUses({
       repoDir: consumer.repoDir,
       args: '--org @all allow',
       homeDir,
     });
+    if (allowed.exitCode !== 0)
+      throw new UnexpectedCodePathError('radio.uses allow failed in the scene', {
+        exitCode: allowed.exitCode,
+        output: allowed.stdout,
+      });
 
     return { consumer, homeDir };
   });
@@ -249,9 +263,13 @@ describe('radio.task.push via gh.issues', () => {
           description: 'for status transition test',
         });
 
-        // extract issue exid from output
+        // extract issue exid from output; a miss fails here, never as a later exid-less push
         const match = result.output.match(/exid: (\d+)/);
-        if (match) issueNumber = match[1]!;
+        if (!match?.[1])
+          throw new UnexpectedCodePathError('create output names no exid', {
+            output: result.output,
+          });
+        issueNumber = match[1];
 
         return result;
       });
@@ -485,10 +503,24 @@ describe('radio.task.push via gh.issues', () => {
         // snap the skill's own stream: rhachet frames stdout and stderr each with a banner
         expect(result.stdout).toContain('🦫 held for the radio');
         expect(
-          sanitizeOutput(result.stdout).replace(
-            /auth-fail env test \d+/g,
-            'auth-fail env test <ts>',
-          ),
+          asStableRecordKey({
+            output: sanitizeOutput(result.stdout).replace(
+              /auth-fail env test \d+/g,
+              'auth-fail env test <ts>',
+            ),
+          }),
+        ).toMatchSnapshot();
+      });
+
+      then('the stderr stream matches snapshot', () => {
+        // snapped apart from stdout, so a leak onto stderr surfaces as a snap diff
+        expect(
+          asStableRecordKey({
+            output: sanitizeOutput(result.stderr).replace(
+              /auth-fail env test \d+/g,
+              'auth-fail env test <ts>',
+            ),
+          }),
         ).toMatchSnapshot();
       });
     });

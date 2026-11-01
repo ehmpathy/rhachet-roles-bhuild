@@ -1,5 +1,6 @@
 import { BadRequestError, MalfunctionError } from 'helpful-errors';
 
+import { RadioGhSendTimeoutError } from '@src/access/daos/daoRadioTask/RadioGhSendTimeoutError';
 import { asExecErrorMessage } from '@src/infra/shell/asExecErrorMessage';
 
 /**
@@ -10,18 +11,24 @@ import { asExecErrorMessage } from '@src/infra/shell/asExecErrorMessage';
  * .note = the allowlist, and naught else:
  *         - a BadRequestError (or its ConstraintError subclass) the radio ops throw
  *           on purpose: an absent or rejected token, a refusal
+ *         - a RadioGhSendTimeoutError: a gh call killed by its send bound
  *         - a child_process exec error (a string `cmd`) from the channel's send
  *         - an fs error (a string `code`, `syscall`, and `path`) from the channel's io
- *         an UnexpectedCodePathError, MalfunctionError, TypeError, or any other value
+ *         a thrown UnexpectedCodePathError, MalfunctionError, TypeError, or any other value
  *         is a defect. the io errors are cross-realm under jest, so they are
- *         duck-typed on the fields node sets, and returned as a MalfunctionError
- *         that keeps their message and names the io kind
+ *         duck-typed on the fields node sets. an io error on the allowlist is a send
+ *         fault: it is returned wrapped in a fresh MalfunctionError that keeps its message
+ *         and names the io kind, and the caller holds that record. so a MalfunctionError
+ *         this returns is a fault to hold; one that arrives thrown is a defect
  */
 export const asRadioUpstreamFault = (input: {
   error: unknown;
 }): Error | null => {
   // a deliberate refusal or auth fault from the radio ops
   if (input.error instanceof BadRequestError) return input.error;
+
+  // a gh call killed by its send bound: a stalled github, a wall, never a defect
+  if (input.error instanceof RadioGhSendTimeoutError) return input.error;
 
   // an io fault from the channel's send, duck-typed across realms
   const io = asRadioIoFaultKind({ error: input.error });

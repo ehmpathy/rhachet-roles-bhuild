@@ -22,7 +22,7 @@
 #   5. unset = blocked (safe default)
 #
 #   a blocked push is held, not lost: the next push that gets through
-#   delivers it (see radio.task.held)
+#   delivers it (see radio.task.queue)
 #
 # guarantee:
 #   - local state stored in .meter/radio.uses.jsonc
