@@ -124,6 +124,7 @@ const schemaOfRecordFile = z.object({
   status: z.nativeEnum(RadioTaskStatus).nullable(),
   recordStatus: z.nativeEnum(RadioTaskRecordStatus),
   reason: z.string().nullable(),
+  reasonHeadline: z.string().nullable().default(null),
   heldSeq: z.number(),
   deliveredExid: z.string().nullable(),
 });
@@ -170,9 +171,11 @@ const asRecordFromFileJson = (input: { json: unknown }): RadioTaskRecord => {
 };
 
 /**
- * .what = the parsed fields, in the key order the file held them
+ * .what = the parsed fields, in the key order the file held them, then any the file lacked
  * .why = the parse emits keys in schema order. a record read and written back must keep its bytes,
- *        or each drain churns the diff of a tracked record file with no change in sense
+ *        or each drain churns the diff of a tracked record file with no change in sense.
+ *        a field the file lacks (one added since it was written) takes its parse default, after
+ *        the rest; the write leaves a null one out, so the bytes still hold
  */
 const asRecordFieldsInFileOrder = <
   TParsed extends Record<string, unknown>,
@@ -180,11 +183,26 @@ const asRecordFieldsInFileOrder = <
   json: Record<string, unknown>;
   parsed: TParsed;
 }): TParsed =>
-  Object.fromEntries(
-    Object.keys(input.json)
+  Object.fromEntries([
+    ...Object.keys(input.json)
       .filter((key) => key in input.parsed)
       .map((key) => [key, input.parsed[key]]),
-  ) as TParsed; // note: the same keys as parsed, since the parse strips only keys the file holds beyond the shape
+    ...Object.keys(input.parsed)
+      .filter((key) => !(key in input.json))
+      .map((key) => [key, input.parsed[key]]),
+  ]) as TParsed; // note: the same keys as parsed, since the parse strips only keys the file holds beyond the shape
+
+/**
+ * .what = the json a record file holds for a record
+ * .why = a null headline is the common case and the state of every file written before the
+ *        field; to leave it out keeps those files' bytes as they were
+ */
+const asRecordFileJson = (input: {
+  record: RadioTaskRecord;
+}): Record<string, unknown> => {
+  const { reasonHeadline, ...rest } = input.record;
+  return reasonHeadline === null ? rest : { ...rest, reasonHeadline };
+};
 
 /**
  * .what = does a record file still hold a clock field a prior version wrote
@@ -383,7 +401,11 @@ const _upsert = (input: {
   const path = join(input.dir, asRecordFileName({ key: input.record.key }));
   const pathTemp = `${path}.tmp.${process.pid}`;
   try {
-    writeFileSync(pathTemp, JSON.stringify(input.record, null, 2) + '\n');
+    writeFileSync(
+      pathTemp,
+      JSON.stringify(asRecordFileJson({ record: input.record }), null, 2) +
+        '\n',
+    );
     renameSync(pathTemp, path);
     return input.record;
   } finally {

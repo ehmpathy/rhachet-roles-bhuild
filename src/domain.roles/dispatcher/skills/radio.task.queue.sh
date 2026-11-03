@@ -4,7 +4,7 @@
 #
 # .why  = a held push is never lost, and never stuck: one record that
 #         faults is set aside, named, and the rest still deliver
-#         - get:   what waits, each with its key, reason, and fix
+#         - get:   what waits: key, reason, upstream's words, fix
 #         - set:   amend a held record's auth or body (e.g. as-human)
 #         - del:   drop a held record, its body and the why kept
 #         - drain: deliver now, oldest first, past any set-aside record

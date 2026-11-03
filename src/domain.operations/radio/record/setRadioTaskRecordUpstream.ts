@@ -10,6 +10,7 @@ import { asRadioErrorHeadline } from './asRadioErrorHeadline';
 import { asRadioErrorHint } from './asRadioErrorHint';
 import { asRadioFateRepushedMidSend } from './asRadioFateRepushedMidSend';
 import { asRadioFateUnreachedByBudget } from './asRadioFateUnreachedByBudget';
+import { asRadioReasonHeadline } from './asRadioReasonHeadline';
 import { asRadioTaskRepoSlug } from './asRadioTaskRepoSlug';
 import { asRadioUpstreamReason } from './asRadioUpstreamReason';
 import type { RadioDrainDeadline } from './genRadioDrainDeadline';
@@ -116,7 +117,8 @@ export const setRadioTaskRecordUpstream = async (
   if (isRadioDrainDeadlineNear({ deadline: context.drainDeadline }))
     return asRadioFateUnreachedByBudget({ record });
 
-  // hold if the credentials cannot be derived now
+  // hold if the credentials cannot be derived now; keep no words, since an auth fault's text is
+  // ours or the caller's credential command's, never github's, and may echo a secret
   if ('fault' in auth) {
     const heldOnAuth = setRadioTaskRecordSettled({
       dir,
@@ -179,7 +181,13 @@ export const setRadioTaskRecordUpstream = async (
     const heldOnFault = setRadioTaskRecordSettled({
       dir,
       record,
-      change: { reason },
+      change: {
+        reason,
+        reasonHeadline: asRadioReasonHeadline({
+          reason,
+          faultText: send.faultText,
+        }),
+      },
     });
 
     // a re-push since the read is a new request: report it re-pushed, never the old fault;

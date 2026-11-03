@@ -24,6 +24,7 @@ const genRecord = (input: {
     status: null,
     recordStatus: RadioTaskRecordStatus.QUEUED,
     reason: input.reason ?? 'radio.uses:blocked — global',
+    reasonHeadline: null,
     heldSeq: 1,
     deliveredExid: null,
   });
@@ -155,6 +156,13 @@ describe('asRadioHeldOutput', () => {
             expect(output).toMatchSnapshot();
           },
         );
+
+        then(
+          'an auth row shows no fault line: an auth fault keeps no words, so the class and its amend carry it',
+          () => {
+            expect(output).not.toContain('fault:');
+          },
+        );
       });
     },
   );
@@ -185,7 +193,7 @@ describe('asRadioHeldOutput', () => {
       then('it names the halt, with no amend or drop lines', () => {
         expect(output).toContain('state: halted (upstream:rate-limit)');
         expect(output).not.toContain('amend it:');
-        expect(output).not.toContain('or drop it:');
+        expect(output).not.toMatch(/drop it:/);
         expect(output).toMatchSnapshot();
       });
     });
@@ -473,6 +481,74 @@ describe('asRadioHeldOutput', () => {
             expect(output).toContain(
               'retry it and print its fault: rhx radio.task.queue drain (this sends every held record whose gate is open)',
             );
+            expect(output).toMatchSnapshot();
+          },
+        );
+      });
+    },
+  );
+
+  given(
+    '[case12] records that keep what upstream said: a refusal, an unknown fault, a wall, a gate',
+    () => {
+      const held = [
+        {
+          record: new RadioTaskRecord({
+            ...genRecord({ title: 'refused', reason: 'upstream:access' }),
+            reasonHeadline:
+              'GraphQL: Resource not accessible by integration (updateIssue)',
+          }),
+          lift: null,
+        },
+        {
+          record: new RadioTaskRecord({
+            ...genRecord({ title: 'odd', reason: 'upstream:fault' }),
+            reasonHeadline: 'HTTP 422: Validation Failed',
+          }),
+          lift: null,
+        },
+        {
+          // a wall keeps no words: setRadioTaskRecordUpstream writes none for it
+          record: new RadioTaskRecord({
+            ...genRecord({ title: 'walled', reason: 'upstream:rate-limit' }),
+            reasonHeadline: null,
+          }),
+          lift: null,
+        },
+        {
+          // a gate keeps no words: its change of reason clears them at the settle
+          record: new RadioTaskRecord({
+            ...genRecord({ title: 'gated' }),
+            reasonHeadline: null,
+          }),
+          lift: 'rhx radio.uses --global allow',
+        },
+      ];
+
+      when('[t0] the list renders', () => {
+        const output = asRadioHeldOutput({ held, mode: 'list' }) ?? '';
+
+        then('the refusal row shows github words right under its state', () => {
+          expect(output).toContain(
+            'state: set aside (upstream:access)\n   │  ├─ fault: GraphQL: Resource not accessible by integration (updateIssue)',
+          );
+          expect(output).toContain(
+            'amend it: rhx radio.task.queue set --uuid refused --auth as-human',
+          );
+        });
+
+        then(
+          'the unknown fault shows its words, so no retry is owed to see them',
+          () => {
+            expect(output).toContain('fault: HTTP 422: Validation Failed');
+            expect(output).not.toContain('retry it and print its fault');
+          },
+        );
+
+        then(
+          'the wall and the gate rows, which hold no words, show no fault line',
+          () => {
+            expect(output.match(/fault: /g)?.length).toEqual(2);
             expect(output).toMatchSnapshot();
           },
         );

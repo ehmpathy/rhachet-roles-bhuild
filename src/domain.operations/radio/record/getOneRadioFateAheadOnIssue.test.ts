@@ -30,6 +30,7 @@ const genUpdate = (input: {
     status: input.status,
     recordStatus: RadioTaskRecordStatus.QUEUED,
     reason: input.reason,
+    reasonHeadline: null,
     heldSeq: 1,
     deliveredExid: null,
   });

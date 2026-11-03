@@ -52,6 +52,7 @@ export const asRadioTaskRecordFromPush = (input: {
     heldSeq: input.heldSeq,
     recordStatus: fate?.recordStatus ?? RadioTaskRecordStatus.QUEUED,
     reason: fate?.reason ?? null,
+    reasonHeadline: fate?.reasonHeadline ?? null,
     deliveredExid: fate?.deliveredExid ?? null,
   });
 };

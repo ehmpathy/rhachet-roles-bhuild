@@ -27,6 +27,7 @@ const genRecord = (input: Partial<RadioTaskRecord>): RadioTaskRecord =>
     status: null,
     recordStatus: RadioTaskRecordStatus.QUEUED,
     reason: null,
+    reasonHeadline: null,
     heldSeq: 1,
     deliveredExid: null,
     ...input,

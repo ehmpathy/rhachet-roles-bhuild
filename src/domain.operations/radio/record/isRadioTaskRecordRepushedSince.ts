@@ -11,6 +11,7 @@ import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 const FIELDS_OF_FATE = new Set<string>([
   'recordStatus',
   'reason',
+  'reasonHeadline',
   'deliveredExid',
   'heldSeq',
 ]);
@@ -33,7 +34,7 @@ const asRadioTaskRecordRequestText = (input: {
  * .why = the drain sends the copy it read; a re-push that lands before it settles carries a
  *        request the send never saw, so the drain must not settle it as though it did
  *
- * .note = compares every field but the fate (recordStatus, reason, deliveredExid), which the
+ * .note = compares every field but the fate (recordStatus, reason, reasonHeadline, deliveredExid), which the
  *         drain owns, and heldSeq, which is fixed; so a settle's own change is never read as a re-push
  */
 export const isRadioTaskRecordRepushedSince = (input: {

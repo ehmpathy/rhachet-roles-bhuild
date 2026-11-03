@@ -20,6 +20,7 @@ const before = new RadioTaskRecord({
   status: null,
   recordStatus: RadioTaskRecordStatus.QUEUED,
   reason: 'upstream:access',
+  reasonHeadline: null,
   heldSeq: 4,
   deliveredExid: null,
 });

@@ -24,6 +24,7 @@ const genRecord = (input: {
     status: input.status,
     recordStatus: RadioTaskRecordStatus.QUEUED,
     reason: null,
+    reasonHeadline: null,
     heldSeq: input.heldSeq,
     deliveredExid: null,
   });
