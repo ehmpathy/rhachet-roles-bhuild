@@ -21,6 +21,7 @@ const genRecord = (input: { reason: string | null }): RadioTaskRecord =>
     status: null,
     recordStatus: RadioTaskRecordStatus.QUEUED,
     reason: input.reason,
+    reasonHeadline: null,
     heldSeq: 1,
     deliveredExid: null,
   });

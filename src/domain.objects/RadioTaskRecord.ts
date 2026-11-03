@@ -73,6 +73,16 @@ interface RadioTaskRecord {
   reason: string | null;
 
   /**
+   * what upstream said when it set this record aside, in its own words: one line, cut of the
+   * echoed command (null when no fault holds it, or when its words held a clock or a token)
+   *
+   * .note = it explains `reason`, so every write that changes `reason` also sets or clears it
+   *         (setRadioTaskRecordSettled clears it by default). a file written before the field
+   *         reads back null, and a null is left out of the file, so its bytes never change
+   */
+  reasonHeadline: string | null;
+
+  /**
    * place in line across the worktree: 1 + the highest heldSeq in any record dir; the drain order
    *
    * .note = a record holds no timestamp. a clock value changes on every run with no change
@@ -100,6 +110,7 @@ class RadioTaskRecord
     'description',
     'recordStatus',
     'reason',
+    'reasonHeadline',
     'deliveredExid',
   ] as const;
   public static nested = { repo: RadioTaskRepo };

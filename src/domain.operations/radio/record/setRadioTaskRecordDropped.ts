@@ -2,9 +2,10 @@ import { ConstraintError } from 'helpful-errors';
 import { relative } from 'path';
 
 import { daoRadioTaskRecord } from '@src/access/daos/daoRadioTaskRecord';
-import { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
+import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 import { RadioTaskRecordStatus } from '@src/domain.objects/RadioTaskRecordStatus';
 
+import { asRadioTaskRecordSettled } from './asRadioTaskRecordSettled';
 import { getAllRadioTaskRecordsHeldOnIssue } from './getAllRadioTaskRecordsHeldOnIssue';
 import { getOneRadioDeliverBehindDroppedClaim } from './getOneRadioDeliverBehindDroppedClaim';
 import { getOneRadioTaskRecordByKey } from './getOneRadioTaskRecordByKey';
@@ -89,10 +90,12 @@ const setRadioTaskRecordDroppedInPlace = (
   // mark it dropped in place
   const dropped = daoRadioTaskRecord.set.upsert({
     dir,
-    record: new RadioTaskRecord({
-      ...record,
-      recordStatus: RadioTaskRecordStatus.DROPPED,
-      reason: `dropped: ${input.why.trim()}`,
+    record: asRadioTaskRecordSettled({
+      record,
+      change: {
+        recordStatus: RadioTaskRecordStatus.DROPPED,
+        reason: `dropped: ${input.why.trim()}`,
+      },
     }),
   });
   return { dropped, dir };

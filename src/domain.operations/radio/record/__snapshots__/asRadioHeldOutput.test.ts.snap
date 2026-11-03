@@ -153,3 +153,26 @@ exports[`asRadioHeldOutput given: [case11] two set-aside records whose fix is no
    │  └─ or drop it: rhx radio.task.queue del --uuid odd --why "<why>"
    └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;
+
+exports[`asRadioHeldOutput given: [case12] records that keep what upstream said: a refusal, an unknown fault, a wall, a gate when: [t0] the list renders then: the wall and the gate rows, which hold no words, show no fault line 1`] = `
+"🦫 held for the radio
+   ├─ refused task refused → ehmpathy/rhachet
+   │  ├─ state: set aside (upstream:access)
+   │  ├─ fault: GraphQL: Resource not accessible by integration (updateIssue)
+   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  ├─ amend it: rhx radio.task.queue set --uuid refused --auth as-human (needs a gh login on this host)
+   │  └─ or drop it: rhx radio.task.queue del --uuid refused --why "<why>"
+   ├─ odd task odd → ehmpathy/rhachet
+   │  ├─ state: set aside (upstream:fault)
+   │  ├─ fault: HTTP 422: Validation Failed
+   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  └─ or drop it: rhx radio.task.queue del --uuid odd --why "<why>"
+   ├─ walled task walled → ehmpathy/rhachet
+   │  ├─ state: halted (upstream:rate-limit)
+   │  └─ auth: default (as-robot:via-keyrack(ehmpath))
+   ├─ gated task gated → ehmpathy/rhachet
+   │  ├─ state: held at gate (radio.uses:blocked — global)
+   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  └─ lift it (human): rhx radio.uses --global allow
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+`;

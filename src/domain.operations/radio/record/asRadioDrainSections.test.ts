@@ -29,6 +29,7 @@ const genRecord = (input: Partial<RadioTaskRecord>): RadioTaskRecord =>
     status: null,
     recordStatus: RadioTaskRecordStatus.QUEUED,
     reason: null,
+    reasonHeadline: null,
     heldSeq: 1,
     deliveredExid: null,
     ...input,
@@ -299,7 +300,7 @@ describe('asRadioDrainSections', () => {
             'fault: API rate limit exceeded for installation',
           );
           expect(text).not.toContain('amend it');
-          expect(text).not.toContain('or drop it');
+          expect(text).not.toMatch(/drop it:/);
           expect(sections).toMatchSnapshot();
         },
       );
@@ -348,7 +349,7 @@ describe('asRadioDrainSections', () => {
           );
           expect(rowBehind).not.toContain('fault:');
           expect(rowBehind).not.toContain('amend it');
-          expect(rowBehind).not.toContain('or drop it');
+          expect(rowBehind).not.toMatch(/drop it:/);
           expect(rowBehind).not.toContain('behind:a1b2c3d4e5f60718');
         },
       );
@@ -380,7 +381,7 @@ describe('asRadioDrainSections', () => {
         expect(text).not.toContain('upstream:access');
         expect(text).not.toContain('fault:');
         expect(text).not.toContain('amend it');
-        expect(text).not.toContain('or drop it');
+        expect(text).not.toMatch(/drop it:/);
         expect(sections).toMatchSnapshot();
       });
     });
@@ -405,7 +406,7 @@ describe('asRadioDrainSections', () => {
         expect(text).not.toContain('upstream:401');
         expect(text).not.toContain('fault:');
         expect(text).not.toContain('amend it');
-        expect(text).not.toContain('or drop it');
+        expect(text).not.toMatch(/drop it:/);
         expect(sections).toMatchSnapshot();
       });
     });
