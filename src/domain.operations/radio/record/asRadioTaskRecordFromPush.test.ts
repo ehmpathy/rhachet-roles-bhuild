@@ -1,3 +1,5 @@
+import { given, then, when } from 'test-fns';
+
 import { IdempotencyMode } from '@src/domain.objects/IdempotencyMode';
 import { RadioChannel } from '@src/domain.objects/RadioChannel';
 import { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
@@ -25,6 +27,7 @@ const genRecord = (input: {
     status: RadioTaskStatus.CLAIMED,
     recordStatus: input.recordStatus,
     reason: null,
+    reasonHeadline: null,
     heldSeq: 3,
     deliveredExid: null,
   });
@@ -97,6 +100,70 @@ describe('asRadioTaskRecordFromPush', () => {
       expect(record.heldSeq).toEqual(3);
     }),
   );
+
+  describe('the words upstream said ride with the fate', () => {
+    const HEADLINE =
+      'GraphQL: Resource not accessible by integration (updateIssue)';
+    const before = new RadioTaskRecord({
+      ...genRecord({ recordStatus: RadioTaskRecordStatus.QUEUED }),
+      reason: 'upstream:access',
+      reasonHeadline: HEADLINE,
+    });
+
+    given('[case1] a set-aside record, re-pushed bare', () => {
+      when('[t0] the push is transcribed', () => {
+        then('the reason and its words are kept', () => {
+          const record = asRadioTaskRecordFromPush({
+            key: 'a1b2c3d4e5f60718',
+            push: { ...genPush({ description: null }), auth: null },
+            before,
+            heldSeq: 3,
+          });
+          expect(record.reason).toEqual('upstream:access');
+          expect(record.reasonHeadline).toEqual(HEADLINE);
+        });
+      });
+    });
+
+    given('[case2] a set-aside record, re-pushed with a new body', () => {
+      when('[t0] the push is transcribed', () => {
+        then('it keeps its place, its reason, and its words', () => {
+          const record = asRadioTaskRecordFromPush({
+            key: 'a1b2c3d4e5f60718',
+            push: {
+              ...genPush({ description: 'remind each surfer two days ahead' }),
+              auth: null,
+            },
+            before,
+            heldSeq: 3,
+          });
+          expect(record.recordStatus).toEqual(RadioTaskRecordStatus.QUEUED);
+          expect(record.reason).toEqual('upstream:access');
+          expect(record.reasonHeadline).toEqual(HEADLINE);
+        });
+      });
+    });
+
+    given('[case3] a refused record with words, re-pushed bare', () => {
+      when('[t0] the push is transcribed', () => {
+        then('it re-queues, so its reason and its words reset', () => {
+          const refused = new RadioTaskRecord({
+            ...before,
+            recordStatus: RadioTaskRecordStatus.REFUSED,
+          });
+          const record = asRadioTaskRecordFromPush({
+            key: 'a1b2c3d4e5f60718',
+            push: { ...genPush({ description: null }), auth: null },
+            before: refused,
+            heldSeq: 3,
+          });
+          expect(record.recordStatus).toEqual(RadioTaskRecordStatus.QUEUED);
+          expect(record.reason).toEqual(null);
+          expect(record.reasonHeadline).toEqual(null);
+        });
+      });
+    });
+  });
 
   test('a bare re-push keeps the auth and idem a `queue set` amended', () => {
     const before = new RadioTaskRecord({

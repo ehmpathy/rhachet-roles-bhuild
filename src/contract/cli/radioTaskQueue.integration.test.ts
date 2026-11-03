@@ -743,6 +743,16 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
           expect(result.stdout).toMatch(/same issue #599/);
         });
 
+        then(
+          'only the set-aside row shows upstream words, the halted rows none',
+          () => {
+            const faultLines = result.stdout.match(/fault: .*/g) ?? [];
+            expect(faultLines).toEqual([
+              'fault: GraphQL: Resource not accessible by integration (updateIssue)',
+            ]);
+          },
+        );
+
         then('the rows read as a human sees them', () => {
           expect(asMaskedStdout(result)).toMatchSnapshot();
         });

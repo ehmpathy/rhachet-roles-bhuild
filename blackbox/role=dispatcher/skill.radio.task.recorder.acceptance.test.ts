@@ -72,6 +72,7 @@ case "$1 $2" in
 esac
 if [ "$mode" = "access-update" ] && [ "$1 $2" = "issue edit" ]; then echo "GraphQL: Resource not accessible by integration (updateIssue)" >&2; exit 1; fi
 if [ "$mode" = "access-update" ] && [ "$1 $2" = "issue close" ]; then echo "GraphQL: Resource not accessible by integration (updateIssue)" >&2; exit 1; fi
+if [ "$mode" = "rate-limit" ]; then echo "API rate limit exceeded for installation ID 1" >&2; exit 1; fi
 case "$1 $2" in
   "issue view") echo '{"number":599,"title":"🎙️ task - board rentals open friday","body":"**description**\\n\\nboard rentals open friday","state":"OPEN","assignees":[{"login":"stubbot"}],"createdAt":"2026-10-20T00:00:00Z","author":{"login":"stubbot"}}' ;;
   "issue edit"|"issue close") echo "https://github.com/stub/stub/issues/599" ;;
@@ -1196,7 +1197,10 @@ describe('radio.task.push — the radio.recorder', () => {
     /**
      * .what = set how the stub gh answers for one target repo, and the org gate in the scene home
      */
-    const setStubMode = (input: { repo: string; mode: 'ok' | 'access-update' }) =>
+    const setStubMode = (input: {
+      repo: string;
+      mode: 'ok' | 'access-update' | 'rate-limit';
+    }) =>
       fs.writeFileSync(
         path.join(scene.stubDir, `mode.${input.repo.replace('/', '_')}`),
         input.mode,
@@ -1232,6 +1236,7 @@ describe('radio.task.push — the radio.recorder', () => {
       auth: string | null;
       recordStatus: string;
       reason: string | null;
+      reasonHeadline?: string;
     }[] => {
       const dir = path.join(scene.consumer.repoDir, '.behavior', '.radio');
       return fs
@@ -1274,7 +1279,17 @@ describe('radio.task.push — the radio.recorder', () => {
           args: 'drain',
           env: getEnvWithStub({ asHumanSession: false }),
         });
-        return { pushes, callsAfterPushes, drain, calls: getStubCalls() };
+        const calls = getStubCalls();
+
+        // a later read, in its own process, of what the drain set aside
+        const get = runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.queue',
+          args: 'get',
+          env: getEnvWithStub({ asHumanSession: false }),
+        });
+        return { pushes, callsAfterPushes, drain, calls, get };
       });
 
       then('each push is held at the shut gate, exit 2, and no gh call is made', () => {
@@ -1294,6 +1309,34 @@ describe('radio.task.push — the radio.recorder', () => {
         const update = getOneRecordOnDisk({ exid: '599', title: null });
         expect(update.recordStatus).toEqual('QUEUED');
         expect(update.reason).toEqual('upstream:access');
+      });
+
+      then('a later `queue get` names the update, its refusal in the words github said, and its fix', () => {
+        expect(result.get.exitCode).toEqual(0);
+        expect(result.get.stdout).toContain('state: set aside (upstream:access)');
+        expect(result.get.stdout).toContain(
+          'fault: GraphQL: Resource not accessible by integration (updateIssue)',
+        );
+        expect(result.get.stdout).toContain('amend it: rhx radio.task.queue set');
+        expect(asStableOutput({ output: result.get.stdout })).toMatchSnapshot();
+      });
+
+      then('the record keeps the refusal headline, with no clock in its file', () => {
+        const update = getOneRecordOnDisk({ exid: '599', title: null });
+        expect(update.reasonHeadline).toEqual(
+          'GraphQL: Resource not accessible by integration (updateIssue)',
+        );
+
+        // the raw bytes of each record file, as git would stage them
+        const dir = path.join(scene.consumer.repoDir, '.behavior', '.radio');
+        const contents = fs
+          .readdirSync(dir)
+          .filter((name) => /^record\.[a-z0-9-]+\.json$/.test(name))
+          .map((name) => fs.readFileSync(path.join(dir, name), 'utf-8'));
+        expect(contents.length).toBeGreaterThan(0);
+        contents.forEach((content) => {
+          expect(getTimestampFound({ content })).toEqual(null);
+        });
       });
 
       then('the create behind it still delivers (no head-of-line block)', () => {
@@ -1354,12 +1397,27 @@ describe('radio.task.push — the radio.recorder', () => {
           args: 'drain',
           env: getEnvWithStub({ asHumanSession: true }),
         });
+        const calls = getStubCalls().slice(callsBefore);
+        const get = runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.queue',
+          args: 'get',
+          env: getEnvWithStub({ asHumanSession: true }),
+        });
         return {
           set,
           drain,
-          calls: getStubCalls().slice(callsBefore),
+          calls,
+          get,
           onDisk: getOneRecordOnDisk({ exid: '599', title: null }),
         };
+      });
+
+      then('a later `queue get` is clean: naught held, no fault line left behind', () => {
+        expect(result.get.exitCode).toEqual(0);
+        expect(result.get.stdout).toContain('naught held for the radio');
+        expect(result.get.stdout).not.toContain('fault:');
       });
 
       then('the set exits 0 and names the auth change', () => {
@@ -1381,6 +1439,66 @@ describe('radio.task.push — the radio.recorder', () => {
       then('the record on disk is DELIVERED, with the as-human auth it was amended to', () => {
         expect(result.onDisk.recordStatus).toEqual('DELIVERED');
         expect(result.onDisk.auth).toEqual('as-human');
+        expect(result.onDisk.reasonHeadline).toBeUndefined();
+      });
+    });
+
+    when('[t3] a push meets a rate limit, a later `queue get` reads it, then the wall clears (case=5)', () => {
+      const result = useThen('the push, the get, and the drain run', () => {
+        setStubMode({ repo: 'sandpine/svc-tides', mode: 'rate-limit' });
+        const push = runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.push',
+          args: `--via gh.issues --into sandpine/svc-tides --title "swell report" --description "post the dawn swell" --auth "${authEnv}"`,
+          env: getEnvWithStub({ asHumanSession: false }),
+        });
+        const walled = getOneRecordOnDisk({ exid: null, title: 'swell report' });
+        const get = runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.queue',
+          args: 'get',
+          env: getEnvWithStub({ asHumanSession: false }),
+        });
+        setStubMode({ repo: 'sandpine/svc-tides', mode: 'ok' });
+        const drain = runDispatcherSkill({
+          ...scene,
+          repoDir: scene.consumer.repoDir,
+          skill: 'radio.task.queue',
+          args: 'drain',
+          env: getEnvWithStub({ asHumanSession: false }),
+        });
+        return {
+          push,
+          walled,
+          get,
+          drain,
+          onDisk: getOneRecordOnDisk({ exid: null, title: 'swell report' }),
+        };
+      });
+
+      then('the push is held behind the wall, exit 2, the record QUEUED as upstream:rate-limit', () => {
+        expect(result.push.exitCode).toEqual(2);
+        expect(result.walled.recordStatus).toEqual('QUEUED');
+        expect(result.walled.reason).toEqual('upstream:rate-limit');
+      });
+
+      then('the wall keeps no words on its record, since they vary per attempt', () => {
+        expect(result.walled.reasonHeadline).toBeUndefined();
+      });
+
+      then('a later `queue get` names the halt, with no fault line', () => {
+        expect(result.get.exitCode).toEqual(0);
+        expect(result.get.stdout).toContain('state: halted (upstream:rate-limit)');
+        expect(result.get.stdout).not.toContain('fault:');
+        expect(asStableOutput({ output: result.get.stdout })).toMatchSnapshot();
+      });
+
+      then('once the wall clears, the drain delivers it and naught is held', () => {
+        expect(result.drain.exitCode).toEqual(0);
+        expect(result.onDisk.recordStatus).toEqual('DELIVERED');
+        expect(result.onDisk.reason).toEqual(null);
       });
     });
   });

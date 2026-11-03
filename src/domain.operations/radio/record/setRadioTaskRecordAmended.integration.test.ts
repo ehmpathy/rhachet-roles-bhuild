@@ -16,6 +16,7 @@ import { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
 
 import { setRadioTaskRecordAmended } from './setRadioTaskRecordAmended';
 import { setRadioTaskRecordFromPush } from './setRadioTaskRecordFromPush';
+import { setRadioTaskRecordSettled } from './setRadioTaskRecordSettled';
 
 /**
  * .what = a temp worktree that holds one create for the sandpine lesson service
@@ -112,6 +113,55 @@ describe('setRadioTaskRecordAmended', () => {
           'remind each surfer to pack a wetsuit',
         );
       });
+    });
+  });
+
+  given('[case2] a held create set aside, with what upstream said', () => {
+    const headline =
+      'GraphQL: Resource not accessible by integration (updateIssue)';
+    const scene = useBeforeAll(async () => {
+      const made = genScene();
+      setRadioTaskRecordSettled({
+        dir: made.dir,
+        record: made.record,
+        change: { reason: 'upstream:access', reasonHeadline: headline },
+      });
+      return made;
+    });
+
+    when('[t0] its body alone is amended', () => {
+      const result = useThen('it is amended', async () =>
+        setRadioTaskRecordAmended(
+          {
+            key: scene.record.key,
+            auth: null,
+            description: 'remind each surfer to wax the board',
+          },
+          { cwd: scene.cwd },
+        ),
+      );
+
+      then('the fault and its words stay: a body cures no auth fault', () => {
+        expect(result.after.reason).toEqual('upstream:access');
+        expect(result.after.reasonHeadline).toEqual(headline);
+      });
+    });
+
+    when('[t1] its auth is amended', () => {
+      const result = useThen('it is amended', async () =>
+        setRadioTaskRecordAmended(
+          { key: scene.record.key, auth: 'as-human', description: null },
+          { cwd: scene.cwd },
+        ),
+      );
+
+      then(
+        'the fault and its words clear: they were the verdict on the old auth',
+        () => {
+          expect(result.after.reason).toEqual(null);
+          expect(result.after.reasonHeadline).toEqual(null);
+        },
+      );
     });
   });
 });

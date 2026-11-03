@@ -18,6 +18,7 @@ const read = new RadioTaskRecord({
   status: null,
   recordStatus: RadioTaskRecordStatus.QUEUED,
   reason: null,
+  reasonHeadline: null,
   heldSeq: 4,
   deliveredExid: null,
 });
@@ -36,6 +37,19 @@ const TEST_CASES = [
         recordStatus: RadioTaskRecordStatus.DELIVERED,
         reason: null,
         deliveredExid: '42',
+      }),
+    },
+    expect: { output: false },
+  },
+  {
+    description:
+      "the drain's own set-aside, with what upstream said, is no re-push",
+    given: {
+      current: new RadioTaskRecord({
+        ...read,
+        reason: 'upstream:access',
+        reasonHeadline:
+          'GraphQL: Resource not accessible by integration (updateIssue)',
       }),
     },
     expect: { output: false },

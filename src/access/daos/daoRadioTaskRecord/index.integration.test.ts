@@ -31,6 +31,7 @@ const record = new RadioTaskRecord({
   status: null,
   recordStatus: RadioTaskRecordStatus.QUEUED,
   reason: null,
+  reasonHeadline: null,
   heldSeq: 1,
   deliveredExid: null,
 });
@@ -624,6 +625,95 @@ describe('daoRadioTaskRecord', () => {
         expect(result.message).toContain(
           'the record holds key "k1" but its file is named for "k2"',
         );
+      });
+    });
+  });
+
+  given('[case14] a record file written before the headline field', () => {
+    // the bytes a prior version wrote: every field but reasonHeadline, in file order
+    const { reasonHeadline: _absent, ...recordLegacy } = record;
+    const contentLegacy = JSON.stringify(recordLegacy, null, 2) + '\n';
+    const scene = useBeforeAll(async () =>
+      genDirWithFile({
+        slug: 'dao-record-case14',
+        name: 'record.k1.json',
+        content: contentLegacy,
+      }),
+    );
+
+    when('[t0] the record is read, then written back unchanged', () => {
+      const result = useThen('it round-trips', async () => {
+        const found = daoRadioTaskRecord.get.one.byUnique({
+          dir: scene.dir,
+          key: 'k1',
+        });
+        daoRadioTaskRecord.set.upsert({ dir: scene.dir, record: found! });
+        return { found, bytesAfter: fs.readFileSync(scene.pathFile, 'utf8') };
+      });
+
+      then('the absent headline reads back as null, never undefined', () => {
+        expect(result.found?.reasonHeadline).toEqual(null);
+      });
+
+      then('the rewrite leaves the file bytes as they were', () => {
+        expect(result.bytesAfter).toEqual(contentLegacy);
+      });
+    });
+  });
+
+  given('[case15] a record that keeps a headline', () => {
+    const recordWithHeadline = new RadioTaskRecord({
+      ...record,
+      reason: 'upstream:access',
+      reasonHeadline:
+        'GraphQL: Resource not accessible by integration (updateIssue)',
+    });
+    const scene = useBeforeAll(async () => ({
+      dir: path.join(genTempDir({ slug: 'dao-record-case15' }), '.radio'),
+    }));
+
+    when('[t0] it is upserted, read back, then its headline cleared', () => {
+      const result = useThen('each write lands', async () => {
+        daoRadioTaskRecord.set.upsert({
+          dir: scene.dir,
+          record: recordWithHeadline,
+        });
+        const found = daoRadioTaskRecord.get.one.byUnique({
+          dir: scene.dir,
+          key: 'k1',
+        });
+        const pathFile = daoRadioTaskRecord.get.path({
+          dir: scene.dir,
+          key: 'k1',
+        });
+        const bytesKept = fs.readFileSync(pathFile, 'utf8');
+        daoRadioTaskRecord.set.upsert({
+          dir: scene.dir,
+          record: new RadioTaskRecord({
+            ...recordWithHeadline,
+            reason: null,
+            reasonHeadline: null,
+          }),
+        });
+        return {
+          found,
+          bytesKept,
+          bytesCleared: fs.readFileSync(pathFile, 'utf8'),
+        };
+      });
+
+      then('the headline reads back whole', () => {
+        expect(result.found).toEqual(recordWithHeadline);
+      });
+
+      then('the file holds the headline beside its reason', () => {
+        expect(result.bytesKept).toContain(
+          '"reasonHeadline": "GraphQL: Resource not accessible by integration (updateIssue)"',
+        );
+      });
+
+      then('a cleared headline leaves no key in the file', () => {
+        expect(result.bytesCleared).not.toContain('reasonHeadline');
       });
     });
   });

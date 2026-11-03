@@ -21,6 +21,7 @@ const genRecord = (input: {
     status: null,
     recordStatus: input.recordStatus,
     reason: null,
+    reasonHeadline: null,
     heldSeq: 1,
     deliveredExid: null,
   });

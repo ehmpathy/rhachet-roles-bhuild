@@ -310,6 +310,22 @@ describe('setRadioTaskRecordUpstream', () => {
           },
         );
 
+        then(
+          'the record keeps no words for an auth fault: its text is ours or the credential command, never github',
+          () => {
+            expect(result.onDisk?.reasonHeadline).toEqual(null);
+
+            // the tracked file never holds the credential command, nor what it would echo
+            const fileText = fs.readFileSync(
+              path.join(scene.dir, `record.${scene.record.key}.json`),
+              'utf-8',
+            );
+            expect(fileText).not.toContain('reasonHeadline');
+            expect(fileText).not.toContain('ghp_stubToken000');
+            expect(fileText).not.toContain('auth derive did not finish');
+          },
+        );
+
         then('it costs the cap, not the stall', () => {
           expect(result.elapsedMs).toBeLessThan(4_000);
         });

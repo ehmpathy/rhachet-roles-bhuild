@@ -28,6 +28,7 @@ const genRecord = (input: Partial<RadioTaskRecord>): RadioTaskRecord =>
     status: null,
     recordStatus: RadioTaskRecordStatus.QUEUED,
     reason: null,
+    reasonHeadline: null,
     heldSeq: 1,
     deliveredExid: null,
     ...input,
@@ -154,7 +155,7 @@ describe('asRadioDrainOutput', () => {
         expect(output).not.toContain('back in the river');
         expect(output).toContain('fault: API rate limit exceeded');
         expect(output).toContain('backlog = 2 await the radio');
-        expect(output).not.toContain('or drop it');
+        expect(output).not.toMatch(/drop it:/);
         expect(output).toMatchSnapshot();
       });
     });

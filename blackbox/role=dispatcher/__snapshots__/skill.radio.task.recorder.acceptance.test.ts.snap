@@ -115,7 +115,7 @@ exports[`radio.task.push — the radio.recorder given: [case2] a record file on 
 
 🎙️ radio.task.queue --help
    ├─ usage
-   │  ├─ rhx radio.task.queue get                                   what waits: uuid · task · reason · fix
+   │  ├─ rhx radio.task.queue get                                   what waits: uuid · task · reason · upstream's words · fix
    │  ├─ rhx radio.task.queue get --when hook.onStop                one-line stop reminder (naught when none)
    │  ├─ rhx radio.task.queue set   --uuid <uuid> --auth as-human   amend one held record (or --description)
    │  ├─ rhx radio.task.queue del   --uuid <uuid> --why "<why>"     drop one, its body and why kept
@@ -386,6 +386,19 @@ exports[`radio.task.push — the radio.recorder given: [case6] a clone reads, dr
 🦫 naught held for the radio"
 `;
 
+exports[`radio.task.push — the radio.recorder given: [case7] a drain crosses a fault through rhachet, via a stub gh (#511, #513, case=5, case=7) when: [t0] two gh pushes are held at a shut gate, then the gate opens and the clone drains; the robot may not write the update then: a later \`queue get\` names the update, its refusal in the words github said, and its fix 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 held for the radio
+   ├─ <uuid> deliver #<exid> → sandpine/svc-lessons
+   │  ├─ state: set aside (upstream:access)
+   │  ├─ fault: GraphQL: Resource not accessible by integration (updateIssue)
+   │  ├─ auth: as-robot:env(RADIO_ACPT_JOURNEY_TOKEN)
+   │  ├─ amend it: rhx radio.task.queue set --uuid <uuid> --auth as-human (needs a gh login on this host)
+   │  └─ or drop it: rhx radio.task.queue del --uuid <uuid> --why "<why>"
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+`;
+
 exports[`radio.task.push — the radio.recorder given: [case7] a drain crosses a fault through rhachet, via a stub gh (#511, #513, case=5, case=7) when: [t0] two gh pushes are held at a shut gate, then the gate opens and the clone drains; the robot may not write the update then: the stdout reads as a human sees it 1`] = `
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
 
@@ -427,4 +440,14 @@ exports[`radio.task.push — the radio.recorder given: [case7] a drain crosses a
    │  └─ auth: as-robot:env(RADIO_ACPT_JOURNEY_TOKEN) → as-human
    ├─ kept at = .behavior/.radio/record.<uuid>.json
    └─ naught sent; its place in line is kept, and the next push, or \`rhx radio.task.queue drain\`, sends it"
+`;
+
+exports[`radio.task.push — the radio.recorder given: [case7] a drain crosses a fault through rhachet, via a stub gh (#511, #513, case=5, case=7) when: [t3] a push meets a rate limit, a later \`queue get\` reads it, then the wall clears (case=5) then: a later \`queue get\` names the halt, with no fault line 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 held for the radio
+   ├─ <uuid> swell report → sandpine/svc-tides
+   │  ├─ state: halted (upstream:rate-limit)
+   │  └─ auth: as-robot:env(RADIO_ACPT_JOURNEY_TOKEN)
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;

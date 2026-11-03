@@ -2,17 +2,22 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { genTempDir, given, then, useBeforeAll, useThen, when } from 'test-fns';
 
+import { daoRadioTaskRecord } from '@src/access/daos/daoRadioTaskRecord';
+import { IdempotencyMode } from '@src/domain.objects/IdempotencyMode';
 import { RadioChannel } from '@src/domain.objects/RadioChannel';
 import { RadioTaskRecordStatus } from '@src/domain.objects/RadioTaskRecordStatus';
 import { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
 import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
 import { shx } from '@src/infra/shell/shx';
 
+import { getTimestampFound } from '../../../.test/utils/getTimestampFound';
 import { asRadioDrainOutput } from './asRadioDrainOutput';
 import { asRadioDropOutput } from './asRadioDropOutput';
+import { asRadioHeldOutput } from './asRadioHeldOutput';
 import { asRadioPushOutput } from './asRadioPushOutput';
 import { asRadioTaskRecordLabel } from './asRadioTaskRecordLabel';
 import { getAllRadioTaskRecordsHeld } from './getAllRadioTaskRecordsHeld';
+import { getAllRadioTaskRecordsHeldWithLift } from './getAllRadioTaskRecordsHeldWithLift';
 import { isRadioPushDelivered } from './isRadioPushDelivered';
 import { setRadioTaskRecordAmended } from './setRadioTaskRecordAmended';
 import { setRadioTaskRecordDropped } from './setRadioTaskRecordDropped';
@@ -25,13 +30,18 @@ import { setRadioTaskRecordsDrainedByPush } from './setRadioTaskRecordsDrainedBy
  * .why  = an update the robot may not write (#599), a repo the auth cannot see, and a rate
  *         limit are faults a test cannot provoke on demand against real github; the stub
  *         replays gh's own stderr text for each, per target repo
- * .real = the 401 path runs against real github in setRadioTaskRecordsDrainedByPush
- *         [case7]; the gh dao itself in daoRadioTaskViaGhIssues.integration.test.ts
+ * .real = against real github, in setRadioTaskRecordsDrainedByPush: [case7] the 401 path,
+ *         [case13] a refusal whose words the record keeps; the gh dao itself in
+ *         daoRadioTaskViaGhIssues.integration.test.ts
  *
  * .note = mode `access-update` answers `issue view` with a claimed radio issue, then refuses
  *         `issue edit` the way github refused bhuild#599; a create on that repo still lands
  * .note = mode `access-claim` faults only #599: unclaimed, and its edits refused; any other
  *         issue on that repo reads claimed and takes its edits
+ * .note = mode `access-clock` refuses `issue edit` as `access-update` does, under any token, with
+ *         a request-id line ahead of a refusal line that ends in a clock (a refusal's words a
+ *         record must not keep)
+ * .note = mode `outage` answers every call with a 502, the shape of a github outage
  * .note = a call under STUB_GH_WIDE_TOKEN passes the access refusals, as a wider auth would;
  *         a claim that lands marks its issue claimed, so a later deliver of it can land
  */
@@ -46,7 +56,9 @@ case "$1 $2" in
   "api user") echo "stubbot"; exit 0 ;;
 esac
 if [ "$mode" = "rate-limit" ]; then echo "API rate limit exceeded for installation ID 1" >&2; exit 1; fi
+if [ "$mode" = "outage" ]; then echo "HTTP 502: Bad Gateway (https://api.github.com/graphql)" >&2; exit 1; fi
 if [ "$mode" = "unreachable" ]; then echo "GraphQL: Could not resolve to a Repository with the name '$repo'. (repository)" >&2; exit 1; fi
+if [ "$mode" = "access-clock" ] && [ "$1 $2" = "issue edit" ]; then printf 'x-github-request-id: 9F3A:1B2C\\nGraphQL: Resource not accessible by integration (updateIssue) at 2026-11-02T14:02:11Z\\n' >&2; exit 1; fi
 if [ "$mode" = "access-update" ] && [ "$wide" = "no" ] && [ "$1 $2" = "issue edit" ]; then echo "GraphQL: Resource not accessible by integration (updateIssue)" >&2; exit 1; fi
 if [ "$mode" = "access-update" ] && [ "$wide" = "no" ] && [ "$1 $2" = "issue close" ]; then echo "GraphQL: Resource not accessible by integration (updateIssue)" >&2; exit 1; fi
 if [ "$mode" = "access-claim" ] && [ "$3" = "599" ] && [ "$claimed" = "no" ] && [ "$1 $2" = "issue view" ]; then echo '{"number":599,"title":"🎙️ task - board rentals open friday","body":"**description**\\n\\nboard rentals open friday","state":"OPEN","assignees":[],"createdAt":"2026-10-20T00:00:00Z","author":{"login":"stubbot"}}'; exit 0; fi
@@ -96,6 +108,10 @@ const repoLeash = new RadioTaskRepo({
   owner: 'sandpine',
   name: 'board-leash',
 });
+const repoTide = new RadioTaskRepo({
+  owner: 'sandpine',
+  name: 'tide-log',
+});
 const authEnv = 'as-robot:env(RADIO_CASE9_TEST_TOKEN)';
 
 /**
@@ -125,7 +141,14 @@ const genScene = (input: { slug: string }) => {
  */
 const setStubMode = (input: {
   repo: RadioTaskRepo;
-  mode: 'ok' | 'rate-limit' | 'access-update' | 'access-claim' | 'unreachable';
+  mode:
+    | 'ok'
+    | 'rate-limit'
+    | 'outage'
+    | 'access-update'
+    | 'access-clock'
+    | 'access-claim'
+    | 'unreachable';
 }) =>
   fs.writeFileSync(
     path.join(
@@ -146,6 +169,7 @@ const holdPush = (input: {
   exid?: string | null;
   status?: RadioTaskStatus | null;
   description?: string | null;
+  idem?: IdempotencyMode | null;
 }) =>
   setRadioTaskRecordFromPush(
     {
@@ -153,7 +177,7 @@ const holdPush = (input: {
         repo: input.repo,
         via: RadioChannel.GH_ISSUES,
         auth: authEnv,
-        idem: null,
+        idem: input.idem ?? null,
         title: input.title,
         description:
           input.description ??
@@ -235,6 +259,35 @@ const pushCarrier = async (input: { cwd: string; homeDir: string }) => {
   };
 };
 
+/**
+ * .what = what `radio.task.queue get` prints, and the bytes of one record file, read after a drain
+ * .why = the reader of `get` runs in a later process than the drain; only what the record
+ *        keeps on disk can reach it
+ */
+const readQueue = async (input: {
+  cwd: string;
+  homeDir: string;
+  key: string;
+}) => {
+  const context = {
+    cwd: input.cwd,
+    homeDir: input.homeDir,
+    env: process.env,
+    shx,
+  };
+  const held = await getAllRadioTaskRecordsHeldWithLift({}, context);
+  return {
+    output: asRadioHeldOutput({ held, mode: 'list' }),
+    recordFileText: fs.readFileSync(
+      daoRadioTaskRecord.get.path({
+        dir: path.join(input.cwd, '.behavior', '.radio'),
+        key: input.key,
+      }),
+      'utf8',
+    ),
+  };
+};
+
 describe('radio.task.push — case=9, one push carries a mixed backlog', () => {
   const pathPrior = process.env.PATH;
 
@@ -285,6 +338,20 @@ describe('radio.task.push — case=9, one push carries a mixed backlog', () => {
             RadioTaskRecordStatus.QUEUED,
           );
         });
+
+        then(
+          'A and B each keep the words github said for its own class',
+          () => {
+            expect(
+              result.fateByLabel['deliver #599']?.record.reasonHeadline,
+            ).toEqual(
+              'GraphQL: Resource not accessible by integration (updateIssue)',
+            );
+            expect(
+              result.fateByLabel['tide widget']?.record.reasonHeadline,
+            ).toContain('to a Repository with the name');
+          },
+        );
 
         then('C and D deliver past both', () => {
           expect(result.fateByLabel['wetsuit sizes']?.fate).toEqual(
@@ -354,6 +421,21 @@ describe('radio.task.push — case=9, one push carries a mixed backlog', () => {
         expect(result.fateByLabel['coachbook ics']?.fate).toEqual('held');
       });
 
+      then(
+        'the wall keeps no words on its record, since they vary per attempt',
+        () => {
+          const fateC = result.fateByLabel['wetsuit sizes'];
+          expect(fateC?.record.reason).toEqual('upstream:rate-limit');
+          expect(fateC?.record.reasonHeadline).toEqual(null);
+        },
+      );
+
+      then('a refusal before the wall keeps its words', () => {
+        expect(
+          result.fateByLabel['deliver #599']?.record.reasonHeadline,
+        ).not.toEqual(null);
+      });
+
       then('the carrier waits too: exit 2, this push did not land', () => {
         expect(result.pushed.fate).toEqual('held');
         expect(result.isDelivered).toEqual(false);
@@ -362,6 +444,49 @@ describe('radio.task.push — case=9, one push carries a mixed backlog', () => {
         );
         expect(result.output).not.toMatch(/radio-task-edit-\d+/);
         expect(result.output).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case2b] the same backlog, an outage (a 502) on C', () => {
+    const scene = useBeforeAll(async () => {
+      const one = genScene({ slug: 'radio-case9-t2b' });
+      holdBacklog({ cwd: one.cwd });
+      return one;
+    });
+
+    when('[t2] the same carrier push', () => {
+      const result = useThen('the carrier push drains', async () => {
+        setStubMode({ repo: repoRentals, mode: 'outage' });
+        const pushed = await pushCarrier(scene);
+        setStubMode({ repo: repoRentals, mode: 'ok' });
+        return pushed;
+      });
+
+      then('A and B are set aside before the wall, as on a rate limit', () => {
+        expect(result.fateByLabel['deliver #599']?.record.reason).toEqual(
+          'upstream:access',
+        );
+        expect(result.fateByLabel['tide widget']?.record.reason).toEqual(
+          'upstream:not-found',
+        );
+      });
+
+      then('C halts the drain as a transient wall; D waits behind it', () => {
+        const fateC = result.fateByLabel['wetsuit sizes'];
+        expect(fateC?.fate).toEqual('held');
+        expect(fateC?.fate === 'held' ? fateC.halt : null).toEqual(true);
+        expect(fateC?.record.reason).toEqual('upstream:transient');
+        expect(result.fateByLabel['coachbook ics']?.fate).toEqual('held');
+      });
+
+      then('the wall keeps no words; the carrier waits too', () => {
+        expect(
+          result.fateByLabel['wetsuit sizes']?.record.reasonHeadline,
+        ).toEqual(null);
+        expect(result.pushed.fate).toEqual('held');
+        expect(result.isDelivered).toEqual(false);
+        expect(result.output).toContain('HTTP 502: Bad Gateway');
       });
     });
   });
@@ -607,10 +732,16 @@ describe('radio.task.push — case=9, one push carries a mixed backlog', () => {
         '[t1] the edit is dropped, the repo grants the write, then a plain drain',
         () => {
           const result = useThen('the drain runs', async () => {
+            const getEditStored = () =>
+              daoRadioTaskRecord.get
+                .all({ dirs: [path.join(scene.cwd, '.behavior', '.radio')] })
+                .find(({ record }) => record.key === scene.edit.key);
+            const editBefore = getEditStored();
             const dropped = await setRadioTaskRecordDropped(
               { key: scene.edit.key, why: 'superseded by the deliver' },
               { cwd: scene.cwd },
             );
+            const editStored = getEditStored();
             setStubMode({ repo: repoWax, mode: 'ok' });
             const { fates } = await setRadioTaskRecordsDrained(
               {},
@@ -622,12 +753,29 @@ describe('radio.task.push — case=9, one push carries a mixed backlog', () => {
                 authOverride: null,
               },
             );
-            return { dropped, fates };
+            return { dropped, fates, editBefore, editStored };
+          });
+
+          then('before the drop, the edit keeps the words github said', () => {
+            expect(result.editBefore?.record.reasonHeadline).toEqual(
+              'GraphQL: Resource not accessible by integration (updateIssue)',
+            );
           });
 
           then('the drop names the one update that waited behind it', () => {
             expect(result.dropped.behind).toEqual(1);
           });
+
+          then(
+            'the dropped record, read back from disk, keeps no words',
+            () => {
+              expect(result.editStored?.record.recordStatus).toEqual(
+                RadioTaskRecordStatus.DROPPED,
+              );
+              expect(result.editStored?.record.reason).toMatch(/^dropped: /);
+              expect(result.editStored?.record.reasonHeadline).toEqual(null);
+            },
+          );
 
           then('the deliver sends on that next drain, and lands', () => {
             const fate = result.fates.find(
@@ -794,6 +942,223 @@ describe('radio.task.push — case=9, one push carries a mixed backlog', () => {
           expect(output).toContain('cannot deliver unclaimed task');
           expect(output).toMatchSnapshot();
         });
+      });
+    },
+  );
+
+  /**
+   * .note = the shape #591 and its wish measured: an `--idem upsert` edit of an extant issue
+   *         the bot may not write, at the head, nine dispatches behind it across repos, then one
+   *         more push. the measured record held `auth: null`; that only picks which token the
+   *         drain derives (the keyrack default), and a failed derive is set aside with
+   *         `halt: false` in setRadioTaskRecordUpstream. this scene pins the derive with an env
+   *         token so the refusal itself is met, deterministically
+   */
+  given(
+    '[case8] an upsert edit the bot may not write, at the head, nine dispatches behind it (#591)',
+    () => {
+      const scene = useBeforeAll(async () => {
+        const one = genScene({ slug: 'radio-case9-c8' });
+        const head = holdPush({
+          cwd: one.cwd,
+          repo: repoLessons,
+          title: 'lesson reminders',
+          exid: '673',
+          idem: IdempotencyMode.UPSERT,
+          description: 'remind each surfer the day before',
+        });
+        const behind = [
+          repoRentals,
+          repoCoachbook,
+          repoWax,
+          repoLeash,
+          repoLessons,
+          repoRentals,
+          repoCoachbook,
+          repoWax,
+          repoLeash,
+        ].map((repo, index) =>
+          holdPush({ cwd: one.cwd, repo, title: `dispatch ${index + 1}` }),
+        );
+        return { ...one, head, behind };
+      });
+
+      when('[t0] one more push lands', () => {
+        const result = useThen('the carrier push drains', async () =>
+          pushCarrier(scene),
+        );
+
+        then('the head is set aside as upstream:access, never a halt', () => {
+          const fate = result.others.find(
+            (one) => one.record.key === scene.head.key,
+          );
+          expect(fate?.fate).toEqual('held');
+          expect(fate?.fate === 'held' ? fate.halt : null).toEqual(false);
+          expect(fate?.record.reason).toEqual('upstream:access');
+          expect(fate?.record.recordStatus).toEqual(
+            RadioTaskRecordStatus.QUEUED,
+          );
+        });
+
+        then('all nine dispatches behind it deliver', () => {
+          const delivered = scene.behind.map(
+            (record) =>
+              result.others.find((one) => one.record.key === record.key)?.fate,
+          );
+          expect(delivered).toEqual(Array(9).fill('delivered'));
+        });
+
+        then('the carrier lands; only the head is left held', () => {
+          expect(result.pushed.fate).toEqual('delivered');
+          expect(result.isDelivered).toEqual(true);
+          expect(result.backlog).toEqual(1);
+        });
+      });
+
+      when('[t1] a later process reads the queue', () => {
+        const read = useThen('queue get lists the backlog', async () =>
+          readQueue({ ...scene, key: scene.head.key }),
+        );
+
+        then('the head names its refusal in the words github said', () => {
+          expect(read.output).toContain(
+            'fault: GraphQL: Resource not accessible by integration (updateIssue)',
+          );
+        });
+
+        then('the head names its fix beside the refusal', () => {
+          expect(read.output).toContain(
+            `amend it: rhx radio.task.queue set --uuid ${scene.head.key} --auth as-human`,
+          );
+          expect(read.output).toContain(
+            `or drop it: rhx radio.task.queue del --uuid ${scene.head.key}`,
+          );
+        });
+
+        then('the record file keeps the headline, with no clock', () => {
+          expect(read.recordFileText).toContain(
+            '"reasonHeadline": "GraphQL: Resource not accessible by integration (updateIssue)"',
+          );
+          expect(getTimestampFound({ content: read.recordFileText })).toEqual(
+            null,
+          );
+        });
+
+        then('the queue reads as the reader sees it', () => {
+          expect(read.output).toContain(
+            '│  ├─ state: set aside (upstream:access)\n   │  ├─ fault: GraphQL: Resource not accessible by integration (updateIssue)',
+          );
+          expect(read.output).toMatchSnapshot();
+        });
+      });
+
+      when('[t2] a plain drain meets the same refusal again', () => {
+        const result = useThen('the drain runs', async () => {
+          const before = await readQueue({ ...scene, key: scene.head.key });
+          await setRadioTaskRecordsDrained(
+            {},
+            { ...scene, env: process.env, shx, authOverride: null },
+          );
+          const after = await readQueue({ ...scene, key: scene.head.key });
+          return { before, after };
+        });
+
+        then('the record file is rewritten byte for byte: no churn', () => {
+          expect(result.after.recordFileText).toEqual(
+            result.before.recordFileText,
+          );
+        });
+      });
+
+      when('[t3] upstream grants the access, and a plain drain runs', () => {
+        const result = useThen('the drain runs', async () => {
+          setStubMode({ repo: repoLessons, mode: 'ok' });
+          try {
+            const { fates } = await setRadioTaskRecordsDrained(
+              {},
+              { ...scene, env: process.env, shx, authOverride: null },
+            );
+            const recordFileText = fs.readFileSync(
+              daoRadioTaskRecord.get.path({
+                dir: path.join(scene.cwd, '.behavior', '.radio'),
+                key: scene.head.key,
+              }),
+              'utf8',
+            );
+            return { fates, recordFileText };
+          } finally {
+            setStubMode({ repo: repoLessons, mode: 'access-update' });
+          }
+        });
+
+        then('the head delivers', () => {
+          const fate = result.fates.find(
+            (one) => one.record.key === scene.head.key,
+          );
+          expect(fate?.fate).toEqual('delivered');
+        });
+
+        then('its reason and its headline clear in the one write', () => {
+          expect(result.recordFileText).toContain('"reason": null');
+          expect(result.recordFileText).not.toContain('reasonHeadline');
+        });
+      });
+    },
+  );
+
+  given(
+    '[case9] a refusal whose words carry a clock, held among others',
+    () => {
+      const scene = useBeforeAll(async () => {
+        const one = genScene({ slug: 'radio-case9-c9' });
+        setStubMode({ repo: repoTide, mode: 'access-clock' });
+        const head = holdPush({
+          cwd: one.cwd,
+          repo: repoTide,
+          title: 'swell report',
+          exid: '674',
+          idem: IdempotencyMode.UPSERT,
+          description: 'post the dawn swell',
+        });
+        holdPush({ cwd: one.cwd, repo: repoRentals, title: 'board rack' });
+        return { ...one, head };
+      });
+
+      when('[t0] one more push lands, then the queue is read', () => {
+        const result = useThen('the carrier push drains', async () =>
+          pushCarrier(scene),
+        );
+
+        then('the head is set aside and the rest deliver', () => {
+          const fate = result.others.find(
+            (one) => one.record.key === scene.head.key,
+          );
+          expect(fate?.record.reason).toEqual('upstream:access');
+          expect(result.fateByLabel['board rack']?.fate).toEqual('delivered');
+        });
+
+        const read = useThen('queue get lists the backlog', async () =>
+          readQueue({ ...scene, key: scene.head.key }),
+        );
+
+        then('the record keeps no headline, so its file holds no clock', () => {
+          expect(read.recordFileText).not.toContain('reasonHeadline');
+          expect(getTimestampFound({ content: read.recordFileText })).toEqual(
+            null,
+          );
+        });
+
+        then(
+          'get still names the class and the fix, with no fault line',
+          () => {
+            expect(read.output).toContain('state: set aside (upstream:access)');
+            expect(read.output).toContain(
+              `amend it: rhx radio.task.queue set --uuid ${scene.head.key} --auth as-human`,
+            );
+            expect(read.output).not.toContain('fault:');
+            expect(read.output).toMatchSnapshot();
+          },
+        );
       });
     },
   );
