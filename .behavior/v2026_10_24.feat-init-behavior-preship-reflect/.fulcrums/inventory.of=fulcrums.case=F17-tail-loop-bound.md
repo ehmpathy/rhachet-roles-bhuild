@@ -30,4 +30,5 @@ blueprint `6.preship.stone` step 3; `## open questions` q10.
 
 ## .verdict
 
-open.
+ruled (b), by the director (2026-11-04): 3 per loop; a timeout re-runs free inside the watch cap;
+the stone passes the tool's max timeout. **why**: under (a), three tool kills halt a healthy route.

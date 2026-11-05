@@ -19,4 +19,5 @@
 - **risk if wrong**: low — a heavy route gets the light roster on two stones; a later add.
 - **where**: `3.3.1.blueprint.product.yield.md` q4; `templates/{6.preship,7.reflect}.guard`.
 - **raised again by**: peer `repo-rules` blocker.1 (round i001), disputed to this row.
-- **verdict**: open — the commander rules.
+- **verdict**: ruled (a), by the director (2026-11-04): one guard per tail stone. **why**: F5 left
+  the variants no difference but roster size.
