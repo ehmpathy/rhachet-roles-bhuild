@@ -30,4 +30,5 @@ blueprint `## open questions` q7; blueprint `6.preship.stone` preamble (the rout
 
 ## .verdict
 
-open.
+ruled (b), by the director (2026-11-04): `7.reflect` ends with one record commit and push,
+re-watched under the same bound. **why**: a route record left on the box is the #590 defect itself.

@@ -16,4 +16,7 @@
   merge; (b) wrong leaves a file out, caught by the full suite or the pr diff.
 - **where**: `3.3.1.blueprint.product.yield.md` q2; `templates/6.preship.stone` step 2.
 - **raised again by**: peer `arch-opport-decomposition` nitpick.1 (round i001), disputed to this row.
-- **verdict**: open — the commander rules.
+- **verdict**: ruled (c), by the director (2026-11-04). the driver stages the deliverable and the
+  execution yield's filediff paths via `rhx git.stage.add`, then commits with `--unstaged ignore`;
+  the stone names what never rides along (`.log/`, `.temp/`, scratch). **why**: `--unstaged
+  include` sweeps another route in the same worktree into the commit.
