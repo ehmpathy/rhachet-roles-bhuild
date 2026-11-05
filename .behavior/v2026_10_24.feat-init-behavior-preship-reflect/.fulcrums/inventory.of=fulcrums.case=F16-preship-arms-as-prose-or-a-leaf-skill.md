@@ -2,16 +2,17 @@
 
 ## .the fork
 
-`6.preship.stone` steps 0, 2 and 3 hold decision arms a driver executes from text: the re-entry
-state (no pr · committed but unpushed · proven · work uncommitted), the refusal sort (input · grant
-· commit landed, push failed), and the head-proof verdict over `statusCheckRollup`.
+`6.preship.stone` steps 0 and 2 hold decision arms a driver executes from text: the re-entry
+state (no pr · committed but unpushed · pushed · work uncommitted) and the refusal sort (input ·
+grant · commit landed, push failed). the reviewers also asked for a head verdict over
+`statusCheckRollup`; that verdict is out of this fork, since F18 moves it to `git.release --watch`
+and its upstream cure.
 
 - (a) prose, as the blueprint planned ("no new domain operation") — proven by template text and
   the case5 call parse
-- (b) a behaver leaf skill with a transformer core: it returns one state, the work-path list, and a
-  one-line head verdict; tested hermetically (temp repo, bare remote, `gh` injected through
-  context, no quota needed). the stones call it
-- (c) (b) for the head verdict only
+- (b) a behaver leaf skill with a transformer core: it returns one state and the work-path list;
+  tested hermetically (temp repo, bare remote, `gh` injected through context, no quota needed).
+  step 0 calls it
 
 ## .taken
 
@@ -22,13 +23,13 @@ call that changes the blueprint's scope from template text to a new operation.
 
 ## .rework
 
-clean — (b) adds one skill and its tests; the stones' steps 0 and 3 change to call it. no extant
-contract moves, and (a) → (b) later is the same edit.
+clean — (b) adds one skill and its tests; step 0 changes to call it. no extant contract moves, and
+(a) → (b) later is the same edit.
 
 ## .confidence
 
 n/a — not guessed. the case for (b) is strong: two independent reviewers converged on it, and it
-turns the c23 and c31 decisions from text into tests.
+turns the c31 decision from text into tests.
 
 ## .where
 
@@ -36,4 +37,6 @@ blueprint `6.preship.stone` preamble; `## open questions` q9; `### critipath →
 
 ## .verdict
 
-open.
+ruled (a) by the director (2026-11-04): prose, no leaf skill. **why**: the head-green verdict
+belongs to `git.release --watch` upstream (ehmpathy/rhachet-roles-ehmpathy#1149), and a copy here
+rebuilds the supplier-layer cure F18 removed. F18 stands. re-entry stays prose: it is one read.
