@@ -2,9 +2,10 @@ import { basename } from 'path';
 
 import type { PhoneMailboxEntry } from '@src/access/daos/daoPhoneMailbox';
 
+import { isPhoneAddressInTreeOf } from '../address/isPhoneAddressInTreeOf';
 import { asPhoneTextAlias } from '../text/asPhoneTextAlias';
 import { asPhoneTextArrow } from '../text/asPhoneTextArrow';
-import { isPhoneTextQueuedOut } from '../text/isPhoneTextQueuedOut';
+import { isPhoneTextQueuedIn } from '../text/isPhoneTextQueuedIn';
 import { asPhoneOutput } from './asPhoneOutput';
 import type { PhoneTreeNode } from './asPhoneTreeLines';
 
@@ -12,8 +13,8 @@ import type { PhoneTreeNode } from './asPhoneTreeLines';
  * .what = the output of `phone.text get`: this clone's thread, one node per text, in write order
  * .why = the mailbox is the audit trail; each line names the text, the other party, the
  *        direction, the status and why it waits, and the words beneath
- * .note = a QUEUED text with no live daemon in the tree would wait in silence; the thread then
- *         ends with a line that says the daemon is down, and names the cure
+ * .note = a text held for this clone with no live daemon in its tree would wait in silence; the
+ *         thread then ends with a line that says the daemon is down, and names the cure
  */
 export const asPhoneTextGetOutput = (input: {
   entries: PhoneMailboxEntry[];
@@ -73,18 +74,28 @@ export const asPhoneTextGetOutput = (input: {
       children: record.what.split('\n').map((line) => ({ text: line })),
     };
   });
-  // a QUEUED text with no daemon to carry it: say so, and name the cure
-  const isStalled =
-    input.daemon === 'DOWN' &&
-    input.entries.some((entry) => isPhoneTextQueuedOut(entry));
-  const nodesDaemon: PhoneTreeNode[] = isStalled
-    ? [
-        {
-          text: 'daemon: DOWN — the QUEUED texts wait for it',
-          children: [{ text: 'start it: rhx phone.daemon set' }],
-        },
-      ]
-    : [];
+  // a QUEUED text this tree's daemon must say, with no daemon here: say so, and name the cure.
+  // a text held for this clone waits on it; so does one this clone sent to a seat in its own tree
+  const isQueuedInForSelf = input.entries.some((entry) =>
+    isPhoneTextQueuedIn(entry),
+  );
+  const isQueuedOutInTree = input.entries.some(
+    (entry) =>
+      entry.record.way === 'out' &&
+      entry.record.status === 'QUEUED' &&
+      isPhoneAddressInTreeOf({ address: entry.record.to, of: input.self }),
+  );
+  const nodesDaemon: PhoneTreeNode[] =
+    input.daemon === 'DOWN' && (isQueuedInForSelf || isQueuedOutInTree)
+      ? [
+          {
+            text: isQueuedInForSelf
+              ? 'daemon: DOWN — the texts held for you wait for it, or for your next stop'
+              : 'daemon: DOWN — the QUEUED texts to this tree wait for it',
+            children: [{ text: 'start it: rhx phone.daemon set' }],
+          },
+        ]
+      : [];
   return asPhoneOutput({
     vibe: "here's the thread",
     root: 'phone.text get',

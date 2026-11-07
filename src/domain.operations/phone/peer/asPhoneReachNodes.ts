@@ -24,6 +24,10 @@ export const asPhoneReachNodes = (input: {
       name: address,
       tag: 'texted you',
     })),
+    ...input.reach.groupMates.map((address) => ({
+      name: address,
+      tag: 'group mate, via its group',
+    })),
     ...ownTreeAwake.map((clone) => ({
       name: `@:${clone.slug ?? clone.serial.slice(0, 8)}`,
       tag: 'own tree',

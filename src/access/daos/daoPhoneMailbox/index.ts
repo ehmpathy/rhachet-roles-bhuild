@@ -29,24 +29,18 @@ export interface PhoneMailboxEntry {
  */
 const PHONE_TEXT_RECORD_VERSION = 1;
 
-const schemaOfRecord = z
-  .object({
-    v: z.literal(PHONE_TEXT_RECORD_VERSION),
-    uuid: z.string(),
-    way: z.enum(['out', 'in']),
-    group: z.string().nullable(),
-    re: z.string().nullable(),
-    from: z.string(),
-    to: z.string(),
-    what: z.string(),
-    status: z.enum(PHONE_TEXT_STATUSES),
-    reason: z.string().nullable(),
-  })
-  // an `in` copy is the receipt of a said text, so it is only ever DELIVERED
-  .refine((record) => record.way === 'out' || record.status === 'DELIVERED', {
-    message: 'an in copy must be DELIVERED',
-    path: ['status'],
-  });
+const schemaOfRecord = z.object({
+  v: z.literal(PHONE_TEXT_RECORD_VERSION),
+  uuid: z.string(),
+  way: z.enum(['out', 'in']),
+  group: z.string().nullable(),
+  re: z.string().nullable(),
+  from: z.string(),
+  to: z.string(),
+  what: z.string(),
+  status: z.enum(PHONE_TEXT_STATUSES),
+  reason: z.string().nullable(),
+});
 
 const PATTERN_FILE = /^text\.(\d+)\.(out|in)\.json$/;
 
@@ -196,7 +190,7 @@ const getOneRecordReadFromPath = async (input: {
 /**
  * .what = the bytes a record is written as, in a fixed key order
  * .why = a record the reader would skip as unreadable is refused at write, so the writer can not
- *        leave a record no reader can use (an `in` copy that is not DELIVERED, say)
+ *        leave a record no reader can use
  */
 const asRecordJson = (record: PhoneTextRecord): string => {
   const shape = {
@@ -295,6 +289,26 @@ const getOne = async (input: { path: string }): Promise<PhoneMailboxEntry> => ({
   path: input.path,
   record: await getOneRecordFromPath(input),
 });
+
+/**
+ * .what = finds the copy of one text in one seat's mailbox, by its uuid and way; null if absent
+ * .why = a text lives as two copies, the sender's `out` and the receiver's `in`; a status write
+ *        to one is mirrored to the other, and a withdraw finds the `in` copy the daemon claims
+ */
+const getOneByUuid = async (input: {
+  treeDir: string;
+  clone: string;
+  uuid: string;
+  way: PhoneTextRecord['way'];
+}): Promise<PhoneMailboxEntry | null> => {
+  const { entries } = await getAllReadable(input);
+  return (
+    entries.find(
+      (entry) =>
+        entry.record.uuid === input.uuid && entry.record.way === input.way,
+    ) ?? null
+  );
+};
 
 /**
  * .what = claims one record for a read-modify-write; false when a live holder has it
@@ -440,6 +454,7 @@ const delClaim = async (input: { path: string }): Promise<void> => {
 
 export const daoPhoneMailbox = {
   getOne,
+  getOneByUuid,
   getAllReadable,
   getAllMailboxClones,
   gen,

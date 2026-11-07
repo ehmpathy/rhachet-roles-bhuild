@@ -1,5 +1,4 @@
 import { promises as fs } from 'fs';
-import { getError, MalfunctionError } from 'helpful-errors';
 import path from 'path';
 import { genTempDir, given, then, useThen, when } from 'test-fns';
 
@@ -16,7 +15,7 @@ const SERIAL = '20fa7ac9-4dfc-4cbc-be9f-7685b5672a14';
 const genRecord = (input: {
   uuid: string;
   way?: 'out' | 'in';
-  status?: 'QUEUED' | 'DELIVERED';
+  status?: PhoneTextRecord['status'];
 }) =>
   new PhoneTextRecord({
     uuid: input.uuid,
@@ -224,65 +223,121 @@ describe('daoPhoneMailbox', () => {
     });
   });
 
-  given('[case5] an in copy, which is only ever DELIVERED', () => {
-    when('[t0] an in copy is written QUEUED', () => {
-      const result = useThen('the write is refused', async () => {
-        const treeDir = genTempDir({ slug: 'dao-phone-mailbox-case5-t0' });
-        const error = await getError(
-          daoPhoneMailbox.gen({
+  given(
+    '[case5] an in copy, which waits QUEUED for its receiver daemon',
+    () => {
+      when('[t0] an in copy is written QUEUED', () => {
+        const result = useThen('the write lands, and reads back', async () => {
+          const treeDir = genTempDir({ slug: 'dao-phone-mailbox-case5-t0' });
+          const written = await daoPhoneMailbox.gen({
             treeDir,
             clone: SERIAL,
             record: genRecord({
               uuid: '7f3e9a02-41c6-4b0e-9d2a-0c5e8f1a3b77',
               way: 'in',
             }),
-          }),
-        );
-        const { entries, unreadable } = await daoPhoneMailbox.getAllReadable({
-          treeDir,
-          clone: SERIAL,
+          });
+          const { entries, unreadable } = await daoPhoneMailbox.getAllReadable({
+            treeDir,
+            clone: SERIAL,
+          });
+          return { written, entries, unreadable };
         });
-        return { error, entries, unreadable };
+
+        then('it is written, as an in file', () => {
+          expect(result.written.path).toContain('.in.json');
+          expect(result.written.record.status).toEqual('QUEUED');
+        });
+
+        then('it is read as a text, and no file is unreadable', () => {
+          expect(result.entries).toHaveLength(1);
+          expect(result.entries[0]!.record.way).toEqual('in');
+          expect(result.entries[0]!.record.status).toEqual('QUEUED');
+          expect(result.unreadable).toEqual([]);
+        });
       });
 
-      then('it fails loud, and names the shape it refused', () => {
-        expect(result.error).toBeInstanceOf(MalfunctionError);
-        expect(result.error.message).toContain('not writable as is');
-      });
+      when('[t1] an in copy settles to any status', () => {
+        const result = useThen('each status is written and read', async () => {
+          const treeDir = genTempDir({ slug: 'dao-phone-mailbox-case5-t1' });
+          const entry = await daoPhoneMailbox.gen({
+            treeDir,
+            clone: SERIAL,
+            record: genRecord({
+              uuid: '7f3e9a02-41c6-4b0e-9d2a-0c5e8f1a3b77',
+              way: 'in',
+            }),
+          });
+          const statuses: string[] = [];
+          for (const status of [
+            'REFUSED',
+            'FAULTED',
+            'WITHDRAWN',
+            'DELIVERED',
+          ] as const) {
+            await daoPhoneMailbox.set({ entry, status, reason: null });
+            statuses.push((await daoPhoneMailbox.getOne(entry)).record.status);
+          }
+          return { statuses };
+        });
 
-      then('no record is left in the mailbox', () => {
-        expect(result.entries).toEqual([]);
-        expect(result.unreadable).toEqual([]);
+        then('the file reads the status last set', () => {
+          expect(result.statuses).toEqual([
+            'REFUSED',
+            'FAULTED',
+            'WITHDRAWN',
+            'DELIVERED',
+          ]);
+        });
       });
-    });
+    },
+  );
 
-    when('[t1] a file on disk holds an in copy that is QUEUED', () => {
-      const result = useThen('the reader skips it, and names it', async () => {
-        const treeDir = genTempDir({ slug: 'dao-phone-mailbox-case5-t1' });
-        const entry = await daoPhoneMailbox.gen({
+  given('[case7] a mailbox that holds both copies of a text', () => {
+    when('[t0] one copy is found by its uuid and way', () => {
+      const result = useThen('each way finds its own copy', async () => {
+        const treeDir = genTempDir({ slug: 'dao-phone-mailbox-case7' });
+        const uuid = '7f3e9a02-41c6-4b0e-9d2a-0c5e8f1a3b77';
+        await daoPhoneMailbox.gen({
           treeDir,
           clone: SERIAL,
-          record: genRecord({
-            uuid: '7f3e9a02-41c6-4b0e-9d2a-0c5e8f1a3b77',
+          record: genRecord({ uuid, way: 'out' }),
+        });
+        await daoPhoneMailbox.gen({
+          treeDir,
+          clone: SERIAL,
+          record: genRecord({ uuid, way: 'in' }),
+        });
+        return {
+          out: await daoPhoneMailbox.getOneByUuid({
+            treeDir,
+            clone: SERIAL,
+            uuid,
+            way: 'out',
+          }),
+          in: await daoPhoneMailbox.getOneByUuid({
+            treeDir,
+            clone: SERIAL,
+            uuid,
             way: 'in',
-            status: 'DELIVERED',
           }),
-        });
-        const bytes = await fs.readFile(entry.path, 'utf8');
-        await fs.writeFile(
-          entry.path,
-          bytes.replace('"DELIVERED"', '"QUEUED"'),
-        );
-        return daoPhoneMailbox.getAllReadable({ treeDir, clone: SERIAL });
+          absent: await daoPhoneMailbox.getOneByUuid({
+            treeDir,
+            clone: SERIAL,
+            uuid: '00000000-0000-4000-8000-000000000000',
+            way: 'in',
+          }),
+        };
       });
 
-      then('the record is not read as a text', () => {
-        expect(result.entries).toEqual([]);
+      then('the out copy and the in copy are two files', () => {
+        expect(result.out?.record.way).toEqual('out');
+        expect(result.in?.record.way).toEqual('in');
+        expect(result.out?.path).not.toEqual(result.in?.path);
       });
 
-      then('the file is named as unreadable', () => {
-        expect(result.unreadable).toHaveLength(1);
-        expect(result.unreadable[0]!.path).toContain('.in.json');
+      then('a uuid the mailbox does not hold finds null', () => {
+        expect(result.absent).toBeNull();
       });
     });
   });

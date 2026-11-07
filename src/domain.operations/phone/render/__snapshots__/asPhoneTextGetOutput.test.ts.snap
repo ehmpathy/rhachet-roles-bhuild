@@ -33,14 +33,14 @@ exports[`asPhoneTextGetOutput given: [case3] a full thread: said, a reply, one t
       └─ hello?"
 `;
 
-exports[`asPhoneTextGetOutput given: [case4] a QUEUED text, and no daemon live to carry it when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+exports[`asPhoneTextGetOutput given: [case4] a QUEUED text held for this clone, and no daemon live to say it when: [t0] the output is rendered then: it matches the snapshot 1`] = `
 "🦫 here's the thread
 
 💧 phone.text get
    ├─ you: phone://grove=bert-laptop/tree=notebook/clone=director
-   ├─ 0c5e8f1a → phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic   QUEUED
+   ├─ 0c5e8f1a ← phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic   QUEUED
    │  └─ text me when green
-   └─ daemon: DOWN — the QUEUED texts wait for it
+   └─ daemon: DOWN — the texts held for you wait for it, or for your next stop
       └─ start it: rhx phone.daemon set"
 `;
 
@@ -64,4 +64,13 @@ exports[`asPhoneTextGetOutput given: [case6] no text it can read, one record it 
    └─ 1 unreadable, skipped
       ├─ text.0001.in.json: phone text record is not json
       └─ a torn write, or a newer rhachet-roles-bhuild; upgrade, else ask who wrote it"
+`;
+
+exports[`asPhoneTextGetOutput given: [case7] a QUEUED text this clone sent, and no daemon in its own tree when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 here's the thread
+
+💧 phone.text get
+   ├─ you: phone://grove=bert-laptop/tree=notebook/clone=director
+   └─ 0c5e8f1a → phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic   QUEUED
+      └─ text me when green"
 `;

@@ -7,18 +7,27 @@ import { openSync } from 'fs';
  *        the only place its output can go once the caller has exited
  *
  * .note = `program` is node source run via `node -e`; `args` follow it after `--`
+ * .note = `cwd` is the dir the worker serves, by design (fulcrum F1, as `sdkRhachetClone`): a
+ *         phone daemon serves the tree its cwd names, and loads that tree's own installed
+ *         package, so a sender that wakes a receiver tree's daemon starts it as that tree would
  */
 export const genProcessDetached = (input: {
   program: string;
   args: string[];
   logPath: string;
   env: NodeJS.ProcessEnv;
+  cwd: string;
 }): { pid: number | null } => {
   const log = openSync(input.logPath, 'a');
   const child = spawn(
     process.execPath,
     ['-e', input.program, '--', ...input.args],
-    { detached: true, stdio: ['ignore', log, log], env: input.env },
+    {
+      detached: true,
+      stdio: ['ignore', log, log],
+      env: input.env,
+      cwd: input.cwd,
+    },
   );
   child.unref();
   return { pid: child.pid ?? null };

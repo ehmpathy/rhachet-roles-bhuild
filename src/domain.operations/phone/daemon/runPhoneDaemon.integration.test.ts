@@ -1,4 +1,5 @@
 import { promises as fs } from 'fs';
+import { MalfunctionError } from 'helpful-errors';
 import { type IsoDuration, sleep } from 'iso-time';
 import { join } from 'path';
 import { genTempDir, getError, given, then, useThen, when } from 'test-fns';
@@ -26,6 +27,7 @@ const IDLE_LONG: IsoDuration = { minutes: 5 };
 
 /**
  * .what = a temp tree with one QUEUED text from the mechanic to the foreman in its own tree
+ * .note = a send writes two copies: the mechanic's `out`, and the foreman's `in` the daemon says
  */
 const genScene = async (input: {
   slug: string;
@@ -34,20 +36,22 @@ const genScene = async (input: {
   const treeDir = join(gitRoot, 'sandpine', '_worktrees', TREE);
   await fs.mkdir(treeDir, { recursive: true });
   await fs.writeFile(join(treeDir, '.git'), 'gitdir: elsewhere\n');
+  const record = new PhoneTextRecord({
+    uuid: '7f3e9a02-41c6-4b0e-9d2a-0c5e8f1a3b77',
+    way: 'out',
+    group: null,
+    re: null,
+    from: `phone://grove=${GROVE}/tree=${TREE}/clone=mechanic`,
+    to: `phone://grove=${GROVE}/tree=${TREE}/clone=foreman`,
+    what: 'where is book-a-lesson?',
+    status: 'QUEUED',
+    reason: null,
+  });
+  await daoPhoneMailbox.gen({ treeDir, clone: 'mechanic', record });
   await daoPhoneMailbox.gen({
     treeDir,
-    clone: 'mechanic',
-    record: new PhoneTextRecord({
-      uuid: '7f3e9a02-41c6-4b0e-9d2a-0c5e8f1a3b77',
-      way: 'out',
-      group: null,
-      re: null,
-      from: `phone://grove=${GROVE}/tree=${TREE}/clone=mechanic`,
-      to: `phone://grove=${GROVE}/tree=${TREE}/clone=foreman`,
-      what: 'where is book-a-lesson?',
-      status: 'QUEUED',
-      reason: null,
-    }),
+    clone: 'foreman',
+    record: new PhoneTextRecord({ ...record, way: 'in' }),
   });
   return { gitRoot, treeDir };
 };
@@ -59,6 +63,12 @@ const asContext = (input: { gitRoot: string }): PhoneContext => ({
   gitRoot: input.gitRoot,
   forestDir: join(input.gitRoot, '.git.forest'),
   groveSelf: GROVE,
+  // every peer here sits on this grove; a call across groves is a defect
+  sdkGrove: {
+    call: async () => {
+      throw new MalfunctionError('this grove must not be called');
+    },
+  },
   sdkClone: {
     getAllClones: async () => [
       { serial: SERIAL_MECHANIC, slug: 'mechanic', reachState: 'LIVE' },

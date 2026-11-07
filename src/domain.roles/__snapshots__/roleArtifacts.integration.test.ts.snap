@@ -307,10 +307,11 @@ between clones via the phone.
 
 ### phone — text peer clones
 
-- \`phone.text\` - send a text to a peer clone or a group, read this clone's thread, or withdraw a QUEUED text
+- \`phone.text\` - send a text to a peer clone or a group (\`--into group:<id>\`), read this clone's thread, or withdraw a QUEUED text; the text is written into the receiver's inbox, on this grove or across one
 - \`phone.contacts\` - read, grant, or revoke the peers this clone may text beyond its own tree
 - \`phone.contacts.uses\` - the meter on whether this tree's clones may manage their own contacts (a human sets it)
-- \`phone.daemon\` - check, start, or stop the tree's daemon, which delivers each text over \`rhx clone say\`
+- \`phone.daemon\` - check, start, or stop the tree's daemon, which says each text held for its clones over \`rhx clone say\`
+- the onStop hook tells a clone of each text held for it, so a text reaches its clone even when the daemon has failed
 
 ## purpose
 
@@ -324,8 +325,9 @@ direct text between a director and its crews, both ways, with no pane keystroke.
 ######################################################################
 # .what = read, grant, or revoke the peers this clone may text
 #
-# .why  = a clone texts only a contact, a clone in its own tree, or a
-#         peer that texted it first; contacts are per clone
+# .why  = a clone texts only a contact, a clone in its own tree, a peer
+#         that texted it first, or a group mate via its group; contacts are
+#         per clone
 #
 # usage:
 #   phone.contacts.sh get
@@ -370,8 +372,8 @@ direct text between a director and its crews, both ways, with no pane keystroke.
 ######################################################################
 # .what = check, start, or stop this tree's phone daemon
 #
-# .why  = one daemon per tree delivers every clone's QUEUED texts over
-#         \`rhx clone say\`; \`phone.text set\` starts it on its own
+# .why  = one daemon per tree says each text held for its clones over
+#         \`rhx clone say\`; a sender's \`phone.text set\` wakes it
 #
 # usage:
 #   phone.daemon.sh get     # is a daemon live here?
@@ -390,25 +392,27 @@ direct text between a director and its crews, both ways, with no pane keystroke.
 <skill.say path="src/domain.roles/dispatcher/skills/phone.text.sh">
 #!/usr/bin/env bash
 ######################################################################
-# .what = send a text to a peer clone, read this clone's thread, or withdraw a QUEUED text
+# .what = send a text to a peer clone or a group, read this clone's thread, or withdraw a QUEUED text
 #
 # .why  = plain directed text between clones, both ways, with no pane keystroke
-#         - a director texts its crew; the crew texts back
 #         - every text a file on disk: ordered, delivered once, the audit trail
-#         - the tree's daemon delivers it over \`rhx clone say\`, never --force
+#         - set writes into the receiver's inbox; its tree's daemon says it over
+#           \`rhx clone say\`, never --force; its stop hook tells it too
 #
 # usage:
-#   phone.text.sh set --to phone://grove=local/tree=<tree>/clone=<clone> --what '...'
-#   phone.text.sh set --to @:foreman --to @:mechanic --what @stdin
-#   phone.text.sh set --to <address> --re 7f3e9a02 --what '...'
-#   phone.text.sh get
-#   phone.text.sh get --text 7f3e9a02
+#   phone.text.sh set --into phone://grove=local/tree=<tree>/clone=<clone> --what '...'
+#   phone.text.sh set --into @:foreman --into @:mechanic --what @stdin
+#   phone.text.sh set --into group:<id> --what '...'
+#   phone.text.sh set --re 7f3e9a02 --what '...'     # re a group text: the whole group
+#   phone.text.sh get [--text 7f3e9a02]
 #   phone.text.sh del --text 7f3e9a02
 #
 # guarantee:
-#   - runs only inside an enrolled clone; reads and writes that clone's mailbox alone
-#   - a peer must be a contact, a clone in this tree, or a peer that texted first
-#   - a group send admits every peer or none; each text returns QUEUED; the daemon is findserted
+#   - runs only inside an enrolled clone
+#   - a peer must be a contact, in this tree, a peer that texted first, or a group
+#     mate via its group
+#   - a group send admits every peer or none; each text returns QUEUED
+#   - a peer on another grove is written through the grove connection
 #   - a text holds at most 8000 chars; a longer one is refused, never cut
 #   - a refusal exits 2 and names the fix
 ######################################################################

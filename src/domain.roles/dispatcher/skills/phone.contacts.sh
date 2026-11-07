@@ -2,8 +2,9 @@
 ######################################################################
 # .what = read, grant, or revoke the peers this clone may text
 #
-# .why  = a clone texts only a contact, a clone in its own tree, or a
-#         peer that texted it first; contacts are per clone
+# .why  = a clone texts only a contact, a clone in its own tree, a peer
+#         that texted it first, or a group mate via its group; contacts are
+#         per clone
 #
 # usage:
 #   phone.contacts.sh get

@@ -93,6 +93,10 @@ const loadPhoneContactsUses = (): typeof import('./phoneContactsUses') =>
   require('./phoneContactsUses');
 const loadPhoneDaemon = (): typeof import('./phoneDaemon') =>
   require('./phoneDaemon');
+const loadPhoneInbox = (): typeof import('./phoneInbox') =>
+  require('./phoneInbox');
+const loadPhoneNotifications = (): typeof import('./phoneNotifications') =>
+  require('./phoneNotifications');
 const loadPhoneText = (): typeof import('./phoneText') =>
   require('./phoneText');
 const loadRadioPull = (): typeof import('./radioTaskPull') =>
@@ -121,6 +125,10 @@ export const cli = {
     () => loadPhoneContactsUses().cliPhoneContactsUses,
   ),
   phoneDaemon: asLazyCli(() => loadPhoneDaemon().cliPhoneDaemon),
+  phoneInbox: asLazyCli(() => loadPhoneInbox().cliPhoneInbox),
+  phoneNotifications: asLazyCli(
+    () => loadPhoneNotifications().cliPhoneNotifications,
+  ),
   phoneText: asLazyCli(() => loadPhoneText().cliPhoneText),
   radioTaskPull: asLazyCli(() => loadRadioPull().cliRadioTaskPull),
   radioTaskPush: asLazyCli(() => loadRadioPush().cliRadioTaskPush),

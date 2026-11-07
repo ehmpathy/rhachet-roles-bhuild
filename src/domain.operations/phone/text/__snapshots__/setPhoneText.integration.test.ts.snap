@@ -7,7 +7,7 @@ where is book-a-lesson?
 blocked on aught?
 
 💧 reply
-   ├─ rhx phone.text set --to phone://grove=bert-laptop/tree=notebook/clone=director --re 7f3e9a02 --what '...'
+   ├─ rhx phone.text set --into phone://grove=bert-laptop/tree=notebook/clone=director --re 7f3e9a02 --what '...'
    └─ words with quotes or newlines? pipe them in: --what @stdin"
 `;
 
@@ -27,18 +27,12 @@ exports[`setPhoneText given: [case2] a mechanic with no contacts when: [t3] it t
 
 exports[`setPhoneText given: [case2] a mechanic with no contacts when: [t4] it names no peer then: the refusal says a text must name a peer, and how 1`] = `
 "✋ ConstraintError: a text must name a peer
-   └─ pass one or more: --to <address>; see who: rhx phone.contacts get"
+   └─ pass one or more: --into <address>, or a group: --into group:<id>; see who: rhx phone.contacts get"
 `;
 
 exports[`setPhoneText given: [case2] a mechanic with no contacts when: [t5] it carries no words then: the refusal says a text must carry words, and how 1`] = `
 "✋ ConstraintError: a text must carry words
    └─ pass words: --what '...', or pipe them: --what @stdin"
-`;
-
-exports[`setPhoneText given: [case2] a mechanic with no contacts when: [t6] it texts a peer on another known grove then: the refusal says the grove leg rides a later delivery 1`] = `
-"✋ ConstraintError: phone://grove=grove-sandpine-v20260901/tree=notebook/clone=director is on another grove
-   ├─ this grove: bert-laptop
-   └─ texts across groves ride a later delivery; text a peer on this grove"
 `;
 
 exports[`setPhoneText given: [case2] a mechanic with no contacts when: [t7] it texts a peer on an unknown grove then: the refusal names the grove, and how to list the known ones 1`] = `
@@ -63,7 +57,7 @@ exports[`setPhoneText given: [case5] a QUEUED text and a DELIVERED text when: [t
 "✋ ConstraintError: text d03e6f91 was already DELIVERED
    ├─ a delivered text can not be unsaid
    └─ send a correction
-      └─ rhx phone.text set --to phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=foreman --re d03e6f91 --what '...'"
+      └─ rhx phone.text set --into phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=foreman --re d03e6f91 --what '...'"
 `;
 
 exports[`setPhoneText given: [case6] references that name no one text, and texts not the sender to take back when: [t0] each is looked up, or withdrawn then: a REFUSED text can not be withdrawn 1`] = `
@@ -71,7 +65,7 @@ exports[`setPhoneText given: [case6] references that name no one text, and texts
    ├─ a refused text never reached the peer; naught to take back
    └─ fix the address, then send it fresh
       ├─ see who you may reach: rhx phone.contacts get
-      └─ rhx phone.text set --to <address> --what '...'"
+      └─ rhx phone.text set --into <address> --what '...'"
 `;
 
 exports[`setPhoneText given: [case6] references that name no one text, and texts not the sender to take back when: [t0] each is looked up, or withdrawn then: a name that matches no text is refused, with the cure 1`] = `
@@ -108,5 +102,5 @@ exports[`setPhoneText given: [case8] a claim left behind by a dead process when:
 "✋ ConstraintError: text d03e6f91 was already FAULTED
    ├─ a faulted say may or may not have landed; it can not be unsaid
    └─ ask the peer before a resend, linked to this text
-      └─ rhx phone.text set --to phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=foreman --re d03e6f91 --what '...'"
+      └─ rhx phone.text set --into phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=foreman --re d03e6f91 --what '...'"
 `;

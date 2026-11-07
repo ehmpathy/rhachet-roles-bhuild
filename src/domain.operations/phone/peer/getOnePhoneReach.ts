@@ -1,8 +1,10 @@
 import { daoPhoneContacts } from '@src/access/daos/daoPhoneContacts';
+import { daoPhoneGroup } from '@src/access/daos/daoPhoneGroup';
 import { daoPhoneMailbox } from '@src/access/daos/daoPhoneMailbox';
 import type { PhoneSelf } from '@src/domain.objects/phone/PhoneSelf';
 import type { PhoneTreeClone } from '@src/domain.objects/phone/PhoneTreeClone';
 
+import { asPhoneAddressString } from '../address/asPhoneAddressString';
 import type { PhoneContext } from '../PhoneContext';
 import { asPhoneInboundSenders } from './asPhoneInboundSenders';
 
@@ -21,6 +23,11 @@ export interface PhoneReach {
    * senders of an `in` text in the clone's mailbox, not already a contact
    */
   inbound: string[];
+
+  /**
+   * the other members of every group this clone is in, not already a contact or an inbound sender
+   */
+  groupMates: string[];
 
   /**
    * the other clones in the clone's own tree
@@ -42,22 +49,31 @@ export const getOnePhoneReach = async (
 ): Promise<PhoneReach> => {
   // a file this clone can not read grants no admission, and never blocks a send: the contacts
   // file reads as no grants and is named back; an unreadable record is skipped
+  const seat = {
+    treeDir: input.self.treeDir,
+    clone: input.self.address.clone,
+  };
   const [
     { addresses: contacts, unreadable: contactsUnreadable },
     { entries },
+    groups,
     roster,
   ] = await Promise.all([
-    daoPhoneContacts.getAll({
-      treeDir: input.self.treeDir,
-      clone: input.self.address.clone,
-    }),
-    daoPhoneMailbox.getAllReadable({
-      treeDir: input.self.treeDir,
-      clone: input.self.address.clone,
-    }),
+    daoPhoneContacts.getAll(seat),
+    daoPhoneMailbox.getAllReadable(seat),
+    daoPhoneGroup.getAll(seat),
     context.sdkClone.getAllClones({ treeDir: input.self.treeDir }),
   ]);
   const inbound = asPhoneInboundSenders({ entries, contacts });
+  const selfString = asPhoneAddressString(input.self.address);
+  const groupMates = [
+    ...new Set(groups.flatMap((group) => group.members)),
+  ].filter(
+    (member) =>
+      member !== selfString &&
+      !contacts.includes(member) &&
+      !inbound.includes(member),
+  );
   const ownTree = roster.filter((clone) => clone.serial !== input.self.serial);
-  return { contacts, inbound, ownTree, contactsUnreadable };
+  return { contacts, inbound, groupMates, ownTree, contactsUnreadable };
 };

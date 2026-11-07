@@ -42,6 +42,7 @@ const TEST_CASES: {
       reach: {
         contacts: [],
         inbound: [],
+        groupMates: [],
         ownTree: [],
         contactsUnreadable: null,
       },
@@ -57,6 +58,7 @@ const TEST_CASES: {
       reach: {
         contacts: [],
         inbound: [],
+        groupMates: [],
         ownTree: [],
         contactsUnreadable: {
           path: '/home/bert/git/sandpine/_worktrees/svc-lessons.beav.feat-book-a-lesson/.agent/.cache/repo=bhuild/role=dispatcher/skill=phone.contacts/clone=mechanic/contacts.json',
@@ -75,6 +77,7 @@ const TEST_CASES: {
       reach: {
         contacts: [],
         inbound: [],
+        groupMates: [],
         ownTree: [
           {
             serial: '7289120d-1a2b-4c3d-8e4f-5a6b7c8d9e0f',
@@ -111,6 +114,7 @@ const TEST_CASES: {
       reach: {
         contacts: [DIRECTOR],
         inbound: [CREW_OTHER],
+        groupMates: [],
         ownTree: [
           {
             serial: '4c1e8b27-9a0f-4d2e-8b31-6f7a0c5d2e19',
@@ -144,6 +148,7 @@ const TEST_CASES: {
           CREW_OTHER,
         ],
         inbound: [],
+        groupMates: [],
         ownTree: [],
         contactsUnreadable: null,
       },
@@ -157,6 +162,24 @@ const TEST_CASES: {
       },
     },
     expect: { contains: '(no clone yet)' },
+  },
+  {
+    description:
+      '[case6] a group mate that is no contact, reached by its group alone',
+    given: {
+      self: SELF,
+      reach: {
+        contacts: [],
+        inbound: [],
+        groupMates: [CREW_LIVE],
+        ownTree: [],
+        contactsUnreadable: null,
+      },
+      reachStateOf: { [CREW_LIVE]: 'LIVE' },
+    },
+    expect: {
+      contains: 'reached by their group: rhx phone.text set --into group:<id>',
+    },
   },
 ];
 
