@@ -1,0 +1,57 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asPhoneAddressFromInput given: a refused address: a repeated key is refused when: [t0] it is cast then: the refusal matches the snapshot 1`] = `
+"✋ ConstraintError: phone://grove=a/grove=b/clone=director is not a phone address
+   ├─ fault: its keys must be grove, tree, and clone, each once
+   ├─ accepted forms
+   │  ├─ phone://grove=<grove>/tree=<tree>/clone=<clone>
+   │  ├─ phone://grove=local/tree=<tree>/clone=<clone>
+   │  └─ @:<clone>   (a clone in your own tree)
+   └─ see who you may reach: rhx phone.contacts get"
+`;
+
+exports[`asPhoneAddressFromInput given: a refused address: an address with no scheme is refused when: [t0] it is cast then: the refusal matches the snapshot 1`] = `
+"✋ ConstraintError: notebook/director is not a phone address
+   ├─ fault: it starts with neither phone:// nor @:
+   ├─ accepted forms
+   │  ├─ phone://grove=<grove>/tree=<tree>/clone=<clone>
+   │  ├─ phone://grove=local/tree=<tree>/clone=<clone>
+   │  └─ @:<clone>   (a clone in your own tree)
+   └─ see who you may reach: rhx phone.contacts get"
+`;
+
+exports[`asPhoneAddressFromInput given: a refused address: an empty clone is refused when: [t0] it is cast then: the refusal matches the snapshot 1`] = `
+"✋ ConstraintError: @: is not a phone address
+   ├─ fault: no clone is named after @:; e.g. @:foreman
+   ├─ accepted forms
+   │  ├─ phone://grove=<grove>/tree=<tree>/clone=<clone>
+   │  ├─ phone://grove=local/tree=<tree>/clone=<clone>
+   │  └─ @:<clone>   (a clone in your own tree)
+   └─ see who you may reach: rhx phone.contacts get"
+`;
+
+exports[`asPhoneAddressFromInput given: a refused address: an empty clone value in the full form is refused when: [t0] it is cast then: the refusal matches the snapshot 1`] = `
+"✋ ConstraintError: phone://grove=bert-laptop/tree=notebook/clone= is not a phone address
+   ├─ fault: the clone key has no value
+   ├─ accepted forms
+   │  ├─ phone://grove=<grove>/tree=<tree>/clone=<clone>
+   │  ├─ phone://grove=local/tree=<tree>/clone=<clone>
+   │  └─ @:<clone>   (a clone in your own tree)
+   └─ see who you may reach: rhx phone.contacts get"
+`;
+
+exports[`asPhoneAddressFromInput given: a refused address: keys out of order are refused, and the canonical form is named when: [t0] it is cast then: the refusal matches the snapshot 1`] = `
+"✋ ConstraintError: phone://tree=notebook/grove=bert-laptop/clone=director is not in canonical order
+   ├─ the keys come in one order: grove, tree, clone
+   └─ use: phone://grove=bert-laptop/tree=notebook/clone=director"
+`;
+
+exports[`asPhoneAddressFromInput given: a refused address: the @: shorthand inside the clone key is refused when: [t0] it is cast then: the refusal matches the snapshot 1`] = `
+"✋ ConstraintError: phone://grove=bert-laptop/tree=notebook/clone=@:director is not a phone address
+   ├─ fault: the clone key takes a bare name: clone=director, not clone=@:director
+   ├─ accepted forms
+   │  ├─ phone://grove=<grove>/tree=<tree>/clone=<clone>
+   │  ├─ phone://grove=local/tree=<tree>/clone=<clone>
+   │  └─ @:<clone>   (a clone in your own tree)
+   └─ see who you may reach: rhx phone.contacts get"
+`;

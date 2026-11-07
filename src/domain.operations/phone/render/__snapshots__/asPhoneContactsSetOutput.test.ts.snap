@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asPhoneContactsSetOutput given: [case1] a new contact is granted when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 new friend in the pond
+
+💧 phone.contacts set
+   ├─ granted: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   └─ contacts: 2"
+`;
+
+exports[`asPhoneContactsSetOutput given: [case2] a contact already held is granted again when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 no change, the pond already holds that
+
+💧 phone.contacts set
+   ├─ already a contact: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   └─ contacts: 1"
+`;
+
+exports[`asPhoneContactsSetOutput given: [case3] a contact is revoked when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 waved them off
+
+💧 phone.contacts del
+   ├─ revoked: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   └─ contacts: 1"
+`;
+
+exports[`asPhoneContactsSetOutput given: [case4] a contact not held is revoked when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 no change, they were not in the pond
+
+💧 phone.contacts del
+   ├─ not a contact: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   └─ contacts: 1"
+`;
+
+exports[`asPhoneContactsSetOutput given: [case5] a revoke names one peer twice when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 waved them off
+
+💧 phone.contacts del
+   ├─ revoked: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   ├─ contacts: 1
+   └─ 1 repeated --address dropped; each peer is one revoke"
+`;

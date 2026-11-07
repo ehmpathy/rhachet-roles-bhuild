@@ -17,8 +17,10 @@ this package, at `ehmpathy/rhachet-roles-bhuild:.agent/repo=.this/role=any/brief
 | **grove.house** | a grove the house owns and operates, reached over a wire | onprem, self-hosted, edge, private |
 | **grove.tunnel** | the ssm port-forward that carries every reach to one grove | session, link, pipe |
 | **grove.purpose** | what a grove is FOR — and so whether a crew may live on it | tier, class, env |
+| **tree** | one worktree = one branch = one pr, on one grove — the unit a crew works in | repo, branch, checkout, workspace |
+| **clone** | one worker in a tree, named by its role slug, or by its serial when it has none | agent, bot, session, seat |
 | **crew** | the set of clones that work ONE tree | team, pod, worker set |
-| **crew.reflector** | the third seat in the standard crew, beside mechanic and foreman | reviewer, critic, auditor |
+| **crew.reflector** | the third clone in the standard crew, beside mechanic and foreman | reviewer, critic, auditor |
 | **duct** | an addressable channel to one worker's keyboard, named by a uri | terminal, tab, session, pane |
 | **term** | one window a human reads — the VIEW half of a crew | console, screen, duct |
 | **ledger** | a durable record that a subject EXISTED, apart from whether it is live | cache, manifest |

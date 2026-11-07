@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asPhoneTextDelOutput given: [case1] a QUEUED text is withdrawn when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 fished it back out
+
+💧 phone.text del
+   ├─ text: 7f3e9a02 → phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   └─ status: QUEUED → WITHDRAWN (never said)"
+`;
+
+exports[`asPhoneTextDelOutput given: [case2] a text already withdrawn when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 already fished out
+
+💧 phone.text del
+   ├─ text: 7f3e9a02 → phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   └─ status: WITHDRAWN (no change)"
+`;

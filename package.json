@@ -66,7 +66,7 @@
     "domain-objects": "0.31.9",
     "emoji-space-shim": "0.0.0",
     "helpful-errors": "1.7.3",
-    "iso-time": "1.11.3",
+    "iso-time": "1.11.7",
     "simple-on-disk-cache": "1.8.1",
     "test-fns": "1.15.7",
     "with-simple-mutex": "0.1.1",
@@ -104,7 +104,7 @@
     "rhachet-brains-xai": "0.3.3",
     "rhachet-roles-bhrain": "0.42.1",
     "rhachet-roles-bhuild": "link:.",
-    "rhachet-roles-ehmpathy": "1.39.9",
+    "rhachet-roles-ehmpathy": "1.41.0",
     "rhachet-roles-rhachet": "0.1.7",
     "tsc-alias": "1.8.10",
     "tsx": "4.20.6",
@@ -119,8 +119,9 @@
   "packageManager": "pnpm@10.24.0",
   "pnpm": {
     "patchedDependencies": {
-      "rhachet-roles-ehmpathy@1.39.9": "patches/rhachet-roles-ehmpathy@1.39.9.patch",
-      "test-fns@1.15.7": "patches/test-fns@1.15.7.patch"
+      "rhachet-roles-bhrain@0.42.1": "patches/rhachet-roles-bhrain@0.42.1.patch",
+      "test-fns@1.15.7": "patches/test-fns@1.15.7.patch",
+      "rhachet-roles-ehmpathy@1.41.0": "patches/rhachet-roles-ehmpathy@1.41.0.patch"
     }
   }
 }
