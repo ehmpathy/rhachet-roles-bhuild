@@ -1,3 +1,4 @@
+import type { PhoneGroveVerb } from '@src/access/sdks/sdkPhoneGrove';
 import type { RhachetCloneSayRaw } from '@src/access/sdks/sdkRhachetClone';
 import type { PhoneTreeClone } from '@src/domain.objects/phone/PhoneTreeClone';
 
@@ -32,5 +33,18 @@ export interface PhoneContext {
       clone: string;
       what: string;
     }) => Promise<RhachetCloneSayRaw>;
+  };
+
+  /**
+   * the grove connection: runs a peer grove's phone inbox, so a text crosses groves with no
+   * daemon on the sender's side
+   */
+  sdkGrove: {
+    call: (input: {
+      grove: string;
+      tree: string;
+      verb: PhoneGroveVerb;
+      payload: object;
+    }) => Promise<Record<string, unknown>>;
   };
 }

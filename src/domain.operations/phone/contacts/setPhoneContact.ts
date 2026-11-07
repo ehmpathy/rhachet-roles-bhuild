@@ -84,7 +84,7 @@ export const setPhoneContact = async (
       headline: `${address} is in this clone's own tree`,
       nodes: [
         {
-          text: `text it as is: rhx phone.text set --to ${address} --what '...'`,
+          text: `text it as is: rhx phone.text set --into ${address} --what '...'`,
         },
       ],
     });

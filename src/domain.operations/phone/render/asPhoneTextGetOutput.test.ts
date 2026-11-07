@@ -140,7 +140,27 @@ const TEST_CASES = [
     expect: { contains: 'QUEUED · peer at a modal' },
   },
   {
-    description: '[case4] a QUEUED text, and no daemon live to carry it',
+    description:
+      '[case4] a QUEUED text held for this clone, and no daemon live to say it',
+    given: {
+      entries: [
+        genEntry({
+          uuid: '0c5e8f1a-41c6-4b0e-9d2a-0c5e8f1a3b77',
+          way: 'in',
+          status: 'QUEUED',
+          reason: null,
+          re: null,
+          what: 'text me when green',
+        }),
+      ],
+      unreadable: [],
+      daemon: 'DOWN' as const,
+    },
+    expect: { contains: 'start it: rhx phone.daemon set' },
+  },
+  {
+    description:
+      '[case7] a QUEUED text this clone sent, and no daemon in its own tree',
     given: {
       entries: [
         genEntry({
@@ -155,7 +175,10 @@ const TEST_CASES = [
       unreadable: [],
       daemon: 'DOWN' as const,
     },
-    expect: { contains: 'start it: rhx phone.daemon set' },
+    expect: {
+      contains: 'QUEUED',
+      lacks: 'daemon: DOWN',
+    },
   },
 ];
 
@@ -169,6 +192,11 @@ describe('asPhoneTextGetOutput', () => {
 
         then('it names the fact the reader needs', () => {
           expect(rendered.output).toContain(thisCase.expect.contains);
+        });
+
+        then('it names no stall that is not this clone to fix', () => {
+          if (thisCase.expect.lacks)
+            expect(rendered.output).not.toContain(thisCase.expect.lacks);
         });
 
         then('it names whose thread it shows', () => {

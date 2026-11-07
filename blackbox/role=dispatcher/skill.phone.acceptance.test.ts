@@ -434,7 +434,7 @@ describe('phone skills', () => {
 
     when('[t0] set and del run with every flag', () => {
       const result = useThen('each is refused for the absent clone', async () => ({
-        set: run('set --to @:mechanic --what board-rentals-are-in'),
+        set: run('set --into @:mechanic --what board-rentals-are-in'),
         del: run('del --text 7f3e9a02'),
       }));
 
@@ -565,7 +565,7 @@ describe('phone skills', () => {
         const sent = runAs({
           serial: SERIAL_MECHANIC,
           skill: 'phone.text',
-          args: "set --to @:foreman --to @:foreman --what @stdin",
+          args: "set --into @:foreman --into @:foreman --what @stdin",
           stdin: "slot shape changed for book-a-lesson\nit's 'lesson.slot', not 'slot'",
         });
         const alias = sent.output.match(/text: ([0-9a-f]{8})/)?.[1] ?? null;
@@ -580,7 +580,7 @@ describe('phone skills', () => {
         const replied = runAs({
           serial: SERIAL_FOREMAN,
           skill: 'phone.text',
-          args: `set --to @:mechanic --re ${alias} --what 'got it; slot renamed'`,
+          args: `set --into @:mechanic --re ${alias} --what 'got it; slot renamed'`,
         });
         await getSaidWhen({ stub, count: 2 });
 
@@ -605,7 +605,7 @@ describe('phone skills', () => {
         expect(result.alias).not.toBeNull();
         expect(result.sent.output).toContain('status: QUEUED');
         expect(result.sent.output).toContain(
-          '1 repeated --to dropped; each peer gets one text',
+          '1 repeated --into dropped; each peer gets one text',
         );
       });
 
@@ -757,14 +757,14 @@ describe('phone skills', () => {
         const contactsGranted = asDirector('phone.contacts get');
 
         // a text with no words is refused, and names the pipe
-        const blank = asDirector(`phone.text set --to ${mechanic} --what ''`);
+        const blank = asDirector(`phone.text set --into ${mechanic} --what ''`);
 
         // a text whose words lead with -- is a text, never a flag
         const sent = runIn({
           repoDir: trees.directorDir,
           serial: SERIAL_DIRECTOR,
           skill: 'phone.text',
-          args: `set --to ${mechanic} --what '--apply is blocked on book-a-lesson; can you look?'`,
+          args: `set --into ${mechanic} --what '--apply is blocked on book-a-lesson; can you look?'`,
         });
         const alias = sent.output.match(/text: ([0-9a-f]{8})/)?.[1] ?? null;
         await getSaidWhen({ stub, count: 1 });
@@ -774,7 +774,7 @@ describe('phone skills', () => {
           repoDir: trees.crewDir,
           serial: SERIAL_MECHANIC,
           skill: 'phone.text',
-          args: `set --to ${director} --re ${alias} --what @stdin`,
+          args: `set --into ${director} --re ${alias} --what @stdin`,
           stdin: 'on it; the slot shape changed',
         });
         await getSaidWhen({ stub, count: 2 });
@@ -841,7 +841,7 @@ describe('phone skills', () => {
         expect(result.sent.output).toContain('status: QUEUED');
       });
 
-      then('the director tree daemon says it in the crew tree, never its own', () => {
+      then("the crew tree's own daemon says it in the crew tree", () => {
         expect(result.said[0]!.to).toEqual('mechanic');
         expect(result.said[0]!.cwd).toEqual(trees.crewTree);
         expect(result.said[0]!.what).toContain('--apply is blocked on book-a-lesson');
@@ -921,7 +921,7 @@ describe('phone skills', () => {
 
         // a group of two distinct peers: the mechanic texted first, the foreman is a contact
         const grouped = asDirector(
-          `phone.text set --to ${mechanic} --to ${foreman} --what 'boards are in'`,
+          `phone.text set --into ${mechanic} --into ${foreman} --what 'boards are in'`,
         );
         const groupAlias = grouped.output.match(/([0-9a-f]{8}) → /)?.[1] ?? null;
         await getSaidWhen({ stub, count: saidBefore + 2 });
@@ -931,37 +931,37 @@ describe('phone skills', () => {
 
         // a stranger, and a group with one stranger in it: refused whole, naught queued
         const outBefore = asOutCount();
-        const toStranger = asDirector(`phone.text set --to ${foreman} --what 'hello?'`);
+        const toStranger = asDirector(`phone.text set --into ${foreman} --what 'hello?'`);
         const toGroupWithStranger = asDirector(
-          `phone.text set --to ${mechanic} --to ${foreman} --what 'all hands'`,
+          `phone.text set --into ${mechanic} --into ${foreman} --what 'all hands'`,
         );
         // a text to its own address, and a text too large for a session: refused, naught queued
-        const toSelf = asDirector("phone.text set --to @:director --what 'note to self'");
-        const tooLarge = asDirector('phone.text set --to @:director --what @stdin', {
+        const toSelf = asDirector("phone.text set --into @:director --what 'note to self'");
+        const tooLarge = asDirector('phone.text set --into @:director --what @stdin', {
           stdin: 'a'.repeat(8001),
         });
 
         // an address with its keys out of order, and one whose clone value does not parse
         const toBackwards = asDirector(
-          `phone.text set --to phone://tree=${trees.crewTree}/grove=local/clone=mechanic --what 'surf?'`,
+          `phone.text set --into phone://tree=${trees.crewTree}/grove=local/clone=mechanic --what 'surf?'`,
         );
         const toMalformed = asDirector(
-          `phone.text set --to phone://grove=local/tree=${trees.crewTree}/clone=@:mechanic --what 'surf?'`,
+          `phone.text set --into phone://grove=local/tree=${trees.crewTree}/clone=@:mechanic --what 'surf?'`,
         );
 
         // a reply flag passed bare, and one that names no text in this mailbox
-        const reBare = asDirector(`phone.text set --to ${mechanic} --what 'got it' --re`);
+        const reBare = asDirector(`phone.text set --into ${mechanic} --what 'got it' --re`);
         const reUnknown = asDirector(
-          `phone.text set --to ${mechanic} --what 'got it' --re deadbeef`,
+          `phone.text set --into ${mechanic} --what 'got it' --re deadbeef`,
         );
         const outAfter = asOutCount();
 
         // a peer on a grove the registry knows, and on one it does not
         const toOtherGrove = asDirector(
-          `phone.text set --to phone://grove=${GROVE_OTHER}/tree=svc-lessons/clone=mechanic --what 'surf?'`,
+          `phone.text set --into phone://grove=${GROVE_OTHER}/tree=svc-lessons/clone=mechanic --what 'surf?'`,
         );
         const toUnknownGrove = asDirector(
-          "phone.text set --to phone://grove=grove-nope/tree=svc-lessons/clone=mechanic --what 'surf?'",
+          "phone.text set --into phone://grove=grove-nope/tree=svc-lessons/clone=mechanic --what 'surf?'",
         );
 
         // a grant to a tree that is not on this grove
@@ -978,7 +978,7 @@ describe('phone skills', () => {
         const revokedAfterMixed = asDirector(`phone.contacts del --address ${foreman}`);
 
         // a text to a clone this tree does not hold: QUEUED, then REFUSED, and the sender hears
-        const toGhost = asDirector("phone.text set --to @:ghost --what 'anyone there?'");
+        const toGhost = asDirector("phone.text set --into @:ghost --what 'anyone there?'");
         await getSaidWhen({ stub, count: saidBefore + 3 });
         const threadAfterGhost = await getThreadWhen({
           run: () => asDirector('phone.text get'),
@@ -1030,7 +1030,7 @@ describe('phone skills', () => {
 
       then('a group of two distinct peers is said once to each, in the crew tree', () => {
         expect(result.grouped.exitCode).toEqual(0);
-        expect(result.grouped.output).toContain('group: 2 peers');
+        expect(result.grouped.output).toMatch(/group: group:[0-9a-f]{8} · 2 peers/);
         expect(result.groupAlias).not.toBeNull();
         const saidGroup = result.said.filter((one) => one.what.includes('boards are in'));
         expect(saidGroup.map((one) => one.to).sort()).toEqual(['foreman', 'mechanic']);
@@ -1108,9 +1108,13 @@ describe('phone skills', () => {
         expect(result.toMalformed.output).toContain('the clone key takes a bare name');
       });
 
-      then('a peer on a known grove is refused, exit 2: no river there yet', () => {
+      then('a peer on a known grove must still be a contact: refused, exit 2, names the grant', () => {
         expect(result.toOtherGrove.exitCode).toEqual(2);
-        expect(result.toOtherGrove.output).toContain('🦫 bummer, no river to that grove yet');
+        expect(result.toOtherGrove.output).toContain('🦫 bummer, no such contact');
+        expect(result.toOtherGrove.output).toContain(
+          `rhx phone.contacts set --address phone://grove=${GROVE_OTHER}/`,
+        );
+        expect(result.toOtherGrove.output).not.toContain('no river');
       });
 
       then('a peer on an unknown grove is refused, exit 2, and names the grove list', () => {
@@ -1182,6 +1186,103 @@ describe('phone skills', () => {
         ).toMatchSnapshot();
       });
     });
+
+    when('[t2] the director texts its group by name, and the mechanic answers the whole group', () => {
+      const result = useThen('each text reaches every other member', async () => {
+        // the group [t1] made is on record in every member's mailbox dir
+        const asGroupFiles = (input: { treeDir: string; seat: string }) =>
+          fs
+            .readdirSync(
+              path.join(
+                input.treeDir,
+                '.agent/.cache/repo=bhuild/role=dispatcher/skill=phone.text',
+                `clone=${input.seat}`,
+              ),
+            )
+            .filter((name) => /^group\..+\.json$/.test(name));
+        const groupFiles = {
+          director: asGroupFiles({ treeDir: trees.directorDir, seat: 'director' }),
+          mechanic: asGroupFiles({ treeDir: trees.crewDir, seat: 'mechanic' }),
+          foreman: asGroupFiles({ treeDir: trees.crewDir, seat: 'foreman' }),
+        };
+        const groupRef = groupFiles.director[0]?.match(/^group\.([0-9a-f]{8})/)?.[1] ?? null;
+
+        // the foreman is no contact of the director since [t1], yet its group still reaches it
+        const saidBefore = stub.getAllSaid().length;
+        const byName = asDirector(`phone.text set --into group:${groupRef} --what 'wax at dawn'`);
+        const aliasOfMechanic =
+          byName.output.match(/([0-9a-f]{8}) → \S+clone=mechanic/)?.[1] ?? null;
+        await getSaidWhen({ stub, count: saidBefore + 2 });
+
+        // the mechanic answers with --re alone: the whole group, less itself
+        const replyAll = runIn({
+          repoDir: trees.crewDir,
+          serial: SERIAL_MECHANIC,
+          skill: 'phone.text',
+          args: `set --re ${aliasOfMechanic} --what 'on the beach by six'`,
+        });
+        await getSaidWhen({ stub, count: saidBefore + 4 });
+        return {
+          groupFiles,
+          groupRef,
+          byName,
+          replyAll,
+          said: stub.getAllSaid().slice(saidBefore),
+        };
+      });
+
+      then('the group is on record in every member mailbox', () => {
+        expect(result.groupRef).not.toBeNull();
+        expect(result.groupFiles.director).toHaveLength(1);
+        expect(result.groupFiles.mechanic).toEqual(result.groupFiles.director);
+        expect(result.groupFiles.foreman).toEqual(result.groupFiles.director);
+      });
+
+      then('a text to the group by name reaches each other member, in its own tree', () => {
+        expect(result.byName.exitCode).toEqual(0);
+        expect(result.byName.output).toContain(`group: group:${result.groupRef} · 2 peers`);
+        const saidByName = result.said.filter((one) => one.what.includes('wax at dawn'));
+        expect(saidByName.map((one) => one.to).sort()).toEqual(['foreman', 'mechanic']);
+        expect(saidByName.every((one) => one.cwd === trees.crewTree)).toEqual(true);
+      });
+
+      then('the said group text names its group and offers both replies', () => {
+        const saidToMechanic = result.said.find(
+          (one) => one.to === 'mechanic' && one.what.includes('wax at dawn'),
+        );
+        expect(saidToMechanic?.what).toContain(`to group:${result.groupRef}`);
+        expect(saidToMechanic?.what).toContain('the whole group: rhx phone.text set --re');
+        expect(saidToMechanic?.what).toContain('the sender alone: rhx phone.text set --into');
+      });
+
+      then('a --re of a group text, with no --into, reaches the whole group less the sender', () => {
+        expect(result.replyAll.exitCode).toEqual(0);
+        const saidReply = result.said.filter((one) => one.what.includes('on the beach by six'));
+        expect(saidReply.map((one) => one.to).sort()).toEqual(['director', 'foreman']);
+        expect(saidReply.find((one) => one.to === 'director')?.cwd).toEqual(trees.directorTree);
+        expect(saidReply.find((one) => one.to === 'foreman')?.cwd).toEqual(trees.crewTree);
+      });
+
+      then('the group sends and the said group texts match their snapshot', () => {
+        expect(
+          asSnapOfStepsWithTextRefs({
+            outputs: [
+              result.byName.stdout,
+              result.replyAll.stdout,
+              ...result.said
+                .filter((one) => one.to === 'mechanic' || one.to === 'director')
+                .map((one) => one.what),
+            ].map((output) =>
+              sanitizeOutput(output)
+                .split(trees.crewTree)
+                .join('$TREE_CREW')
+                .split(trees.directorTree)
+                .join('$TREE_DIRECTOR'),
+            ),
+          }),
+        ).toMatchSnapshot();
+      });
+    });
   });
 
   given('[case11] a foreman at a modal, then one whose say cannot be confirmed, on a stub rhachet', () => {
@@ -1237,7 +1338,7 @@ describe('phone skills', () => {
 
     when('[t0] the mechanic texts the foreman while it sits at a modal, then the modal clears', () => {
       const result = useThen('the text waits with its reason, then lands once', async () => {
-        const sent = runAs({ skill: 'phone.text', args: "set --to @:foreman --what 'is the swell up?'" });
+        const sent = runAs({ skill: 'phone.text', args: "set --into @:foreman --what 'is the swell up?'" });
         await getWithheldWhen({ stub, count: 1 });
         const threadHeld = await getThreadWhen({
           run: () => runAs({ skill: 'phone.text', args: 'get' }),
@@ -1285,7 +1386,7 @@ describe('phone skills', () => {
     when('[t1] the mechanic texts the foreman, and the say cannot be confirmed', () => {
       const result = useThen('the text settles FAULTED, and the mechanic hears of it', async () => {
         stub.setRosters(rosterOf({ foremanSay: 'unconfirmed' }));
-        const sent = runAs({ skill: 'phone.text', args: "set --to @:foreman --what 'board count?'" });
+        const sent = runAs({ skill: 'phone.text', args: "set --into @:foreman --what 'board count?'" });
         await getSaidWhen({ stub, count: 3 });
         const thread = await getThreadWhen({
           run: () => runAs({ skill: 'phone.text', args: 'get' }),
@@ -1319,7 +1420,7 @@ describe('phone skills', () => {
     when('[t2] a flag is passed bare, and --address repeats on a revoke', () => {
       const result = useThen('each bare flag is refused, and each address is revoked once', async () => {
         const crew = `phone://grove=local/tree=${basename(repo.repoDir)}`;
-        const bareTo = runAs({ skill: 'phone.text', args: 'set --to --what hi' });
+        const bareTo = runAs({ skill: 'phone.text', args: 'set --into --what hi' });
         const bareText = runAs({ skill: 'phone.text', args: 'get --text' });
         const bareAddress = runAs({ skill: 'phone.contacts', args: 'set --address' });
         const revoked = runAs({
@@ -1330,7 +1431,7 @@ describe('phone skills', () => {
         return { bareTo, bareText, bareAddress, revoked };
       });
 
-      then('a bare --to, --text, or --address exits 2 with the usage', () => {
+      then('a bare --into, --text, or --address exits 2 with the usage', () => {
         expect(result.bareTo.exitCode).toEqual(2);
         expect(result.bareTo.output).toContain('a text must name a peer');
         expect(result.bareText.exitCode).toEqual(2);
@@ -1369,7 +1470,7 @@ describe('phone skills', () => {
     when('[t3] the mechanic texts the foreman at a modal, reads the text by name, then withdraws it', () => {
       const result = useThen('the text is read QUEUED by its alias, then withdrawn, never said', async () => {
         stub.setRosters(rosterOf({ foremanSay: 'withheld' }));
-        const sent = runAs({ skill: 'phone.text', args: "set --to @:foreman --what 'wetsuit count?'" });
+        const sent = runAs({ skill: 'phone.text', args: "set --into @:foreman --what 'wetsuit count?'" });
         const alias = sent.output.match(/text: ([0-9a-f]{8})/)?.[1] ?? null;
         const readHeld = await getThreadWhen({
           run: () => runAs({ skill: 'phone.text', args: `get --text ${alias}` }),
@@ -1389,7 +1490,7 @@ describe('phone skills', () => {
         // the modal clears; a later text lands, and the withdrawn one, sent first, must not have
         const saidBefore = stub.getAllSaid().length;
         stub.setRosters(rosterOf({ foremanSay: null }));
-        runAs({ skill: 'phone.text', args: "set --to @:foreman --what 'never mind, found them'" });
+        runAs({ skill: 'phone.text', args: "set --into @:foreman --what 'never mind, found them'" });
         await getSaidWhen({ stub, count: saidBefore + 1 });
         return {
           sent,
@@ -1466,7 +1567,7 @@ describe('phone skills', () => {
           serial: SERIAL_FOREMAN_REVIVED,
         });
         const saidBefore = stub.getAllSaid().length;
-        const sent = runAs({ skill: 'phone.text', args: "set --to @:foreman --what 'welcome back'" });
+        const sent = runAs({ skill: 'phone.text', args: "set --into @:foreman --what 'welcome back'" });
         await getSaidWhen({ stub, count: saidBefore + 1 });
         // a clone no text has reached, and a serial the roster does not hold
         const threadEmpty = runAs({ skill: 'phone.text', args: 'get', serial: SERIAL_REFLECTOR });
@@ -1540,7 +1641,7 @@ describe('phone skills', () => {
         // a text the foreman cannot take yet, seen by the daemon
         stub.setRosters(rosterOf({ foremanSay: 'withheld', foremanSerial: SERIAL_FOREMAN_REVIVED }));
         const withheldBefore = stub.getAllWithheld().length;
-        const sent = runAs({ skill: 'phone.text', args: "set --to @:foreman --what 'tide is out'" });
+        const sent = runAs({ skill: 'phone.text', args: "set --into @:foreman --what 'tide is out'" });
         await getWithheldWhen({ stub, count: withheldBefore + 1 });
 
         // the daemon is stopped, read, and stopped again
@@ -1602,7 +1703,7 @@ describe('phone skills', () => {
       then('while it is down, the text waits QUEUED, never said, and the thread says why', () => {
         expect(result.saidWhileDown).toEqual(0);
         expect(result.threadWaits.output).toContain('QUEUED');
-        expect(result.threadWaits.output).toContain('daemon: DOWN — the QUEUED texts wait for it');
+        expect(result.threadWaits.output).toContain('daemon: DOWN — the QUEUED texts to this tree wait for it');
       });
 
       then('a lock left by a crashed daemon reads DOWN, never LIVE', () => {
@@ -1658,7 +1759,7 @@ describe('phone skills', () => {
         const contacts = runAs({ skill: 'phone.contacts', args: 'get' });
 
         // a text to the DEAD clone waits with its reason, and no say is spent on it
-        const toDead = runAs({ skill: 'phone.text', args: "set --to @:shaper --what 'fins?'" });
+        const toDead = runAs({ skill: 'phone.text', args: "set --into @:shaper --what 'fins?'" });
         const threadDead = await getThreadWhen({
           run: () => runAs({ skill: 'phone.text', args: 'get' }),
           has: 'peer clone is DEAD',
@@ -1674,7 +1775,7 @@ describe('phone skills', () => {
 
       then('the send to the DEAD clone promises a carry, never a delivery, and names where to look', () => {
         expect(result.toDead.exitCode).toEqual(0);
-        expect(result.toDead.stdout).toContain('status: QUEUED → the daemon carries it');
+        expect(result.toDead.stdout).toContain("status: QUEUED → the receiver's daemon says it");
         expect(result.toDead.stdout).toContain('rhx phone.text get');
         expect(result.toDead.stdout).not.toContain('delivers');
       });
@@ -1783,7 +1884,7 @@ describe('phone skills', () => {
           ],
         });
         stub.setRosters(roster('input-region-dirty'));
-        const sent = runAs({ skill: 'phone.text', args: "set --to @:foreman --what 'wax on the rack?'" });
+        const sent = runAs({ skill: 'phone.text', args: "set --into @:foreman --what 'wax on the rack?'" });
         const threadDirty = await getThreadWhen({
           run: () => runAs({ skill: 'phone.text', args: 'get' }),
           has: 'peer input box holds typed text',
@@ -1821,6 +1922,74 @@ describe('phone skills', () => {
         expect(
           asSnapOfStepsWithTextRefs({
             outputs: [result.threadDirty.stdout, result.threadUnread.stdout].map((output) =>
+              asMaskedOfTree({ output: sanitizeOutput(output), repoDir: repo.repoDir }),
+            ),
+          }),
+        ).toMatchSnapshot();
+      });
+    });
+
+    when('[t9] a text waits on the foreman at a modal, and the foreman stops', () => {
+      const result = useThen('the stop hook tells it once, and the daemon never resays it', async () => {
+        const tree = basename(repo.repoDir);
+        const roster = (foremanSay: 'withheld' | null) => ({
+          [tree]: [
+            ...rosterOf({ foremanSay, foremanSerial: SERIAL_FOREMAN_REVIVED })[tree]!,
+            { serial: SERIAL_SHAPER, slug: 'shaper', reachState: 'DEAD' as const },
+          ],
+        });
+        stub.setRosters(roster('withheld'));
+        const withheldBefore = stub.getAllWithheld().length;
+        const sent = runAs({ skill: 'phone.text', args: "set --into @:foreman --what 'tide turns at four'" });
+        await getWithheldWhen({ stub, count: withheldBefore + 1 });
+
+        // the foreman stops: its hook tells it the held text, once
+        const told = await getHookToldWhen({
+          run: () => runPhoneStopHook({ repoDir: repo.repoDir, env: { ...stub.env, PHONE_GROVE: 'bert-laptop', RHACHET_CLONE_SERIAL: SERIAL_FOREMAN_REVIVED } }),
+        });
+        const toldAgain = runPhoneStopHook({
+          repoDir: repo.repoDir,
+          env: { ...stub.env, PHONE_GROVE: 'bert-laptop', RHACHET_CLONE_SERIAL: SERIAL_FOREMAN_REVIVED },
+        });
+        const thread = await getThreadWhen({
+          run: () => runAs({ skill: 'phone.text', args: 'get' }),
+          has: 'told at stop',
+        });
+
+        // the modal clears; a later text is said, and the told one never is
+        stub.setRosters(roster(null));
+        const marker = runAs({ skill: 'phone.text', args: "set --into @:foreman --what 'paddle out at five'" });
+        await getSaidOfWhen({ stub, has: 'paddle out at five' });
+        return { sent, told, toldAgain, thread, marker, said: stub.getAllSaid() };
+      });
+
+      then('the stop hook exits 2 and tells the held text, with its reply command, on stderr', () => {
+        expect(result.sent.exitCode).toEqual(0);
+        expect(result.told.exitCode).toEqual(2);
+        expect(result.told.stdout).toEqual('');
+        expect(result.told.stderr).toContain('🦫📬 1 text held for you');
+        expect(result.told.stderr).toContain('tide turns at four');
+        expect(result.told.stderr).toContain('rhx phone.text set --into');
+      });
+
+      then('a second stop tells naught: exit 0, silent', () => {
+        expect(result.toldAgain.exitCode).toEqual(0);
+        expect(result.toldAgain.stderr).toEqual('');
+      });
+
+      then("the sender's thread reads DELIVERED, told at stop", () => {
+        expect(result.thread.stdout).toContain('DELIVERED · told at stop, by the onStop hook');
+      });
+
+      then('the daemon never says the told text once the modal clears', () => {
+        expect(result.marker.exitCode).toEqual(0);
+        expect(result.said.filter((one) => one.what.includes('tide turns at four'))).toHaveLength(0);
+      });
+
+      then('the told text matches its snapshot', () => {
+        expect(
+          asSnapOfStepsWithTextRefs({
+            outputs: [result.told.stderr].map((output) =>
               asMaskedOfTree({ output: sanitizeOutput(output), repoDir: repo.repoDir }),
             ),
           }),
@@ -1885,13 +2054,13 @@ describe('phone skills', () => {
       const result = useThen('each default is found where it ships', async () => {
         const mechanic = `phone://grove=local/tree=${home.crewTree}/clone=mechanic`;
         const granted = asDirector(`phone.contacts set --address ${mechanic}`, { isHuman: true });
-        const sent = asDirector(`phone.text set --to ${mechanic} --what 'boards are waxed'`);
+        const sent = asDirector(`phone.text set --into ${mechanic} --what 'boards are waxed'`);
         await getSaidWhen({ stub, count: 1 });
         const toKnownGrove = asDirector(
-          `phone.text set --to phone://grove=${GROVE_OTHER}/tree=svc-lessons/clone=mechanic --what 'surf?'`,
+          `phone.text set --into phone://grove=${GROVE_OTHER}/tree=svc-lessons/clone=mechanic --what 'surf?'`,
         );
         const toUnknownGrove = asDirector(
-          "phone.text set --to phone://grove=grove-nope/tree=svc-lessons/clone=mechanic --what 'surf?'",
+          "phone.text set --into phone://grove=grove-nope/tree=svc-lessons/clone=mechanic --what 'surf?'",
         );
         return { granted, sent, toKnownGrove, toUnknownGrove, said: stub.getAllSaid() };
       });
@@ -1909,10 +2078,10 @@ describe('phone skills', () => {
         expect(result.said[0]!.cwd).toEqual(home.crewTree);
       });
 
-      then('a grove the registry at ~/.git.forest knows is refused as no river yet', () => {
+      then('a grove the registry at ~/.git.forest knows is found; its peer must still be a contact', () => {
         expect(result.toKnownGrove.exitCode).toEqual(2);
-        expect(result.toKnownGrove.output).toContain('🦫 bummer, no river to that grove yet');
-        expect(result.toKnownGrove.output).toContain(`this grove: ${hostname()}`);
+        expect(result.toKnownGrove.output).toContain('🦫 bummer, no such contact');
+        expect(result.toKnownGrove.output).not.toContain('no grove');
       });
 
       then('a grove the registry does not know is refused, and names the grove list', () => {
@@ -1938,6 +2107,235 @@ describe('phone skills', () => {
                 .join('$TREE_DIRECTOR')
                 .split(home.homeDir)
                 .join('$HOME'),
+            ),
+          }),
+        ).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case14] a director on one grove and a crew on another, joined by a stub ssh', () => {
+    // two groves, each its own tree root and grove registry; each registry names the other's alias
+    const groves = useBeforeAll(async () => {
+      const crew = genConsumerRepo({ prefix: 'phone-grove-crew', branchName: 'main' });
+      const director = genConsumerRepo({ prefix: 'phone-grove-director', branchName: 'main' });
+      const asGrove = (input: { slug: string; repoDir: string; peer: { name: string; alias: string } }) => {
+        const gitRoot = genTempDir({ slug: `${input.slug}-git-root` });
+        fs.mkdirSync(path.join(gitRoot, 'sandpine'), { recursive: true });
+        fs.symlinkSync(input.repoDir, path.join(gitRoot, 'sandpine', basename(input.repoDir)));
+        const forestDir = genTempDir({ slug: `${input.slug}-git-forest` });
+        fs.mkdirSync(path.join(forestDir, 'groves'), { recursive: true });
+        fs.writeFileSync(
+          path.join(forestDir, 'groves', `${input.peer.name}.json`),
+          `${JSON.stringify({ name: input.peer.name, sshAlias: input.peer.alias })}\n`,
+        );
+        return { gitRoot, forestDir };
+      };
+      const groveDirector = asGrove({
+        slug: 'phone-grove-a',
+        repoDir: director.repoDir,
+        peer: { name: GROVE_OTHER, alias: 'alias-b' },
+      });
+      const groveCrew = asGrove({
+        slug: 'phone-grove-b',
+        repoDir: crew.repoDir,
+        peer: { name: 'bert-laptop', alias: 'alias-a' },
+      });
+
+      // the stub ssh runs the remote command here, under the env of the grove its alias names
+      const binDir = genTempDir({ slug: 'phone-stub-ssh' });
+      const hopsLog = path.join(binDir, 'hops.log');
+      const sshBin = path.join(binDir, 'ssh');
+      fs.writeFileSync(
+        sshBin,
+        [
+          '#!/usr/bin/env bash',
+          'alias="$1"; shift',
+          'case "$alias" in',
+          `  alias-a) export PHONE_GROVE=bert-laptop PHONE_GIT_ROOT='${groveDirector.gitRoot}' GIT_FOREST_DIR='${groveDirector.forestDir}' ;;`,
+          `  alias-b) export PHONE_GROVE='${GROVE_OTHER}' PHONE_GIT_ROOT='${groveCrew.gitRoot}' GIT_FOREST_DIR='${groveCrew.forestDir}' ;;`,
+          '  *) echo "ssh: no host named $alias" >&2; exit 255 ;;',
+          'esac',
+          'export RHACHET_CLONE_SERIAL=',
+          `echo "$alias" >> '${hopsLog}'`,
+          // the far side's stderr is kept for the journey to name, then handed to the caller. a
+          // file, never a pipe: a pipe fd leaks into the far daemon, which outlives the call and
+          // would hold the caller's stderr open
+          'errfile="$(mktemp)"',
+          'bash -c "$1" 2>"$errfile"',
+          'code=$?',
+          `cat "$errfile" >> '${hopsLog}.stderr'`,
+          'cat "$errfile" >&2',
+          'rm -f "$errfile"',
+          'exit "$code"',
+          '',
+        ].join('\n'),
+      );
+      fs.chmodSync(sshBin, 0o755);
+      return {
+        sshBin,
+        hopsLog,
+        groveDirector,
+        groveCrew,
+        crewDir: crew.repoDir,
+        crewTree: basename(crew.repoDir),
+        directorDir: director.repoDir,
+        directorTree: basename(director.repoDir),
+      };
+    });
+    const stub = useBeforeAll(async () =>
+      genRhachetStubBin({
+        slug: 'phone-stub-rhachet-groves',
+        rosters: {
+          [groves.crewTree]: [{ serial: SERIAL_MECHANIC, slug: 'mechanic' }],
+          [groves.directorTree]: [{ serial: SERIAL_DIRECTOR, slug: 'director' }],
+        },
+      }),
+    );
+    const runOn = (input: {
+      side: 'director' | 'crew';
+      args: string;
+      isHuman?: boolean;
+    }) => {
+      const grove = input.side === 'director' ? groves.groveDirector : groves.groveCrew;
+      return runPhoneCli({
+        repo: 'bhuild',
+        role: 'dispatcher',
+        skill: input.args.split(' ')[0]!,
+        args: input.args.split(' ').slice(1).join(' '),
+        repoDir: input.side === 'director' ? groves.directorDir : groves.crewDir,
+        env: {
+          ...stub.env,
+          PHONE_GROVE: input.side === 'director' ? 'bert-laptop' : GROVE_OTHER,
+          PHONE_GIT_ROOT: grove.gitRoot,
+          GIT_FOREST_DIR: grove.forestDir,
+          PHONE_SSH_BIN: groves.sshBin,
+          RHACHET_CLONE_SERIAL: input.side === 'director' ? SERIAL_DIRECTOR : SERIAL_MECHANIC,
+          __I_AM_HUMAN: input.isHuman ? 'true' : '',
+        },
+        timeout: 90000,
+      });
+    };
+
+    // each grove's tree daemon was woken by the journey; stop both, however the journey ends
+    afterAll(() => {
+      runOn({ side: 'director', args: 'phone.daemon del' });
+      runOn({ side: 'crew', args: 'phone.daemon del' });
+    });
+
+    when('[t0] the director texts the crew mechanic across groves, and the mechanic replies', () => {
+      const result = useThen('each text crosses through the grove connection', async () => {
+        const mechanic = `phone://grove=${GROVE_OTHER}/tree=${groves.crewTree}/clone=mechanic`;
+        const ghost = `phone://grove=${GROVE_OTHER}/tree=${groves.crewTree}/clone=ghost`;
+        const director = `phone://grove=bert-laptop/tree=${groves.directorTree}/clone=director`;
+        const granted = runOn({ side: 'director', args: `phone.contacts set --address ${mechanic}`, isHuman: true });
+        const sentAt = Date.now();
+        const sent = runOn({ side: 'director', args: `phone.text set --into ${mechanic} --what 'swell at noon'` });
+        const sentMs = Date.now() - sentAt;
+        const alias = sent.output.match(/text: ([0-9a-f]{8})/)?.[1] ?? null;
+        const asJourneyState = () =>
+          [
+            `granted:\n${granted.output}`,
+            `sent (exit ${sent.exitCode}, ${sentMs}ms):\n${sent.stdout}\n--stderr--\n${sent.stderr}`,
+            `hops:\n${fs.existsSync(groves.hopsLog) ? fs.readFileSync(groves.hopsLog, 'utf8') : '(none)'}`,
+            `far stderr:\n${fs.existsSync(`${groves.hopsLog}.stderr`) ? fs.readFileSync(`${groves.hopsLog}.stderr`, 'utf8') : '(none)'}`,
+            `thread:\n${runOn({ side: 'director', args: 'phone.text get' }).output}`,
+          ].join('\n');
+        await getSaidOfWhen({ stub, has: 'swell at noon', context: asJourneyState });
+
+        // the settle on the far grove is mirrored back onto the director's out copy
+        const threadDelivered = await getThreadWhen({
+          run: () => runOn({ side: 'director', args: 'phone.text get' }),
+          has: 'DELIVERED',
+        });
+
+        // the mechanic replies to the director it has no contact for: it texted first
+        const replied = runOn({
+          side: 'crew',
+          args: `phone.text set --into ${director} --re ${alias} --what 'out past the break'`,
+        });
+        await getSaidOfWhen({
+          stub,
+          has: 'out past the break',
+          context: () => [`replied:\n${replied.output}`, asJourneyState()].join('\n'),
+        });
+
+        // a seat no clone answers to, on the far grove, is refused there, and the refusal returns
+        runOn({ side: 'director', args: `phone.contacts set --address ${ghost}`, isHuman: true });
+        const toGhost = runOn({ side: 'director', args: `phone.text set --into ${ghost} --what 'anyone?'` });
+        return {
+          granted,
+          sent,
+          threadDelivered,
+          replied,
+          toGhost,
+          said: stub.getAllSaid(),
+          hops: fs.readFileSync(groves.hopsLog, 'utf8').trim().split('\n'),
+          inCrew: fs
+            .readdirSync(
+              path.join(
+                groves.crewDir,
+                '.agent/.cache/repo=bhuild/role=dispatcher/skill=phone.text/clone=mechanic',
+              ),
+            )
+            .filter((name) => name.endsWith('.in.json')),
+        };
+      });
+
+      then('a grant to a peer on a registered grove is taken', () => {
+        expect(result.granted.exitCode).toEqual(0);
+        expect(result.granted.stdout).toContain(`granted: phone://grove=${GROVE_OTHER}/`);
+      });
+
+      then('the text is written into the far inbox, and that tree says it', () => {
+        expect(result.sent.exitCode).toEqual(0);
+        expect(result.sent.output).toContain('status: QUEUED');
+        expect(result.inCrew.length).toBeGreaterThanOrEqual(1);
+        const saidSwell = result.said.find((one) => one.what.includes('swell at noon'));
+        expect(saidSwell?.to).toEqual('mechanic');
+        expect(saidSwell?.cwd).toEqual(groves.crewTree);
+      });
+
+      then("the far settle is mirrored onto the director's thread", () => {
+        expect(result.threadDelivered.stdout).toContain('DELIVERED');
+      });
+
+      then('the reply crosses back, and is said in the director tree', () => {
+        expect(result.replied.exitCode).toEqual(0);
+        const saidReply = result.said.find((one) => one.what.includes('out past the break'));
+        expect(saidReply?.to).toEqual('director');
+        expect(saidReply?.cwd).toEqual(groves.directorTree);
+      });
+
+      then('each leg went through the grove connection, both ways', () => {
+        expect(result.hops).toContain('alias-b');
+        expect(result.hops).toContain('alias-a');
+      });
+
+      then('a seat the far tree has no clone for settles REFUSED, with the far reason', () => {
+        expect(result.toGhost.exitCode).toEqual(0);
+        expect(result.toGhost.stdout).toContain('REFUSED');
+        expect(result.toGhost.stdout).toContain('no clone answers to @:ghost');
+      });
+
+      then('every output and every said text matches its snapshot', () => {
+        expect(
+          asSnapOfStepsWithTextRefs({
+            outputs: [
+              result.granted.stdout,
+              result.sent.stdout,
+              result.threadDelivered.stdout,
+              result.replied.stdout,
+              result.toGhost.stdout,
+              ...result.said
+                .filter((one) => one.what.includes('swell at noon') || one.what.includes('out past the break'))
+                .map((one) => one.what),
+            ].map((output) =>
+              sanitizeOutput(output)
+                .split(groves.crewTree)
+                .join('$TREE_CREW')
+                .split(groves.directorTree)
+                .join('$TREE_DIRECTOR'),
             ),
           }),
         ).toMatchSnapshot();
@@ -1988,6 +2386,71 @@ describe('phone skills', () => {
     });
   });
 });
+
+/**
+ * .what = runs the dispatcher's onStop phone hook in a tree, as the role's hook declares it
+ * .why = the hook is no skill; claude code runs its command from the tree, with the clone's env,
+ *        and reads stderr on exit 2. this runs the same command the same way
+ */
+const runPhoneStopHook = (input: {
+  repoDir: string;
+  env: Record<string, string | undefined>;
+}): SkillResult => {
+  const ran = spawnSync(
+    'node',
+    [
+      '-e',
+      "import('rhachet-roles-bhuild/cli').then(m => m.cli.phoneNotifications())",
+      '--',
+      'get',
+      '--when',
+      'hook.onStop',
+    ],
+    { cwd: input.repoDir, timeout: 90000, env: { ...process.env, ...input.env } },
+  );
+  const stdout = (ran.stdout ?? '').toString().trim();
+  const stderr = (ran.stderr ?? '').toString().trim();
+  const exitCode = ran.status ?? 1;
+  return {
+    stdout,
+    stderr,
+    output: [stdout, stderr].filter(Boolean).join('\n'),
+    exitCode,
+  };
+};
+
+/**
+ * .what = runs the stop hook until it tells a text, or fails loud
+ * .why = a held text is retried each tick, and while that say is in flight the daemon holds its
+ *        claim; a stop hook that lands inside it tells naught that run, by design
+ */
+const getHookToldWhen = async (input: {
+  run: () => SkillResult;
+}): Promise<SkillResult> => {
+  for (let attempt = 0; attempt < 30; attempt++) {
+    const ran = input.run();
+    if (ran.exitCode === 2) return ran;
+    if (ran.exitCode !== 0) throw new Error(`the stop hook failed: ${ran.output}`);
+    await new Promise((done) => setTimeout(done, 500));
+  }
+  throw new Error('the stop hook told naught within 30 runs');
+};
+
+/**
+ * .what = waits until the stub has taken a say that holds `has`, or fails loud
+ */
+const getSaidOfWhen = async (input: {
+  stub: ReturnType<typeof genRhachetStubBin>;
+  has: string;
+  context?: () => string;
+}): Promise<void> => {
+  for (let attempt = 0; attempt < 120; attempt++) {
+    if (input.stub.getAllSaid().some((one) => one.what.includes(input.has))) return;
+    await new Promise((done) => setTimeout(done, 500));
+  }
+  const context = input.context ? `\n${input.context()}` : '';
+  throw new Error(`the stub took no say that holds '${input.has}' within 60s${context}`);
+};
 
 /**
  * .what = waits until the stub has withheld at least `count` says, or fails loud

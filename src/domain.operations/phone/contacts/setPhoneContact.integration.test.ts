@@ -1,4 +1,5 @@
 import { promises as fs } from 'fs';
+import { MalfunctionError } from 'helpful-errors';
 import { join } from 'path';
 import { genTempDir, getError, given, then, useThen, when } from 'test-fns';
 
@@ -48,6 +49,12 @@ const genScene = async (input: { slug: string }) => {
     sdkClone: {
       getAllClones: async (call) => rosters[call.treeDir] ?? [],
       say: async () => ({ exitCode: 0, stdout: '{}', stderr: '' }),
+    },
+    // a grant reads naught across groves; a call here is a defect
+    sdkGrove: {
+      call: async () => {
+        throw new MalfunctionError('this grove must not be called');
+      },
     },
   };
   const director = new PhoneSelf({

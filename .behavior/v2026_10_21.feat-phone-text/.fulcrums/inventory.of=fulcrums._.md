@@ -8,13 +8,13 @@
 | F4 | a director gets the meter grant from its boot hooks (ruled); a per-seat grant at crew boot, reachable in this repo, stays a dream | clean | director half ruled by wisher; crew half council verdict: dream | — |
 | F8 | three nouns, each get · set · del: `phone.text`, `phone.contacts`, later `phone.call` | clean | ruled by wisher | — |
 | F5 | an unconfirmed say settles FAULTED, never auto-resent (at-most-once) | clean | ruled by director: lean stands (2026-10-23) | 80% |
-| F6 | each delivery writes an `in` copy into the peer tree mailbox (a write into a foreign tree) | clean | ruled by director: lean stands (2026-10-23) | 75% |
+| F6 | each delivery writes an `in` copy into the peer tree mailbox (a write into a foreign tree) | clean | ruled by director: lean stands (2026-10-23); the commander's order (2026-11-06) moves the write to the send, and the receiver's daemon says it (F36) | 75% |
 | F7 | a clone may reply to any clone that texted it, contact or not | clean | ruled by director: lean stands (2026-10-23) | 80% |
 | F9 | a text is named by its uuid alone (alias: first 8 chars); a number is refused; `--text <uuid>` on get/del, `--re <uuid>` on set | clean | ids ruled by wisher; flag settled by director | — |
 | F10 | the clone slot is `clone=<clone>`; `@:` stays shell shorthand, never stored | clean | settled by director | — |
 | F11 | `phone.contacts set/del` take no `--at`; a grant runs as the clone it widens | clean | ruled by wisher | — |
 | F12 | texts and contacts are per seat (F24); daemon and meter per tree; `clone=` takes the slug, or the full serial for a clone with no slug | clean | texts + contacts ruled per seat (F24); daemon/meter scope per tree ruled by director: lean stands (2026-10-23) | 85% |
-| F13 | the grove leg (push, pull, relay) rides a later delivery; a text across groves is refused loud | clean | ruled by director: lean stands (2026-10-23) | 70% |
+| F13 | the grove leg (push, pull, relay) rides a later delivery; a text across groves is refused loud | clean | superseded by the commander's order (2026-11-06): the grove leg ships, see F38 | — |
 | F14 | this grove's own name is `PHONE_GROVE`, else the hostname | clean | best-guessed | 75% |
 | F15 | the daemon polls every 3s, and exits after 30 min with no QUEUED text | clean | best-guessed | 80% |
 | F16 | a daemon crash between the say and the settle settles the text FAULTED, never resaid (at-most-once, like F5) | clean | best-guessed; closed in code at i001 | 90% |
@@ -36,3 +36,9 @@
 | F32 | the concurrency paths (eight writers, two daemon claims) are proven at the dao where the race is forced; one crashed-lock reclaim walks the cli | clean | best-guessed | 80% |
 | F33 | a malfunction's stack frames keep node's 4-space indent under the 3-space tree, via the one shared printer | clean | best-guessed | 75% |
 | F34 | the meter pitch prints only on the verbs the meter governs (`phone.contacts set`, `del`); the `(none)` grant hints sit beside it as peers | clean | best-guessed; named in pr #572 for the commander's review | 85% |
+| F35 | the peer flag is `--into`, after the `into:` label; `--to` is refused, never aliased | clean | best-guessed; named in pr #572 for the commander's review | 75% |
+| F36 | a send wakes the receiver tree's daemon, spawned with cwd at that tree | clean | best-guessed | 85% |
+| F37 | a group mate is reached by its group alone; a lone text to one is refused | clean | best-guessed | 75% |
+| F38 | the grove leg: one ssh call per write by the registry alias; the far daemon says it; no say crosses a grove | clean | best-guessed; supersedes F13 | 70% |
+| F39 | the stop hook tells each held text once, settles it DELIVERED, exits 2; a fault never blocks a stop | clean | best-guessed | 75% |
+| F40 | the dispatcher boot budget rises from 4,000 to 4,200 tokens | clean | best-guessed | 90% |

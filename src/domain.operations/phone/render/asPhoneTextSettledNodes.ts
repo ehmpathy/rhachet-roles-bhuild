@@ -13,8 +13,8 @@ export const asPhoneTextSettledNodes = (input: {
   to: string;
   alias: string;
 }): PhoneTreeNode[] => {
-  const stepFresh = `rhx phone.text set --to <address> --what '...'`;
-  const stepLinked = `rhx phone.text set --to ${input.to} --re ${input.alias} --what '...'`;
+  const stepFresh = `rhx phone.text set --into <address> --what '...'`;
+  const stepLinked = `rhx phone.text set --into ${input.to} --re ${input.alias} --what '...'`;
   if (input.status === 'REFUSED')
     return [
       { text: 'a refused text never reached the peer; naught to take back' },

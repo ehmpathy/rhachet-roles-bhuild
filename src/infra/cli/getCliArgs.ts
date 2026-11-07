@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { getCliArgvTail } from './getCliArgvTail';
+
 /**
  * .what = base schema for rhachet passthrough args
  *
@@ -118,21 +120,8 @@ export const getCliArgs = <T extends CliSchemaWithRhachetArgs>(input: {
    */
   valueRawKeys?: string[];
 }): z.infer<T> => {
-  // drop script filename from argv if present
-  //
-  // rhachet skills use `tsx -e "import('pkg').then(m => m.cli.X())"` which
-  // has no script filename - argv[1] is already the first user arg.
-  //
-  // direct invocation like `tsx src/contract/cli/bind.behavior.ts` puts
-  // the script path in argv[1], which we need to skip.
-  //
-  // we detect the script filename by checking for `/cli/` in the path,
-  // since all CLI entry points live in src/contract/cli/.
-  const argvFirstIsScriptFilename = process.argv[1]?.includes('/cli/');
-  const argvWithoutScriptFilename = argvFirstIsScriptFilename
-    ? process.argv.slice(2)
-    : process.argv.slice(1);
-  const argv = input.argv ?? argvWithoutScriptFilename;
+  // the user args: argv with the node bin and any entry file path dropped
+  const argv = input.argv ?? getCliArgvTail({ argv: process.argv });
   const raw = getCliArgsRaw(argv, { valueRawKeys: input.valueRawKeys ?? [] });
 
   // validate against schema

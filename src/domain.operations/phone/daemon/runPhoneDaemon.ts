@@ -12,14 +12,15 @@ import { daoPhoneMailbox } from '@src/access/daos/daoPhoneMailbox';
 import { genProcessStopHandlers } from '@src/infra/process/genProcessStopHandlers';
 
 import type { PhoneContext } from '../PhoneContext';
-import { isPhoneTextQueuedOut } from '../text/isPhoneTextQueuedOut';
+import { isPhoneTextQueuedIn } from '../text/isPhoneTextQueuedIn';
 import { getOnePhoneIdleExitAt } from './getOnePhoneIdleExitAt';
 import { setPhoneDeliveriesOfTree } from './setPhoneDeliveriesOfTree';
 
 /**
  * .what = the daemon's loop: claim the lock, tick until idle, release the lock
- * .why = one daemon per tree carries every clone's texts. it exits after a long idle with no
- *        QUEUED text, since the next send starts one again; a held lock never outlives it
+ * .why = one daemon per tree says every text held for a clone in that tree. it exits after a long
+ *        idle with no QUEUED text, since the next send to the tree starts one again; a held lock
+ *        never outlives it
  *
  * .note = `tick` is the poll span and `idleExit` the quiet span before it exits (F15); the cli
  *         holds their values, so a test can run the loop to idle in a moment
@@ -135,7 +136,7 @@ const isPast = (input: { at: IsoTimeStamp }): boolean =>
   toMillisecondsSinceEpoch(input.at) <= toMillisecondsSinceEpoch(now());
 
 /**
- * .what = does no mailbox in the tree hold a QUEUED `out` text
+ * .what = does no mailbox in the tree hold a QUEUED `in` text
  */
 const isMailboxQuiet = async (input: { treeDir: string }): Promise<boolean> => {
   const clones = await daoPhoneMailbox.getAllMailboxClones(input);
@@ -144,7 +145,7 @@ const isMailboxQuiet = async (input: { treeDir: string }): Promise<boolean> => {
       treeDir: input.treeDir,
       clone,
     });
-    if (entries.some((entry) => isPhoneTextQueuedOut(entry))) return false;
+    if (entries.some((entry) => isPhoneTextQueuedIn(entry))) return false;
   }
   return true;
 };

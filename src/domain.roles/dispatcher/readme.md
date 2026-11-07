@@ -13,10 +13,11 @@ between clones via the phone.
 
 ### phone — text peer clones
 
-- `phone.text` - send a text to a peer clone or a group, read this clone's thread, or withdraw a QUEUED text
+- `phone.text` - send a text to a peer clone or a group (`--into group:<id>`), read this clone's thread, or withdraw a QUEUED text; the text is written into the receiver's inbox, on this grove or across one
 - `phone.contacts` - read, grant, or revoke the peers this clone may text beyond its own tree
 - `phone.contacts.uses` - the meter on whether this tree's clones may manage their own contacts (a human sets it)
-- `phone.daemon` - check, start, or stop the tree's daemon, which delivers each text over `rhx clone say`
+- `phone.daemon` - check, start, or stop the tree's daemon, which says each text held for its clones over `rhx clone say`
+- the onStop hook tells a clone of each text held for it, so a text reaches its clone even when the daemon has failed
 
 ## purpose
 

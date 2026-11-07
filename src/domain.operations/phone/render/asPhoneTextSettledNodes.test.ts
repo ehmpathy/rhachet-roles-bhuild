@@ -17,7 +17,7 @@ const TEST_CASES: {
       contains: [
         'a delivered text can not be unsaid',
         'send a correction',
-        `--to ${MECHANIC} --re 7f3e9a02`,
+        `--into ${MECHANIC} --re 7f3e9a02`,
       ],
       lacks: ['fix the address'],
     },
@@ -41,7 +41,7 @@ const TEST_CASES: {
       contains: [
         'may or may not have landed',
         'ask the peer before a resend',
-        `--to ${MECHANIC} --re 7f3e9a02`,
+        `--into ${MECHANIC} --re 7f3e9a02`,
       ],
       lacks: ['send a correction', 'never reached'],
     },

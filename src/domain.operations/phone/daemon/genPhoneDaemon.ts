@@ -21,10 +21,10 @@ const START_WAIT: IsoDuration = { seconds: 30 };
 const START_POLL: IsoDuration = { milliseconds: 150 };
 
 /**
- * .what = finds this tree's live daemon, or starts one detached
- * .why = `phone.text set` returns at once; the daemon carries the text. a second start beside a
- *        live daemon is a no-op, and two starts at once leave one daemon, since the daemon itself
- *        claims the lock and a loser exits
+ * .what = finds a tree's live daemon, or starts one detached, in that tree
+ * .why = `phone.text set` returns at once; the receiver tree's daemon says the text. a second
+ *        start beside a live daemon is a no-op, and two starts at once leave one daemon, since
+ *        the daemon itself claims the lock and a loser exits
  *
  * .note = the outcome names what was observed, never what was hoped:
  *         - FOUND       = a live daemon already held the lock
@@ -53,6 +53,8 @@ export const genPhoneDaemon = async (input: {
     logPath: daoPhoneDaemon.getOneLogPath({ treeDir }),
     // the daemon serves every clone in the tree, so it carries no one clone's serial
     env: { ...process.env, RHACHET_CLONE_SERIAL: '' },
+    // it runs in the tree it serves: a sender wakes the receiver tree's daemon, not its own
+    cwd: treeDir,
   });
 
   // wait for the daemon to claim its lock, so the caller can name its pid

@@ -73,3 +73,19 @@ exports[`asPhoneContactsGetOutput given: [case5] a contact in each reach state t
    └─ own tree
       └─ (none)"
 `;
+
+exports[`asPhoneContactsGetOutput given: [case6] a group mate that is no contact, reached by its group alone when: [t0] the output is rendered then: it matches the snapshot 1`] = `
+"🦫 here's who's in the pond
+
+💧 phone.contacts
+   ├─ you: phone://grove=bert-laptop/tree=svc-lessons.beav.feat-book-a-lesson/clone=mechanic
+   ├─ contacts
+   │  ├─ (none)
+   │  ├─ grant one: rhx phone.contacts set --address phone://grove=local/tree=<tree>/clone=<clone>
+   │  └─ a clone may grant its own only where the tree meter allows: rhx phone.contacts.uses get
+   ├─ group mates
+   │  ├─ phone://grove=bert-laptop/tree=svc-lessons.beav.feat-spot-forecast-widget/clone=mechanic   (LIVE)
+   │  └─ reached by their group: rhx phone.text set --into group:<id>, or --re a group text
+   └─ own tree
+      └─ (none)"
+`;

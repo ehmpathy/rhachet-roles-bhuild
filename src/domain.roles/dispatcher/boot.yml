@@ -10,10 +10,11 @@
 #   boot outgrows it. it covers the `radio.task.queue` verb (net of the two radio.uses
 #   internals and the retired `radio.task.held` alias it no longer boots) and the four
 #   phone verbs (text, contacts, contacts.uses, daemon), whose headers boot in full,
-#   like each radio verb's.
+#   like each radio verb's, and name the receiver inbox, the group, the grove leg, and
+#   the stop hook.
 #   measure: `npx rhachet roles cost --what src/domain.roles/dispatcher/boot.yml`
 budget:
-  tokens: 4_000
+  tokens: 4_200
 
 always:
   briefs:

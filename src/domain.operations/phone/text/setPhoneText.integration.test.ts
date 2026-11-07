@@ -6,6 +6,7 @@ import { genTempDir, getError, given, then, useThen, when } from 'test-fns';
 import { getAllPhoneMailboxEntries } from '@src/.test/utils/getAllPhoneMailboxEntries';
 import { daoPhoneContacts } from '@src/access/daos/daoPhoneContacts';
 import { daoPhoneContactsUses } from '@src/access/daos/daoPhoneContactsUses';
+import { daoPhoneGroup } from '@src/access/daos/daoPhoneGroup';
 import { daoPhoneMailbox } from '@src/access/daos/daoPhoneMailbox';
 import { getOnePhoneCacheDir } from '@src/access/daos/getOnePhoneCacheDir';
 import type { RhachetCloneSayRaw } from '@src/access/sdks/sdkRhachetClone';
@@ -21,15 +22,22 @@ import { isPhoneRefusal } from '../render/isPhoneRefusal';
 import { delPhoneText } from './delPhoneText';
 import { getOnePhoneTextByRef } from './getOnePhoneTextByRef';
 import { setPhoneText } from './setPhoneText';
+import { setPhoneTextsToldAtStop } from './setPhoneTextsToldAtStop';
 
 const GROVE = 'bert-laptop';
+const GROVE_REMOTE = 'grove-sandpine-v20260901';
 const TREE_DIRECTOR = 'notebook';
 const TREE_CREW = 'svc-lessons.beav.feat-book-a-lesson';
+const TREE_SCOUT = 'svc-lessons.beav.feat-ratings';
 const SERIAL_DIRECTOR = '0d1e2c3f-0000-4000-8000-00000000d1e2';
 const SERIAL_MECHANIC = '20fa7ac9-4dfc-4cbc-be9f-7685b5672a14';
 const SERIAL_FOREMAN = '4c1e8b27-9a0f-4d2e-8b31-6f7a0c5d2e19';
+const SERIAL_SCOUT = '5b9d3e71-6c2a-4f08-a1d4-9e3c7b2f6a10';
 const DIRECTOR = `phone://grove=${GROVE}/tree=${TREE_DIRECTOR}/clone=director`;
 const MECHANIC = `phone://grove=${GROVE}/tree=${TREE_CREW}/clone=mechanic`;
+const FOREMAN = `phone://grove=${GROVE}/tree=${TREE_CREW}/clone=foreman`;
+const SCOUT = `phone://grove=${GROVE}/tree=${TREE_SCOUT}/clone=scout`;
+const DIRECTOR_REMOTE = `phone://grove=${GROVE_REMOTE}/tree=notebook/clone=director`;
 
 /**
  * .what = a fake rhachet clone boundary: a roster per tree, and a say that records each call
@@ -68,7 +76,8 @@ const genScene = async (input: { slug: string }) => {
   const gitRoot = genTempDir({ slug: input.slug });
   const treeDirector = join(gitRoot, 'sandpine', TREE_DIRECTOR);
   const treeCrew = join(gitRoot, 'sandpine', '_worktrees', TREE_CREW);
-  for (const dir of [treeDirector, treeCrew]) {
+  const treeScout = join(gitRoot, 'sandpine', '_worktrees', TREE_SCOUT);
+  for (const dir of [treeDirector, treeCrew, treeScout]) {
     await fs.mkdir(dir, { recursive: true });
     await fs.writeFile(join(dir, '.git'), 'gitdir: elsewhere\n');
   }
@@ -90,6 +99,24 @@ const genScene = async (input: { slug: string }) => {
       clone: 'mechanic',
     }),
   });
+  const foreman = new PhoneSelf({
+    serial: SERIAL_FOREMAN,
+    treeDir: treeCrew,
+    address: new PhoneAddress({
+      grove: GROVE,
+      tree: TREE_CREW,
+      clone: 'foreman',
+    }),
+  });
+  const scout = new PhoneSelf({
+    serial: SERIAL_SCOUT,
+    treeDir: treeScout,
+    address: new PhoneAddress({
+      grove: GROVE,
+      tree: TREE_SCOUT,
+      clone: 'scout',
+    }),
+  });
   const rosters: Record<string, PhoneTreeClone[]> = {
     [treeDirector]: [
       { serial: SERIAL_DIRECTOR, slug: 'director', reachState: 'LIVE' },
@@ -98,14 +125,26 @@ const genScene = async (input: { slug: string }) => {
       { serial: SERIAL_MECHANIC, slug: 'mechanic', reachState: 'LIVE' },
       { serial: SERIAL_FOREMAN, slug: 'foreman', reachState: 'LIVE' },
     ],
+    [treeScout]: [{ serial: SERIAL_SCOUT, slug: 'scout', reachState: 'LIVE' }],
   };
-  return { gitRoot, treeDirector, treeCrew, director, mechanic, rosters };
+  return {
+    gitRoot,
+    treeDirector,
+    treeCrew,
+    treeScout,
+    director,
+    mechanic,
+    foreman,
+    scout,
+    rosters,
+  };
 };
 
 const SERIAL_OF_SLUG: Record<string, string> = {
   director: SERIAL_DIRECTOR,
   mechanic: SERIAL_MECHANIC,
   foreman: SERIAL_FOREMAN,
+  scout: SERIAL_SCOUT,
 };
 
 /**
@@ -121,19 +160,113 @@ const sayReleased = (call: { clone: string }): RhachetCloneSayRaw => ({
   stderr: '',
 });
 
+type GroveCall = Parameters<PhoneContext['sdkGrove']['call']>[0];
+
+/**
+ * .what = a fake grove connection that records each call and answers by a rule
+ * .why = a second grove needs a second machine; the connection is the one boundary faked, and
+ *        the acceptance suite drives the real one over a stand-in ssh
+ */
+const genFakeSdkGrove = (input: {
+  answerOf: (call: GroveCall) => Record<string, unknown>;
+}) => {
+  const calls: GroveCall[] = [];
+  return {
+    calls,
+    sdkGrove: {
+      call: async (call: GroveCall) => {
+        calls.push(call);
+        return input.answerOf(call);
+      },
+    },
+  };
+};
+
+/**
+ * .what = the answer a healthy peer grove gives: a text is QUEUED, a group is SET
+ */
+const answerOfGroveHealthy = (call: GroveCall): Record<string, unknown> => {
+  const payload: Record<string, unknown> = { ...call.payload };
+  return payload.kind === 'group' ? { outcome: 'SET' } : { outcome: 'QUEUED' };
+};
+
+/**
+ * .what = a grove connection that must not be used: a send that stays on this grove calls none
+ */
+const genSdkGroveUnused = (): PhoneContext['sdkGrove'] => ({
+  call: async () => {
+    throw new MalfunctionError('this grove must not be called');
+  },
+});
+
 /**
  * .what = a phone context over the scene, with a fake clone sdk that records each say
  */
 const asContext = (input: {
   gitRoot: string;
   sdkClone: PhoneContext['sdkClone'];
+  sdkGrove?: PhoneContext['sdkGrove'];
 }): PhoneContext & { log: (line: string) => void } => ({
   gitRoot: input.gitRoot,
   forestDir: join(input.gitRoot, '.git.forest'),
   groveSelf: GROVE,
   sdkClone: input.sdkClone,
+  sdkGrove: input.sdkGrove ?? genSdkGroveUnused(),
   log: () => undefined,
 });
+
+/**
+ * .what = one daemon tick over one tree of the scene
+ */
+const tick = (input: {
+  treeDir: string;
+  treeSelf: string;
+  context: PhoneContext & { log: (line: string) => void };
+  isStopped?: boolean;
+}) =>
+  setPhoneDeliveriesOfTree(
+    {
+      treeDir: input.treeDir,
+      treeSelf: input.treeSelf,
+      state: { isStopped: input.isStopped ?? false },
+    },
+    input.context,
+  );
+
+/**
+ * .what = the dir one seat's mailbox lives in
+ */
+const getDirOfSeat = (input: { treeDir: string; clone: string }): string =>
+  join(
+    getOnePhoneCacheDir({ treeDir: input.treeDir }),
+    'skill=phone.text',
+    `clone=${input.clone}`,
+  );
+
+/**
+ * .what = the names of the claim files a seat's mailbox holds
+ */
+const getClaimsOfSeat = async (input: {
+  treeDir: string;
+  clone: string;
+}): Promise<string[]> =>
+  (await fs.readdir(getDirOfSeat(input))).filter((name) =>
+    name.endsWith('.claim'),
+  );
+
+/**
+ * .what = the `in` copy of one text in one seat's mailbox; fails loud where it is absent
+ */
+const getInCopy = async (input: {
+  treeDir: string;
+  clone: string;
+  uuid: string;
+}) => {
+  const found = await daoPhoneMailbox.getOneByUuid({ ...input, way: 'in' });
+  if (!found)
+    throw new MalfunctionError('no in copy of the text in this seat', input);
+  return found;
+};
 
 describe('setPhoneText', () => {
   given('[case1] a director with the crew mechanic as a contact', () => {
@@ -158,48 +291,51 @@ describe('setPhoneText', () => {
               addresses: [MECHANIC],
             });
 
-            // the director sends; the director tree's daemon ticks
+            // the director sends; the mechanic's tree holds the text at once, QUEUED
             const sent = await setPhoneText(
               {
-                to: [`phone://grove=local/tree=${TREE_CREW}/clone=mechanic`],
+                into: [`phone://grove=local/tree=${TREE_CREW}/clone=mechanic`],
                 what: 'where is book-a-lesson?\nblocked on aught?',
                 re: null,
                 self: scene.director,
               },
               context,
             );
-            const tallyOut = await setPhoneDeliveriesOfTree(
-              {
-                treeDir: scene.treeDirector,
-                treeSelf: TREE_DIRECTOR,
-                state: { isStopped: false },
-              },
+            const mechanicBeforeTick = await getAllPhoneMailboxEntries({
+              treeDir: scene.treeCrew,
+              clone: 'mechanic',
+            });
+
+            // the receiver's tree ticks, and says the text into its own pane
+            const tallyOut = await tick({
+              treeDir: scene.treeCrew,
+              treeSelf: TREE_CREW,
               context,
-            );
+            });
 
             // the mechanic replies to the sender of an inbound text, with no contact of its own
             const alias = sent.entries[0]!.record.uuid.slice(0, 8);
             const reply = await setPhoneText(
               {
-                to: [DIRECTOR],
+                into: [DIRECTOR],
                 what: 'green; pr up within the hour.',
                 re: alias,
                 self: scene.mechanic,
               },
               context,
             );
-            const tallyBack = await setPhoneDeliveriesOfTree(
-              {
-                treeDir: scene.treeCrew,
-                treeSelf: TREE_CREW,
-                state: { isStopped: false },
-              },
+            const tallyBack = await tick({
+              treeDir: scene.treeDirector,
+              treeSelf: TREE_DIRECTOR,
               context,
-            );
+            });
 
             return {
               sent: sent.entries,
               reply: reply.entries,
+              treeDirsToWake: sent.treeDirsToWake,
+              treeCrew: scene.treeCrew,
+              mechanicBeforeTick,
               tallyOut,
               tallyBack,
               said: fake.said,
@@ -225,13 +361,32 @@ describe('setPhoneText', () => {
         );
 
         then(
-          'the daemon said it into the mechanic, inside the crew tree',
+          'the receiver already holds the text in, QUEUED, and the send names its tree to wake',
+          () => {
+            expect(
+              result.mechanicBeforeTick.map((entry) => [
+                entry.record.way,
+                entry.record.status,
+              ]),
+            ).toEqual([['in', 'QUEUED']]);
+            expect(result.treeDirsToWake).toEqual([result.treeCrew]);
+          },
+        );
+
+        then(
+          'the receiver tree daemon said it into the mechanic, inside the crew tree',
           () => {
             expect(result.tallyOut).toEqual({ said: 1, waited: 0, settled: 0 });
             expect(result.said[0]!.clone).toEqual('mechanic');
             expect(result.said[0]!.treeDir).toContain(TREE_CREW);
           },
         );
+
+        then('the reply is said by the director tree daemon', () => {
+          expect(result.tallyBack).toEqual({ said: 1, waited: 0, settled: 0 });
+          expect(result.said[1]!.clone).toEqual('director');
+          expect(result.said[1]!.treeDir).toContain(TREE_DIRECTOR);
+        });
 
         then(
           'the said message is signed and carries the exact reply command',
@@ -245,7 +400,7 @@ describe('setPhoneText', () => {
         );
 
         then(
-          'the director holds the text out and the reply in, both DELIVERED',
+          'the director holds the text out and the reply in, both DELIVERED: the settle is mirrored onto the out copy',
           () => {
             expect(
               result.director.map((entry) => [
@@ -265,6 +420,15 @@ describe('setPhoneText', () => {
             expect(result.mechanic.map((entry) => entry.record.uuid)).toEqual([
               result.sent[0]!.record.uuid,
               result.reply[0]!.record.uuid,
+            ]);
+            expect(
+              result.mechanic.map((entry) => [
+                entry.record.way,
+                entry.record.status,
+              ]),
+            ).toEqual([
+              ['in', 'DELIVERED'],
+              ['out', 'DELIVERED'],
             ]);
           },
         );
@@ -292,7 +456,7 @@ describe('setPhoneText', () => {
         });
         return setPhoneText(
           {
-            to: ['@:foreman'],
+            into: ['@:foreman'],
             what: 'judgment call on dedupe',
             re: null,
             self: scene.mechanic,
@@ -321,7 +485,7 @@ describe('setPhoneText', () => {
         });
         const error = await getError(
           setPhoneText(
-            { to: [DIRECTOR], what: 'hi', re: null, self: scene.mechanic },
+            { into: [DIRECTOR], what: 'hi', re: null, self: scene.mechanic },
             context,
           ),
         );
@@ -355,7 +519,7 @@ describe('setPhoneText', () => {
         const error = await getError(
           setPhoneText(
             {
-              to: ['@:foreman', DIRECTOR],
+              into: ['@:foreman', DIRECTOR],
               what: 'hi',
               re: null,
               self: scene.mechanic,
@@ -389,7 +553,12 @@ describe('setPhoneText', () => {
         });
         const error = await getError(
           setPhoneText(
-            { to: ['@:mechanic'], what: 'hi', re: null, self: scene.mechanic },
+            {
+              into: ['@:mechanic'],
+              what: 'hi',
+              re: null,
+              self: scene.mechanic,
+            },
             context,
           ),
         );
@@ -407,7 +576,7 @@ describe('setPhoneText', () => {
      */
     const genRefusalOfSend = async (input: {
       slug: string;
-      to: string[];
+      into: string[];
       what: string;
       groves: string[];
     }) => {
@@ -422,7 +591,12 @@ describe('setPhoneText', () => {
       });
       const error = await getError(
         setPhoneText(
-          { to: input.to, what: input.what, re: null, self: scene.mechanic },
+          {
+            into: input.into,
+            what: input.what,
+            re: null,
+            self: scene.mechanic,
+          },
           asContext({ gitRoot: scene.gitRoot, sdkClone: fake.sdkClone }),
         ),
       );
@@ -437,7 +611,7 @@ describe('setPhoneText', () => {
       const result = useThen('the send is refused', () =>
         genRefusalOfSend({
           slug: 'phone-text-case2-t4',
-          to: [],
+          into: [],
           what: 'hi',
           groves: [],
         }),
@@ -454,7 +628,7 @@ describe('setPhoneText', () => {
       const result = useThen('the send is refused', () =>
         genRefusalOfSend({
           slug: 'phone-text-case2-t5',
-          to: ['@:foreman'],
+          into: ['@:foreman'],
           what: '  \n ',
           groves: [],
         }),
@@ -467,21 +641,164 @@ describe('setPhoneText', () => {
       });
     });
 
-    when('[t6] it texts a peer on another known grove', () => {
-      const result = useThen('the send is refused', () =>
-        genRefusalOfSend({
+    /**
+     * .what = one send from the mechanic to a peer on another known grove, through a fake grove
+     */
+    const genSendAcrossGrove = async (input: {
+      slug: string;
+      isContact: boolean;
+      answerOf: (call: GroveCall) => Record<string, unknown>;
+    }) => {
+      const scene = await genScene({ slug: input.slug });
+      const forestDir = join(scene.gitRoot, '.git.forest');
+      await fs.mkdir(join(forestDir, 'groves'), { recursive: true });
+      await fs.writeFile(
+        join(forestDir, 'groves', `${GROVE_REMOTE}.json`),
+        '{}',
+      );
+      if (input.isContact)
+        await daoPhoneContacts.set({
+          treeDir: scene.treeCrew,
+          clone: 'mechanic',
+          addresses: [DIRECTOR_REMOTE],
+        });
+      const fake = genFakeSdkClone({
+        rosters: scene.rosters,
+        sayAs: sayReleased,
+      });
+      const grove = genFakeSdkGrove({ answerOf: input.answerOf });
+      const context = asContext({
+        gitRoot: scene.gitRoot,
+        sdkClone: fake.sdkClone,
+        sdkGrove: grove.sdkGrove,
+      });
+      const outcome = await setPhoneText(
+        {
+          into: [DIRECTOR_REMOTE],
+          what: 'hi from afar',
+          re: null,
+          self: scene.mechanic,
+        },
+        context,
+      ).then(
+        (sent) => ({ sent, error: null }),
+        (error: Error) => ({ sent: null, error }),
+      );
+      const mailbox = await getAllPhoneMailboxEntries({
+        treeDir: scene.treeCrew,
+        clone: 'mechanic',
+      });
+      return { ...outcome, mailbox, calls: grove.calls };
+    };
+
+    when('[t6] it texts a contact on another known grove', () => {
+      const result = useThen('the text is admitted and put there', () =>
+        genSendAcrossGrove({
           slug: 'phone-text-case2-t6',
-          to: [
-            'phone://grove=grove-sandpine-v20260901/tree=notebook/clone=director',
-          ],
-          what: 'hi',
-          groves: ['grove-sandpine-v20260901'],
+          isContact: true,
+          answerOf: answerOfGroveHealthy,
         }),
       );
 
-      then('the refusal says the grove leg rides a later delivery', () => {
-        expect(result.message).toContain('is on another grove');
-        expect(result.message).toMatchSnapshot();
+      then('the grove inbox is written with the in copy', () => {
+        expect(result.error).toBeNull();
+        expect(result.calls).toHaveLength(1);
+        expect(result.calls[0]).toMatchObject({
+          grove: GROVE_REMOTE,
+          tree: 'notebook',
+          verb: 'put',
+          payload: {
+            kind: 'text',
+            grove: GROVE_REMOTE,
+            record: {
+              way: 'in',
+              status: 'QUEUED',
+              from: MECHANIC,
+              to: DIRECTOR_REMOTE,
+              what: 'hi from afar',
+            },
+          },
+        });
+      });
+
+      then('the out copy waits QUEUED, and no tree here is woke', () => {
+        expect(result.mailbox.map((entry) => entry.record.status)).toEqual([
+          'QUEUED',
+        ]);
+        expect(result.sent?.treeDirsToWake).toEqual([]);
+      });
+    });
+
+    when('[t6b] the peer grove refuses the text', () => {
+      const result = useThen('the out copy settles REFUSED at once', () =>
+        genSendAcrossGrove({
+          slug: 'phone-text-case2-t6b',
+          isContact: true,
+          answerOf: () => ({
+            outcome: 'REFUSED',
+            reason: 'no clone answers to @:director in this tree',
+          }),
+        }),
+      );
+
+      then('the out copy reads REFUSED with the reason of the grove', () => {
+        expect(result.error).toBeNull();
+        expect(result.mailbox[0]!.record.status).toEqual('REFUSED');
+        expect(result.mailbox[0]!.record.reason).toEqual(
+          'no clone answers to @:director in this tree',
+        );
+      });
+    });
+
+    when('[t6c] the peer grove has no such tree', () => {
+      const result = useThen('the out copy settles REFUSED at once', () =>
+        genSendAcrossGrove({
+          slug: 'phone-text-case2-t6c',
+          isContact: true,
+          answerOf: () => ({ outcome: 'NO_TREE' }),
+        }),
+      );
+
+      then('the out copy names the tree and the grove', () => {
+        expect(result.mailbox[0]!.record.status).toEqual('REFUSED');
+        expect(result.mailbox[0]!.record.reason).toEqual(
+          `no tree notebook on ${GROVE_REMOTE}`,
+        );
+      });
+    });
+
+    when('[t6d] the grove connection fails', () => {
+      const result = useThen('the out copy settles FAULTED at once', () =>
+        genSendAcrossGrove({
+          slug: 'phone-text-case2-t6d',
+          isContact: true,
+          answerOf: () => {
+            throw new MalfunctionError('the grove connection gave no answer');
+          },
+        }),
+      );
+
+      then('the out copy reads FAULTED with the fault named', () => {
+        expect(result.error).toBeNull();
+        expect(result.mailbox[0]!.record.status).toEqual('FAULTED');
+        expect(result.mailbox[0]!.record.reason).toContain(
+          'the grove connection gave no answer',
+        );
+      });
+    });
+
+    when('[t6e] the peer on another known grove is not a contact', () => {
+      const result = useThen('the send is refused, with no grove call', () =>
+        genSendAcrossGrove({
+          slug: 'phone-text-case2-t6e',
+          isContact: false,
+          answerOf: answerOfGroveHealthy,
+        }),
+      );
+
+      then('the refusal says it is not a contact; no record is written', () => {
+        expect(result.error?.message).toContain('is not a contact');
+        expect(result.calls).toEqual([]);
         expect(result.mailbox).toEqual([]);
       });
     });
@@ -490,7 +807,7 @@ describe('setPhoneText', () => {
       const result = useThen('the send is refused', () =>
         genRefusalOfSend({
           slug: 'phone-text-case2-t7',
-          to: ['phone://grove=nowhere/tree=notebook/clone=director'],
+          into: ['phone://grove=nowhere/tree=notebook/clone=director'],
           what: 'hi',
           groves: [],
         }),
@@ -510,7 +827,7 @@ describe('setPhoneText', () => {
       const result = useThen('the send is refused', () =>
         genRefusalOfSend({
           slug: 'phone-text-case2-t8',
-          to: ['@:foreman'],
+          into: ['@:foreman'],
           what: 'x'.repeat(8001),
           groves: [],
         }),
@@ -546,7 +863,12 @@ describe('setPhoneText', () => {
             });
             const error = await getError(
               setPhoneText(
-                { to: [DIRECTOR], what: 'hi', re: null, self: scene.mechanic },
+                {
+                  into: [DIRECTOR],
+                  what: 'hi',
+                  re: null,
+                  self: scene.mechanic,
+                },
                 context,
               ),
             );
@@ -580,7 +902,7 @@ describe('setPhoneText', () => {
           const error = await getError(
             setPhoneText(
               {
-                to: ['@:foreman'],
+                into: ['@:foreman'],
                 what: 'got it',
                 re: 'deadbeef',
                 self: scene.mechanic,
@@ -628,7 +950,7 @@ describe('setPhoneText', () => {
         });
         return setPhoneText(
           {
-            to: [MECHANIC, foreman, MECHANIC],
+            into: [MECHANIC, foreman, MECHANIC],
             what: 'slot shape changed',
             re: null,
             self: scene.director,
@@ -680,17 +1002,7 @@ describe('setPhoneText', () => {
                       },
                     }),
                   }
-                : call.clone === 'mechanik'
-                  ? {
-                      exitCode: 2,
-                      stdout: '',
-                      stderr: JSON.stringify({
-                        class: 'ConstraintError',
-                        message: "no clone answers to '@:mechanik'",
-                        metadata: {},
-                      }),
-                    }
-                  : sayReleased(call),
+                : sayReleased(call),
           });
           const context = asContext({
             gitRoot: scene.gitRoot,
@@ -698,7 +1010,7 @@ describe('setPhoneText', () => {
           });
           await setPhoneText(
             {
-              to: ['@:foreman'],
+              into: ['@:foreman'],
               what: 'at a modal?',
               re: null,
               self: scene.mechanic,
@@ -707,21 +1019,19 @@ describe('setPhoneText', () => {
           );
           await setPhoneText(
             {
-              to: ['@:mechanik'],
+              into: ['@:mechanik'],
               what: 'typo peer',
               re: null,
               self: scene.mechanic,
             },
             context,
           );
-          const tally = await setPhoneDeliveriesOfTree(
-            {
-              treeDir: scene.treeCrew,
-              treeSelf: TREE_CREW,
-              state: { isStopped: false },
-            },
+          // the receiver tree reads the roster, and refuses the seat no clone answers to, unsaid
+          const tally = await tick({
+            treeDir: scene.treeCrew,
+            treeSelf: TREE_CREW,
             context,
-          );
+          });
           const mailbox = await getAllPhoneMailboxEntries({
             treeDir: scene.treeCrew,
             clone: 'mechanic',
@@ -731,16 +1041,27 @@ describe('setPhoneText', () => {
       );
 
       then(
-        'the text to the peer at a modal stays QUEUED, with the reason',
+        'the text to the peer at a modal stays QUEUED, with the reason mirrored onto the sender',
         () => {
+          expect(result.tally).toEqual({ said: 0, waited: 1, settled: 1 });
           expect(result.mailbox[0]!.record.status).toEqual('QUEUED');
           expect(result.mailbox[0]!.record.reason).toEqual('peer at a modal');
         },
       );
 
-      then('the text to a peer that does not exist is REFUSED', () => {
-        expect(result.mailbox[1]!.record.status).toEqual('REFUSED');
-      });
+      then(
+        'the text to a peer that does not exist is REFUSED, with no say spent on it',
+        () => {
+          expect(result.mailbox[1]!.record.status).toEqual('REFUSED');
+          expect(result.mailbox[1]!.record.reason).toEqual(
+            'no clone answers to @:mechanik in that tree',
+          );
+          expect(result.said.map((call) => call.clone)).toEqual([
+            'foreman',
+            'mechanic',
+          ]);
+        },
+      );
 
       then('the sender is told of the refusal in its own session', () => {
         // the uuid is minted fresh each run; pin its alias so the snapshot holds
@@ -767,24 +1088,21 @@ describe('setPhoneText', () => {
           });
           const delivered = await setPhoneText(
             {
-              to: ['@:foreman'],
+              into: ['@:foreman'],
               what: 'first',
               re: null,
               self: scene.mechanic,
             },
             context,
           );
-          await setPhoneDeliveriesOfTree(
-            {
-              treeDir: scene.treeCrew,
-              treeSelf: TREE_CREW,
-              state: { isStopped: false },
-            },
+          await tick({
+            treeDir: scene.treeCrew,
+            treeSelf: TREE_CREW,
             context,
-          );
+          });
           const queued = await setPhoneText(
             {
-              to: ['@:foreman'],
+              into: ['@:foreman'],
               what: 'second',
               re: null,
               self: scene.mechanic,
@@ -792,33 +1110,40 @@ describe('setPhoneText', () => {
             context,
           );
           const aliasQueued = queued.entries[0]!.record.uuid.slice(0, 8);
-          const withdrawn = await delPhoneText({
-            text: aliasQueued,
-            self: scene.mechanic,
-          });
-          const again = await delPhoneText({
-            text: aliasQueued,
-            self: scene.mechanic,
-          });
-          const refusal = await getError(
-            delPhoneText({
-              text: delivered.entries[0]!.record.uuid.slice(0, 8),
-              self: scene.mechanic,
-            }),
-          );
-          const tally = await setPhoneDeliveriesOfTree(
-            {
-              treeDir: scene.treeCrew,
-              treeSelf: TREE_CREW,
-              state: { isStopped: false },
-            },
+          const withdrawn = await delPhoneText(
+            { text: aliasQueued, self: scene.mechanic },
             context,
           );
+          const again = await delPhoneText(
+            { text: aliasQueued, self: scene.mechanic },
+            context,
+          );
+          const refusal = await getError(
+            delPhoneText(
+              {
+                text: delivered.entries[0]!.record.uuid.slice(0, 8),
+                self: scene.mechanic,
+              },
+              context,
+            ),
+          );
+          const tally = await tick({
+            treeDir: scene.treeCrew,
+            treeSelf: TREE_CREW,
+            context,
+          });
+          const inCopy = await getInCopy({
+            treeDir: scene.treeCrew,
+            clone: 'foreman',
+            uuid: queued.entries[0]!.record.uuid,
+          });
           // the uuid is minted fresh each run; pin its alias so the snapshot holds
           const aliasDelivered = delivered.entries[0]!.record.uuid.slice(0, 8);
           return {
             withdrawn,
             again,
+            inCopy,
+            said: fake.said,
             refusal: {
               message: refusal.message.split(aliasDelivered).join('d03e6f91'),
             },
@@ -829,6 +1154,13 @@ describe('setPhoneText', () => {
 
       then('the QUEUED text settles WITHDRAWN', () => {
         expect(result.withdrawn.entry.record.status).toEqual('WITHDRAWN');
+      });
+
+      then('the receiver in copy is WITHDRAWN too: both copies agree', () => {
+        expect(result.inCopy.record.status).toEqual('WITHDRAWN');
+        expect(result.inCopy.record.reason).toEqual(
+          'withdrawn by its sender; never said',
+        );
       });
 
       then('a second withdraw is a no-op', () => {
@@ -842,6 +1174,7 @@ describe('setPhoneText', () => {
 
       then('the daemon never says a WITHDRAWN text', () => {
         expect(result.tally).toEqual({ said: 0, waited: 0, settled: 0 });
+        expect(result.said.map((call) => call.clone)).toEqual(['foreman']);
       });
     });
   });
@@ -909,11 +1242,19 @@ describe('setPhoneText', () => {
             raw: '7f3e9a02-d9b8-4e15-a6c3-71f20e4d9c05',
             self: scene.mechanic,
           });
+          const fake = genFakeSdkClone({
+            rosters: scene.rosters,
+            sayAs: sayReleased,
+          });
+          const context = asContext({
+            gitRoot: scene.gitRoot,
+            sdkClone: fake.sdkClone,
+          });
           const delOfIn = await getError(
-            delPhoneText({ text: '1a2b3c4d', self: scene.mechanic }),
+            delPhoneText({ text: '1a2b3c4d', self: scene.mechanic }, context),
           );
           const delOfRefused = await getError(
-            delPhoneText({ text: '9c8b7a6d', self: scene.mechanic }),
+            delPhoneText({ text: '9c8b7a6d', self: scene.mechanic }, context),
           );
           return {
             byNumber: byNumber.message,
@@ -969,14 +1310,18 @@ describe('setPhoneText', () => {
             rosters: scene.rosters,
             sayAs: sayReleased,
           });
+          const contextSend = asContext({
+            gitRoot: scene.gitRoot,
+            sdkClone: fake.sdkClone,
+          });
           const queued = await setPhoneText(
             {
-              to: ['@:foreman'],
+              into: ['@:foreman'],
               what: 'mid-say',
               re: null,
               self: scene.mechanic,
             },
-            asContext({ gitRoot: scene.gitRoot, sdkClone: fake.sdkClone }),
+            contextSend,
           );
           const alias = queued.entries[0]!.record.uuid.slice(0, 8);
 
@@ -986,7 +1331,10 @@ describe('setPhoneText', () => {
             getAllClones: fake.sdkClone.getAllClones,
             say: async (call) => {
               const error = await getError(
-                delPhoneText({ text: alias, self: scene.mechanic }),
+                delPhoneText(
+                  { text: alias, self: scene.mechanic },
+                  contextSend,
+                ),
               );
               withdraws.push({
                 message: error.message.split(alias).join('d03e6f91'),
@@ -994,22 +1342,33 @@ describe('setPhoneText', () => {
               return fake.sdkClone.say(call);
             },
           };
-          const tally = await setPhoneDeliveriesOfTree(
-            {
-              treeDir: scene.treeCrew,
-              treeSelf: TREE_CREW,
-              state: { isStopped: false },
-            },
-            asContext({ gitRoot: scene.gitRoot, sdkClone }),
-          );
+          const tally = await tick({
+            treeDir: scene.treeCrew,
+            treeSelf: TREE_CREW,
+            context: asContext({ gitRoot: scene.gitRoot, sdkClone }),
+          });
+
+          // the sender's out copy reads the mirror; the claim sat on the receiver's in copy
           const after = await getOnePhoneTextByRef({
             raw: alias,
             self: scene.mechanic,
           });
-          const claims = (await fs.readdir(join(after.path, '..'))).filter(
-            (name) => name.endsWith('.claim'),
-          );
-          return { withdraws, tally, after, said: fake.said, claims };
+          const inCopy = await getInCopy({
+            treeDir: scene.treeCrew,
+            clone: 'foreman',
+            uuid: queued.entries[0]!.record.uuid,
+          });
+          const claims = [
+            ...(await getClaimsOfSeat({
+              treeDir: scene.treeCrew,
+              clone: 'foreman',
+            })),
+            ...(await getClaimsOfSeat({
+              treeDir: scene.treeCrew,
+              clone: 'mechanic',
+            })),
+          ];
+          return { withdraws, tally, after, inCopy, said: fake.said, claims };
         },
       );
 
@@ -1020,6 +1379,7 @@ describe('setPhoneText', () => {
       });
 
       then('the text settles DELIVERED, never clobbered to a lie', () => {
+        expect(result.inCopy.record.status).toEqual('DELIVERED');
         expect(result.after.record.status).toEqual('DELIVERED');
         expect(result.tally).toEqual({ said: 1, waited: 0, settled: 0 });
       });
@@ -1050,12 +1410,23 @@ describe('setPhoneText', () => {
         sdkClone: fake.sdkClone,
       });
       const queued = await setPhoneText(
-        { to: ['@:foreman'], what: 'hi', re: null, self: scene.mechanic },
+        { into: ['@:foreman'], what: 'hi', re: null, self: scene.mechanic },
         context,
       );
-      const path = queued.entries[0]!.path;
-      await fs.writeFile(`${path}.claim`, input.claim);
-      return { scene, fake, context, path };
+      // the claim sits on the receiver's `in` copy, the one the daemon claims to say it
+      const inCopy = await getInCopy({
+        treeDir: scene.treeCrew,
+        clone: 'foreman',
+        uuid: queued.entries[0]!.record.uuid,
+      });
+      await fs.writeFile(`${inCopy.path}.claim`, input.claim);
+      return {
+        scene,
+        fake,
+        context,
+        path: inCopy.path,
+        pathOut: queued.entries[0]!.path,
+      };
     };
 
     when(
@@ -1064,20 +1435,20 @@ describe('setPhoneText', () => {
         const result = useThen(
           'the text is settled, never said twice',
           async () => {
-            const { scene, fake, context, path } = await genStaleClaim({
-              slug: 'phone-text-case8-say',
-              claim: '4194303999 say\n',
-            });
-            const tally = await setPhoneDeliveriesOfTree(
+            const { scene, fake, context, path, pathOut } = await genStaleClaim(
               {
-                treeDir: scene.treeCrew,
-                treeSelf: TREE_CREW,
-                state: { isStopped: false },
+                slug: 'phone-text-case8-say',
+                claim: '4194303999 say\n',
               },
-              context,
             );
+            const tally = await tick({
+              treeDir: scene.treeCrew,
+              treeSelf: TREE_CREW,
+              context,
+            });
             const after = await daoPhoneMailbox.getOne({ path });
-            return { tally, after, said: fake.said };
+            const afterOut = await daoPhoneMailbox.getOne({ path: pathOut });
+            return { tally, after, afterOut, said: fake.said };
           },
         );
 
@@ -1085,6 +1456,13 @@ describe('setPhoneText', () => {
           expect(result.tally).toEqual({ said: 0, waited: 0, settled: 1 });
           expect(result.after.record.status).toEqual('FAULTED');
           expect(result.after.record.reason).toContain('it may have been said');
+        });
+
+        then('the sender out copy reads the same fate, by the mirror', () => {
+          expect(result.afterOut.record.status).toEqual('FAULTED');
+          expect(result.afterOut.record.reason).toEqual(
+            result.after.record.reason,
+          );
         });
 
         then('the peer hears naught; the sender hears the failure', () => {
@@ -1097,19 +1475,21 @@ describe('setPhoneText', () => {
       '[t1] the dead holder was a daemon mid-say, and the sender withdraws',
       () => {
         const result = useThen('the withdraw is refused', async () => {
-          const { scene, path } = await genStaleClaim({
+          const { scene, context, path, pathOut } = await genStaleClaim({
             slug: 'phone-text-case8-del',
             claim: '4194303999 say\n',
           });
           const { record } = await daoPhoneMailbox.getOne({ path });
           const alias = record.uuid.slice(0, 8);
           const error = await getError(
-            delPhoneText({ text: alias, self: scene.mechanic }),
+            delPhoneText({ text: alias, self: scene.mechanic }, context),
           );
           const after = await daoPhoneMailbox.getOne({ path });
+          const afterOut = await daoPhoneMailbox.getOne({ path: pathOut });
           return {
             error: { message: error.message.split(alias).join('d03e6f91') },
             after,
+            afterOut,
           };
         });
 
@@ -1117,6 +1497,13 @@ describe('setPhoneText', () => {
           expect(result.error.message).toContain('was already FAULTED');
           expect(result.error.message).toMatchSnapshot();
           expect(result.after.record.status).toEqual('FAULTED');
+          expect(result.afterOut.record.status).toEqual('FAULTED');
+        });
+
+        then('the sender out copy keeps the reason of the fault', () => {
+          expect(result.afterOut.record.reason).toContain(
+            'it may have been said',
+          );
         });
       },
     );
@@ -1128,14 +1515,11 @@ describe('setPhoneText', () => {
           claim: '4194303999 withdraw\n',
         });
         return {
-          tally: await setPhoneDeliveriesOfTree(
-            {
-              treeDir: scene.treeCrew,
-              treeSelf: TREE_CREW,
-              state: { isStopped: false },
-            },
+          tally: await tick({
+            treeDir: scene.treeCrew,
+            treeSelf: TREE_CREW,
             context,
-          ),
+          }),
         };
       });
 
@@ -1160,15 +1544,26 @@ describe('setPhoneText', () => {
         sdkClone: fake.sdkClone,
       });
       const queued = await setPhoneText(
-        { to: ['@:foreman'], what: 'hi', re: null, self: scene.mechanic },
+        { into: ['@:foreman'], what: 'hi', re: null, self: scene.mechanic },
         context,
       );
-      return { scene, fake, context, path: queued.entries[0]!.path };
+      const inCopy = await getInCopy({
+        treeDir: scene.treeCrew,
+        clone: 'foreman',
+        uuid: queued.entries[0]!.record.uuid,
+      });
+      return {
+        scene,
+        fake,
+        context,
+        path: inCopy.path,
+        pathOut: queued.entries[0]!.path,
+      };
     };
 
     when('[t0] the roster read before the say throws', () => {
       const result = useThen('the text waits; no say is spent', async () => {
-        const { scene, path } = await genTwoTexts({
+        const { scene, path, pathOut } = await genTwoTexts({
           slug: 'phone-text-case9-pre',
         });
         const said: string[] = [];
@@ -1181,19 +1576,18 @@ describe('setPhoneText', () => {
             return sayReleased(call);
           },
         };
-        const tally = await setPhoneDeliveriesOfTree(
-          {
-            treeDir: scene.treeCrew,
-            treeSelf: TREE_CREW,
-            state: { isStopped: false },
-          },
-          asContext({ gitRoot: scene.gitRoot, sdkClone }),
-        );
+        const tally = await tick({
+          treeDir: scene.treeCrew,
+          treeSelf: TREE_CREW,
+          context: asContext({ gitRoot: scene.gitRoot, sdkClone }),
+        });
         const after = await daoPhoneMailbox.getOne({ path });
-        const claims = (await fs.readdir(join(path, '..'))).filter((name) =>
-          name.endsWith('.claim'),
-        );
-        return { tally, after, said, claims };
+        const afterOut = await daoPhoneMailbox.getOne({ path: pathOut });
+        const claims = await getClaimsOfSeat({
+          treeDir: scene.treeCrew,
+          clone: 'foreman',
+        });
+        return { tally, after, afterOut, said, claims };
       });
 
       then('the tick resolves; the fault is held to the one text', () => {
@@ -1208,6 +1602,9 @@ describe('setPhoneText', () => {
           expect(result.after.record.reason).toEqual(
             'retry: rhachet clone list failed',
           );
+          expect(result.afterOut.record.reason).toEqual(
+            'retry: rhachet clone list failed',
+          );
         },
       );
 
@@ -1216,47 +1613,51 @@ describe('setPhoneText', () => {
       });
     });
 
-    when('[t1] the `in` copy write throws after the say has landed', () => {
+    when('[t1] the say throws after it may have landed', () => {
       const result = useThen(
         'the text settles FAULTED, said once',
         async () => {
-          const { scene, fake, context, path } = await genTwoTexts({
+          const { scene, fake, context, path, pathOut } = await genTwoTexts({
             slug: 'phone-text-case9-post',
           });
 
-          // a file where the foreman's seat mailbox dir should be: the `in` copy can not be written
-          const mailboxForeman = join(
-            getOnePhoneCacheDir({ treeDir: scene.treeCrew }),
-            'skill=phone.text',
-            'clone=foreman',
-          );
-          await fs.writeFile(mailboxForeman, 'not a dir');
-
-          const tally = await setPhoneDeliveriesOfTree(
-            {
-              treeDir: scene.treeCrew,
-              treeSelf: TREE_CREW,
-              state: { isStopped: false },
+          // the first say throws a fault that is not a spawn fault: the pane may have heard it
+          const sdkClone: PhoneContext['sdkClone'] = {
+            getAllClones: fake.sdkClone.getAllClones,
+            say: async (call) => {
+              if (fake.said.length === 0) {
+                fake.said.push(call);
+                throw new MalfunctionError('rhachet clone say timed out');
+              }
+              return fake.sdkClone.say(call);
             },
-            context,
-          );
+          };
+          const contextFault = asContext({
+            gitRoot: context.gitRoot,
+            sdkClone,
+          });
+          const tally = await tick({
+            treeDir: scene.treeCrew,
+            treeSelf: TREE_CREW,
+            context: contextFault,
+          });
           const saidFirst = fake.said.map((call) => call.clone);
-          const tallyAgain = await setPhoneDeliveriesOfTree(
-            {
-              treeDir: scene.treeCrew,
-              treeSelf: TREE_CREW,
-              state: { isStopped: false },
-            },
-            context,
-          );
+          const tallyAgain = await tick({
+            treeDir: scene.treeCrew,
+            treeSelf: TREE_CREW,
+            context: contextFault,
+          });
           const after = await daoPhoneMailbox.getOne({ path });
-          const claims = (await fs.readdir(join(path, '..'))).filter((name) =>
-            name.endsWith('.claim'),
-          );
+          const afterOut = await daoPhoneMailbox.getOne({ path: pathOut });
+          const claims = await getClaimsOfSeat({
+            treeDir: scene.treeCrew,
+            clone: 'foreman',
+          });
           return {
             tally,
             tallyAgain,
             after,
+            afterOut,
             saidFirst,
             said: fake.said,
             claims,
@@ -1275,11 +1676,12 @@ describe('setPhoneText', () => {
           expect(result.after.record.reason).toContain(
             'said, then its settle failed',
           );
+          expect(result.afterOut.record.status).toEqual('FAULTED');
           expect(result.tallyAgain).toEqual({ said: 0, waited: 0, settled: 0 });
         },
       );
 
-      then('the foreman heard it once; the mechanic heard the failure', () => {
+      then('the foreman was asked once; the mechanic heard the failure', () => {
         expect(result.saidFirst).toEqual(['foreman', 'mechanic']);
         expect(result.said).toHaveLength(2);
       });
@@ -1303,21 +1705,25 @@ describe('setPhoneText', () => {
           sdkClone: fake.sdkClone,
         });
         const queued = await setPhoneText(
-          { to: ['@:foreman'], what: 'hi', re: null, self: scene.mechanic },
+          { into: ['@:foreman'], what: 'hi', re: null, self: scene.mechanic },
           context,
         );
-        const path = queued.entries[0]!.path;
+        const { path } = await getInCopy({
+          treeDir: scene.treeCrew,
+          clone: 'foreman',
+          uuid: queued.entries[0]!.record.uuid,
+        });
         await fs.writeFile(`${path}.claim`, '4194303999 prep\n');
-        const tally = await setPhoneDeliveriesOfTree(
-          {
-            treeDir: scene.treeCrew,
-            treeSelf: TREE_CREW,
-            state: { isStopped: false },
-          },
+        const tally = await tick({
+          treeDir: scene.treeCrew,
+          treeSelf: TREE_CREW,
           context,
-        );
+        });
         const after = await daoPhoneMailbox.getOne({ path });
-        return { tally, after };
+        const afterOut = await daoPhoneMailbox.getOne({
+          path: queued.entries[0]!.path,
+        });
+        return { tally, after, afterOut };
       });
 
       then(
@@ -1325,15 +1731,66 @@ describe('setPhoneText', () => {
         () => {
           expect(result.tally).toEqual({ said: 1, waited: 0, settled: 0 });
           expect(result.after.record.status).toEqual('DELIVERED');
+          expect(result.afterOut.record.status).toEqual('DELIVERED');
         },
       );
     });
 
-    when(
-      '[t1] a sender holds the withdraw claim as the peer tree goes away',
-      () => {
-        const result = useThen('the daemon writes naught', async () => {
-          const scene = await genScene({ slug: 'phone-text-case10-withdraw' });
+    when('[t1] a sender holds the withdraw claim as the receiver ticks', () => {
+      const result = useThen('the daemon writes naught', async () => {
+        const scene = await genScene({ slug: 'phone-text-case10-withdraw' });
+        const fake = genFakeSdkClone({
+          rosters: scene.rosters,
+          sayAs: sayReleased,
+        });
+        const context = asContext({
+          gitRoot: scene.gitRoot,
+          sdkClone: fake.sdkClone,
+        });
+        await daoPhoneContacts.set({
+          treeDir: scene.treeDirector,
+          clone: 'director',
+          addresses: [MECHANIC],
+        });
+        const queued = await setPhoneText(
+          { into: [MECHANIC], what: 'hi', re: null, self: scene.director },
+          context,
+        );
+        const { path } = await getInCopy({
+          treeDir: scene.treeCrew,
+          clone: 'mechanic',
+          uuid: queued.entries[0]!.record.uuid,
+        });
+
+        // a live sender holds the withdraw claim on the receiver's in copy
+        await fs.writeFile(`${path}.claim`, `${process.ppid} withdraw\n`);
+        const tally = await tick({
+          treeDir: scene.treeCrew,
+          treeSelf: TREE_CREW,
+          context,
+        });
+        const after = await daoPhoneMailbox.getOne({ path });
+        return { tally, after, said: fake.said };
+      });
+
+      then(
+        'the daemon waits on the claim and writes naught, so the withdraw stands',
+        () => {
+          expect(result.tally).toEqual({ said: 0, waited: 1, settled: 0 });
+          expect(result.after.record.status).toEqual('QUEUED');
+          expect(result.after.record.reason).toEqual(null);
+          expect(result.said).toEqual([]);
+        },
+      );
+    });
+
+    when('[t1b] the sender tree is gone as the receiver ticks', () => {
+      const result = useThen(
+        'the text waits, and the reason is named',
+        async () => {
+          const scene = await genScene({
+            slug: 'phone-text-case10-sender-gone',
+          });
           const fake = genFakeSdkClone({
             rosters: scene.rosters,
             sayAs: sayReleased,
@@ -1348,37 +1805,33 @@ describe('setPhoneText', () => {
             addresses: [MECHANIC],
           });
           const queued = await setPhoneText(
-            { to: [MECHANIC], what: 'hi', re: null, self: scene.director },
+            { into: [MECHANIC], what: 'hi', re: null, self: scene.director },
             context,
           );
-          const path = queued.entries[0]!.path;
-
-          // a live sender holds the withdraw claim; the peer tree is gone
-          await fs.writeFile(`${path}.claim`, `${process.ppid} withdraw\n`);
-          await fs.rm(scene.treeCrew, { recursive: true, force: true });
-
-          const tally = await setPhoneDeliveriesOfTree(
-            {
-              treeDir: scene.treeDirector,
-              treeSelf: TREE_DIRECTOR,
-              state: { isStopped: false },
-            },
+          await fs.rm(scene.treeDirector, { recursive: true, force: true });
+          const tally = await tick({
+            treeDir: scene.treeCrew,
+            treeSelf: TREE_CREW,
             context,
-          );
-          const after = await daoPhoneMailbox.getOne({ path });
-          return { tally, after };
-        });
+          });
+          const after = await getInCopy({
+            treeDir: scene.treeCrew,
+            clone: 'mechanic',
+            uuid: queued.entries[0]!.record.uuid,
+          });
+          return { tally, after, said: fake.said };
+        },
+      );
 
-        then(
-          'the daemon waits on the claim and writes naught, so the withdraw stands',
-          () => {
-            expect(result.tally).toEqual({ said: 0, waited: 1, settled: 0 });
-            expect(result.after.record.status).toEqual('QUEUED');
-            expect(result.after.record.reason).toEqual(null);
-          },
+      then('the reach of the sender can not be read, so the text waits', () => {
+        expect(result.tally).toEqual({ said: 0, waited: 1, settled: 0 });
+        expect(result.after.record.status).toEqual('QUEUED');
+        expect(result.after.record.reason).toEqual(
+          `sender tree ${TREE_DIRECTOR} not found here`,
         );
-      },
-    );
+        expect(result.said).toEqual([]);
+      });
+    });
 
     when('[t2] a sender sends two texts and the first is withheld', () => {
       const result = useThen('the second holds its place', async () => {
@@ -1405,28 +1858,32 @@ describe('setPhoneText', () => {
           sdkClone: fake.sdkClone,
         });
         const first = await setPhoneText(
-          { to: ['@:foreman'], what: 'one', re: null, self: scene.mechanic },
+          { into: ['@:foreman'], what: 'one', re: null, self: scene.mechanic },
           context,
         );
         const second = await setPhoneText(
-          { to: ['@:foreman'], what: 'two', re: null, self: scene.mechanic },
+          { into: ['@:foreman'], what: 'two', re: null, self: scene.mechanic },
           context,
         );
-        const tally = await setPhoneDeliveriesOfTree(
-          {
-            treeDir: scene.treeCrew,
-            treeSelf: TREE_CREW,
-            state: { isStopped: false },
-          },
+        const tally = await tick({
+          treeDir: scene.treeCrew,
+          treeSelf: TREE_CREW,
           context,
-        );
-        const afterFirst = await daoPhoneMailbox.getOne({
+        });
+        const afterFirst = await getInCopy({
+          treeDir: scene.treeCrew,
+          clone: 'foreman',
+          uuid: first.entries[0]!.record.uuid,
+        });
+        const afterSecond = await getInCopy({
+          treeDir: scene.treeCrew,
+          clone: 'foreman',
+          uuid: second.entries[0]!.record.uuid,
+        });
+        const firstOut = await daoPhoneMailbox.getOne({
           path: first.entries[0]!.path,
         });
-        const afterSecond = await daoPhoneMailbox.getOne({
-          path: second.entries[0]!.path,
-        });
-        return { tally, afterFirst, afterSecond, said: fake.said };
+        return { tally, afterFirst, afterSecond, firstOut, said: fake.said };
       });
 
       then('only the first is tried; the second waits behind it', () => {
@@ -1437,6 +1894,7 @@ describe('setPhoneText', () => {
       then('both stay QUEUED, so the peer reads them in the order sent', () => {
         expect(result.afterFirst.record.status).toEqual('QUEUED');
         expect(result.afterFirst.record.reason).toEqual('peer at a modal');
+        expect(result.firstOut.record.reason).toEqual('peer at a modal');
         expect(result.afterSecond.record.status).toEqual('QUEUED');
       });
     });
@@ -1465,19 +1923,18 @@ describe('setPhoneText', () => {
           sdkClone: fake.sdkClone,
         });
         const queued = await setPhoneText(
-          { to: ['@:foreman'], what: 'hi', re: null, self: scene.mechanic },
+          { into: ['@:foreman'], what: 'hi', re: null, self: scene.mechanic },
           context,
         );
-        const tally = await setPhoneDeliveriesOfTree(
-          {
-            treeDir: scene.treeCrew,
-            treeSelf: TREE_CREW,
-            state: { isStopped: false },
-          },
+        const tally = await tick({
+          treeDir: scene.treeCrew,
+          treeSelf: TREE_CREW,
           context,
-        );
-        const after = await daoPhoneMailbox.getOne({
-          path: queued.entries[0]!.path,
+        });
+        const after = await getInCopy({
+          treeDir: scene.treeCrew,
+          clone: 'foreman',
+          uuid: queued.entries[0]!.record.uuid,
         });
         return { tally, after, said: fake.said };
       });
@@ -1500,9 +1957,13 @@ describe('setPhoneText', () => {
             rosters: scene.rosters,
             sayAs: sayReleased,
           });
+          const contextSend = asContext({
+            gitRoot: scene.gitRoot,
+            sdkClone: fake.sdkClone,
+          });
           const queued = await setPhoneText(
-            { to: ['@:foreman'], what: 'hi', re: null, self: scene.mechanic },
-            asContext({ gitRoot: scene.gitRoot, sdkClone: fake.sdkClone }),
+            { into: ['@:foreman'], what: 'hi', re: null, self: scene.mechanic },
+            contextSend,
           );
           const alias = queued.entries[0]!.record.uuid.slice(0, 8);
 
@@ -1511,26 +1972,28 @@ describe('setPhoneText', () => {
           const sdkClone: PhoneContext['sdkClone'] = {
             say: fake.sdkClone.say,
             getAllClones: async (call) => {
-              const withdrawn = await delPhoneText({
-                text: alias,
-                self: scene.mechanic,
-              });
+              const withdrawn = await delPhoneText(
+                { text: alias, self: scene.mechanic },
+                contextSend,
+              );
               withdraws.push(withdrawn.entry.record.status);
               return fake.sdkClone.getAllClones(call);
             },
           };
-          const tally = await setPhoneDeliveriesOfTree(
-            {
-              treeDir: scene.treeCrew,
-              treeSelf: TREE_CREW,
-              state: { isStopped: false },
-            },
-            asContext({ gitRoot: scene.gitRoot, sdkClone }),
-          );
-          const after = await daoPhoneMailbox.getOne({
+          const tally = await tick({
+            treeDir: scene.treeCrew,
+            treeSelf: TREE_CREW,
+            context: asContext({ gitRoot: scene.gitRoot, sdkClone }),
+          });
+          const after = await getInCopy({
+            treeDir: scene.treeCrew,
+            clone: 'foreman',
+            uuid: queued.entries[0]!.record.uuid,
+          });
+          const afterOut = await daoPhoneMailbox.getOne({
             path: queued.entries[0]!.path,
           });
-          return { withdraws, tally, after, said: fake.said };
+          return { withdraws, tally, after, afterOut, said: fake.said };
         },
       );
 
@@ -1540,6 +2003,7 @@ describe('setPhoneText', () => {
 
       then('the text stays WITHDRAWN, and no say is spent', () => {
         expect(result.after.record.status).toEqual('WITHDRAWN');
+        expect(result.afterOut.record.status).toEqual('WITHDRAWN');
         expect(result.said).toEqual([]);
         expect(result.tally).toEqual({ said: 0, waited: 0, settled: 1 });
       });
@@ -1566,32 +2030,37 @@ describe('setPhoneText', () => {
         });
         const queued = await setPhoneText(
           {
-            to: [`@:${SERIAL_FOREMAN}`],
+            into: [`@:${SERIAL_FOREMAN}`],
             what: 'hi',
             re: null,
             self: scene.mechanic,
           },
           context,
         );
-        const tally = await setPhoneDeliveriesOfTree(
-          {
-            treeDir: scene.treeCrew,
-            treeSelf: TREE_CREW,
-            state: { isStopped: false },
-          },
+        const tally = await tick({
+          treeDir: scene.treeCrew,
+          treeSelf: TREE_CREW,
           context,
-        );
-        const after = await daoPhoneMailbox.getOne({
+        });
+        const after = await getInCopy({
+          treeDir: scene.treeCrew,
+          clone: SERIAL_FOREMAN,
+          uuid: queued.entries[0]!.record.uuid,
+        });
+        const afterOut = await daoPhoneMailbox.getOne({
           path: queued.entries[0]!.path,
         });
-        return { tally, after, said: fake.said };
+        return { tally, after, afterOut, said: fake.said };
       });
 
       then('it never waits for a clone that no revive can return', () => {
         expect(result.tally).toEqual({ said: 0, waited: 0, settled: 1 });
         expect(result.after.record.status).toEqual('REFUSED');
         expect(result.after.record.reason).toEqual(
-          `peer clone ${SERIAL_FOREMAN} is DEAD and has no slug to revive under`,
+          `clone ${SERIAL_FOREMAN} is DEAD and has no slug to revive under`,
+        );
+        expect(result.afterOut.record.reason).toEqual(
+          result.after.record.reason,
         );
       });
 
@@ -1608,10 +2077,14 @@ describe('setPhoneText', () => {
           sayAs: sayReleased,
         });
         const queued = await setPhoneText(
-          { to: ['@:foreman'], what: 'hi', re: null, self: scene.mechanic },
+          { into: ['@:foreman'], what: 'hi', re: null, self: scene.mechanic },
           asContext({ gitRoot: scene.gitRoot, sdkClone: fake.sdkClone }),
         );
-        const path = queued.entries[0]!.path;
+        const { path } = await getInCopy({
+          treeDir: scene.treeCrew,
+          clone: 'foreman',
+          uuid: queued.entries[0]!.record.uuid,
+        });
 
         // the first say can not spawn rhachet at all, as on a grove out of pids
         const sdkCloneNoSpawn: PhoneContext['sdkClone'] = {
@@ -1623,23 +2096,23 @@ describe('setPhoneText', () => {
             });
           },
         };
-        const tallyFirst = await setPhoneDeliveriesOfTree(
-          {
-            treeDir: scene.treeCrew,
-            treeSelf: TREE_CREW,
-            state: { isStopped: false },
-          },
-          asContext({ gitRoot: scene.gitRoot, sdkClone: sdkCloneNoSpawn }),
-        );
+        const tallyFirst = await tick({
+          treeDir: scene.treeCrew,
+          treeSelf: TREE_CREW,
+          context: asContext({
+            gitRoot: scene.gitRoot,
+            sdkClone: sdkCloneNoSpawn,
+          }),
+        });
         const afterFirst = await daoPhoneMailbox.getOne({ path });
-        const tallyAgain = await setPhoneDeliveriesOfTree(
-          {
-            treeDir: scene.treeCrew,
-            treeSelf: TREE_CREW,
-            state: { isStopped: false },
-          },
-          asContext({ gitRoot: scene.gitRoot, sdkClone: fake.sdkClone }),
-        );
+        const tallyAgain = await tick({
+          treeDir: scene.treeCrew,
+          treeSelf: TREE_CREW,
+          context: asContext({
+            gitRoot: scene.gitRoot,
+            sdkClone: fake.sdkClone,
+          }),
+        });
         const afterAgain = await daoPhoneMailbox.getOne({ path });
         return { tallyFirst, afterFirst, tallyAgain, afterAgain };
       });
@@ -1671,7 +2144,7 @@ describe('setPhoneText', () => {
         });
         for (const what of ['one', 'two', 'three'])
           await setPhoneText(
-            { to: ['@:foreman'], what, re: null, self: scene.mechanic },
+            { into: ['@:foreman'], what, re: null, self: scene.mechanic },
             context,
           );
         const reads: string[] = [];
@@ -1682,14 +2155,11 @@ describe('setPhoneText', () => {
             return fake.sdkClone.getAllClones(call);
           },
         };
-        const tally = await setPhoneDeliveriesOfTree(
-          {
-            treeDir: scene.treeCrew,
-            treeSelf: TREE_CREW,
-            state: { isStopped: false },
-          },
-          asContext({ gitRoot: scene.gitRoot, sdkClone }),
-        );
+        const tally = await tick({
+          treeDir: scene.treeCrew,
+          treeSelf: TREE_CREW,
+          context: asContext({ gitRoot: scene.gitRoot, sdkClone }),
+        });
         return { reads, tally };
       });
 
@@ -1713,7 +2183,12 @@ describe('setPhoneText', () => {
             sdkClone: fake.sdkClone,
           });
           const first = await setPhoneText(
-            { to: ['@:foreman'], what: 'one', re: null, self: scene.mechanic },
+            {
+              into: ['@:foreman'],
+              what: 'one',
+              re: null,
+              self: scene.mechanic,
+            },
             context,
           );
 
@@ -1725,7 +2200,12 @@ describe('setPhoneText', () => {
           );
 
           const second = await setPhoneText(
-            { to: ['@:foreman'], what: 'two', re: null, self: scene.mechanic },
+            {
+              into: ['@:foreman'],
+              what: 'two',
+              re: null,
+              self: scene.mechanic,
+            },
             context,
           );
           const alias = second.entries[0]!.record.uuid.slice(0, 8);
@@ -1733,10 +2213,10 @@ describe('setPhoneText', () => {
             raw: alias,
             self: scene.mechanic,
           });
-          const withdrawn = await delPhoneText({
-            text: alias,
-            self: scene.mechanic,
-          });
+          const withdrawn = await delPhoneText(
+            { text: alias, self: scene.mechanic },
+            context,
+          );
           const { unreadable } = await daoPhoneMailbox.getAllReadable({
             treeDir: scene.treeCrew,
             clone: 'mechanic',
@@ -1775,11 +2255,11 @@ describe('setPhoneText', () => {
           sdkClone: fake.sdkClone,
         });
         const first = await setPhoneText(
-          { to: ['@:foreman'], what: 'one', re: null, self: scene.mechanic },
+          { into: ['@:foreman'], what: 'one', re: null, self: scene.mechanic },
           context,
         );
         const second = await setPhoneText(
-          { to: ['@:foreman'], what: 'two', re: null, self: scene.mechanic },
+          { into: ['@:foreman'], what: 'two', re: null, self: scene.mechanic },
           context,
         );
 
@@ -1852,17 +2332,19 @@ describe('setPhoneText', () => {
                 addresses: [DIRECTOR],
               });
               await setPhoneText(
-                { to: [MECHANIC], what: 'one', re: null, self: scene.director },
-                context,
-              );
-              await setPhoneDeliveriesOfTree(
                 {
-                  treeDir: scene.treeDirector,
-                  treeSelf: TREE_DIRECTOR,
-                  state: { isStopped: false },
+                  into: [MECHANIC],
+                  what: 'one',
+                  re: null,
+                  self: scene.director,
                 },
                 context,
               );
+              await tick({
+                treeDir: scene.treeCrew,
+                treeSelf: TREE_CREW,
+                context,
+              });
 
               // the revive: the slug rebinds to a fresh serial
               rosters[scene.treeCrew] = [
@@ -1879,21 +2361,23 @@ describe('setPhoneText', () => {
                 address: scene.mechanic.address,
               });
               await setPhoneText(
-                { to: [MECHANIC], what: 'two', re: null, self: scene.director },
-                context,
-              );
-              await setPhoneDeliveriesOfTree(
                 {
-                  treeDir: scene.treeDirector,
-                  treeSelf: TREE_DIRECTOR,
-                  state: { isStopped: false },
+                  into: [MECHANIC],
+                  what: 'two',
+                  re: null,
+                  self: scene.director,
                 },
                 context,
               );
+              await tick({
+                treeDir: scene.treeCrew,
+                treeSelf: TREE_CREW,
+                context,
+              });
 
               // the revived clone texts the director with no re-grant
               const reply = await setPhoneText(
-                { to: [DIRECTOR], what: 'back', re: null, self: revived },
+                { into: [DIRECTOR], what: 'back', re: null, self: revived },
                 context,
               );
               const reach = await getOnePhoneReach({ self: revived }, context);
@@ -1948,7 +2432,7 @@ describe('setPhoneText', () => {
             addresses: [MECHANIC],
           });
           const queued = await setPhoneText(
-            { to: [MECHANIC], what: 'hi', re: null, self: scene.director },
+            { into: [MECHANIC], what: 'hi', re: null, self: scene.director },
             context,
           );
 
@@ -1958,25 +2442,32 @@ describe('setPhoneText', () => {
             clone: 'director',
             addresses: [],
           });
-          const tally = await setPhoneDeliveriesOfTree(
-            {
-              treeDir: scene.treeDirector,
-              treeSelf: TREE_DIRECTOR,
-              state: { isStopped: false },
-            },
+          // the receiver's tree reads the revoke from the sender's own seat
+          const tally = await tick({
+            treeDir: scene.treeCrew,
+            treeSelf: TREE_CREW,
             context,
-          );
+          });
           const after = await daoPhoneMailbox.getOne({
             path: queued.entries[0]!.path,
           });
-          return { tally, after, said: fake.said };
+          const afterIn = await getInCopy({
+            treeDir: scene.treeCrew,
+            clone: 'mechanic',
+            uuid: queued.entries[0]!.record.uuid,
+          });
+          return { tally, after, afterIn, said: fake.said };
         },
       );
 
       then('the revoke holds for the life of the text', () => {
+        expect(result.afterIn.record.status).toEqual('REFUSED');
         expect(result.after.record.status).toEqual('REFUSED');
         expect(result.after.record.reason).toEqual(
-          `${MECHANIC} is no longer a contact`,
+          `${MECHANIC} is no longer a contact of ${DIRECTOR}`,
+        );
+        expect(result.afterIn.record.reason).toEqual(
+          result.after.record.reason,
         );
         expect(result.tally).toEqual({ said: 0, waited: 0, settled: 1 });
       });
@@ -2003,19 +2494,19 @@ describe('setPhoneText', () => {
           sdkClone: fake.sdkClone,
         });
         const queued = await setPhoneText(
-          { to: ['@:foreman'], what: 'hi', re: null, self: scene.mechanic },
+          { into: ['@:foreman'], what: 'hi', re: null, self: scene.mechanic },
           context,
         );
-        const tally = await setPhoneDeliveriesOfTree(
-          {
-            treeDir: scene.treeCrew,
-            treeSelf: TREE_CREW,
-            state: { isStopped: true },
-          },
+        const tally = await tick({
+          treeDir: scene.treeCrew,
+          treeSelf: TREE_CREW,
           context,
-        );
-        const after = await daoPhoneMailbox.getOne({
-          path: queued.entries[0]!.path,
+          isStopped: true,
+        });
+        const after = await getInCopy({
+          treeDir: scene.treeCrew,
+          clone: 'foreman',
+          uuid: queued.entries[0]!.record.uuid,
         });
         return { tally, after, said: fake.said };
       });
@@ -2024,6 +2515,560 @@ describe('setPhoneText', () => {
         expect(result.said).toEqual([]);
         expect(result.tally).toEqual({ said: 0, waited: 0, settled: 0 });
         expect(result.after.record.status).toEqual('QUEUED');
+      });
+    });
+  });
+
+  given('[case16] a director who texts a group, then the group by name', () => {
+    when('[t0] the director texts two peers, then --into group:<alias>', () => {
+      const result = useThen('one group, in every member seat', async () => {
+        const scene = await genScene({ slug: 'phone-text-case16' });
+        const fake = genFakeSdkClone({
+          rosters: scene.rosters,
+          sayAs: sayReleased,
+        });
+        const context = asContext({
+          gitRoot: scene.gitRoot,
+          sdkClone: fake.sdkClone,
+        });
+        await daoPhoneContacts.set({
+          treeDir: scene.treeDirector,
+          clone: 'director',
+          addresses: [MECHANIC, FOREMAN],
+        });
+        const first = await setPhoneText(
+          {
+            into: [MECHANIC, FOREMAN],
+            what: 'slot shape changed',
+            re: null,
+            self: scene.director,
+          },
+          context,
+        );
+        const alias = first.group!.uuid.slice(0, 8);
+        const second = await setPhoneText(
+          {
+            into: [`group:${alias}`],
+            what: 'and the cutoff is 5pm',
+            re: null,
+            self: scene.director,
+          },
+          context,
+        );
+        const seats = [
+          { treeDir: scene.treeDirector, clone: 'director' },
+          { treeDir: scene.treeCrew, clone: 'mechanic' },
+          { treeDir: scene.treeCrew, clone: 'foreman' },
+        ];
+        const groupsBySeat = await Promise.all(
+          seats.map((seat) => daoPhoneGroup.getAll(seat)),
+        );
+        const filesBySeat = await Promise.all(
+          seats.map(async (seat) =>
+            (await fs.readdir(getDirOfSeat(seat))).filter((name) =>
+              name.startsWith('group.'),
+            ),
+          ),
+        );
+        const inCopies = await Promise.all(
+          [...first.entries, ...second.entries].map((entry) =>
+            getInCopy({
+              treeDir: scene.treeCrew,
+              clone: entry.record.to === MECHANIC ? 'mechanic' : 'foreman',
+              uuid: entry.record.uuid,
+            }),
+          ),
+        );
+        return {
+          first,
+          second,
+          groupsBySeat,
+          filesBySeat,
+          inCopies,
+          treeCrew: scene.treeCrew,
+        };
+      });
+
+      then('the group names the sender first, then each peer', () => {
+        expect(result.first.group!.members).toEqual([
+          DIRECTOR,
+          MECHANIC,
+          FOREMAN,
+        ]);
+      });
+
+      then('every member seat holds the group as group.<uuid>.json', () => {
+        const file = `group.${result.first.group!.uuid}.json`;
+        expect(result.filesBySeat).toEqual([[file], [file], [file]]);
+        for (const groups of result.groupsBySeat)
+          expect(groups.map((group) => group.uuid)).toEqual([
+            result.first.group!.uuid,
+          ]);
+        expect(result.groupsBySeat[1]![0]!.members).toEqual(
+          result.first.group!.members,
+        );
+      });
+
+      then('each text carries the group uuid, on both of its copies', () => {
+        const uuid = result.first.group!.uuid;
+        expect(result.first.entries).toHaveLength(2);
+        for (const entry of [...result.first.entries, ...result.second.entries])
+          expect(entry.record.group).toEqual(uuid);
+        for (const entry of result.inCopies)
+          expect(entry.record.group).toEqual(uuid);
+      });
+
+      then('the send names one receiver tree to wake', () => {
+        expect(result.first.treeDirsToWake).toEqual([result.treeCrew]);
+      });
+
+      then('--into group:<alias> texts every member but the sender', () => {
+        expect(result.second.group!.uuid).toEqual(result.first.group!.uuid);
+        expect(result.second.entries.map((entry) => entry.record.to)).toEqual([
+          MECHANIC,
+          FOREMAN,
+        ]);
+        expect(result.second.entries.map((entry) => entry.record.from)).toEqual(
+          [DIRECTOR, DIRECTOR],
+        );
+      });
+
+      then('the named group mints no second group file', () => {
+        expect(result.filesBySeat[0]).toHaveLength(1);
+      });
+    });
+
+    when('[t1] a group named by a bad ref, and a group with a peer', () => {
+      const result = useThen('each is refused', async () => {
+        const scene = await genScene({ slug: 'phone-text-case16-refuse' });
+        const fake = genFakeSdkClone({
+          rosters: scene.rosters,
+          sayAs: sayReleased,
+        });
+        const context = asContext({
+          gitRoot: scene.gitRoot,
+          sdkClone: fake.sdkClone,
+        });
+        const noGroup = await getError(
+          setPhoneText(
+            {
+              into: ['group:7f3e9a02'],
+              what: 'hi',
+              re: null,
+              self: scene.mechanic,
+            },
+            context,
+          ),
+        );
+        const badRef = await getError(
+          setPhoneText(
+            {
+              into: ['group:nope'],
+              what: 'hi',
+              re: null,
+              self: scene.mechanic,
+            },
+            context,
+          ),
+        );
+        const mixed = await getError(
+          setPhoneText(
+            {
+              into: ['group:7f3e9a02', '@:foreman'],
+              what: 'hi',
+              re: null,
+              self: scene.mechanic,
+            },
+            context,
+          ),
+        );
+        return {
+          noGroup: noGroup.message,
+          badRef: badRef.message,
+          mixed: mixed.message,
+        };
+      });
+
+      then('a group no seat holds is refused', () => {
+        expect(result.noGroup).toContain('no group 7f3e9a02 holds this clone');
+      });
+
+      then('a ref that names no group is refused', () => {
+        expect(result.badRef).toContain('is not a group reference');
+      });
+
+      then('a group and a peer in one send is refused', () => {
+        expect(result.mixed).toContain('not both');
+      });
+    });
+  });
+
+  given('[case17] a group of three trees answers a group text', () => {
+    when('[t0] the mechanic replies with --re and no --into', () => {
+      const result = useThen('the whole group is reached', async () => {
+        const scene = await genScene({ slug: 'phone-text-case17' });
+        const fake = genFakeSdkClone({
+          rosters: scene.rosters,
+          sayAs: sayReleased,
+        });
+        const context = asContext({
+          gitRoot: scene.gitRoot,
+          sdkClone: fake.sdkClone,
+        });
+        await daoPhoneContacts.set({
+          treeDir: scene.treeDirector,
+          clone: 'director',
+          addresses: [MECHANIC, SCOUT],
+        });
+
+        // before the group, the scout is no one the mechanic may reach
+        const refusedBefore = await getError(
+          setPhoneText(
+            { into: [SCOUT], what: 'hi', re: null, self: scene.mechanic },
+            context,
+          ),
+        );
+
+        // the director texts the mechanic and the scout, on two trees
+        const first = await setPhoneText(
+          {
+            into: [MECHANIC, SCOUT],
+            what: 'ratings ship friday',
+            re: null,
+            self: scene.director,
+          },
+          context,
+        );
+        const tallyCrew = await tick({
+          treeDir: scene.treeCrew,
+          treeSelf: TREE_CREW,
+          context,
+        });
+        const tallyScout = await tick({
+          treeDir: scene.treeScout,
+          treeSelf: TREE_SCOUT,
+          context,
+        });
+
+        // the mechanic has no contact, and never heard from the scout: only the group admits it
+        const refusedAlone = await getError(
+          setPhoneText(
+            { into: [SCOUT], what: 'psst', re: null, self: scene.mechanic },
+            context,
+          ),
+        );
+        const reply = await setPhoneText(
+          {
+            into: [],
+            what: 'friday works',
+            re: first.entries[0]!.record.uuid.slice(0, 8),
+            self: scene.mechanic,
+          },
+          context,
+        );
+        const tallyScoutAgain = await tick({
+          treeDir: scene.treeScout,
+          treeSelf: TREE_SCOUT,
+          context,
+        });
+        const tallyDirector = await tick({
+          treeDir: scene.treeDirector,
+          treeSelf: TREE_DIRECTOR,
+          context,
+        });
+
+        // the mechanic answers the sender alone: one peer, so no group rides it
+        const alone = await setPhoneText(
+          {
+            into: [DIRECTOR],
+            what: 'just you',
+            re: first.entries[0]!.record.uuid.slice(0, 8),
+            self: scene.mechanic,
+          },
+          context,
+        );
+        const scoutThread = await getAllPhoneMailboxEntries({
+          treeDir: scene.treeScout,
+          clone: 'scout',
+        });
+        const mechanicOut = await getAllPhoneMailboxEntries({
+          treeDir: scene.treeCrew,
+          clone: 'mechanic',
+        });
+        return {
+          refusedBefore: refusedBefore.message,
+          refusedAlone: refusedAlone.message,
+          first,
+          reply,
+          alone,
+          tallyCrew,
+          tallyScout,
+          tallyScoutAgain,
+          tallyDirector,
+          scoutThread,
+          mechanicOut,
+          said: fake.said,
+        };
+      });
+
+      then('the scout is unreachable before any group holds it', () => {
+        expect(result.refusedBefore).toContain('is not a contact');
+      });
+
+      then(
+        'a lone text to a group mate is refused: the group alone reaches it',
+        () => {
+          expect(result.refusedAlone).toContain('is not a contact');
+        },
+      );
+
+      then('the reply reaches the director and the scout, on the group', () => {
+        expect(result.reply.group!.uuid).toEqual(result.first.group!.uuid);
+        expect(result.reply.entries.map((entry) => entry.record.to)).toEqual([
+          DIRECTOR,
+          SCOUT,
+        ]);
+        for (const entry of result.reply.entries) {
+          expect(entry.record.group).toEqual(result.first.group!.uuid);
+          expect(entry.record.re).toEqual(result.first.entries[0]!.record.uuid);
+        }
+      });
+
+      then(
+        'each receiver tree says its own text: the group mate is delivered',
+        () => {
+          expect(result.tallyCrew).toEqual({ said: 1, waited: 0, settled: 0 });
+          expect(result.tallyScout).toEqual({ said: 1, waited: 0, settled: 0 });
+          expect(result.tallyScoutAgain).toEqual({
+            said: 1,
+            waited: 0,
+            settled: 0,
+          });
+          expect(result.tallyDirector).toEqual({
+            said: 1,
+            waited: 0,
+            settled: 0,
+          });
+          expect(
+            result.scoutThread.map((entry) => [
+              entry.record.from,
+              entry.record.status,
+            ]),
+          ).toEqual([
+            [DIRECTOR, 'DELIVERED'],
+            [MECHANIC, 'DELIVERED'],
+          ]);
+        },
+      );
+
+      then('the reply to the sender alone rides no group', () => {
+        expect(result.alone.group).toBeNull();
+        expect(result.alone.entries).toHaveLength(1);
+        expect(result.alone.entries[0]!.record.group).toBeNull();
+      });
+
+      then('the said group text names its group and both reply forms', () => {
+        const said = result.said.find((call) => call.clone === 'scout');
+        const alias = result.first.group!.uuid.slice(0, 8);
+        expect(said?.what).toContain(`to group:${alias}`);
+        expect(said?.what).toContain(
+          'the whole group: rhx phone.text set --re',
+        );
+        expect(said?.what).toContain(
+          'the sender alone: rhx phone.text set --into',
+        );
+      });
+    });
+  });
+
+  given('[case18] a group with a member on another grove', () => {
+    /**
+     * .what = the director texts the mechanic and a remote peer, as a contact of both
+     */
+    const genSendGroupAcrossGrove = async (input: {
+      slug: string;
+      answerOf: (call: GroveCall) => Record<string, unknown>;
+    }) => {
+      const scene = await genScene({ slug: input.slug });
+      const forestDir = join(scene.gitRoot, '.git.forest');
+      await fs.mkdir(join(forestDir, 'groves'), { recursive: true });
+      await fs.writeFile(
+        join(forestDir, 'groves', `${GROVE_REMOTE}.json`),
+        '{}',
+      );
+      await daoPhoneContacts.set({
+        treeDir: scene.treeDirector,
+        clone: 'director',
+        addresses: [MECHANIC, DIRECTOR_REMOTE],
+      });
+      const fake = genFakeSdkClone({
+        rosters: scene.rosters,
+        sayAs: sayReleased,
+      });
+      const grove = genFakeSdkGrove({ answerOf: input.answerOf });
+      const context = asContext({
+        gitRoot: scene.gitRoot,
+        sdkClone: fake.sdkClone,
+        sdkGrove: grove.sdkGrove,
+      });
+      const outcome = await setPhoneText(
+        {
+          into: [MECHANIC, DIRECTOR_REMOTE],
+          what: 'all hands',
+          re: null,
+          self: scene.director,
+        },
+        context,
+      ).then(
+        (sent) => ({ sent, error: null }),
+        (error: Error) => ({ sent: null, error }),
+      );
+      const mailbox = await getAllPhoneMailboxEntries({
+        treeDir: scene.treeDirector,
+        clone: 'director',
+      });
+      const mechanicMailbox = await getAllPhoneMailboxEntries({
+        treeDir: scene.treeCrew,
+        clone: 'mechanic',
+      });
+      return { ...outcome, mailbox, mechanicMailbox, calls: grove.calls };
+    };
+
+    when('[t0] the peer grove takes the group and the text', () => {
+      const result = useThen('the group lands before the texts', () =>
+        genSendGroupAcrossGrove({
+          slug: 'phone-text-case18',
+          answerOf: answerOfGroveHealthy,
+        }),
+      );
+
+      then('the group is put on the peer grove first, then its text', () => {
+        expect(result.calls.map((call) => call.verb)).toEqual(['put', 'put']);
+        expect(
+          result.calls.map((call) => {
+            const payload: Record<string, unknown> = { ...call.payload };
+            return payload.kind;
+          }),
+        ).toEqual(['group', 'text']);
+        expect(result.calls[0]).toMatchObject({
+          grove: GROVE_REMOTE,
+          tree: 'notebook',
+          payload: {
+            kind: 'group',
+            clone: 'director',
+            group: { uuid: result.sent!.group!.uuid },
+          },
+        });
+      });
+
+      then(
+        'both out copies wait QUEUED, and only the local tree is woke',
+        () => {
+          expect(result.mailbox.map((entry) => entry.record.status)).toEqual([
+            'QUEUED',
+            'QUEUED',
+          ]);
+          expect(
+            result.mechanicMailbox.map((entry) => entry.record.way),
+          ).toEqual(['in']);
+          expect(result.sent!.treeDirsToWake).toHaveLength(1);
+        },
+      );
+    });
+
+    when('[t1] the peer grove does not take the group record', () => {
+      const result = useThen('the send fails loud, before any text', () =>
+        genSendGroupAcrossGrove({
+          slug: 'phone-text-case18-refuse',
+          answerOf: () => ({ outcome: 'NO_TREE' }),
+        }),
+      );
+
+      then('the send throws, and no text is written anywhere', () => {
+        expect(result.error?.message).toContain(
+          'a group record did not land on its grove',
+        );
+        expect(result.mailbox).toEqual([]);
+        expect(result.mechanicMailbox).toEqual([]);
+      });
+    });
+  });
+
+  given('[case19] a text held for a clone that stops', () => {
+    when('[t0] the clone stops, and stops again', () => {
+      const result = useThen('the held text is told once', async () => {
+        const scene = await genScene({ slug: 'phone-text-case19' });
+        const fake = genFakeSdkClone({
+          rosters: scene.rosters,
+          sayAs: sayReleased,
+        });
+        const context = asContext({
+          gitRoot: scene.gitRoot,
+          sdkClone: fake.sdkClone,
+        });
+
+        // the first text is said by the daemon; the second is held when the clone stops
+        const delivered = await setPhoneText(
+          { into: ['@:foreman'], what: 'one', re: null, self: scene.mechanic },
+          context,
+        );
+        await tick({ treeDir: scene.treeCrew, treeSelf: TREE_CREW, context });
+        const held = await setPhoneText(
+          { into: ['@:foreman'], what: 'two', re: null, self: scene.mechanic },
+          context,
+        );
+        const toldFirst = await setPhoneTextsToldAtStop(
+          { self: scene.foreman },
+          context,
+        );
+        const toldAgain = await setPhoneTextsToldAtStop(
+          { self: scene.foreman },
+          context,
+        );
+        const tallyAfter = await tick({
+          treeDir: scene.treeCrew,
+          treeSelf: TREE_CREW,
+          context,
+        });
+        const outHeld = await daoPhoneMailbox.getOne({
+          path: held.entries[0]!.path,
+        });
+        const outDelivered = await daoPhoneMailbox.getOne({
+          path: delivered.entries[0]!.path,
+        });
+        return {
+          toldFirst,
+          toldAgain,
+          tallyAfter,
+          outHeld,
+          outDelivered,
+          said: fake.said,
+          uuidHeld: held.entries[0]!.record.uuid,
+        };
+      });
+
+      then('only the held text is told, and a second stop tells none', () => {
+        expect(result.toldFirst.told.map((entry) => entry.record.uuid)).toEqual(
+          [result.uuidHeld],
+        );
+        expect(result.toldFirst.told[0]!.record.status).toEqual('DELIVERED');
+        expect(result.toldFirst.told[0]!.record.reason).toEqual(
+          'told at stop, by the onStop hook',
+        );
+        expect(result.toldAgain.told).toEqual([]);
+      });
+
+      then('the sender out copy reads DELIVERED by the mirror', () => {
+        expect(result.outHeld.record.status).toEqual('DELIVERED');
+        expect(result.outHeld.record.reason).toEqual(
+          'told at stop, by the onStop hook',
+        );
+        expect(result.outDelivered.record.status).toEqual('DELIVERED');
+      });
+
+      then('the daemon says naught of a text already told', () => {
+        expect(result.tallyAfter).toEqual({ said: 0, waited: 0, settled: 0 });
+        expect(result.said.map((call) => call.clone)).toEqual(['foreman']);
       });
     });
   });

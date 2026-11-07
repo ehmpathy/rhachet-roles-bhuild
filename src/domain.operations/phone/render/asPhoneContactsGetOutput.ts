@@ -7,7 +7,7 @@ import type { PhoneTreeNode } from './asPhoneTreeLines';
 
 /**
  * .what = the output of `phone.contacts get`: this clone, its contacts, the peers that texted it,
- *         and its own tree, each with its reach state
+ *         its group mates, and its own tree, each with its reach state
  */
 export const asPhoneContactsGetOutput = (input: {
   self: PhoneSelf;
@@ -98,6 +98,25 @@ export const asPhoneContactsGetOutput = (input: {
                 state: input.reachStateOf[name] ?? 'unknown',
               })),
             ),
+          },
+        ]
+      : []),
+    // a group mate is reached by its group alone, so the hint names the group send
+    ...(input.reach.groupMates.length
+      ? [
+          {
+            text: 'group mates',
+            children: [
+              ...asRows(
+                input.reach.groupMates.map((name) => ({
+                  name,
+                  state: input.reachStateOf[name] ?? 'unknown',
+                })),
+              ),
+              {
+                text: 'reached by their group: rhx phone.text set --into group:<id>, or --re a group text',
+              },
+            ],
           },
         ]
       : []),

@@ -2,8 +2,8 @@
 ######################################################################
 # .what = check, start, or stop this tree's phone daemon
 #
-# .why  = one daemon per tree delivers every clone's QUEUED texts over
-#         `rhx clone say`; `phone.text set` starts it on its own
+# .why  = one daemon per tree says each text held for its clones over
+#         `rhx clone say`; a sender's `phone.text set` wakes it
 #
 # usage:
 #   phone.daemon.sh get     # is a daemon live here?

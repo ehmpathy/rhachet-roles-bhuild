@@ -15,7 +15,7 @@ exports[`setPhoneContact given: [case3] a human, and a peer tree that does not e
 
 exports[`setPhoneContact given: [case5] a grant that needs no contact, or can not pick one tree when: [t0] the human grants a clone in its own tree then: the refusal says it is already in the pond, and how to text it 1`] = `
 "✋ ConstraintError: phone://grove=bert-laptop/tree=notebook/clone=director is in this clone's own tree
-   └─ text it as is: rhx phone.text set --to phone://grove=bert-laptop/tree=notebook/clone=director --what '...'"
+   └─ text it as is: rhx phone.text set --into phone://grove=bert-laptop/tree=notebook/clone=director --what '...'"
 `;
 
 exports[`setPhoneContact given: [case5] a grant that needs no contact, or can not pick one tree when: [t1] two orgs each hold a tree of that name then: the refusal names both dirs, never guesses one 1`] = `

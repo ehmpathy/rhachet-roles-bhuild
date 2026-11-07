@@ -2,10 +2,9 @@ import { randomUUID } from 'crypto';
 import { MalfunctionError } from 'helpful-errors';
 
 import type { PhoneContactsUsesState } from '@src/access/daos/daoPhoneContactsUses';
-import {
-  daoPhoneMailbox,
-  type PhoneMailboxEntry,
-} from '@src/access/daos/daoPhoneMailbox';
+import type { PhoneMailboxEntry } from '@src/access/daos/daoPhoneMailbox';
+import { PhoneGroup } from '@src/domain.objects/phone/PhoneGroup';
+import type { PhonePeer } from '@src/domain.objects/phone/PhonePeer';
 import type { PhoneSelf } from '@src/domain.objects/phone/PhoneSelf';
 import { PhoneTextRecord } from '@src/domain.objects/phone/PhoneTextRecord';
 
@@ -13,12 +12,14 @@ import { asPhoneAddressesUnique } from '../address/asPhoneAddressesUnique';
 import { asPhoneAddressFromInput } from '../address/asPhoneAddressFromInput';
 import { asPhoneAddressString } from '../address/asPhoneAddressString';
 import { getOnePhoneContactsUses } from '../contacts/getOnePhoneContactsUses';
+import { setPhoneGroupCopies } from '../group/setPhoneGroupCopies';
 import type { PhoneContext } from '../PhoneContext';
 import { asPhonePeerRefusal } from '../peer/asPhonePeerRefusal';
 import { getAllPhonePeers } from '../peer/getAllPhonePeers';
 import { getOnePhoneReach } from '../peer/getOnePhoneReach';
 import { genPhoneRefusal } from '../render/genPhoneRefusal';
-import { getOnePhoneTextByRef } from './getOnePhoneTextByRef';
+import { getOnePhoneTextTargets } from './getOnePhoneTextTargets';
+import { setPhoneTextCopies } from './setPhoneTextCopies';
 
 /**
  * .what = the most chars one text may carry
@@ -28,30 +29,31 @@ import { getOnePhoneTextByRef } from './getOnePhoneTextByRef';
 const PHONE_TEXT_CHARS_MAX = 8000;
 
 /**
- * .what = sends a text to one peer or a group: one QUEUED `out` record per peer, in this clone's
- *         mailbox; the daemon delivers them
+ * .what = sends a text to one peer or a group: into each receiver seat's inbox, QUEUED, with the
+ *         sender's own `out` copy beside it; the receiver tree's daemon says it
  * .why = the send returns at once and the file is the queue, so a dead daemon or a reboot loses
  *        no text. admission is all-or-none: a typo never yields a half-sent group
+ *
  * .note = all-or-none covers admission: every peer is checked before any record is written. the
  *         writes follow one per peer, so a crash mid-write may leave part of a group QUEUED (F18)
+ * .note = the send keeps no daemon of its own. it returns the dir of each receiver tree on this
+ *         grove, so the caller can wake that tree's daemon; a peer on another grove is written
+ *         through the grove connection, and its grove's inbox wakes its own daemon
  */
 export const setPhoneText = async (
-  input: { to: string[]; what: string; re: string | null; self: PhoneSelf },
+  input: { into: string[]; what: string; re: string | null; self: PhoneSelf },
   context: PhoneContext,
-): Promise<{ entries: PhoneMailboxEntry[]; duplicates: number }> => {
+): Promise<{
+  entries: PhoneMailboxEntry[];
+  duplicates: number;
+  group: PhoneGroup | null;
+  treeDirsToWake: string[];
+}> => {
   const { self } = input;
 
-  // a text must name a peer
-  if (input.to.length === 0)
-    throw genPhoneRefusal({
-      vibe: 'bummer, that text has no one to go to',
-      headline: 'a text must name a peer',
-      nodes: [
-        {
-          text: 'pass one or more: --to <address>; see who: rhx phone.contacts get',
-        },
-      ],
-    });
+  // a text must name a peer, or answer a text whose group it may reach
+  if (input.into.length === 0 && input.re === null)
+    throw genPhoneRefusalOfNoPeer();
 
   // a text must carry words
   if (!input.what.trim())
@@ -73,8 +75,18 @@ export const setPhoneText = async (
       ],
     });
 
+  // settle who it goes to: peers, a group by name, or the group of the text it answers
+  const targets = await getOnePhoneTextTargets({
+    into: input.into,
+    re: input.re,
+    self,
+  });
+
+  // a reply to a one-to-one text must still name its peer
+  if (targets.raws.length === 0) throw genPhoneRefusalOfNoPeer();
+
   // cast each address, and look each peer up; a repeated peer is one peer
-  const addresses = input.to.map((raw) =>
+  const addresses = targets.raws.map((raw) =>
     asPhoneAddressFromInput({
       raw,
       self: { grove: context.groveSelf, tree: self.address.tree },
@@ -87,64 +99,121 @@ export const setPhoneText = async (
   );
 
   // admit each peer, or refuse the whole send
-  const reach = await getOnePhoneReach({ self }, context);
-  const asRefusalOf = (input: {
-    peer: (typeof peers)[number];
+  await assertPhonePeersAdmitted(
+    { peers, self, group: targets.group },
+    context,
+  );
+
+  // a text to several peers rides a group: the one it named, or a new one, written to every member
+  const group = targets.group ?? asPhoneGroupNew({ peers, self });
+  if (group && !targets.group)
+    await setPhoneGroupCopies({ group, peers, self }, context);
+
+  // write each peer's copies, in --into order
+  // .note = deliberate mutation: sequential writes, so the mailbox order follows the --into order
+  const entries: PhoneMailboxEntry[] = [];
+  for (const peer of peers)
+    entries.push(
+      await setPhoneTextCopies(
+        {
+          record: new PhoneTextRecord({
+            uuid: randomUUID(),
+            way: 'out',
+            group: group?.uuid ?? null,
+            re: targets.re?.record.uuid ?? null,
+            from: asPhoneAddressString(self.address),
+            to: asPhoneAddressString(peer.address),
+            what: input.what,
+            status: 'QUEUED',
+            reason: null,
+          }),
+          peer,
+          self,
+        },
+        context,
+      ),
+    );
+  const treeDirsToWake = [
+    ...new Set(peers.flatMap((peer) => (peer.treeDir ? [peer.treeDir] : []))),
+  ];
+  return {
+    entries,
+    duplicates: addresses.length - addressesUnique.length,
+    group,
+    treeDirsToWake,
+  };
+};
+
+/**
+ * .what = the refusal of a text that names no one
+ */
+const genPhoneRefusalOfNoPeer = () =>
+  genPhoneRefusal({
+    vibe: 'bummer, that text has no one to go to',
+    headline: 'a text must name a peer',
+    nodes: [
+      {
+        text: 'pass one or more: --into <address>, or a group: --into group:<id>; see who: rhx phone.contacts get',
+      },
+    ],
+  });
+
+/**
+ * .what = a new group of the sender and its peers, for a text to two or more; null for one peer
+ */
+const asPhoneGroupNew = (input: {
+  peers: PhonePeer[];
+  self: PhoneSelf;
+}): PhoneGroup | null =>
+  input.peers.length > 1
+    ? new PhoneGroup({
+        uuid: randomUUID(),
+        members: [
+          asPhoneAddressString(input.self.address),
+          ...input.peers.map((peer) => asPhoneAddressString(peer.address)),
+        ],
+      })
+    : null;
+
+/**
+ * .what = admits every peer, or throws the refusal of the first one refused
+ * .note = the meter is read only for a refusal, so its grant names just the steps still owed
+ * .note = a group mate is reached by its group alone, as the daemon checks at delivery: only the
+ *         members of the group this text goes to are admitted as mates; a lone text admits none
+ */
+const assertPhonePeersAdmitted = async (
+  input: { peers: PhonePeer[]; self: PhoneSelf; group: PhoneGroup | null },
+  context: PhoneContext,
+): Promise<void> => {
+  const { peers, self } = input;
+  const reachAll = await getOnePhoneReach({ self }, context);
+  const reach = {
+    ...reachAll,
+    groupMates: reachAll.groupMates.filter(
+      (mate) => input.group?.members.includes(mate) ?? false,
+    ),
+  };
+  const asRefusalOf = (one: {
+    peer: PhonePeer;
     meter: PhoneContactsUsesState | null;
   }) =>
     asPhonePeerRefusal({
-      peer: input.peer,
+      peer: one.peer,
       self,
       reach,
-      groveSelf: context.groveSelf,
-      meter: input.meter,
+      meter: one.meter,
       group: peers.length,
     });
   const peerRefused = peers.find(
     (peer) => asRefusalOf({ peer, meter: null }) !== null,
   );
-
-  // the meter is read only for a refusal, so its grant names just the steps still owed
-  if (peerRefused) {
-    const meter = await getOnePhoneContactsUses({ treeDir: self.treeDir });
-    throw (
-      asRefusalOf({ peer: peerRefused, meter }) ??
-      new MalfunctionError(
-        'a refused peer read as admitted once the meter was read',
-        {
-          peer: asPhoneAddressString(peerRefused.address),
-        },
-      )
-    );
-  }
-
-  // link a reply to the text it answers, by its full uuid; a blank ref is refused, never dropped
-  const re =
-    input.re !== null
-      ? (await getOnePhoneTextByRef({ raw: input.re, self })).record.uuid
-      : null;
-
-  // write one QUEUED record per peer, under one group id when there are several
-  const group = peers.length > 1 ? randomUUID() : null;
-  // .note = deliberate mutation: sequential writes, so the mailbox order follows the --to order
-  const entries: PhoneMailboxEntry[] = [];
-  for (const peer of peers)
-    entries.push(
-      await daoPhoneMailbox.gen({
-        treeDir: self.treeDir,
-        clone: self.address.clone,
-        record: new PhoneTextRecord({
-          uuid: randomUUID(),
-          way: 'out',
-          group,
-          re,
-          from: asPhoneAddressString(self.address),
-          to: asPhoneAddressString(peer.address),
-          what: input.what,
-          status: 'QUEUED',
-          reason: null,
-        }),
-      }),
-    );
-  return { entries, duplicates: addresses.length - addressesUnique.length };
+  if (!peerRefused) return;
+  const meter = await getOnePhoneContactsUses({ treeDir: self.treeDir });
+  throw (
+    asRefusalOf({ peer: peerRefused, meter }) ??
+    new MalfunctionError(
+      'a refused peer read as admitted once the meter was read',
+      { peer: asPhoneAddressString(peerRefused.address) },
+    )
+  );
 };
