@@ -499,8 +499,14 @@
           },
           {
             "type": "command",
-            "command": "node -e \"import('rhachet-roles-bhuild').then(m => m.cli.radioTaskHeld())\" -- --when hook.onStop",
+            "command": "node -e \"import('rhachet-roles-bhuild/cli').then(m => m.cli.radioTaskQueue())\" -- get --when hook.onStop",
             "timeout": 10,
+            "author": "repo=bhuild/role=dispatcher"
+          },
+          {
+            "type": "command",
+            "command": "node -e \"import('rhachet-roles-bhuild/cli').then(m => m.cli.phoneNotifications())\" -- get --when hook.onStop",
+            "timeout": 30,
             "author": "repo=bhuild/role=dispatcher"
           },
           {
