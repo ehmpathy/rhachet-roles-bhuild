@@ -1,0 +1,875 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`role=any skills given: [case1] claude.statusline.caplog, fed by one seat when: [t0] one input arrives twice, then a changed one then: the tick render, the bar text masked, matches its snapshot 1`] = `
+"exit: 0
+[stdout]
+<the route bar>
+
+[stderr]
+"
+`;
+
+exports[`role=any skills given: [case1] claude.statusline.caplog, fed by one seat when: [t1] the status is read from a subdir of the worktree then: the status render matches its snapshot 1`] = `
+"exit: 0
+[stdout]
+🐚 claude.statusline.caplog
+   ├─ wired: no — add the statusLine to <project>/.claude/settings.local.json, then restart the seat
+   ├─ last run: YYYY-MM-DDTHH:MM:SSZ
+   ├─ rows: 2
+   │  └─ last: {"at":"YYYY-MM-DDTHH:MM:SSZ","account":"bert@example.com","confdir":"<tmp>","session":"session-surf-forecast","version":"2.0.0","model":"claude-fixture","five_hour":{"used_percentage":12,"resets_at":<epoch>},"seven_day":{"used_percentage":3,"resets_at":<epoch>},"spend_limit":null,"rate_limits_present":true}
+   └─ faults: 0
+
+[stderr]
+"
+`;
+
+exports[`role=any skills given: [case1] claude.statusline.caplog, fed by one seat when: [t2] help is asked for then: the help matches its snapshot 1`] = `
+"exit: 0
+[stdout]
+🐚 claude.statusline.caplog — log each account's cap % to a ledger, then render the route statusline
+
+usage:
+  as a statusLine command, in a seat's .claude/settings.local.json (it reads the statusline input on stdin):
+    { "statusLine": { "type": "command",
+        "command": ".agent/repo=.this/role=any/skills/claude.statusline.caplog.sh" } }
+  rhx claude.statusline.caplog --status   # is it wired? did it run? what did it log?
+  rhx claude.statusline.caplog --help     # this
+
+files (gitignored), under the worktree root:
+  .log/role=any/skill=claude.statusline.caplog/caps.jsonl   one row per change of (account, 5h %, 7d %)
+  .log/role=any/skill=claude.statusline.caplog/heartbeat    the last run
+  .log/role=any/skill=claude.statusline.caplog/faults.log   every ledger fault
+
+[stderr]
+"
+`;
+
+exports[`role=any skills given: [case1] claude.statusline.caplog, fed by one seat when: [t3] it is given an unknown flag then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: unknown argument '--stauts' (see --help)
+"
+`;
+
+exports[`role=any skills given: [case1] claude.statusline.caplog, fed by one seat when: [t4] an input arrives that does not parse then: the status render with its fault matches its snapshot 1`] = `
+"exit: 0
+[stdout]
+🐚 claude.statusline.caplog
+   ├─ wired: no — add the statusLine to <project>/.claude/settings.local.json, then restart the seat
+   ├─ last run: YYYY-MM-DDTHH:MM:SSZ
+   ├─ rows: 2
+   │  └─ last: {"at":"YYYY-MM-DDTHH:MM:SSZ","account":"bert@example.com","confdir":"<tmp>","session":"session-surf-forecast","version":"2.0.0","model":"claude-fixture","five_hour":{"used_percentage":12,"resets_at":<epoch>},"seven_day":{"used_percentage":3,"resets_at":<epoch>},"spend_limit":null,"rate_limits_present":true}
+   └─ faults: 3
+      └─ last: YYYY-MM-DDTHH:MM:SSZ ledger fault, exit <tool exit>
+
+[stderr]
+"
+`;
+
+exports[`role=any skills given: [case1] claude.statusline.caplog, fed by one seat when: [t5] the same % arrives once its last row has aged 10 min then: the status reads the keepalive row, and its render matches its snapshot 1`] = `
+"exit: 0
+[stdout]
+🐚 claude.statusline.caplog
+   ├─ wired: no — add the statusLine to <project>/.claude/settings.local.json, then restart the seat
+   ├─ last run: YYYY-MM-DDTHH:MM:SSZ
+   ├─ rows: 3
+   │  └─ last: {"at":"YYYY-MM-DDTHH:MM:SSZ","account":"bert@example.com","confdir":"<tmp>","session":"session-surf-forecast","version":"2.0.0","model":"claude-fixture","five_hour":{"used_percentage":12,"resets_at":<epoch>},"seven_day":{"used_percentage":3,"resets_at":<epoch>},"spend_limit":null,"rate_limits_present":true}
+   └─ faults: 3
+      └─ last: YYYY-MM-DDTHH:MM:SSZ ledger fault, exit <tool exit>
+
+[stderr]
+"
+`;
+
+exports[`role=any skills given: [case3] claude.statusline.caplog, with a ledger dir it cannot make when: [t0] the project dir sits under a plain file then: the fault, the bar text masked, matches its snapshot 1`] = `
+"exit: 0
+[stdout]
+<the route bar>
+
+[stderr]
+💥 MalfunctionError: caplog: the ledger dir could not be made: <tmp>/not-a-dir/repo/.log/role=any/skill=claude.statusline.caplog
+"
+`;
+
+exports[`role=any skills given: [case4] claude.statusline.probe, aimed at a binary with no cap keys when: [t0] it scans bash then: the scan render matches its snapshot, its binary-specific values masked 1`] = `
+"exit: 0
+[stdout]
+binary: <the binary>
+rate_limits: 0
+five_hour: 0
+seven_day: 0
+used_percentage: 0
+resets_at: 0
+context: none
+plan: none
+source: none
+
+[stderr]
+"
+`;
+
+exports[`role=any skills given: [case4] claude.statusline.probe, aimed at a binary with no cap keys when: [t1] it is aimed at a path that is no file then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: --exe is not a readable file: /surf/absent
+"
+`;
+
+exports[`role=any skills given: [case4] claude.statusline.probe, aimed at a binary with no cap keys when: [t2] help is asked for then: the help matches its snapshot 1`] = `
+"exit: 0
+[stdout]
+usage:
+  rhx claude.statusline.probe               scan the live claude binary for the rate_limits field
+  rhx claude.statusline.probe --exe <path>  scan this binary, in place of a live seat's
+
+[stderr]
+"
+`;
+
+exports[`role=any skills given: [case4] claude.statusline.probe, aimed at a binary with no cap keys when: [t3] it is given an unknown flag then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: unknown argument '--exee' (see --help)
+"
+`;
+
+exports[`role=any skills given: [case4] claude.statusline.probe, aimed at a binary with no cap keys when: [t4] it scans a binary that holds the cap keys then: the populated render matches its snapshot, the binary path masked 1`] = `
+"exit: 0
+[stdout]
+binary: <fixture-bin>
+rate_limits: 1
+five_hour: 2
+seven_day: 2
+used_percentage: 2
+resets_at: <epoch>
+context:
+urf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandrate_limits:{five_hour:{used_percentage,resets_at},seven_day:{used_percentage,resets_at}}sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-sch
+plan:
+urf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-scsubscription type (max_plan)sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf
+source:
+urf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-sandpine-surf-school-s(ht.five_hour||ht.seven_day
+
+[stderr]
+"
+`;
+
+exports[`role=any skills given: [case4] claude.statusline.probe, aimed at a binary with no cap keys when: [t5] it is given --exe with no value then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: --exe needs a path
+"
+`;
+
+exports[`role=any skills given: [case5] grove.census, over a home with one unreadable transcript when: [t0] it reads as json over a short sample then: the record shape matches its snapshot 1`] = `
+{
+  "accounts": {
+    "[each]": [
+      "account",
+      "config_dirs",
+      "weighted",
+    ],
+  },
+  "boots": {
+    "boot_md": {
+      "dirs": "number",
+      "max_bytes": "number",
+      "median_bytes": "number",
+      "with_boot": "number",
+    },
+    "forks": {
+      "boots": "number",
+      "cache_write_median": "number",
+      "prompt_median": "number",
+      "weighted_per_hour": "number",
+      "weighted_total": "number",
+    },
+    "seats": {
+      "boots": "number",
+      "cache_write_median": "number",
+      "prompt_median": "number",
+      "weighted_per_hour": "number",
+      "weighted_total": "number",
+    },
+  },
+  "cpu": {
+    "busy_cores": "number",
+    "count": "number",
+    "load1": "number",
+    "load5": "number",
+    "outside_crews": {
+      "[each]": [
+        "comm",
+        "cores",
+      ],
+    },
+    "psi_some_avg60": "string",
+  },
+  "crews": {
+    "[each]": [
+      "cores",
+      "crew",
+      "procs",
+      "ram_gb",
+      "seat_parents",
+      "seats_live",
+      "tokens",
+    ],
+  },
+  "date": "string",
+  "forks": {
+    "per_sec": "number",
+    "sample_sec": "number",
+  },
+  "grove": "string",
+  "hooks": {
+    "cores_at_most": "number",
+    "pre_tool_use": "number",
+    "runs": "number",
+    "wall_sec": "number",
+  },
+  "ram": {
+    "avail_gb": "number",
+    "psi_full_avg60": "string",
+    "psi_some_avg60": "string",
+    "swap_gb": "number",
+    "total_gb": "number",
+  },
+  "transcripts_unread": {
+    "[each]": [
+      "string",
+    ],
+  },
+  "window_min": "number",
+}
+`;
+
+exports[`role=any skills given: [case5] grove.census, over a home with one unreadable transcript when: [t1] it renders the tree then: the tree matches its snapshot, its live values masked 1`] = `
+"🐚 grove.census
+   ├─ grove: <grove>
+   ├─ cpu: N of N cores busy over Ns · load N / N · psi some avgN N%
+   ├─ cpu in crews: N cores · outside crews: <the box>
+   ├─ ram: NG avail of NG · swap NG · psi some N% full N%
+   ├─ forks: N/s over Ns
+   ├─ account burn over N min: NM weighted · NM raw (a lower bound: N transcripts unread — e.g. <home>/git/sandpine/_worktrees/svc-lessons.beav.fix-tide-chart/.agent/.actors/actor.via.repo=ambient/brain/.claude/projects/project-N/session-N.jsonl)
+   ├─ accounts (signed in now — a swap inside the span misattributes)
+   │  └─ bert@example.com: NM weighted · N config dirs
+   ├─ boot toll over the N min span (first call of each transcript begun in it; resumes count, so an upper bound)
+   │  ├─ boot.md: N of N config dirs · median NKB · max NKB
+   │  ├─ seats: N boots · first prompt median NK · written fresh median NK · toll NK (NK/h)
+   │  └─ forks: N boots · first prompt median NK · written fresh median NK · toll NK (NK/h)
+   ├─ hooks over the N min span: N runs (N PreToolUse) · Ns wall · ≤ N cores (wall time, so an upper bound on their cpu)
+   └─ crews (ram now · tokens over the N min span, cost-weighted)
+      └─ svc-lessons.beav.feat-book-a-lesson: NG · N cores · N seats · N procs · NM weighted (NM/h) · raw NM · out NM · forks NM
+"
+`;
+
+exports[`role=any skills given: [case5] grove.census, over a home with one unreadable transcript when: [t2] one crew config does not parse then: the unparsed tree matches its snapshot, its live values masked 1`] = `
+"🐚 grove.census
+   ├─ grove: <grove>
+   ├─ cpu: N of N cores busy over Ns · load N / N · psi some avgN N%
+   ├─ cpu in crews: N cores · outside crews: <the box>
+   ├─ ram: NG avail of NG · swap NG · psi some N% full N%
+   ├─ forks: N/s over Ns
+   ├─ account burn over N min: NM weighted · NM raw (a lower bound: N transcripts unread — e.g. <home>/git/sandpine/_worktrees/svc-lessons.beav.feat-book-a-lesson/.agent/.actors/actor.via.repo=ambient/brain/.claude/.claude.json (does not parse))
+   ├─ accounts (signed in now — a swap inside the span misattributes)
+   │  └─ unparsed: NM weighted · N config dirs
+   ├─ boot toll over the N min span (first call of each transcript begun in it; resumes count, so an upper bound)
+   │  ├─ boot.md: N of N config dirs · median NKB · max NKB
+   │  ├─ seats: N boots · first prompt median NK · written fresh median NK · toll NK (NK/h)
+   │  └─ forks: N boots · first prompt median NK · written fresh median NK · toll NK (NK/h)
+   ├─ hooks over the N min span: N runs (N PreToolUse) · Ns wall · ≤ N cores (wall time, so an upper bound on their cpu)
+   └─ crews (ram now · tokens over the N min span, cost-weighted)
+      └─ svc-lessons.beav.feat-book-a-lesson: NG · N cores · N seats · N procs · NM weighted (NM/h) · raw NM · out NM · forks NM
+"
+`;
+
+exports[`role=any skills given: [case5] grove.census, over a home with one unreadable transcript when: [t3] it is given a zero sample then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: --sample must be at least 1 second
+"
+`;
+
+exports[`role=any skills given: [case5] grove.census, over a home with one unreadable transcript when: [t4] it is given an unknown flag then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: unknown argument: --windw
+   run with --help for usage
+"
+`;
+
+exports[`role=any skills given: [case5] grove.census, over a home with one unreadable transcript when: [t5] it is given a window in words then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: --window must be whole minutes, got 'an hour'
+"
+`;
+
+exports[`role=any skills given: [case5] grove.census, over a home with one unreadable transcript when: [t6] it is given a sample in words then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: --sample must be whole seconds, got 'ten'
+"
+`;
+
+exports[`role=any skills given: [case5] grove.census, over a home with one unreadable transcript when: [t7] it is given an unreadable --since then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: --since is not a readable instant: 'low tide'
+"
+`;
+
+exports[`role=any skills given: [case5] grove.census, over a home with one unreadable transcript when: [t8] it is given an empty span then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: the span is empty: --since must precede --until (and now)
+"
+`;
+
+exports[`role=any skills given: [case5] grove.census, over a home with one unreadable transcript when: [t9] it is given a flag with no value then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: --window needs a value
+   run with --help for usage
+"
+`;
+
+exports[`role=any skills given: [case5] grove.census, over a home with one unreadable transcript when: [t10] it is given a span under one minute then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: the span is under one minute — a burn rate needs ≥ 1 min between --since and --until
+"
+`;
+
+exports[`role=any skills given: [case5] grove.census, over a home with one unreadable transcript when: [t11] it is given a span that begins in the future then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: --since is in the future ('YYYY-MM-DDTHH:MM:SSZ'); a burn can only be read over time already past
+"
+`;
+
+exports[`role=any skills given: [case5] grove.census, over a home with one unreadable transcript when: [t12] help is asked for then: the help matches its snapshot 1`] = `
+"exit: 0
+[stdout]
+usage: grove.census.sh [--window <min> | --since <iso> [--until <iso>]] [--sample <sec>] [--json]
+
+  --window <min>   token burn window, in minutes back from now (default 60)
+  --since <iso>    token burn from this instant (utc), in place of --window
+  --until <iso>    token burn up to this instant (utc; default now)
+  --sample <sec>   fork-rate sample length, in seconds (default 30)
+  --json           emit one json record in place of the tree
+
+[stderr]
+"
+`;
+
+exports[`role=any skills given: [case6] git.branch.merge.main, on a feature branch behind main when: [t0] an untracked file stands where main adds one then: the malfunction matches its snapshot 1`] = `
+"exit: 1
+[stdout]
+
+[stderr]
+error: The following untracked working tree files would be overwritten by merge:
+	tides.md
+Please move or remove them before you merge.
+Aborting
+💥 MalfunctionError: git merge failed with no conflict to settle (exit <tool exit>); see the git error above
+   └─ e.g. an untracked file in the way: move it, then rerun
+"
+`;
+
+exports[`role=any skills given: [case6] git.branch.merge.main, on a feature branch behind main when: [t1] the branch and main both change one file then: the conflict render matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+Auto-merging readme.md
+CONFLICT (content): Merge conflict in readme.md
+Automatic merge failed; fix conflicts and then commit the result.
+🐚 git.branch.merge.main
+   ├─ branch: beav/feat-tide-chart
+   ├─ merge: open (origin/main <sha>)
+   └─ conflicts
+      └─ readme.md
+
+
+[stderr]
+✋ ConstraintError: conflicts; settle them, rhx git.stage.add them, then conclude via git.commit.set
+"
+`;
+
+exports[`role=any skills given: [case6] git.branch.merge.main, on a feature branch behind main when: [t2] main merges in clean then: the merge render matches its snapshot 1`] = `
+"exit: 0
+[stdout]
+🐚 git.branch.merge.main
+   ├─ branch: beav/feat-tide-chart
+   ├─ merge: open (origin/main <sha>)
+   └─ conflicts: none
+
+🥥 next: conclude via rhx git.commit.set -m @stdin --mode apply --push
+
+[stderr]
+Automatic merge went well; stopped before committing as requested
+"
+`;
+
+exports[`role=any skills given: [case6] git.branch.merge.main, on a feature branch behind main when: [t3] it runs on main itself then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: on main; this merges main INTO a feature branch
+"
+`;
+
+exports[`role=any skills given: [case6] git.branch.merge.main, on a feature branch behind main when: [t4] the index holds a staged change then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: the index holds staged changes; commit or unstage them first
+"
+`;
+
+exports[`role=any skills given: [case6] git.branch.merge.main, on a feature branch behind main when: [t5] a merge is already open then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: a merge is already open; settle it, or see --status
+"
+`;
+
+exports[`role=any skills given: [case6] git.branch.merge.main, on a feature branch behind main when: [t6] the status is read once main merged in clean then: the status render matches its snapshot, the sha masked 1`] = `
+"🐚 git.branch.merge.main
+   ├─ branch: beav/feat-tide-chart
+   ├─ merge: open (origin/main <sha>)
+   └─ conflicts: none
+"
+`;
+
+exports[`role=any skills given: [case6] git.branch.merge.main, on a feature branch behind main when: [t7] it is run outside a git repo then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: not a git repo — run this from inside the worktree to merge into
+"
+`;
+
+exports[`role=any skills given: [case6] git.branch.merge.main, on a feature branch behind main when: [t8] HEAD is detached then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: HEAD is detached; this merges main INTO a feature branch
+   └─ check out the feature branch first: git checkout <branch>
+"
+`;
+
+exports[`role=any skills given: [case6] git.branch.merge.main, on a feature branch behind main when: [t9] help is asked for then: the help matches its snapshot 1`] = `
+"exit: 0
+[stdout]
+######################################################################
+# .what = bring the current branch level with origin/main via a merge,
+#         staged but NOT committed
+#
+# .why  = a pr that conflicts with main cannot be reviewed clean.
+#         a rebase rewrites history and needs a force push; a merge
+#         of origin/main is a plain push. the commit itself is left to
+#         git.commit.set, so it rides the commit meter and carries the
+#         seaturtle author that git.commit.push requires
+#
+# usage:
+#   git.branch.merge.main.sh            # fetch + merge --no-commit; report
+#   git.branch.merge.main.sh --status   # show merge state + conflicted files
+#
+# then:
+#   settle any conflicts, rhx git.stage.add <files>, and conclude with
+#   printf 'merge(main): ...\\n\\n- ...' | rhx git.commit.set -m @stdin --mode apply --push
+#
+# guarantee:
+#   - never commits, never pushes, never force-pushes
+#   - refuses on a dirty index or an open merge (exit 2)
+#   - on conflict: exit 2, the merge stays open, conflicted files listed
+#   - on main/master: refuses (exit 2)
+######################################################################
+
+[stderr]
+"
+`;
+
+exports[`role=any skills given: [case6] git.branch.merge.main, on a feature branch behind main when: [t10] the branch is already level with origin/main then: the level render matches its snapshot 1`] = `
+"exit: 0
+[stdout]
+Already up to date.
+🐚 git.branch.merge.main
+   ├─ branch: beav/feat-tide-chart
+   └─ already level with origin/main; naught to merge, naught owed
+
+[stderr]
+"
+`;
+
+exports[`role=any skills given: [case6] git.branch.merge.main, on a feature branch behind main when: [t11] the status is read with no merge open then: the status render matches its snapshot 1`] = `
+"exit: 0
+[stdout]
+🐚 git.branch.merge.main
+   ├─ branch: beav/feat-tide-chart
+   ├─ merge: none open
+   └─ conflicts: none
+
+[stderr]
+"
+`;
+
+exports[`role=any skills given: [case6] git.branch.merge.main, on a feature branch behind main when: [t12] the fetch of origin main fails then: the malfunction matches its snapshot 1`] = `
+"exit: 1
+[stdout]
+
+[stderr]
+fatal: '<tmp>/surf-absent-origin' does not appear to be a git repository
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+💥 MalfunctionError: git fetch origin main failed; see the git error above
+"
+`;
+
+exports[`role=any skills given: [case7] route.concerns.absorb, fed a malformed list when: [t0] it is given no --stone then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: --stone is required
+"
+`;
+
+exports[`role=any skills given: [case7] route.concerns.absorb, fed a malformed list when: [t1] it is given a bare --stone then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: --stone needs a value
+"
+`;
+
+exports[`role=any skills given: [case7] route.concerns.absorb, fed a malformed list when: [t2] it is given a short line then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: line 1 needs 4 fields: mech-failhides blocker.1 conceded
+"
+`;
+
+exports[`role=any skills given: [case7] route.concerns.absorb, fed a malformed list when: [t3] it is given a bad ordinal then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: line 1 ordinal must be blocker.N or nitpick.N: mech-failhides concern.1 conceded better
+"
+`;
+
+exports[`role=any skills given: [case7] route.concerns.absorb, fed a malformed list when: [t4] it is given a bad severity then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: line 1 severity must be better or urgent: mech-failhides blocker.1 conceded severe
+"
+`;
+
+exports[`role=any skills given: [case7] route.concerns.absorb, fed a malformed list when: [t5] it is given a why-path that is no file then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: line 1 why-path is not a file: /surf/absent.md
+"
+`;
+
+exports[`role=any skills given: [case7] route.concerns.absorb, fed a malformed list when: [t6] it is given a bad stance on line 3 then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: line 3 stance must be conceded or disputed: mech-failhides blocker.1 absorbed better
+"
+`;
+
+exports[`role=any skills given: [case7] route.concerns.absorb, fed a malformed list when: [t7] it is given a well-formed list then: the render matches its snapshot, the why-path masked 1`] = `
+"🗿 mech-failhides blocker.1 → conceded (urgent)
+🗿 mech-failhides nitpick.1 → disputed (<why>)
+🦉 2 concerns rendered
+"
+`;
+
+exports[`role=any skills given: [case7] route.concerns.absorb, fed a malformed list when: [t8] help is asked for then: the help matches its snapshot 1`] = `
+"exit: 0
+[stdout]
+######################################################################
+# .what = render one disposition per peer concern, from a list on stdin
+#
+# .why  = a review round can raise dozens of concerns, and each owes
+#         one \`route.stone.set --as conceded|disputed\` call. a list on
+#         stdin keeps each stance in one reviewable line, and the calls
+#         run one per line, in order, with each verdict echoed
+#
+# usage:
+#   printf '%s\\n' \\
+#     'mech-failhides blocker.1 conceded urgent' \\
+#     'mech-failhides nitpick.2 disputed path/to/fulcrum.md' \\
+#   | rhx route.concerns.absorb --stone 5.1.execution.from_vision
+#
+#   line = <reviewer-slug> <ordinal> conceded <better|urgent>
+#        | <reviewer-slug> <ordinal> disputed <why-path>
+#   blank lines and lines that start with # are skipped
+#
+# guarantee:
+#   - each line runs exactly one \`rhx route.stone.set\`; no other write
+#   - a malformed line halts before any call (exit 2), its line named
+#   - a call that fails halts the rest (its exit code is passed on)
+#   - never absorbs a lane as a whole; that stays a deliberate act
+######################################################################
+
+[stderr]
+"
+`;
+
+exports[`role=any skills given: [case7] route.concerns.absorb, fed a malformed list when: [t9] the driver fails on the second call then: the halted render matches its snapshot 1`] = `
+"exit: 7
+[stdout]
+🗿 mech-failhides blocker.1 → conceded (better)
+🗿 mech-failhides nitpick.1 → conceded (better)
+
+[stderr]
+"
+`;
+
+exports[`role=any skills given: [case7] route.concerns.absorb, fed a malformed list when: [t10] it is given a list of only comments and blank lines then: the empty render matches its snapshot 1`] = `
+"exit: 0
+[stdout]
+🦉 0 concerns rendered
+
+[stderr]
+"
+`;
+
+exports[`role=any skills given: [case8] chmodsafe, on files inside and outside the repo when: [t0] a repo file is marked --exec on then: the render matches its snapshot 1`] = `
+"exit: 0
+[stdout]
+🐢 chmodsafe --exec on
+   ├─ -rwxr-xr-x lesson.book.sh
+   └─ 1 file(s)
+
+[stderr]
+"
+`;
+
+exports[`role=any skills given: [case8] chmodsafe, on files inside and outside the repo when: [t1] it is given no --exec then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: --exec must be on or off, got ''
+"
+`;
+
+exports[`role=any skills given: [case8] chmodsafe, on files inside and outside the repo when: [t2] it is given no path then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: name at least one path
+"
+`;
+
+exports[`role=any skills given: [case8] chmodsafe, on files inside and outside the repo when: [t3] it is given a dir then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: not a regular file: .git
+"
+`;
+
+exports[`role=any skills given: [case8] chmodsafe, on files inside and outside the repo when: [t4] it is given a path outside the repo then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: outside the repo: <outside>/board.sh
+"
+`;
+
+exports[`role=any skills given: [case8] chmodsafe, on files inside and outside the repo when: [t5] help is asked for then: the help matches its snapshot 1`] = `
+"exit: 0
+[stdout]
+######################################################################
+# .what = mark files inside this repo executable (+x), or not (-x)
+#
+# .why  = a skill written by an editor lands 0644, and a layout clamp
+#         (and every caller) needs it runnable; raw chmod is not paved
+#
+# usage:
+#   chmodsafe.sh --exec on  <path> [<path> ...]    # chmod +x
+#   chmodsafe.sh --exec off <path> [<path> ...]    # chmod -x
+#
+# guarantee:
+#   - touches only the exec bits; never read/write bits
+#   - every path must be a regular file inside the git root (no symlink
+#     escape, no dir); one bad path refuses the whole call, exit 2
+#   - prints each path with its mode after the change
+######################################################################
+
+[stderr]
+"
+`;
+
+exports[`role=any skills given: [case8] chmodsafe, on files inside and outside the repo when: [t6] two repo files are marked --exec on, then --exec off then: the off render matches its snapshot 1`] = `
+"exit: 0
+[stdout]
+🐢 chmodsafe --exec off
+   ├─ -rw-r--r-- lesson.book.sh
+   ├─ -rw-r--r-- lesson.cancel.sh
+   └─ 2 file(s)
+
+[stderr]
+"
+`;
+
+exports[`role=any skills given: [case8] chmodsafe, on files inside and outside the repo when: [t7] it is given an unknown flag then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: unknown flag '--recursive'
+"
+`;
+
+exports[`role=any skills given: [case8] chmodsafe, on files inside and outside the repo when: [t8] it is given a symlink to a file outside the repo then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: not a regular file: board.link.sh
+"
+`;
+
+exports[`role=any skills given: [case9] task.output.await, on a task output file when: [t0] the pattern is already in the file then: the found render matches its snapshot 1`] = `
+"exit: 0
+[stdout]
+🐢 found after 0s
+💤 inflight (15s)
+🎉 passed (58s)
+
+[stderr]
+"
+`;
+
+exports[`role=any skills given: [case9] task.output.await, on a task output file when: [t1] the pattern never shows inside the bound then: the bound render matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+🌙 not yet, after 10s — the task still runs; await again
+💤 inflight (15s)
+
+[stderr]
+"
+`;
+
+exports[`role=any skills given: [case9] task.output.await, on a task output file when: [t2] it is given no --file then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: --file is required
+"
+`;
+
+exports[`role=any skills given: [case9] task.output.await, on a task output file when: [t3] it is given no --pattern then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: --pattern is required
+"
+`;
+
+exports[`role=any skills given: [case9] task.output.await, on a task output file when: [t4] it is given a word for --max-sec then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: --max-sec must be an integer, got 'soon'
+"
+`;
+
+exports[`role=any skills given: [case9] task.output.await, on a task output file when: [t5] it is given an absent file then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: no such file: /surf/absent.output
+"
+`;
+
+exports[`role=any skills given: [case9] task.output.await, on a task output file when: [t6] help is asked for then: the help matches its snapshot 1`] = `
+"exit: 0
+[stdout]
+######################################################################
+# .what = block until a background task's output file shows a pattern,
+#         or a bound passes; then print the file's tail
+#
+# .why  = a long test run in the background re-fires the stop hook each
+#         turn; one bounded wait in the foreground replaces many polls
+#
+# usage:
+#   task.output.await.sh --file <path> --pattern '<regex>'               # wait up to 540s
+#   task.output.await.sh --file <path> --pattern '<regex>' --max-sec 300
+#
+# guarantee:
+#   - read-only: reads the file, writes naught
+#   - exit 0 = the pattern showed · exit 2 = the bound passed first (not an error;
+#     the task still runs) · exit 2 also on bad input
+#   - --max-sec is capped at 590, under the 600s foreground bound
+######################################################################
+
+[stderr]
+"
+`;
+
+exports[`role=any skills given: [case10] gh.workflow.logs, run as rhx runs it when: [t0] the rhachet args arrive beside a flag it does not know then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: unknown argument: --bogus
+   └─ run with --help for usage
+"
+`;

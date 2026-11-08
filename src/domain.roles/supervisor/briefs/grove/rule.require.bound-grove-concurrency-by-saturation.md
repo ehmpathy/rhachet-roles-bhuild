@@ -12,6 +12,33 @@ rhx git.grove.saturation                    # the whole forest, on the tick
 
 a grove is a shared, finite machine. every crew you add takes from every crew already there.
 
+## .the gate — ask for a slot, then release it
+
+saturation says how loaded a grove IS. the gate says whether ONE more crew of a kind fits, on
+the axis that binds (ram, cpu, or the account's token caps), and holds the slot so two sprouts
+cannot both take the last one:
+
+```sh
+rhx git.grove.capacity --grove cloud://<grove> --for behavior --key <branch>  # exit 0 = granted, 2 = refused
+rhx git.tree.behavior --into <org/repo> --name <branch> --grove cloud://<grove> ...   # sprout on the grove it granted
+rhx git.grove.capacity --release <hold>                                       # once the crew boots
+```
+
+- **`--key <branch>`** — a retry of the same sprout is reheld under the same hold, never a second slot
+- **a hold lapses after 15 min** — a sprout that died before its release frees its slot on its own
+- **holds live on the gate's host** — one supervisor host gates a grove; two hosts that gate one
+  grove do not see each other's holds
+- **a refusal is the seed verb**, never a cancel — it prints the `radio.task.push` line
+- **a 🔴 stall refuses at once**, before the token scan, so a stalled box answers fast. the gate
+  reads both rows, each on the lines `git.grove.saturation` grades: the life row (cpu at 10%,
+  memory some at 5%) and the instant avg60 (any memory full above 0). either 🔴 refuses: a sprout
+  after boot costs a fell, so at the gate a disagreement fails safe
+- **⚪ marks are honest** — an unread axis makes the count an upper bound; a kind with no crew on
+  the box borrows its cost and says so
+
+the gate composes saturation: read the box with `git.grove.saturation` on the tick, and ask
+`git.grove.capacity` at the one free moment, the sprout.
+
 ## .why
 
 ### the degradation is invisible from inside any crew
@@ -88,7 +115,9 @@ life rows — the threshold is on the grove, never on one axis alone.
 the last row is easy to skim past — it does not mean "worse," it means no work progressed at
 all, which no patience recovers.
 
-instant read, as the second gate — both must pass:
+instant read, a second check beside the life row — where the two disagree on the tick, the life
+row decides (one calibration run settled it; see `.the thresholds are uncalibrated`). the sprout
+gate is the one exception: there either 🔴 refuses:
 
 | signal | do not sprout when |
 |---|---|
@@ -148,6 +177,8 @@ source repo (`ehmpathy/rhachet-roles-bhuild:.agent/repo=.this/role=any/briefs/ev
 ## .enforcement
 
 - a sprout onto a grove whose saturation was never read = **blocker**
+- a sprout past a `git.grove.capacity` refusal, with no reason recorded = **blocker**
+- a granted hold left to lapse where the crew booted = **nitpick**
 - a sprout onto a grove 🔴 on either life axis, with no reason recorded = **blocker**
 - a concurrency judgment made on one axis alone = **blocker** — read both; let the numbers name
   the axis
@@ -157,6 +188,7 @@ source repo (`ehmpathy/rhachet-roles-bhuild:.agent/repo=.this/role=any/briefs/ev
 ## .see also
 
 - `git.grove.saturation.sh` — the instrument
+- `git.grove.capacity.sh` — the gate, and `--levers` for what would raise the count
 - `glossary.of=supervisor.md` — `grove.saturation` and `grove.saturation.stall`
 - `rule.require.babysit-cron-per-dispatch-fleet.md` — the periodic vehicle this rides on
 - `define.sprout-vs-seed.md` — a seed costs a grove naught; only a sprout takes a share
