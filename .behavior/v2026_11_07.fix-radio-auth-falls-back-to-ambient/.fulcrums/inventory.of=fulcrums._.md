@@ -7,3 +7,4 @@
 | [F3](./inventory.of=fulcrums.case=F3-ghlitch-keyrack-extends.md) | drop the ghlitch keyrack extends `rhx upgrade` added | clean | open | 80% |
 | [F4](./inventory.of=fulcrums.case=F4-practice-owned-decode-friction.md) | decode-friction in practice-owned test setup: dispute here, fix upstream (#787) | clean | open | 75% |
 | [F5](./inventory.of=fulcrums.case=F5-held-by-design-in-the-fallback.md) | review points held by design: gh-login fault class, error metadata, derive cap, `.eco` exemption, pre-extant skips, keyrack status parse | clean (dirty for `.eco`) | open | 80% |
+| [F6](./inventory.of=fulcrums.case=F6-l3-points-held-past-the-nano-scope.md) | L3 points held past the nano scope: pull, not-found, CLI-tier depth, test-env gh login, tagged union, glue, keyrack metadata, typed refusal, per-record bot retry | clean | open | 75% |

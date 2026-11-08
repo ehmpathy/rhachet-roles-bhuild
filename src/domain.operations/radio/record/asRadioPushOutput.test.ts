@@ -7,6 +7,7 @@ import { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 import { RadioTaskRecordStatus } from '@src/domain.objects/RadioTaskRecordStatus';
 import { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
 import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
+import { asRadioAuthBothFailedError } from '@src/domain.operations/radio/auth/asRadioAuthBothFailedError';
 
 import { asRadioPushOutput } from './asRadioPushOutput';
 
@@ -131,6 +132,40 @@ describe('asRadioPushOutput', () => {
         expect(output).toMatchSnapshot();
       });
     });
+
+    when(
+      '[t0.1] the default auth missed both the bot token and the ambient credential (#513)',
+      () => {
+        const output = asRadioPushOutput({
+          pushed: {
+            fate: 'held',
+            record: genRecord({ reason: 'upstream:auth' }),
+            lift: null,
+            detail: asRadioAuthBothFailedError({
+              bot: {
+                reason: 'absent',
+                headline: 'the ehmpath bot token was absent',
+                fix: 'rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep',
+              },
+              ambient: { state: 'absent' },
+            }).message,
+            halt: false,
+          },
+          others: [],
+          home: { dir: '.behavior/.radio', place: 'unbound', binds: [] },
+          backlog: 1,
+        });
+
+        then('each credential fix shows once, in the fault tree', () => {
+          expect(output.match(/rhx keyrack set --owner ehmpath/g)).toHaveLength(
+            1,
+          );
+          expect(output).not.toContain('or fix the ambient credential');
+          expect(output).toContain('or amend it:');
+          expect(output).toMatchSnapshot();
+        });
+      },
+    );
 
     when('[t1] the branch is bound to two routes (R3)', () => {
       const output = asRadioPushOutput({

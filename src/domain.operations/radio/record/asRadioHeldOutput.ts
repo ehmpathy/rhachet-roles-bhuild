@@ -213,6 +213,7 @@ export const asRadioHeldOutput = (input: {
                 record: entry.record,
                 authOverride: null,
                 detail: null,
+                isCredentialFixShown: false,
               }),
             ],
           };

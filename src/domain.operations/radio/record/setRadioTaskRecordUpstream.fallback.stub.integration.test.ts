@@ -43,6 +43,10 @@ if (lines('refuse.403').includes(token)) {
   process.stderr.write('HTTP 403: Resource not accessible by integration');
   process.exit(1);
 }
+if (lines('notfound').includes(token)) {
+  process.stderr.write("GraphQL: Could not resolve to a Repository with the name 'sandpine/svc-lessons'. (repository)");
+  process.exit(1);
+}
 if (lines('ratelimit').includes(token)) {
   process.stderr.write('HTTP 403: API rate limit exceeded for installation');
   process.exit(1);
@@ -118,6 +122,7 @@ const genScene = (input: {
     403?: string[];
     afterCreate401?: string[];
     rateLimit?: string[];
+    notFound?: string[];
   };
   auth?: string | null;
 }) => {
@@ -140,6 +145,10 @@ const genScene = (input: {
   fs.writeFileSync(
     path.join(stubDir, 'ratelimit'),
     (input.refuse?.rateLimit ?? []).join('\n'),
+  );
+  fs.writeFileSync(
+    path.join(stubDir, 'notfound'),
+    (input.refuse?.notFound ?? []).join('\n'),
   );
   fs.mkdirSync(path.join(cwd, '.meter'), { recursive: true });
   fs.writeFileSync(
@@ -573,6 +582,41 @@ describe('setRadioTaskRecordUpstream — the default auth falls back to the ambi
       );
     });
   });
+
+  given(
+    '[case18] push, the bot token absent, and the repo unseen under GITHUB_TOKEN',
+    () => {
+      when('[t0] the push runs', () => {
+        const result = useThen('it is held', async () =>
+          runPush({
+            scene: genScene({
+              slug: 'bot-absent-ambient-notfound',
+              bot: 'absent',
+              env: { GITHUB_TOKEN: TOKEN_AMBIENT },
+              refuse: { notFound: [TOKEN_AMBIENT] },
+            }),
+          }),
+        );
+
+        then('the push is held as not-found, sent once', () => {
+          expect(result.pushed.fate).toEqual('held');
+          expect(result.onDisk?.reason).toEqual('upstream:not-found');
+          expect(result.seen.tokens).toEqual([TOKEN_AMBIENT]);
+        });
+
+        then(
+          'the detail leads with the credential it was sent under, and why',
+          () => {
+            const detail = asDetail({ fate: result.pushed }) ?? '';
+            expect(detail.split('\n')[0]).toContain(
+              'sent via the GITHUB_TOKEN env (the ehmpath bot token was absent)',
+            );
+            expect(detail).not.toContain(TOKEN_AMBIENT);
+          },
+        );
+      });
+    },
+  );
 
   given('[case11] drain, a record held on an absent bot token', () => {
     const scene = useThen('a push is held with no credential', async () => {

@@ -42,11 +42,14 @@ const isRadioTestEnvGuardFault = (input: { detail: string }): boolean =>
  * .note = detail is the fault text the record was set aside on, when known (null: none)
  * .note = authOverride is the `drain --auth` the record was just sent under (null: none);
  *         the auth tried decides the fix, so an as-human override never suggests as-human
+ * .note = isCredentialFixShown is true where the caller already renders the fault tree that
+ *         names each credential's fix (the live push); drain and get cut it, so they pass false
  */
 export const asRadioQueueFixLines = (input: {
   record: RadioTaskRecord;
   authOverride: string | null;
   detail: string | null;
+  isCredentialFixShown: boolean;
 }): string[] => {
   const { key, reason } = input.record;
   const auth = input.authOverride ?? input.record.auth;
@@ -68,10 +71,17 @@ export const asRadioQueueFixLines = (input: {
   // the default auth already tried the bot token, then the ambient credential (#513): name the
   // fix for each first, since an as-human amend opts the record out of that order for good
   const amend = `amend it: rhx radio.task.queue set --uuid ${key} --auth as-human (needs a gh login on this host)`;
-  if (reason && REASONS_CURED_BY_DEFAULT_AUTH_FIX.has(reason) && auth === null)
+  // the live push already drew each credential's own fix in its fault tree: name the rest once
+  const isDefaultAuthFix =
+    !!reason && REASONS_CURED_BY_DEFAULT_AUTH_FIX.has(reason) && auth === null;
+  if (isDefaultAuthFix && input.isCredentialFixShown)
+    return [`or ${amend}`, drop];
+  // the ambient line names gh's own read order, since an env token set ahead of the login is
+  // the credential sent, and a fresh login cannot cure it
+  if (isDefaultAuthFix)
     return [
       'fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)',
-      'or fix the ambient credential: gh auth login (or a GH_TOKEN env), then: rhx radio.task.queue drain',
+      'or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain',
       `or ${amend}`,
       drop,
     ];

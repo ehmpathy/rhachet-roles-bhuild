@@ -14,6 +14,7 @@ import { asRadioReplayWarnLines } from './asRadioReplayWarnLines';
 import { asRadioTaskRecordLabel } from './asRadioTaskRecordLabel';
 import { asRadioTaskRepoSlug } from './asRadioTaskRepoSlug';
 import { asRadioTreeLines } from './asRadioTreeLines';
+import { isRadioAuthBothFailedDetail } from './isRadioAuthBothFailedDetail';
 import { isRadioFateBehindHalt } from './isRadioFateBehindHalt';
 import type { RadioTaskRecordFate } from './RadioTaskRecordFate';
 
@@ -123,7 +124,12 @@ const asHeldFixBranch = (input: {
 }): RadioTreeBranch => {
   const { lift, detail, record } = input.held;
   const next = 'then the next push delivers the backlog first';
-  const queue = asRadioQueueFixLines({ record, authOverride: null, detail });
+  const queue = asRadioQueueFixLines({
+    record,
+    authOverride: null,
+    detail,
+    isCredentialFixShown: isRadioAuthBothFailedDetail({ detail }),
+  });
   const behind = asRadioReasonBehindOnIssue({ reason: record.reason });
   // a stored auth no drain replays needs an amend too; "the next push delivers it" would
   // contradict it, since that push faults the record as upstream:auth until the auth is amended

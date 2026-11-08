@@ -3,7 +3,7 @@
 🗿 route.stone.set
    ├─ stone = 5.1.execution.from_vision
    ├─ passage = blocked
-   ├─ reason = blockers exceed threshold (4 > 0)
+   ├─ reason = blockers exceed threshold (3 > 0)
    │  ├─ after 2 blockers shed (2 disputed + 0 conceded better)
    │  └─ after 8 nitpicks shed (6 disputed + 2 conceded better)
    └─ guard
@@ -72,24 +72,23 @@
       │   │   ├─ 1 nitpick 🟠
       │   │   ├─ given: .behavior/v2026_11_07.fix-radio-auth-falls-back-to-ambient/.reviews/peer/5.1.execution.from_vision._.review.i004.a98d5595c011c8d02b.r009._.given.by_peer.ergo-friction-hazards.md
       │   │   └─ taken: .behavior/v2026_11_07.fix-radio-auth-falls-back-to-ambient/.reviews/peer/5.1.execution.from_vision._.review.i004.a98d5595c011c8d02b.r009._.taken.by_self.ergo-friction-hazards.md
-      │   ├─ r10: enroll-impl-behavior-intent (l3, 1/3)
-      │   │   ├─ rejected 320.0s
+      │   ├─ r10: enroll-impl-behavior-intent (l3, 2/3)
+      │   │   ├─ rejected 211.8s
       │   │   ├─ 3 blockers 🔴
       │   │   ├─ 6 nitpicks 🟠
       │   │   ├─ tallied by reviewer@openrouter/deepseek/flash
-      │   │   ├─ given: .behavior/v2026_11_07.fix-radio-auth-falls-back-to-ambient/.reviews/peer/5.1.execution.from_vision._.review.i005.78564e3e58d33b53cb.r010._.given.by_peer.enroll-impl-behavior-intent.md
-      │   │   └─ taken: .behavior/v2026_11_07.fix-radio-auth-falls-back-to-ambient/.reviews/peer/5.1.execution.from_vision._.review.i005.78564e3e58d33b53cb.r010._.taken.by_self.enroll-impl-behavior-intent.md
-      │   └─ r11: enroll-impl-arch-defects (l3, 1/3)
-      │       ├─ rejected 255.6s
-      │       ├─ 1 blocker 🔴
-      │       ├─ 7 nitpicks 🟠
-      │       ├─ tallied by reviewer@openrouter/deepseek/flash
-      │       ├─ given: .behavior/v2026_11_07.fix-radio-auth-falls-back-to-ambient/.reviews/peer/5.1.execution.from_vision._.review.i005.78564e3e58d33b53cb.r011._.given.by_peer.enroll-impl-arch-defects.md
-      │       └─ taken: .behavior/v2026_11_07.fix-radio-auth-falls-back-to-ambient/.reviews/peer/5.1.execution.from_vision._.review.i005.78564e3e58d33b53cb.r011._.taken.by_self.enroll-impl-arch-defects.md
+      │   │   ├─ given: .behavior/v2026_11_07.fix-radio-auth-falls-back-to-ambient/.reviews/peer/5.1.execution.from_vision._.review.i006.bf46f2c552e7d79421.r010._.given.by_peer.enroll-impl-behavior-intent.md
+      │   │   └─ taken: .behavior/v2026_11_07.fix-radio-auth-falls-back-to-ambient/.reviews/peer/5.1.execution.from_vision._.review.i006.bf46f2c552e7d79421.r010._.taken.by_self.enroll-impl-behavior-intent.md
+      │   └─ r11: enroll-impl-arch-defects (l3, 2/3)
+      │       ├─ rejected 211.0s
+      │       ├─ 0 blockers ✓
+      │       ├─ 8 nitpicks 🟠
+      │       ├─ given: .behavior/v2026_11_07.fix-radio-auth-falls-back-to-ambient/.reviews/peer/5.1.execution.from_vision._.review.i006.bf46f2c552e7d79421.r011._.given.by_peer.enroll-impl-arch-defects.md
+      │       └─ taken: .behavior/v2026_11_07.fix-radio-auth-falls-back-to-ambient/.reviews/peer/5.1.execution.from_vision._.review.i006.bf46f2c552e7d79421.r011._.taken.by_self.enroll-impl-arch-defects.md
       └─ judges
           └─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 7
-              ├─ finished 2.2s ✗
-              └─ reason: blockers exceed threshold (4 > 0)
+              ├─ finished 2.1s ✗
+              └─ reason: blockers exceed threshold (3 > 0)
                  ├─ after 2 blockers shed (2 disputed + 0 conceded better)
                  └─ after 8 nitpicks shed (6 disputed + 2 conceded better)
 
@@ -108,7 +107,7 @@
    │  │  🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.judge
    │  │
    │  │  passed: false
-   │  │  reason: blockers exceed threshold (4 > 0), after 2 blockers shed (2 disputed + 0 conceded better), 8 nitpicks shed (6 disputed + 2 conceded better)
+   │  │  reason: blockers exceed threshold (3 > 0), after 2 blockers shed (2 disputed + 0 conceded better), 8 nitpicks shed (6 disputed + 2 conceded better)
    │  │
    │  └─
    ├─ stderr
@@ -119,7 +118,7 @@
    │  │
    │  │  disputed: 2 blockers, 6 nitpicks excluded from the tally
    │  │  conceded better: 0 blockers, 2 nitpicks excluded from the tally
-   │  │  residual: 4/0 blockers, 13/7 nitpicks
+   │  │  residual: 3/0 blockers, 14/7 nitpicks
    │  │
    │  └─
    └─ passage blocked

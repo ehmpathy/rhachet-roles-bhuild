@@ -11,6 +11,7 @@ import { asRadioErrorHeadline } from './asRadioErrorHeadline';
 import { asRadioErrorHint } from './asRadioErrorHint';
 import { asRadioFateRepushedMidSend } from './asRadioFateRepushedMidSend';
 import { asRadioFateUnreachedByBudget } from './asRadioFateUnreachedByBudget';
+import { asRadioFaultMessageUnderFallback } from './asRadioFaultMessageUnderFallback';
 import { asRadioTaskRepoSlug } from './asRadioTaskRepoSlug';
 import { asRadioUpstreamReason } from './asRadioUpstreamReason';
 import type { RadioDrainDeadline } from './genRadioDrainDeadline';
@@ -212,7 +213,10 @@ export const setRadioTaskRecordUpstream = async (
       record: heldOnFault,
       lift: null,
       detail: asRadioErrorDetail({
-        message: send.fault.message,
+        message: asRadioFaultMessageUnderFallback({
+          message: send.fault.message,
+          sentUnder: send.sentUnder,
+        }),
         hint: asRadioErrorHint({ error: send.fault }),
       }),
       halt: isRadioUpstreamReasonHalt({ reason }),

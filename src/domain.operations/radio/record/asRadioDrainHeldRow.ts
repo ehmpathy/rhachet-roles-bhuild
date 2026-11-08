@@ -61,6 +61,7 @@ export const asRadioDrainHeldRow = (input: {
         record: fate.record,
         authOverride: input.authOverride,
         detail: fate.detail,
+        isCredentialFixShown: false,
       }),
       ...(fate.lift ? [`lift it (human): ${fate.lift}`] : []),
     ],

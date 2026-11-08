@@ -480,8 +480,6 @@ exports[`radio.task.push — the radio.recorder given: [case8] no --auth, and th
       │  └─ fix: <bot fix>
       ├─ the ambient credential: no GH_TOKEN env, no GITHUB_TOKEN env, no gh login
       │  └─ fix: gh auth login
-      ├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
-      ├─ or fix the ambient credential: gh auth login (or a GH_TOKEN env), then: rhx radio.task.queue drain
       ├─ or amend it: rhx radio.task.queue set --uuid <uuid> --auth as-human (needs a gh login on this host)
       ├─ or drop it: rhx radio.task.queue del --uuid <uuid> --why "<why>"
       └─ then the next push delivers the backlog first",
@@ -496,8 +494,18 @@ exports[`radio.task.push — the radio.recorder given: [case8] no --auth, and th
    │  └─ <uuid> leash audit → sandpine/svc-lessons (upstream:auth)
    │     ├─ fault: ✋ ConstraintError: github auth failed: the ehmpath bot token was <status>, and no ambient credential was found
    │     ├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
-   │     ├─ or fix the ambient credential: gh auth login (or a GH_TOKEN env), then: rhx radio.task.queue drain
+   │     ├─ or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain
    │     ├─ or amend it: rhx radio.task.queue set --uuid <uuid> --auth as-human (needs a gh login on this host)
    │     └─ or drop it: rhx radio.task.queue del --uuid <uuid> --why "<why>"
    └─ backlog = 1 awaits the radio"
+`;
+
+exports[`radio.task.push — the radio.recorder given: [case8] no --auth, and the ehmpath bot token is not granted: push and drain fall back to the ambient credential, via a stub gh (#513) when: [t4] the ambient credential returns, and the clone drains the record held on the absent bot token then: the stdout reads as a human sees it 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 delivered via the GITHUB_TOKEN env; the ehmpath bot token was <status>
+🦫 back in the river! the backlog is delivered
+   ├─ drained
+   │  └─ #<exid> leash audit
+   └─ backlog = 0"
 `;

@@ -57,7 +57,7 @@ export const setRadioTaskUpstreamFromRecordWithFallback = async (
       sent: Extract<SendResult, { sent: unknown }>['sent'];
       fallback: RadioAuthFallback | null;
     }
-  | { fault: Error; faultText: string }
+  | { fault: Error; faultText: string; sentUnder: RadioAuthFallback | null }
 > => {
   // send under the auth derived for this record
   const send = await setRadioTaskUpstreamFromRecord(
@@ -70,8 +70,10 @@ export const setRadioTaskUpstreamFromRecordWithFallback = async (
   if ('sent' in send) return { sent: send.sent, fallback: input.fallback };
 
   // only a refused credential under the default auth earns another try
+  // a fault that is no refusal stays as is; under the ambient credential it names that one
   const refusal = asRadioAuthRefusal({ send });
-  if (!refusal || !input.isAuthDefault) return send;
+  if (!refusal || !input.isAuthDefault)
+    return { ...send, sentUnder: input.fallback };
   const code = refusal === 'upstream:401' ? '401' : '403';
 
   // the ambient credential was refused too, after the bot token was absent
@@ -82,16 +84,18 @@ export const setRadioTaskUpstreamFromRecordWithFallback = async (
         ambient: { state: 'refused', kind: input.fallback.kind, code },
       }),
       faultText: send.faultText,
+      sentUnder: null,
     };
 
   // only a github send carries a credential to swap
-  if (!isContextGithubAuth(input.radioContext)) return send;
+  if (!isContextGithubAuth(input.radioContext))
+    return { ...send, sentUnder: null };
 
   // github refused the bot token: fall back to the ambient credential, if the box holds one
   const bot = asRadioAuthBotMiss({ refusal });
   const ambient = await getOneGithubAuthFallback({ bot }, context);
   if ('fault' in ambient)
-    return { fault: ambient.fault, faultText: send.faultText };
+    return { fault: ambient.fault, faultText: send.faultText, sentUnder: null };
 
   // resend once under the ambient credential
   const resend = await setRadioTaskUpstreamFromRecord(
@@ -109,8 +113,10 @@ export const setRadioTaskUpstreamFromRecordWithFallback = async (
 
   // the ambient credential was refused too: name both
   const refusalAmbient = asRadioAuthRefusal({ send: resend });
-  if (!refusalAmbient) return resend;
+  if (!refusalAmbient)
+    return { ...resend, sentUnder: { kind: ambient.kind, bot } };
   return {
+    sentUnder: null,
     fault: asRadioAuthBothFailedError({
       bot,
       ambient: {

@@ -29,13 +29,19 @@ const AMEND =
   'amend it: rhx radio.task.queue set --uuid a1b2c3d4e5f60718 --auth as-human (needs a gh login on this host)';
 const FIX_DEFAULT = [
   'fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)',
-  'or fix the ambient credential: gh auth login (or a GH_TOKEN env), then: rhx radio.task.queue drain',
+  'or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain',
   'or amend it: rhx radio.task.queue set --uuid a1b2c3d4e5f60718 --auth as-human (needs a gh login on this host)',
 ];
 const DROP =
   'or drop it: rhx radio.task.queue del --uuid a1b2c3d4e5f60718 --why "<why>"';
 
 const FIX_CASES = [
+  {
+    description:
+      'a live push whose fault tree already names each credential fix names only the amend + drop, never each fix twice (#513)',
+    given: { reason: 'upstream:401', isCredentialFixShown: true },
+    expect: { output: [`or ${AMEND}`, DROP] },
+  },
   {
     description:
       'an access fault under a stored auth names amend + drop (the #599 shape)',
@@ -155,6 +161,7 @@ describe('asRadioQueueFixLines', () => {
               record: genRecord({ reason: thisCase.given.reason }),
               authOverride: null,
               detail: null,
+              isCredentialFixShown: false,
             }),
           );
           expect(linesAll.length).toBeGreaterThan(0);
@@ -185,6 +192,10 @@ describe('asRadioQueueFixLines', () => {
                 'detail' in thisCase.given
                   ? (thisCase.given.detail ?? null)
                   : null,
+              isCredentialFixShown:
+                'isCredentialFixShown' in thisCase.given
+                  ? (thisCase.given.isCredentialFixShown ?? false)
+                  : false,
             }),
           ).toEqual(thisCase.expect.output);
         });

@@ -1936,6 +1936,50 @@ describe('radio.task.push — the radio.recorder', () => {
           });
         },
       );
+
+      when(
+        '[t4] the ambient credential returns, and the clone drains the record held on the absent bot token',
+        () => {
+          const result = useThen('the drain runs', () => {
+            const callsBefore = getStubCalls().length;
+            const drain = runDispatcherSkill({
+              ...scene,
+              repoDir: scene.consumer.repoDir,
+              skill: 'radio.task.queue',
+              args: 'drain',
+              env: getEnvWithStub({ ambient: true }),
+            });
+            return { drain, calls: getStubCalls().slice(callsBefore) };
+          });
+
+          then(
+            'the held record delivers under the ambient credential, exit 0',
+            () => {
+              expect(result.drain.exitCode).toEqual(0);
+              expect(result.drain.stdout).toMatch(LINE_FALLBACK);
+            },
+          );
+
+          then(
+            'every gh call carried the ambient token, never its value',
+            () => {
+              expect(result.calls.length).toBeGreaterThan(0);
+              expect(
+                result.calls.every((call) =>
+                  call.startsWith(`${tokenAmbientStub} `),
+                ),
+              ).toEqual(true);
+              expect(result.drain.stdout).not.toContain(tokenAmbientStub);
+            },
+          );
+
+          then('the stdout reads as a human sees it', () => {
+            expect(
+              asStableFallbackOutput({ output: result.drain.stdout }),
+            ).toMatchSnapshot();
+          });
+        },
+      );
     },
   );
 });

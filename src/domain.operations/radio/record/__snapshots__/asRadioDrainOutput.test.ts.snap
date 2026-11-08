@@ -8,7 +8,7 @@ exports[`asRadioDrainOutput given: [case2] one delivered past a set-aside head (
    │  └─ a1b2c3d4e5f60718 deliver #599 → sandpine/svc-lessons (upstream:access)
    │     ├─ fault: GraphQL: Resource not accessible by integration (updateIssue)
    │     ├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
-   │     ├─ or fix the ambient credential: gh auth login (or a GH_TOKEN env), then: rhx radio.task.queue drain
+   │     ├─ or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain
    │     ├─ or amend it: rhx radio.task.queue set --uuid a1b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
    │     └─ or drop it: rhx radio.task.queue del --uuid a1b2c3d4e5f60718 --why "<why>"
    └─ backlog = 1 awaits the radio"

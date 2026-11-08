@@ -27,14 +27,14 @@ exports[`asRadioHeldOutput given: [case2.1] two tasks set aside on an upstream f
    │  ├─ state: set aside (upstream:auth)
    │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
    │  ├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
-   │  ├─ or fix the ambient credential: gh auth login (or a GH_TOKEN env), then: rhx radio.task.queue drain
+   │  ├─ or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain
    │  ├─ or amend it: rhx radio.task.queue set --uuid a --auth as-human (needs a gh login on this host)
    │  └─ or drop it: rhx radio.task.queue del --uuid a --why "<why>"
    ├─ b task b → ehmpathy/rhachet
    │  ├─ state: set aside (upstream:auth)
    │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
    │  ├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
-   │  ├─ or fix the ambient credential: gh auth login (or a GH_TOKEN env), then: rhx radio.task.queue drain
+   │  ├─ or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain
    │  ├─ or amend it: rhx radio.task.queue set --uuid b --auth as-human (needs a gh login on this host)
    │  └─ or drop it: rhx radio.task.queue del --uuid b --why "<why>"
    ├─ c task c → ehmpathy/rhachet
@@ -60,7 +60,7 @@ exports[`asRadioHeldOutput given: [case2.3] two updates to one issue, the first 
    │  ├─ state: set aside (upstream:access)
    │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
    │  ├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
-   │  ├─ or fix the ambient credential: gh auth login (or a GH_TOKEN env), then: rhx radio.task.queue drain
+   │  ├─ or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain
    │  ├─ or amend it: rhx radio.task.queue set --uuid a1a1a1a1a1a1a1a1 --auth as-human (needs a gh login on this host)
    │  └─ or drop it: rhx radio.task.queue del --uuid a1a1a1a1a1a1a1a1 --why "<why>"
    ├─ b2b2b2b2b2b2b2b2 update #599 → ehmpathy/rhachet

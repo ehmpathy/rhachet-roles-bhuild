@@ -39,7 +39,7 @@ exports[`asRadioDrainSections given: [case3.1] a record at a shut gate beside a 
         "b1b2c3d4e5f60718 board rentals → sandpine/svc-lessons (upstream:auth)
 ├─ fault: github auth failed: the robot token was rejected (401)
 ├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
-├─ or fix the ambient credential: gh auth login (or a GH_TOKEN env), then: rhx radio.task.queue drain
+├─ or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain
 ├─ or amend it: rhx radio.task.queue set --uuid b1b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
 └─ or drop it: rhx radio.task.queue del --uuid b1b2c3d4e5f60718 --why "<why>"",
       ],
@@ -75,7 +75,7 @@ exports[`asRadioDrainSections given: [case4] records set aside, one per fault re
         "01b2c3d4e5f60718 task upstream:access → sandpine/svc-lessons (upstream:access)
 ├─ fault: GraphQL: Resource not accessible by integration (updateIssue)
 ├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
-├─ or fix the ambient credential: gh auth login (or a GH_TOKEN env), then: rhx radio.task.queue drain
+├─ or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain
 ├─ or amend it: rhx radio.task.queue set --uuid 01b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
 └─ or drop it: rhx radio.task.queue del --uuid 01b2c3d4e5f60718 --why "<why>"",
         "11b2c3d4e5f60718 task upstream:not-found → sandpine/svc-lessons (upstream:not-found)
@@ -85,13 +85,13 @@ exports[`asRadioDrainSections given: [case4] records set aside, one per fault re
         "21b2c3d4e5f60718 task upstream:401 → sandpine/svc-lessons (upstream:401)
 ├─ fault: HTTP 401: Bad credentials
 ├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
-├─ or fix the ambient credential: gh auth login (or a GH_TOKEN env), then: rhx radio.task.queue drain
+├─ or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain
 ├─ or amend it: rhx radio.task.queue set --uuid 21b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
 └─ or drop it: rhx radio.task.queue del --uuid 21b2c3d4e5f60718 --why "<why>"",
         "31b2c3d4e5f60718 task upstream:auth → sandpine/svc-lessons (upstream:auth)
 ├─ fault: no token in env var GH_TOKEN
 ├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
-├─ or fix the ambient credential: gh auth login (or a GH_TOKEN env), then: rhx radio.task.queue drain
+├─ or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain
 ├─ or amend it: rhx radio.task.queue set --uuid 31b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
 └─ or drop it: rhx radio.task.queue del --uuid 31b2c3d4e5f60718 --why "<why>"",
         "41b2c3d4e5f60718 task upstream:fault → sandpine/svc-lessons (upstream:fault)
@@ -149,7 +149,7 @@ exports[`asRadioDrainSections given: [case7] two updates to one issue, the first
         "a1b2c3d4e5f60718 claim #599 → sandpine/svc-lessons (upstream:access)
 ├─ fault: GraphQL: Resource not accessible by integration (updateIssue)
 ├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
-├─ or fix the ambient credential: gh auth login (or a GH_TOKEN env), then: rhx radio.task.queue drain
+├─ or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain
 ├─ or amend it: rhx radio.task.queue set --uuid a1b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
 └─ or drop it: rhx radio.task.queue del --uuid a1b2c3d4e5f60718 --why "<why>"",
         "b1b2c3d4e5f60718 deliver #599 → sandpine/svc-lessons (same issue #599)

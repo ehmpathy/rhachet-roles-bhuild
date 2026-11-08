@@ -34,7 +34,7 @@ exports[`asRadioPushOutput given: [case3.2] a push held behind an earlier update
    │  └─ a1b2c3d4e5f60718 claim #599 → ehmpathy/rhachet (upstream:access)
    │     ├─ fault: GraphQL: Resource not accessible by integration (updateIssue)
    │     ├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
-   │     ├─ or fix the ambient credential: gh auth login (or a GH_TOKEN env), then: rhx radio.task.queue drain
+   │     ├─ or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain
    │     ├─ or amend it: rhx radio.task.queue set --uuid a1b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
    │     └─ or drop it: rhx radio.task.queue del --uuid a1b2c3d4e5f60718 --why "<why>"
    ├─ backlog = 2 await the radio
@@ -68,7 +68,7 @@ exports[`asRadioPushOutput given: [case3.4] a push held with no fault detail, th
    ├─ backlog = 1 awaits the radio
    └─ fix it: upstream:access
       ├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
-      ├─ or fix the ambient credential: gh auth login (or a GH_TOKEN env), then: rhx radio.task.queue drain
+      ├─ or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain
       ├─ or amend it: rhx radio.task.queue set --uuid f0e1d2c3b4a59687 --auth as-human (needs a gh login on this host)
       ├─ or drop it: rhx radio.task.queue del --uuid f0e1d2c3b4a59687 --why "<why>"
       └─ then the next push delivers the backlog first"
@@ -85,6 +85,23 @@ exports[`asRadioPushOutput given: [case3.4] a push held with no fault detail, th
       └─ then the next push delivers the backlog first"
 `;
 
+exports[`asRadioPushOutput given: [case3] an unbound push held by an upstream fault (R2, C13) when: [t0.1] the default auth missed both the bot token and the ambient credential (#513) then: each credential fix shows once, in the fault tree 1`] = `
+"🦫 held for the radio
+   ├─ task    = fix flaky keyrack test
+   ├─ into    = ehmpathy/rhachet
+   ├─ status  = QUEUED (upstream:auth)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ backlog = 1 awaits the radio
+   └─ fix it: ✋ ConstraintError: github auth failed: the ehmpath bot token was absent, and no ambient credential was found
+      ├─ the ehmpath bot token: the ehmpath bot token was absent
+      │  └─ fix: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
+      ├─ the ambient credential: no GH_TOKEN env, no GITHUB_TOKEN env, no gh login
+      │  └─ fix: gh auth login
+      ├─ or amend it: rhx radio.task.queue set --uuid f0e1d2c3b4a59687 --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --uuid f0e1d2c3b4a59687 --why "<why>"
+      └─ then the next push delivers the backlog first"
+`;
+
 exports[`asRadioPushOutput given: [case3] an unbound push held by an upstream fault (R2, C13) when: [t0] the token was rejected then: it names the place and the fix 1`] = `
 "🦫 held for the radio
    ├─ task    = fix flaky keyrack test
@@ -95,7 +112,7 @@ exports[`asRadioPushOutput given: [case3] an unbound push held by an upstream fa
    └─ fix it: github auth failed: the robot token was rejected by github (401)
       ├─ unblock now — re-run as human: --auth as-human
       ├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
-      ├─ or fix the ambient credential: gh auth login (or a GH_TOKEN env), then: rhx radio.task.queue drain
+      ├─ or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain
       ├─ or amend it: rhx radio.task.queue set --uuid f0e1d2c3b4a59687 --auth as-human (needs a gh login on this host)
       ├─ or drop it: rhx radio.task.queue del --uuid f0e1d2c3b4a59687 --why "<why>"
       └─ then the next push delivers the backlog first"
@@ -126,7 +143,7 @@ exports[`asRadioPushOutput given: [case3] an unbound push held by an upstream fa
       │  └─ as-human
       │        use gh cli logged-in session (interactive)
       ├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
-      ├─ or fix the ambient credential: gh auth login (or a GH_TOKEN env), then: rhx radio.task.queue drain
+      ├─ or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain
       ├─ or amend it: rhx radio.task.queue set --uuid f0e1d2c3b4a59687 --auth as-human (needs a gh login on this host)
       ├─ or drop it: rhx radio.task.queue del --uuid f0e1d2c3b4a59687 --why "<why>"
       └─ then the next push delivers the backlog first"
