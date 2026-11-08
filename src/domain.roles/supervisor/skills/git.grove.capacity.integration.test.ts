@@ -1975,7 +1975,9 @@ describe('git.grove.capacity', () => {
                 .split(dirname(scene.capacityCopy))
                 .join('<fixture-skills>')
                 .split(scene.home)
-                .join('<home>'),
+                .join('<home>')
+                // jq's own line differs per jq version (1.7 prefixes `jq: `), so it is masked
+                .replace(/^(jq: )?parse error: .*$/m, '<jq parse error>'),
             }).toMatchSnapshot();
           },
         );

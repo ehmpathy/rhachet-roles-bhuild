@@ -112,6 +112,11 @@ const asSnapStable = (input: {
     .replace(/"resets_at":\s*[0-9]+/g, '"resets_at":<epoch>')
     .replace(/\bresets_at: [1-9][0-9]*/g, 'resets_at: <epoch>')
     .replace(/\bpid[ =:]?[0-9]+/g, 'pid<pid>')
+    // a tool's own exit code and text differ per version (jq 1.6 exits 4 on a parse fault,
+    // 1.7 exits 5; git 2.4x adds a strategy line and exits 2 where older git exits 128)
+    .replace(/(ledger fault, exit )[0-9]+/g, '$1<tool exit>')
+    .replace(/(no conflict to settle \(exit )[0-9]+/g, '$1<tool exit>')
+    .replace(/^Merge with strategy \S+ failed\.\n/gm, '')
     // a short sha can be all digits, which the general mask below cannot tell from a count
     .replace(/(origin\/main )[0-9a-f]{7,40}\b/g, '$1<sha>')
     .replace(/\b(?=[0-9a-f]*[0-9])(?=[0-9a-f]*[a-f])[0-9a-f]{7,40}\b/g, '<sha>');
@@ -1399,6 +1404,28 @@ describe('role=any skills', () => {
       label: `[t${2 + REFUSALS.length}]`,
       path: join(SKILLS, 'task.output.await.sh'),
       name: 'task.output.await',
+    });
+  });
+
+  given('[case10] gh.workflow.logs, run as rhx runs it', () => {
+    // rhx passes --skill, --repo and --role to every skill; this skill once refused them
+    when('[t0] the rhachet args arrive beside a flag it does not know', () => {
+      const result = useThen('it runs', async () =>
+        runSkill({
+          path: join(SKILLS, 'gh.workflow.logs.sh'),
+          args: ['--skill', 'gh.workflow.logs', '--repo', '.this', '--role', 'any', '--bogus'],
+        }),
+      );
+
+      then('it skips the rhachet args and refuses the unknown flag alone, exit 2', () => {
+        expect(result.status).toEqual(2);
+        expect(result.stderr).toContain('✋ ConstraintError: unknown argument: --bogus');
+        expect(result.stderr).not.toContain('--skill');
+      });
+
+      then('the refusal matches its snapshot', () => {
+        expect(asSnapStable({ result })).toMatchSnapshot();
+      });
     });
   });
 });

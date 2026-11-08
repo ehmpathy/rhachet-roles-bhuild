@@ -646,9 +646,12 @@ jq -r --argjson levers "$LEVERS" --argjson timeout "$TIMEOUT" "$TOKENWORK_JQ_DEF
   # .what = one stall on the grove row: its mark (the worse of the minute and the life row),
   #         the minute percent, and the life percent beside it
   # .note = `label` is a jq keyword, so the param is $name
+  # .note = each percent prints as the probe read it (pct_text), never the parsed number:
+  #         jq 1.7 keeps a parsed literal (0.00) where jq 1.6 prints 0, so a number would read
+  #         one way per jq version
   def stallseg($name; $s):
     if $s.mark == null then " · \($name) ⚪"
-    else " · \($name) \($s.mark) \(num($s.pct))%"
+    else " · \($name) \($s.mark) \($s.pct_text // "⚪")%"
       + (if $s.life_pct != null then " (since boot \($s.life_text)%)" else "" end)
       + (if $s.mark == "🔴" then ", no sprout" else "" end) end;
   def est($c; $axis; $x): if $x == null then "⚪" elif ($c.estimates | index($axis)) then "~\($x) (est.)" else "\($x)" end;

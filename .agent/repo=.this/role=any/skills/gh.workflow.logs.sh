@@ -35,6 +35,10 @@ BRANCH=""
 
 while [[ $# -gt 0 ]]; do
   case $1 in
+    # rhachet passes these to every skill; ignore them
+    --skill|--repo|--role)
+      shift 2
+      ;;
     --workflow|-w)
       WORKFLOW="$2"
       shift 2
@@ -75,9 +79,9 @@ while [[ $# -gt 0 ]]; do
       exit 0
       ;;
     *)
-      echo "unknown argument: $1"
-      echo "run with --help for usage"
-      exit 1
+      echo "✋ ConstraintError: unknown argument: $1" >&2
+      echo "   └─ run with --help for usage" >&2
+      exit 2
       ;;
   esac
 done
