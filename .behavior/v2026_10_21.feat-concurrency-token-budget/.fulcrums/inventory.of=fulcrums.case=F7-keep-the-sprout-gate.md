@@ -6,4 +6,5 @@
 - **confidence**: 60% — it widens the wish; the wisher may prefer it as a follow-up
 - **risk**: low — none ships: an exit code on a local read; no credential, no prod write. worst case, a miscount holds or admits one local sprout, and the flag drops clean
 - **where**: `1.vision.yield.md` · contract; `case=2.sprout-gate`
-- **verdict**: —
+- **verdict**: (a), ruled by the commander on fleet.asks #41 — the gate ships as a mode of the
+  capacity read

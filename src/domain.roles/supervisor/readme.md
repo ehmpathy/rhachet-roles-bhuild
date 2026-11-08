@@ -8,10 +8,10 @@ used to tend the camps — sprout trees, seat crews, and poll them for a verdict
 
 🔴 **read first**: `camper` is neither a clone nor an AWS boundary.
 
-### skills — 45 verbs
+### skills — 47 verbs
 
-- `git.crew.*` (15) — the seats on a tree: poll, read, revive, ledger, prune
-- `git.grove.*` (8) — the boxes: auth, wake, saturation, prune
+- `git.crew.*` (16) — the seats on a tree: poll, read, revive, ledger, prune, tokens
+- `git.grove.*` (9) — the boxes: auth, wake, saturation, capacity, prune
 - `git.tree.*` (8) — the worktrees: sprout, sync, supervise, behavior
 - `duct.*` (9) — the tmux/ssh transport a crew is reached over · `term.*` (3) — the local terminal tabs
 - `git.release.poll` — a fleet-wide release verdict, the shape of `git.crew.poll` · `git.checkout`

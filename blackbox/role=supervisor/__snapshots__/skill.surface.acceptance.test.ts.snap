@@ -27,7 +27,9 @@ exports[`supervisor.surface acceptance (as consumer) given: [case1] a consumer r
   "git.crew.send.sh",
   "git.crew.show.sh",
   "git.crew.stop.sh",
+  "git.crew.tokens.sh",
   "git.grove.auth.sh",
+  "git.grove.capacity.sh",
   "git.grove.keyrack.sh",
   "git.grove.list.sh",
   "git.grove.prune.sh",
@@ -73,4 +75,384 @@ guarantee:
   - a one-segment duct (duct:///65 — a human's own shell) is never
     counted as a crew (see term=duct._.choice._.md)
   - exit 0 = listed, 1 = malfunction"
+`;
+
+exports[`supervisor.surface acceptance (as consumer) given: [case3] the concurrency verbs, invoked by name from a consumer when: [t0] \`rhx git.crew.tokens --help\` is run then: 🔴 and the whole help surface holds its shape 1`] = `
+"🪨 run solid skill repo=bhuild/role=supervisor/skill=git.crew.tokens
+
+🌲 git.crew.tokens — each crew's token burn, cost-weighted, on every grove
+
+usage:
+  rhx git.crew.tokens                         every grove + local, last 180 min
+  rhx git.crew.tokens <grove>                 one grove (or \`local\`)
+  rhx git.crew.tokens --window 60             a shorter window, in minutes
+  rhx git.crew.tokens --since <iso> --until <iso>
+                                              the burn between two utc instants
+  rhx git.crew.tokens --json                  one json record in place of the tree, for a tick
+  rhx git.crew.tokens calibrate               what 1% of each cap costs, in tokens
+  rhx git.crew.tokens calibrate --json        the same, as one json record, for a tick
+
+inputs:
+  calibrate          read the cap ledger: weighted tokens per 1% of the 5h and
+                     the 7d cap, over every account's reads at once
+  <grove> | --grove  a registered grove, or \`local\`        (default: all + local)
+  --window           burn window, minutes back from now    (default: 180)
+  --since, --until   burn span, two utc instants           (default: the window)
+                     the span between them must be 1 min or more
+  --span-5h          calibrate: minutes between 5h reads   (default: 120)
+  --span-7d          calibrate: minutes between 7d reads   (default: 1440)
+  --timeout          seconds per grove                     (default: 90)
+  --json             one json record in place of the tree, for a tick
+
+example:
+  rhx git.crew.tokens local --window 60"
+`;
+
+exports[`supervisor.surface acceptance (as consumer) given: [case3] the concurrency verbs, invoked by name from a consumer when: [t1] \`rhx git.crew.tokens\` meets an unknown flag then: 🔴 and the refusal holds its shape 1`] = `
+"🪨 run solid skill repo=bhuild/role=supervisor/skill=git.crew.tokens
+
+🪨 run solid skill repo=bhuild/role=supervisor/skill=git.crew.tokens
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: unknown flag '--bogus'
+   ├─ known subcommands
+   │  └─ calibrate
+   ├─ known flags
+   │  ├─ --grove
+   │  ├─ --window
+   │  ├─ --since
+   │  ├─ --until
+   │  ├─ --span-5h
+   │  ├─ --span-7d
+   │  ├─ --timeout
+   │  ├─ --json
+   │  └─ --help
+   └─ see: rhx git.crew.tokens --help"
+`;
+
+exports[`supervisor.surface acceptance (as consumer) given: [case3] the concurrency verbs, invoked by name from a consumer when: [t2] \`rhx git.grove.capacity --help\` is run then: 🔴 and the whole help surface holds its shape 1`] = `
+"🪨 run solid skill repo=bhuild/role=supervisor/skill=git.grove.capacity
+
+🌲 git.grove.capacity — how many crews fit, which limit binds, which levers raise it
+
+usage:
+  rhx git.grove.capacity                          every grove + local
+  rhx git.grove.capacity <grove>                  one grove (or \`local\`)
+  rhx git.grove.capacity --grove <g> --for behavior
+                                                  the sprout gate: a slot, or exit 2
+  rhx git.grove.capacity --release <hold>         drop a hold once its sprout booted
+  rhx git.grove.capacity --levers                 levers ranked by gain in crews
+  rhx git.grove.capacity --json                   one json record in place of the tree, for a tick
+
+inputs:
+  <grove> | --grove   a registered grove, or \`local\`          (default: all + local)
+                      a grove name is bare, or cloud://<name>
+  --for               behavior | directive: the sprout gate, on one grove
+                      no slot while the box is stalled:
+                      cpu: tasks wait on cpu 10%+ of the time, over the
+                           last minute or on average since the box booted
+                      ram: every task stalls on ram at all in the last
+                           minute, or some task waits on ram 5%+ of the
+                           time on average since the box booted
+                      an empty grove gives one first-crew slot
+                      see: rule.require.bound-grove-concurrency-by-saturation, at
+                      .agent/repo=bhuild/role=supervisor/briefs/grove/rule.require.bound-grove-concurrency-by-saturation.md
+  --key               the gate's hold key, e.g. the branch
+                      a retry whose hold stands is granted at once
+  --release           a hold id a grant printed
+  --levers            rank the levers per grove
+  --window            burn window for the token cost, minutes (default: 180)
+  --sample            cpu sample, seconds                     (default: 15)
+  --timeout           seconds per grove; token scans get 3×   (default: 90)
+  --json              one json record in place of the tree, for a tick
+
+example:
+  rhx git.grove.capacity --grove local --for behavior --key beav/feat-surf-forecast"
+`;
+
+exports[`supervisor.surface acceptance (as consumer) given: [case3] the concurrency verbs, invoked by name from a consumer when: [t3] \`rhx git.grove.capacity\` meets an unknown flag then: 🔴 and the refusal holds its shape 1`] = `
+"🪨 run solid skill repo=bhuild/role=supervisor/skill=git.grove.capacity
+
+🪨 run solid skill repo=bhuild/role=supervisor/skill=git.grove.capacity
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: unknown flag '--bogus'
+   ├─ known flags
+   │  ├─ --grove
+   │  ├─ --for
+   │  ├─ --key
+   │  ├─ --release
+   │  ├─ --levers
+   │  ├─ --window
+   │  ├─ --sample
+   │  ├─ --timeout
+   │  ├─ --json
+   │  └─ --help
+   └─ see: rhx git.grove.capacity --help"
+`;
+
+exports[`supervisor.surface acceptance (as consumer) given: [case3] the concurrency verbs, invoked by name from a consumer when: [t4] \`rhx git.crew.tokens local --json\` reads the fixture home then: 🔴 and the record holds its shape 1`] = `
+{
+  "fleet": {
+    "by_kind": {
+      "behavior": {
+        "crews": "number",
+        "weighted": "number",
+        "weighted_per_crew_hour": "number",
+      },
+      "directive": {
+        "crews": "number",
+        "weighted": "number",
+        "weighted_per_crew_hour": "null",
+      },
+      "other": {
+        "crews": "number",
+        "weighted": "number",
+        "weighted_per_crew_hour": "null",
+      },
+    },
+    "weighted": "number",
+    "weighted_per_hour": "number",
+  },
+  "groves": {
+    "[each]": [
+      "grove",
+      "hint",
+      "record",
+      "state",
+    ],
+  },
+  "partial": "boolean",
+  "read": "boolean",
+  "since": "string",
+  "span_min": "number",
+  "unreached": {
+    "[each]": [],
+  },
+  "unread": {
+    "[each]": [],
+  },
+  "until": "string",
+}
+`;
+
+exports[`supervisor.surface acceptance (as consumer) given: [case3] the concurrency verbs, invoked by name from a consumer when: [t5] \`rhx git.grove.capacity --grove local --for behavior\` asks the gate then: 🔴 and the decision holds its shape 1`] = `
+{
+  "binds": "string",
+  "borrowed": "boolean",
+  "cpu_stall": {
+    "by": "string",
+    "life_pct": "number",
+    "life_text": "string",
+    "mark": "string",
+    "pct": "number",
+    "pct_text": "string",
+  },
+  "free": "number",
+  "granted": "boolean",
+  "grove": "string",
+  "held_before": "number",
+  "hold": "string",
+  "idle": {
+    "[each]": [],
+  },
+  "kind": "string",
+  "ram_stall": {
+    "by": "string",
+    "life_pct": "number",
+    "life_text": "string",
+    "mark": "string",
+    "pct": "number",
+    "pct_text": "string",
+  },
+  "reheld": "boolean",
+  "unread_axes": {
+    "[each]": [
+      "string",
+    ],
+  },
+}
+`;
+
+exports[`supervisor.surface acceptance (as consumer) given: [case3] the concurrency verbs, invoked by name from a consumer when: [t6] \`rhx git.grove.capacity local --levers\` ranks the levers then: 🔴 and the levers record holds its shape 1`] = `
+{
+  "groves": {
+    "[each]": [
+      "cpu_stall",
+      "crews_at_work",
+      "crews_live",
+      "exchange",
+      "grove",
+      "hint",
+      "idle",
+      "kinds",
+      "levers",
+      "ram_stall",
+      "record",
+      "seats_live",
+      "state",
+    ],
+  },
+  "tokens": {
+    "five_hour": {
+      "accounts": {
+        "[each]": [],
+      },
+      "burn": "null",
+      "logged": {
+        "[each]": [],
+      },
+      "pool": "null",
+      "rise_pct": "number",
+      "span_min": "number",
+      "t1": "null",
+      "t2": "null",
+      "verdict": {
+        "state": "string",
+        "why": "string",
+      },
+      "window": "string",
+    },
+    "fleet_per_hour": "number",
+    "partial": "null",
+    "per_crew_hour": {
+      "behavior": "number",
+      "directive": "null",
+    },
+    "read": "boolean",
+    "seven_day": {
+      "accounts": {
+        "[each]": [],
+      },
+      "burn": "null",
+      "logged": {
+        "[each]": [],
+      },
+      "pool": "null",
+      "rise_pct": "number",
+      "span_min": "number",
+      "t1": "null",
+      "t2": "null",
+      "verdict": {
+        "state": "string",
+        "why": "string",
+      },
+      "window": "string",
+    },
+    "unreached": {
+      "[each]": [],
+    },
+    "unread": {
+      "[each]": [],
+    },
+  },
+  "window_min": "number",
+}
+`;
+
+exports[`supervisor.surface acceptance (as consumer) given: [case3] the concurrency verbs, invoked by name from a consumer when: [t7] \`rhx git.grove.capacity local\` renders the read then: 🔴 and the read tree holds its shape 1`] = `
+"🪨 run solid skill repo=bhuild/role=supervisor/skill=git.grove.capacity
+
+🌲 grove capacity (token cost over 180 min)
+   ├─ tokens, fleet-wide: N/h now
+   │  ├─ per crew-hour: behavior N · directive ⚪
+   │  ├─ 5h: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
+   │  └─ 7d: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
+   └─ grove local: 4 cpu · 12G free of 16G · 1 crews live, 1 at work · busy 3 of 4 · 40 forks/s (40 per seat) · cpu stall 🟢 0% (since boot 0.400%) · ram full stall 🟢 0% (since boot 0.100%)
+      ├─ behavior: affordable ~2 (est.) (upper bound) · binds cpu · free slots 1 · ram 11 · cpu ~2 (est.) · tokens_5h ⚪ · tokens_7d ⚪
+      ├─ directive: affordable ~2 (est.) (upper bound) · binds cpu · free slots 1 · ram 11 · cpu ~2 (est.) · tokens_5h ⚪ · tokens_7d ⚪ · costs borrowed from the grove median
+      └─ exchange: 1 directive ≈ 1 behavior (on cpu) — ⚪ an estimate: a cost is borrowed, so this is no measure
+
+🥥 next
+   ├─ ask for a slot: rhx git.grove.capacity --grove <g> --for behavior --key <branch>
+   ├─ rank the levers: rhx git.grove.capacity --levers
+   └─ calibrate the caps: rhx git.crew.tokens calibrate"
+`;
+
+exports[`supervisor.surface acceptance (as consumer) given: [case3] the concurrency verbs, invoked by name from a consumer when: [t8] \`rhx git.grove.capacity --for behavior\` grants a slot, as a tree then: 🔴 and the grant tree holds its shape 1`] = `
+"🪨 run solid skill repo=bhuild/role=supervisor/skill=git.grove.capacity
+
+🌲 grove capacity · gate
+   ├─ ✅ a behavior slot on local — 0 left after this one (binds: cpu)
+   ├─ ⚪ an upper bound: unread axes — tokens_5h, tokens_7d
+   └─ held as local.behavior.beav+feat-coachbook for 15 min
+      └─ drop it once the sprout boots: rhx git.grove.capacity --release local.behavior.beav+feat-coachbook"
+`;
+
+exports[`supervisor.surface acceptance (as consumer) given: [case3] the concurrency verbs, invoked by name from a consumer when: [t9] a second key asks the full box, as a tree then: 🔴 and the full-box refusal tree holds its shape 1`] = `
+"🪨 run solid skill repo=bhuild/role=supervisor/skill=git.grove.capacity
+
+🪨 run solid skill repo=bhuild/role=supervisor/skill=git.grove.capacity
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: no behavior slot on local
+   ├─ free: 1 · held by sprouts in flight: 1 · binds: cpu
+   ├─ held by sprouts in flight — each lapses on its own, or on --release
+   │  └─ local.behavior.beav+feat-coachbook · behavior · lapses in N min
+   ├─ a hold whose sprout already booted holds its slot twice; drop it: rhx git.grove.capacity --release <hold>
+   └─ read every grove's free slots, then sprout where one is free — or seed the wish for later
+      ├─ rhx git.grove.capacity
+      └─ rhx radio.task.push --via gh.issues --into <org/repo> --title '<title>' --description @stdin"
+`;
+
+exports[`supervisor.surface acceptance (as consumer) given: [case3] the concurrency verbs, invoked by name from a consumer when: [t10] a key asks a box stalled on cpu, as a tree then: 🔴 and the stall refusal tree holds its shape 1`] = `
+"🪨 run solid skill repo=bhuild/role=supervisor/skill=git.grove.capacity
+
+🪨 run solid skill repo=bhuild/role=supervisor/skill=git.grove.capacity
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: no behavior slot on local
+   ├─ cpu stall 🔴 12.50%: at or past the 10% line, a stalled box takes no sprout
+   └─ read every grove's free slots, then sprout where one is free — or seed the wish for later
+      ├─ rhx git.grove.capacity
+      └─ rhx radio.task.push --via gh.issues --into <org/repo> --title '<title>' --description @stdin"
+`;
+
+exports[`supervisor.surface acceptance (as consumer) given: [case3] the concurrency verbs, invoked by name from a consumer when: [t11] \`rhx git.crew.tokens local\` renders the read then: 🔴 and the read tree holds its shape 1`] = `
+"🪨 run solid skill repo=bhuild/role=supervisor/skill=git.crew.tokens
+
+🌲 crew tokens over 180 min (cost-weighted)
+   ├─ fleet: N · N/h
+   ├─ per crew-hour, by kind
+   │  ├─ behavior: N over 1 crew
+   │  ├─ directive: ⚪ no crew of this kind burned in the span
+   │  └─ other: ⚪ no crew of this kind burned in the span
+   └─ grove local: N over 1 crew · 1 config dir
+      └─ svc-lessons.beav.feat-book-a-lesson [behavior]: N (N/h) · 1 seat · forks N · bert@example.com"
+`;
+
+exports[`supervisor.surface acceptance (as consumer) given: [case3] the concurrency verbs, invoked by name from a consumer when: [t12] \`rhx git.crew.tokens calibrate\` renders the calibration then: 🔴 and the calibrate tree holds its shape 1`] = `
+"🪨 run solid skill repo=bhuild/role=supervisor/skill=git.crew.tokens
+
+🌲 crew tokens · calibrate (pool of 0 accounts with a cap read)
+   ├─ five_hour: ⚪ uncalibrated — the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
+   └─ seven_day: ⚪ uncalibrated — the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it"
+`;
+
+exports[`supervisor.surface acceptance (as consumer) given: [case3] the concurrency verbs, invoked by name from a consumer when: [t13] \`rhx git.grove.capacity local --levers\` renders the levers then: 🔴 and the levers tree holds its shape 1`] = `
+"🪨 run solid skill repo=bhuild/role=supervisor/skill=git.grove.capacity
+
+🌲 grove capacity (token cost over 180 min)
+   ├─ tokens, fleet-wide: N/h now
+   │  ├─ per crew-hour: behavior N · directive ⚪
+   │  ├─ 5h: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
+   │  └─ 7d: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
+   └─ grove local: 4 cpu · 12G free of 16G · 1 crews live, 1 at work · busy 3 of 4 · 40 forks/s (40 per seat) · cpu stall 🟢 0% (since boot 0.400%) · ram full stall 🟢 0% (since boot 0.100%)
+      ├─ behavior: affordable ~2 (est.) (upper bound) · binds cpu · free slots 1 · ram 11 · cpu ~2 (est.) · tokens_5h ⚪ · tokens_7d ⚪
+      ├─ directive: affordable ~2 (est.) (upper bound) · binds cpu · free slots 1 · ram 11 · cpu ~2 (est.) · tokens_5h ⚪ · tokens_7d ⚪ · costs borrowed from the grove median
+      ├─ exchange: 1 directive ≈ 1 behavior (on cpu) — ⚪ an estimate: a cost is borrowed, so this is no measure
+      └─ levers, by gain in behavior slots against cpu
+         ├─ #1 slimmer-boot-briefs: +0 crews · cuts tokens 1% · estimated · 2 reads
+         ├─ #2 fell-or-park-idle-crews: +0 crews · cuts ram · estimated · 2 reads
+         ├─ smoke-test-empty-config-dir: +0 crews · cuts tokens 9% · measured · 1 read · unranked
+         ├─ small-context-forks: +0 crews · cuts tokens 25% · estimated · 1 read · unranked
+         ├─ fewer-hook-forks: unmeasured — listed, never ranked
+         ├─ cheaper-crew-transport: unmeasured — listed, never ranked
+         ├─ statusline-from-a-file: unmeasured — listed, never ranked
+         └─ fork-cap-per-seat: unmeasured — listed, never ranked
+
+🥥 next
+   ├─ ask for a slot: rhx git.grove.capacity --grove <g> --for behavior --key <branch>
+   ├─ rank the levers: rhx git.grove.capacity --levers
+   └─ calibrate the caps: rhx git.crew.tokens calibrate"
 `;

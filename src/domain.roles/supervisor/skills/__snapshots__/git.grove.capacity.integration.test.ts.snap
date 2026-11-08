@@ -1,0 +1,823 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`git.grove.capacity given: [case1] a grove with a live behavior crew and an uncalibrated pool when: [t0] the read runs as json then: the read record shape matches its snapshot 1`] = `
+{
+  "groves": {
+    "[each]": [
+      "cpu_stall",
+      "crews_at_work",
+      "crews_live",
+      "exchange",
+      "grove",
+      "hint",
+      "idle",
+      "kinds",
+      "levers",
+      "ram_stall",
+      "record",
+      "seats_live",
+      "state",
+    ],
+  },
+  "tokens": {
+    "five_hour": {
+      "accounts": {
+        "[each]": [],
+      },
+      "burn": "null",
+      "logged": {
+        "[each]": [],
+      },
+      "pool": "null",
+      "rise_pct": "number",
+      "span_min": "number",
+      "t1": "null",
+      "t2": "null",
+      "verdict": {
+        "state": "string",
+        "why": "string",
+      },
+      "window": "string",
+    },
+    "fleet_per_hour": "number",
+    "partial": "null",
+    "per_crew_hour": {
+      "behavior": "number",
+      "directive": "null",
+    },
+    "read": "boolean",
+    "seven_day": {
+      "accounts": {
+        "[each]": [],
+      },
+      "burn": "null",
+      "logged": {
+        "[each]": [],
+      },
+      "pool": "null",
+      "rise_pct": "number",
+      "span_min": "number",
+      "t1": "null",
+      "t2": "null",
+      "verdict": {
+        "state": "string",
+        "why": "string",
+      },
+      "window": "string",
+    },
+    "unreached": {
+      "[each]": [],
+    },
+    "unread": {
+      "[each]": [],
+    },
+  },
+  "window_min": "number",
+}
+`;
+
+exports[`git.grove.capacity given: [case1] a grove with a live behavior crew and an uncalibrated pool when: [t1] the read renders the tree then: the render, its live values masked, matches its snapshot 1`] = `
+"🌲 grove capacity (token cost over N min)
+   ├─ tokens, fleet-wide: N/h now
+   │  ├─ per crew-hour: behavior N · directive ⚪
+   │  ├─ 5h: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
+   │  └─ 7d: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
+   └─ grove local: N cpu · NG free of NG · N crews live, N at work · busy N of N · N forks/s (N per seat) · cpu stall ◯ N% (since boot N%) · ram full stall ◯ N% (since boot N%)
+      ├─ behavior: affordable N (upper bound) · binds <axis> · free slots N · ram N · cpu N · tokens_Nh ⚪ · tokens_Nd ⚪
+      ├─ directive: affordable N (upper bound) · binds <axis> · free slots N · ram N · cpu N · tokens_Nh ⚪ · tokens_Nd ⚪ · costs borrowed from the grove median
+      └─ exchange: N directive ≈ N behavior (on <axis>) — ⚪ an estimate: a cost is borrowed, so this is no measure
+
+🥥 next
+   ├─ ask for a slot: rhx git.grove.capacity --grove <g> --for behavior --key <branch>
+   ├─ rank the levers: rhx git.grove.capacity --levers
+   └─ calibrate the caps: rhx git.crew.tokens calibrate
+"
+`;
+
+exports[`git.grove.capacity given: [case2] the sprout gate, on a box with exactly one free slot when: [t0] three asks race for behavior slots on local then: a release drops the hold it names 1`] = `
+{
+  "status": 0,
+  "stderr": "",
+  "stdout": "🌲 grove capacity · release
+   └─ dropped hold <hold>
+",
+}
+`;
+
+exports[`git.grove.capacity given: [case2] the sprout gate, on a box with exactly one free slot when: [t1] one key asks for the slot twice then: the grant decision shape matches its snapshot 1`] = `
+{
+  "binds": "string",
+  "borrowed": "boolean",
+  "cpu_stall": {
+    "by": "string",
+    "life_pct": "null",
+    "life_text": "null",
+    "mark": "string",
+    "pct": "number",
+    "pct_text": "string",
+  },
+  "free": "number",
+  "granted": "boolean",
+  "grove": "string",
+  "held_before": "number",
+  "hold": "string",
+  "idle": {
+    "[each]": [],
+  },
+  "kind": "string",
+  "ram_stall": {
+    "by": "string",
+    "life_pct": "null",
+    "life_text": "null",
+    "mark": "string",
+    "pct": "number",
+    "pct_text": "string",
+  },
+  "reheld": "boolean",
+  "unread_axes": {
+    "[each]": [
+      "string",
+    ],
+  },
+}
+`;
+
+exports[`git.grove.capacity given: [case2] the sprout gate, on a box with exactly one free slot when: [t1] one key asks for the slot twice then: the reheld decision shape matches its snapshot 1`] = `
+{
+  "binds": "null",
+  "borrowed": "boolean",
+  "cpu_stall": "null",
+  "free": "null",
+  "granted": "boolean",
+  "grove": "string",
+  "held_before": "null",
+  "hold": "string",
+  "idle": {
+    "[each]": [],
+  },
+  "kind": "string",
+  "ram_stall": "null",
+  "reheld": "boolean",
+  "unread_axes": {
+    "[each]": [],
+  },
+}
+`;
+
+exports[`git.grove.capacity given: [case2] the sprout gate, on a box with exactly one free slot when: [t1] one key asks for the slot twice then: the reheld tree names the renewed hold, and matches its snapshot 1`] = `
+"🌲 grove capacity · gate
+   ├─ ✅ a behavior slot on local — the hold this key already took, renewed (no probe: a findsert returns the extant)
+   └─ held as local.behavior.beav+feat-surf-forecast for 15 min
+      └─ drop it once the sprout boots: rhx git.grove.capacity --release local.behavior.beav+feat-surf-forecast
+"
+`;
+
+exports[`git.grove.capacity given: [case2] the sprout gate, on a box with exactly one free slot when: [t2] the hold that takes the slot ages past its bound then: the refusal decision shape matches its snapshot 1`] = `
+{
+  "binds": "string",
+  "borrowed": "boolean",
+  "cpu_stall": {
+    "by": "string",
+    "life_pct": "null",
+    "life_text": "null",
+    "mark": "string",
+    "pct": "number",
+    "pct_text": "string",
+  },
+  "free": "number",
+  "granted": "boolean",
+  "grove": "string",
+  "held_before": "number",
+  "hold": "null",
+  "idle": {
+    "[each]": [],
+  },
+  "kind": "string",
+  "ram_stall": {
+    "by": "string",
+    "life_pct": "null",
+    "life_text": "null",
+    "mark": "string",
+    "pct": "number",
+    "pct_text": "string",
+  },
+  "reheld": "boolean",
+  "unread_axes": {
+    "[each]": [
+      "string",
+    ],
+  },
+}
+`;
+
+exports[`git.grove.capacity given: [case2] the sprout gate, on a box with exactly one free slot when: [t3] a directive slot is asked, as a tree then: the grant tree matches its snapshot, the hold id masked 1`] = `
+"🌲 grove capacity · gate
+   ├─ ✅ a directive slot on local — 0 left after this one (binds: cpu)
+   ├─ ⚪ an upper bound: unread axes — tokens_5h, tokens_7d
+   ├─ ⚪ an estimate: no directive crew on local, so its cost is borrowed from the median of all its crews
+   └─ held as local.directive.<pid>.<rand> for 15 min
+      └─ drop it once the sprout boots: rhx git.grove.capacity --release local.directive.<pid>.<rand>
+"
+`;
+
+exports[`git.grove.capacity given: [case2] the sprout gate, on a box with exactly one free slot when: [t4] the gate is asked with no grove then: the refusal matches its snapshot 1`] = `
+{
+  "status": 2,
+  "stderr": "✋ ConstraintError: the gate needs one grove — the slot is a grove's to give
+   └─ e.g.: rhx git.grove.capacity --grove local --for behavior
+",
+  "stdout": "",
+}
+`;
+
+exports[`git.grove.capacity given: [case2] the sprout gate, on a box with exactly one free slot when: [t5] a behavior slot is asked of the full box, as a tree then: the refusal tree matches its snapshot 1`] = `
+"✋ ConstraintError: no behavior slot on local
+   ├─ free: 1 · held by sprouts in flight: 1 · binds: cpu
+   ├─ held by sprouts in flight — each lapses on its own, or on --release
+   │  └─ local.directive.<pid>.<rand> · directive · lapses in <N> min
+   ├─ a hold whose sprout already booted holds its slot twice; drop it: rhx git.grove.capacity --release <hold>
+   └─ read every grove's free slots, then sprout where one is free — or seed the wish for later
+      ├─ rhx git.grove.capacity
+      └─ rhx radio.task.push --via gh.issues --into <org/repo> --title '<title>' --description @stdin
+"
+`;
+
+exports[`git.grove.capacity given: [case2] the sprout gate, on a box with exactly one free slot when: [t6] a keyed hold retries once the box is full then: the look-alike refusal tree names no slot, and matches its snapshot 1`] = `
+"✋ ConstraintError: no behavior slot on local
+   ├─ free: 1 · held by sprouts in flight: 2 · binds: cpu
+   ├─ held by sprouts in flight — each lapses on its own, or on --release
+   │  ├─ local.behavior.beav+feat-coachbook · behavior · lapses in <N> min
+   │  └─ local.directive.<pid>.<rand> · directive · lapses in <N> min
+   ├─ a hold whose sprout already booted holds its slot twice; drop it: rhx git.grove.capacity --release <hold>
+   └─ read every grove's free slots, then sprout where one is free — or seed the wish for later
+      ├─ rhx git.grove.capacity
+      └─ rhx radio.task.push --via gh.issues --into <org/repo> --title '<title>' --description @stdin
+"
+`;
+
+exports[`git.grove.capacity given: [case2] the sprout gate, on a box with exactly one free slot when: [t7] a slot is asked of a box stalled past the 🔴 line, as a tree then: the refusal tree matches its snapshot 1`] = `
+"✋ ConstraintError: no behavior slot on local
+   ├─ cpu stall 🔴 12.50%: at or past the 10% line, a stalled box takes no sprout
+   └─ read every grove's free slots, then sprout where one is free — or seed the wish for later
+      ├─ rhx git.grove.capacity
+      └─ rhx radio.task.push --via gh.issues --into <org/repo> --title '<title>' --description @stdin
+"
+`;
+
+exports[`git.grove.capacity given: [case2] the sprout gate, on a box with exactly one free slot when: [t8] a slot is asked of a box with a memory full stall above 0 then: the refusal tree matches its snapshot 1`] = `
+"✋ ConstraintError: no behavior slot on local
+   ├─ ram full stall 🔴 1.50%: above 0, the box stopped outright and takes no sprout
+   └─ read every grove's free slots, then sprout where one is free — or seed the wish for later
+      ├─ rhx git.grove.capacity
+      └─ rhx radio.task.push --via gh.issues --into <org/repo> --title '<title>' --description @stdin
+"
+`;
+
+exports[`git.grove.capacity given: [case2] the sprout gate, on a box with exactly one free slot when: [t9] a behavior slot is asked of the freed box, as a tree then: the grant tree matches its snapshot, the hold id masked 1`] = `
+"🌲 grove capacity · gate
+   ├─ ✅ a behavior slot on local — 0 left after this one (binds: cpu)
+   ├─ ⚪ an upper bound: unread axes — tokens_5h, tokens_7d
+   └─ held as local.behavior.<pid>.<rand> for 15 min
+      └─ drop it once the sprout boots: rhx git.grove.capacity --release local.behavior.<pid>.<rand>
+"
+`;
+
+exports[`git.grove.capacity given: [case3] a registered grove that cannot be reached when: [t0] the gate asks it for a slot then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: no slot — grove-sandpine-v20260901 is unread (unreadable), so the gate gives no verdict
+   └─ exit 255: ssh: <the resolver says why>
+"
+`;
+
+exports[`git.grove.capacity given: [case3] a registered grove that cannot be reached when: [t1] the read runs, and the token half cannot reach that grove then: the partial fleet render, masked, matches its snapshot 1`] = `
+"🌲 grove capacity (token cost over N min)
+   ├─ tokens, fleet-wide: ⚪ unread as a fleet sum — unreached: grove-sandpine-vN unreadable; each grove row below names why
+   │  ├─ per crew-hour: behavior ⚪ · directive ⚪
+   │  ├─ 5h: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
+   │  └─ 7d: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
+   └─ grove-sandpine-vN: 💥 unreadable — no slot — exit <rc>: ssh: <the resolver says why>
+
+🥥 next
+   ├─ ask for a slot: rhx git.grove.capacity --grove <g> --for behavior --key <branch>
+   ├─ rank the levers: rhx git.grove.capacity --levers
+   └─ calibrate the caps: rhx git.crew.tokens calibrate
+"
+`;
+
+exports[`git.grove.capacity given: [case4] the contract surfaces that read no box when: [t0] help is asked for then: the help matches its snapshot 1`] = `
+"🌲 git.grove.capacity — how many crews fit, which limit binds, which levers raise it
+
+usage:
+  rhx git.grove.capacity                          every grove + local
+  rhx git.grove.capacity <grove>                  one grove (or \`local\`)
+  rhx git.grove.capacity --grove <g> --for behavior
+                                                  the sprout gate: a slot, or exit 2
+  rhx git.grove.capacity --release <hold>         drop a hold once its sprout booted
+  rhx git.grove.capacity --levers                 levers ranked by gain in crews
+  rhx git.grove.capacity --json                   one json record in place of the tree, for a tick
+
+inputs:
+  <grove> | --grove   a registered grove, or \`local\`          (default: all + local)
+                      a grove name is bare, or cloud://<name>
+  --for               behavior | directive: the sprout gate, on one grove
+                      no slot while the box is stalled:
+                      cpu: tasks wait on cpu 10%+ of the time, over the
+                           last minute or on average since the box booted
+                      ram: every task stalls on ram at all in the last
+                           minute, or some task waits on ram 5%+ of the
+                           time on average since the box booted
+                      an empty grove gives one first-crew slot
+                      see: rule.require.bound-grove-concurrency-by-saturation, at
+                      .agent/repo=bhuild/role=supervisor/briefs/grove/rule.require.bound-grove-concurrency-by-saturation.md
+  --key               the gate's hold key, e.g. the branch
+                      a retry whose hold stands is granted at once
+  --release           a hold id a grant printed
+  --levers            rank the levers per grove
+  --window            burn window for the token cost, minutes (default: 180)
+  --sample            cpu sample, seconds                     (default: 15)
+  --timeout           seconds per grove; token scans get 3×   (default: 90)
+  --json              one json record in place of the tree, for a tick
+
+example:
+  rhx git.grove.capacity --grove local --for behavior --key beav/feat-surf-forecast
+"
+`;
+
+exports[`git.grove.capacity given: [case4] the contract surfaces that read no box when: [t1] a hold that does not exist is released then: the release matches its snapshot 1`] = `
+"🌲 grove capacity · release
+   └─ no hold local.behavior.1.1 (lapsed, or already dropped)
+"
+`;
+
+exports[`git.grove.capacity given: [case4] the contract surfaces that read no box when: [t2] the verb is given a second grove positional then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: one grove per read — got 'local' and 'grove-sandpine-v20260901'
+   └─ read every grove at once: rhx git.grove.capacity
+"
+`;
+
+exports[`git.grove.capacity given: [case4] the contract surfaces that read no box when: [t3] the verb is given a flag with no value then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: --grove needs a value
+   └─ see: rhx git.grove.capacity --help
+"
+`;
+
+exports[`git.grove.capacity given: [case4] the contract surfaces that read no box when: [t4] the verb is given a flag whose value is a flag then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: --window needs a value
+   └─ see: rhx git.grove.capacity --help
+"
+`;
+
+exports[`git.grove.capacity given: [case4] the contract surfaces that read no box when: [t5] the verb is given a key with no gate then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: --key names a gate hold, so it needs --for
+"
+`;
+
+exports[`git.grove.capacity given: [case4] the contract surfaces that read no box when: [t6] the verb is given an unknown kind then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: --for takes behavior or directive, got 'surfer'
+"
+`;
+
+exports[`git.grove.capacity given: [case4] the contract surfaces that read no box when: [t7] the verb is given a non-numeric sample then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: --sample must be a whole number, got 'soon'
+"
+`;
+
+exports[`git.grove.capacity given: [case4] the contract surfaces that read no box when: [t8] the verb is given an unregistered grove then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: grove 'grove-absent' is not registered
+   └─ see what is: rhx git.grove.list
+"
+`;
+
+exports[`git.grove.capacity given: [case4] the contract surfaces that read no box when: [t9] the verb is given an unknown flag then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: unknown flag '--levrs'
+   ├─ known flags
+   │  ├─ --grove
+   │  ├─ --for
+   │  ├─ --key
+   │  ├─ --release
+   │  ├─ --levers
+   │  ├─ --window
+   │  ├─ --sample
+   │  ├─ --timeout
+   │  ├─ --json
+   │  └─ --help
+   └─ see: rhx git.grove.capacity --help
+"
+`;
+
+exports[`git.grove.capacity given: [case4] the contract surfaces that read no box when: [t10] the verb is given a malformed hold id then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: --release takes a hold id, got '../etc'
+"
+`;
+
+exports[`git.grove.capacity given: [case4] the contract surfaces that read no box when: [t11] the verb is given a zero timeout then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: --timeout must be at least 1, got '0'
+"
+`;
+
+exports[`git.grove.capacity given: [case4] the contract surfaces that read no box when: [t12] the verb is given a sample no shorter than the timeout then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: --sample (30 s) must be shorter than --timeout (30 s), or every grove reads timeout
+"
+`;
+
+exports[`git.grove.capacity given: [case5] the levers, on a pool whose 5h window is calibrated when: [t0] the levers are read as json then: the levers record shape matches its snapshot 1`] = `
+{
+  "groves": {
+    "[each]": [
+      "cpu_stall",
+      "crews_at_work",
+      "crews_live",
+      "exchange",
+      "grove",
+      "hint",
+      "idle",
+      "kinds",
+      "levers",
+      "ram_stall",
+      "record",
+      "seats_live",
+      "state",
+    ],
+  },
+  "tokens": {
+    "five_hour": {
+      "accounts": {
+        "[each]": [
+          "account",
+          "off_after_min",
+          "off_before_min",
+          "resets_after",
+          "resets_before",
+          "used_after",
+          "used_before",
+        ],
+      },
+      "burn": {
+        "partial": "boolean",
+        "unreached": {
+          "[each]": [],
+        },
+        "unread": {
+          "[each]": [],
+        },
+        "weighted": "number",
+      },
+      "logged": {
+        "[each]": [
+          "string",
+        ],
+      },
+      "pool": {
+        "accounts": "number",
+        "reads_stale": "number",
+        "sustainable_per_hour": "number",
+      },
+      "rise_pct": "number",
+      "span_min": "number",
+      "t1": "string",
+      "t2": "string",
+      "verdict": {
+        "state": "string",
+        "tokens_per_pct": "number",
+      },
+      "window": "string",
+    },
+    "fleet_per_hour": "number",
+    "partial": "null",
+    "per_crew_hour": {
+      "behavior": "number",
+      "directive": "null",
+    },
+    "read": "boolean",
+    "seven_day": {
+      "accounts": {
+        "[each]": [],
+      },
+      "burn": {
+        "partial": "boolean",
+        "unreached": {
+          "[each]": [],
+        },
+        "unread": {
+          "[each]": [],
+        },
+        "weighted": "number",
+      },
+      "logged": {
+        "[each]": [
+          "string",
+        ],
+      },
+      "pool": "null",
+      "rise_pct": "number",
+      "span_min": "number",
+      "t1": "string",
+      "t2": "string",
+      "verdict": {
+        "state": "string",
+        "why": "string",
+      },
+      "window": "string",
+    },
+    "unreached": {
+      "[each]": [],
+    },
+    "unread": {
+      "[each]": [],
+    },
+  },
+  "window_min": "number",
+}
+`;
+
+exports[`git.grove.capacity given: [case5] the levers, on a pool whose 5h window is calibrated when: [t1] the levers render then: the lever rows, masked and sorted, match their snapshot 1`] = `
+"cheaper-crew-transport: unmeasured — listed, never ranked
+fell-or-park-idle-crews: +N crews · cuts ram · estimated · N reads
+fewer-hook-forks: unmeasured — listed, never ranked
+fork-cap-per-seat: unmeasured — listed, never ranked
+slimmer-boot-briefs: +N crews · cuts tokens N% · estimated · N reads
+small-context-forks: +N crews · cuts tokens N% · estimated · N read · unranked
+smoke-test-empty-config-dir: +N crews · cuts tokens N% · measured · N read · unranked
+statusline-from-a-file: unmeasured — listed, never ranked"
+`;
+
+exports[`git.grove.capacity given: [case6] a fleet with one transcript the token read cannot open when: [t0] the read renders the tree then: the partial render, masked, matches its snapshot 1`] = `
+"🌲 grove capacity (token cost over N min)
+   ├─ tokens, fleet-wide: ⚪ unread as a fleet sum — N transcript unread, e.g. local:<home>/git/sandpine/_worktrees/svc-lessons.beav.feat-book-a-lesson/.agent/.actors/actor.via.repo=ambient/brain/.claude/projects/project-N/session-N.jsonl; each grove row below names why
+   │  ├─ per crew-hour: behavior ⚪ · directive ⚪
+   │  ├─ 5h: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
+   │  └─ 7d: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
+   └─ grove local: N cpu · NG free of NG · N crews live, N at work · busy N of N · N forks/s (N per seat) · cpu stall ◯ N% · ram full stall ◯ N%
+      ├─ behavior: affordable N (upper bound) · binds <axis> · free slots N · ram N · cpu N · tokens_Nh ⚪ · tokens_Nd ⚪
+      ├─ directive: affordable N (upper bound) · binds <axis> · free slots N · ram N · cpu N · tokens_Nh ⚪ · tokens_Nd ⚪ · costs borrowed from the grove median
+      └─ exchange: N directive ≈ N behavior (on <axis>) — ⚪ an estimate: a cost is borrowed, so this is no measure
+
+🥥 next
+   ├─ ask for a slot: rhx git.grove.capacity --grove <g> --for behavior --key <branch>
+   ├─ rank the levers: rhx git.grove.capacity --levers
+   └─ calibrate the caps: rhx git.crew.tokens calibrate
+"
+`;
+
+exports[`git.grove.capacity given: [case7] the sprout gate, on a woken grove with no crew when: [t0] two sprouts ask, under two keys then: the first-crew grant tree names its one slot, and matches its snapshot 1`] = `
+"🌲 grove capacity · gate
+   ├─ ✅ a behavior slot on local — 0 left after this one (binds: none)
+   ├─ ⚪ the first crew: local holds no crew to read a cost from, so it gives one slot; the crew it boots gives the cost every later ask reads
+   └─ held as local.behavior.beav+feat-coachbook for 15 min
+      └─ drop it once the sprout boots: rhx git.grove.capacity --release local.behavior.beav+feat-coachbook
+"
+`;
+
+exports[`git.grove.capacity given: [case7] the sprout gate, on a woken grove with no crew when: [t0] two sprouts ask, under two keys then: the tree refused while that hold stands matches its snapshot 1`] = `
+"✋ ConstraintError: no behavior slot on local
+   ├─ free: 1 · held by sprouts in flight: 1 · binds: none
+   ├─ held by sprouts in flight — each lapses on its own, or on --release
+   │  └─ local.behavior.beav+feat-coachbook · behavior · lapses in <N> min
+   ├─ a hold whose sprout already booted holds its slot twice; drop it: rhx git.grove.capacity --release <hold>
+   └─ read every grove's free slots, then sprout where one is free — or seed the wish for later
+      ├─ rhx git.grove.capacity
+      └─ rhx radio.task.push --via gh.issues --into <org/repo> --title '<title>' --description @stdin
+"
+`;
+
+exports[`git.grove.capacity given: [case7] the sprout gate, on a woken grove with no crew when: [t1] the read renders the tree then: the first-crew render, masked, matches its snapshot 1`] = `
+"🌲 grove capacity (token cost over N min)
+   ├─ tokens, fleet-wide: N/h now
+   │  ├─ per crew-hour: behavior ⚪ · directive ⚪
+   │  ├─ 5h: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
+   │  └─ 7d: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
+   └─ grove local: N cpu · NG free of NG · N crews live, N at work · busy N of N · N forks/s · cpu stall ◯ N% · ram full stall ◯ N%
+      ├─ behavior: ⚪ no crew here to read its cost from · first-crew slots free N, then the crew it boots gives the cost
+      ├─ directive: ⚪ no crew here to read its cost from · first-crew slots free N, then the crew it boots gives the cost
+      └─ exchange: ⚪ a directive cost is unread on the axis that binds
+
+🥥 next
+   ├─ ask for a slot: rhx git.grove.capacity --grove <g> --for behavior --key <branch>
+   ├─ rank the levers: rhx git.grove.capacity --levers
+   └─ calibrate the caps: rhx git.crew.tokens calibrate
+"
+`;
+
+exports[`git.grove.capacity given: [case9] the sprout gate, on a full box, beside a corrupt levers table when: [t1] a slot is asked, beside the corrupt levers table then: the malfunction render matches its snapshot, the fixture paths masked 1`] = `
+{
+  "status": 1,
+  "stderr": "parse error: Invalid numeric literal at line 1, column 5
+💥 MalfunctionError: the levers table is unreadable: <fixture-skills>/git.grove.capacity.levers.jsonc
+",
+  "stdout": "",
+}
+`;
+
+exports[`git.grove.capacity given: [case11] the sprout gate, on a box whose ram binds, one crew idle when: [t0] a behavior slot is asked, as a tree then: the refusal tree matches its snapshot 1`] = `
+"✋ ConstraintError: no behavior slot on local
+   ├─ free: 0 · held by sprouts in flight: 0 · binds: ram
+   ├─ idle crews — no cpu now and no burn in the window; fell one only once its work is done
+   │  └─ svc-lessons.beav.feat-coachbook · 2G
+   ├─ to see which crews may be felled: rhx git.crew.poll --fellable
+   └─ read every grove's free slots, then sprout where one is free — or seed the wish for later
+      ├─ rhx git.grove.capacity
+      └─ rhx radio.task.push --via gh.issues --into <org/repo> --title '<title>' --description @stdin
+"
+`;
+
+exports[`git.grove.capacity given: [case12] the default sweep, over local and one grove that cannot be reached when: [t0] the read runs with no grove named then: the mixed sweep render, masked, matches its snapshot 1`] = `
+"🌲 grove capacity (token cost over N min)
+   ├─ tokens, fleet-wide: ⚪ unread as a fleet sum — unreached: grove-sandpine-vN unreadable; each grove row below names why
+   │  ├─ per crew-hour: behavior N · directive ⚪
+   │  ├─ 5h: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
+   │  └─ 7d: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
+   ├─ grove-sandpine-vN: 💥 unreadable — no slot — exit <rc>: ssh: <the resolver says why>
+   └─ grove local: <the live box, masked out>
+
+🥥 next
+   ├─ ask for a slot: rhx git.grove.capacity --grove <g> --for behavior --key <branch>
+   ├─ rank the levers: rhx git.grove.capacity --levers
+   └─ calibrate the caps: rhx git.crew.tokens calibrate
+"
+`;
+
+exports[`git.grove.capacity given: [case13] a registered grove that answers, but holds no jq when: [t0] the read renders the tree then: the no-jq render, masked, matches its snapshot 1`] = `
+"🌲 grove capacity (token cost over N min)
+   ├─ tokens, fleet-wide: ⚪ unread as a fleet sum — unreached: grove-sandpine-vN unreadable; each grove row below names why
+   │  ├─ per crew-hour: behavior ⚪ · directive ⚪
+   │  ├─ 5h: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
+   │  └─ 7d: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
+   └─ grove-sandpine-vN: 💥 unreadable — no slot — exit N: 💥 MalfunctionError: jq is absent on this grove; install it, then re-read: rhx git.grove.send <grove> --what 'sudo apt-get install -y jq'
+
+🥥 next
+   ├─ ask for a slot: rhx git.grove.capacity --grove <g> --for behavior --key <branch>
+   ├─ rank the levers: rhx git.grove.capacity --levers
+   └─ calibrate the caps: rhx git.crew.tokens calibrate
+"
+`;
+
+exports[`git.grove.capacity given: [case14] a registered grove whose ssh connect is refused when: [t0] the read renders the tree then: the asleep render, masked, matches its snapshot 1`] = `
+"🌲 grove capacity (token cost over N min)
+   ├─ tokens, fleet-wide: ⚪ unread as a fleet sum — unreached: grove-sandpine-vN asleep; each grove row below names why
+   │  ├─ per crew-hour: behavior ⚪ · directive ⚪
+   │  ├─ 5h: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
+   │  └─ 7d: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
+   └─ grove-sandpine-vN: 💤 asleep — no slot — wake it: rhx git.grove.wake grove-sandpine-vN
+
+🥥 next
+   ├─ ask for a slot: rhx git.grove.capacity --grove <g> --for behavior --key <branch>
+   ├─ rank the levers: rhx git.grove.capacity --levers
+   └─ calibrate the caps: rhx git.crew.tokens calibrate
+"
+`;
+
+exports[`git.grove.capacity given: [case15] a registered grove whose ssh hangs past the timeout when: [t0] the read renders the tree then: the timeout render, masked, matches its snapshot 1`] = `
+"🌲 grove capacity (token cost over N min)
+   ├─ tokens, fleet-wide: ⚪ unread as a fleet sum — unreached: grove-sandpine-vN timeout; re-read once: rhx git.grove.capacity --timeout N
+   │  ├─ per crew-hour: behavior ⚪ · directive ⚪
+   │  ├─ 5h: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
+   │  └─ 7d: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
+   └─ grove-sandpine-vN: ⏳ timeout — no slot — a slow read is a load signal; re-read once: rhx git.grove.capacity grove-sandpine-vN --timeout N
+
+🥥 next
+   ├─ ask for a slot: rhx git.grove.capacity --grove <g> --for behavior --key <branch>
+   ├─ rank the levers: rhx git.grove.capacity --levers
+   └─ calibrate the caps: rhx git.crew.tokens calibrate
+"
+`;
+
+exports[`git.grove.capacity given: [case16] the levers, a measured row beside a larger estimated one on the axis that binds when: [t1] the levers render as a tree then: the lever rows, in render order, match their snapshot 1`] = `
+"         ├─ #1 locker-measured: +1 crews · cuts ram 10% · measured · 2 reads
+         └─ #2 locker-estimated: +6 crews · cuts ram 50% · estimated · 2 reads"
+`;
+
+exports[`git.grove.capacity given: [case17] the sprout gate, on a box whose life stall differs from its minute when: [t0] the cpu life row reads 🔴, its minute calm then: the life-stall decision shape matches its snapshot 1`] = `
+{
+  "granted": "boolean",
+  "grove": "string",
+  "kind": "string",
+  "why": "string",
+}
+`;
+
+exports[`git.grove.capacity given: [case17] the sprout gate, on a box whose life stall differs from its minute when: [t0] the cpu life row reads 🔴, its minute calm then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: no behavior slot on local
+   ├─ cpu stall 🔴 12.300% since boot: at or past the 10% line on average since the box booted, a stalled box takes no sprout
+   └─ read every grove's free slots, then sprout where one is free — or seed the wish for later
+      ├─ rhx git.grove.capacity
+      └─ rhx radio.task.push --via gh.issues --into <org/repo> --title '<title>' --description @stdin
+"
+`;
+
+exports[`git.grove.capacity given: [case17] the sprout gate, on a box whose life stall differs from its minute when: [t1] the ram life row reads 🔴, its minute calm then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: no behavior slot on local
+   ├─ ram stall 🔴 6.000% since boot: at or past the 5% line on average since the box booted, the box takes no sprout
+   └─ read every grove's free slots, then sprout where one is free — or seed the wish for later
+      ├─ rhx git.grove.capacity
+      └─ rhx radio.task.push --via gh.issues --into <org/repo> --title '<title>' --description @stdin
+"
+`;
+
+exports[`git.grove.capacity given: [case18] a box with room whose 5h token pool sits near its cap when: [t1] the read renders the tree then: the tokens-bind render, its figures masked, matches its snapshot 1`] = `
+"🌲 grove capacity (token cost over N min)
+   ├─ tokens, fleet-wide: N/h now
+   │  ├─ per crew-hour: behavior N · directive ⚪
+   │  ├─ 5h: NK/h sustained
+   │  └─ 7d: ⚪ accounts whose cap reads carry no 7d figure: bert@example.com — their claude code hands none to the statusline; see rhx claude.statusline.probe
+   └─ grove local: N cpu · NG free of NG · N crews live, N at work · busy N of N · N forks/s (N per seat) · cpu stall 🟢 N% · ram full stall 🟢 N%
+      ├─ behavior: affordable N (upper bound) · binds tokens_5h · free slots N · ram N · cpu ~N (est.) · tokens_5h N · tokens_7d ⚪
+      ├─ directive: affordable ~N (est.) (upper bound) · binds cpu · free slots N · ram N · cpu ~N (est.) · tokens_5h ⚪ · tokens_7d ⚪ · costs borrowed from the grove median
+      └─ exchange: ⚪ a directive cost is unread on the axis that binds
+
+🥥 next
+   ├─ ask for a slot: rhx git.grove.capacity --grove <g> --for behavior --key <branch>
+   ├─ rank the levers: rhx git.grove.capacity --levers
+   └─ calibrate the caps: rhx git.crew.tokens calibrate
+"
+`;
+
+exports[`git.grove.capacity given: [case18] a box with room whose 5h token pool sits near its cap when: [t2] a behavior slot is asked, as a tree then: the token refusal tree, its figures masked, matches its snapshot 1`] = `
+"✋ ConstraintError: no behavior slot on local
+   ├─ free: N · held by sprouts in flight: N · binds: tokens_5h
+   ├─ the token pool caps the free slots (tokens_5h): a fell frees no token slot; the pool frees one as its burn falls or its window resets
+   ├─ read the pool: rhx git.crew.tokens calibrate
+   └─ read every grove's free slots, then sprout where one is free — or seed the wish for later
+      ├─ rhx git.grove.capacity
+      └─ rhx radio.task.push --via gh.issues --into <org/repo> --title '<title>' --description @stdin
+"
+`;
+
+exports[`git.grove.capacity given: [case19] a box with one behavior crew and one directive crew, both pools calibrated when: [t1] the read renders the tree then: the two-kind render, its figures masked, matches its snapshot 1`] = `
+"🌲 grove capacity (token cost over N min)
+   ├─ tokens, fleet-wide: NK/h now
+   │  ├─ per crew-hour: behavior N · directive N
+   │  ├─ 5h: NM/h sustained
+   │  └─ 7d: NK/h sustained
+   └─ grove local: N cpu · NG free of NG · N crews live, N at work · busy N of N · N forks/s (N per seat) · cpu stall 🟢 N% · ram full stall 🟢 N%
+      ├─ behavior: affordable ~N (est.) · binds cpu · free slots N · ram N · cpu ~N (est.) · tokens_5h N · tokens_7d N
+      ├─ directive: affordable ~N (est.) · binds cpu · free slots N · ram N · cpu ~N (est.) · tokens_5h N · tokens_7d N
+      └─ exchange: N directive ≈ N behavior (on cpu)
+
+🥥 next
+   ├─ ask for a slot: rhx git.grove.capacity --grove <g> --for behavior --key <branch>
+   ├─ rank the levers: rhx git.grove.capacity --levers
+   └─ calibrate the caps: rhx git.crew.tokens calibrate
+"
+`;
+
+exports[`git.grove.capacity given: [case19] a box with one behavior crew and one directive crew, both pools calibrated when: [t3] a behavior slot is asked beside three directive holds then: the refusal tree, its hold lapses masked, matches its snapshot 1`] = `
+"✋ ConstraintError: no behavior slot on local
+   ├─ free: 5 · held by sprouts in flight: 6 · binds: cpu
+   ├─ held by sprouts in flight — each lapses on its own, or on --release
+   │  ├─ local.directive.beav+feat-cert-ingest · directive · lapses in <N> min
+   │  ├─ local.directive.beav+feat-coachbook · directive · lapses in <N> min
+   │  └─ local.directive.beav+feat-spot-forecast-widget · directive · lapses in <N> min
+   ├─ a hold whose sprout already booted holds its slot twice; drop it: rhx git.grove.capacity --release <hold>
+   └─ read every grove's free slots, then sprout where one is free — or seed the wish for later
+      ├─ rhx git.grove.capacity
+      └─ rhx radio.task.push --via gh.issues --into <org/repo> --title '<title>' --description @stdin
+"
+`;
+
+exports[`git.grove.capacity given: [case20] a box with room whose 7d token pool sits near its cap when: [t1] the read renders the tree then: the 7d-bind render, its figures masked, matches its snapshot 1`] = `
+"🌲 grove capacity (token cost over N min)
+   ├─ tokens, fleet-wide: N/h now
+   │  ├─ per crew-hour: behavior N · directive ⚪
+   │  ├─ 5h: NK/h sustained
+   │  └─ 7d: N/h sustained
+   └─ grove local: N cpu · NG free of NG · N crews live, N at work · busy N of N · N forks/s (N per seat) · cpu stall 🟢 N% · ram full stall 🟢 N%
+      ├─ behavior: affordable N · binds tokens_7d · free slots N · ram N · cpu ~N (est.) · tokens_5h N · tokens_7d N
+      ├─ directive: affordable ~N (est.) (upper bound) · binds cpu · free slots N · ram N · cpu ~N (est.) · tokens_5h ⚪ · tokens_7d ⚪ · costs borrowed from the grove median
+      └─ exchange: ⚪ a directive cost is unread on the axis that binds
+
+🥥 next
+   ├─ ask for a slot: rhx git.grove.capacity --grove <g> --for behavior --key <branch>
+   ├─ rank the levers: rhx git.grove.capacity --levers
+   └─ calibrate the caps: rhx git.crew.tokens calibrate
+"
+`;
+
+exports[`git.grove.capacity given: [case20] a box with room whose 7d token pool sits near its cap when: [t2] a behavior slot is asked, as a tree then: the 7d refusal tree, its figures masked, matches its snapshot 1`] = `
+"✋ ConstraintError: no behavior slot on local
+   ├─ free: N · held by sprouts in flight: N · binds: tokens_7d
+   ├─ the token pool caps the free slots (tokens_7d): a fell frees no token slot; the pool frees one as its burn falls or its window resets
+   ├─ read the pool: rhx git.crew.tokens calibrate
+   └─ read every grove's free slots, then sprout where one is free — or seed the wish for later
+      ├─ rhx git.grove.capacity
+      └─ rhx radio.task.push --via gh.issues --into <org/repo> --title '<title>' --description @stdin
+"
+`;
+
+exports[`git.grove.capacity given: [case21] a box whose token read fails when: [t0] the plain token read exits 1 then: the malfunction render matches its snapshot 1`] = `
+{
+  "status": 1,
+  "stderr": "💥 MalfunctionError: the token read failed (tokens, exit 1)
+   └─ 💥 MalfunctionError: the transcript scan broke
+",
+  "stdout": "",
+}
+`;
+
+exports[`git.grove.capacity given: [case21] a box whose token read fails when: [t1] the calibrate read exits 1 then: the malfunction render matches its snapshot 1`] = `
+{
+  "status": 1,
+  "stderr": "💥 MalfunctionError: the token read failed (cal, exit 1)
+   └─ 💥 MalfunctionError: the cap ledger could not be read
+",
+  "stdout": "",
+}
+`;

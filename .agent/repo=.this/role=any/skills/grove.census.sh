@@ -39,7 +39,19 @@ AS_JSON=false
 SINCE_AT=""
 UNTIL_AT=""
 
+# .what = refuse a valued flag with no value, before `set -u` aborts on an unbound $2
+need_value() {
+  [[ $# -ge 2 && "$2" != --* ]] || {
+    echo "✋ ConstraintError: $1 needs a value" >&2
+    echo "   run with --help for usage" >&2
+    exit 2
+  }
+}
+
 while [[ $# -gt 0 ]]; do
+  case $1 in
+    --window|--sample|--since|--until) need_value "$@" ;;
+  esac
   case $1 in
     # rhachet passes these; ignore them
     --skill|--repo|--role)
@@ -87,48 +99,114 @@ done
 [[ "$WINDOW_MIN" =~ ^[0-9]+$ ]] || { echo "✋ ConstraintError: --window must be whole minutes, got '$WINDOW_MIN'" >&2; exit 2; }
 [[ "$SAMPLE_SEC" =~ ^[0-9]+$ ]] || { echo "✋ ConstraintError: --sample must be whole seconds, got '$SAMPLE_SEC'" >&2; exit 2; }
 command -v jq >/dev/null || { echo "💥 MalfunctionError: jq is absent on this grove" >&2; exit 1; }
+(( SAMPLE_SEC > 0 )) || { echo "✋ ConstraintError: --sample must be at least 1 second" >&2; exit 2; }
+
+# the cost weight and the crew of a cwd: one statement each, owned by the supervisor's libs
+#   work/tokenwork.sh  = the api price ratios (usagefields, weighted)
+#   work/grovework.sh  = the tree a seat cwd sits in (crewroot)
+# .note = the linked role dir first, then the source tree, so a run from either finds them
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel 2>/dev/null || echo "$SCRIPT_DIR")"
+source_supervisor_lib() {
+  local candidate
+  for candidate in "$REPO_ROOT/.agent/repo=bhuild/role=supervisor/skills/work/$1" \
+                   "$REPO_ROOT/src/domain.roles/supervisor/skills/work/$1"; do
+    # shellcheck source=/dev/null
+    [[ -r "$candidate" ]] && { source "$candidate"; return 0; }
+  done
+  echo "💥 MalfunctionError: the supervisor lib work/$1 is absent; run: npx rhachet roles link --role supervisor" >&2
+  exit 1
+}
+source_supervisor_lib tokenwork.sh
+source_supervisor_lib grovework.sh
+
+# the /proc extractors, each named for the field it reads
+get_cpu_count() { grep -c '^processor' /proc/cpuinfo; }
+# a /proc/meminfo field, in kb
+get_meminfo_kb() { awk -v field="$1:" '$1 == field { print $2 }' /proc/meminfo; }
+# the load average over 1 min (field 1) or 5 min (field 2)
+get_load_avg() { awk -v span="$1" '{ print (span == 1 ? $1 : $2) }' /proc/loadavg; }
+# a psi avg60 percent: resource = cpu | memory, kind = some | full; null where psi is absent
+get_psi_avg60() {
+  [[ -r "/proc/pressure/$1" ]] || { echo null; return 0; }
+  awk -v kind="$2" '$1 == kind { for (i = 2; i <= NF; i++) if ($i ~ /^avg60=/) { sub("avg60=", "", $i); print $i } }' "/proc/pressure/$1"
+}
 
 # grove totals: cpu, ram, pressure
-CPU_COUNT=$(grep -c '^processor' /proc/cpuinfo)
-MEM_TOTAL_KB=$(awk '/^MemTotal:/ {print $2}' /proc/meminfo)
-MEM_AVAIL_KB=$(awk '/^MemAvailable:/ {print $2}' /proc/meminfo)
-SWAP_TOTAL_KB=$(awk '/^SwapTotal:/ {print $2}' /proc/meminfo)
-LOAD_1=$(awk '{print $1}' /proc/loadavg)
-LOAD_5=$(awk '{print $2}' /proc/loadavg)
-PSI_CPU_SOME_60=$(awk '/^some/ {sub("avg60=", "", $3); print $3}' /proc/pressure/cpu 2>/dev/null || echo "null")
-PSI_MEM_SOME_60=$(awk '/^some/ {sub("avg60=", "", $3); print $3}' /proc/pressure/memory 2>/dev/null || echo "null")
-PSI_MEM_FULL_60=$(awk '/^full/ {sub("avg60=", "", $3); print $3}' /proc/pressure/memory 2>/dev/null || echo "null")
+CPU_COUNT=$(get_cpu_count)
+MEM_TOTAL_KB=$(get_meminfo_kb MemTotal)
+MEM_AVAIL_KB=$(get_meminfo_kb MemAvailable)
+SWAP_TOTAL_KB=$(get_meminfo_kb SwapTotal)
+LOAD_1=$(get_load_avg 1)
+LOAD_5=$(get_load_avg 5)
+PSI_CPU_SOME_60=$(get_psi_avg60 cpu some)
+PSI_MEM_SOME_60=$(get_psi_avg60 memory some)
+PSI_MEM_FULL_60=$(get_psi_avg60 memory full)
 
 # map each live process to: pid, ppid, comm, pss kb, cwd
 # .note = a process may exit mid-read; each read tolerates that and moves on
 # .note = read at both ends of the sample: a pid born inside the window is charged to its
 #         crew, and a pid dead inside it still gives back its pre-sample ticks (see read_ticks)
+# .why each read is ONE pass over /proc (a grep, a find), never a loop that forks per pid:
+#      on a loaded grove a per-pid loop took minutes and was itself the top saturator
+#      (surgoal.squeeze-the-grove: a census that forks per process IS a saturator)
+
+# one row per pid from /proc/<pid>/stat: pid, ppid, comm, cpu ticks
+# .note = the fields after the ")" of comm, by their proc(5) names: state 1, ppid 2,
+#         utime 12, stime 13, cutime 14, cstime 15. comm may hold spaces or a ")", so it
+#         is cut at the LAST ")"
+# .note = a pid that exits between the glob and the read makes grep exit 2; that is the
+#         live box, not a fault, so each pass tolerates it (the row is just absent)
+read_stat_rows() {
+  { grep -h "" /proc/[0-9]*/stat 2>/dev/null || true; } | awk '{
+    s = $0; lparen = index(s, "("); rparen = 0
+    while ((k = index(substr(s, rparen + 1), ")")) > 0) rparen += k
+    comm = substr(s, lparen + 1, rparen - lparen - 1); gsub(/\t/, " ", comm)
+    split(substr(s, rparen + 2), f, " ")
+    pid = substr(s, 1, lparen - 2); ppid = f[2]
+    utime = f[12]; stime = f[13]; cutime = f[14]; cstime = f[15]
+    printf "%s\t%s\t%s\t%s\n", pid, ppid, comm, utime + stime + cutime + cstime
+  }'
+}
+# one row per pid: pid, pss kb (from smaps_rollup)
+read_pss_rows() {
+  { grep -H '^Pss:' /proc/[0-9]*/smaps_rollup 2>/dev/null || true; } \
+    | awk '{ split($1, path, "/"); pid = path[3]; print pid "\t" $2 }'
+}
+# one row per pid: pid, cwd
+read_cwd_rows() {
+  { find /proc -mindepth 2 -maxdepth 2 -name cwd -printf '%h\t%l\n' 2>/dev/null || true; } \
+    | awk -F'\t' '{ pid = substr($1, 7) } pid ~ /^[0-9]+$/ { print pid "\t" $2 }'
+}
+
+# map each live process to: pid, ppid, comm, pss kb, cwd
+# .note = a process may exit mid-read; a pid absent from one pass reads pss 0 or no cwd
+# .note = read at both ends of the sample: a pid born inside the window is charged to its
+#         crew, and a pid dead inside it still gives back its pre-sample ticks (see read_ticks)
 read_proc_rows() {
-  for dir in /proc/[0-9]*; do
-    pid=${dir#/proc/}
-    stat=$(cat "$dir/stat" 2>/dev/null) || continue
-    comm=$(cat "$dir/comm" 2>/dev/null) || continue
-    rest=${stat##*) }
-    ppid=$(echo "$rest" | awk '{print $2}')
-    pss=$(awk '/^Pss:/ {print $2}' "$dir/smaps_rollup" 2>/dev/null || true)
-    cwd=$(readlink "$dir/cwd" 2>/dev/null || true)
-    printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$1" "$pid" "$ppid" "$comm" "${pss:-0}" "$cwd"
-  done
+  local tag="$1"
+  awk -F'\t' -v tag="$tag" '
+    FILENAME == ARGV[1] { pss[$1] = $2; next }
+    FILENAME == ARGV[2] { cwd[$1] = $2; next }
+    { printf "%s\t%s\t%s\t%s\t%s\t%s\n", tag, $1, $2, $3, (($1 in pss) ? pss[$1] : 0), cwd[$1] }
+  ' <(read_pss_rows) <(read_cwd_rows) <(read_stat_rows)
 }
 PROC_ROWS_A=$(read_proc_rows a)
 
-# cpu ticks per process: utime + stime + cutime + cstime (stat fields 14-17)
+# cpu ticks per process: utime + stime + cutime + cstime
 # .note = a child reaped mid-sample lands its WHOLE life in its parent's cutime, the part
 #         before the sample too. the delta below charges each pid (b - a), absent = 0, so a
 #         pid gone by b gives back its pre-sample ticks and the parent's jump nets to the window
-read_ticks() {
-  for dir in /proc/[0-9]*; do
-    stat=$(cat "$dir/stat" 2>/dev/null) || continue
-    rest=${stat##*) }
-    echo "$rest" | awk -v pid="${dir#/proc/}" '{print pid "\t" ($12 + $13 + $14 + $15)}'
-  done
+read_ticks() { read_stat_rows | awk -F'\t' '{ print $1 "\t" $4 }'; }
+# the whole box's busy jiffies: user + nice + system + irq + softirq + steal
+# .note = idle and iowait wait; guest is already inside user (proc(5)), so neither counts
+read_cpu_busy() {
+  # .note = `sys`, never `system`: system() is an awk builtin, and the program would not parse
+  awk '/^cpu / { user = $2; nice = $3; sys = $4; irq = $7; softirq = $8; steal = $9
+                 print user + nice + sys + irq + softirq + steal }' /proc/stat
 }
-read_cpu_busy() { awk '/^cpu / {print $2 + $3 + $4 + $7 + $8 + $9}' /proc/stat; }
+# the box's fork counter since boot
+read_forks_total() { awk '/^processes / { print $2 }' /proc/stat; }
 
 # one sample window for fork rate and cpu spend
 CLK_TCK=$(getconf CLK_TCK)
@@ -137,15 +215,18 @@ CLK_TCK=$(getconf CLK_TCK)
 SPAN_START_NS=$(date +%s%N)
 TICKS_A=$(read_ticks)
 BUSY_A=$(read_cpu_busy)
-FORKS_BEFORE=$(awk '/^processes/ {print $2}' /proc/stat)
+FORKS_BEFORE=$(read_forks_total)
 sleep "$SAMPLE_SEC"
-FORKS_AFTER=$(awk '/^processes/ {print $2}' /proc/stat)
+FORKS_AFTER=$(read_forks_total)
 BUSY_B=$(read_cpu_busy)
 TICKS_B=$(read_ticks)
-TICK_SPAN_SEC=$(echo "scale=3; ($(date +%s%N) - $SPAN_START_NS) / 1000000000" | bc)
+# .what = a quotient as a json number, to $3 decimals
+# .why bc prints ".52" for a sub-1 quotient, which --argjson refuses as json; awk prints "0.52"
+get_quotient() { awk -v a="$1" -v b="$2" -v dp="$3" 'BEGIN { printf "%." dp "f", a / b }'; }
+TICK_SPAN_SEC=$(get_quotient "$(( $(date +%s%N) - SPAN_START_NS ))" 1000000000 3)
 PROC_ROWS_B=$(read_proc_rows b)
-FORKS_PER_SEC=$(echo "scale=2; ($FORKS_AFTER - $FORKS_BEFORE) / $SAMPLE_SEC" | bc)
-CORES_BUSY=$(echo "scale=2; ($BUSY_B - $BUSY_A) / $CLK_TCK / $SAMPLE_SEC" | bc)
+FORKS_PER_SEC=$(get_quotient "$((FORKS_AFTER - FORKS_BEFORE))" "$SAMPLE_SEC" 2)
+CORES_BUSY=$(get_quotient "$((BUSY_B - BUSY_A))" "$((CLK_TCK * SAMPLE_SEC))" 2)
 TICK_DELTA_JSON=$(
   printf '%s\n%s\n' "$(echo "$TICKS_A" | sed 's/^/a\t/')" "$(echo "$TICKS_B" | sed 's/^/b\t/')" | jq -R -s '
     split("\n") | map(select(length > 0) | split("\t"))
@@ -167,12 +248,13 @@ PROCS_JSON=$(
   '
 )
 CREW_RAM_JSON=$(
-  echo "$PROCS_JSON" | jq --argjson dticks "$TICK_DELTA_JSON" --argjson hz "$CLK_TCK" --argjson sec "$TICK_SPAN_SEC" '
+  echo "$PROCS_JSON" | jq --argjson dticks "$TICK_DELTA_JSON" --argjson hz "$CLK_TCK" --argjson sec "$TICK_SPAN_SEC" \
+    --arg home "$HOME" "$GROVEWORK_JQ_CREW"'
     . as $procs
     | (reduce $procs[] as $p ({}; .[$p.ppid] += [$p.pid])) as $kids
     | (reduce $procs[] as $p ({}; .[$p.pid] = $p)) as $byPid
     | def tree($id): [$id] + ([($kids[$id] // [])[] | tree(.)] | add // []);
-    def crew($cwd): ($cwd | capture("^(?<root>.*/_worktrees/[^/]+)") .root) // $cwd;
+    def crew($cwd): crewroot($cwd; $home);
     def cores($t): ([$t, 0] | max | . / $hz / $sec * 100 | floor / 100);
     [ $procs[] | select(.comm == "claude.exe" or .comm == "claude")
       | select(($byPid[.ppid].comm // "") as $pc | ($pc != "claude.exe" and $pc != "claude"))
@@ -213,6 +295,10 @@ if [[ -n "$UNTIL_AT" ]]; then
   UNTIL_EPOCH=$(date -u -d "$UNTIL_AT" +%s 2>/dev/null) || { echo "✋ ConstraintError: --until is not a readable instant: '$UNTIL_AT'" >&2; exit 2; }
 fi
 (( SINCE_EPOCH < UNTIL_EPOCH )) || { echo "✋ ConstraintError: the span is empty: --since must precede --until (and now)" >&2; exit 2; }
+# a rate per hour over 0 whole minutes divides by zero; refuse it up front, as git.crew.tokens does
+(( UNTIL_EPOCH - SINCE_EPOCH >= 60 )) || { echo "✋ ConstraintError: the span is under one minute — a burn rate needs ≥ 1 min between --since and --until" >&2; exit 2; }
+# a span that begins in the future holds no transcript yet, and its burn would read 0: an idle fleet
+(( SINCE_EPOCH <= NOW_EPOCH )) || { echo "✋ ConstraintError: --since is in the future ('$SINCE_AT'); a burn can only be read over time already past" >&2; exit 2; }
 SINCE=$(date -u -d "@$SINCE_EPOCH" +%Y-%m-%dT%H:%M:%S)
 UNTIL=$(date -u -d "@$UNTIL_EPOCH" +%Y-%m-%dT%H:%M:%S)
 WINDOW_MIN=$(( (UNTIL_EPOCH - SINCE_EPOCH) / 60 ))
@@ -227,11 +313,18 @@ done
 
 # the account a config dir is signed in to NOW (transcripts record none)
 # .note = a swap overwrites this, so burn before the last swap is misattributed
+# .note = an absent config reads `unknown`; a config that exists and does not parse reads
+#         `unparsed:<file>`, so the caller names it in the unread list (as tokenwork.probe does)
 read_account() {
-  local cfg="$1" file
+  local cfg="$1" file account
   for file in "$cfg/.claude.json" "$(dirname "$cfg")/.claude.json"; do
     [[ -f "$file" ]] || continue
-    jq -r '.oauthAccount.emailAddress // "unsigned"' "$file" 2>/dev/null && return 0
+    if account=$(jq -r '.oauthAccount.emailAddress // "unsigned"' "$file" 2>/dev/null); then
+      echo "$account"
+    else
+      echo "unparsed:$file"
+    fi
+    return 0
   done
   echo "unknown"
 }
@@ -243,14 +336,24 @@ SPAN_LINES=$(
   for cfg in "${CONFIG_DIRS[@]}"; do
     actor=$(echo "$cfg" | sed -n 's#.*/\.actors/\([^/]*\)/brain/\.claude$#\1#p')
     account=$(read_account "$cfg")
+    if [[ "$account" == unparsed:* ]]; then
+      jq -n -c --arg file "${account#unparsed:} (does not parse)" '{t: "unread", file: $file}'
+      account="unparsed"
+    fi
     find "$cfg/projects" -name '*.jsonl' -mmin "-$FIND_MIN" 2>/dev/null | while read -r file; do
       fork=false
       [[ "$file" == */subagents/* ]] && fork=true
-      jq -c --arg since "$SINCE" --arg until "$UNTIL" --arg actor "${actor:-home}" --arg account "$account" --argjson fork "$fork" '
-        select(.timestamp? != null and .timestamp >= $since and .timestamp < $until and .message.usage? != null)
-        | { t: "use", id: (.message.id // .uuid), cwd: (.cwd // ""), actor: $actor, account: $account, fork: $fork,
-            session: (.sessionId // ""), u: .message.usage }
-      ' "$file" 2>/dev/null || true
+      # a transcript that does not parse is named in an unread row, never dropped in silence
+      # .note = fromjson? skips one torn line (a write in flight), so only a whole-file fault counts
+      jq -R -c --arg since "$SINCE" --arg until "$UNTIL" --arg actor "${actor:-home}" --arg account "$account" --argjson fork "$fork" '
+        fromjson? | select(.timestamp? != null and .timestamp >= $since and .timestamp < $until)
+        | if .message.usage? != null then
+            { t: "use", id: (.message.id // .uuid), cwd: (.cwd // ""), actor: $actor, account: $account, fork: $fork,
+              session: (.sessionId // ""), u: .message.usage }
+          elif .attachment.durationMs? != null then
+            { t: "hook", id: (.uuid // ""), ms: .attachment.durationMs, event: (.attachment.hookEvent // "") }
+          else empty end
+      ' "$file" 2>/dev/null || jq -n -c --arg file "$file" '{t: "unread", file: $file}'
       (jq -c --argjson fork "$fork" '
         select(.message.usage? != null and .timestamp? != null)
         | { t: "boot", at: .timestamp, fork: $fork, u: .message.usage }
@@ -259,6 +362,20 @@ SPAN_LINES=$(
   done
 )
 TOKEN_LINES=$(printf '%s\n' "$SPAN_LINES" | jq -c 'select(.t? == "use")')
+UNREAD_JSON=$(printf '%s\n' "$SPAN_LINES" | jq -s -c 'map(select(.t? == "unread") | .file)')
+
+# the hook toll: each hook run's wall time, as the transcript records it (attachment.durationMs)
+# .note = wall time, not cpu: a hook chain that waits (a stalled box, a network call) reads long
+#         and spends little, so cores_at_most is an upper bound on the cpu the hooks spent
+HOOKS_JSON=$(
+  printf '%s\n' "$SPAN_LINES" | jq -s -c --argjson window "$WINDOW_MIN" '
+    map(select(.t? == "hook")) | unique_by(.id)
+    | { runs: length,
+        pre_tool_use: (map(select(.event == "PreToolUse")) | length),
+        wall_sec: ((map(.ms) | add // 0) / 1000 | floor),
+        cores_at_most: (if $window == 0 then 0 else ((map(.ms) | add // 0) / 1000 / ($window * 60) * 100 | floor / 100) end) }
+  '
+)
 
 # the boot toll: what a seat or fork pays before its first word (a fresh cache write)
 # .note = a "boot" = the first api call of a transcript file; a fork = a transcript under
@@ -272,21 +389,16 @@ BOOT_MD_JSON=$(
     median_bytes: (if length == 0 then 0 else .[(length / 2 | floor)] end), max_bytes: (max // 0) }'
 )
 BOOTS_JSON=$(
-  printf '%s\n' "$SPAN_LINES" | jq -s -c --arg since "$SINCE" --arg until "$UNTIL" --argjson window "$WINDOW_MIN" --argjson bootMd "$BOOT_MD_JSON" '
-    def n($x): ($x // 0);
+  printf '%s\n' "$SPAN_LINES" | jq -s -c --arg since "$SINCE" --arg until "$UNTIL" --argjson window "$WINDOW_MIN" --argjson bootMd "$BOOT_MD_JSON" "$TOKENWORK_JQ_WEIGHT"'
+    # .note = the toll is the prompt side alone (output 0): what a boot pays before its first word
     map(select(.t? == "boot" and .at >= $since and .at < $until)
-      | .u as $u
-      | { fork,
-          input: n($u.input_tokens),
-          cw1h: n($u.cache_creation.ephemeral_1h_input_tokens),
-          cw5: (n($u.cache_creation_input_tokens) - n($u.cache_creation.ephemeral_1h_input_tokens)),
-          cr: n($u.cache_read_input_tokens) }) as $all
+      | {fork} + (.u | usagefields | .output = 0)) as $all
     | def median($xs): ($xs | sort) as $s | if ($s | length) == 0 then 0 else $s[($s | length / 2 | floor)] end;
     def stats($rows):
-      ($rows | map(.input + .cw5 * 1.25 + .cw1h * 2 + .cr * 0.1)) as $wt
+      ($rows | map(weighted)) as $wt
       | { boots: ($rows | length),
-          prompt_median: median($rows | map(.input + .cw5 + .cw1h + .cr)),
-          cache_write_median: median($rows | map(.cw5 + .cw1h)),
+          prompt_median: median($rows | map(.input + .write5m + .write1h + .read)),
+          cache_write_median: median($rows | map(.write5m + .write1h)),
           weighted_total: ($wt | add // 0 | floor),
           weighted_per_hour: (if $window == 0 then 0 else (($wt | add // 0) * 60 / $window | floor) end) };
     { boot_md: $bootMd,
@@ -297,14 +409,9 @@ BOOTS_JSON=$(
 
 # burn per account, by the account each config dir is signed in to now
 ACCOUNT_TOKENS_JSON=$(
-  echo "$TOKEN_LINES" | jq -s '
-    def n($x): ($x // 0);
+  echo "$TOKEN_LINES" | jq -s "$TOKENWORK_JQ_WEIGHT"'
     unique_by(.id)
-    | map({ account, cfg: .actor,
-            weighted: (n(.u.input_tokens)
-              + 1.25 * (n(.u.cache_creation_input_tokens) - n(.u.cache_creation.ephemeral_1h_input_tokens))
-              + 2 * n(.u.cache_creation.ephemeral_1h_input_tokens)
-              + 0.1 * n(.u.cache_read_input_tokens) + 5 * n(.u.output_tokens)) })
+    | map({ account, cfg: .actor, weighted: (.u | usagefields | weighted) })
     | group_by(.account)
     | map({ account: .[0].account, config_dirs: (map(.cfg) | unique | length),
             weighted: (map(.weighted) | add | floor) })
@@ -313,19 +420,13 @@ ACCOUNT_TOKENS_JSON=$(
 )
 
 CREW_TOKENS_JSON=$(
-  echo "$TOKEN_LINES" | jq -s --argjson hours "$(echo "scale=4; $WINDOW_MIN / 60" | bc)" '
-    # the brain smoke test (initBehaviorDir.brain.claude) asks claude from a temp dir that names no crew: pool them in one row
-    def crew($cwd): if ($cwd | test("brain-claude-ask")) then "(brain smoke test, crew unknown)"
-      else (($cwd | capture("^(?<root>.*/_worktrees/[^/]+)") .root) // $cwd) end;
-    def n($x): ($x // 0);
+  echo "$TOKEN_LINES" | jq -s --argjson hours "$(get_quotient "$WINDOW_MIN" 60 4)" --arg home "$HOME" \
+    "$TOKENWORK_JQ_WEIGHT$GROVEWORK_JQ_CREW"'
+    # a call from a cwd in no repo (a smoke test, a scratch ask) pools in one "(outside any repo)" row
+    def crew($cwd): crewroot($cwd; $home);
     unique_by(.id)
-    | map(. + {
-        input: n(.u.input_tokens),
-        write1h: n(.u.cache_creation.ephemeral_1h_input_tokens),
-        write5m: (n(.u.cache_creation_input_tokens) - n(.u.cache_creation.ephemeral_1h_input_tokens)),
-        read: n(.u.cache_read_input_tokens),
-        output: n(.u.output_tokens) })
-    | map(. + { weighted: (.input + 1.25 * .write5m + 2 * .write1h + 0.1 * .read + 5 * .output) })
+    | map(. + (.u | usagefields))
+    | map(. + { weighted: weighted })
     | group_by(crew(.cwd))
     | map({
         crew: crew(.[0].cwd),
@@ -350,7 +451,25 @@ RECORD=$(jq -n \
   --arg psiCpu "$PSI_CPU_SOME_60" --arg psiMemSome "$PSI_MEM_SOME_60" --arg psiMemFull "$PSI_MEM_FULL_60" \
   --argjson forksPerSec "$FORKS_PER_SEC" --argjson sampleSec "$SAMPLE_SEC" --argjson windowMin "$WINDOW_MIN" \
   --argjson coresBusy "$CORES_BUSY" --argjson accounts "$ACCOUNT_TOKENS_JSON" \
-  --argjson ram "$CREW_RAM_JSON" --argjson tokens "$CREW_TOKENS_JSON" --argjson outside "$CREW_OUTSIDE_JSON" --argjson boots "$BOOTS_JSON" '
+  --argjson ram "$CREW_RAM_JSON" --argjson tokens "$CREW_TOKENS_JSON" --argjson outside "$CREW_OUTSIDE_JSON" --argjson boots "$BOOTS_JSON" --argjson unread "$UNREAD_JSON" \
+  --argjson hooks "$HOOKS_JSON" '
+  # .what = the rows of one crew root from a set, and a sum of one field over them
+  def rowsof($rows; $c): [$rows[] | select(.crew == $c)];
+  def sumof($rows; $f; $zero): ([$rows[] | .[$f]] | add // $zero);
+  # .what = one crew: its ram now (pss, in G) joined to its token burn over the span, by crew root
+  # .note = a crew with ram and no burn reads tokens null ("no burn in window"), never 0
+  def census_crew($c; $ram; $tokens):
+    rowsof($ram; $c) as $r
+    | { crew: ($c | split("/") | last),
+        ram_gb: (sumof($r; "pss_kb"; 0) / 1048576 * 100 | floor / 100),
+        seats_live: sumof($r; "seats"; 0),
+        seat_parents: sumof($r; "seat_parents"; {}),
+        procs: sumof($r; "procs"; 0),
+        cores: sumof($r; "cores"; 0),
+        tokens: ((rowsof($tokens; $c) | first) // null | if . then del(.crew) else . end) };
+  # .what = every crew root that holds ram now or burned in the span, each joined once
+  def census_crews($ram; $tokens): ([$ram[].crew, $tokens[].crew] | unique | map(census_crew(.; $ram; $tokens)));
+
   { grove: $host, date: $date,
     cpu: { count: $cpus, busy_cores: $coresBusy, load1: $load1, load5: $load5, psi_some_avg60: $psiCpu,
            outside_crews: $outside },
@@ -358,16 +477,11 @@ RECORD=$(jq -n \
            swap_gb: ($swapKb / 1048576 * 10 | floor / 10), psi_some_avg60: $psiMemSome, psi_full_avg60: $psiMemFull },
     forks: { per_sec: $forksPerSec, sample_sec: $sampleSec },
     window_min: $windowMin,
+    transcripts_unread: $unread,
     accounts: $accounts,
     boots: $boots,
-    crews:([$ram[].crew, $tokens[].crew] | unique | map(. as $c | {
-      crew: ($c | split("/") | last),
-      ram_gb: (([$ram[] | select(.crew == $c) | .pss_kb] | add // 0) / 1048576 * 100 | floor / 100),
-      seats_live: ([$ram[] | select(.crew == $c) | .seats] | add // 0),
-      seat_parents: ([$ram[] | select(.crew == $c) | .seat_parents] | add // {}),
-      procs: ([$ram[] | select(.crew == $c) | .procs] | add // 0),
-      cores: ([$ram[] | select(.crew == $c) | .cores] | add // 0),
-      tokens: (([$tokens[] | select(.crew == $c)] | first) // null) | (if . then del(.crew) else . end) })) }
+    hooks: $hooks,
+    crews: census_crews($ram; $tokens) }
 ')
 
 # emit json for a tick
@@ -385,10 +499,11 @@ echo "$RECORD" | jq -r '
   "🐚 grove.census",
   "   ├─ grove: \(.grove) (\(.date))",
   "   ├─ cpu: \(.cpu.busy_cores) of \(.cpu.count) cores busy over \(.forks.sample_sec)s · load \(.cpu.load1) / \(.cpu.load5) · psi some avg60 \(.cpu.psi_some_avg60)%",
-  "   ├─ cpu in crews: \([.crews[].cores] | add * 100 | floor / 100) cores · outside crews: \([.cpu.outside_crews[].cores] | add // 0 | . * 100 | floor / 100) cores (\(.cpu.outside_crews[:3] | map("\(.comm) \(.cores)") | join(", ")))",
+  "   ├─ cpu in crews: \(if (.crews | length) == 0 then "⚪ no crew live" else "\(([.crews[].cores] | add // 0) * 100 | floor / 100) cores" end) · outside crews: \([.cpu.outside_crews[].cores] | add // 0 | . * 100 | floor / 100) cores (\(.cpu.outside_crews[:3] | map("\(.comm) \(.cores)") | join(", ")))",
   "   ├─ ram: \(.ram.avail_gb)G avail of \(.ram.total_gb)G · swap \(.ram.swap_gb)G · psi some \(.ram.psi_some_avg60)% full \(.ram.psi_full_avg60)%",
   "   ├─ forks: \(.forks.per_sec)/s over \(.forks.sample_sec)s",
-  "   ├─ account burn over \(.window_min) min: \(mtok([.crews[].tokens.weighted // 0] | add)) weighted · \(mtok([.crews[].tokens.raw // 0] | add)) raw",
+  "   ├─ account burn over \(.window_min) min: \(mtok([.crews[].tokens.weighted // 0] | add)) weighted · \(mtok([.crews[].tokens.raw // 0] | add)) raw"
+    + (if (.transcripts_unread | length) > 0 then " (a lower bound: \(.transcripts_unread | length) transcripts unread — e.g. \(.transcripts_unread[0]))" else "" end),
   "   ├─ accounts (signed in now — a swap inside the span misattributes)",
   ( .accounts | length as $len | to_entries[] |
     (if .key == ($len - 1) then "   │  └─ " else "   │  ├─ " end)
@@ -397,6 +512,7 @@ echo "$RECORD" | jq -r '
   "   │  ├─ boot.md: \(.boots.boot_md.with_boot) of \(.boots.boot_md.dirs) config dirs · median \(.boots.boot_md.median_bytes / 1024 | floor)KB · max \(.boots.boot_md.max_bytes / 1024 | floor)KB",
   "   │  ├─ seats: \(.boots.seats.boots) boots · first prompt median \(ktok(.boots.seats.prompt_median)) · written fresh median \(ktok(.boots.seats.cache_write_median)) · toll \(atok(.boots.seats.weighted_total)) (\(atok(.boots.seats.weighted_per_hour))/h)",
   "   │  └─ forks: \(.boots.forks.boots) boots · first prompt median \(ktok(.boots.forks.prompt_median)) · written fresh median \(ktok(.boots.forks.cache_write_median)) · toll \(atok(.boots.forks.weighted_total)) (\(atok(.boots.forks.weighted_per_hour))/h)",
+  "   ├─ hooks over the \(.window_min) min span: \(.hooks.runs) runs (\(.hooks.pre_tool_use) PreToolUse) · \(.hooks.wall_sec)s wall · ≤ \(.hooks.cores_at_most) cores (wall time, so an upper bound on their cpu)",
   "   └─ crews (ram now · tokens over the \(.window_min) min span, cost-weighted)",
   ( .crews | sort_by(-(.tokens.weighted // 0)) | length as $len | to_entries[] |
     (if .key == ($len - 1) then "      └─ " else "      ├─ " end)

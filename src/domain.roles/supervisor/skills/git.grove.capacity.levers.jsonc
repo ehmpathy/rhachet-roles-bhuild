@@ -1,0 +1,87 @@
+{
+  "$what": "the levers git.grove.capacity --levers prices against the limit that binds on each grove",
+  "$why": "a lever is ranked only on a measured cost: its own before/after, or the cost it targets, read 2+ times in varied conditions (rule.always.re-measure-a-lever-before-you-rank-it). a row with fewer reads is listed with its gain and never ranked; a row with no read of its cost is listed as unmeasured",
+  "$how": "shape = cost-cut (cut a share of one axis's per-crew cost) | fell-idle (free the ram of crews with no cpu and no burn). axis = tokens | ram | cpu. cut = the share of that axis's per-crew cost the lever removes, with its basis",
+  "levers": [
+    {
+      "slug": "smoke-test-empty-config-dir",
+      "what": "the brain smoke test spawns claude with an empty config dir, so no actor boot rides into a one-word ask",
+      "shape": "cost-cut",
+      "axis": "tokens",
+      "cut": 0.09,
+      "tier": "measured",
+      "reads": 1,
+      "basis": "~4M weighted per hour of integration tests, against ~45M/h of grove burn, one read; landed, its after-read is owed"
+    },
+    {
+      "slug": "slimmer-boot-briefs",
+      "what": "a smaller role boot, so each seat and fork writes less fresh context before its first word",
+      "shape": "cost-cut",
+      "axis": "tokens",
+      "cut": 0.015,
+      "tier": "estimated",
+      "reads": 2,
+      "basis": "boot toll ~160K written fresh per boot, ~1-2% of the grove's 40-55M/h, over a 24h and a 7d window; per-role boot budgets, rhachet-roles-ehmpathy#1002"
+    },
+    {
+      "slug": "small-context-forks",
+      "what": "forks that start from a small context, rather than a fresh write of the parent's whole context",
+      "shape": "cost-cut",
+      "axis": "tokens",
+      "cut": 0.25,
+      "tier": "estimated",
+      "reads": 1,
+      "basis": "cache writes were ~half of cost-weighted spend in one 1h window; half of that share assumed to be fork writes"
+    },
+    {
+      "slug": "fell-or-park-idle-crews",
+      "what": "fell (or stop) crews that hold ram with no cpu and no burn in the window",
+      "shape": "fell-idle",
+      "axis": "ram",
+      "cut": 0,
+      "tier": "estimated",
+      "reads": 2,
+      "basis": "idle crews read ~0 cpu and ~0 tokens on two reads; a park keeps the process, so only a fell frees its ram"
+    },
+    {
+      "slug": "fewer-hook-forks",
+      "what": "fewer forks per hook call: hooks via one local server, and if-scoped hooks (bhuild#514, rhachet#635)",
+      "shape": "cost-cut",
+      "axis": "cpu",
+      "cut": 0,
+      "tier": "unmeasured",
+      "reads": 1,
+      "basis": "one census read on 0901 (2026-11-07): 3872 hook runs in 60 min (3773 PreToolUse), 13628s wall, so at most 3.78 cores beside 4.01 busy at 169 forks/s. wall time holds the wait on the api and the box, so it bounds the hook cpu share from above and cannot rank a cut — a per-hook cpu read (cutime of the hook children) is owed first"
+    },
+    {
+      "slug": "cheaper-crew-transport",
+      "what": "tmux control mode, ssh connection reuse, and a kitty socket for the supervisor's reads (bhuild#515, #516, #517)",
+      "shape": "cost-cut",
+      "axis": "cpu",
+      "cut": 0,
+      "tier": "unmeasured",
+      "reads": 0,
+      "basis": "no read of the transport's cpu share; the saturator catalog puts tmux + zsh + systemd near 89% of the cpu flow, so it may be large"
+    },
+    {
+      "slug": "statusline-from-a-file",
+      "what": "a status line read from a json written ahead, not computed per render (bhrain#660)",
+      "shape": "cost-cut",
+      "axis": "cpu",
+      "cut": 0,
+      "tier": "unmeasured",
+      "reads": 0,
+      "basis": "no read of the status line's cpu share per seat"
+    },
+    {
+      "slug": "fork-cap-per-seat",
+      "what": "a cap on live forks per seat",
+      "shape": "cost-cut",
+      "axis": "tokens",
+      "cut": 0,
+      "tier": "unmeasured",
+      "reads": 0,
+      "basis": "one 0901 read put one crew's forks at 10M of a 41.2M/h fleet hour, and every other crew at 0; the share a cap would remove is unread"
+    }
+  ]
+}
