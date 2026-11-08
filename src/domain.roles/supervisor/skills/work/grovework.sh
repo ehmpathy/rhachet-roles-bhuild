@@ -302,3 +302,213 @@ __grove_unreached_cure() {
   fi
   printf 'wake it — rhx git.grove.wake %s\n' "$who"
 }
+
+######################################################################
+# the forest read — select the groves, run one payload on each at once,
+# and fold each result into one row
+#
+# .what = the fan-out every forest read makes (`rhx git.crew.tokens`,
+#         `rhx git.grove.capacity`): the rows folded onto their reach
+#         host:port (local last), one payload per grove under its own
+#         clock, and the rc → read | timeout | refused | asleep | unreadable
+#         ladder
+#
+# .why  = the two forest readers each carried a copy of the fan-out and
+#         the ladder, so a fix to one verdict had to land twice. one copy
+#         here, on the reach reader above, so a forest read dials a grove
+#         where wake, list, saturation, and spend dial it, and hands back
+#         the cure they hand back
+#
+# usage:
+#   source "$SKILL_DIR/work/grovework.sh"
+#   grovework_select "$ONLY"                     # sets GROVES, GROVE_PROBER, GROVES_DIR
+#   grovework_fanout "$PAYLOAD" "$TIMEOUT" "$WORK"
+#   ROWS=$(grovework_rows "$WORK" "$TIMEOUT" "rhx git.crew.tokens")
+#
+# guarantee:
+#   - grovework_select exits 2 on a grove that is not registered
+#   - an unreadable row is left out of the read; the reach reader names it
+#   - grovework_fanout waits on its own probes alone, never on a peer
+#     background job of the caller
+#   - each grove's files are keyed on its index, so two hosts whose
+#     names fold alike never write one file
+#   - a result with no parse is never `read`: an empty or non-json stdout
+#     reads `unreadable`
+######################################################################
+
+# .what = the registered groves to read, folded onto their reach host:port, local last
+# .in   = $1 = a grove name, `local`, or empty for every grove + local
+# .out  = GROVES (keys), GROVE_PROBER (key → row name), GROVE_HOST, GROVE_PORT,
+#         GROVE_USER (key → the prober's reach), GROVES_DIR
+# .note = a camper entry displaces a ground prober on one host:port, never the
+#         reverse — the same fold git.grove.saturation makes
+grovework_select() {
+  local only="$1" e f key r_host r_port r_user
+  # the sprout and crew verbs name a grove as cloud://<name> or house://<name>; the registry keys on the bare name
+  only="${only#cloud://}"
+  only="${only#house://}"
+  GROVES_DIR="$(__grove_rows_dir)"
+  local entries=()
+  if [[ "$only" == "local" ]]; then
+    :
+  elif [[ -n "$only" ]]; then
+    [[ -f "$GROVES_DIR/$only.json" ]] || {
+      echo "✋ ConstraintError: grove '$only' is not registered" >&2
+      echo "   └─ see what is: rhx git.grove.list" >&2
+      exit 2
+    }
+    entries+=("$only")
+  elif [[ -d "$GROVES_DIR" ]]; then
+    while IFS= read -r f; do
+      entries+=("$(basename "$f" .json)")
+    done < <(find "$GROVES_DIR" -maxdepth 1 -name '*.json' | sort)
+  fi
+  declare -gA GROVE_PROBER=() GROVE_HOST=() GROVE_PORT=() GROVE_USER=()
+  GROVES=()
+  for e in "${entries[@]}"; do
+    IFS=$'\t' read -r _ r_host r_port r_user _ _ <<< "$(__grove_reach_of "$GROVES_DIR/$e.json")"
+    [[ -n "$r_host" ]] || continue   # unreadable: the reader named it on stderr
+    key="$r_host:$r_port"
+    if [[ -z "${GROVE_PROBER[$key]:-}" ]]; then
+      GROVES+=("$key")
+      GROVE_PROBER[$key]="$e"
+      GROVE_HOST[$key]="$r_host"; GROVE_PORT[$key]="$r_port"; GROVE_USER[$key]="$r_user"
+    elif [[ "${GROVE_USER[$key]}" == "ground" && "$r_user" != "ground" ]]; then
+      GROVE_PROBER[$key]="$e"; GROVE_USER[$key]="$r_user"
+    fi
+  done
+  if [[ -z "$only" || "$only" == "local" ]]; then
+    GROVES+=("local")
+    GROVE_PROBER["local"]="local"
+  fi
+}
+
+# .what = run one payload on every selected grove at once, each under its own clock
+# .why  = one slow or asleep grove must never freeze the forest read
+# .out  = $work/g<i>.out, .err, .rc per grove, i its index in GROVES
+# .note = over the tailnet, as the prober's user, with HostName pinned, so a
+#         stale ssm-era alias of the same name cannot send it into a dead tunnel
+grovework_fanout() {
+  local payload="$1" timeout="$2" work="$3" quoted i key
+  local pids=()
+  printf -v quoted '%q' "$payload"
+  # a read can take a minute; a human at a terminal sees what it waits on, never a frozen
+  # cursor. a pipe, a --json reader, or a test sees naught, so no output contract moves
+  if [[ -t 2 ]]; then
+    echo "🌲 reads ${#GROVES[@]} grove(s) at once (${GROVES[*]}), up to ${timeout}s each…" >&2
+  fi
+  for i in "${!GROVES[@]}"; do
+    key="${GROVES[$i]}"
+    (
+      rc=0
+      if [[ "$key" == "local" ]]; then
+        timeout "$timeout" bash -c "$payload" > "$work/g$i.out" 2> "$work/g$i.err" || rc=$?
+      else
+        __grove_reach_ssh_opts host="${GROVE_HOST[$key]}" port="${GROVE_PORT[$key]}" wait=8
+        timeout "$timeout" ssh -n "${GROVE_REACH_SSH_OPTS[@]}" \
+          "${GROVE_USER[$key]}@${GROVE_HOST[$key]}" "bash -c $quoted" > "$work/g$i.out" 2> "$work/g$i.err" || rc=$?
+      fi
+      echo "$rc" > "$work/g$i.rc"
+    ) &
+    pids+=("$!")
+  done
+  (( ${#pids[@]} == 0 )) || wait "${pids[@]}"
+}
+
+# .what = one row per grove: read | timeout | refused | asleep | unreadable, with a hint
+# .in   = $1 = the fan-out's work dir, $2 = its timeout, $3 = the verb to re-read with
+# .out  = a json array of {grove, state, hint, record}
+# .note = the cures are the reach reader's own, so a forest read and
+#         git.grove.saturation never disagree on one grove: a refusal proves
+#         the tailnet carried the connect (sshd or its port, never a wake); no
+#         answer at all takes the cure its power lever names (wake, or tailnet)
+grovework_rows() {
+  local work="$1" timeout="$2" verb="$3" i key name rc err state hint record
+  local rows="[]"
+  for i in "${!GROVES[@]}"; do
+    key="${GROVES[$i]}"
+    name="${GROVE_PROBER[$key]}"
+    rc=$(cat "$work/g$i.rc" 2>/dev/null || echo 1)
+    err=$(head -1 "$work/g$i.err" 2>/dev/null || true)
+    state="read"; hint=""; record="null"
+    if [[ "$rc" == "0" ]] && record=$(jq -c '.' "$work/g$i.out" 2>/dev/null) && [[ -n "$record" && "$record" != "null" ]]; then
+      :
+    elif [[ "$rc" == "124" ]]; then
+      state="timeout"; record="null"
+      hint="a slow read is a load signal; re-read once: $verb $name --timeout $((timeout * 2))"
+    elif [[ "$err" == *"Connection refused"* ]]; then
+      state="refused"; record="null"
+      hint="$(__grove_refused_cure name="$name" host="${GROVE_HOST[$key]}" port="${GROVE_PORT[$key]}")"
+    elif [[ "$err" == *"No route to host"* \
+         || ( "$err" == *"connect to host"* && "$err" == *"timed out"* ) \
+         || "$err" == *"Could not resolve hostname"* || "$err" == *"Name or service not known"* ]]; then
+      # no answer on the tailnet at all: an offline peer drops the SYN, it never refuses.
+      # ssh's words are quoted verbatim: a matcher against another program's output
+      state="asleep"; record="null"; hint="$(__grove_unreached_cure "$name" via=row)"
+    # .note = ssh's own clock (not rc 124): the box answered at the network layer, then
+    #         spared no process for the login. a load signal, or a flap; no record either way
+    elif [[ "$err" == *"timed out"* || "$err" == *"Timeout"* ]]; then
+      state="timeout"; record="null"
+      hint="ssh got no login in time — a load signal, or a flap; re-read once: $verb $name --timeout $((timeout * 2))"
+    else
+      state="unreadable"; record="null"; hint="exit $rc: ${err:-no stderr}"
+    fi
+    rows=$(jq -c --arg grove "$name" --arg state "$state" --arg hint "$hint" --argjson record "$record" \
+      '. + [{grove: $grove, state: $state, hint: $hint, record: $record}]' <<<"$rows") || {
+      echo "💥 MalfunctionError: the row of grove $name did not fold" >&2
+      exit 1
+    }
+  done
+  printf '%s\n' "$rows"
+}
+
+######################################################################
+# the crew — which tree a seat sits in, and which kind that tree is
+#
+# .what = GROVEWORK_JQ_CREW: `def crewroot($cwd; $home)` — the tree a seat cwd sits in
+#         get_crew_kinds: crew roots on stdin → a json map root → kind
+#
+# .the kinds (F11)
+#   behavior  = a worktree whose branch binds a behavior route
+#               (`.behavior/*/.route/.bind.<branch>.flag`)
+#   directive = a repo root under ~/git, outside every `_worktrees` tree
+#   other     = a worktree with no bound route
+#   a cwd in neither shape is "(outside any repo)" and kind other
+#
+# .note = a probe runs on the grove, so it carries these as text:
+#         grovework_payload_lib prints them, `declare`-quoted
+######################################################################
+# shellcheck disable=SC2034 # read by the payloads that embed this lib
+GROVEWORK_JQ_CREW='
+  def crewroot($cwd; $home): (($cwd | capture("^(?<root>.*/_worktrees/[^/]+)").root)
+    // ($cwd | capture("^(?<root>" + ($home | gsub("[.]"; "\\.")) + "/git/[^/]+/[^/]+)").root)
+    // "(outside any repo)");
+'
+
+get_crew_kinds() {
+  local root kind branch flag
+  while read -r root; do
+    [[ -n "$root" && "$root" != "(outside any repo)" ]] || continue
+    kind="directive"
+    if [[ "$root" == */_worktrees/* ]]; then
+      kind="other"
+      # .note = a detached head reads an empty branch (exit 0), and kind other is right there;
+      #         a git that fails (no repo, no git) is named on stderr, never filed in silence
+      if ! branch=$(git -C "$root" branch --show-current 2>/dev/null); then
+        echo "💥 MalfunctionError: the branch of $root did not read (git failed); filed as kind other" >&2
+        branch=""
+      fi
+      flag=".bind.${branch//\//.}.flag"
+      if [[ -n "$branch" ]] && compgen -G "$root/.behavior/*/.route/$flag" >/dev/null; then
+        kind="behavior"
+      fi
+    fi
+    printf '%s\t%s\n' "$root" "$kind"
+  done | jq -R -s -c 'split("\n") | map(select(length > 0) | split("\t") | {(.[0]): .[1]}) | add // {}'
+}
+
+# .what = the crew lib as source text, for a payload to embed
+grovework_payload_lib() {
+  declare -p GROVEWORK_JQ_CREW
+  declare -f get_crew_kinds
+}

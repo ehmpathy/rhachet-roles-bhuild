@@ -28,5 +28,6 @@
 - **confidence**: 60% — the lean is the director's; who owns fleet-level reads is unruled
 - **risk**: low — a read-only meter of local transcripts; no credential, no prod write
 - **where**: `5.1.execution.from_vision.yield.md` · Q-B1, `.what execution builds`
-- **verdict**: open — the commander rules on fleet.asks #41. the director set the lean and struck
-  the port (2026-10-26); the earlier Q1 rule (a port of nheuron's source) is superseded
+- **verdict**: (a), ruled by the commander on fleet.asks #41 (Q-B1) — the token reader lands in
+  this repo, supervisor role. the seam stands: first to land owns the usage-line reader. the
+  earlier Q1 rule (a port of nheuron's source) stays superseded

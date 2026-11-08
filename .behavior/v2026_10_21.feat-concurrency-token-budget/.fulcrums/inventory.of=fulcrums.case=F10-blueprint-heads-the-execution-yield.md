@@ -6,4 +6,5 @@
 - **risk**: low — none ships: where a document lives; no credential, no prod write
 - **confidence**: 70% — the director said "drive on to the blueprint", which may presume a stone of its own
 - **where**: `5.1.execution.from_vision.yield.md` · `.blueprint`
-- **verdict**: —
+- **verdict**: (a), ruled by the commander on fleet.asks #41 — the blueprint stays at the head of
+  the 5.1 yield; no stone added
