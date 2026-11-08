@@ -28,7 +28,7 @@ import { execFileSync } from 'child_process';
 import { existsSync, readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 
-import { tempDirs } from '../../../.test/tempDirs';
+import { tempDirs } from '@src/domain.roles/.test/tempDirs';
 
 export const PATH_ECOWORK_DB = join(__dirname, 'ecowork.db.mjs');
 

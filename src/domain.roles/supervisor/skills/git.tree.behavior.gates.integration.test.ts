@@ -18,7 +18,7 @@ import { writeFileSync } from 'fs';
 import { join } from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
-import { tempDirs } from '../../.test/tempDirs';
+import { tempDirs } from '@src/domain.roles/.test/tempDirs';
 
 const PATH_SKILL = join(__dirname, 'git.tree.behavior.sh');
 

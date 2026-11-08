@@ -1,13 +1,13 @@
 import { BadRequestError } from 'helpful-errors';
 
-import type { ContextDispatchRadio } from '../../../../access/daos/daoRadioTask';
-import type { IdempotencyMode } from '../../../../domain.objects/IdempotencyMode';
-import { RadioChannel } from '../../../../domain.objects/RadioChannel';
-import type { RadioTask } from '../../../../domain.objects/RadioTask';
-import type { RadioTaskRepo } from '../../../../domain.objects/RadioTaskRepo';
-import type { RadioTaskStatus } from '../../../../domain.objects/RadioTaskStatus';
-import { getRepoFromGitContext } from '../../../../infra/git/getRepoFromGitContext';
-import { bootstrapRadioDir } from '../../bootstrap/bootstrapRadioDir';
+import type { ContextDispatchRadio } from '@src/access/daos/daoRadioTask';
+import type { IdempotencyMode } from '@src/domain.objects/IdempotencyMode';
+import { RadioChannel } from '@src/domain.objects/RadioChannel';
+import type { RadioTask } from '@src/domain.objects/RadioTask';
+import type { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
+import type { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
+import { getRepoFromGitContext } from '@src/infra/git/getRepoFromGitContext';
+import { bootstrapRadioDir } from '@src/domain.operations/radio/bootstrap/bootstrapRadioDir';
 import { setFullRadioTask } from './setFullRadioTask';
 import { setPartRadioTask } from './setPartRadioTask';
 

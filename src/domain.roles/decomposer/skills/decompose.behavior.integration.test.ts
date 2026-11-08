@@ -4,7 +4,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { given, then, when } from 'test-fns';
 
-import { invokeDecomposeSkill } from '../../../.test/utils/invokeDecomposeSkill';
+import { invokeDecomposeSkill } from '@src/.test/utils/invokeDecomposeSkill';
 
 const ASSETS_DIR = path.join(__dirname, '.test/assets/example.repo');
 

@@ -1,19 +1,3 @@
-diff --git a/dist/domain.operations/genTempDir/pruneStale.js b/dist/domain.operations/genTempDir/pruneStale.js
-index af583e2a0d86a598a78e63a66bdbb75d1abe7f42..5fc698ee2ddb8879291edd3750fb639c4b2342ab 100644
---- a/dist/domain.operations/genTempDir/pruneStale.js
-+++ b/dist/domain.operations/genTempDir/pruneStale.js
-@@ -56,6 +56,11 @@ const pruneStale = async (input) => {
-     // remove stale directories
-     for (const dir of staleDirs) {
-         try {
-+            // a name is a claim of age a faked clock can forge; the fs mtime is a fact.
-+            // a dir the fs saw touched inside the window is live, whatever its name reads
-+            const mtimeMs = fs.statSync(dir.path).mtimeMs;
-+            if (Date.now() - mtimeMs <= maxAgeMs)
-+                continue;
-             fs.rmSync(dir.path, { recursive: true, force: true });
-         }
-         catch {
 diff --git a/dist/infra/isomorph.fs/initGitRepo.js b/dist/infra/isomorph.fs/initGitRepo.js
 index d7a1d1d19d791d6f5efa63dc45f7136a1e340cba..59770483393638d7fb3764c06ef7c32528cd661c 100644
 --- a/dist/infra/isomorph.fs/initGitRepo.js

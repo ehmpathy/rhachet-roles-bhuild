@@ -5,10 +5,11 @@ import { getError, given, then, useBeforeAll, when } from 'test-fns';
 import type {
   ContextGithubAuth,
   ContextGitRepo,
-} from '../../../domain.objects/RadioContext';
-import { RadioTask } from '../../../domain.objects/RadioTask';
-import { RadioTaskRepo } from '../../../domain.objects/RadioTaskRepo';
-import { RadioTaskStatus } from '../../../domain.objects/RadioTaskStatus';
+} from '@src/domain.objects/RadioContext';
+import { RadioTask } from '@src/domain.objects/RadioTask';
+import { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
+import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
+
 import { daoRadioTaskViaGhIssues } from './daoRadioTaskViaGhIssues';
 
 /**
@@ -251,7 +252,7 @@ describe('daoRadioTaskViaGhIssues — github auth failure nudge', () => {
     github: {
       auth: {
         // an invalid token — github will reject this with HTTP 401
-        token: 'ghp_bogusInvalidToken0000000000000000000000',
+        token: 'ghp_bogusInvalidToken000',
         role: 'as-robot',
       },
     },

@@ -4,7 +4,6 @@ import path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import { genConsumerRepo } from '../.test/infra';
-
 import {
   runInitBehaviorSkillViaRhachet,
   shim,
@@ -56,14 +55,18 @@ describe('init.behavior.consumer', () => {
           fs.existsSync(path.join(behaviorPath, '2.1.criteria.blackbox.stone')),
         ).toBe(true);
         expect(
-          fs.existsSync(path.join(behaviorPath, '3.3.1.blueprint.product.stone')),
+          fs.existsSync(
+            path.join(behaviorPath, '3.3.1.blueprint.product.stone'),
+          ),
         ).toBe(true);
         // verify guard files
         expect(fs.existsSync(path.join(behaviorPath, '1.vision.guard'))).toBe(
           true,
         );
         expect(
-          fs.existsSync(path.join(behaviorPath, '3.3.1.blueprint.product.guard')),
+          fs.existsSync(
+            path.join(behaviorPath, '3.3.1.blueprint.product.guard'),
+          ),
         ).toBe(true);
       });
 

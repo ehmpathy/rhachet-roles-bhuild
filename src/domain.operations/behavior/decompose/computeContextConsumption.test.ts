@@ -1,7 +1,8 @@
 import * as path from 'path';
 import { given, then, when } from 'test-fns';
 
-import { BehaviorPersisted } from '../../../domain.objects/BehaviorPersisted';
+import { BehaviorPersisted } from '@src/domain.objects/BehaviorPersisted';
+
 import { computeContextConsumption } from './computeContextConsumption';
 
 const ASSETS_DIR = path.join(

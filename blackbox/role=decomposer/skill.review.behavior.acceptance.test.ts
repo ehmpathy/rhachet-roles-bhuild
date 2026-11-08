@@ -1,12 +1,15 @@
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
-  genConsumerRepo,
   genBehaviorFixture,
+  genConsumerRepo,
   runRhachetSkill,
 } from '../.test/infra';
 
-const runReviewBehaviorSkill = (input: { behaviorName: string; repoDir: string }) =>
+const runReviewBehaviorSkill = (input: {
+  behaviorName: string;
+  repoDir: string;
+}) =>
   runRhachetSkill({
     repo: 'bhuild',
     role: 'decomposer',
@@ -51,7 +54,9 @@ describe('decomposer.review.behavior acceptance (as consumer)', () => {
 
   given('[case2] behavior without criteria', () => {
     const scene = useBeforeAll(async () => {
-      const consumer = genConsumerRepo({ prefix: 'review-behavior-nocriteria-test-' });
+      const consumer = genConsumerRepo({
+        prefix: 'review-behavior-nocriteria-test-',
+      });
       genBehaviorFixture({
         repoDir: consumer.repoDir,
         behaviorName: 'incomplete-feature',
@@ -80,7 +85,9 @@ describe('decomposer.review.behavior acceptance (as consumer)', () => {
 
   given('[case3] behavior not found', () => {
     const scene = useBeforeAll(async () => {
-      const consumer = genConsumerRepo({ prefix: 'review-behavior-notfound-test-' });
+      const consumer = genConsumerRepo({
+        prefix: 'review-behavior-notfound-test-',
+      });
       genBehaviorFixture({
         repoDir: consumer.repoDir,
         behaviorName: 'extant-feature',

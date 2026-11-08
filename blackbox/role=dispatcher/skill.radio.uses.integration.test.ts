@@ -1,15 +1,12 @@
-/**
- * .what = acceptance tests for radio.uses permission controls
- * .why = verify the 24-row precedence matrix works as expected
- */
-import { execSync } from 'child_process';
 import * as fs from 'fs';
-import * as os from 'os';
 import * as path from 'path';
-
 import { given, then, useBeforeAll, useThen, when } from 'test-fns';
 
-import { genConsumerRepo, runRhachetSkill, sanitizeOutput } from '../.test/infra';
+import {
+  genConsumerRepo,
+  runRhachetSkill,
+  sanitizeOutput,
+} from '../.test/infra';
 
 /**
  * .what = the per-call kill budgets, and the jest limit sized to hold them
@@ -143,7 +140,9 @@ describe('radio.uses acceptance', () => {
 
     given('[case2] global blocked', () => {
       const scene = useBeforeAll(async () => {
-        const consumer = await genConsumerRepo({ prefix: 'radio-uses-global-' });
+        const consumer = await genConsumerRepo({
+          prefix: 'radio-uses-global-',
+        });
         const homeDir = path.join(consumer.repoDir, '.home');
         fs.mkdirSync(homeDir);
 
@@ -228,7 +227,10 @@ describe('radio.uses acceptance', () => {
       });
 
       afterAll(async () => {
-        await fs.promises.rm(scene.globalRadioDir, { recursive: true, force: true });
+        await fs.promises.rm(scene.globalRadioDir, {
+          recursive: true,
+          force: true,
+        });
       });
 
       when('[t0] radio.uses get is called', () => {
@@ -269,7 +271,9 @@ describe('radio.uses acceptance', () => {
 
     given('[case4] org @all allowed', () => {
       const scene = useBeforeAll(async () => {
-        const consumer = await genConsumerRepo({ prefix: 'radio-uses-org-all-' });
+        const consumer = await genConsumerRepo({
+          prefix: 'radio-uses-org-all-',
+        });
         const homeDir = path.join(consumer.repoDir, '.home');
         fs.mkdirSync(homeDir);
 
@@ -294,7 +298,10 @@ describe('radio.uses acceptance', () => {
       });
 
       afterAll(async () => {
-        await fs.promises.rm(scene.globalRadioDir, { recursive: true, force: true });
+        await fs.promises.rm(scene.globalRadioDir, {
+          recursive: true,
+          force: true,
+        });
       });
 
       when('[t0] radio.uses get is called', () => {
@@ -335,7 +342,9 @@ describe('radio.uses acceptance', () => {
 
     given('[case5] org specific overrides @all', () => {
       const scene = useBeforeAll(async () => {
-        const consumer = await genConsumerRepo({ prefix: 'radio-uses-org-spec-' });
+        const consumer = await genConsumerRepo({
+          prefix: 'radio-uses-org-spec-',
+        });
         const homeDir = path.join(consumer.repoDir, '.home');
         fs.mkdirSync(homeDir);
 
@@ -373,8 +382,14 @@ describe('radio.uses acceptance', () => {
       });
 
       afterAll(async () => {
-        await fs.promises.rm(scene.ehmpathyRadioDir, { recursive: true, force: true });
-        await fs.promises.rm(scene.otherRadioDir, { recursive: true, force: true });
+        await fs.promises.rm(scene.ehmpathyRadioDir, {
+          recursive: true,
+          force: true,
+        });
+        await fs.promises.rm(scene.otherRadioDir, {
+          recursive: true,
+          force: true,
+        });
       });
 
       when('[t0] radio.uses get is called', () => {
@@ -464,7 +479,10 @@ describe('radio.uses acceptance', () => {
       });
 
       afterAll(async () => {
-        await fs.promises.rm(scene.globalRadioDir, { recursive: true, force: true });
+        await fs.promises.rm(scene.globalRadioDir, {
+          recursive: true,
+          force: true,
+        });
       });
 
       when('[t0] radio.uses get is called', () => {
@@ -640,7 +658,8 @@ describe('radio.uses acceptance', () => {
             via: 'os.fileops',
             into: 'otherorg/test-repo-other',
             title: 'other org local test',
-            description: 'no org config for otherorg, local allowed should apply',
+            description:
+              'no org config for otherorg, local allowed should apply',
             homeDir: scene.homeDir,
           });
         });
@@ -785,7 +804,9 @@ describe('radio.uses acceptance', () => {
   describe('user journey', () => {
     given('[case12] full permission workflow', () => {
       const scene = useBeforeAll(async () => {
-        const consumer = await genConsumerRepo({ prefix: 'radio-uses-journey-' });
+        const consumer = await genConsumerRepo({
+          prefix: 'radio-uses-journey-',
+        });
         const homeDir = path.join(consumer.repoDir, '.home');
         fs.mkdirSync(homeDir);
 
@@ -803,7 +824,10 @@ describe('radio.uses acceptance', () => {
       });
 
       afterAll(async () => {
-        await fs.promises.rm(scene.globalRadioDir, { recursive: true, force: true });
+        await fs.promises.rm(scene.globalRadioDir, {
+          recursive: true,
+          force: true,
+        });
       });
 
       when('[t0] initial push attempt (blocked)', () => {

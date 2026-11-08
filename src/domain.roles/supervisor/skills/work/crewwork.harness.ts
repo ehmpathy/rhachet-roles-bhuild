@@ -25,8 +25,8 @@
 import { mkdirSync } from 'fs';
 import { join } from 'path';
 
-import { getShellSkillWhole } from '../../../.test/getShellLibWhole';
-import { tempDirs } from '../../../.test/tempDirs';
+import { getShellSkillWhole } from '@src/domain.roles/.test/getShellLibWhole';
+import { tempDirs } from '@src/domain.roles/.test/tempDirs';
 
 export const TREE = 'somerepo.beav.fix-thing';
 

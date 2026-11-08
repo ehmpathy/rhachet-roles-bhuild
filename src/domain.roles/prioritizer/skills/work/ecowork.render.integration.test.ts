@@ -8,7 +8,8 @@
 import { spawnSync } from 'child_process';
 import { given, then, useBeforeAll, useThen, when } from 'test-fns';
 
-import { tempDirs } from '../../../.test/tempDirs';
+import { tempDirs } from '@src/domain.roles/.test/tempDirs';
+
 import {
   eco,
   genDbPath,

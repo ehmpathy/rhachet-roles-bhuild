@@ -4,12 +4,13 @@ import { today } from 'iso-time';
 import * as os from 'os';
 import * as path from 'path';
 
-import type { ContextGitRepo } from '../../../domain.objects/RadioContext';
-import { RadioTask } from '../../../domain.objects/RadioTask';
-import type { RadioTaskRepo } from '../../../domain.objects/RadioTaskRepo';
-import { RadioTaskStatus } from '../../../domain.objects/RadioTaskStatus';
-import { composeTaskIntoOsFileops } from '../../../domain.operations/radio/task/format/composeTaskIntoOsFileops';
-import { extractTaskFromOsFileops } from '../../../domain.operations/radio/task/format/extractTaskFromOsFileops';
+import type { ContextGitRepo } from '@src/domain.objects/RadioContext';
+import { RadioTask } from '@src/domain.objects/RadioTask';
+import type { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
+import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
+import { composeTaskIntoOsFileops } from '@src/domain.operations/radio/task/format/composeTaskIntoOsFileops';
+import { extractTaskFromOsFileops } from '@src/domain.operations/radio/task/format/extractTaskFromOsFileops';
+
 import { asOsFileopsPathSegment } from './asOsFileopsPathSegment';
 
 /**

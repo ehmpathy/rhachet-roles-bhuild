@@ -18,6 +18,9 @@ always:
     ref:
       - briefs/domain.terms/**
       - briefs/evidence/**
+    not:
+      - briefs/domain.terms/term=*._.choice.reason.md
+      - briefs/domain.terms/term=*._.choice.example=*.md
   skills:
     say:
       - skills/**

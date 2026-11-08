@@ -19,7 +19,8 @@ import { MalfunctionError } from 'helpful-errors';
 import { dirname, join } from 'path';
 import { given, then, useBeforeAll } from 'test-fns';
 
-import { tempDirs } from '../../../.test/tempDirs';
+import { tempDirs } from '@src/domain.roles/.test/tempDirs';
+
 import {
   asCsvRows,
   asCsvText,

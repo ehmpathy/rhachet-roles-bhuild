@@ -3,7 +3,6 @@ import path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import { genConsumerRepo } from '../.test/infra';
-
 import {
   asSnapshotStable,
   runInitBehaviorSkillDirect,
@@ -54,7 +53,9 @@ describe('init.behavior.scaffold', () => {
           true,
         );
         expect(
-          fs.existsSync(path.join(behaviorDir, '3.3.1.blueprint.product.guard')),
+          fs.existsSync(
+            path.join(behaviorDir, '3.3.1.blueprint.product.guard'),
+          ),
         ).toBe(true);
       });
 

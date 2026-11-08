@@ -27,7 +27,10 @@ const asSnapshotStable = (output: string): string =>
     // mask temp directory paths: /tmp/xxx-xxx -> /tmp/{TEMP}
     .replace(/\/tmp\/[a-z0-9-]+/gi, '/tmp/{TEMP}')
     // mask .temp dir with iso timestamp: .temp/2026-04-10T15-23-19.328Z.name.uuid -> .temp/{TIMESTAMP}
-    .replace(/\.temp\/\d{4}-\d{2}-\d{2}T[\d-]+\.\d+Z\.[a-z0-9-]+\.[a-f0-9]+/gi, '.temp/{TIMESTAMP}')
+    .replace(
+      /\.temp\/\d{4}-\d{2}-\d{2}T[\d-]+\.\d+Z\.[a-z0-9-]+\.[a-f0-9]+/gi,
+      '.temp/{TIMESTAMP}',
+    )
     // mask time values: "passed 3.6s" -> "passed [time]"
     .replace(/\d+\.\d+s/g, '[time]');
 
@@ -315,31 +318,34 @@ describe('feedback.take', () => {
       });
     });
 
-    when('[t2] feedback.take.get --when hook.onStop is called after response', () => {
-      const result = useThen('it succeeds', () =>
-        runFeedbackTakeGetSkill({
-          behavior: 'take-set-test',
-          when: 'hook.onStop',
-          force: true,
-          repoDir: scene.repoDir,
-        }),
-      );
+    when(
+      '[t2] feedback.take.get --when hook.onStop is called after response',
+      () => {
+        const result = useThen('it succeeds', () =>
+          runFeedbackTakeGetSkill({
+            behavior: 'take-set-test',
+            when: 'hook.onStop',
+            force: true,
+            repoDir: scene.repoDir,
+          }),
+        );
 
-      then('exits with code 0', () => {
-        expect(result.exitCode).toBe(0);
-      });
+        then('exits with code 0', () => {
+          expect(result.exitCode).toBe(0);
+        });
 
-      then('output is silent per vision (no mascot output)', () => {
-        // vision: "hook.onStop (passed) = silent — no output"
-        // note: rhachet wrapper prints "🪨 run solid skill..." but skill is silent
-        expect(result.output).not.toContain('🦫');
-        expect(result.output).not.toContain('🌲');
-      });
+        then('output is silent per vision (no mascot output)', () => {
+          // vision: "hook.onStop (passed) = silent — no output"
+          // note: rhachet wrapper prints "🪨 run solid skill..." but skill is silent
+          expect(result.output).not.toContain('🦫');
+          expect(result.output).not.toContain('🌲');
+        });
 
-      then('output matches snapshot', () => {
-        expect(asSnapshotStable(result.output)).toMatchSnapshot();
-      });
-    });
+        then('output matches snapshot', () => {
+          expect(asSnapshotStable(result.output)).toMatchSnapshot();
+        });
+      },
+    );
   });
 
   given('[case4] behavior with stale feedback (hash mismatch)', () => {
@@ -455,10 +461,7 @@ response content`,
 
       // unresponded feedback
       fs.writeFileSync(
-        path.join(
-          feedbackDir,
-          '0.wish.md.[feedback].v1.[given].by_human.md',
-        ),
+        path.join(feedbackDir, '0.wish.md.[feedback].v1.[given].by_human.md'),
         'wish feedback',
       );
 

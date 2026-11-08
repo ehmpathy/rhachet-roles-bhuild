@@ -6,14 +6,14 @@ import {
   daoRadioTaskViaGhIssues,
   daoRadioTaskViaOsFileops,
   isContextGithubAuth,
-} from '../../../../access/daos/daoRadioTask';
-import { RadioChannel } from '../../../../domain.objects/RadioChannel';
-import { RadioTask } from '../../../../domain.objects/RadioTask';
-import type { RadioTaskRepo } from '../../../../domain.objects/RadioTaskRepo';
-import { RadioTaskStatus } from '../../../../domain.objects/RadioTaskStatus';
-import { getCurrentActor } from '../../../../infra/git/getCurrentActor';
-import { getCurrentBranch } from '../../../../infra/git/getCurrentBranch';
-import { assure } from '../../../../infra/types/assure';
+} from '@src/access/daos/daoRadioTask';
+import { RadioChannel } from '@src/domain.objects/RadioChannel';
+import { RadioTask } from '@src/domain.objects/RadioTask';
+import type { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
+import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
+import { getCurrentActor } from '@src/infra/git/getCurrentActor';
+import { getCurrentBranch } from '@src/infra/git/getCurrentBranch';
+import { assure } from '@src/infra/types/assure';
 
 /**
  * .what = update a task on a channel (status, title, description)

@@ -1,8 +1,8 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
-import { BehaviorDecompositionContextAnalysis } from '../../../domain.objects/BehaviorDecompositionContextAnalysis';
-import type { BehaviorPersisted } from '../../../domain.objects/BehaviorPersisted';
+import { BehaviorDecompositionContextAnalysis } from '@src/domain.objects/BehaviorDecompositionContextAnalysis';
+import type { BehaviorPersisted } from '@src/domain.objects/BehaviorPersisted';
 
 /**
  * .what = computes token consumption of behavior artifacts

@@ -1,9 +1,9 @@
 import type { IsoDateStamp } from 'iso-time';
 import { given, then, when } from 'test-fns';
 
-import { RadioTask } from '../../../../domain.objects/RadioTask';
-import { RadioTaskRepo } from '../../../../domain.objects/RadioTaskRepo';
-import { RadioTaskStatus } from '../../../../domain.objects/RadioTaskStatus';
+import { RadioTask } from '@src/domain.objects/RadioTask';
+import { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
+import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
 import { composeTaskIntoOsFileops } from './composeTaskIntoOsFileops';
 import { extractTaskFromOsFileops } from './extractTaskFromOsFileops';
 

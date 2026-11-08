@@ -1,4 +1,5 @@
-import { DreamCandidate } from '../../../domain.objects/dreamer/DreamCandidate';
+import { DreamCandidate } from '@src/domain.objects/dreamer/DreamCandidate';
+
 import { getAllDreamsFromPastWeek } from './getAllDreamsFromPastWeek';
 
 /**

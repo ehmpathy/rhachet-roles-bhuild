@@ -1,6 +1,6 @@
 import { existsSync, readdirSync } from 'fs';
 
-import { DreamArtifact } from '../../../domain.objects/dreamer/DreamArtifact';
+import { DreamArtifact } from '@src/domain.objects/dreamer/DreamArtifact';
 
 /**
  * .what = retrieves all dreams created within the past week

@@ -3,6 +3,7 @@ import { getDeclastructGithubProvider } from 'declastruct-github';
 import type { DomainEntity } from 'domain-objects';
 import { ConstraintError } from 'helpful-errors';
 import { keyrack } from 'rhachet/keyrack';
+import { genLogMethods } from 'sdk-logs';
 
 import { getResourcesOfAppBhuildBeaver } from './resources.app.bhuild-beaver';
 
@@ -36,12 +37,8 @@ export const getProviders = async (): Promise<DeclastructProvider[]> => [
       },
     },
     {
-      log: {
-        info: () => {},
-        debug: () => {},
-        warn: console.warn,
-        error: console.error,
-      },
+      // MUST be an sdk-logs logger — 1.6.0 DAOs read log._.level via as-procedure
+      log: genLogMethods(),
     },
   ),
 ];

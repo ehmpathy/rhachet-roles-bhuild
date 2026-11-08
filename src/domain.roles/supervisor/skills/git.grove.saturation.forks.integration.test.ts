@@ -8,7 +8,8 @@
 import { readFileSync } from 'fs';
 import { given, then, when } from 'test-fns';
 
-import { tempDirs } from '../../.test/tempDirs';
+import { tempDirs } from '@src/domain.roles/.test/tempDirs';
+
 import { PATH_SAT } from './git.grove.saturation.harness';
 
 /**

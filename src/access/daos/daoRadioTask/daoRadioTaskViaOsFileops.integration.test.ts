@@ -4,10 +4,11 @@ import * as os from 'os';
 import * as path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
-import type { ContextGitRepo } from '../../../domain.objects/RadioContext';
-import { RadioTask } from '../../../domain.objects/RadioTask';
-import { RadioTaskRepo } from '../../../domain.objects/RadioTaskRepo';
-import { RadioTaskStatus } from '../../../domain.objects/RadioTaskStatus';
+import type { ContextGitRepo } from '@src/domain.objects/RadioContext';
+import { RadioTask } from '@src/domain.objects/RadioTask';
+import { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
+import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
+
 import { daoRadioTaskViaOsFileops } from './daoRadioTaskViaOsFileops';
 
 describe('daoRadioTaskViaOsFileops', () => {

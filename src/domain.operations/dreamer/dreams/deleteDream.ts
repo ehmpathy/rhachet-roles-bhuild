@@ -1,6 +1,6 @@
 import { existsSync, unlinkSync } from 'fs';
 
-import type { DreamArtifact } from '../../../domain.objects/dreamer/DreamArtifact';
+import type { DreamArtifact } from '@src/domain.objects/dreamer/DreamArtifact';
 
 /**
  * .what = deletes a dream file from disk

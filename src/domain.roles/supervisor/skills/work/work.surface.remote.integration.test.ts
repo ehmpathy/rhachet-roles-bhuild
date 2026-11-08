@@ -8,7 +8,8 @@
 import { join } from 'path';
 import { given, then, when } from 'test-fns';
 
-import { getShellLibWhole } from '../../../.test/getShellLibWhole';
+import { getShellLibWhole } from '@src/domain.roles/.test/getShellLibWhole';
+
 import {
   asCode,
   DIR_SKILLS,

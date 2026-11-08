@@ -32,7 +32,7 @@ import { getError, MalfunctionError } from 'helpful-errors';
 import { join } from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
-import { tempDirs } from '../../../.test/tempDirs';
+import { tempDirs } from '@src/domain.roles/.test/tempDirs';
 
 const PATH_SYNCWORK = join(__dirname, 'syncwork.sh');
 

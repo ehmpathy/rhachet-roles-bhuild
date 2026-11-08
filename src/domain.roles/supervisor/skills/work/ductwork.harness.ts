@@ -21,7 +21,8 @@ import { join } from 'path';
 import {
   getShellLibWhole,
   getShellSkillWhole,
-} from '../../../.test/getShellLibWhole';
+} from '@src/domain.roles/.test/getShellLibWhole';
+
 import { PREFIX_TEST_SOCKET } from './work.harness';
 
 /**

@@ -2,8 +2,8 @@ import * as os from 'os';
 import * as path from 'path';
 import { given, then, when } from 'test-fns';
 
-import { RadioTaskRepo } from '../../../domain.objects/RadioTaskRepo';
-import { RadioTaskStatus } from '../../../domain.objects/RadioTaskStatus';
+import { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
+import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
 import { getGlobalRadioRoot, getRadioPath } from './getRadioPath';
 
 describe('getRadioPath', () => {

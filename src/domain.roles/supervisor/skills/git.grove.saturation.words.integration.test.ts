@@ -10,7 +10,8 @@ import { mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { given, then, useThen, when } from 'test-fns';
 
-import { tempDirs } from '../../.test/tempDirs';
+import { tempDirs } from '@src/domain.roles/.test/tempDirs';
+
 import { PATH_SAT, PATH_SPEND } from './git.grove.saturation.harness';
 
 /**

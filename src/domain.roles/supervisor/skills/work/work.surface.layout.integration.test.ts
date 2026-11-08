@@ -9,7 +9,8 @@ import { readdirSync, statSync } from 'fs';
 import { join } from 'path';
 import { given, then, when } from 'test-fns';
 
-import { getShellLibWhole } from '../../../.test/getShellLibWhole';
+import { getShellLibWhole } from '@src/domain.roles/.test/getShellLibWhole';
+
 import {
   DIR_SKILLS,
   DIR_WORK,

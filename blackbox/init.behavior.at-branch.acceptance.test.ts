@@ -1,7 +1,6 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-
 import { given, then, useThen, when } from 'test-fns';
 
 import { genConsumerRepo } from './.test/infra/genConsumerRepo';

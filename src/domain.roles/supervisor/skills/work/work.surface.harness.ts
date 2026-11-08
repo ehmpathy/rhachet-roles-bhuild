@@ -34,7 +34,7 @@ import {
   getShellLibParts,
   getShellLibWhole,
   getShellSkillWhole,
-} from '../../../.test/getShellLibWhole';
+} from '@src/domain.roles/.test/getShellLibWhole';
 
 export const DIR_SKILLS = join(__dirname, '..');
 export const DIR_WORK = __dirname;

@@ -2,7 +2,11 @@ import fs from 'fs';
 import path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
-import { genConsumerRepo, runRhachetSkill, sanitizeOutput } from '../.test/infra';
+import {
+  genConsumerRepo,
+  runRhachetSkill,
+  sanitizeOutput,
+} from '../.test/infra';
 
 /**
  * .what = invoke radio.uses skill to set up permissions
@@ -72,7 +76,10 @@ const runRadioTaskPush = (input: {
 
 describe('radio.task.push via os.fileops', () => {
   given('[case1] inside a git repo', () => {
-    const testRepo = { owner: 'test-owner', name: `test-repo-acpt-push-${Date.now()}` };
+    const testRepo = {
+      owner: 'test-owner',
+      name: `test-repo-acpt-push-${Date.now()}`,
+    };
     const scene = useBeforeAll(async () => {
       const consumer = await genConsumerRepo({ prefix: 'radio-push-acpt-' });
       const homeDir = path.join(consumer.repoDir, '.home');
@@ -83,12 +90,21 @@ describe('radio.task.push via os.fileops', () => {
         args: '--org @all allow',
         homeDir,
       });
-      const globalRadioDir = path.join(homeDir, 'git', '.radio', testRepo.owner, testRepo.name);
+      const globalRadioDir = path.join(
+        homeDir,
+        'git',
+        '.radio',
+        testRepo.owner,
+        testRepo.name,
+      );
       return { consumer, homeDir, globalRadioDir };
     });
 
     afterAll(async () => {
-      await fs.promises.rm(scene.globalRadioDir, { recursive: true, force: true });
+      await fs.promises.rm(scene.globalRadioDir, {
+        recursive: true,
+        force: true,
+      });
     });
 
     when('[t0] push with title and description', () => {
@@ -117,13 +133,17 @@ describe('radio.task.push via os.fileops', () => {
 
       then('task file exists in global radio dir', async () => {
         const files = await fs.promises.readdir(scene.globalRadioDir);
-        const taskFiles = files.filter((f) => f.startsWith('task.') && f.endsWith('._.md'));
+        const taskFiles = files.filter(
+          (f) => f.startsWith('task.') && f.endsWith('._.md'),
+        );
         expect(taskFiles.length).toBeGreaterThan(0);
       });
 
       then('status flag file exists', async () => {
         const files = await fs.promises.readdir(scene.globalRadioDir);
-        const flagFiles = files.filter((f) => f.includes('.status=QUEUED.flag'));
+        const flagFiles = files.filter((f) =>
+          f.includes('.status=QUEUED.flag'),
+        );
         expect(flagFiles.length).toBeGreaterThan(0);
       });
     });
@@ -206,12 +226,21 @@ describe('radio.task.push via os.fileops', () => {
         args: '--org @all allow',
         homeDir,
       });
-      const idemRadioDir = path.join(homeDir, 'git', '.radio', idemRepo.owner, idemRepo.name);
+      const idemRadioDir = path.join(
+        homeDir,
+        'git',
+        '.radio',
+        idemRepo.owner,
+        idemRepo.name,
+      );
       return { consumer, homeDir, idemRadioDir };
     });
 
     afterAll(async () => {
-      await fs.promises.rm(scene.idemRadioDir, { recursive: true, force: true });
+      await fs.promises.rm(scene.idemRadioDir, {
+        recursive: true,
+        force: true,
+      });
     });
 
     when('[t0] findsert mode with duplicate title', () => {
@@ -313,13 +342,22 @@ describe('radio.task.push via os.fileops', () => {
         args: '--org @all allow',
         homeDir,
       });
-      const statusRadioDir = path.join(homeDir, 'git', '.radio', statusRepo.owner, statusRepo.name);
+      const statusRadioDir = path.join(
+        homeDir,
+        'git',
+        '.radio',
+        statusRepo.owner,
+        statusRepo.name,
+      );
       return { consumer, homeDir, statusRadioDir };
     });
     let taskExid: string;
 
     afterAll(async () => {
-      await fs.promises.rm(scene.statusRadioDir, { recursive: true, force: true });
+      await fs.promises.rm(scene.statusRadioDir, {
+        recursive: true,
+        force: true,
+      });
     });
 
     when('[t0] create task then claim it', () => {
@@ -390,9 +428,14 @@ describe('radio.task.push via os.fileops', () => {
   });
 
   given('[case4] channel validation', () => {
-    const validateRepo = { owner: 'test-validate', name: `test-repo-validate-${Date.now()}` };
+    const validateRepo = {
+      owner: 'test-validate',
+      name: `test-repo-validate-${Date.now()}`,
+    };
     const scene = useBeforeAll(async () => {
-      const consumer = await genConsumerRepo({ prefix: 'radio-push-validate-' });
+      const consumer = await genConsumerRepo({
+        prefix: 'radio-push-validate-',
+      });
       const homeDir = path.join(consumer.repoDir, '.home');
       fs.mkdirSync(homeDir);
       // allow radio usage for @all orgs
@@ -434,12 +477,21 @@ describe('radio.task.push via os.fileops', () => {
         args: '--org @all allow',
         homeDir,
       });
-      const formatRadioDir = path.join(homeDir, 'git', '.radio', formatRepo.owner, formatRepo.name);
+      const formatRadioDir = path.join(
+        homeDir,
+        'git',
+        '.radio',
+        formatRepo.owner,
+        formatRepo.name,
+      );
       return { consumer, homeDir, formatRadioDir };
     });
 
     afterAll(async () => {
-      await fs.promises.rm(scene.formatRadioDir, { recursive: true, force: true });
+      await fs.promises.rm(scene.formatRadioDir, {
+        recursive: true,
+        force: true,
+      });
     });
 
     when('[t0] task is pushed', () => {
@@ -492,7 +544,9 @@ describe('radio.task.push via os.fileops', () => {
       name: `test-repo-bootstrap-${Date.now()}`,
     };
     const scene = useBeforeAll(async () => {
-      const consumer = await genConsumerRepo({ prefix: 'radio-push-bootstrap-' });
+      const consumer = await genConsumerRepo({
+        prefix: 'radio-push-bootstrap-',
+      });
       const homeDir = path.join(consumer.repoDir, '.home');
       fs.mkdirSync(homeDir);
       // allow radio usage for @all orgs
@@ -502,12 +556,19 @@ describe('radio.task.push via os.fileops', () => {
         homeDir,
       });
       const globalRadioRoot = path.join(homeDir, 'git', '.radio');
-      const bootstrapRadioDir = path.join(globalRadioRoot, bootstrapRepo.owner, bootstrapRepo.name);
+      const bootstrapRadioDir = path.join(
+        globalRadioRoot,
+        bootstrapRepo.owner,
+        bootstrapRepo.name,
+      );
       return { consumer, homeDir, globalRadioRoot, bootstrapRadioDir };
     });
 
     afterAll(async () => {
-      await fs.promises.rm(scene.bootstrapRadioDir, { recursive: true, force: true });
+      await fs.promises.rm(scene.bootstrapRadioDir, {
+        recursive: true,
+        force: true,
+      });
     });
 
     when('[t0] first push to fresh repo', () => {

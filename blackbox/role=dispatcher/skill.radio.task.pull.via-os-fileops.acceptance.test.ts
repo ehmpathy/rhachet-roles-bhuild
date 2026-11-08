@@ -120,12 +120,21 @@ describe('radio.task.pull via os.fileops', () => {
         args: '--org @all allow',
         homeDir,
       });
-      const emptyRadioDir = path.join(homeDir, 'git', '.radio', emptyRepo.owner, emptyRepo.name);
+      const emptyRadioDir = path.join(
+        homeDir,
+        'git',
+        '.radio',
+        emptyRepo.owner,
+        emptyRepo.name,
+      );
       return { consumer, homeDir, emptyRadioDir };
     });
 
     afterAll(async () => {
-      await fs.promises.rm(scene.emptyRadioDir, { recursive: true, force: true });
+      await fs.promises.rm(scene.emptyRadioDir, {
+        recursive: true,
+        force: true,
+      });
     });
 
     when('[t0] pull --list from empty repo', () => {
@@ -237,7 +246,10 @@ describe('radio.task.pull via os.fileops', () => {
     });
 
     afterAll(async () => {
-      await fs.promises.rm(scene.tasksRadioDir, { recursive: true, force: true });
+      await fs.promises.rm(scene.tasksRadioDir, {
+        recursive: true,
+        force: true,
+      });
     });
 
     when('[t0] pull --list without filter', () => {
@@ -342,7 +354,9 @@ describe('radio.task.pull via os.fileops', () => {
 
   given('[case3] channel validation', () => {
     const scene = useBeforeAll(async () => {
-      const consumer = await genConsumerRepo({ prefix: 'radio-pull-validate-' });
+      const consumer = await genConsumerRepo({
+        prefix: 'radio-pull-validate-',
+      });
       const homeDir = path.join(consumer.repoDir, '.home');
       fs.mkdirSync(homeDir);
 
@@ -413,7 +427,10 @@ describe('radio.task.pull via os.fileops', () => {
     });
 
     afterAll(async () => {
-      await fs.promises.rm(scene.formatRadioDir, { recursive: true, force: true });
+      await fs.promises.rm(scene.formatRadioDir, {
+        recursive: true,
+        force: true,
+      });
     });
 
     when('[t0] pull --list shows emoji prefix', () => {

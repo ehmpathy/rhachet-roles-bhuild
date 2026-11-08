@@ -1,5 +1,5 @@
-import type { RadioTask } from '../../../../domain.objects/RadioTask';
-import { RadioTaskStatus } from '../../../../domain.objects/RadioTaskStatus';
+import type { RadioTask } from '@src/domain.objects/RadioTask';
+import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
 
 /**
  * .what = compose task file content with yaml frontmatter

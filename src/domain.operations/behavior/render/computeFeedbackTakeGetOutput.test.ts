@@ -1,6 +1,7 @@
 import { given, then, when } from 'test-fns';
 
-import type { FeedbackTakeGetResult } from '../feedback/feedbackTakeGet';
+import type { FeedbackTakeGetResult } from '@src/domain.operations/behavior/feedback/feedbackTakeGet';
+
 import { computeFeedbackTakeGetOutput } from './computeFeedbackTakeGetOutput';
 
 /**

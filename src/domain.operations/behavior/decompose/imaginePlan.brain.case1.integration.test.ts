@@ -1,10 +1,11 @@
 import * as path from 'path';
 import { given, then, when } from 'test-fns';
 
-import { BehaviorDecompositionPlan } from '../../../domain.objects/BehaviorDecompositionPlan';
-import { BehaviorPersisted } from '../../../domain.objects/BehaviorPersisted';
-import { invokeBrainRepl } from '../../../infra/brain/invokeBrainRepl';
-import { loadBriefs } from '../../../infra/brain/loadBriefs';
+import { BehaviorDecompositionPlan } from '@src/domain.objects/BehaviorDecompositionPlan';
+import { BehaviorPersisted } from '@src/domain.objects/BehaviorPersisted';
+import { invokeBrainRepl } from '@src/infra/brain/invokeBrainRepl';
+import { loadBriefs } from '@src/infra/brain/loadBriefs';
+
 import { imaginePlan } from './imaginePlan';
 
 // extend timeout for brain-powered tests

@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { given, then, when } from 'test-fns';
 
-import { invokeReviewBehaviorSkill } from '../../../.test/utils/invokeReviewBehaviorSkill';
+import { invokeReviewBehaviorSkill } from '@src/.test/utils/invokeReviewBehaviorSkill';
 
 const ASSETS_DIR = path.join(__dirname, '.test/assets/example.repo');
 

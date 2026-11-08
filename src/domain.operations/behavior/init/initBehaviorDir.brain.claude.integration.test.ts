@@ -4,8 +4,9 @@ import path from 'path';
 import { getAllStones } from 'rhachet-roles-bhrain/sdk/route';
 import { genTempDir, given, then, useBeforeAll, when } from 'test-fns';
 
-import { getAllPeerLanesWithBrain } from '../../../.test/utils/getAllPeerLanesWithBrain';
-import { RUN_BRAIN_TEST } from '../../../.test/utils/RUN_BRAIN_TEST';
+import { getAllPeerLanesWithBrain } from '@src/.test/utils/getAllPeerLanesWithBrain';
+import { RUN_BRAIN_TEST } from '@src/.test/utils/RUN_BRAIN_TEST';
+
 import { initBehaviorDir } from './initBehaviorDir';
 
 /**

@@ -12,6 +12,10 @@ process.env.FORCE_COLOR = 'true';
 // https://jestjs.io/docs/configuration
 const config: Config = {
   verbose: true,
+  reporters: [
+    ['default', { summaryThreshold: 0 }], // ensure we always get a failure summary at the bottom, to avoid the hunt
+    ['test-fns/slowtest.reporter.jest', { slow: '10s', output: '.log/slowtest/unit.report.json' }],
+  ],
   testEnvironment: 'node',
   moduleFileExtensions: ['js', 'ts'],
   moduleNameMapper: {
@@ -26,22 +30,29 @@ const config: Config = {
   ],
   testMatch: [
     // note: order matters
-    '**/*.test.ts',
+    '**/*.test.ts', // also matches the `._.unit.test` kind seam
     '!**/*.acceptance.test.ts',
     '!**/*.integration.test.ts',
+    '!**/*.evaluation.test.ts',
+    '!**/*._.acpt.test.ts',
+    '!**/*._.intg.test.ts',
+    '!**/*._.eval.test.ts',
+    '!**/.agent/.actors/**', // rhachet host-local state; holds a scratch clone of this repo, whose suites are not ours
+    '!**/.agent/.cache/**',
     '!**/.yalc/**',
-    // `.temp/` is gitignored scratch — a suite in there is not this repo's
-    '!**/.temp/**',
-    // 🔴 `.agent/` is the same class — linked role artifacts plus per-actor
-    //    runtime scratch. `.agent/.actors/<actor>/brain/.claude/plugins/**`
-    //    caches claude-code plugin marketplaces, whose own `*.test.ts` files
-    //    import packages this repo lacks — so jest collected 6 such suites and
-    //    all 6 died at module lookup, while every one of this repo's 521 tests
-    //    passed. the integration config already carried this line; unit and
-    //    acceptance had drifted without it.
-    '!**/.agent/**',
   ],
+  // skip all of `.agent/`: rhachet roles, host-local clones, and the rmsafe trash live there. a test
+  // there would run as ours, and a snapshot there would read as obsolete (the haste map scans it)
+  testPathIgnorePatterns: ['/node_modules/', '/.agent/'],
+  modulePathIgnorePatterns: ['<rootDir>/.agent/'],
   setupFilesAfterEnv: ['./jest.unit.env.ts'],
+
+  // reclaim every temp dir genTempDir made this run (test-fns autoprune; needs test-fns >=1.16,
+  // the floor is 1.17). jest needs BOTH keys -- globalSetup stamps the run, globalTeardown reclaims
+  // its dirs. one key without the other stamps and never reclaims, a half-wired state test-fns itself
+  // detects + reports at runtime.
+  globalSetup: 'test-fns/autoprune.setup.jest',
+  globalTeardown: 'test-fns/autoprune.teardown.jest',
 
   // use 50% of threads to leave headroom for other processes
   maxWorkers: '50%', // https://stackoverflow.com/questions/71287710/why-does-jest-run-faster-with-maxworkers-50

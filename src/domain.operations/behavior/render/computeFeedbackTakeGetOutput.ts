@@ -1,4 +1,4 @@
-import type { FeedbackTakeGetResult } from '../feedback/feedbackTakeGet';
+import type { FeedbackTakeGetResult } from '@src/domain.operations/behavior/feedback/feedbackTakeGet';
 
 /**
  * .what = compute feedback.take.get output with tree format

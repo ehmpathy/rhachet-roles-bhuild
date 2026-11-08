@@ -5,14 +5,14 @@ import {
   daoRadioTaskViaGhIssues,
   daoRadioTaskViaOsFileops,
   isContextGithubAuth,
-} from '../../../../access/daos/daoRadioTask';
-import { RadioChannel } from '../../../../domain.objects/RadioChannel';
-import type { RadioTask } from '../../../../domain.objects/RadioTask';
-import type { RadioTaskRepo } from '../../../../domain.objects/RadioTaskRepo';
-import type { RadioTaskStatus } from '../../../../domain.objects/RadioTaskStatus';
-import { getRepoFromGitContext } from '../../../../infra/git/getRepoFromGitContext';
-import { assure } from '../../../../infra/types/assure';
-import { bootstrapRadioDir } from '../../bootstrap/bootstrapRadioDir';
+} from '@src/access/daos/daoRadioTask';
+import { RadioChannel } from '@src/domain.objects/RadioChannel';
+import type { RadioTask } from '@src/domain.objects/RadioTask';
+import type { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
+import type { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
+import { getRepoFromGitContext } from '@src/infra/git/getRepoFromGitContext';
+import { assure } from '@src/infra/types/assure';
+import { bootstrapRadioDir } from '@src/domain.operations/radio/bootstrap/bootstrapRadioDir';
 
 /**
  * .what = list tasks from a channel

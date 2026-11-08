@@ -7,12 +7,12 @@ import { getError, given, then, useBeforeAll, when } from 'test-fns';
 import {
   type ContextGitRepo,
   daoRadioTaskViaOsFileops,
-} from '../../../../access/daos/daoRadioTask';
-import { IdempotencyMode } from '../../../../domain.objects/IdempotencyMode';
-import { RadioChannel } from '../../../../domain.objects/RadioChannel';
-import { RadioTask } from '../../../../domain.objects/RadioTask';
-import { RadioTaskRepo } from '../../../../domain.objects/RadioTaskRepo';
-import { RadioTaskStatus } from '../../../../domain.objects/RadioTaskStatus';
+} from '@src/access/daos/daoRadioTask';
+import { IdempotencyMode } from '@src/domain.objects/IdempotencyMode';
+import { RadioChannel } from '@src/domain.objects/RadioChannel';
+import { RadioTask } from '@src/domain.objects/RadioTask';
+import { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
+import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
 import { radioTaskPush } from './radioTaskPush';
 
 describe('radioTaskPush via os.fileops', () => {

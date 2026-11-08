@@ -3,9 +3,10 @@ import * as os from 'os';
 import * as path from 'path';
 import { given, then, when } from 'test-fns';
 
-import { BehaviorDecompositionPlan } from '../../../domain.objects/BehaviorDecompositionPlan';
-import { BehaviorPersisted } from '../../../domain.objects/BehaviorPersisted';
-import type { BrainReplContext } from '../../../infra/brain/BrainReplContext';
+import { BehaviorDecompositionPlan } from '@src/domain.objects/BehaviorDecompositionPlan';
+import { BehaviorPersisted } from '@src/domain.objects/BehaviorPersisted';
+import type { BrainReplContext } from '@src/infra/brain/BrainReplContext';
+
 import { imaginePlan } from './imaginePlan';
 
 describe('imaginePlan', () => {

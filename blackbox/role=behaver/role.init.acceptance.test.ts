@@ -16,8 +16,9 @@ const getHooksOfEvent = (input: {
   repoDir: string;
   event: string;
 }): { command: string; author?: string }[] =>
-  (getRepoClaudeSettings({ repoDir: input.repoDir }).hooks?.[input.event] ?? [])
-    .flatMap((matcher) => matcher.hooks ?? []);
+  (
+    getRepoClaudeSettings({ repoDir: input.repoDir }).hooks?.[input.event] ?? []
+  ).flatMap((matcher) => matcher.hooks ?? []);
 
 describe('behaver role.init acceptance (as consumer)', () => {
   given('[case1] fresh consumer repo without behaver initialization', () => {

@@ -3,7 +3,8 @@ import {
   type ContextGithubAuth,
   type ContextGitRepo,
   isContextGithubAuth,
-} from '../../../domain.objects/RadioContext';
+} from '@src/domain.objects/RadioContext';
+
 import { daoRadioTaskViaGhIssues } from './daoRadioTaskViaGhIssues';
 import { daoRadioTaskViaOsFileops } from './daoRadioTaskViaOsFileops';
 

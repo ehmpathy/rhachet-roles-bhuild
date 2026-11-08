@@ -10,7 +10,8 @@ import { readdirSync, readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { given, then, useBeforeAll, useThen, when } from 'test-fns';
 
-import { tempDirs } from '../../../.test/tempDirs';
+import { tempDirs } from '@src/domain.roles/.test/tempDirs';
+
 import {
   eco,
   genDbPath,

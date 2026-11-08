@@ -1,7 +1,7 @@
 import { ConstraintError } from 'helpful-errors';
 import type { keyrack } from 'rhachet/keyrack';
 
-import { asExecErrorMessage } from '../../../infra/shell/asExecErrorMessage';
+import { asExecErrorMessage } from '@src/infra/shell/asExecErrorMessage';
 import { asGithubAuthMode } from './asGithubAuthMode';
 import { genAuthFromKeyrack } from './genAuthFromKeyrack';
 import { RADIO_AUTH_DEFAULT } from './RADIO_AUTH_DEFAULT';

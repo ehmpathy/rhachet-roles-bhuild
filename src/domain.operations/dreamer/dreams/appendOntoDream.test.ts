@@ -2,7 +2,8 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import { DreamArtifact } from '../../../domain.objects/dreamer/DreamArtifact';
+import { DreamArtifact } from '@src/domain.objects/dreamer/DreamArtifact';
+
 import { appendOntoDream } from './appendOntoDream';
 
 describe('appendOntoDream', () => {

@@ -11,7 +11,8 @@ import { getError, MalfunctionError } from 'helpful-errors';
 import { join } from 'path';
 import { given, then, useThen, when } from 'test-fns';
 
-import { tempDirs } from '../../.test/tempDirs';
+import { tempDirs } from '@src/domain.roles/.test/tempDirs';
+
 import { getProbePayload, PATH_SPEND } from './git.grove.saturation.harness';
 
 /**

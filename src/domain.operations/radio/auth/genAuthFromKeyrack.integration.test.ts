@@ -1,7 +1,7 @@
 import { ConstraintError } from 'helpful-errors';
 import { getError, given, then, when } from 'test-fns';
 
-import { shx } from '../../../infra/shell/shx';
+import { shx } from '@src/infra/shell/shx';
 import { genAuthFromKeyrack } from './genAuthFromKeyrack';
 
 describe('genAuthFromKeyrack.integration', () => {

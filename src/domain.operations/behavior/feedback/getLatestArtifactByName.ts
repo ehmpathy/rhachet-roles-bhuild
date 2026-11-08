@@ -1,7 +1,7 @@
 import { readdirSync } from 'fs';
 import { join } from 'path';
 
-import { BehaviorArtifact } from '../../../domain.objects/BehaviorArtifact';
+import { BehaviorArtifact } from '@src/domain.objects/BehaviorArtifact';
 
 /**
  * .what = get the latest artifact by name from a behavior directory

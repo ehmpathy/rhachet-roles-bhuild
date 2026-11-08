@@ -3,7 +3,8 @@ import path from 'path';
 import { getAllStones } from 'rhachet-roles-bhrain/sdk/route';
 import { genTempDir, given, then, useBeforeAll, when } from 'test-fns';
 
-import { getAllPeerLanesWithBrain } from '../../../.test/utils/getAllPeerLanesWithBrain';
+import { getAllPeerLanesWithBrain } from '@src/.test/utils/getAllPeerLanesWithBrain';
+
 import { BEHAVIOR_SIZE_ORDER } from './getAllTemplatesBySize';
 import { initBehaviorDir } from './initBehaviorDir';
 

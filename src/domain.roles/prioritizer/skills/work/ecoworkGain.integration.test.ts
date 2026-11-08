@@ -25,7 +25,7 @@ import { execFileSync } from 'child_process';
 import { join } from 'path';
 import { given, then, useBeforeAll } from 'test-fns';
 
-import { tempDirs } from '../../../.test/tempDirs';
+import { tempDirs } from '@src/domain.roles/.test/tempDirs';
 
 const PATH_ECOWORK_DB = join(__dirname, 'ecowork.db.mjs');
 

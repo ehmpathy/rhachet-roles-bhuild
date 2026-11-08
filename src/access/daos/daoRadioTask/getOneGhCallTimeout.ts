@@ -1,4 +1,5 @@
-import type { RadioGhSendLimit } from '../../../domain.objects/RadioContext';
+import type { RadioGhSendLimit } from '@src/domain.objects/RadioContext';
+
 import { RADIO_GH_SEND_TIMEOUT } from './RADIO_GH_SEND_TIMEOUT';
 import { RadioGhSendTimeoutError } from './RadioGhSendTimeoutError';
 

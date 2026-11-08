@@ -40,7 +40,6 @@
 import { execSync } from 'child_process';
 import { existsSync, readdirSync } from 'fs';
 import { join } from 'path';
-
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import { genConsumerRepo, stripAnsi } from '../.test/infra';

@@ -1,11 +1,11 @@
 import type { IsoDateStamp } from 'iso-time';
 
-import { RadioTask } from '../../../../domain.objects/RadioTask';
-import { RadioTaskRepo } from '../../../../domain.objects/RadioTaskRepo';
+import { RadioTask } from '@src/domain.objects/RadioTask';
+import { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
 import {
   isRadioTaskStatus,
   type RadioTaskStatus,
-} from '../../../../domain.objects/RadioTaskStatus';
+} from '@src/domain.objects/RadioTaskStatus';
 
 /**
  * .what = extract RadioTask from local task file content

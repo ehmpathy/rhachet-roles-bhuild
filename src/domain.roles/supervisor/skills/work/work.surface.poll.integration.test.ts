@@ -9,7 +9,8 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { given, then, when } from 'test-fns';
 
-import { getShellFnBody } from '../../../.test/getShellFnBody';
+import { getShellFnBody } from '@src/domain.roles/.test/getShellFnBody';
+
 import {
   asCode,
   DIR_SKILLS,

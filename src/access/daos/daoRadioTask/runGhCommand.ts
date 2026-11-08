@@ -2,8 +2,9 @@ import { execFile } from 'child_process';
 import { ConstraintError } from 'helpful-errors';
 import { promisify } from 'util';
 
-import type { ContextGithubAuth } from '../../../domain.objects/RadioContext';
-import { asExecErrorMessage } from '../../../infra/shell/asExecErrorMessage';
+import type { ContextGithubAuth } from '@src/domain.objects/RadioContext';
+import { asExecErrorMessage } from '@src/infra/shell/asExecErrorMessage';
+
 import { getGithubAuthFailureMessage } from './getGithubAuthFailureMessage';
 import { isGhCallTimedOut } from './isGhCallTimedOut';
 import { isGithubAuthFailure } from './isGithubAuthFailure';

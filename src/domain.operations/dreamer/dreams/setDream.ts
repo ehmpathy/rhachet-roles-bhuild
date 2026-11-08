@@ -1,7 +1,8 @@
 import { writeFileSync } from 'fs';
 import * as path from 'path';
 
-import { DreamArtifact } from '../../../domain.objects/dreamer/DreamArtifact';
+import { DreamArtifact } from '@src/domain.objects/dreamer/DreamArtifact';
+
 import { getOneDreamByName } from './getOneDreamByName';
 
 /**

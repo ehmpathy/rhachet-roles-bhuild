@@ -4,8 +4,8 @@ import path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
-  genConsumerRepo,
   genBehaviorFixture,
+  genConsumerRepo,
   genTestGitRepo,
   runRhachetSkill,
 } from '../.test/infra';
@@ -241,7 +241,9 @@ describe('bind.behavior', () => {
 
   given('[case3] consumer: set with absent behavior', () => {
     const scene = useBeforeAll(async () => {
-      const consumer = genConsumerRepo({ prefix: 'bind-behavior-notfound-test-' });
+      const consumer = genConsumerRepo({
+        prefix: 'bind-behavior-notfound-test-',
+      });
       genBehaviorFixture({
         repoDir: consumer.repoDir,
         behaviorName: 'some-feature',

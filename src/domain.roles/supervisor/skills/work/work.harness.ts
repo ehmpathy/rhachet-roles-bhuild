@@ -48,7 +48,7 @@ import { join } from 'path';
 //    prioritizer suite had to reach into this module to get one — a scope leak
 //    across the very seam this lift exists to draw
 //    (rule.prefer.most-common-denominator)
-import { tempDirs } from '../../../.test/tempDirs';
+import { tempDirs } from '@src/domain.roles/.test/tempDirs';
 
 export const DIR_WORK = __dirname;
 export const PATH_CREWWORK = join(DIR_WORK, 'crewwork.sh');

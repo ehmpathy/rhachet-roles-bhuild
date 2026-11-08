@@ -2,8 +2,8 @@ import type { IsoDateStamp } from 'iso-time';
 import * as os from 'os';
 import * as path from 'path';
 
-import type { RadioTaskRepo } from '../../../domain.objects/RadioTaskRepo';
-import type { RadioTaskStatus } from '../../../domain.objects/RadioTaskStatus';
+import type { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
+import type { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
 
 /**
  * .what = compute paths for radio task storage

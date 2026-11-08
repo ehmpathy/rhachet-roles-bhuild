@@ -3,11 +3,11 @@ import * as os from 'os';
 import * as path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
-import type { ContextGitRepo } from '../../../../access/daos/daoRadioTask';
-import { IdempotencyMode } from '../../../../domain.objects/IdempotencyMode';
-import { RadioChannel } from '../../../../domain.objects/RadioChannel';
-import { RadioTaskRepo } from '../../../../domain.objects/RadioTaskRepo';
-import { RadioTaskStatus } from '../../../../domain.objects/RadioTaskStatus';
+import type { ContextGitRepo } from '@src/access/daos/daoRadioTask';
+import { IdempotencyMode } from '@src/domain.objects/IdempotencyMode';
+import { RadioChannel } from '@src/domain.objects/RadioChannel';
+import { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
+import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
 import { setFullRadioTask } from './setFullRadioTask';
 
 describe('setFullRadioTask via os.fileops', () => {

@@ -1,8 +1,8 @@
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
-  genConsumerRepo,
   genBehaviorFixture,
+  genConsumerRepo,
   runRhachetSkill,
 } from '../.test/infra';
 
@@ -59,7 +59,9 @@ describe('decomposer.decompose acceptance (as consumer)', () => {
 
   given('[case2] behavior without criteria', () => {
     const scene = useBeforeAll(async () => {
-      const consumer = genConsumerRepo({ prefix: 'decompose-nocriteria-test-' });
+      const consumer = genConsumerRepo({
+        prefix: 'decompose-nocriteria-test-',
+      });
       genBehaviorFixture({
         repoDir: consumer.repoDir,
         behaviorName: 'no-criteria-feature',

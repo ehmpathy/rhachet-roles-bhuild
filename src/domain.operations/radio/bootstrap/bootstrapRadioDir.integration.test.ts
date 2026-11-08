@@ -3,7 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
-import { RadioTaskRepo } from '../../../domain.objects/RadioTaskRepo';
+import { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
 import { bootstrapRadioDir } from './bootstrapRadioDir';
 import { getGlobalRadioRoot, getRadioPath } from './getRadioPath';
 

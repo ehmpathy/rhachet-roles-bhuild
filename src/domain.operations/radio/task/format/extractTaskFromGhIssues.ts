@@ -1,8 +1,8 @@
 import type { IsoDateStamp } from 'iso-time';
 
-import { RadioTask } from '../../../../domain.objects/RadioTask';
-import type { RadioTaskRepo } from '../../../../domain.objects/RadioTaskRepo';
-import { RadioTaskStatus } from '../../../../domain.objects/RadioTaskStatus';
+import { RadioTask } from '@src/domain.objects/RadioTask';
+import type { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
+import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
 
 /**
  * .what = extract RadioTask from github issue data

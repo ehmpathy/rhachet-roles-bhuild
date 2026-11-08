@@ -1,7 +1,6 @@
 import { execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
@@ -118,18 +117,21 @@ describe('skill.init.behavior.guards.journey.execution', () => {
     });
 
     when('[t2] the unenrolled driver enters the execution', () => {
-      then('bhrain names sonnet, the build brain, and halts with the enroll fix', () => {
-        const output = asCallOutput({ call: scene.executionDrive });
-        expect(asSnapshotStable(output)).toMatchSnapshot();
-        expect(output).toContain('stone = 5.1.execution.phase0_to_phaseN');
-        expect(output).toContain('brain = claude-sonnet-5-5[1m]');
-        expect(output).not.toContain('claude-opus-5-5[1m]');
-        expect(output).toContain('halted, brain switch could not land');
-        expect(output).toContain('no clone address was confirmed');
-        expect(output).toContain(
-          'rhx enroll claude --as @:driver --roles driver',
-        );
-      });
+      then(
+        'bhrain names sonnet, the build brain, and halts with the enroll fix',
+        () => {
+          const output = asCallOutput({ call: scene.executionDrive });
+          expect(asSnapshotStable(output)).toMatchSnapshot();
+          expect(output).toContain('stone = 5.1.execution.phase0_to_phaseN');
+          expect(output).toContain('brain = claude-sonnet-5-5[1m]');
+          expect(output).not.toContain('claude-opus-5-5[1m]');
+          expect(output).toContain('halted, brain switch could not land');
+          expect(output).toContain('no clone address was confirmed');
+          expect(output).toContain(
+            'rhx enroll claude --as @:driver --roles driver',
+          );
+        },
+      );
     });
   });
 });

@@ -3,7 +3,6 @@ import path from 'path';
 import { given, then, useBeforeAll, useThen, when } from 'test-fns';
 
 import { genConsumerRepo } from '../.test/infra';
-
 import {
   asSnapshotStable,
   runInitBehaviorSkillDirect,
@@ -72,9 +71,7 @@ describe('init.behavior.wish', () => {
       then('wish file contains piped content', () => {
         const behaviorRoot = path.join(scene.repoDir, '.behavior');
         const behaviorDirs = fs.readdirSync(behaviorRoot);
-        const wishDir = behaviorDirs.find((d) =>
-          d.includes('wish-stdin-test'),
-        );
+        const wishDir = behaviorDirs.find((d) => d.includes('wish-stdin-test'));
         expect(wishDir).toBeDefined();
 
         const wishPath = path.join(behaviorRoot, wishDir!, '0.wish.md');

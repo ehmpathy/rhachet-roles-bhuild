@@ -13,9 +13,10 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
-import { getShellFnBody } from '../../../.test/getShellFnBody';
-import { getShellLibWhole } from '../../../.test/getShellLibWhole';
-import { tempDirs } from '../../../.test/tempDirs';
+import { getShellFnBody } from '@src/domain.roles/.test/getShellFnBody';
+import { getShellLibWhole } from '@src/domain.roles/.test/getShellLibWhole';
+import { tempDirs } from '@src/domain.roles/.test/tempDirs';
+
 import { runCrew } from './work.harness';
 
 // .why = each case makes a fake git root, and each runCrew makes a driver dir.

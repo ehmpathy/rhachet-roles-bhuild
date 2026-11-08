@@ -270,7 +270,9 @@ describe('prioritizer.eco.priority acceptance (as consumer)', () => {
       //    children off blanks. one rank, both glyphs, proven together
       then('🔴 the non-terminal row keeps a live rail under it', () => {
         expect(result.output).toContain('   ├─ p2 · 1m · bigrock://sandpine');
-        expect(result.output).toContain('   │     ├─ what: fix the nullability');
+        expect(result.output).toContain(
+          '   │     ├─ what: fix the nullability',
+        );
       });
 
       then('🔴 and the terminal row hangs its children off blanks', () => {

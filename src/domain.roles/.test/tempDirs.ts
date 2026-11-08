@@ -9,7 +9,7 @@
  *         so a **prioritizer** suite that wanted a temp dir had to reach into
  *         the **supervisor's** internal test module to get it:
  *
- *           import { genTempDir } from '../../supervisor/skills/work/work.harness'
+ *           import { genTempDir } from '@src/supervisor/skills/work/work.harness'
  *
  *         ⇒ that is a scope leak in the literal sense — one bounded context
  *         reaches into another's interior — and a decomposition miss:

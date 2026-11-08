@@ -1,6 +1,6 @@
 import { appendFileSync } from 'fs';
 
-import type { DreamArtifact } from '../../../domain.objects/dreamer/DreamArtifact';
+import type { DreamArtifact } from '@src/domain.objects/dreamer/DreamArtifact';
 
 /**
  * .what = appends content to a dream file

@@ -9,8 +9,9 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
-import { getShellLibWhole } from '../../../.test/getShellLibWhole';
-import { tempDirs } from '../../../.test/tempDirs';
+import { getShellLibWhole } from '@src/domain.roles/.test/getShellLibWhole';
+import { tempDirs } from '@src/domain.roles/.test/tempDirs';
+
 import { readPollWhole } from './crewwork.harness';
 import { runCrew } from './work.harness';
 

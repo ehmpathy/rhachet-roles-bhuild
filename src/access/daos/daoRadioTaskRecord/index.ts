@@ -11,13 +11,13 @@ import { ConstraintError, MalfunctionError } from 'helpful-errors';
 import { basename, join } from 'path';
 import { z } from 'zod';
 
-import { IdempotencyMode } from '../../../domain.objects/IdempotencyMode';
-import { RadioChannel } from '../../../domain.objects/RadioChannel';
-import { RadioTaskRecord } from '../../../domain.objects/RadioTaskRecord';
-import { RADIO_TASK_RECORD_KEY_PATTERN } from '../../../domain.objects/RadioTaskRecordKeyGrammar';
-import { RadioTaskRecordStatus } from '../../../domain.objects/RadioTaskRecordStatus';
-import { RadioTaskStatus } from '../../../domain.objects/RadioTaskStatus';
-import { asExecErrorMessage } from '../../../infra/shell/asExecErrorMessage';
+import { IdempotencyMode } from '@src/domain.objects/IdempotencyMode';
+import { RadioChannel } from '@src/domain.objects/RadioChannel';
+import { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
+import { RADIO_TASK_RECORD_KEY_PATTERN } from '@src/domain.objects/RadioTaskRecordKeyGrammar';
+import { RadioTaskRecordStatus } from '@src/domain.objects/RadioTaskRecordStatus';
+import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
+import { asExecErrorMessage } from '@src/infra/shell/asExecErrorMessage';
 
 /**
  * .what = the cause of a record fault, minus the class header an inner helpful-error carries

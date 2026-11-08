@@ -2,7 +2,7 @@ import type {
   RadioGlobalState,
   RadioLocalState,
   RadioOrgState,
-} from '../../../domain.objects/RadioPermissions';
+} from '@src/domain.objects/RadioPermissions';
 import { computeRadioUsagePermissionDecision } from './computeRadioUsagePermissionDecision';
 
 /**

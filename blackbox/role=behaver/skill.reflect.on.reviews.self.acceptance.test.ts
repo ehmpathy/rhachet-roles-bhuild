@@ -172,61 +172,66 @@ describe('reflect.on.reviews.self (acceptance)', () => {
     const scene = useBeforeAll(async () => genScene({ corpus: TRANSCRIPT }));
     afterAll(() => scene.cleanup());
 
-    when('[t0] the skill is dispatched in plan mode with an --into path', () => {
-      const reportPath = () => path.join(scene.repoDir, 'report.md');
-      const result = useBeforeAll(async () =>
-        runReflectSkill({
-          repoDir: scene.repoDir,
-          corpusDir: scene.corpusDir,
-          args: `--mode plan --into "${reportPath()}"`,
-        }),
-      );
+    when(
+      '[t0] the skill is dispatched in plan mode with an --into path',
+      () => {
+        const reportPath = () => path.join(scene.repoDir, 'report.md');
+        const result = useBeforeAll(async () =>
+          runReflectSkill({
+            repoDir: scene.repoDir,
+            corpusDir: scene.corpusDir,
+            args: `--mode plan --into "${reportPath()}"`,
+          }),
+        );
 
-      then('it exits cleanly', () => {
-        expect(result.exitCode).toBe(0);
-      });
+        then('it exits cleanly', () => {
+          expect(result.exitCode).toBe(0);
+        });
 
-      then('it emits the treestruct summary to stdout', () => {
-        expect(result.stdout).toContain('🦫 heres the reflection');
-        expect(result.stdout).toContain('🌲 reflect.on.reviews.self --mode plan');
-        expect(result.stdout).toContain('has-questioned-assumptions');
-      });
+        then('it emits the treestruct summary to stdout', () => {
+          expect(result.stdout).toContain('🦫 heres the reflection');
+          expect(result.stdout).toContain(
+            '🌲 reflect.on.reviews.self --mode plan',
+          );
+          expect(result.stdout).toContain('has-questioned-assumptions');
+        });
 
-      then('the stdout summary matches its snapshot', () => {
-        expect(asStableStdout(result.stdout)).toMatchSnapshot();
-      });
+        then('the stdout summary matches its snapshot', () => {
+          expect(asStableStdout(result.stdout)).toMatchSnapshot();
+        });
 
-      then('it writes the markdown report', () => {
-        const report = fs.readFileSync(reportPath(), 'utf-8');
-        expect(report).toContain('# reflection: self-reviews');
-        expect(report).toContain('has-questioned-assumptions');
-      });
+        then('it writes the markdown report', () => {
+          const report = fs.readFileSync(reportPath(), 'utf-8');
+          expect(report).toContain('# reflection: self-reviews');
+          expect(report).toContain('has-questioned-assumptions');
+        });
 
-      then('the markdown report matches its snapshot', () => {
-        const report = fs.readFileSync(reportPath(), 'utf-8');
-        expect(report).toMatchSnapshot();
-      });
+        then('the markdown report matches its snapshot', () => {
+          const report = fs.readFileSync(reportPath(), 'utf-8');
+          expect(report).toMatchSnapshot();
+        });
 
-      then('it writes the machine-readable json aggregate', () => {
-        const jsonPath = reportPath().replace(/\.md$/, '.v1.json');
-        const parsed = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
-        expect(parsed.reviewsTotal).toBe(1);
-      });
+        then('it writes the machine-readable json aggregate', () => {
+          const jsonPath = reportPath().replace(/\.md$/, '.v1.json');
+          const parsed = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
+          expect(parsed.reviewsTotal).toBe(1);
+        });
 
-      then('the json aggregate matches its snapshot', () => {
-        // snapshot the RAW file bytes (not a re-parsed object) so the diff shows
-        // exactly what a caller opens: the real `JSON.stringify(..., null, 2)`
-        // output — strict json with no comma after the last member, consistent
-        // with the error blocks above (which are also raw strings). a re-parsed
-        // object would instead render via jest pretty-format, which adds a comma
-        // after the last member and diverges from the true artifact. the aggregate
-        // is a pure per-slug rollup with no timestamps or temp paths, so it is
-        // deterministic for a fixed corpus. full shape still surfaces schema drift.
-        const jsonPath = reportPath().replace(/\.md$/, '.v1.json');
-        const raw = fs.readFileSync(jsonPath, 'utf-8');
-        expect(raw).toMatchSnapshot();
-      });
-    });
+        then('the json aggregate matches its snapshot', () => {
+          // snapshot the RAW file bytes (not a re-parsed object) so the diff shows
+          // exactly what a caller opens: the real `JSON.stringify(..., null, 2)`
+          // output — strict json with no comma after the last member, consistent
+          // with the error blocks above (which are also raw strings). a re-parsed
+          // object would instead render via jest pretty-format, which adds a comma
+          // after the last member and diverges from the true artifact. the aggregate
+          // is a pure per-slug rollup with no timestamps or temp paths, so it is
+          // deterministic for a fixed corpus. full shape still surfaces schema drift.
+          const jsonPath = reportPath().replace(/\.md$/, '.v1.json');
+          const raw = fs.readFileSync(jsonPath, 'utf-8');
+          expect(raw).toMatchSnapshot();
+        });
+      },
+    );
   });
 
   given('[case2] a corpus with no behavior routes', () => {
@@ -248,9 +253,7 @@ describe('reflect.on.reviews.self (acceptance)', () => {
 
       then('it fails loud rather than an empty success', () => {
         expect(result.exitCode).not.toBe(0);
-        expect(result.stdout).toContain(
-          'no init.behavior self-review windows',
-        );
+        expect(result.stdout).toContain('no init.behavior self-review windows');
       });
 
       then('the no-route error block matches its snapshot', () => {
@@ -289,26 +292,29 @@ describe('reflect.on.reviews.self (acceptance)', () => {
     const scene = useBeforeAll(async () => genScene({ corpus: TRANSCRIPT }));
     afterAll(() => scene.cleanup());
 
-    when('[t0] the skill is dispatched with a project filter that misses', () => {
-      const result = useBeforeAll(async () =>
-        runReflectSkill({
-          repoDir: scene.repoDir,
-          corpusDir: scene.corpusDir,
-          args: `--project no-such-project --into "${path.join(scene.repoDir, 'r.md')}"`,
-        }),
-      );
-
-      then('it fails loud with the filter-miss constraint', () => {
-        expect(result.exitCode).not.toBe(0);
-        expect(result.stdout).toContain(
-          'no self-review windows matched the given filters',
+    when(
+      '[t0] the skill is dispatched with a project filter that misses',
+      () => {
+        const result = useBeforeAll(async () =>
+          runReflectSkill({
+            repoDir: scene.repoDir,
+            corpusDir: scene.corpusDir,
+            args: `--project no-such-project --into "${path.join(scene.repoDir, 'r.md')}"`,
+          }),
         );
-      });
 
-      then('the filter-miss error block matches its snapshot', () => {
-        expect(asStableError(result.stdout)).toMatchSnapshot();
-      });
-    });
+        then('it fails loud with the filter-miss constraint', () => {
+          expect(result.exitCode).not.toBe(0);
+          expect(result.stdout).toContain(
+            'no self-review windows matched the given filters',
+          );
+        });
+
+        then('the filter-miss error block matches its snapshot', () => {
+          expect(asStableError(result.stdout)).toMatchSnapshot();
+        });
+      },
+    );
   });
 
   // .why = apply mode is acceptance-tested only on its *error* path (below), not
@@ -372,9 +378,12 @@ describe('reflect.on.reviews.self (acceptance)', () => {
         }),
       );
 
-      then('it fails loud with a non-zero exit, not a silent plan fallback', () => {
-        expect(result.exitCode).not.toBe(0);
-      });
+      then(
+        'it fails loud with a non-zero exit, not a silent plan fallback',
+        () => {
+          expect(result.exitCode).not.toBe(0);
+        },
+      );
 
       then('it names the offending flag and that input was invalid', () => {
         expect(result.stdout).toContain('input invalid');

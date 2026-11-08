@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import * as path from 'path';
-
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
@@ -130,18 +129,21 @@ describe('skill.init.behavior.guards.journey.vision', () => {
     // `brain:` stone bhrain names the prescribed brain, then halts with the `unenrolled` cause
     // and the enroll fix (catalog cell c16)
     when('[t4] the unenrolled driver enters the vision', () => {
-      then('bhrain names opus, the design brain, and halts with the enroll fix', () => {
-        const output = asCallOutput({ call: scene.visionDrive });
-        expect(asSnapshotStable(output)).toMatchSnapshot();
-        expect(output).toContain('stone = 1.vision');
-        expect(output).toContain('brain = claude-opus-5-5[1m]');
-        expect(output).not.toContain('claude-sonnet-5-5[1m]');
-        expect(output).toContain('halted, brain switch could not land');
-        expect(output).toContain('no clone address was confirmed');
-        expect(output).toContain(
-          'rhx enroll claude --as @:driver --roles driver',
-        );
-      });
+      then(
+        'bhrain names opus, the design brain, and halts with the enroll fix',
+        () => {
+          const output = asCallOutput({ call: scene.visionDrive });
+          expect(asSnapshotStable(output)).toMatchSnapshot();
+          expect(output).toContain('stone = 1.vision');
+          expect(output).toContain('brain = claude-opus-5-5[1m]');
+          expect(output).not.toContain('claude-sonnet-5-5[1m]');
+          expect(output).toContain('halted, brain switch could not land');
+          expect(output).toContain('no clone address was confirmed');
+          expect(output).toContain(
+            'rhx enroll claude --as @:driver --roles driver',
+          );
+        },
+      );
     });
   });
 });

@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import * as path from 'path';
-
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
@@ -150,19 +149,25 @@ describe('skill.init.behavior.guards.journey.blueprint', () => {
       });
     });
 
-    when('[t4] the unenrolled driver enters the roadmap, past the blueprint', () => {
-      then('bhrain names sonnet, the build brain, and halts with the enroll fix', () => {
-        const output = asCallOutput({ call: scene.roadmapDrive });
-        expect(asSnapshotStable(output)).toMatchSnapshot();
-        expect(output).toContain('stone = 4.1.roadmap');
-        expect(output).toContain('brain = claude-sonnet-5-5[1m]');
-        expect(output).not.toContain('claude-opus-5-5[1m]');
-        expect(output).toContain('halted, brain switch could not land');
-        expect(output).toContain('no clone address was confirmed');
-        expect(output).toContain(
-          'rhx enroll claude --as @:driver --roles driver',
+    when(
+      '[t4] the unenrolled driver enters the roadmap, past the blueprint',
+      () => {
+        then(
+          'bhrain names sonnet, the build brain, and halts with the enroll fix',
+          () => {
+            const output = asCallOutput({ call: scene.roadmapDrive });
+            expect(asSnapshotStable(output)).toMatchSnapshot();
+            expect(output).toContain('stone = 4.1.roadmap');
+            expect(output).toContain('brain = claude-sonnet-5-5[1m]');
+            expect(output).not.toContain('claude-opus-5-5[1m]');
+            expect(output).toContain('halted, brain switch could not land');
+            expect(output).toContain('no clone address was confirmed');
+            expect(output).toContain(
+              'rhx enroll claude --as @:driver --roles driver',
+            );
+          },
         );
-      });
-    });
+      },
+    );
   });
 });

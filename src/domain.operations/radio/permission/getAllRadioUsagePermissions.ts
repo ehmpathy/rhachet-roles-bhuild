@@ -6,7 +6,7 @@ import type {
   RadioGlobalState,
   RadioLocalState,
   RadioOrgState,
-} from '../../../domain.objects/RadioPermissions';
+} from '@src/domain.objects/RadioPermissions';
 
 const GLOBAL_STORAGE_PATH =
   '.rhachet/storage/repo=bhuild/role=dispatcher/.meter';

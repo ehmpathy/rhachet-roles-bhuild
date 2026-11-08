@@ -1,7 +1,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
-import type { RadioTaskRepo } from '../../../domain.objects/RadioTaskRepo';
+import type { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
 import { getGlobalRadioRoot, getRadioPath } from './getRadioPath';
 
 /**

@@ -20,9 +20,9 @@
 import { withEmojiSpaceShim } from 'emoji-space-shim';
 import { BadRequestError, ConstraintError, HelpfulError } from 'helpful-errors';
 
-import { asCliHintText } from '../../infra/cli/asCliHintText';
-import { asCliMalfunctionOutput } from '../../infra/cli/asCliMalfunctionOutput';
-import { isHintInErrorMessage } from '../../infra/cli/isHintInErrorMessage';
+import { asCliHintText } from '@src/infra/cli/asCliHintText';
+import { asCliMalfunctionOutput } from '@src/infra/cli/asCliMalfunctionOutput';
+import { isHintInErrorMessage } from '@src/infra/cli/isHintInErrorMessage';
 
 /**
  * .what = runs a cli's logic and maps a caller-fixable error to exit 2

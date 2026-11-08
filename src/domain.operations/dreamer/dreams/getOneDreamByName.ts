@@ -2,7 +2,7 @@ import { existsSync, readdirSync } from 'fs';
 import { UnexpectedCodePathError } from 'helpful-errors';
 import * as path from 'path';
 
-import { DreamArtifact } from '../../../domain.objects/dreamer/DreamArtifact';
+import { DreamArtifact } from '@src/domain.objects/dreamer/DreamArtifact';
 
 /**
  * .what = finds a dream artifact by its name, regardless of date

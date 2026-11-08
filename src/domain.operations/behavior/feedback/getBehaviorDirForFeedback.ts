@@ -1,7 +1,7 @@
 import { BadRequestError } from 'helpful-errors';
 
-import { getBranchBehaviorBind } from '../bind/getBranchBehaviorBind';
-import { getBehaviorDir } from '../getBehaviorDir';
+import { getBranchBehaviorBind } from '@src/domain.operations/behavior/bind/getBranchBehaviorBind';
+import { getBehaviorDir } from '@src/domain.operations/behavior/getBehaviorDir';
 
 /**
  * .what = get the behavior directory for feedback operations

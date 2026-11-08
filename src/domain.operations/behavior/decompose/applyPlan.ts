@@ -2,8 +2,8 @@ import * as fs from 'fs/promises';
 import { BadRequestError, UnexpectedCodePathError } from 'helpful-errors';
 import * as path from 'path';
 
-import type { BehaviorDecompositionPlan } from '../../../domain.objects/BehaviorDecompositionPlan';
-import type { BehaviorDecompositionProposed } from '../../../domain.objects/BehaviorDecompositionProposed';
+import type { BehaviorDecompositionPlan } from '@src/domain.objects/BehaviorDecompositionPlan';
+import type { BehaviorDecompositionProposed } from '@src/domain.objects/BehaviorDecompositionProposed';
 
 /**
  * .what = applies a decomposition plan by creating sub-behavior directories

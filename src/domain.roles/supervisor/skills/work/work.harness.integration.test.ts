@@ -10,7 +10,8 @@
 import { MalfunctionError } from 'helpful-errors';
 import { getError, given, then, when } from 'test-fns';
 
-import { tempDirs } from '../../../.test/tempDirs';
+import { tempDirs } from '@src/domain.roles/.test/tempDirs';
+
 import { runDriver } from './work.harness';
 
 afterAll(() => tempDirs.delAll());

@@ -46,8 +46,8 @@ import { execFileSync, spawnSync } from 'child_process';
 import { join } from 'path';
 import { genTempDir, given, then, useBeforeAll } from 'test-fns';
 
-import { daoRadioTaskRecord } from '../../../access/daos/daoRadioTaskRecord';
-import { tempDirs } from '../../.test/tempDirs';
+import { daoRadioTaskRecord } from '@src/access/daos/daoRadioTaskRecord';
+import { tempDirs } from '@src/domain.roles/.test/tempDirs';
 
 const PATH_ECOWORK_DB = join(__dirname, 'work', 'ecowork.db.mjs');
 const PATH_ECO_SEED_SH = join(__dirname, 'eco.seed.sh');

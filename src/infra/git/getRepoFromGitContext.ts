@@ -1,7 +1,7 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
-import { RadioTaskRepo } from '../../domain.objects/RadioTaskRepo';
+import { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
 
 const execAsync = promisify(exec);
 

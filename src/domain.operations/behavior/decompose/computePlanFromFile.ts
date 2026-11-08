@@ -2,7 +2,7 @@ import * as fs from 'fs/promises';
 import { BadRequestError } from 'helpful-errors';
 import { asIsoDateStamp } from 'iso-time';
 
-import { BehaviorDecompositionPlan } from '../../../domain.objects/BehaviorDecompositionPlan';
+import { BehaviorDecompositionPlan } from '@src/domain.objects/BehaviorDecompositionPlan';
 
 /**
  * .what = reads and validates a decomposition plan from a JSON file

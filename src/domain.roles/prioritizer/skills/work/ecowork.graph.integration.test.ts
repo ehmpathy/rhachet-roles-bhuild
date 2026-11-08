@@ -10,7 +10,8 @@ import { rmSync } from 'fs';
 import { dirname } from 'path';
 import { given, then, useBeforeAll } from 'test-fns';
 
-import { tempDirs } from '../../../.test/tempDirs';
+import { tempDirs } from '@src/domain.roles/.test/tempDirs';
+
 import {
   eco,
   genDbPath,

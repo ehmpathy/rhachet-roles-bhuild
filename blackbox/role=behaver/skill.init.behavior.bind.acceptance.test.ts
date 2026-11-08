@@ -1,7 +1,6 @@
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import { genConsumerRepo } from '../.test/infra';
-
 import {
   asSnapshotStable,
   runInitBehaviorSkillDirect,

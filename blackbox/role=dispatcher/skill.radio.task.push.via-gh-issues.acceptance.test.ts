@@ -1,13 +1,12 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
-import path from 'path';
-
 import { UnexpectedCodePathError } from 'helpful-errors';
+import path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
-  genConsumerRepo,
   GITHUB_DEMO_REPO,
+  genConsumerRepo,
   runRhachetSkill,
   sanitizeOutput,
 } from '../.test/infra';
@@ -165,7 +164,6 @@ const runRadioTaskPushWithStdin = (input: {
 };
 
 describe('radio.task.push via gh.issues', () => {
-
   // shared consumer repo for all test cases (pnpm install is expensive)
   const scene = useBeforeAll(async () => {
     const consumer = await genConsumerRepo({ prefix: 'radio-gh-acpt-' });
@@ -179,20 +177,23 @@ describe('radio.task.push via gh.issues', () => {
       homeDir,
     });
     if (allowed.exitCode !== 0)
-      throw new UnexpectedCodePathError('radio.uses allow failed in the scene', {
-        exitCode: allowed.exitCode,
-        output: allowed.stdout,
-      });
+      throw new UnexpectedCodePathError(
+        'radio.uses allow failed in the scene',
+        {
+          exitCode: allowed.exitCode,
+          output: allowed.stdout,
+        },
+      );
 
     return { consumer, homeDir };
   });
 
   given('[case1] push new task to gh.issues (default auth via keyrack)', () => {
-
     when('[t0] push with title and description (no --auth flag)', () => {
       const result = useBeforeAll(async () =>
         runRadioTaskPush({
-          repoDir: scene.consumer.repoDir, homeDir: scene.homeDir,
+          repoDir: scene.consumer.repoDir,
+          homeDir: scene.homeDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
           into: GITHUB_DEMO_REPO,
@@ -221,7 +222,8 @@ describe('radio.task.push via gh.issues', () => {
     when('[t1] push without title (no --auth flag)', () => {
       const result = useBeforeAll(async () =>
         runRadioTaskPush({
-          repoDir: scene.consumer.repoDir, homeDir: scene.homeDir,
+          repoDir: scene.consumer.repoDir,
+          homeDir: scene.homeDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
           into: GITHUB_DEMO_REPO,
@@ -255,7 +257,8 @@ describe('radio.task.push via gh.issues', () => {
     when('[t0] create then claim task', () => {
       const createResult = useBeforeAll(async () => {
         const result = runRadioTaskPush({
-          repoDir: scene.consumer.repoDir, homeDir: scene.homeDir,
+          repoDir: scene.consumer.repoDir,
+          homeDir: scene.homeDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
           into: GITHUB_DEMO_REPO,
@@ -281,7 +284,8 @@ describe('radio.task.push via gh.issues', () => {
 
       then('claim updates status', async () => {
         const claimResult = runRadioTaskPush({
-          repoDir: scene.consumer.repoDir, homeDir: scene.homeDir,
+          repoDir: scene.consumer.repoDir,
+          homeDir: scene.homeDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
           into: GITHUB_DEMO_REPO,
@@ -294,7 +298,8 @@ describe('radio.task.push via gh.issues', () => {
 
       then('deliver closes the issue', async () => {
         const deliverResult = runRadioTaskPush({
-          repoDir: scene.consumer.repoDir, homeDir: scene.homeDir,
+          repoDir: scene.consumer.repoDir,
+          homeDir: scene.homeDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
           into: GITHUB_DEMO_REPO,
@@ -313,7 +318,8 @@ describe('radio.task.push via gh.issues', () => {
     when('[t0] findsert mode with duplicate title', () => {
       const firstResult = useBeforeAll(async () =>
         runRadioTaskPush({
-          repoDir: scene.consumer.repoDir, homeDir: scene.homeDir,
+          repoDir: scene.consumer.repoDir,
+          homeDir: scene.homeDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
           into: GITHUB_DEMO_REPO,
@@ -333,7 +339,8 @@ describe('radio.task.push via gh.issues', () => {
         await new Promise((resolve) => setTimeout(resolve, 5000));
 
         const secondResult = runRadioTaskPush({
-          repoDir: scene.consumer.repoDir, homeDir: scene.homeDir,
+          repoDir: scene.consumer.repoDir,
+          homeDir: scene.homeDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
           into: GITHUB_DEMO_REPO,
@@ -351,7 +358,8 @@ describe('radio.task.push via gh.issues', () => {
     when('[t0] task is pushed to gh.issues', () => {
       const result = useBeforeAll(async () =>
         runRadioTaskPush({
-          repoDir: scene.consumer.repoDir, homeDir: scene.homeDir,
+          repoDir: scene.consumer.repoDir,
+          homeDir: scene.homeDir,
           via: 'gh.issues',
           // no auth — uses default as-robot:via-keyrack(ehmpath)
           into: GITHUB_DEMO_REPO,
@@ -391,9 +399,12 @@ describe('radio.task.push via gh.issues', () => {
         expect(result.output).toContain('created');
       });
 
-      then('output shows exid (proves issue was created with piped content)', () => {
-        expect(result.output).toMatch(/exid: \d+/);
-      });
+      then(
+        'output shows exid (proves issue was created with piped content)',
+        () => {
+          expect(result.output).toMatch(/exid: \d+/);
+        },
+      );
     });
   });
 
@@ -448,142 +459,169 @@ describe('radio.task.push via gh.issues', () => {
   // (a caller-fixable ConstraintError), NOT a raw crash or 💥.
   // ────────────────────────────────────────────────────────────────
 
-  given('[case7] auth misconfig surfaces a graceful ✋ (unset env token)', () => {
-    // .note = its own consumer repo: the push is held, and a shared repo would
-    //   list every other case's held task beside it, so the snapshot would drift
-    const sceneOwn = useBeforeAll(async () => {
-      const consumer = await genConsumerRepo({ prefix: 'radio-gh-acpt-authfail-' });
-      const homeDir = path.join(consumer.repoDir, '.home');
-      fs.mkdirSync(homeDir);
-      runRadioUses({
-        repoDir: consumer.repoDir,
-        args: '--org @all allow',
-        homeDir,
+  given(
+    '[case7] auth misconfig surfaces a graceful ✋ (unset env token)',
+    () => {
+      // .note = its own consumer repo: the push is held, and a shared repo would
+      //   list every other case's held task beside it, so the snapshot would drift
+      const sceneOwn = useBeforeAll(async () => {
+        const consumer = await genConsumerRepo({
+          prefix: 'radio-gh-acpt-authfail-',
+        });
+        const homeDir = path.join(consumer.repoDir, '.home');
+        fs.mkdirSync(homeDir);
+        runRadioUses({
+          repoDir: consumer.repoDir,
+          args: '--org @all allow',
+          homeDir,
+        });
+        return { consumer, homeDir };
       });
-      return { consumer, homeDir };
-    });
 
-    when('[t0] push with --auth as-robot:env(VAR) where VAR is not set', () => {
-      // fully deterministic: the token is derived from an env var that is not
-      // set, so the skill fails fast BEFORE any gh call — no network, no creds.
-      const result = useBeforeAll(async () =>
-        runRadioTaskPush({
-          repoDir: sceneOwn.consumer.repoDir,
-          homeDir: sceneOwn.homeDir,
-          via: 'gh.issues',
-          auth: 'as-robot:env(RADIO_ACCEPT_UNSET_TOKEN)',
-          into: GITHUB_DEMO_REPO,
-          title: `auth-fail env test ${Date.now()}`,
-          description: 'should never be created',
-        }),
+      when(
+        '[t0] push with --auth as-robot:env(VAR) where VAR is not set',
+        () => {
+          // fully deterministic: the token is derived from an env var that is not
+          // set, so the skill fails fast BEFORE any gh call — no network, no creds.
+          const result = useBeforeAll(async () =>
+            runRadioTaskPush({
+              repoDir: sceneOwn.consumer.repoDir,
+              homeDir: sceneOwn.homeDir,
+              via: 'gh.issues',
+              auth: 'as-robot:env(RADIO_ACCEPT_UNSET_TOKEN)',
+              into: GITHUB_DEMO_REPO,
+              title: `auth-fail env test ${Date.now()}`,
+              description: 'should never be created',
+            }),
+          );
+
+          then(
+            'exits with code 2 (✋ caller-fixable ConstraintError, not 💥 exit 1)',
+            () => {
+              // the vision's central reclassification: a caller-fixable auth failure
+              // is a ConstraintError (exit 2), never a MalfunctionError (exit 1).
+              expect(result.exitCode).toBe(2);
+            },
+          );
+
+          then(
+            'names the unset env var in a graceful ✋ (not a raw crash)',
+            () => {
+              expect(result.output).toContain('RADIO_ACCEPT_UNSET_TOKEN');
+              expect(result.output).toContain('not set');
+            },
+          );
+
+          then('does NOT leak a raw stack trace or unhandled crash', () => {
+            expect(result.output).not.toContain('    at ');
+            expect(result.output).not.toContain('UnhandledPromiseRejection');
+          });
+
+          then('the push is held, not lost', () => {
+            expect(result.output).toContain('🦫 held for the radio');
+            expect(result.output).toContain('QUEUED (upstream:auth)');
+          });
+
+          then('the human-readable output matches snapshot', () => {
+            // snap the skill's own stream: rhachet frames stdout and stderr each with a banner
+            expect(result.stdout).toContain('🦫 held for the radio');
+            expect(
+              asStableRecordKey({
+                output: sanitizeOutput(result.stdout).replace(
+                  /auth-fail env test \d+/g,
+                  'auth-fail env test <ts>',
+                ),
+              }),
+            ).toMatchSnapshot();
+          });
+
+          then('the stderr stream matches snapshot', () => {
+            // snapped apart from stdout, so a leak onto stderr surfaces as a snap diff
+            expect(
+              asStableRecordKey({
+                output: sanitizeOutput(result.stderr).replace(
+                  /auth-fail env test \d+/g,
+                  'auth-fail env test <ts>',
+                ),
+              }),
+            ).toMatchSnapshot();
+          });
+        },
       );
+    },
+  );
 
-      then('exits with code 2 (✋ caller-fixable ConstraintError, not 💥 exit 1)', () => {
-        // the vision's central reclassification: a caller-fixable auth failure
-        // is a ConstraintError (exit 2), never a MalfunctionError (exit 1).
-        expect(result.exitCode).toBe(2);
+  given(
+    '[case8] rejected robot token surfaces the as-human nudge (gh 401)',
+    () => {
+      // .note = its own consumer repo, as [case7]: the push is held, and a shared
+      //   repo would list every other case's held task beside it
+      const sceneOwn = useBeforeAll(async () => {
+        const consumer = await genConsumerRepo({
+          prefix: 'radio-gh-acpt-auth401-',
+        });
+        const homeDir = path.join(consumer.repoDir, '.home');
+        fs.mkdirSync(homeDir);
+        runRadioUses({
+          repoDir: consumer.repoDir,
+          args: '--org @all allow',
+          homeDir,
+        });
+        return { consumer, homeDir };
       });
 
-      then('names the unset env var in a graceful ✋ (not a raw crash)', () => {
-        expect(result.output).toContain('RADIO_ACCEPT_UNSET_TOKEN');
-        expect(result.output).toContain('not set');
-      });
-
-      then('does NOT leak a raw stack trace or unhandled crash', () => {
-        expect(result.output).not.toContain('    at ');
-        expect(result.output).not.toContain('UnhandledPromiseRejection');
-      });
-
-      then('the push is held, not lost', () => {
-        expect(result.output).toContain('🦫 held for the radio');
-        expect(result.output).toContain('QUEUED (upstream:auth)');
-      });
-
-      then('the human-readable output matches snapshot', () => {
-        // snap the skill's own stream: rhachet frames stdout and stderr each with a banner
-        expect(result.stdout).toContain('🦫 held for the radio');
-        expect(
-          asStableRecordKey({
-            output: sanitizeOutput(result.stdout).replace(
-              /auth-fail env test \d+/g,
-              'auth-fail env test <ts>',
-            ),
+      when('[t0] push with an env token that github rejects (401)', () => {
+        // a deliberately bogus token — github answers HTTP 401. no real
+        // credential needed: the case under test IS a rejected token.
+        const result = useBeforeAll(async () =>
+          runRadioTaskPush({
+            repoDir: sceneOwn.consumer.repoDir,
+            homeDir: sceneOwn.homeDir,
+            via: 'gh.issues',
+            auth: 'as-robot:env(RADIO_ACCEPT_BOGUS_TOKEN)',
+            env: {
+              RADIO_ACCEPT_BOGUS_TOKEN: 'ghp_bogusInvalidToken000',
+            },
+            into: GITHUB_DEMO_REPO,
+            title: `auth-fail 401 test ${Date.now()}`,
+            description: 'should never be created',
           }),
-        ).toMatchSnapshot();
-      });
+        );
 
-      then('the stderr stream matches snapshot', () => {
-        // snapped apart from stdout, so a leak onto stderr surfaces as a snap diff
-        expect(
-          asStableRecordKey({
-            output: sanitizeOutput(result.stderr).replace(
-              /auth-fail env test \d+/g,
-              'auth-fail env test <ts>',
-            ),
-          }),
-        ).toMatchSnapshot();
-      });
-    });
-  });
-
-  given('[case8] rejected robot token surfaces the as-human nudge (gh 401)', () => {
-    // .note = its own consumer repo, as [case7]: the push is held, and a shared
-    //   repo would list every other case's held task beside it
-    const sceneOwn = useBeforeAll(async () => {
-      const consumer = await genConsumerRepo({ prefix: 'radio-gh-acpt-auth401-' });
-      const homeDir = path.join(consumer.repoDir, '.home');
-      fs.mkdirSync(homeDir);
-      runRadioUses({
-        repoDir: consumer.repoDir,
-        args: '--org @all allow',
-        homeDir,
-      });
-      return { consumer, homeDir };
-    });
-
-    when('[t0] push with an env token that github rejects (401)', () => {
-      // a deliberately bogus token — github answers HTTP 401. no real
-      // credential needed: the case under test IS a rejected token.
-      const result = useBeforeAll(async () =>
-        runRadioTaskPush({
-          repoDir: sceneOwn.consumer.repoDir,
-          homeDir: sceneOwn.homeDir,
-          via: 'gh.issues',
-          auth: 'as-robot:env(RADIO_ACCEPT_BOGUS_TOKEN)',
-          env: {
-            RADIO_ACCEPT_BOGUS_TOKEN: 'ghp_bogusInvalidToken0000000000000000000000',
+        then(
+          'exits with code 2 (✋ caller-fixable ConstraintError, not 💥 exit 1)',
+          () => {
+            // same central reclassification, proven for the PRIMARY (gh 401) case.
+            expect(result.exitCode).toBe(2);
           },
-          into: GITHUB_DEMO_REPO,
-          title: `auth-fail 401 test ${Date.now()}`,
-          description: 'should never be created',
-        }),
-      );
+        );
 
-      then('exits with code 2 (✋ caller-fixable ConstraintError, not 💥 exit 1)', () => {
-        // same central reclassification, proven for the PRIMARY (gh 401) case.
-        expect(result.exitCode).toBe(2);
-      });
+        then('names the as-human unblock as the primary move', () => {
+          expect(result.output).toContain('--auth as-human');
+        });
 
-      then('names the as-human unblock as the primary move', () => {
-        expect(result.output).toContain('--auth as-human');
-      });
+        then('does NOT leak the raw `Command failed` bubble', () => {
+          expect(result.output).not.toContain('Command failed');
+        });
 
-      then('does NOT leak the raw `Command failed` bubble', () => {
-        expect(result.output).not.toContain('Command failed');
-      });
+        then('the push is held, not lost', () => {
+          expect(result.output).toContain('🦫 held for the radio');
+          expect(result.output).toContain('QUEUED (upstream:401)');
+        });
 
-      then('the push is held, not lost', () => {
-        expect(result.output).toContain('🦫 held for the radio');
-        expect(result.output).toContain('QUEUED (upstream:401)');
+        then(
+          'the human-readable held output matches snapshot, volatile bytes masked',
+          () => {
+            // snap the skill's own stream: rhachet frames stdout and stderr each with a banner
+            expect(result.stdout).toContain('🦫 held for the radio');
+            expect(
+              asStable401Output({ output: result.stdout }),
+            ).toMatchSnapshot();
+          },
+        );
       });
-
-      then('the human-readable held output matches snapshot, volatile bytes masked', () => {
-        // snap the skill's own stream: rhachet frames stdout and stderr each with a banner
-        expect(result.stdout).toContain('🦫 held for the radio');
-        expect(asStable401Output({ output: result.stdout })).toMatchSnapshot();
-      });
-    });
-  });
+    },
+  );
 });
 
 // ────────────────────────────────────────────────────────────────

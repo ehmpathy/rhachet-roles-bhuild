@@ -1,13 +1,10 @@
 import fs from 'fs';
 import path from 'path';
-
-import { BadRequestError } from 'helpful-errors';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
-  genConsumerRepo,
-  BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN,
   GITHUB_DEMO_REPO,
+  genConsumerRepo,
   runRhachetSkill,
   sanitizeOutput,
 } from '../.test/infra';
@@ -47,7 +44,6 @@ const runRadioUses = (input: {
  *   source .agent/repo=.this/role=any/skills/use.apikeys.sh
  *   npm run test:acceptance -- skill.radio.task.pull.via-gh-issues
  */
-
 
 /**
  * .what = runs radio.task.push via rhachet dispatch
@@ -130,7 +126,6 @@ const runRadioTaskPull = (input: {
 
 // TODO: unskip once keyrack provides BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN
 describe.skip('radio.task.pull via gh.issues', () => {
-
   // shared consumer repo for all test cases (pnpm install is expensive)
   const sharedRepo = useBeforeAll(async () =>
     genConsumerRepo({ prefix: 'radio-gh-pull-acpt-' }),
@@ -295,7 +290,9 @@ describe.skip('radio.task.pull via gh.issues', () => {
 describe('radio.task.pull via gh.issues — github auth failure nudge', () => {
   // shared consumer repo for the auth-failure cases (pnpm install is expensive)
   const scene = useBeforeAll(async () => {
-    const consumer = await genConsumerRepo({ prefix: 'radio-gh-pull-authfail-' });
+    const consumer = await genConsumerRepo({
+      prefix: 'radio-gh-pull-authfail-',
+    });
     const homeDir = path.join(consumer.repoDir, '.home');
     fs.mkdirSync(homeDir);
 
@@ -310,83 +307,101 @@ describe('radio.task.pull via gh.issues — github auth failure nudge', () => {
     return { consumer, homeDir };
   });
 
-  given('[case5] auth misconfig surfaces a graceful ✋ (unset env token)', () => {
-    when('[t0] pull with --auth as-robot:env(VAR) where VAR is not set', () => {
-      // fully deterministic: the token is derived from an env var that is not
-      // set, so the skill fails fast BEFORE any gh call — no network, no creds.
-      const result = useBeforeAll(async () =>
-        runRadioTaskPull({
-          repoDir: scene.consumer.repoDir,
-          homeDir: scene.homeDir,
-          via: 'gh.issues',
-          auth: 'as-robot:env(RADIO_ACCEPT_UNSET_TOKEN)',
-          from: GITHUB_DEMO_REPO,
-          list: true,
-        }),
+  given(
+    '[case5] auth misconfig surfaces a graceful ✋ (unset env token)',
+    () => {
+      when(
+        '[t0] pull with --auth as-robot:env(VAR) where VAR is not set',
+        () => {
+          // fully deterministic: the token is derived from an env var that is not
+          // set, so the skill fails fast BEFORE any gh call — no network, no creds.
+          const result = useBeforeAll(async () =>
+            runRadioTaskPull({
+              repoDir: scene.consumer.repoDir,
+              homeDir: scene.homeDir,
+              via: 'gh.issues',
+              auth: 'as-robot:env(RADIO_ACCEPT_UNSET_TOKEN)',
+              from: GITHUB_DEMO_REPO,
+              list: true,
+            }),
+          );
+
+          then(
+            'exits with code 2 (✋ caller-fixable ConstraintError, not 💥 exit 1)',
+            () => {
+              // the vision's central reclassification: a caller-fixable auth failure
+              // is a ConstraintError (exit 2), never a MalfunctionError (exit 1).
+              expect(result.exitCode).toBe(2);
+            },
+          );
+
+          then(
+            'names the unset env var in a graceful ✋ (not a raw crash)',
+            () => {
+              expect(result.output).toContain('RADIO_ACCEPT_UNSET_TOKEN');
+              expect(result.output).toContain('not set');
+            },
+          );
+
+          then('does NOT leak a raw stack trace or unhandled crash', () => {
+            expect(result.output).not.toContain('    at ');
+            expect(result.output).not.toContain('UnhandledPromiseRejection');
+          });
+
+          then('the human-readable output matches snapshot', () => {
+            expect(sanitizeOutput(result.output)).toMatchSnapshot();
+          });
+        },
       );
+    },
+  );
 
-      then('exits with code 2 (✋ caller-fixable ConstraintError, not 💥 exit 1)', () => {
-        // the vision's central reclassification: a caller-fixable auth failure
-        // is a ConstraintError (exit 2), never a MalfunctionError (exit 1).
-        expect(result.exitCode).toBe(2);
-      });
+  given(
+    '[case6] rejected robot token surfaces the as-human nudge (gh 401)',
+    () => {
+      when('[t0] pull with an env token that github rejects (401)', () => {
+        // a deliberately bogus token — github answers HTTP 401. no real
+        // credential needed: the case under test IS a rejected token.
+        const result = useBeforeAll(async () =>
+          runRadioTaskPull({
+            repoDir: scene.consumer.repoDir,
+            homeDir: scene.homeDir,
+            via: 'gh.issues',
+            auth: 'as-robot:env(RADIO_ACCEPT_BOGUS_TOKEN)',
+            env: {
+              RADIO_ACCEPT_BOGUS_TOKEN: 'ghp_bogusInvalidToken000',
+            },
+            from: GITHUB_DEMO_REPO,
+            list: true,
+          }),
+        );
 
-      then('names the unset env var in a graceful ✋ (not a raw crash)', () => {
-        expect(result.output).toContain('RADIO_ACCEPT_UNSET_TOKEN');
-        expect(result.output).toContain('not set');
-      });
-
-      then('does NOT leak a raw stack trace or unhandled crash', () => {
-        expect(result.output).not.toContain('    at ');
-        expect(result.output).not.toContain('UnhandledPromiseRejection');
-      });
-
-      then('the human-readable output matches snapshot', () => {
-        expect(sanitizeOutput(result.output)).toMatchSnapshot();
-      });
-    });
-  });
-
-  given('[case6] rejected robot token surfaces the as-human nudge (gh 401)', () => {
-    when('[t0] pull with an env token that github rejects (401)', () => {
-      // a deliberately bogus token — github answers HTTP 401. no real
-      // credential needed: the case under test IS a rejected token.
-      const result = useBeforeAll(async () =>
-        runRadioTaskPull({
-          repoDir: scene.consumer.repoDir,
-          homeDir: scene.homeDir,
-          via: 'gh.issues',
-          auth: 'as-robot:env(RADIO_ACCEPT_BOGUS_TOKEN)',
-          env: {
-            RADIO_ACCEPT_BOGUS_TOKEN: 'ghp_bogusInvalidToken0000000000000000000000',
+        then(
+          'exits with code 2 (✋ caller-fixable ConstraintError, not 💥 exit 1)',
+          () => {
+            // same central reclassification, proven for the PRIMARY (gh 401) case.
+            expect(result.exitCode).toBe(2);
           },
-          from: GITHUB_DEMO_REPO,
-          list: true,
-        }),
-      );
+        );
 
-      then('exits with code 2 (✋ caller-fixable ConstraintError, not 💥 exit 1)', () => {
-        // same central reclassification, proven for the PRIMARY (gh 401) case.
-        expect(result.exitCode).toBe(2);
+        then('names the as-human unblock as the primary move', () => {
+          expect(result.output).toContain('--auth as-human');
+        });
+
+        then('does NOT leak the raw `Command failed` bubble', () => {
+          expect(result.output).not.toContain('Command failed');
+        });
+
+        // .note = deliberately NOT snapshotted (same rationale as push [case8]):
+        //   the rendered ConstraintError metadata embeds the live gh command plus
+        //   gh's own version-volatile 401 stderr in metadata.detail — all
+        //   non-deterministic. the stable contract the human sees (exit 2, the
+        //   --auth as-human nudge, no `Command failed` leak) is asserted
+        //   explicitly above; the deterministic message SHAPE is snapshot-locked
+        //   at the unit tier in getGithubAuthFailureMessage.test.
       });
-
-      then('names the as-human unblock as the primary move', () => {
-        expect(result.output).toContain('--auth as-human');
-      });
-
-      then('does NOT leak the raw `Command failed` bubble', () => {
-        expect(result.output).not.toContain('Command failed');
-      });
-
-      // .note = deliberately NOT snapshotted (same rationale as push [case8]):
-      //   the rendered ConstraintError metadata embeds the live gh command plus
-      //   gh's own version-volatile 401 stderr in metadata.detail — all
-      //   non-deterministic. the stable contract the human sees (exit 2, the
-      //   --auth as-human nudge, no `Command failed` leak) is asserted
-      //   explicitly above; the deterministic message SHAPE is snapshot-locked
-      //   at the unit tier in getGithubAuthFailureMessage.test.
-    });
-  });
+    },
+  );
 });
 
 // ────────────────────────────────────────────────────────────────

@@ -1,13 +1,13 @@
 import { join } from 'path';
 
-import type { DreamArtifact } from '../../../domain.objects/dreamer/DreamArtifact';
-import type { DreamCandidate } from '../../../domain.objects/dreamer/DreamCandidate';
-import { OpenerUnavailableError } from '../../../infra/shell/OpenerUnavailableError';
-import { openFileWithOpener } from '../../../infra/shell/openFileWithOpener';
-import { genDreamDir } from '../dreams/genDreamDir';
-import { getAllDreamsBySimilarity } from '../dreams/getAllDreamsBySimilarity';
-import { normalizeDreamName } from '../dreams/normalizeDreamName';
-import { setDream } from '../dreams/setDream';
+import type { DreamArtifact } from '@src/domain.objects/dreamer/DreamArtifact';
+import type { DreamCandidate } from '@src/domain.objects/dreamer/DreamCandidate';
+import { genDreamDir } from '@src/domain.operations/dreamer/dreams/genDreamDir';
+import { getAllDreamsBySimilarity } from '@src/domain.operations/dreamer/dreams/getAllDreamsBySimilarity';
+import { normalizeDreamName } from '@src/domain.operations/dreamer/dreams/normalizeDreamName';
+import { setDream } from '@src/domain.operations/dreamer/dreams/setDream';
+import { OpenerUnavailableError } from '@src/infra/shell/OpenerUnavailableError';
+import { openFileWithOpener } from '@src/infra/shell/openFileWithOpener';
 
 /**
  * .what = catches a dream via findsert pattern

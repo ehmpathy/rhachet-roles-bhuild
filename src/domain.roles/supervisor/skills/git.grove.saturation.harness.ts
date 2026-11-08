@@ -30,7 +30,7 @@ import { spawnSync } from 'child_process';
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
-import { tempDirs } from '../../.test/tempDirs';
+import { tempDirs } from '@src/domain.roles/.test/tempDirs';
 
 export const PATH_SAT = join(__dirname, 'git.grove.saturation.sh');
 export const PATH_SPEND = join(__dirname, 'git.grove.saturation.spend.sh');

@@ -1,7 +1,8 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
-import type { ContextGithubAuth } from '../../domain.objects/RadioContext';
+import type { ContextGithubAuth } from '@src/domain.objects/RadioContext';
+
 import { asCurrentActor } from './asCurrentActor';
 
 const execAsync = promisify(exec);

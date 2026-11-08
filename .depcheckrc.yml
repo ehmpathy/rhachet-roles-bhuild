@@ -38,3 +38,14 @@ ignores:
   - rhachet-roles-bhrain
   - rhachet-roles-ehmpathy
   - rhachet-roles-rhachet
+  - rhachet*
+  - declastruct-aws
+  - declastruct-unix-network
+  - test-fns
+  - type-fns
+  - yaml
+ignorePatterns:
+  - .agent/.actors
+  - .claude
+  - .agent/repo=*
+  - "!.agent/repo=.this"

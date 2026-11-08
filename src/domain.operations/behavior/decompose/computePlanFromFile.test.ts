@@ -4,7 +4,8 @@ import * as os from 'os';
 import * as path from 'path';
 import { given, then, when } from 'test-fns';
 
-import { BehaviorDecompositionPlan } from '../../../domain.objects/BehaviorDecompositionPlan';
+import { BehaviorDecompositionPlan } from '@src/domain.objects/BehaviorDecompositionPlan';
+
 import { computePlanFromFile } from './computePlanFromFile';
 
 describe('computePlanFromFile', () => {

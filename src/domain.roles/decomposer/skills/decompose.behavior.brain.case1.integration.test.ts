@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { given, then, when } from 'test-fns';
 
-import { invokeDecomposeSkill } from '../../../.test/utils/invokeDecomposeSkill';
+import { invokeDecomposeSkill } from '@src/.test/utils/invokeDecomposeSkill';
 
 // extend timeout for brain-powered tests
 jest.setTimeout(120000);

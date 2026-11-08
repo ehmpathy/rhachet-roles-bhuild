@@ -28,7 +28,10 @@ const asSnapshotStable = (output: string): string =>
     // mask temp directory paths: /tmp/xxx-xxx -> /tmp/{TEMP}
     .replace(/\/tmp\/[a-z0-9-]+/gi, '/tmp/{TEMP}')
     // mask .temp dir with iso timestamp: .temp/2026-04-10T15-23-19.328Z.name.uuid -> .temp/{TIMESTAMP}
-    .replace(/\.temp\/\d{4}-\d{2}-\d{2}T[\d-]+\.\d+Z\.[a-z0-9-]+\.[a-f0-9]+/gi, '.temp/{TIMESTAMP}')
+    .replace(
+      /\.temp\/\d{4}-\d{2}-\d{2}T[\d-]+\.\d+Z\.[a-z0-9-]+\.[a-f0-9]+/gi,
+      '.temp/{TIMESTAMP}',
+    )
     // mask time values: "passed 3.6s" -> "passed [time]"
     .replace(/\d+\.\d+s/g, '[time]');
 
@@ -98,9 +101,9 @@ describe('give.feedback', () => {
       then('creates feedback file with placeholders replaced', () => {
         // check feedback file was created in feedback/ subdirectory
         const feedbackDir = path.join(scene.behaviorDir, 'feedback');
-        const feedbackFiles = fs.readdirSync(feedbackDir).filter(
-          (f) => f.includes('[feedback]') && f.includes('[given]'),
-        );
+        const feedbackFiles = fs
+          .readdirSync(feedbackDir)
+          .filter((f) => f.includes('[feedback]') && f.includes('[given]'));
         expect(feedbackFiles.length).toBeGreaterThan(0);
 
         const feedbackPath = path.join(feedbackDir, feedbackFiles[0]!);
@@ -140,7 +143,9 @@ describe('give.feedback', () => {
 
   given('[case2] consumer: feedback file already exists (findsert)', () => {
     const scene = useBeforeAll(async () => {
-      const consumer = genConsumerRepo({ prefix: 'give-feedback-exists-test-' });
+      const consumer = genConsumerRepo({
+        prefix: 'give-feedback-exists-test-',
+      });
       execSync('git checkout -b feedback-exists-branch', {
         cwd: consumer.repoDir,
       });
@@ -191,7 +196,9 @@ describe('give.feedback', () => {
 
   given('[case3] consumer: version flag creates v2 feedback', () => {
     const scene = useBeforeAll(async () => {
-      const consumer = genConsumerRepo({ prefix: 'give-feedback-version-test-' });
+      const consumer = genConsumerRepo({
+        prefix: 'give-feedback-version-test-',
+      });
       execSync('git checkout -b feedback-version-branch', {
         cwd: consumer.repoDir,
       });
@@ -221,9 +228,9 @@ describe('give.feedback', () => {
 
       then('creates v2 feedback file', () => {
         const feedbackDir = path.join(scene.behaviorDir, 'feedback');
-        const feedbackFiles = fs.readdirSync(feedbackDir).filter((f) =>
-          f.includes('[feedback].v2'),
-        );
+        const feedbackFiles = fs
+          .readdirSync(feedbackDir)
+          .filter((f) => f.includes('[feedback].v2'));
         expect(feedbackFiles.length).toBe(1);
       });
 
@@ -235,7 +242,9 @@ describe('give.feedback', () => {
 
   given('[case4] consumer: artifact not found', () => {
     const scene = useBeforeAll(async () => {
-      const consumer = genConsumerRepo({ prefix: 'give-feedback-notfound-test-' });
+      const consumer = genConsumerRepo({
+        prefix: 'give-feedback-notfound-test-',
+      });
       execSync('git checkout -b feedback-notfound-branch', {
         cwd: consumer.repoDir,
       });
@@ -275,7 +284,9 @@ describe('give.feedback', () => {
 
   given('[case5] consumer: template not found', () => {
     const scene = useBeforeAll(async () => {
-      const consumer = genConsumerRepo({ prefix: 'give-feedback-notemplate-test-' });
+      const consumer = genConsumerRepo({
+        prefix: 'give-feedback-notemplate-test-',
+      });
       execSync('git checkout -b feedback-notemplate-branch', {
         cwd: consumer.repoDir,
       });
@@ -398,9 +409,9 @@ describe('give.feedback', () => {
 
       then('creates feedback in other behavior', () => {
         const feedbackDir = path.join(scene.otherDir, 'feedback');
-        const feedbackFiles = fs.readdirSync(feedbackDir).filter(
-          (f) => f.includes('[feedback]') && f.includes('[given]'),
-        );
+        const feedbackFiles = fs
+          .readdirSync(feedbackDir)
+          .filter((f) => f.includes('[feedback]') && f.includes('[given]'));
         expect(feedbackFiles.length).toBe(1);
       });
 
@@ -461,9 +472,9 @@ describe('give.feedback', () => {
 
       then('uses custom template content', () => {
         const feedbackDir = path.join(scene.behaviorDir, 'feedback');
-        const feedbackFiles = fs.readdirSync(feedbackDir).filter(
-          (f) => f.includes('[feedback]') && f.includes('[given]'),
-        );
+        const feedbackFiles = fs
+          .readdirSync(feedbackDir)
+          .filter((f) => f.includes('[feedback]') && f.includes('[given]'));
         const feedbackPath = path.join(feedbackDir, feedbackFiles[0]!);
         const content = fs.readFileSync(feedbackPath, 'utf-8');
         expect(content).toContain('# custom feedback');

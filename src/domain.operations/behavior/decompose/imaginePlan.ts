@@ -2,13 +2,14 @@ import * as fs from 'fs/promises';
 import { today } from 'iso-time';
 import * as path from 'path';
 
-import { BehaviorDecompositionPlan } from '../../../domain.objects/BehaviorDecompositionPlan';
-import { BehaviorDecompositionProposed } from '../../../domain.objects/BehaviorDecompositionProposed';
-import type { BehaviorPersisted } from '../../../domain.objects/BehaviorPersisted';
+import { BehaviorDecompositionPlan } from '@src/domain.objects/BehaviorDecompositionPlan';
+import { BehaviorDecompositionProposed } from '@src/domain.objects/BehaviorDecompositionProposed';
+import type { BehaviorPersisted } from '@src/domain.objects/BehaviorPersisted';
 import type {
   BrainReplContext,
   BrainReplRole,
-} from '../../../infra/brain/BrainReplContext';
+} from '@src/infra/brain/BrainReplContext';
+
 import { computeContextConsumption } from './computeContextConsumption';
 
 /**

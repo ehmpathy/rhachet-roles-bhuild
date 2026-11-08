@@ -3,7 +3,7 @@ import type {
   RadioLocalState,
   RadioOrgState,
   RadioPermissionDecision,
-} from '../../../domain.objects/RadioPermissions';
+} from '@src/domain.objects/RadioPermissions';
 
 /**
  * .what = compute radio usage permission decision from state hierarchy

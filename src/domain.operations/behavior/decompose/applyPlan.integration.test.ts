@@ -4,8 +4,9 @@ import * as os from 'os';
 import * as path from 'path';
 import { given, then, when } from 'test-fns';
 
-import { getTimestampFound } from '../../../.test/utils/getTimestampFound';
-import { BehaviorDecompositionPlan } from '../../../domain.objects/BehaviorDecompositionPlan';
+import { getTimestampFound } from '@src/.test/utils/getTimestampFound';
+import { BehaviorDecompositionPlan } from '@src/domain.objects/BehaviorDecompositionPlan';
+
 import { applyPlan } from './applyPlan';
 
 describe('applyPlan.integration', () => {

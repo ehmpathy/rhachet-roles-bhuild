@@ -4,12 +4,13 @@ import { asIsoDateStamp } from 'iso-time';
 import type {
   ContextGithubAuth,
   ContextGitRepo,
-} from '../../../domain.objects/RadioContext';
-import { RadioTask } from '../../../domain.objects/RadioTask';
-import type { RadioTaskRepo } from '../../../domain.objects/RadioTaskRepo';
-import { RadioTaskStatus } from '../../../domain.objects/RadioTaskStatus';
-import { composeTaskIntoGhIssues } from '../../../domain.operations/radio/task/format/composeTaskIntoGhIssues';
-import { extractTaskFromGhIssues } from '../../../domain.operations/radio/task/format/extractTaskFromGhIssues';
+} from '@src/domain.objects/RadioContext';
+import { RadioTask } from '@src/domain.objects/RadioTask';
+import type { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
+import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
+import { composeTaskIntoGhIssues } from '@src/domain.operations/radio/task/format/composeTaskIntoGhIssues';
+import { extractTaskFromGhIssues } from '@src/domain.operations/radio/task/format/extractTaskFromGhIssues';
+
 import { asGhIssueNumber } from './asGhIssueNumber';
 import { genGhBodyTempFile } from './genGhBodyTempFile';
 import { getOneGhCallTimeout } from './getOneGhCallTimeout';
