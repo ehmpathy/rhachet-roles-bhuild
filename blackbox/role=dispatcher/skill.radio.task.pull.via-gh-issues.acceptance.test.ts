@@ -37,12 +37,11 @@ const runRadioUses = (input: {
  * .what = acceptance tests for radio.task.pull via gh.issues channel
  * .why = validates the github issues integration end-to-end
  *
- * .note = these tests require github authentication
- *         set BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN before test execution
+ * .note = these tests read the ehmpath bot token from keyrack's test env
+ *         (EHMPATH_BEAVER_GITHUB_TOKEN), which reaches the demo repo
  *
  * .usage:
- *   source .agent/repo=.this/role=any/skills/use.apikeys.sh
- *   npm run test:acceptance -- skill.radio.task.pull.via-gh-issues
+ *   rhx git.repo.test --what acceptance --against local --env test --scope path://skill.radio.task.pull.via-gh-issues --mode apply
  */
 
 /**
@@ -60,7 +59,7 @@ const runRadioTaskPush = (input: {
   const args = [
     `--via ${input.via}`,
     input.auth
-      ? `--auth "${input.auth.replace(/\(/g, '\\(').replace(/\)/g, '\\)')}"`
+      ? `--auth "${input.auth}"` // inside double quotes the parens are literal; an escape would reach the skill
       : '',
     `--into "${input.into}"`,
     `--title "${input.title}"`,
@@ -124,12 +123,26 @@ const runRadioTaskPull = (input: {
   });
 };
 
-// TODO: unskip once keyrack provides BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN
-describe.skip('radio.task.pull via gh.issues', () => {
+describe('radio.task.pull via gh.issues', () => {
   // shared consumer repo for all test cases (pnpm install is expensive)
-  const sharedRepo = useBeforeAll(async () =>
-    genConsumerRepo({ prefix: 'radio-gh-pull-acpt-' }),
-  );
+  // open the radio gate in the consumer repo: an unset gate holds every push, so no exid returns
+  const sharedRepo = useBeforeAll(async () => {
+    const repo = genConsumerRepo({ prefix: 'radio-gh-pull-acpt-' });
+    const uses = runRadioUses({ repoDir: repo.repoDir, args: 'allow' });
+    if (uses.exitCode !== 0)
+      throw new Error(`radio.uses allow failed, exit ${uses.exitCode}`);
+    return repo;
+  });
+
+  /**
+   * .what = the exid a push delivered under, or a loud failure that shows the push output
+   * .why = a held or failed push returns no exid; a silent skip would pull `undefined`
+   */
+  const asExidPushed = (input: { output: string }): string => {
+    const exid = input.output.match(/exid: (\d+)/)?.[1];
+    if (!exid) throw new Error(`push returned no exid:\n${input.output}`);
+    return exid;
+  };
 
   given('[case1] list tasks from gh.issues', () => {
     // create a task first to ensure there is content to list
@@ -137,7 +150,7 @@ describe.skip('radio.task.pull via gh.issues', () => {
       runRadioTaskPush({
         repoDir: sharedRepo.repoDir,
         via: 'gh.issues',
-        auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
+        auth: 'as-robot:env(EHMPATH_BEAVER_GITHUB_TOKEN)',
         into: GITHUB_DEMO_REPO,
         title: `pull list test ${Date.now()}`,
         description: 'for list verification',
@@ -149,7 +162,7 @@ describe.skip('radio.task.pull via gh.issues', () => {
         runRadioTaskPull({
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
-          auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
+          auth: 'as-robot:env(EHMPATH_BEAVER_GITHUB_TOKEN)',
           from: GITHUB_DEMO_REPO,
           list: true,
         }),
@@ -174,13 +187,12 @@ describe.skip('radio.task.pull via gh.issues', () => {
       const result = runRadioTaskPush({
         repoDir: sharedRepo.repoDir,
         via: 'gh.issues',
-        auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
+        auth: 'as-robot:env(EHMPATH_BEAVER_GITHUB_TOKEN)',
         into: GITHUB_DEMO_REPO,
         title: `pull one test ${Date.now()}`,
         description: 'for specific pull',
       });
-      const match = result.output.match(/exid: (\d+)/);
-      if (match) issueNumber = match[1]!;
+      issueNumber = asExidPushed({ output: result.output });
       return { result };
     });
 
@@ -189,7 +201,7 @@ describe.skip('radio.task.pull via gh.issues', () => {
         const result = runRadioTaskPull({
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
-          auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
+          auth: 'as-robot:env(EHMPATH_BEAVER_GITHUB_TOKEN)',
           from: GITHUB_DEMO_REPO,
           exid: issueNumber,
         });
@@ -203,7 +215,7 @@ describe.skip('radio.task.pull via gh.issues', () => {
         const result = runRadioTaskPull({
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
-          auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
+          auth: 'as-robot:env(EHMPATH_BEAVER_GITHUB_TOKEN)',
           from: GITHUB_DEMO_REPO,
           exid: '999999999',
         });
@@ -221,13 +233,12 @@ describe.skip('radio.task.pull via gh.issues', () => {
       const result = runRadioTaskPush({
         repoDir: sharedRepo.repoDir,
         via: 'gh.issues',
-        auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
+        auth: 'as-robot:env(EHMPATH_BEAVER_GITHUB_TOKEN)',
         into: GITHUB_DEMO_REPO,
         title: `cache test ${Date.now()}`,
         description: 'for cache verification',
       });
-      const match = result.output.match(/exid: (\d+)/);
-      if (match) issueNumber = match[1]!;
+      issueNumber = asExidPushed({ output: result.output });
       return { result };
     });
 
@@ -236,7 +247,7 @@ describe.skip('radio.task.pull via gh.issues', () => {
         runRadioTaskPull({
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
-          auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
+          auth: 'as-robot:env(EHMPATH_BEAVER_GITHUB_TOKEN)',
           from: GITHUB_DEMO_REPO,
           exid: issueNumber,
         }),
@@ -256,7 +267,7 @@ describe.skip('radio.task.pull via gh.issues', () => {
         runRadioTaskPull({
           repoDir: sharedRepo.repoDir,
           via: 'gh.issues',
-          auth: 'as-robot:env(BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN)',
+          auth: 'as-robot:env(EHMPATH_BEAVER_GITHUB_TOKEN)',
           from: GITHUB_DEMO_REPO,
           list: true,
           status: 'QUEUED',

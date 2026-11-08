@@ -219,3 +219,5 @@
 {"stone":"5.1.execution.from_vision","status":"disputed","reviewer":"enroll-impl-arch-defects","about":"nitpick.4","given":"5.1.execution.from_vision._.review.i007.72993f5fcc3797bf3e.r011._.given.by_peer.enroll-impl-arch-defects.md","fulcrum":".behavior/v2026_11_07.fix-radio-auth-falls-back-to-ambient/.fulcrums/inventory.of=fulcrums.case=F6-l3-points-held-past-the-nano-scope.md","reason":"disputed review.peer: enroll-impl-arch-defects nitpick.4"}
 {"stone":"5.1.execution.from_vision","status":"absorbed","reason":"absorbed review.peer: enroll-impl-behavior-intent"}
 {"stone":"5.1.execution.from_vision","status":"absorbed","reason":"absorbed review.peer: enroll-impl-arch-defects"}
+{"stone":"5.1.execution.from_vision","status":"arrived","reason":"entered guard reviews"}
+{"stone":"5.1.execution.from_vision","status":"passed"}

@@ -1,3 +1,4 @@
+import { execSync } from 'child_process';
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
@@ -33,6 +34,8 @@ describe('suitesGated', () => {
     '!**/node_modules/**',
     '!**/.temp/**',
     '!**/.agent/**',
+    '!**/.agent/.actors/**', // the practice's narrower `.agent` forms: host-local clones
+    '!**/.agent/.cache/**',
   ];
 
   /**
@@ -44,6 +47,18 @@ describe('suitesGated', () => {
   const NEGATIONS_TIER = [
     '!**/*.acceptance.test.ts',
     '!**/*.integration.test.ts',
+    '!**/*._.acpt.test.ts', // the `._.` kind seam; the acceptance config matches it
+    '!**/*._.intg.test.ts', // the `._.` kind seam; the integration config matches it
+  ];
+
+  /**
+   * .what = negations for a tier this repo runs no config for (the practice's evaluation tier)
+   * .why = a suite of that kind would run in no gate, so these hold no suite out only while
+   *        none exists; [case3] asserts that, so the first such suite goes red here
+   */
+  const NEGATIONS_TIER_UNGATED = [
+    '!**/*.evaluation.test.ts',
+    '!**/*._.eval.test.ts',
   ];
 
   const CONFIGS = [
@@ -72,11 +87,21 @@ describe('suitesGated', () => {
       const negationsHeldOut = [...config.matchAll(/'(![^']+)'/g)]
         .map((m) => m[1]!)
         .filter(
-          (n) => !NEGATIONS_INFRA.includes(n) && !NEGATIONS_TIER.includes(n),
+          (n) =>
+            !NEGATIONS_INFRA.includes(n) &&
+            !NEGATIONS_TIER.includes(n) &&
+            !NEGATIONS_TIER_UNGATED.includes(n),
         );
 
       return { ...declared, pathAbs, config, negationsHeldOut };
     }),
+    suitesUngated: execSync(
+      "git ls-files -- '*.evaluation.test.ts' '*._.eval.test.ts'",
+      { cwd: DIR_REPO },
+    )
+      .toString()
+      .split('\n')
+      .filter(Boolean),
   }));
 
   given('[case1] every tier config', () => {
@@ -130,6 +155,14 @@ describe('suitesGated', () => {
           { tier: 'acceptance', heldOut: [] },
         ]);
         expect(tallyDrifted[0]!.heldOut).toEqual(['!**/someOther.test.ts']);
+      });
+    });
+  });
+
+  given('[case3] the negations for a tier no config runs', () => {
+    when('[t0] the repo is read for suites of that kind', () => {
+      then('🔴 none exists, so those negations hold no suite out', () => {
+        expect(scene.suitesUngated).toEqual([]);
       });
     });
   });

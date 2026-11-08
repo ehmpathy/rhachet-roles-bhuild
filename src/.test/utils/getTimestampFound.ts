@@ -4,14 +4,14 @@
  *        hand-written cousin; getTimestampFound.integration.test.ts holds this copy equal to the hook
  */
 export const TIMESTAMP_PATTERN_OF_HOOK =
-  'T?[0-9][0-9]:[0-9][0-9]:[0-9][0-9](Z|[+-][0-9][0-9]:?[0-9][0-9])?';
+  '(T([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?|T([01][0-9]|2[0-3])-[0-5][0-9](-[0-5][0-9])?|(^|[^0-9:])([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?)(Z|[+-][0-9][0-9]:?[0-9][0-9])?([^0-9]|$)';
 
 /**
  * .what = the iso-8601 duration pattern the gate strips before it scans
  * .why = a duration is a fixed span, never a drift, so the gate lets it through
  */
 export const DURATION_PATTERN_OF_HOOK =
-  'P([0-9]+[YMWD])*T([0-9]+[HMS])*[0-9][0-9]:[0-9][0-9]:[0-9][0-9]';
+  'P([0-9]+[YMWD])*T([0-9]+[HMS])*[0-9][0-9]:[0-9][0-9](:[0-9][0-9])?';
 
 /**
  * .what = the first line of content the commit gate would reject for a timestamp, or null

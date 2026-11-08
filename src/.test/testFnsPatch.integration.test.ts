@@ -131,8 +131,9 @@ describe('test-fns patch', () => {
 
       then('the forged dir was named stale', () => {
         expect(result.forged.status).toEqual(0);
-        expect(result.forged.stdout).toContain(
-          '2026-01-01T00-00-00.000Z.forged-clock-probe',
+        // test-fns 1.17 names a dir <stamp>.<rand>.<slug>.<hash>: the forged stamp still leads it
+        expect(result.forged.stdout).toMatch(
+          /\/2026-01-01T00-00-00\.000Z\.[^/]*\bforged-clock-probe\b[^/]*$/,
         );
         expect(result.peer.status).toEqual(0);
       });

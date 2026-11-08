@@ -10,7 +10,7 @@ import { ConstraintError } from 'helpful-errors';
  * .why =
  *   - the non-prod cluster is aurora-serverless-v2 at min-capacity 0, so it auto-pauses
  *     when idle; the first downstream query after a pause cold-starts past the 90s test
- *     timeout and flakes the suite (svc-gateway hit this on mAddCrewMember + the quote suites)
+ *     timeout and flakes the suite (seen on db-backed suites whose first query met a cold database)
  *   - a gateway/fan-out service owns NO db of its own, so a db-ownership signal misses it.
  *     the signal that it REACHES the shared cluster is a tunnel declared in its config —
  *     `config/prep.json`'s `database.tunnel`. that is the self-gate: a tunnel means a query

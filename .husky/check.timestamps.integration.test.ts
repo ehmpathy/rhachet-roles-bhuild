@@ -43,7 +43,15 @@ const runCommitOnStaged = (input: {
   const dirHooks = path.join(cwd, '.husky');
   fs.mkdirSync(path.join(dirHooks, '_'), { recursive: true });
   fs.writeFileSync(path.join(dirHooks, '_', 'husky.sh'), '');
-  ['pre-commit', 'check.yalc.sh', 'check.timestamps.sh'].forEach((name) => {
+  // copy every hook pre-commit sources, read from pre-commit itself, so a new gate never
+  // leaves the temp repo short a file (an absent source fails every commit, stamp or not)
+  const sourced = [
+    ...fs
+      .readFileSync(path.join(__dirname, 'pre-commit'), 'utf-8')
+      .matchAll(/\)\/([\w.]+\.sh)"$/gm), // `$(dirname …)/x.sh`, never husky's `_/husky.sh` stub
+
+  ].map((m) => m[1]!);
+  ['pre-commit', ...sourced].forEach((name) => {
     fs.copyFileSync(path.join(__dirname, name), path.join(dirHooks, name));
     fs.chmodSync(path.join(dirHooks, name), 0o755);
   });
@@ -89,7 +97,9 @@ const asMaskedGitLines = (input: { text: string }): string =>
   input.text
     .split('\n')
     .map((line) =>
-      line.startsWith('💥') || line === '' ? line : '<a line from git>',
+      line.startsWith('💥') || line.startsWith('   └─') || line === ''
+        ? line
+        : '<a line from git>',
     )
     .join('\n');
 
@@ -192,8 +202,9 @@ describe('check.timestamps', () => {
 
       then('it names the class and the file, on stderr', () => {
         expect(result.stderr).toContain(
-          '💥 MalfunctionError: check.timestamps failed to read staged content for lessons.md',
+          '💥 MalfunctionError: check.timestamps could not read the staged blob',
         );
+        expect(result.stderr).toContain('   └─ lessons.md');
         expect(result.stdout).toEqual('');
       });
 

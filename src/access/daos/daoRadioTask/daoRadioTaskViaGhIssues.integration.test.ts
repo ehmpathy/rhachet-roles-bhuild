@@ -31,7 +31,8 @@ const GITHUB_DEMO_REPO = new RadioTaskRepo({
  *             tests MUST explicitly use this token
  */
 const BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN =
-  process.env.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN;
+  process.env.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN ??
+  process.env.EHMPATH_BEAVER_GITHUB_TOKEN; // keyrack's test env carries the bot token
 
 /**
  * .what = integration tests for daoRadioTaskViaGhIssues
@@ -44,8 +45,7 @@ const BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN =
  *   source .agent/repo=.this/role=any/skills/use.apikeys.sh
  *   npm run test:integration -- daoRadioTaskViaGhIssues
  */
-// TODO: unskip once keyrack provides BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN
-describe.skip('daoRadioTaskViaGhIssues', () => {
+describe('daoRadioTaskViaGhIssues', () => {
   // use the demo repo for tests (NEVER this repo)
   const testRepo = GITHUB_DEMO_REPO;
 
