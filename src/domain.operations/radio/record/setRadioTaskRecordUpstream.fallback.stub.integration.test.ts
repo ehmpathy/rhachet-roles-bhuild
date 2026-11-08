@@ -55,6 +55,10 @@ if (verb === 'issue list') {
   process.stdout.write(JSON.stringify(issues));
   process.exit(0);
 }
+if (verb === 'issue create' && lines('ratelimit-on-create').includes(token)) {
+  process.stderr.write('HTTP 403: API rate limit exceeded for installation');
+  process.exit(1);
+}
 if (verb === 'issue create') {
   const title = args[args.indexOf('--title') + 1];
   const body = fs.readFileSync(args[args.indexOf('--body-file') + 1], 'utf-8');
@@ -123,6 +127,7 @@ const genScene = (input: {
     afterCreate401?: string[];
     rateLimit?: string[];
     notFound?: string[];
+    rateLimitOnCreate?: string[];
   };
   auth?: string | null;
 }) => {
@@ -149,6 +154,10 @@ const genScene = (input: {
   fs.writeFileSync(
     path.join(stubDir, 'notfound'),
     (input.refuse?.notFound ?? []).join('\n'),
+  );
+  fs.writeFileSync(
+    path.join(stubDir, 'ratelimit-on-create'),
+    (input.refuse?.rateLimitOnCreate ?? []).join('\n'),
   );
   fs.mkdirSync(path.join(cwd, '.meter'), { recursive: true });
   fs.writeFileSync(
@@ -893,6 +902,36 @@ describe('setRadioTaskRecordUpstream — the default auth falls back to the ambi
             expect(asDetail({ fate: result.pushed })).not.toContain(
               'github auth failed:',
             );
+          },
+        );
+      });
+    },
+  );
+
+  given(
+    '[case19] push of a task whose title names gh_token, the bot token rate limited',
+    () => {
+      when('[t0] the push runs', () => {
+        const result = useThen('it is held', async () =>
+          runPush({
+            scene: genScene({
+              slug: 'title-names-gh_token',
+              bot: 'granted',
+              env: { GITHUB_TOKEN: TOKEN_AMBIENT },
+              refuse: { rateLimitOnCreate: [TOKEN_BOT] },
+            }),
+          }),
+        );
+
+        then(
+          'the title never fakes a 401: the push holds on the rate limit, halts, sent once',
+          () => {
+            expect(result.pushed.fate).toEqual('held');
+            expect(result.onDisk?.reason).toEqual('upstream:rate-limit');
+            expect(
+              result.pushed.fate === 'held' ? result.pushed.halt : null,
+            ).toEqual(true);
+            expect(result.seen.tokens).toEqual([TOKEN_BOT]);
           },
         );
       });

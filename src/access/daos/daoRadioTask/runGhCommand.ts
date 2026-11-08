@@ -5,6 +5,7 @@ import { promisify } from 'util';
 import type { ContextGithubAuth } from '@src/domain.objects/RadioContext';
 import { asExecErrorMessage } from '@src/infra/shell/asExecErrorMessage';
 
+import { asGhFaultTextSansEcho } from './asGhFaultTextSansEcho';
 import { getGithubAuthFailureMessage } from './getGithubAuthFailureMessage';
 import { isGhCallTimedOut } from './isGhCallTimedOut';
 import { isGithubAuthFailure } from './isGithubAuthFailure';
@@ -63,7 +64,13 @@ export const runGhCommand = async (
     // `.stderr` is a separate exec field, read inline below
     const message = asExecErrorMessage({ error });
     const stderr = (error as { stderr?: string })?.stderr ?? '';
-    const text = `${message}\n${stderr}`;
+    const cmdEchoed = (error as { cmd?: unknown })?.cmd; // duck-type: cross-realm node error
+    const text = asGhFaultTextSansEcho({
+      message,
+      stderr,
+      cmd: typeof cmdEchoed === 'string' ? cmdEchoed : null,
+      command,
+    });
 
     // graceful nudge on a github auth rejection (401), branched by auth role
     if (isGithubAuthFailure({ text }))

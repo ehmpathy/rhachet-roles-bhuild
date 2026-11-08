@@ -27,6 +27,11 @@ the 5.1 L3 lanes (i005) raised points that are sound but widen the wish or resha
 | the `case=9` demo and the catalog trail the render | behavior-intent n6, n7 (i006) | the yield names the real render; the demo prose and five alterpath rows are catalog hygiene, a followup |
 | the bot fix text is masked at acceptance; the gh-login headline prints in no run | behavior-intent smaller notes (i006) | the mask is box variance; the fix text is pinned at unit (`asRadioAuthBotMiss [case3]`). the gh login is the test-env row above |
 
+| a not-found after a fallback still names the as-human amend | behavior-intent n2 (i007) | the held detail now leads with the credential and why (i006); the fix line's route for a not-found is the extant one, and whether a not-found earns the fallback is the open not-found row above |
+| the static drain fix line names unlock before set; `keyrack set` and `gh auth login` carry no `(human)` tag | behavior-intent n3 (i007) | a text pass over extant fix lines; the line names both commands, so a refused token reaches `set` in one read. a `(human)` tag across every fix line is a followup |
+| the integration branch text is asserted by `toContain`, not snapped | behavior-intent n4 (i007) | each branch's key text is asserted outright; a snap per branch is cheap and a followup. the gh login under test is the test-env row above |
+| the derive-time bot miss and the send-time refusal are one event on two paths; the ambient read re-parses an auth grammar; text is the producer-consumer protocol; the send-time ambient read sits outside the deadline gate | arch-defects n1-n4 (i007) | the one-seam reshape row above; the send-time read is one `gh auth token` call bounded by the per-send limit, so it cannot outlast the drain lease |
+
 ## taken: hold, each named in the pr or as a followup
 
 ## rework
