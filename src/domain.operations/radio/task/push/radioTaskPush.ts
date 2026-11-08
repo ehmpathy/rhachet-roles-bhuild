@@ -6,8 +6,9 @@ import { RadioChannel } from '@src/domain.objects/RadioChannel';
 import type { RadioTask } from '@src/domain.objects/RadioTask';
 import type { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
 import type { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
-import { getRepoFromGitContext } from '@src/infra/git/getRepoFromGitContext';
 import { bootstrapRadioDir } from '@src/domain.operations/radio/bootstrap/bootstrapRadioDir';
+import { getRepoFromGitContext } from '@src/infra/git/getRepoFromGitContext';
+
 import { setFullRadioTask } from './setFullRadioTask';
 import { setPartRadioTask } from './setPartRadioTask';
 

@@ -16,6 +16,12 @@ exports[`radio.task.queue.integration — CLI contract given: [case1] --help whe
    │  ├─ any other fault sets its one record aside; the rest still deliver
    │  └─ a later update to the same issue waits behind it, unsent, until it lands or is dropped
    │
+   ├─ auth, on a drain with no --auth
+   │  ├─ each record sends under its own stored --auth; one with none takes the ehmpath bot token first
+   │  ├─ absent, or refused by github (401/403): GH_TOKEN, then GITHUB_TOKEN, then the gh login
+   │  ├─ one line names which credential delivered, and why the bot token did not
+   │  └─ a stored --auth, or an --auth you pass, is used as given, never fallen back past
+   │
    ├─ exit codes
    │  ├─ drain
    │  │  ├─ 0  naught waits, naught refused

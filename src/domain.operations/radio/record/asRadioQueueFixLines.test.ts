@@ -27,28 +27,49 @@ const genRecord = (input: { reason: string | null }): RadioTaskRecord =>
 
 const AMEND =
   'amend it: rhx radio.task.queue set --uuid a1b2c3d4e5f60718 --auth as-human (needs a gh login on this host)';
+const FIX_DEFAULT = [
+  'fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)',
+  'or fix the ambient credential: gh auth login (or a GH_TOKEN env), then: rhx radio.task.queue drain',
+  'or amend it: rhx radio.task.queue set --uuid a1b2c3d4e5f60718 --auth as-human (needs a gh login on this host)',
+];
 const DROP =
   'or drop it: rhx radio.task.queue del --uuid a1b2c3d4e5f60718 --why "<why>"';
 
 const FIX_CASES = [
   {
-    description: 'an access fault names amend + drop (the #599 shape)',
-    given: { reason: 'upstream:access' },
+    description:
+      'an access fault under a stored auth names amend + drop (the #599 shape)',
+    given: { reason: 'upstream:access', auth: 'as-robot:env(GH_TOKEN)' },
     expect: { output: [AMEND, DROP] },
   },
   {
-    description: 'a repo the auth cannot see names amend + drop',
+    description:
+      'an access fault under the default auth names both credential fixes + drop, never an amend that would opt out of the fallback (#513)',
+    given: { reason: 'upstream:access' },
+    expect: { output: [...FIX_DEFAULT, DROP] },
+  },
+  {
+    description:
+      'a repo the default auth cannot see names amend + drop; the default auth never falls back past a not-found',
     given: { reason: 'upstream:not-found' },
     expect: { output: [AMEND, DROP] },
   },
   {
-    description: 'a rejected token names amend + drop (#513)',
+    description:
+      'a rejected token under the default auth names both credential fixes + drop (#513)',
     given: { reason: 'upstream:401' },
-    expect: { output: [AMEND, DROP] },
+    expect: { output: [...FIX_DEFAULT, DROP] },
   },
   {
-    description: 'an auth not derivable names amend + drop',
+    description:
+      'an auth not derivable under the default auth names both credential fixes + drop (#513)',
     given: { reason: 'upstream:auth' },
+    expect: { output: [...FIX_DEFAULT, DROP] },
+  },
+  {
+    description:
+      'an auth not derivable under a stored robot auth names amend + drop',
+    given: { reason: 'upstream:auth', auth: 'as-robot:env(GH_TOKEN)' },
     expect: { output: [AMEND, DROP] },
   },
   {

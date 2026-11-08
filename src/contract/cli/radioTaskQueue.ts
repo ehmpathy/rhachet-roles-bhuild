@@ -25,6 +25,7 @@ import { z } from 'zod';
 
 import { asGithubAuthMode } from '@src/domain.operations/radio/auth/asGithubAuthMode';
 import { asRadioAmendOutput } from '@src/domain.operations/radio/record/asRadioAmendOutput';
+import { asRadioAuthFallbackNotice } from '@src/domain.operations/radio/record/asRadioAuthFallbackNotice';
 import { asRadioDrainAuthNotice } from '@src/domain.operations/radio/record/asRadioDrainAuthNotice';
 import { asRadioDrainOutput } from '@src/domain.operations/radio/record/asRadioDrainOutput';
 import { asRadioDropOutput } from '@src/domain.operations/radio/record/asRadioDropOutput';
@@ -92,6 +93,12 @@ const HELP_TEXT = `
    │  ├─ a rate limit or a github outage halts the drain; the rest wait in order
    │  ├─ any other fault sets its one record aside; the rest still deliver
    │  └─ a later update to the same issue waits behind it, unsent, until it lands or is dropped
+   │
+   ├─ auth, on a drain with no --auth
+   │  ├─ each record sends under its own stored --auth; one with none takes the ehmpath bot token first
+   │  ├─ absent, or refused by github (401/403): GH_TOKEN, then GITHUB_TOKEN, then the gh login
+   │  ├─ one line names which credential delivered, and why the bot token did not
+   │  └─ a stored --auth, or an --auth you pass, is used as given, never fallen back past
    │
    ├─ exit codes
    │  ├─ drain
@@ -269,6 +276,7 @@ const _cliRadioTaskQueue = async (): Promise<void> => {
     // an override reaches every record this drain sends, so the output names it
     const notice = asRadioDrainAuthNotice({ fates, authOverride });
     if (notice) console.log(notice);
+    asRadioAuthFallbackNotice({ fates }).forEach((line) => console.log(line));
     console.log(asRadioDrainOutput({ fates, backlog, authOverride }));
     // a refused record is closed, not held, so the backlog alone would read it as success
     const isAnyRefused = fates.some((fate) => fate.fate === 'refused');

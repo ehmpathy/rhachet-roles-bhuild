@@ -17,6 +17,12 @@ exports[`radio.task.push.integration — CLI contract given: [case1] --help (the
    │  ├─ see what waits: rhx radio.task.queue get
    │  └─ lift a shut gate (human): rhx radio.uses allow
    │
+   ├─ auth, with no --auth
+   │  ├─ the ehmpath bot token goes first
+   │  ├─ absent, or refused by github (401/403): GH_TOKEN, then GITHUB_TOKEN, then the gh login
+   │  ├─ one line names which credential delivered, and why the bot token did not
+   │  └─ an --auth you pass is used as given, never fallen back past
+   │
    └─ options
       ├─ --via         channel: gh.issues or os.fileops (required)
       ├─ --into        target: @this (current repo) or owner/repo (required)
@@ -71,6 +77,12 @@ exports[`radio.task.push.integration — CLI contract given: [case5] -h (the sho
    │  ├─ the next push that gets through delivers the backlog first, oldest first
    │  ├─ see what waits: rhx radio.task.queue get
    │  └─ lift a shut gate (human): rhx radio.uses allow
+   │
+   ├─ auth, with no --auth
+   │  ├─ the ehmpath bot token goes first
+   │  ├─ absent, or refused by github (401/403): GH_TOKEN, then GITHUB_TOKEN, then the gh login
+   │  ├─ one line names which credential delivered, and why the bot token did not
+   │  └─ an --auth you pass is used as given, never fallen back past
    │
    └─ options
       ├─ --via         channel: gh.issues or os.fileops (required)

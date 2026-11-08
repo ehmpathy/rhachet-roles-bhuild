@@ -1,3 +1,5 @@
+import type { keyrack } from 'rhachet/keyrack';
+
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 
 import { asRadioFateUnreachedByBudget } from './asRadioFateUnreachedByBudget';
@@ -41,6 +43,7 @@ export const setRadioTaskRecordsInLine = async (
       perSend: { milliseconds: number };
     };
     drainDeadline: RadioDrainDeadline;
+    keyrackGet?: typeof keyrack.get;
   },
 ): Promise<RadioTaskRecordFate[]> => {
   // the budget starts with the line

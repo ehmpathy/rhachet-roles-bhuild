@@ -2,8 +2,10 @@ import { ConstraintError } from 'helpful-errors';
 import type { keyrack } from 'rhachet/keyrack';
 
 import { asExecErrorMessage } from '@src/infra/shell/asExecErrorMessage';
+
 import { asGithubAuthMode } from './asGithubAuthMode';
 import { genAuthFromKeyrack } from './genAuthFromKeyrack';
+import { isGithubAuthTestEnv } from './isGithubAuthTestEnv';
 import { RADIO_AUTH_DEFAULT } from './RADIO_AUTH_DEFAULT';
 
 /**
@@ -47,8 +49,7 @@ export const getGithubTokenByAuthArg = async (
   const auth = input.auth ?? RADIO_AUTH_DEFAULT;
 
   // tests must use explicit tokens, not the gh cli auto login
-  const isTestEnv =
-    context.env.NODE_ENV === 'test' || context.env.JEST_WORKER_ID !== undefined;
+  const isTestEnv = isGithubAuthTestEnv({ env: context.env });
 
   // parse the auth arg into a typed mode, then branch on it
   const mode = asGithubAuthMode({ auth });

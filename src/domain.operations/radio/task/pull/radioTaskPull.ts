@@ -10,9 +10,9 @@ import { RadioChannel } from '@src/domain.objects/RadioChannel';
 import type { RadioTask } from '@src/domain.objects/RadioTask';
 import type { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
 import type { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
+import { bootstrapRadioDir } from '@src/domain.operations/radio/bootstrap/bootstrapRadioDir';
 import { getRepoFromGitContext } from '@src/infra/git/getRepoFromGitContext';
 import { assure } from '@src/infra/types/assure';
-import { bootstrapRadioDir } from '@src/domain.operations/radio/bootstrap/bootstrapRadioDir';
 
 /**
  * .what = list tasks from a channel

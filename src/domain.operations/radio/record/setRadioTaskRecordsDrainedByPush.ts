@@ -1,3 +1,5 @@
+import type { keyrack } from 'rhachet/keyrack';
+
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 import { RadioTaskRecordStatus } from '@src/domain.objects/RadioTaskRecordStatus';
 import { getOneRadioUsagePermissionDecision } from '@src/domain.operations/radio/permission/getOneRadioUsagePermissionDecision';
@@ -30,6 +32,7 @@ export const setRadioTaskRecordsDrainedByPush = async (
     homeDir: string | undefined;
     env: NodeJS.ProcessEnv;
     shx: ShellExecutor;
+    keyrackGet?: typeof keyrack.get;
   },
 ): Promise<{
   pushed: RadioTaskRecordFate | { fate: 'landed'; record: RadioTaskRecord };

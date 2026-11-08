@@ -1,3 +1,5 @@
+import type { keyrack } from 'rhachet/keyrack';
+
 import type { RadioDrainDeadline } from './genRadioDrainDeadline';
 import { getAllRadioTaskRecordsHeld } from './getAllRadioTaskRecordsHeld';
 import type { RadioTaskRecordFate } from './RadioTaskRecordFate';
@@ -38,6 +40,7 @@ const _setRadioTaskRecordsDrained = async (
     lockAcquireTimeout?: { milliseconds: number };
     lockLease?: { milliseconds: number };
     drainDeadline: RadioDrainDeadline;
+    keyrackGet?: typeof keyrack.get;
   },
 ): Promise<{ fates: RadioTaskRecordFate[] }> => {
   // send the held line, oldest first

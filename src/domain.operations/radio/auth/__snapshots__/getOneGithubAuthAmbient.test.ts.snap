@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`getOneGithubAuthAmbient given: [case4] no env token, and gh holds no login when: [t2] \`gh auth token\` is killed at its bound then: it fails loud, never reads as no login 1`] = `
+"✋ ConstraintError: the gh login could not be read: Command failed: gh auth token
+
+{
+  "hint": "check \`gh auth token\` returns promptly on this box"
+}"
+`;

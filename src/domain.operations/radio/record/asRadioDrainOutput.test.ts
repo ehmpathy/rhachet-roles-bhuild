@@ -91,6 +91,7 @@ describe('asRadioDrainOutput', () => {
             }),
             task: taskDelivered,
             outcome: 'created',
+            fallback: null,
           },
         ],
         backlog: 1,
@@ -199,6 +200,7 @@ describe('asRadioDrainOutput', () => {
             }),
             task: taskDelivered,
             outcome: 'created',
+            fallback: null,
           },
         ],
         backlog: 0,
@@ -261,6 +263,7 @@ describe('asRadioDrainOutput', () => {
             }),
             task: taskDelivered,
             outcome: 'created',
+            fallback: null,
           },
           asRadioFateUnreachedByBudget({
             record: genRecord({

@@ -1,9 +1,10 @@
+import type { keyrack } from 'rhachet/keyrack';
+
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 import { RadioTaskRecordStatus } from '@src/domain.objects/RadioTaskRecordStatus';
 import { getOneRadioUsagePermissionDecision } from '@src/domain.operations/radio/permission/getOneRadioUsagePermissionDecision';
 
 import { asRadioAuthDeriveStallError } from './asRadioAuthDeriveStallError';
-import { asRadioContextWithSendLimit } from './asRadioContextWithSendLimit';
 import { asRadioDrainStepBound } from './asRadioDrainStepBound';
 import { asRadioErrorDetail } from './asRadioErrorDetail';
 import { asRadioErrorHeadline } from './asRadioErrorHeadline';
@@ -29,7 +30,7 @@ import type { RadioTaskRecordFate } from './RadioTaskRecordFate';
 import type { ShellExecutor } from './ShellExecutor';
 import { setRadioTaskRecordHeldAtGate } from './setRadioTaskRecordHeldAtGate';
 import { setRadioTaskRecordSettled } from './setRadioTaskRecordSettled';
-import { setRadioTaskUpstreamFromRecord } from './setRadioTaskUpstreamFromRecord';
+import { setRadioTaskUpstreamFromRecordWithFallback } from './setRadioTaskUpstreamFromRecordWithFallback';
 
 /**
  * .what = send one record upstream on its own terms, then settle its fate
@@ -60,6 +61,7 @@ export const setRadioTaskRecordUpstream = async (
     };
     drainDeadline: RadioDrainDeadline;
     drainAuthDeriveCap?: { milliseconds: number };
+    keyrackGet?: typeof keyrack.get;
   },
 ): Promise<RadioTaskRecordFate> => {
   const { record, dir } = input;
@@ -96,6 +98,7 @@ export const setRadioTaskRecordUpstream = async (
               deadline: context.drainDeadline,
             }),
           }),
+        keyrackGet: context.keyrackGet,
       },
     ),
     bound: authBound,
@@ -149,9 +152,24 @@ export const setRadioTaskRecordUpstream = async (
       deadline: context.drainDeadline,
     }),
   });
-  const send = await setRadioTaskUpstreamFromRecord(
-    { record },
-    asRadioContextWithSendLimit({ radioContext: auth.radioContext, limit }),
+  const send = await setRadioTaskUpstreamFromRecordWithFallback(
+    {
+      record,
+      radioContext: auth.radioContext,
+      fallback: auth.fallback,
+      isAuthDefault: auth.isAuthDefault,
+      limit,
+    },
+    {
+      env: context.env,
+      shx: (command) =>
+        context.shx(command, {
+          timeout: asRadioDrainStepBound({
+            cap: authCap,
+            deadline: context.drainDeadline,
+          }),
+        }),
+    },
   );
   if ('fault' in send && isRadioReplayRefusal({ error: send.fault })) {
     const refused = setRadioTaskRecordSettled({
@@ -220,5 +238,6 @@ export const setRadioTaskRecordUpstream = async (
     record: delivered,
     task: send.sent.task,
     outcome: send.sent.outcome,
+    fallback: send.fallback,
   };
 };

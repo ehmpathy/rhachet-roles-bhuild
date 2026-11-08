@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asRadioAuthBothFailedError given: [case1] the bot token is absent, and so is the ambient when: [t0] the fault is built then: it names both credentials, each with its fix 1`] = `
+"✋ ConstraintError: github auth failed: the ehmpath bot token was absent, and no ambient credential was found
+  • the ehmpath bot token: github auth via keyrack failed: EHMPATH_BEAVER_GITHUB_TOKEN (status: absent)
+  └─ fix: set the robot token: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
+  • the ambient credential: no GH_TOKEN env, no GITHUB_TOKEN env, no gh login
+  └─ fix: gh auth login"
+`;
+
+exports[`asRadioAuthBothFailedError given: [case2] the bot token was refused, then the ambient too when: [t0] the ambient was the GITHUB_TOKEN env then: it names which ambient source github refused 1`] = `
+"✋ ConstraintError: github auth failed: github refused the ehmpath bot token (401), and github refused the GITHUB_TOKEN env (401)
+  • the ehmpath bot token: github refused the ehmpath bot token (401)
+  └─ fix: replace the robot token: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
+  • the ambient credential: github refused the GITHUB_TOKEN env (401)
+  └─ fix: check the token in GITHUB_TOKEN: its scopes and expiry"
+`;
+
+exports[`asRadioAuthBothFailedError given: [case2] the bot token was refused, then the ambient too when: [t1] the ambient was the gh login then: the ambient fix is a fresh gh login 1`] = `
+"✋ ConstraintError: github auth failed: github refused the ehmpath bot token (403), and github refused the gh login (403)
+  • the ehmpath bot token: github refused the ehmpath bot token (403)
+  └─ fix: replace the robot token: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
+  • the ambient credential: github refused the gh login (403)
+  └─ fix: gh auth login"
+`;

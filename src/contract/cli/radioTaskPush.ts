@@ -38,6 +38,7 @@ import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
 import { getBranchBehaviorBind } from '@src/domain.operations/behavior/bind/getBranchBehaviorBind';
 import { asPushTaskFromArgs } from '@src/domain.operations/radio/cli/asPushTaskFromArgs';
 import { getOneRadioTaskRepoFromCliArg } from '@src/domain.operations/radio/cli/getOneRadioTaskRepoFromCliArg';
+import { asRadioAuthFallbackNotice } from '@src/domain.operations/radio/record/asRadioAuthFallbackNotice';
 import { asRadioLockWaitNotice } from '@src/domain.operations/radio/record/asRadioLockWaitNotice';
 import { asRadioPushOutput } from '@src/domain.operations/radio/record/asRadioPushOutput';
 import { asRadioPushSavedNotice } from '@src/domain.operations/radio/record/asRadioPushSavedNotice';
@@ -127,6 +128,12 @@ const HELP_TEXT = `
    │  ├─ the next push that gets through delivers the backlog first, oldest first
    │  ├─ see what waits: rhx radio.task.queue get
    │  └─ lift a shut gate (human): rhx radio.uses allow
+   │
+   ├─ auth, with no --auth
+   │  ├─ the ehmpath bot token goes first
+   │  ├─ absent, or refused by github (401/403): GH_TOKEN, then GITHUB_TOKEN, then the gh login
+   │  ├─ one line names which credential delivered, and why the bot token did not
+   │  └─ an --auth you pass is used as given, never fallen back past
    │
    └─ options
       ├─ --via         channel: gh.issues or os.fileops (required)
@@ -225,6 +232,11 @@ export const cliRadioTaskPush = async (): Promise<void> => {
       ),
     notice: asRadioPushSavedNotice({ record, dir: homeOfRecord.dir }),
   });
+
+  // name the credential that delivered, where the bot token did not (#513)
+  asRadioAuthFallbackNotice({ fates: [pushed, ...others] }).forEach((line) =>
+    console.log(line),
+  );
 
   // report the fate of this push, and of the backlog it carried
   console.log(

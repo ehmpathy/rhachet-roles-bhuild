@@ -75,6 +75,7 @@ describe('asRadioDrainSections', () => {
             }),
             task: genTask({ exid: '601', title: 'lesson reminders' }),
             outcome: 'created',
+            fallback: null,
           },
           {
             fate: 'delivered',
@@ -86,6 +87,7 @@ describe('asRadioDrainSections', () => {
             }),
             task: genTask({ exid: '602', title: 'board rentals' }),
             outcome: 'found',
+            fallback: null,
           },
         ],
       });

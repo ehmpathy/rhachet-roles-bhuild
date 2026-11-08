@@ -67,6 +67,7 @@ describe('asRadioPushOutput', () => {
           }),
           task: genTask({ exid: '414', title: 'fix flaky keyrack test' }),
           outcome: 'created',
+          fallback: null,
         },
         others: [],
         home: homeRoute,
@@ -375,6 +376,7 @@ describe('asRadioPushOutput', () => {
             }),
             task: genTask({ exid: '415', title: 'retry race in route.bounce' }),
             outcome: 'created',
+            fallback: null,
           },
           others: [
             {
@@ -386,6 +388,7 @@ describe('asRadioPushOutput', () => {
               }),
               task: genTask({ exid: '412', title: 'fix flaky keyrack test' }),
               outcome: 'created',
+              fallback: null,
             },
             {
               fate: 'refused',
@@ -523,6 +526,7 @@ describe('asRadioPushOutput', () => {
               }),
               task: genTask({ exid: '413', title: 'guard absent sponsor' }),
               outcome: 'found',
+              fallback: null,
             },
           ],
           home: homeRoute,
@@ -571,6 +575,7 @@ describe('asRadioPushOutput', () => {
               }),
               task: genTask({ exid: '412', title: 'fix flaky keyrack test' }),
               outcome: 'created',
+              fallback: null,
             },
             {
               fate: 'held',

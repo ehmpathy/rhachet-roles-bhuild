@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`setRadioTaskRecordUpstream — the default auth falls back to the ambient credential (#513) given: [case7] push, the bot token absent, and no ambient credential when: [t0] the push runs then: the detail names both credentials, each with its fix 1`] = `
+"✋ ConstraintError: github auth failed: the ehmpath bot token was absent, and no ambient credential was found
+  • the ehmpath bot token: github auth via keyrack failed: EHMPATH_BEAVER_GITHUB_TOKEN (status: absent)
+  └─ fix: set the robot token: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
+  • the ambient credential: no GH_TOKEN env, no GITHUB_TOKEN env, no gh login
+  └─ fix: gh auth login"
+`;

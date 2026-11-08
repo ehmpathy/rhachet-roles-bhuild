@@ -13,6 +13,17 @@ const REASONS_CURED_BY_AUTH = new Set([
 ]);
 
 /**
+ * .what = the reasons a default-auth record holds on after both credentials missed
+ * .why = the default auth falls back past a 401/403 or an absent bot token, never past a
+ *        not-found (#513); so for these, the fix is a credential, never an amend
+ */
+const REASONS_CURED_BY_DEFAULT_AUTH_FIX = new Set([
+  'upstream:access',
+  'upstream:401',
+  'upstream:auth',
+]);
+
+/**
  * .what = is this fault the test-env guard's refusal of as-human
  * .why = there the gh login is not the cause, so "check the gh login" would mislead
  */
@@ -54,11 +65,21 @@ export const asRadioQueueFixLines = (input: {
       `check the gh login on this host: gh auth status (else: gh auth login), then: rhx radio.task.queue drain`,
       drop,
     ];
-  if (reason && REASONS_CURED_BY_AUTH.has(reason))
+  // the default auth already tried the bot token, then the ambient credential (#513): name the
+  // fix for each first, since an as-human amend opts the record out of that order for good
+  const amend = `amend it: rhx radio.task.queue set --uuid ${key} --auth as-human (needs a gh login on this host)`;
+  if (
+    reason &&
+    REASONS_CURED_BY_DEFAULT_AUTH_FIX.has(reason) &&
+    auth === null
+  )
     return [
-      `amend it: rhx radio.task.queue set --uuid ${key} --auth as-human (needs a gh login on this host)`,
+      'fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)',
+      'or fix the ambient credential: gh auth login (or a GH_TOKEN env), then: rhx radio.task.queue drain',
+      `or ${amend}`,
       drop,
     ];
+  if (reason && REASONS_CURED_BY_AUTH.has(reason)) return [amend, drop];
   // an unknown fault: its text is never kept on disk (F10), so a read with no detail names
   // the drain that prints it again
   if (reason === 'upstream:fault' && input.detail === null)

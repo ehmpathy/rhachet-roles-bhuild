@@ -376,6 +376,7 @@ lets humans and clones hand tasks to each other: one pushes a task onto a channe
 #   - records every push first, into $route/.radio/ (or .behavior/.radio/ if unbound)
 #   - a push that radio.uses blocks is held QUEUED (exit 2), never lost
 #   - the next push that gets through delivers the held backlog first, oldest first
+#   - no --auth: the ehmpath bot token, else (absent, or 401/403) the box's own gh credential, named in one line
 #   - validates required args (--via, --into, --title/--description or --exid)
 #   - enforces lifecycle order on status transitions
 #   - creates backups on edit

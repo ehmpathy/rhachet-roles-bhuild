@@ -1,3 +1,5 @@
+import type { keyrack } from 'rhachet/keyrack';
+
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 
 import type { RadioDrainDeadline } from './genRadioDrainDeadline';
@@ -40,6 +42,7 @@ export const setRadioTaskRecordNextInLine = async (
       perSend: { milliseconds: number };
     };
     drainDeadline: RadioDrainDeadline;
+    keyrackGet?: typeof keyrack.get;
   },
 ): Promise<RadioTaskRecordLineProgress> => {
   // behind a halt: held in place with the halter's reason, unsent

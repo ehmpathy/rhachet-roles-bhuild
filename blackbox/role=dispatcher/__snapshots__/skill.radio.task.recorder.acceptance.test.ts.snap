@@ -126,6 +126,12 @@ exports[`radio.task.push — the radio.recorder given: [case2] a record file on 
    │  ├─ any other fault sets its one record aside; the rest still deliver
    │  └─ a later update to the same issue waits behind it, unsent, until it lands or is dropped
    │
+   ├─ auth, on a drain with no --auth
+   │  ├─ each record sends under its own stored --auth; one with none takes the ehmpath bot token first
+   │  ├─ absent, or refused by github (401/403): GH_TOKEN, then GITHUB_TOKEN, then the gh login
+   │  ├─ one line names which credential delivered, and why the bot token did not
+   │  └─ a stored --auth, or an --auth you pass, is used as given, never fallen back past
+   │
    ├─ exit codes
    │  ├─ drain
    │  │  ├─ 0  naught waits, naught refused
@@ -427,4 +433,71 @@ exports[`radio.task.push — the radio.recorder given: [case7] a drain crosses a
    │  └─ auth: as-robot:env(RADIO_ACPT_JOURNEY_TOKEN) → as-human
    ├─ kept at = .behavior/.radio/record.<uuid>.json
    └─ naught sent; its place in line is kept, and the next push, or \`rhx radio.task.queue drain\`, sends it"
+`;
+
+exports[`radio.task.push — the radio.recorder given: [case8] no --auth, and the ehmpath bot token is not granted: push and drain fall back to the ambient credential, via a stub gh (#513) when: [t0] the clone pushes with no --auth, the ambient env present then: the stdout reads as a human sees it 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 delivered via the GITHUB_TOKEN env; the ehmpath bot token was <status>
+🦫 onto the pile!
+
+🎙️ created: tide chart refresh
+   ├─ exid: <exid>
+   ├─ status: QUEUED
+   ├─ repo: sandpine/svc-lessons
+   ├─ pushedBy: stubbot
+   ├─ pushedAt: <date>
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.push — the radio.recorder given: [case8] no --auth, and the ehmpath bot token is not granted: push and drain fall back to the ambient credential, via a stub gh (#513) when: [t1] a push is held at a shut gate, then the clone drains with no --auth then: the stdout reads as a human sees it 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 delivered via the GITHUB_TOKEN env; the ehmpath bot token was <status>
+🦫 back in the river! the backlog is delivered
+   ├─ drained
+   │  └─ #<exid> wax restock
+   └─ backlog = 0"
+`;
+
+exports[`radio.task.push — the radio.recorder given: [case8] no --auth, and the ehmpath bot token is not granted: push and drain fall back to the ambient credential, via a stub gh (#513) when: [t2] the clone pushes with no --auth, and no ambient credential either then: the output reads as a human sees it 1`] = `
+{
+  "stderr": "
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+   └─ ✋ blocked by constraints
+",
+  "stdout": "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 held for the radio
+   ├─ task    = leash audit
+   ├─ into    = sandpine/svc-lessons
+   ├─ status  = QUEUED (upstream:auth)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ backlog = 1 awaits the radio
+   └─ fix it: ✋ ConstraintError: github auth failed: the ehmpath bot token was <status>, and no ambient credential was found
+      ├─ the ehmpath bot token: github auth via keyrack failed: EHMPATH_BEAVER_GITHUB_TOKEN (status: <status>)
+      │  └─ fix: <bot fix>
+      ├─ the ambient credential: no GH_TOKEN env, no GITHUB_TOKEN env, no gh login
+      │  └─ fix: gh auth login
+      ├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
+      ├─ or fix the ambient credential: gh auth login (or a GH_TOKEN env), then: rhx radio.task.queue drain
+      ├─ or amend it: rhx radio.task.queue set --uuid <uuid> --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --uuid <uuid> --why "<why>"
+      └─ then the next push delivers the backlog first",
+}
+`;
+
+exports[`radio.task.push — the radio.recorder given: [case8] no --auth, and the ehmpath bot token is not granted: push and drain fall back to the ambient credential, via a stub gh (#513) when: [t3] the clone drains the held record with no --auth, and still no ambient credential then: the stdout reads as a human sees it 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 naught delivered; the backlog still waits
+   ├─ still held
+   │  └─ <uuid> leash audit → sandpine/svc-lessons (upstream:auth)
+   │     ├─ fault: ✋ ConstraintError: github auth failed: the ehmpath bot token was <status>, and no ambient credential was found
+   │     ├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
+   │     ├─ or fix the ambient credential: gh auth login (or a GH_TOKEN env), then: rhx radio.task.queue drain
+   │     ├─ or amend it: rhx radio.task.queue set --uuid <uuid> --auth as-human (needs a gh login on this host)
+   │     └─ or drop it: rhx radio.task.queue del --uuid <uuid> --why "<why>"
+   └─ backlog = 1 awaits the radio"
 `;
