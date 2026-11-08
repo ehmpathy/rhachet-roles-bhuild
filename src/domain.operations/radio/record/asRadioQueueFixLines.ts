@@ -68,11 +68,7 @@ export const asRadioQueueFixLines = (input: {
   // the default auth already tried the bot token, then the ambient credential (#513): name the
   // fix for each first, since an as-human amend opts the record out of that order for good
   const amend = `amend it: rhx radio.task.queue set --uuid ${key} --auth as-human (needs a gh login on this host)`;
-  if (
-    reason &&
-    REASONS_CURED_BY_DEFAULT_AUTH_FIX.has(reason) &&
-    auth === null
-  )
+  if (reason && REASONS_CURED_BY_DEFAULT_AUTH_FIX.has(reason) && auth === null)
     return [
       'fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)',
       'or fix the ambient credential: gh auth login (or a GH_TOKEN env), then: rhx radio.task.queue drain',
