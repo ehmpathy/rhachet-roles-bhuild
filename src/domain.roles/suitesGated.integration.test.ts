@@ -61,6 +61,32 @@ describe('suitesGated', () => {
     '!**/*._.eval.test.ts',
   ];
 
+  /**
+   * .what = path-ignore entries that name no suite, so they hold no suite out
+   * .why = a `testPathIgnorePatterns` or `modulePathIgnorePatterns` entry holds a suite out as
+   *        surely as a `testMatch` negation; these name only install artifacts, rhachet's cache,
+   *        and gitignored scratch, the same three dirs NEGATIONS_INFRA allows
+   */
+  const IGNORES_INFRA = [
+    '/node_modules/',
+    '/.agent/',
+    '<rootDir>/.temp/',
+    '<rootDir>/.agent/',
+  ];
+
+  /**
+   * .what = the entries of each path-ignore array a config declares
+   * .why = the second channel a suite can be held out by, read beside the negations
+   */
+  const getAllPathIgnores = (input: { config: string }): string[] =>
+    [
+      ...input.config.matchAll(
+        /(?:test|module)PathIgnorePatterns:\s*\[([^\]]*)\]/g,
+      ),
+    ]
+      .flatMap((m) => [...m[1]!.matchAll(/'([^']+)'/g)])
+      .map((m) => m[1]!);
+
   const CONFIGS = [
     { tier: 'unit', path: 'jest.unit.config.ts', glob: '**/*.test.ts' },
     {
@@ -93,7 +119,19 @@ describe('suitesGated', () => {
             !NEGATIONS_TIER_UNGATED.includes(n),
         );
 
-      return { ...declared, pathAbs, config, negationsHeldOut };
+      const pathIgnores = getAllPathIgnores({ config });
+      const ignoresHeldOut = pathIgnores.filter(
+        (ignore) => !IGNORES_INFRA.includes(ignore),
+      );
+
+      return {
+        ...declared,
+        pathAbs,
+        config,
+        negationsHeldOut,
+        pathIgnores,
+        ignoresHeldOut,
+      };
     }),
     suitesUngated: execSync(
       "git ls-files -- '*.evaluation.test.ts' '*._.eval.test.ts'",
@@ -163,6 +201,69 @@ describe('suitesGated', () => {
     when('[t0] the repo is read for suites of that kind', () => {
       then('🔴 none exists, so those negations hold no suite out', () => {
         expect(scene.suitesUngated).toEqual([]);
+      });
+    });
+  });
+
+  given('[case4] the negations that draw a tier boundary', () => {
+    when(
+      '[t0] each is sought as a positive match in another tier config',
+      () => {
+        then(
+          '🔴 each one a config excludes, another config runs — so the boundary holds no suite out',
+          () => {
+            // .teeth = a tier negation is allowlisted only because another tier runs those suites.
+            //   drop the positive glob from its tier config, and the suites run nowhere: red here
+            const tierUnmatched = NEGATIONS_TIER.filter((negation) => {
+              const glob = negation.slice(1);
+              return !scene.reads.some(
+                (read) =>
+                  read.config.includes(`'${glob}'`) &&
+                  !read.config.includes(`'${negation}'`),
+              );
+            });
+            expect(tierUnmatched).toEqual([]);
+          },
+        );
+      },
+    );
+  });
+
+  given('[case5] the path-ignore arrays of every tier config', () => {
+    when('[t0] each is read for the entries it declares', () => {
+      then('the read is not vacuous — each config declares its ignores', () => {
+        // ANTI-VACUITY: a parse that finds no array yields an empty set, which passes over naught
+        for (const read of scene.reads)
+          expect(read.pathIgnores).toContain('/node_modules/');
+      });
+
+      then('🔴 not one entry holds a suite out of its required gate', () => {
+        // .teeth = an ignore entry for a suite path, in ANY tier config, goes red here
+        expect(
+          scene.reads.map((read) => ({
+            tier: read.tier,
+            heldOut: read.ignoresHeldOut,
+          })),
+        ).toEqual([
+          { tier: 'unit', heldOut: [] },
+          { tier: 'integration', heldOut: [] },
+          { tier: 'acceptance', heldOut: [] },
+        ]);
+      });
+    });
+
+    when('[t1] a suite path is added to one config', () => {
+      then('🔴 it goes RED — the bite proof', () => {
+        // .teeth = the drift is injected into the REAL config text, then read by the REAL parse
+        const drifted = scene.reads[0]!.config.replace(
+          "testPathIgnorePatterns: ['/node_modules/',",
+          "testPathIgnorePatterns: ['/node_modules/', '/src/foo/',",
+        );
+        expect(
+          getAllPathIgnores({ config: drifted }).filter(
+            (ignore) => !IGNORES_INFRA.includes(ignore),
+          ),
+        ).toEqual(['/src/foo/']);
       });
     });
   });

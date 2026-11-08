@@ -27,9 +27,10 @@ const asSnapshotStable = (output: string): string =>
     .replace(/[a-f0-9]{64}/gi, '{HASH}')
     // mask temp directory paths: /tmp/xxx-xxx -> /tmp/{TEMP}
     .replace(/\/tmp\/[a-z0-9-]+/gi, '/tmp/{TEMP}')
-    // mask .temp dir with iso timestamp: .temp/2026-04-10T15-23-19.328Z.name.uuid -> .temp/{TIMESTAMP}
+    // mask .temp dir with iso timestamp, any count of segments after it:
+    //   .temp/2026-04-10T15-23-19.328Z.name.uuid, .temp/<stamp>.rc5904689.name.hash -> .temp/{TIMESTAMP}
     .replace(
-      /\.temp\/\d{4}-\d{2}-\d{2}T[\d-]+\.\d+Z\.[a-z0-9-]+\.[a-f0-9]+/gi,
+      /\.temp\/\d{4}-\d{2}-\d{2}T[\d-]+\.\d+Z(\.[a-z0-9-]+)+/gi,
       '.temp/{TIMESTAMP}',
     )
     // mask time values: "passed 3.6s" -> "passed [time]"

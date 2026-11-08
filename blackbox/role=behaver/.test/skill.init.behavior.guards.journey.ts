@@ -494,8 +494,9 @@ const setConsumerInstall = (input: { repoDir: string }): void => {
     );
 
   /**
-   * .mock = the peer-review brain: the `claude` cli, the bhrain `review` skill, the rhachet
-   *         `enroll` skill, and the `use.apikeys` credential source they read
+   * .mock = the peer-review brain: the `claude` cli, the bhrain `review` skill, and the
+   *         `use.apikeys` credential source they read. the rhachet `enroll` skill runs for
+   *         real, so its actor-dir boot is in the path; it reaches the stub `claude`
    * .why = the subject here is bhuild's guard templates — that `init.behavior` emits guards
    *        whose stones, self-reviews, and judges drive a route to passage. a real reviewer
    *        is a paid llm call per guard with a non-deterministic verdict, so a real one would

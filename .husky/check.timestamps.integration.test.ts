@@ -97,9 +97,7 @@ const asMaskedGitLines = (input: { text: string }): string =>
   input.text
     .split('\n')
     .map((line) =>
-      line.startsWith('💥') || line.startsWith('   └─') || line === ''
-        ? line
-        : '<a line from git>',
+      line.startsWith('💥') || line === '' ? line : '<a line from git>',
     )
     .join('\n');
 
@@ -202,9 +200,8 @@ describe('check.timestamps', () => {
 
       then('it names the class and the file, on stderr', () => {
         expect(result.stderr).toContain(
-          '💥 MalfunctionError: check.timestamps could not read the staged blob',
+          '💥 MalfunctionError: check.timestamps failed to read staged content for lessons.md',
         );
-        expect(result.stderr).toContain('   └─ lessons.md');
         expect(result.stdout).toEqual('');
       });
 

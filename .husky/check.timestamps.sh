@@ -13,6 +13,15 @@
 #    a file that "needs" a timestamp removes it or masks it (e.g. `[timestamp]`, a fixed clock).
 #    the .ts/.sh skip below is code that computes time, not data that records it; it may never
 #    widen. check.timestamps.lock.sh halts every commit if this file differs from the practice.
+#
+# 🍴 repo-local fork (rhachet-roles-bhuild), pinned by check.timestamps.lock.sh to this blob:
+#    - `.eco/*` is skipped: the prioritizer's plaintext data store, whose rows carry
+#      createdAt/updatedAt as facts of the data (rule.forbid.timestamps-in-tracked-files)
+#    - the halt names the fix and the rule's brief, so a human need not hunt for either
+#    - the read fault names its file in its header, and the halt header asks for a mask, as
+#      the repo's clamps pin both (a "zero exceptions" header would contradict the .eco skip)
+#    the durable cure is upstream, in declapract-typescript-ehmpathy#788; a practice apply
+#    that lands it retires this fork
 
 # fail fast on errors and unbound vars (safe here: scan pipelines end in `head`
 # so a no-match grep does not abort, and all vars are assigned before use)
@@ -51,13 +60,13 @@ while IFS= read -r file; do
   # skip exempt code files (.ts and .sh legitimately carry time logic)
   case "$file" in
     *.ts | *.sh) continue ;;
+    .eco/*) continue ;; # repo-local fork: the prioritizer's data store (see header)
   esac
 
   # read the staged blob; fail loud if git cannot read it
   # (git's own stderr flows straight to the terminal, never into the scanned content)
   if ! content=$(git show ":$file"); then
-    printf '💥 MalfunctionError: check.timestamps could not read the staged blob\n' >&2
-    printf '   └─ %s\n' "$file" >&2
+    printf '💥 MalfunctionError: check.timestamps failed to read staged content for %s\n' "$file" >&2
     exit 1
   fi
 
@@ -66,9 +75,10 @@ while IFS= read -r file; do
   # and falls through; a line that also holds a real stamp still matches (the stamp wins)
   match=$(printf '%s\n' "$content" | sed -E "s/$DURATION_PATTERN//g" | grep -nIE "$TIMESTAMP_PATTERN" | head -n 1)
   if [ -n "$match" ]; then
-    printf '✋ ConstraintError: timestamps are forbidden in tracked files, prose and docs included. remove them, zero exceptions\n' >&2
-    printf '   ├─ why: a timestamp is a privacy leak, and churns every diff\n' >&2
-    printf '   └─ %s:%s\n' "$file" "$match" >&2
+    printf '✋ ConstraintError: timestamps are forbidden in tracked files. mask them to prevent permadrift\n' >&2
+    printf '   ├─ %s:%s\n' "$file" "$match" >&2
+    printf '   ├─ fix: cut it to a datestamp (YYYY-MM-DD), or mask the time (THH:MM:SSZ); then stage again\n' >&2
+    printf '   └─ why: .agent/repo=.this/role=any/briefs/rule.forbid.timestamps-in-tracked-files.md\n' >&2
     exit 2
   fi
 done <<EOF

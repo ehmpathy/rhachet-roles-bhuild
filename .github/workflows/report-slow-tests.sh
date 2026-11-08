@@ -15,7 +15,13 @@
 # guarantee:
 #   - exit 0 = report written to $GITHUB_STEP_SUMMARY (or /dev/null locally)
 #   - exit 0 = empty shard (0 test files) — a legitimate state, stated explicitly
-#   - exit 1 = non-empty report yielded zero real durations (schema drift)
+#   - exit 0 = skipped shard (files matched, but no test ran) — stated explicitly
+#   - exit 1 = a report where tests ran yielded zero real durations (schema drift)
+#
+# 🍴 repo-local fork (rhachet-roles-bhuild): the skipped-shard branch. a shard whose one file
+#    is all `describe.skip` (a suite that shells `claude`, absent in ci) has a zero wall-clock
+#    span, which the drift check read as schema drift. the durable cure is upstream, in
+#    declapract-typescript-ehmpathy#788; a practice apply that lands it retires this fork
 ######################################################################
 set -eu
 
@@ -29,6 +35,14 @@ summary="${GITHUB_STEP_SUMMARY:-/dev/null}"
 # an empty shard (no matched files) is legitimate — say so explicitly, never fail.
 if [[ "$total" -eq 0 ]]; then
   echo "slow-test report: 0 test files in $results (empty shard)" >> "$summary"
+  exit 0
+fi
+
+# a shard where no test passed or failed (every one skipped or todo) has no duration to rank —
+# say so explicitly, never fail. (repo-local fork; see header)
+ran=$(jq '[.testResults[] | .assertionResults[]? | select(.status == "passed" or .status == "failed")] | length' "$results")
+if [[ "$ran" -eq 0 ]]; then
+  echo "slow-test report: $total test files in $results, no test ran (skipped shard)" >> "$summary"
   exit 0
 fi
 

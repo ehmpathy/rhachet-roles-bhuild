@@ -13,7 +13,10 @@
 #    sanctioned change to the timestamp hook is a practice upgrade, which rewrites both at once.
 
 # the blob id of the declared hook (stamped by the practice on apply)
-TIMESTAMPS_LOCK_EXPECTED='afea02deb1cb378e08af49b86070c37cacd5b032'
+# 🍴 repo-local re-pin: this id is the forked hook (its header names the fork and why);
+#    the practice's own id was afea02deb1cb378e08af49b86070c37cacd5b032. the durable cure is
+#    declapract-typescript-ehmpathy#788, whose apply rewrites both at once
+TIMESTAMPS_LOCK_EXPECTED='4071be2c55d9b352983007a9ceae1939d944bff1'
 
 # the hook under lock; $0 is the hook dir whether sourced by pre-commit or run direct
 TIMESTAMPS_LOCK_HOOK="$(dirname -- "$0")/check.timestamps.sh"

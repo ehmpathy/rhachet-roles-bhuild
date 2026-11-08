@@ -38,7 +38,7 @@ const config: Config = {
   ],
   // skip all of `.agent/`: rhachet roles, host-local clones, and the rmsafe trash live there. a test
   // there would run as ours, and a snapshot there would read as obsolete (the haste map scans it)
-  testPathIgnorePatterns: ['/node_modules/', '/.agent/'],
+  testPathIgnorePatterns: ['/node_modules/', '/.agent/', '<rootDir>/.temp/'],
   modulePathIgnorePatterns: ['<rootDir>/.agent/'],
   setupFilesAfterEnv: ['./jest.integration.env.ts'],
 
