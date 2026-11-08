@@ -358,7 +358,7 @@ exports[`supervisor.surface acceptance (as consumer) given: [case3] the concurre
    │  ├─ per crew-hour: behavior N · directive ⚪
    │  ├─ 5h: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
    │  └─ 7d: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
-   └─ grove local: 4 cpu · 12G free of 16G · 1 crews live, 1 at work · busy 3 of 4 · 40 forks/s (40 per seat) · cpu stall 🟢 0% (since boot 0.400%) · ram full stall 🟢 0% (since boot 0.100%)
+   └─ grove local: 4 cpu · 12G free of 16G · 1 crews live, 1 at work · busy 3 of 4 · 40 forks/s (40 per seat) · cpu stall 🟢 0.00% (since boot 0.400%) · ram full stall 🟢 0.00% (since boot 0.100%)
       ├─ behavior: affordable ~2 (est.) (upper bound) · binds cpu · free slots 1 · ram 11 · cpu ~2 (est.) · tokens_5h ⚪ · tokens_7d ⚪
       ├─ directive: affordable ~2 (est.) (upper bound) · binds cpu · free slots 1 · ram 11 · cpu ~2 (est.) · tokens_5h ⚪ · tokens_7d ⚪ · costs borrowed from the grove median
       └─ exchange: 1 directive ≈ 1 behavior (on cpu) — ⚪ an estimate: a cost is borrowed, so this is no measure
@@ -437,7 +437,7 @@ exports[`supervisor.surface acceptance (as consumer) given: [case3] the concurre
    │  ├─ per crew-hour: behavior N · directive ⚪
    │  ├─ 5h: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
    │  └─ 7d: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
-   └─ grove local: 4 cpu · 12G free of 16G · 1 crews live, 1 at work · busy 3 of 4 · 40 forks/s (40 per seat) · cpu stall 🟢 0% (since boot 0.400%) · ram full stall 🟢 0% (since boot 0.100%)
+   └─ grove local: 4 cpu · 12G free of 16G · 1 crews live, 1 at work · busy 3 of 4 · 40 forks/s (40 per seat) · cpu stall 🟢 0.00% (since boot 0.400%) · ram full stall 🟢 0.00% (since boot 0.100%)
       ├─ behavior: affordable ~2 (est.) (upper bound) · binds cpu · free slots 1 · ram 11 · cpu ~2 (est.) · tokens_5h ⚪ · tokens_7d ⚪
       ├─ directive: affordable ~2 (est.) (upper bound) · binds cpu · free slots 1 · ram 11 · cpu ~2 (est.) · tokens_5h ⚪ · tokens_7d ⚪ · costs borrowed from the grove median
       ├─ exchange: 1 directive ≈ 1 behavior (on cpu) — ⚪ an estimate: a cost is borrowed, so this is no measure

@@ -600,7 +600,7 @@ exports[`git.grove.capacity given: [case7] the sprout gate, on a woken grove wit
 exports[`git.grove.capacity given: [case9] the sprout gate, on a full box, beside a corrupt levers table when: [t1] a slot is asked, beside the corrupt levers table then: the malfunction render matches its snapshot, the fixture paths masked 1`] = `
 {
   "status": 1,
-  "stderr": "parse error: Invalid numeric literal at line 1, column 5
+  "stderr": "<jq parse error>
 💥 MalfunctionError: the levers table is unreadable: <fixture-skills>/git.grove.capacity.levers.jsonc
 ",
   "stdout": "",

@@ -62,7 +62,7 @@ exports[`role=any skills given: [case1] claude.statusline.caplog, fed by one sea
    ├─ rows: 2
    │  └─ last: {"at":"YYYY-MM-DDTHH:MM:SSZ","account":"bert@example.com","confdir":"<tmp>","session":"session-surf-forecast","version":"2.0.0","model":"claude-fixture","five_hour":{"used_percentage":12,"resets_at":<epoch>},"seven_day":{"used_percentage":3,"resets_at":<epoch>},"spend_limit":null,"rate_limits_present":true}
    └─ faults: 3
-      └─ last: YYYY-MM-DDTHH:MM:SSZ ledger fault, exit 4
+      └─ last: YYYY-MM-DDTHH:MM:SSZ ledger fault, exit <tool exit>
 
 [stderr]
 "
@@ -77,7 +77,7 @@ exports[`role=any skills given: [case1] claude.statusline.caplog, fed by one sea
    ├─ rows: 3
    │  └─ last: {"at":"YYYY-MM-DDTHH:MM:SSZ","account":"bert@example.com","confdir":"<tmp>","session":"session-surf-forecast","version":"2.0.0","model":"claude-fixture","five_hour":{"used_percentage":12,"resets_at":<epoch>},"seven_day":{"used_percentage":3,"resets_at":<epoch>},"spend_limit":null,"rate_limits_present":true}
    └─ faults: 3
-      └─ last: YYYY-MM-DDTHH:MM:SSZ ledger fault, exit 4
+      └─ last: YYYY-MM-DDTHH:MM:SSZ ledger fault, exit <tool exit>
 
 [stderr]
 "
@@ -398,7 +398,7 @@ error: The following untracked working tree files would be overwritten by merge:
 	tides.md
 Please move or remove them before you merge.
 Aborting
-💥 MalfunctionError: git merge failed with no conflict to settle (exit 128); see the git error above
+💥 MalfunctionError: git merge failed with no conflict to settle (exit <tool exit>); see the git error above
    └─ e.g. an untracked file in the way: move it, then rerun
 "
 `;
@@ -861,5 +861,15 @@ exports[`role=any skills given: [case9] task.output.await, on a task output file
 ######################################################################
 
 [stderr]
+"
+`;
+
+exports[`role=any skills given: [case10] gh.workflow.logs, run as rhx runs it when: [t0] the rhachet args arrive beside a flag it does not know then: the refusal matches its snapshot 1`] = `
+"exit: 2
+[stdout]
+
+[stderr]
+✋ ConstraintError: unknown argument: --bogus
+   └─ run with --help for usage
 "
 `;
