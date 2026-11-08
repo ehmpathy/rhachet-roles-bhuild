@@ -32,6 +32,11 @@ const FIX_DEFAULT = [
   'or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain',
   'or amend it: rhx radio.task.queue set --uuid a1b2c3d4e5f60718 --auth as-human (needs a gh login on this host)',
 ];
+// an access refusal: the bot token is live but lacks the grant, so its fix is the grant
+const FIX_DEFAULT_ACCESS = [
+  'fix the ehmpath bot access: grant the ehmpath bot write on the target repo (else a token with that grant: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)',
+  ...FIX_DEFAULT.slice(1),
+];
 const DROP =
   'or drop it: rhx radio.task.queue del --uuid a1b2c3d4e5f60718 --why "<why>"';
 
@@ -50,9 +55,9 @@ const FIX_CASES = [
   },
   {
     description:
-      'an access fault under the default auth names both credential fixes + drop, never an amend that would opt out of the fallback (#513)',
+      'an access fault under the default auth names both credential fixes + drop, the bot fix as a grant since an unlock cannot cure a live token that lacks one (#513)',
     given: { reason: 'upstream:access' },
-    expect: { output: [...FIX_DEFAULT, DROP] },
+    expect: { output: [...FIX_DEFAULT_ACCESS, DROP] },
   },
   {
     description:
@@ -166,6 +171,19 @@ describe('asRadioQueueFixLines', () => {
           );
           expect(linesAll.length).toBeGreaterThan(0);
           expect(linesAll.join('\n')).not.toMatch(/drain --auth/);
+        },
+      );
+      then(
+        'an access fault never names a keyrack unlock: the bot token is live, it lacks the grant',
+        () => {
+          const linesAccess = asRadioQueueFixLines({
+            record: genRecord({ reason: 'upstream:access' }),
+            authOverride: null,
+            detail: null,
+            isCredentialFixShown: false,
+          });
+          expect(linesAccess.join('\n')).not.toContain('keyrack unlock');
+          expect(linesAccess[0]).toContain('grant the ehmpath bot write');
         },
       );
     });

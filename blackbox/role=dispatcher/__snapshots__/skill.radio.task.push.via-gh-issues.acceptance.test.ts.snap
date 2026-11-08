@@ -1,5 +1,20 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
+exports[`radio.task.push via gh.issues given: [case1] push new task to gh.issues (default auth via keyrack) when: [t0] push with title and description (no --auth flag) then: the bot token delivers it, with no fallback line (#513) 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 onto the pile!
+
+🎙️ created: test task <ts>
+   ├─ exid: <exid>
+   ├─ status: QUEUED
+   ├─ repo: ehmpathy/rhachet-roles-bhuild-demo
+   ├─ pushedBy: test-fns
+   ├─ pushedAt: <date>
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
 exports[`radio.task.push via gh.issues given: [case1] push new task to gh.issues (default auth via keyrack) when: [t1] push without title (no --auth flag) then: output names the fix, as snapped 1`] = `
 {
   "stderr": "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
@@ -50,6 +65,45 @@ exports[`radio.task.push via gh.issues given: [case8] rejected robot token surfa
       └─ then the next push delivers the backlog first"
 `;
 
+exports[`radio.task.push via gh.issues given: [case8] rejected robot token surfaces the as-human nudge (gh 401) when: [t0] push with an env token that github rejects (401) then: the stderr stream matches snapshot, volatile bytes masked 1`] = `
+"
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+   └─ ✋ blocked by constraints
+"
+`;
+
+exports[`radio.task.push via gh.issues given: [case10] no --auth, the ehmpath bot token not granted: the push falls back to the ambient GITHUB_TOKEN, against real github (#513) when: [t0] the bot token is absent then: the stdout matches snapshot, volatile bytes masked 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 delivered via the GITHUB_TOKEN env; the ehmpath bot token was <status>
+🦫 onto the pile!
+
+🎙️ created: fallback absent test <ts>
+   ├─ exid: <exid>
+   ├─ status: QUEUED
+   ├─ repo: ehmpathy/rhachet-roles-bhuild-demo
+   ├─ pushedBy: test-fns
+   ├─ pushedAt: <date>
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.push via gh.issues given: [case10] no --auth, the ehmpath bot token not granted: the push falls back to the ambient GITHUB_TOKEN, against real github (#513) when: [t1] the bot slot holds a forged value keyrack never granted then: the stdout matches snapshot, volatile bytes masked 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 delivered via the GITHUB_TOKEN env; the ehmpath bot token was <status>
+🦫 onto the pile!
+
+🎙️ created: fallback forged test <ts>
+   ├─ exid: <exid>
+   ├─ status: QUEUED
+   ├─ repo: ehmpathy/rhachet-roles-bhuild-demo
+   ├─ pushedBy: test-fns
+   ├─ pushedAt: <date>
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
 exports[`radio.task.push via gh.issues — usage contract given: [case9] --help renders the usage contract (deterministic) when: [t0] push is invoked with --help then: the human-readable usage output matches snapshot 1`] = `
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
 
@@ -71,7 +125,8 @@ exports[`radio.task.push via gh.issues — usage contract given: [case9] --help 
    │
    ├─ auth, with no --auth
    │  ├─ the ehmpath bot token goes first
-   │  ├─ absent, or refused by github (401/403): GH_TOKEN, then GITHUB_TOKEN, then the gh login
+   │  ├─ absent, or refused by github (a 401, or a 403 write refusal): GH_TOKEN, then GITHUB_TOKEN, then the gh login
+   │  ├─ a rate limit (a 403 or 429 that says so) never falls back: the task is held, and the next drain retries it
    │  ├─ one line names which credential delivered, and why the bot token did not
    │  └─ an --auth you pass is used as given, never fallen back past
    │

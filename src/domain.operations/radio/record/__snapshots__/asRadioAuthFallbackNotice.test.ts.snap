@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asRadioAuthFallbackNotice given: [case5] every (credential kind × bot miss) pair when: [t0] the notice is read for each pair then: each pair yields one line, every variant shown at once 1`] = `
+[
+  "🦫 delivered via the GH_TOKEN env; the ehmpath bot token was absent",
+  "🦫 delivered via the GH_TOKEN env; the ehmpath bot token was locked",
+  "🦫 delivered via the GH_TOKEN env; the ehmpath bot token was blocked",
+  "🦫 delivered via the GH_TOKEN env; the ehmpath bot token was not granted",
+  "🦫 delivered via the GH_TOKEN env; github refused the ehmpath bot token (401)",
+  "🦫 delivered via the GH_TOKEN env; github refused the ehmpath bot token (403)",
+  "🦫 delivered via the GITHUB_TOKEN env; the ehmpath bot token was absent",
+  "🦫 delivered via the GITHUB_TOKEN env; the ehmpath bot token was locked",
+  "🦫 delivered via the GITHUB_TOKEN env; the ehmpath bot token was blocked",
+  "🦫 delivered via the GITHUB_TOKEN env; the ehmpath bot token was not granted",
+  "🦫 delivered via the GITHUB_TOKEN env; github refused the ehmpath bot token (401)",
+  "🦫 delivered via the GITHUB_TOKEN env; github refused the ehmpath bot token (403)",
+  "🦫 delivered via the gh login; the ehmpath bot token was absent",
+  "🦫 delivered via the gh login; the ehmpath bot token was locked",
+  "🦫 delivered via the gh login; the ehmpath bot token was blocked",
+  "🦫 delivered via the gh login; the ehmpath bot token was not granted",
+  "🦫 delivered via the gh login; github refused the ehmpath bot token (401)",
+  "🦫 delivered via the gh login; github refused the ehmpath bot token (403)",
+]
+`;

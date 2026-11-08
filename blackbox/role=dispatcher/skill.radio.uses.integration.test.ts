@@ -1,3 +1,7 @@
+/**
+ * .what = integration tests for radio.uses permission controls
+ * .why = verify the 24-row precedence matrix works as expected
+ */
 import * as fs from 'fs';
 import * as path from 'path';
 import { given, then, useBeforeAll, useThen, when } from 'test-fns';

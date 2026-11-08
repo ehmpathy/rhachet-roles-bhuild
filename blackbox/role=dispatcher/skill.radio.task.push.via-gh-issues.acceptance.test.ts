@@ -1,6 +1,6 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
-import { UnexpectedCodePathError } from 'helpful-errors';
+import { ConstraintError, UnexpectedCodePathError } from 'helpful-errors';
 import path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
@@ -41,6 +41,22 @@ const asStable401Output = (input: { output: string }): string =>
       .replace(/auth-fail 401 test \d+/g, 'auth-fail 401 test <ts>')
       .replace(/\S*radio-task-\d+\.md/g, '<tempfile>'),
   });
+
+/**
+ * .what = mask the bytes of a live delivery that vary per run or per box
+ * .why = the title carries Date.now(), github mints the exid, the day stamps pushedAt, and the
+ *        bot slot's keyrack status depends on the box; the line shape and the tree are what hold
+ */
+const asStableDeliveredOutput = (input: { output: string }): string =>
+  sanitizeOutput(input.output)
+    .replace(/fallback (absent|forged) test \d+/g, 'fallback $1 test <ts>')
+    .replace(/test task \d+/g, 'test task <ts>')
+    .replace(/exid: \d+/g, 'exid: <exid>')
+    .replace(/pushedAt: \d{4}-\d{2}-\d{2}/g, 'pushedAt: <date>')
+    .replace(
+      /the ehmpath bot token was (absent|locked|blocked|not granted)/g,
+      'the ehmpath bot token was <status>',
+    );
 
 /**
  * .what = invoke radio.uses skill to set up permissions
@@ -85,7 +101,7 @@ const runRadioTaskPush = (input: {
   status?: string;
   idem?: string;
   homeDir?: string;
-  env?: Record<string, string>;
+  env?: Record<string, string | undefined>;
 }) => {
   const args = [
     `--via ${input.via}`,
@@ -216,6 +232,13 @@ describe('radio.task.push via gh.issues', () => {
 
       then('output shows repo', () => {
         expect(result.output).toContain(GITHUB_DEMO_REPO);
+      });
+
+      then('the bot token delivers it, with no fallback line (#513)', () => {
+        expect(result.output).not.toContain('delivered via');
+        expect(
+          asStableDeliveredOutput({ output: result.output }),
+        ).toMatchSnapshot();
       });
     });
 
@@ -619,17 +642,130 @@ describe('radio.task.push via gh.issues', () => {
             ).toMatchSnapshot();
           },
         );
+
+        then(
+          'the stderr stream matches snapshot, volatile bytes masked',
+          () => {
+            expect(result.stderr).not.toContain('Command failed');
+            expect(
+              asStable401Output({ output: result.stderr }),
+            ).toMatchSnapshot();
+          },
+        );
       });
+    },
+  );
+
+  given(
+    '[case10] no --auth, the ehmpath bot token not granted: the push falls back to the ambient GITHUB_TOKEN, against real github (#513)',
+    () => {
+      // the real bot token, sourced from keyrack by jest.acceptance.env.ts, rides in as the
+      // ambient GITHUB_TOKEN; the bot slot is emptied or forged. no gh login is ever read:
+      // the test env forbids it, and every send goes to real github under the env token
+      const tokenReal = useBeforeAll(async () => {
+        const token = process.env.EHMPATH_BEAVER_GITHUB_TOKEN;
+        if (!token)
+          throw new ConstraintError(
+            'EHMPATH_BEAVER_GITHUB_TOKEN is required for the real-github fallback case',
+            { hint: 'rhx keyrack unlock --owner ehmpath --env prep' },
+          );
+        return { token };
+      });
+      const tokenForged = 'ghp_radioAcptForgedBotToken000000';
+
+      when('[t0] the bot token is absent', () => {
+        const result = useBeforeAll(async () =>
+          runRadioTaskPush({
+            repoDir: scene.consumer.repoDir,
+            homeDir: scene.homeDir,
+            via: 'gh.issues',
+            env: {
+              EHMPATH_BEAVER_GITHUB_TOKEN: undefined,
+              GH_TOKEN: undefined,
+              GITHUB_TOKEN: tokenReal.token,
+            },
+            into: GITHUB_DEMO_REPO,
+            title: `fallback absent test ${Date.now()}`,
+            description: 'delivered under the ambient GITHUB_TOKEN',
+          }),
+        );
+
+        then('it delivers to real github, exit 0', () => {
+          expect(result.exitCode).toBe(0);
+          expect(result.output).toContain('created');
+          expect(result.output).toMatch(/exid: \d+/);
+        });
+
+        then('one line names the credential kind and why', () => {
+          expect(result.output).toMatch(
+            /🦫 delivered via the GITHUB_TOKEN env; the ehmpath bot token was (absent|locked|blocked|not granted)/,
+          );
+        });
+
+        then('no token value reaches the output', () => {
+          expect(result.output).not.toContain(tokenReal.token);
+        });
+
+        then('the stdout matches snapshot, volatile bytes masked', () => {
+          expect(
+            asStableDeliveredOutput({ output: result.stdout }),
+          ).toMatchSnapshot();
+        });
+      });
+
+      when(
+        '[t1] the bot slot holds a forged value keyrack never granted',
+        () => {
+          const result = useBeforeAll(async () =>
+            runRadioTaskPush({
+              repoDir: scene.consumer.repoDir,
+              homeDir: scene.homeDir,
+              via: 'gh.issues',
+              env: {
+                EHMPATH_BEAVER_GITHUB_TOKEN: tokenForged,
+                GH_TOKEN: undefined,
+                GITHUB_TOKEN: tokenReal.token,
+              },
+              into: GITHUB_DEMO_REPO,
+              title: `fallback forged test ${Date.now()}`,
+              description:
+                'delivered under the ambient GITHUB_TOKEN, the forged bot value unsent',
+            }),
+          );
+
+          then('it delivers to real github under the ambient, exit 0', () => {
+            expect(result.exitCode).toBe(0);
+            expect(result.output).toContain('created');
+            expect(result.output).toMatch(/exid: \d+/);
+          });
+
+          then('one line names the keyrack status the forged value hit', () => {
+            // keyrack refuses an env value it did not grant, so the forged token is never sent
+            expect(result.output).toMatch(
+              /🦫 delivered via the GITHUB_TOKEN env; the ehmpath bot token was (blocked|locked|absent|not granted)/,
+            );
+          });
+
+          then('no token value reaches the output', () => {
+            expect(result.output).not.toContain(tokenReal.token);
+            expect(result.output).not.toContain(tokenForged);
+          });
+
+          then('the stdout matches snapshot, volatile bytes masked', () => {
+            expect(
+              asStableDeliveredOutput({ output: result.stdout }),
+            ).toMatchSnapshot();
+          });
+        },
+      );
     },
   );
 });
 
 // ────────────────────────────────────────────────────────────────
-// the positive/usage contract at the acceptance (subprocess) tier. the
-// live happy path (a real push) has non-deterministic output (Date.now()
-// titles, live issue exids) so it is asserted in the credential-gated cases
-// above, not snapshotted. --help is the one FULLY-deterministic caller-faced
-// output, so it is snapshotted here for a subprocess-tier vibecheck.
+// the usage contract at the acceptance (subprocess) tier. a live push snaps
+// above through asStableDeliveredOutput, which masks its per-run bytes;
+// --help needs no mask, so it snaps here as is.
 // ────────────────────────────────────────────────────────────────
 describe('radio.task.push via gh.issues — usage contract', () => {
   const helpScene = useBeforeAll(async () =>

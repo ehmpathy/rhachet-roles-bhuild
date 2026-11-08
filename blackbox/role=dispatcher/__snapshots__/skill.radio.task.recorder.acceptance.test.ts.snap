@@ -128,7 +128,8 @@ exports[`radio.task.push — the radio.recorder given: [case2] a record file on 
    │
    ├─ auth, on a drain with no --auth
    │  ├─ each record sends under its own stored --auth; one with none takes the ehmpath bot token first
-   │  ├─ absent, or refused by github (401/403): GH_TOKEN, then GITHUB_TOKEN, then the gh login
+   │  ├─ absent, or refused by github (a 401, or a 403 write refusal): GH_TOKEN, then GITHUB_TOKEN, then the gh login
+   │  ├─ a rate limit (a 403 or 429 that says so) never falls back: it halts the drain, and the next drain retries it
    │  ├─ one line names which credential delivered, and why the bot token did not
    │  └─ a stored --auth, or an --auth you pass, is used as given, never fallen back past
    │
@@ -475,7 +476,7 @@ exports[`radio.task.push — the radio.recorder given: [case8] no --auth, and th
    ├─ status  = QUEUED (upstream:auth)
    ├─ held at = .behavior/.radio/ (no route bound to this branch)
    ├─ backlog = 1 awaits the radio
-   └─ fix it: ✋ ConstraintError: github auth failed: the ehmpath bot token was <status>, and no ambient credential was found
+   └─ fix it: github auth failed: the ehmpath bot token was <status>, and no ambient credential was found
       ├─ the ehmpath bot token: github auth via keyrack failed: EHMPATH_BEAVER_GITHUB_TOKEN (status: <status>)
       │  └─ fix: <bot fix>
       ├─ the ambient credential: no GH_TOKEN env, no GITHUB_TOKEN env, no gh login
@@ -492,7 +493,7 @@ exports[`radio.task.push — the radio.recorder given: [case8] no --auth, and th
 🦫 naught delivered; the backlog still waits
    ├─ still held
    │  └─ <uuid> leash audit → sandpine/svc-lessons (upstream:auth)
-   │     ├─ fault: ✋ ConstraintError: github auth failed: the ehmpath bot token was <status>, and no ambient credential was found
+   │     ├─ fault: github auth failed: the ehmpath bot token was <status>, and no ambient credential was found
    │     ├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
    │     ├─ or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain
    │     ├─ or amend it: rhx radio.task.queue set --uuid <uuid> --auth as-human (needs a gh login on this host)

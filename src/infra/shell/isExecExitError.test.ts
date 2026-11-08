@@ -1,3 +1,5 @@
+import { given, then, when } from 'test-fns';
+
 import { isExecExitError } from './isExecExitError';
 
 const TEST_CASES = [
@@ -49,11 +51,15 @@ const TEST_CASES = [
 ];
 
 describe('isExecExitError', () => {
-  TEST_CASES.map((thisCase) =>
-    test(thisCase.description, () => {
-      expect(isExecExitError({ error: thisCase.given.error })).toEqual(
-        thisCase.expect.output,
-      );
+  TEST_CASES.map((thisCase, index) =>
+    given(`[case${index + 1}] ${thisCase.description}`, () => {
+      when('[t0] the error is read', () => {
+        then('it yields the expected verdict', () => {
+          expect(isExecExitError({ error: thisCase.given.error })).toEqual(
+            thisCase.expect.output,
+          );
+        });
+      });
     }),
   );
 });

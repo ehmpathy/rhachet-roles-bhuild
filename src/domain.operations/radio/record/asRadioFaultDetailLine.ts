@@ -1,3 +1,5 @@
+import { asRadioFaultTextShown } from './asRadioFaultTextShown';
+
 /**
  * .what = the one line of an upstream fault's own text a drain prints beside its code
  * .why = a code alone (`upstream:fault`) cannot tell a human why a record was set aside;
@@ -18,5 +20,5 @@ export const asRadioFaultDetailLine = (input: {
   const lineUpstream =
     lines.find((line) => !line.includes('Command failed:')) ?? lines[0];
   if (!lineUpstream) return null;
-  return `fault: ${lineUpstream}`;
+  return `fault: ${asRadioFaultTextShown({ line: lineUpstream, detail: input.detail })}`;
 };

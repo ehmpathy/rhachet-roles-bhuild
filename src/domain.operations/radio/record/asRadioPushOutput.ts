@@ -7,6 +7,7 @@ import { asRadioDeliveredLine } from './asRadioDeliveredLine';
 import { asRadioDrainSections } from './asRadioDrainSections';
 import { asRadioErrorHeadline } from './asRadioErrorHeadline';
 import { asRadioErrorHintLines } from './asRadioErrorHintLines';
+import { asRadioFaultTextShown } from './asRadioFaultTextShown';
 import { asRadioQueueFixLines } from './asRadioQueueFixLines';
 import { asRadioReasonBehindOnIssue } from './asRadioReasonBehindOnIssue';
 import { asRadioRefusalText } from './asRadioRefusalText';
@@ -160,11 +161,41 @@ const asHeldFixBranch = (input: {
   if (!detail && !record.reason)
     return { line: 'naught to fix: no fault on record', children: [next] };
   if (!detail)
-    return { line: `fix it: ${record.reason}`, children: [...queue, next] };
+    return {
+      line: `fix it: ${record.reason ?? ''}`,
+      children: [...queue, next],
+    };
+  const hints = asRadioErrorHintLines({ message: detail });
   return {
-    line: `fix it: ${asRadioErrorHeadline({ message: detail })}`,
-    children: [...asRadioErrorHintLines({ message: detail }), ...queue, next],
+    line: `fix it: ${asRadioFaultTextShown({ line: asRadioErrorHeadline({ message: detail }), detail })}`,
+    children: [
+      ...hints,
+      ...asQueueLinesAfterHints({ hints, queue, record }),
+      next,
+    ],
   };
+};
+
+/**
+ * .what = the queue's fix lines, joined onto the fault's own fix lines
+ * .why = where the fault already names a fix, the queue's first line is one more alternative,
+ *        so it reads `or …` like each line after it, never as a second primary
+ * .note = default-auth records only (#513 added their credential fixes); a chosen `--auth`
+ *         renders as it did before the fallback
+ */
+const asQueueLinesAfterHints = (input: {
+  hints: string[];
+  queue: string[];
+  record: RadioTaskRecord;
+}): string[] => {
+  if (input.record.auth !== null) return input.queue;
+  const [first, ...rest] = input.queue;
+  const isFixNamedAlready = input.hints.some(
+    (hint) => !hint.startsWith('hint:'),
+  );
+  if (!first || !isFixNamedAlready || first.startsWith('or '))
+    return input.queue;
+  return [`or ${first}`, ...rest];
 };
 
 /**

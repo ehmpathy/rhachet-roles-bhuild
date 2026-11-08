@@ -74,7 +74,7 @@ exports[`asRadioDrainSections given: [case4] records set aside, one per fault re
       "children": [
         "01b2c3d4e5f60718 task upstream:access → sandpine/svc-lessons (upstream:access)
 ├─ fault: GraphQL: Resource not accessible by integration (updateIssue)
-├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
+├─ fix the ehmpath bot access: grant the ehmpath bot write on the target repo (else a token with that grant: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
 ├─ or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain
 ├─ or amend it: rhx radio.task.queue set --uuid 01b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
 └─ or drop it: rhx radio.task.queue del --uuid 01b2c3d4e5f60718 --why "<why>"",
@@ -148,7 +148,7 @@ exports[`asRadioDrainSections given: [case7] two updates to one issue, the first
       "children": [
         "a1b2c3d4e5f60718 claim #599 → sandpine/svc-lessons (upstream:access)
 ├─ fault: GraphQL: Resource not accessible by integration (updateIssue)
-├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
+├─ fix the ehmpath bot access: grant the ehmpath bot write on the target repo (else a token with that grant: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
 ├─ or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain
 ├─ or amend it: rhx radio.task.queue set --uuid a1b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
 └─ or drop it: rhx radio.task.queue del --uuid a1b2c3d4e5f60718 --why "<why>"",

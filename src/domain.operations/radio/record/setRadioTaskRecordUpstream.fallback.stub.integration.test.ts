@@ -9,6 +9,7 @@ import { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
 import { shx } from '@src/infra/shell/shx';
 
 import { asRadioAuthFallbackNotice } from './asRadioAuthFallbackNotice';
+import { asRadioQueueFixLines } from './asRadioQueueFixLines';
 import type { RadioTaskRecordFate } from './RadioTaskRecordFate';
 import { setRadioTaskRecordFromPush } from './setRadioTaskRecordFromPush';
 import { setRadioTaskRecordsDrained } from './setRadioTaskRecordsDrained';
@@ -82,6 +83,7 @@ process.exit(1);
 const TOKEN_BOT = 'ghs_botToken000';
 const TOKEN_AMBIENT = 'ghp_ambientToken000';
 const TOKEN_TYPED = 'ghp_typedToken000';
+const TOKEN_LOGIN = 'gho_loginToken000';
 
 /**
  * .what = a fake keyrack.get: the bot token granted, or absent
@@ -114,6 +116,39 @@ const genEnv = (input: Record<string, string>): NodeJS.ProcessEnv => {
 };
 
 /**
+ * .what = the env a gh-login case runs under: genEnv, with the test-env marks dropped too
+ * .why = the ambient read skips the gh login in a test env, so a box with only a gh login
+ *        cannot be staged without them gone. safe only beside genShxWithGhLoginOnly, which
+ *        stands in for every shell call, so no real `gh` can run
+ */
+const genEnvWithGhLogin = (
+  input: Record<string, string>,
+): NodeJS.ProcessEnv => {
+  const {
+    NODE_ENV: _removed,
+    JEST_WORKER_ID: _removed2,
+    ...envOutsideTest
+  } = genEnv(input);
+  return envOutsideTest;
+};
+
+/**
+ * .what = a fake shx that answers the gh-login read with a fixture token, and refuses all else
+ * .why = the auth seam's shell is the one path to a real `gh`, whose login is a developer's own.
+ *        a login shell rebuilds PATH, so a stub first on PATH cannot shadow it; this fake
+ *        replaces the seam whole. any other command throws, so an unforeseen call goes red
+ */
+const genShxWithGhLoginOnly =
+  (input: { login: string }) =>
+  async (command: string): Promise<{ stdout: string; stderr: string }> => {
+    if (command === 'env -u GH_TOKEN -u GITHUB_TOKEN gh auth token')
+      return { stdout: `${input.login}\n`, stderr: '' };
+    throw new Error(
+      `fake shx: unexpected command in a gh-login case: ${command}`,
+    );
+  };
+
+/**
  * .what = a scene: a granted repo, a stub gh, one held gh.issues record of a surf-school task
  * .why = each case stages its own credentials and refusals
  */
@@ -130,6 +165,7 @@ const genScene = (input: {
     rateLimitOnCreate?: string[];
   };
   auth?: string | null;
+  ghLogin?: string;
 }) => {
   const cwd = genTempDir({ slug: `radio-fallback-${input.slug}`, git: true });
   const homeDir = genTempDir({ slug: `radio-fallback-${input.slug}-home` });
@@ -184,8 +220,8 @@ const genScene = (input: {
   const context = {
     cwd,
     homeDir,
-    env: genEnv(input.env),
-    shx,
+    env: input.ghLogin ? genEnvWithGhLogin(input.env) : genEnv(input.env),
+    shx: input.ghLogin ? genShxWithGhLoginOnly({ login: input.ghLogin }) : shx,
     keyrackGet,
   };
   return { cwd, dir, stubDir, record, context, keyrackGet };
@@ -363,6 +399,41 @@ describe('setRadioTaskRecordUpstream — the default auth falls back to the ambi
   });
 
   given(
+    '[case20] push, the bot token absent, no env token, a gh login on the box',
+    () => {
+      when('[t0] the push runs', () => {
+        const result = useThen('it delivers', async () =>
+          runPush({
+            scene: genScene({
+              slug: 'bot-absent-gh-login',
+              bot: 'absent',
+              env: {},
+              ghLogin: TOKEN_LOGIN,
+            }),
+          }),
+        );
+
+        then('the push is delivered under the gh login', () => {
+          expect(result.pushed.fate).toEqual('delivered');
+          expect(result.seen.tokens).toEqual([TOKEN_LOGIN]);
+          expect(result.seen.issues).toHaveLength(1);
+          expect(result.onDisk?.recordStatus).toEqual(
+            RadioTaskRecordStatus.DELIVERED,
+          );
+        });
+
+        then('the line names the gh login, never its token', () => {
+          const lines = asRadioAuthFallbackNotice({ fates: [result.pushed] });
+          expect(lines).toEqual([
+            '🦫 delivered via the gh login; the ehmpath bot token was absent',
+          ]);
+          expect(lines.join('\n')).not.toContain(TOKEN_LOGIN);
+        });
+      });
+    },
+  );
+
+  given(
     '[case3] push, the bot token refused (401), GH_TOKEN in the env',
     () => {
       when('[t0] the push runs', () => {
@@ -469,6 +540,15 @@ describe('setRadioTaskRecordUpstream — the default auth falls back to the ambi
         expect(result.onDisk?.reason).toEqual('upstream:401');
         expect(asDetail({ fate: result.pushed })).toContain(
           'the robot token was rejected by github (401)',
+        );
+        const fixes = asRadioQueueFixLines({
+          record: result.onDisk!,
+          authOverride: null,
+          detail: asDetail({ fate: result.pushed }),
+          isCredentialFixShown: false,
+        });
+        expect(fixes[0]).toContain(
+          `rhx radio.task.queue set --uuid ${result.onDisk!.key} --auth as-human`,
         );
       });
 
@@ -709,6 +789,19 @@ describe('setRadioTaskRecordUpstream — the default auth falls back to the ambi
         expect(result.seen.tokens).toEqual([TOKEN_TYPED]);
         expect(asRadioAuthFallbackNotice({ fates: result.fates })).toEqual([]);
       });
+
+      then('the drain names the fix for the auth it was sent under', () => {
+        const held = result.fates.find((fate) => fate.fate === 'held');
+        const fixes = asRadioQueueFixLines({
+          record: result.onDisk!,
+          authOverride: 'as-robot:env(MY_TYPED_TOKEN)',
+          detail: held ? asDetail({ fate: held }) : null,
+          isCredentialFixShown: false,
+        });
+        expect(fixes[0]).toContain(
+          `rhx radio.task.queue set --uuid ${result.onDisk!.key} --auth as-human`,
+        );
+      });
     });
   });
 
@@ -716,24 +809,54 @@ describe('setRadioTaskRecordUpstream — the default auth falls back to the ambi
     '[case14] drain, the bot token absent, and no ambient credential',
     () => {
       when('[t0] the drain runs', () => {
-        const result = useThen('it drains', async () =>
-          runDrain({
-            scene: genScene({
-              slug: 'drain-both-absent',
-              bot: 'absent',
-              env: {},
-            }),
-          }),
-        );
+        const result = useThen('it drains', async () => {
+          const staged = genScene({
+            slug: 'drain-both-absent',
+            bot: 'absent',
+            env: {},
+          });
+          // a second held record, so the drain meets two
+          setRadioTaskRecordFromPush(
+            {
+              push: {
+                repo: new RadioTaskRepo({
+                  owner: 'sandpine',
+                  name: 'svc-lessons',
+                }),
+                via: RadioChannel.GH_ISSUES,
+                auth: null,
+                idem: null,
+                title: 'wetsuit restock for the dawn lesson',
+                description: 'restock the size m wetsuits',
+                exid: null,
+                status: null,
+              },
+            },
+            { dir: staged.dir, cwd: staged.cwd },
+          );
+          return { ...(await runDrain({ scene: staged })), dir: staged.dir };
+        });
 
         then(
-          'the record stays held as upstream:auth, both credentials named',
+          'both records stay held as upstream:auth, each names both credentials with its fix',
           () => {
-            expect(result.onDisk?.reason).toEqual('upstream:auth');
-            const held = result.fates.find((fate) => fate.fate === 'held');
-            expect(held && asDetail({ fate: held })).toContain(
-              'no GH_TOKEN env, no GITHUB_TOKEN env, no gh login',
-            );
+            const records = daoRadioTaskRecord.get.all({ dirs: [result.dir] });
+            expect(records).toHaveLength(2);
+            expect(records.map((found) => found.record.reason)).toEqual([
+              'upstream:auth',
+              'upstream:auth',
+            ]);
+            const details = result.fates
+              .filter((fate) => fate.fate === 'held')
+              .map((fate) => asDetail({ fate }) ?? '');
+            expect(details).toHaveLength(2);
+            for (const detail of details) {
+              expect(detail).toContain('rhx keyrack set --owner ehmpath');
+              expect(detail).toContain(
+                'no GH_TOKEN env, no GITHUB_TOKEN env, no gh login',
+              );
+              expect(detail).toContain('fix: gh auth login');
+            }
             expect(result.seen.calls).toEqual(0);
           },
         );
@@ -822,6 +945,21 @@ describe('setRadioTaskRecordUpstream — the default auth falls back to the ambi
             );
           },
         );
+
+        then('B names the fix for the auth it was stored with', () => {
+          const fateB = result.fates.find(
+            (fate) => fate.record.key === result.keys[1],
+          );
+          const fixes = asRadioQueueFixLines({
+            record: result.onDiskB!,
+            authOverride: null,
+            detail: fateB ? asDetail({ fate: fateB }) : null,
+            isCredentialFixShown: false,
+          });
+          expect(fixes[0]).toContain(
+            `rhx radio.task.queue set --uuid ${result.onDiskB!.key} --auth as-human`,
+          );
+        });
 
         then('the fates keep the queue order', () => {
           expect(result.fates.map((fate) => fate.record.key)).toEqual(

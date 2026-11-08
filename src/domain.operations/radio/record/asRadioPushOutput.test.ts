@@ -9,6 +9,7 @@ import { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
 import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
 import { asRadioAuthBothFailedError } from '@src/domain.operations/radio/auth/asRadioAuthBothFailedError';
 
+import { asRadioFaultMessageUnderFallback } from './asRadioFaultMessageUnderFallback';
 import { asRadioPushOutput } from './asRadioPushOutput';
 
 const repo = new RadioTaskRepo({ owner: 'ehmpathy', name: 'rhachet' });
@@ -144,7 +145,8 @@ describe('asRadioPushOutput', () => {
             detail: asRadioAuthBothFailedError({
               bot: {
                 reason: 'absent',
-                headline: 'the ehmpath bot token was absent',
+                headline:
+                  'github auth via keyrack failed: EHMPATH_BEAVER_GITHUB_TOKEN (status: absent)',
                 fix: 'rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep',
               },
               ambient: { state: 'absent' },
@@ -720,6 +722,50 @@ describe('asRadioPushOutput', () => {
           expect(output).toContain('backlog = 2 await the radio');
         });
       });
+    },
+  );
+
+  given(
+    '[case9] a push held on a fault after it fell back to the ambient credential (#513)',
+    () => {
+      const STATES = ['absent', 'locked', 'blocked', 'not granted'] as const;
+      STATES.map((state) =>
+        when(`[t${STATES.indexOf(state)}] the bot token was ${state}`, () => {
+          const output = asRadioPushOutput({
+            pushed: {
+              fate: 'held',
+              record: genRecord({ reason: 'upstream:not-found' }),
+              lift: null,
+              detail: asRadioFaultMessageUnderFallback({
+                message:
+                  'HTTP 404: Not Found (https://api.github.com/repos/sandpine/svc-reservations/issues)',
+                sentUnder: {
+                  kind: 'GITHUB_TOKEN env',
+                  bot: {
+                    reason: state,
+                    headline: `github auth via keyrack failed: EHMPATH_BEAVER_GITHUB_TOKEN (status: ${state})`,
+                    fix: 'rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep',
+                  },
+                },
+              }),
+              halt: false,
+            },
+            others: [],
+            home: homeRoute,
+            backlog: 1,
+          });
+
+          then(
+            'the fix row names the credential sent under, and the state',
+            () => {
+              expect(output).toContain(
+                `fix it: sent via the GITHUB_TOKEN env (the ehmpath bot token was ${state}): HTTP 404: Not Found`,
+              );
+              expect(output).toMatchSnapshot();
+            },
+          );
+        }),
+      );
     },
   );
 });

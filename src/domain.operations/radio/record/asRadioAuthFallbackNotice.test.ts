@@ -146,4 +146,49 @@ describe('asRadioAuthFallbackNotice', () => {
       });
     });
   });
+
+  given('[case5] every (credential kind × bot miss) pair', () => {
+    const KINDS = ['GH_TOKEN env', 'GITHUB_TOKEN env', 'gh login'] as const;
+    const MISSES = [
+      {
+        fault: {
+          message: 'github auth via keyrack failed: X (status: absent)',
+        },
+      },
+      {
+        fault: {
+          message: 'github auth via keyrack failed: X (status: locked)',
+        },
+      },
+      {
+        fault: {
+          message: 'github auth via keyrack failed: X (status: blocked)',
+        },
+      },
+      { fault: { message: 'github auth via keyrack failed: X' } },
+      { refusal: 'upstream:401' as const },
+      { refusal: 'upstream:access' as const },
+    ];
+
+    when('[t0] the notice is read for each pair', () => {
+      const lines = KINDS.flatMap((kind) =>
+        MISSES.flatMap((miss, index) =>
+          asRadioAuthFallbackNotice({
+            fates: [
+              genDelivered({
+                key: `${kind}.${index}`,
+                fallback: { kind, bot: asRadioAuthBotMiss(miss) },
+              }),
+            ],
+          }),
+        ),
+      );
+
+      then('each pair yields one line, every variant shown at once', () => {
+        expect(lines).toHaveLength(KINDS.length * MISSES.length);
+        expect(lines.join('\n')).not.toMatch(/gh[pos]_/);
+        expect(lines).toMatchSnapshot();
+      });
+    });
+  });
 });

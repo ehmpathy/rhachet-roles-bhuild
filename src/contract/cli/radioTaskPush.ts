@@ -131,7 +131,8 @@ const HELP_TEXT = `
    │
    ├─ auth, with no --auth
    │  ├─ the ehmpath bot token goes first
-   │  ├─ absent, or refused by github (401/403): GH_TOKEN, then GITHUB_TOKEN, then the gh login
+   │  ├─ absent, or refused by github (a 401, or a 403 write refusal): GH_TOKEN, then GITHUB_TOKEN, then the gh login
+   │  ├─ a rate limit (a 403 or 429 that says so) never falls back: the task is held, and the next drain retries it
    │  ├─ one line names which credential delivered, and why the bot token did not
    │  └─ an --auth you pass is used as given, never fallen back past
    │

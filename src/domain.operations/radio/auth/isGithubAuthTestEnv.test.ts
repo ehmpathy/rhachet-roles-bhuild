@@ -1,3 +1,5 @@
+import { given, then, when } from 'test-fns';
+
 import { isGithubAuthTestEnv } from './isGithubAuthTestEnv';
 
 const TEST_CASES: {
@@ -28,11 +30,15 @@ const TEST_CASES: {
 ];
 
 describe('isGithubAuthTestEnv', () => {
-  TEST_CASES.map((thisCase) =>
-    test(thisCase.description, () => {
-      expect(isGithubAuthTestEnv({ env: thisCase.given.env })).toEqual(
-        thisCase.expect.output,
-      );
+  TEST_CASES.map((thisCase, index) =>
+    given(`[case${index + 1}] ${thisCase.description}`, () => {
+      when('[t0] the env is read', () => {
+        then('it yields the expected verdict', () => {
+          expect(isGithubAuthTestEnv({ env: thisCase.given.env })).toEqual(
+            thisCase.expect.output,
+          );
+        });
+      });
     }),
   );
 });

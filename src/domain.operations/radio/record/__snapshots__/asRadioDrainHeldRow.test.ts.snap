@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asRadioDrainHeldRow given: [case1] a drain holds a record on a fault after it fell back to the ambient credential (#513) when: [t0] the bot token was absent then: the fault row names the credential sent under, and the state 1`] = `
+"a1b2c3d4e5f60718 tide chart refresh → sandpine/svc-lessons (upstream:not-found)
+├─ fault: sent via the GITHUB_TOKEN env (the ehmpath bot token was absent): HTTP 404: Not Found (https://api.github.com/repos/sandpine/svc-lessons/issues)
+├─ amend it: rhx radio.task.queue set --uuid a1b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
+└─ or drop it: rhx radio.task.queue del --uuid a1b2c3d4e5f60718 --why "<why>""
+`;
+
+exports[`asRadioDrainHeldRow given: [case1] a drain holds a record on a fault after it fell back to the ambient credential (#513) when: [t1] the bot token was locked then: the fault row names the credential sent under, and the state 1`] = `
+"a1b2c3d4e5f60718 tide chart refresh → sandpine/svc-lessons (upstream:not-found)
+├─ fault: sent via the GITHUB_TOKEN env (the ehmpath bot token was locked): HTTP 404: Not Found (https://api.github.com/repos/sandpine/svc-lessons/issues)
+├─ amend it: rhx radio.task.queue set --uuid a1b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
+└─ or drop it: rhx radio.task.queue del --uuid a1b2c3d4e5f60718 --why "<why>""
+`;
+
+exports[`asRadioDrainHeldRow given: [case1] a drain holds a record on a fault after it fell back to the ambient credential (#513) when: [t2] the bot token was blocked then: the fault row names the credential sent under, and the state 1`] = `
+"a1b2c3d4e5f60718 tide chart refresh → sandpine/svc-lessons (upstream:not-found)
+├─ fault: sent via the GITHUB_TOKEN env (the ehmpath bot token was blocked): HTTP 404: Not Found (https://api.github.com/repos/sandpine/svc-lessons/issues)
+├─ amend it: rhx radio.task.queue set --uuid a1b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
+└─ or drop it: rhx radio.task.queue del --uuid a1b2c3d4e5f60718 --why "<why>""
+`;
+
+exports[`asRadioDrainHeldRow given: [case1] a drain holds a record on a fault after it fell back to the ambient credential (#513) when: [t3] the bot token was not granted then: the fault row names the credential sent under, and the state 1`] = `
+"a1b2c3d4e5f60718 tide chart refresh → sandpine/svc-lessons (upstream:not-found)
+├─ fault: sent via the GITHUB_TOKEN env (the ehmpath bot token was not granted): HTTP 404: Not Found (https://api.github.com/repos/sandpine/svc-lessons/issues)
+├─ amend it: rhx radio.task.queue set --uuid a1b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
+└─ or drop it: rhx radio.task.queue del --uuid a1b2c3d4e5f60718 --why "<why>""
+`;

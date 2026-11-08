@@ -36,6 +36,18 @@ const TEST_CASES = [
     expect: { output: 'fault: Command failed: gh issue list' },
   },
   {
+    description:
+      'a class-headed fault other than the both-failed one keeps its header, as on main (F7)',
+    given: {
+      detail:
+        '✋ ConstraintError: github auth failed: the robot token was rejected (401)',
+    },
+    expect: {
+      output:
+        'fault: ✋ ConstraintError: github auth failed: the robot token was rejected (401)',
+    },
+  },
+  {
     description: 'no detail yields no line',
     given: { detail: null },
     expect: { output: null },

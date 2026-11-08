@@ -33,7 +33,7 @@ exports[`asRadioPushOutput given: [case3.2] a push held behind an earlier update
    ├─ still held
    │  └─ a1b2c3d4e5f60718 claim #599 → ehmpathy/rhachet (upstream:access)
    │     ├─ fault: GraphQL: Resource not accessible by integration (updateIssue)
-   │     ├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
+   │     ├─ fix the ehmpath bot access: grant the ehmpath bot write on the target repo (else a token with that grant: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
    │     ├─ or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain
    │     ├─ or amend it: rhx radio.task.queue set --uuid a1b2c3d4e5f60718 --auth as-human (needs a gh login on this host)
    │     └─ or drop it: rhx radio.task.queue del --uuid a1b2c3d4e5f60718 --why "<why>"
@@ -67,7 +67,7 @@ exports[`asRadioPushOutput given: [case3.4] a push held with no fault detail, th
    ├─ held at = .behavior/v2026_09_28.fix-radio-recorder/.radio/
    ├─ backlog = 1 awaits the radio
    └─ fix it: upstream:access
-      ├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
+      ├─ fix the ehmpath bot access: grant the ehmpath bot write on the target repo (else a token with that grant: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
       ├─ or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain
       ├─ or amend it: rhx radio.task.queue set --uuid f0e1d2c3b4a59687 --auth as-human (needs a gh login on this host)
       ├─ or drop it: rhx radio.task.queue del --uuid f0e1d2c3b4a59687 --why "<why>"
@@ -92,8 +92,8 @@ exports[`asRadioPushOutput given: [case3] an unbound push held by an upstream fa
    ├─ status  = QUEUED (upstream:auth)
    ├─ held at = .behavior/.radio/ (no route bound to this branch)
    ├─ backlog = 1 awaits the radio
-   └─ fix it: ✋ ConstraintError: github auth failed: the ehmpath bot token was absent, and no ambient credential was found
-      ├─ the ehmpath bot token: the ehmpath bot token was absent
+   └─ fix it: github auth failed: the ehmpath bot token was absent, and no ambient credential was found
+      ├─ the ehmpath bot token: github auth via keyrack failed: EHMPATH_BEAVER_GITHUB_TOKEN (status: absent)
       │  └─ fix: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
       ├─ the ambient credential: no GH_TOKEN env, no GITHUB_TOKEN env, no gh login
       │  └─ fix: gh auth login
@@ -111,7 +111,7 @@ exports[`asRadioPushOutput given: [case3] an unbound push held by an upstream fa
    ├─ backlog = 1 awaits the radio
    └─ fix it: github auth failed: the robot token was rejected by github (401)
       ├─ unblock now — re-run as human: --auth as-human
-      ├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
+      ├─ or fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
       ├─ or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain
       ├─ or amend it: rhx radio.task.queue set --uuid f0e1d2c3b4a59687 --auth as-human (needs a gh login on this host)
       ├─ or drop it: rhx radio.task.queue del --uuid f0e1d2c3b4a59687 --why "<why>"
@@ -142,7 +142,7 @@ exports[`asRadioPushOutput given: [case3] an unbound push held by an upstream fa
       │  │     use token from environment variable
       │  └─ as-human
       │        use gh cli logged-in session (interactive)
-      ├─ fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
+      ├─ or fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)
       ├─ or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain
       ├─ or amend it: rhx radio.task.queue set --uuid f0e1d2c3b4a59687 --auth as-human (needs a gh login on this host)
       ├─ or drop it: rhx radio.task.queue del --uuid f0e1d2c3b4a59687 --why "<why>"
@@ -199,6 +199,58 @@ exports[`asRadioPushOutput given: [case8] a refused push through an open gate, w
    │  └─ c3c3c3c3c3c3c3c3 guard gateway → sandpine/svc-reservations (radio.uses:blocked — org)
    │     └─ lift it (human): rhx radio.uses --org sandpine allow
    └─ backlog = 1 awaits the radio"
+`;
+
+exports[`asRadioPushOutput given: [case9] a push held on a fault after it fell back to the ambient credential (#513) when: [t0] the bot token was absent then: the fix row names the credential sent under, and the state 1`] = `
+"🦫 held for the radio
+   ├─ task    = fix flaky keyrack test
+   ├─ into    = ehmpathy/rhachet
+   ├─ status  = QUEUED (upstream:not-found)
+   ├─ held at = .behavior/v2026_09_28.fix-radio-recorder/.radio/
+   ├─ backlog = 1 awaits the radio
+   └─ fix it: sent via the GITHUB_TOKEN env (the ehmpath bot token was absent): HTTP 404: Not Found (https://api.github.com/repos/sandpine/svc-reservations/issues)
+      ├─ amend it: rhx radio.task.queue set --uuid f0e1d2c3b4a59687 --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --uuid f0e1d2c3b4a59687 --why "<why>"
+      └─ then the next push delivers the backlog first"
+`;
+
+exports[`asRadioPushOutput given: [case9] a push held on a fault after it fell back to the ambient credential (#513) when: [t1] the bot token was locked then: the fix row names the credential sent under, and the state 1`] = `
+"🦫 held for the radio
+   ├─ task    = fix flaky keyrack test
+   ├─ into    = ehmpathy/rhachet
+   ├─ status  = QUEUED (upstream:not-found)
+   ├─ held at = .behavior/v2026_09_28.fix-radio-recorder/.radio/
+   ├─ backlog = 1 awaits the radio
+   └─ fix it: sent via the GITHUB_TOKEN env (the ehmpath bot token was locked): HTTP 404: Not Found (https://api.github.com/repos/sandpine/svc-reservations/issues)
+      ├─ amend it: rhx radio.task.queue set --uuid f0e1d2c3b4a59687 --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --uuid f0e1d2c3b4a59687 --why "<why>"
+      └─ then the next push delivers the backlog first"
+`;
+
+exports[`asRadioPushOutput given: [case9] a push held on a fault after it fell back to the ambient credential (#513) when: [t2] the bot token was blocked then: the fix row names the credential sent under, and the state 1`] = `
+"🦫 held for the radio
+   ├─ task    = fix flaky keyrack test
+   ├─ into    = ehmpathy/rhachet
+   ├─ status  = QUEUED (upstream:not-found)
+   ├─ held at = .behavior/v2026_09_28.fix-radio-recorder/.radio/
+   ├─ backlog = 1 awaits the radio
+   └─ fix it: sent via the GITHUB_TOKEN env (the ehmpath bot token was blocked): HTTP 404: Not Found (https://api.github.com/repos/sandpine/svc-reservations/issues)
+      ├─ amend it: rhx radio.task.queue set --uuid f0e1d2c3b4a59687 --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --uuid f0e1d2c3b4a59687 --why "<why>"
+      └─ then the next push delivers the backlog first"
+`;
+
+exports[`asRadioPushOutput given: [case9] a push held on a fault after it fell back to the ambient credential (#513) when: [t3] the bot token was not granted then: the fix row names the credential sent under, and the state 1`] = `
+"🦫 held for the radio
+   ├─ task    = fix flaky keyrack test
+   ├─ into    = ehmpathy/rhachet
+   ├─ status  = QUEUED (upstream:not-found)
+   ├─ held at = .behavior/v2026_09_28.fix-radio-recorder/.radio/
+   ├─ backlog = 1 awaits the radio
+   └─ fix it: sent via the GITHUB_TOKEN env (the ehmpath bot token was not granted): HTTP 404: Not Found (https://api.github.com/repos/sandpine/svc-reservations/issues)
+      ├─ amend it: rhx radio.task.queue set --uuid f0e1d2c3b4a59687 --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --uuid f0e1d2c3b4a59687 --why "<why>"
+      └─ then the next push delivers the backlog first"
 `;
 
 exports[`asRadioPushOutput given: [case20] a push held at a shut gate, under an auth no drain will replay when: [t0] the hold renders then: it names two human acts side by side, the lift and an auth amend with a placeholder auth 1`] = `

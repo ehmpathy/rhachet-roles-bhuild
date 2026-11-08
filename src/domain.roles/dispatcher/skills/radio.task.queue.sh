@@ -22,6 +22,7 @@
 #   - drain meets each record's radio.uses gate; exit 2 while any waits, or if it refused one
 #   - a flag or positional a verb does not read is refused before it acts
 #   - a rate limit or outage halts the drain; any other fault sets one aside
+#   - drain, a record with no stored --auth: the ehmpath bot token, else (absent, a 401, or a 403 write refusal) the box's own gh credential, named in one line
 #   - hook.onStop never exits 2, so never blocks the stop
 ######################################################################
 

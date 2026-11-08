@@ -78,9 +78,12 @@ export const asRadioQueueFixLines = (input: {
     return [`or ${amend}`, drop];
   // the ambient line names gh's own read order, since an env token set ahead of the login is
   // the credential sent, and a fresh login cannot cure it
+  // an access refusal means the bot token is live but lacks the grant, so an unlock cannot cure it
   if (isDefaultAuthFix)
     return [
-      'fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)',
+      reason === 'upstream:access'
+        ? 'fix the ehmpath bot access: grant the ehmpath bot write on the target repo (else a token with that grant: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)'
+        : 'fix the ehmpath bot token: rhx keyrack unlock --owner ehmpath --env prep (if absent: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep)',
       'or fix the ambient credential, the first one set of GH_TOKEN, GITHUB_TOKEN, the gh login: rotate or unset that env token, else gh auth login; then: rhx radio.task.queue drain',
       `or ${amend}`,
       drop,
