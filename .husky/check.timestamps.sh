@@ -6,8 +6,8 @@
 # .how  = scan staged files (except .ts/.sh) for the pattern; halt with a
 #         constraint error (exit 2) if any are found
 
-# fail fast on errors and unbound vars (safe here: scan pipelines end in `head`
-# so a no-match grep does not abort, and all vars are assigned before use)
+# fail fast on errors and unbound vars (safe here: grep's status is read by hand, so a
+# no-match does not abort, and all vars are assigned before use)
 set -eu
 
 # the timestamp pattern: optional lead T, HH:MM:SS, optional timezone (Z, ±HH:MM, ±HHMM)
@@ -23,7 +23,12 @@ DURATION_PATTERN='P([0-9]+[YMWD])*T([0-9]+[HMS])*[0-9][0-9]:[0-9][0-9]:[0-9][0-9
 # collect staged files (added/copied/modified); skip deletions
 # note: quotepath=off keeps a non-ascii path raw, so `git show ":$file"` below can read it
 #       (repo-local; declapract main lists the quoted form, which git show cannot find)
-staged=$(git -c core.quotepath=off diff --cached --name-only --diff-filter=ACM)
+# fail loud if git cannot list them, never abort raw under `set -e` (repo-local, as check.secrets)
+if ! staged=$(git -c core.quotepath=off diff --cached --name-only --diff-filter=ACM); then
+  printf '💥 MalfunctionError: check.timestamps could not list the staged files\n' >&2
+  printf '   └─ fix: run the commit inside a git repo whose index git can read\n' >&2
+  exit 1
+fi
 
 # scan each staged file for a raw timestamp
 # note: the here-doc feeds the loop in the current shell (no pipe subshell),
@@ -52,8 +57,24 @@ while IFS= read -r file; do
   # halt if the staged content embeds a raw timestamp. strip iso durations first (sed is
   # line-by-line, so line numbers are preserved): a duration-only line loses its HH:MM:SS run
   # and falls through; a line that also holds a real stamp still matches (the stamp wins)
-  match=$(printf '%s\n' "$content" | sed -E "s/$DURATION_PATTERN//g" | grep -nIE "$TIMESTAMP_PATTERN" | head -n 1)
-  if [ -n "$match" ]; then
+  # each tool's own status is read, never only the last of a pipe: a broken sed or grep
+  # (a bad regex, say) must fail loud, never pass as clean (rule.forbid.failhide)
+  # repo-local: declapract's copy ended the pipe in `head`, so it hid grep exit 2
+  if ! stripped=$(printf '%s\n' "$content" | sed -E "s/$DURATION_PATTERN//g"); then
+    printf '💥 MalfunctionError: check.timestamps could not strip durations\n' >&2
+    printf '   └─ fix: repair DURATION_PATTERN in .husky/check.timestamps.sh\n' >&2
+    exit 1
+  fi
+  status=0
+  matches=$(printf '%s\n' "$stripped" | grep -nIE -e "$TIMESTAMP_PATTERN") || status=$?
+  if [ "$status" -gt 1 ]; then
+    printf '💥 MalfunctionError: check.timestamps could not scan for a timestamp\n' >&2
+    printf '   ├─ grep exit: %s\n' "$status" >&2
+    printf '   └─ fix: repair TIMESTAMP_PATTERN in .husky/check.timestamps.sh\n' >&2
+    exit 1
+  fi
+  match=$(printf '%s\n' "$matches" | head -n 1)
+  if [ "$status" -eq 0 ]; then
     # note: both halt branches print to stderr, and the words name every tracked file the scan
     #       covers, not only snapshots (repo-local; declapract main prints "in snapshots" to stdout)
     printf '✋ ConstraintError: timestamps are forbidden in tracked files. mask them to prevent permadrift\n' >&2
