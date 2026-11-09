@@ -8,7 +8,8 @@ import { genTempDir, given, then, useBeforeAll, when } from 'test-fns';
 import { initBehaviorDir } from './initBehaviorDir';
 
 /**
- * .what = proves each 1.vision peer lane's scope, as bhrain computes it, holds the experience files
+ * .what = proves each 1.vision experience lane's scope, as bhrain computes it, holds the experience
+ *         files; the root purpose motive lane holds the yield alone; the depth lane binds no scope
  * .why  = the lanes grade the experience decomposition and its demos. bhrain drops route files
  *         other than `*.yield.md` as paperwork, and a glob that also matches the yield earns no
  *         exemption, so a bind of `$route/1.vision.*.md` alone hands the lanes the yield and
@@ -26,7 +27,7 @@ const BHRAIN_DIST = path.join(
 /**
  * .what = the slice of bhrain's `getOneReviewScope` contract this suite reads
  * .why  = the package exports map hides the function's own declaration, so the slice is
- *         declared here from `dist/domain.operations/review/getOneReviewScope.d.ts` (0.42.1)
+ *         declared here from `dist/domain.operations/review/getOneReviewScope.d.ts` (0.43.1)
  */
 type GetOneReviewScope = (
   input: {
@@ -154,8 +155,13 @@ describe('initBehaviorDir.visionScope', () => {
         const lanes =
           stones.find((stone) => stone.name === '1.vision')?.guard?.reviews
             .peer ?? [];
+
+        // only a brain lane binds a review scope; the depth lane reads one named file
+        const lanesOfReview = lanes.filter((lane) =>
+          lane.run.startsWith('$rhx review '),
+        );
         const scopes = await Promise.all(
-          lanes.map(async (lane) => {
+          lanesOfReview.map(async (lane) => {
             const logDir = path.join(repoDir, '.log', lane.slug);
             fs.mkdirSync(logDir, { recursive: true });
             const options = parseReviewArgs(
@@ -198,30 +204,76 @@ describe('initBehaviorDir.visionScope', () => {
             };
           }),
         );
-        return { scopes };
+        return {
+          scopes,
+          lanes: lanes.map((lane) => ({ slug: lane.slug, run: lane.run })),
+        };
       });
 
       when('[t0] each vision peer lane scope is walked by bhrain', () => {
-        then('both experience lanes are present', () => {
-          expect(scene.scopes.map((scope) => scope.slug).sort()).toEqual([
+        // an exclusion, never an allowlist: a new brain lane is graded as an experience lane
+        // unless it is opted out here, by name, with its own scope assert below
+        const SLUGS_OF_NON_EXPERIENCE = ['root-purpose-motive'];
+        const getAllScopesOfExperience = () =>
+          scene.scopes.filter(
+            (scope) => !SLUGS_OF_NON_EXPERIENCE.includes(scope.slug),
+          );
+
+        then('every vision lane is present', () => {
+          expect(scene.lanes.map((lane) => lane.slug).sort()).toEqual([
             'dimensional-decomposition',
             'experience-coverage',
+            'root-purpose-depth',
+            'root-purpose-motive',
           ]);
         });
 
-        then('every lane holds the dimensions file and the inventory', () => {
-          scene.scopes.forEach((scope) => {
-            expect(scope.files).toContain(
-              `${ROUTE_REL}/1.vision.experience.dimensions.md`,
+        then(
+          'the brain lanes are the experience lanes and the motive lane',
+          () => {
+            expect(scene.scopes.map((scope) => scope.slug).sort()).toEqual([
+              'dimensional-decomposition',
+              'experience-coverage',
+              'root-purpose-motive',
+            ]);
+          },
+        );
+
+        then(
+          'the depth lane reads the yield via the deterministic skill',
+          () => {
+            const depth = scene.lanes.find(
+              (lane) => lane.slug === 'root-purpose-depth',
             );
-            expect(scope.files).toContain(
-              `${ROUTE_REL}/1.vision.experience.case=_.md`,
+            expect(depth?.run).toEqual(
+              "$rhx review.vision.root-purpose --vision '$route/1.vision.yield.md'",
             );
-          });
+          },
+        );
+
+        then('the motive lane holds the yield alone', () => {
+          const motive = scene.scopes.find(
+            (scope) => scope.slug === 'root-purpose-motive',
+          );
+          expect(motive?.files).toEqual([`${ROUTE_REL}/1.vision.yield.md`]);
         });
 
-        then('every lane holds the yield and each demo', () => {
-          scene.scopes.forEach((scope) => {
+        then(
+          'every experience lane holds the dimensions file and the inventory',
+          () => {
+            getAllScopesOfExperience().forEach((scope) => {
+              expect(scope.files).toContain(
+                `${ROUTE_REL}/1.vision.experience.dimensions.md`,
+              );
+              expect(scope.files).toContain(
+                `${ROUTE_REL}/1.vision.experience.case=_.md`,
+              );
+            });
+          },
+        );
+
+        then('every experience lane holds the yield and each demo', () => {
+          getAllScopesOfExperience().forEach((scope) => {
             expect(scope.files).toContain(`${ROUTE_REL}/1.vision.yield.md`);
             expect(scope.files).toContain(
               `${ROUTE_REL}/1.vision.experience.case=1.book-a-lesson.md`,

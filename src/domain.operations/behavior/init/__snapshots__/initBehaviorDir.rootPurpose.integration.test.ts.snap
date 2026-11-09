@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`initBehaviorDir.rootPurpose given: [case1] a route inited by initBehaviorDir when: [t0] the vision stone is read then: the scaffold matches the snapshot 1`] = `
+"## .the root purpose
+
+why is this vision wanted at all? dig at least 3 layers: each a motive (why), never a mechanism (how).
+
+- why: <the surface motive — why the wisher asked>
+  - why: <the motive beneath it>
+    - why: <the root motive — the one that no longer shifts>
+"
+`;

@@ -115,6 +115,17 @@ describe('initBehaviorDir.integration', () => {
         );
         expect(visionGuard).toContain('reviewed?');
 
+        // light also carries both root purpose lanes: the deterministic depth lane
+        // and the brain lane that grades motive vs mechanism
+        expect(visionGuard).toContain('slug: root-purpose-depth');
+        expect(visionGuard).toContain(
+          "$rhx review.vision.root-purpose --vision '$route/1.vision.yield.md'",
+        );
+        expect(visionGuard).toContain('slug: root-purpose-motive');
+        expect(visionGuard).toContain(
+          'rule.forbid.vision-root-purpose-mechanism.md',
+        );
+
         // light does NOT have: fundamentals, inverse, devils-advocate, premortem, 5whys
         expect(visionGuard).not.toContain('has-questioned-fundamentals');
         expect(visionGuard).not.toContain('has-questioned-inverse');
@@ -197,6 +208,16 @@ describe('initBehaviorDir.integration', () => {
           "--paths-with '$route/1.vision.experience.case=*.md'",
         );
         expect(visionGuard).toContain('reviewed?');
+
+        // heavy carries the same root purpose lanes as light (guard-variant-consistency)
+        expect(visionGuard).toContain('slug: root-purpose-depth');
+        expect(visionGuard).toContain(
+          "$rhx review.vision.root-purpose --vision '$route/1.vision.yield.md'",
+        );
+        expect(visionGuard).toContain('slug: root-purpose-motive');
+        expect(visionGuard).toContain(
+          'rule.forbid.vision-root-purpose-mechanism.md',
+        );
       });
 
       then('criteria guard has heavy self-reviews (4 reviews)', () => {
@@ -694,6 +715,37 @@ describe('initBehaviorDir.integration', () => {
                 .includes(`uri: ${templatesUriBase}/${name}\n`),
           );
           expect(uriMismatches).toEqual([]);
+        });
+
+        then('each guard template holds only the vars the driver binds', () => {
+          // the vars `rhx route.guard.upgrade` accepts: bhrain's RUNTIME_GUARD_VAR_NAMES plus
+          // the copy-time `$BEHAVIOR_DIR_REL`. any other `$word` — even in prompt prose — makes
+          // the upgrade refuse the guard as `unknown var`, so an extant route can never adopt it.
+          // the list is read from bhrain's dist, never copied, so a bhrain upgrade that adds a
+          // var is read at once, and one that moves the export fails this test loud
+          // note: an untyped require at a package boundary; the cast names the one export read.
+          //       remove once bhrain exports the list from a declared entry
+          const { RUNTIME_GUARD_VAR_NAMES } = require(
+            path.join(
+              __dirname,
+              '../../../../node_modules/rhachet-roles-bhrain/dist/domain.operations/route/guard/RUNTIME_GUARD_VAR_NAMES.js',
+            ),
+          ) as { RUNTIME_GUARD_VAR_NAMES: string[] };
+          const varsAllowed = [...RUNTIME_GUARD_VAR_NAMES, '$BEHAVIOR_DIR_REL'];
+          const templatesDir = path.join(__dirname, 'templates');
+          const varsUnknown = fs
+            .readdirSync(templatesDir)
+            .filter((name) => /\.guard(\.(light|heavy))?$/.test(name))
+            .flatMap((name) =>
+              (
+                fs
+                  .readFileSync(path.join(templatesDir, name), 'utf-8')
+                  .match(/\$[A-Za-z_][A-Za-z0-9_]*/g) ?? []
+              )
+                .filter((token) => !varsAllowed.includes(token))
+                .map((token) => `${name}: ${token}`),
+            );
+          expect(varsUnknown).toEqual([]);
         });
       });
     });

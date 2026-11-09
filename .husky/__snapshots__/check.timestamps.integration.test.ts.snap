@@ -13,3 +13,25 @@ exports[`check.timestamps given: [case4] a staged file whose blob git cannot rea
 💥 MalfunctionError: check.timestamps failed to read staged content for lessons.md
 "
 `;
+
+exports[`check.timestamps given: [case7] a pattern the scan tools cannot parse when: [t0] the timestamp pattern is broken, so grep fails then: the halt reads as snapped, on stderr alone 1`] = `
+"<a line from grep>
+💥 MalfunctionError: check.timestamps could not scan for a timestamp
+   ├─ grep exit: 2
+   └─ fix: repair TIMESTAMP_PATTERN in .husky/check.timestamps.sh
+"
+`;
+
+exports[`check.timestamps given: [case7] a pattern the scan tools cannot parse when: [t1] the duration pattern is broken, so sed fails then: the halt reads as snapped, on stderr alone 1`] = `
+"<a line from sed>
+💥 MalfunctionError: check.timestamps could not strip durations
+   └─ fix: repair DURATION_PATTERN in .husky/check.timestamps.sh
+"
+`;
+
+exports[`check.timestamps given: [case8] a dir that is no git repo when: [t0] the gate runs then: the halt reads as snapped, on stderr alone 1`] = `
+"<a line from git>
+💥 MalfunctionError: check.timestamps could not list the staged files
+   └─ fix: run the commit inside a git repo whose index git can read
+"
+`;

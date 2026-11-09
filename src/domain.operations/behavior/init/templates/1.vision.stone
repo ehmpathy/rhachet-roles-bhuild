@@ -10,6 +10,30 @@ testdrive the contract we propose via realworld examples
 
 specifically,
 
+## .the root purpose
+
+**required, and first.** why is this wanted at all? ask why of the wish, then why of that answer, then why again — at least 3 layers deep, each a motive (why it matters), never a mechanism (how it works). nest each layer one indent under the last:
+
+```md
+## .the root purpose
+
+why is this vision wanted at all? dig at least 3 layers: each a motive (why), never a mechanism (how).
+
+- why: <the surface motive — why the wisher asked>
+  - why: <the motive beneath it>
+    - why: <the root motive — the one that no longer shifts>
+```
+
+the rest of the vision must serve this root. a peer reviewer refuses a vision whose root purpose is absent, under 3 layers, or names a mechanism as its root.
+
+check the depth before you arrive — it is free, and spends no review round:
+`rhx review.vision.root-purpose --vision '$BEHAVIOR_DIR_REL/1.vision.yield.md'`
+it exits 0 with a verdict, red or green; read its blocker count, never its exit code.
+
+a mechanism can wear motive words: `why: the reminder job must run on a cron` names a part of the build; the motive beneath it is `why: a surfer who forgets misses the slot`. ask of each layer: could a different build meet it? yes → a motive.
+
+→ see `rule.require.vision-root-purpose` (the section, its depth, its form) and `rule.forbid.vision-root-purpose-mechanism` (motive vs mechanism, with paired examples)
+
 ## the outcome world
 
 - what does a day-in-the-life look like with this in place?

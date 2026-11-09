@@ -150,8 +150,10 @@ behavior.wish/rule.prefer.clear-desires.md
   practices/behavior.vision/howto.experience.decompose.md
   practices/behavior.vision/howto.experience.demonstrate.md
   practices/behavior.vision/howto.experience.enumerate.md
+  practices/behavior.vision/rule.forbid.vision-root-purpose-mechanism.md
   practices/behavior.vision/rule.require.dimensional-decomposition.md
   practices/behavior.vision/rule.require.experience-coverage.md
+  practices/behavior.vision/rule.require.vision-root-purpose.md
   </briefs.ref>
 
   <skills.ref base="src/domain.roles/behaver/skills/">
@@ -164,6 +166,7 @@ behavior.wish/rule.prefer.clear-desires.md
   reflect.on.reviews.self.sh
   review.behavior.sh
   review.deliverable.sh
+  review.vision.root-purpose.sh
   </skills.ref>
 </also>"
 `;
@@ -221,8 +224,10 @@ behavior.wish/rule.prefer.clear-desires.md
   practices/behavior.vision/howto.experience.decompose.md
   practices/behavior.vision/howto.experience.demonstrate.md
   practices/behavior.vision/howto.experience.enumerate.md
+  practices/behavior.vision/rule.forbid.vision-root-purpose-mechanism.md
   practices/behavior.vision/rule.require.dimensional-decomposition.md
   practices/behavior.vision/rule.require.experience-coverage.md
+  practices/behavior.vision/rule.require.vision-root-purpose.md
   </briefs.ref>
   <skills.ref base="src/domain.roles/behaver/skills/">
   bind.behavior.sh
@@ -234,6 +239,7 @@ behavior.wish/rule.prefer.clear-desires.md
   reflect.on.reviews.self.sh
   review.behavior.sh
   review.deliverable.sh
+  review.vision.root-purpose.sh
   </skills.ref>
 </also>"
 `;

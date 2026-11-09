@@ -62,7 +62,7 @@ reviews:
            every experience the wish implies, then name each one's feel (happy / sharp)
            and care (critipath / alterpath). do not enumerate only critipaths — enumerate all,
            then let the care decide severity.
-        2. demonstrate — is there a `1.vision.experience.case=N.$slug.md` per experience,
+        2. demonstrate — is there a `1.vision.experience.case=N.<slug>.md` per experience,
            rendered both as a narrative (actor's pov) and a bdd `[tn]` timeline? does each
            sharp critipath prove it fails safe (fast, loud, teaches the fix) — not just that
            the edge exists?
@@ -190,7 +190,7 @@ reviews:
         ensure they're enumerated within the vision under "open questions & assumptions"
 
   peer:
-    # each lane binds two globs. the first reaches the yield. the second reaches the experience
+    # each experience lane binds two globs. the first reaches the yield. the second reaches the experience
     # files. bhrain drops route files other than `*.yield.md` unless a glob names them and naught
     # else — so the experience files need a glob of their own, or the lanes never read them.
     #
@@ -207,5 +207,20 @@ reviews:
     # are the critipaths (happy + sharp) each demonstrated, and do sharp ones fail safe?
     - slug: experience-coverage
       run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/rule.require.experience-coverage.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.axis=feel.path=happy-vs-sharp.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.axis=care.path=criti-vs-alter.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.metric=boundary-density.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/howto.experience.enumerate.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.demo.surf-school.md' --refs '$route/0.wish.md' --diffs since-main --paths-with '$route/1.vision.*.md' --paths-with '$route/1.vision.experience.*.md' --join intersect --conversation $conversation --output "$output"
+      budget: 3
+      level: 1
+
+    # root purpose depth — deterministic, no brain: is `## .the root purpose` present, free
+    # of scaffold text, and at least 3 nested `- why:` layers deep? a count, so a count holds it
+    - slug: root-purpose-depth
+      run: $rhx review.vision.root-purpose --vision '$route/1.vision.yield.md'
+      budget: 3
+      level: 1
+
+    # root purpose motive — light-enrolled, scoped to one concern:
+    # is each layer a motive, and is the root (the deepest layer) never a mechanism?
+    # reads the yield alone; the root purpose lives there
+    - slug: root-purpose-motive
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/rule.forbid.vision-root-purpose-mechanism.md' --refs '$route/0.wish.md' --diffs since-main --paths-with '$route/1.vision.yield.md' --join intersect --conversation $conversation --output "$output"
       budget: 3
       level: 1
