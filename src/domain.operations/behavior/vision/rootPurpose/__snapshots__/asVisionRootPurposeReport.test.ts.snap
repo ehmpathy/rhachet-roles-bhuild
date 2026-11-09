@@ -1,0 +1,145 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asVisionRootPurposeReport given: [case1] a vision with no root purpose section when: [t0] the depth lane reports then: stdout matches the snapshot 1`] = `
+"🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: absent
+   ├─ blockers
+   │  └─ [blocker][better] the vision has no \`## .the root purpose\` section
+   │     └─ fix: add \`## .the root purpose\`, exactly so (no text after it), as the first \`##\` section right under the title, with at least 3 nested \`- why:\` layers, each a motive; a header inside a code fence or an html comment does not count
+   └─ summary
+      ├─ 1 blocker
+      └─ 0 nitpicks"
+`;
+
+exports[`asVisionRootPurposeReport given: [case2] a root purpose 2 layers deep when: [t0] the depth lane reports then: stdout matches the snapshot 1`] = `
+"🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: present
+   ├─ layers: 2 of 3
+   ├─ blockers
+   │  └─ [blocker][better] the root purpose is 2 layers deep; it owes at least 3
+   │     └─ fix: ask why of the deepest layer, and nest the answer as a \`- why:\` under it
+   └─ summary
+      ├─ 1 blocker
+      └─ 0 nitpicks"
+`;
+
+exports[`asVisionRootPurposeReport given: [case3] a root purpose 3 layers deep when: [t0] the depth lane reports then: stdout matches the snapshot 1`] = `
+"🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: present
+   ├─ layers: 3 of 3
+   └─ summary
+      ├─ 0 blockers
+      └─ 0 nitpicks"
+`;
+
+exports[`asVisionRootPurposeReport given: [case4] the scaffold left as is when: [t0] the depth lane reports then: stdout matches the snapshot 1`] = `
+"🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: present
+   ├─ layers: 0 of 3
+   ├─ blockers
+   │  └─ [blocker][better] the root purpose holds no motive in 3 layers (scaffold text or a blank \`- why:\`)
+   │     └─ fix: write the motive itself in each, in place of the blank or the scaffold; drop the angle brackets, since a motive wrapped in \`<…>\` reads as scaffold
+   └─ summary
+      ├─ 1 blocker
+      └─ 0 nitpicks"
+`;
+
+exports[`asVisionRootPurposeReport given: [case5] three whys at one indent when: [t0] the depth lane reports then: stdout matches the snapshot 1`] = `
+"🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: present
+   ├─ layers: 1 of 3
+   ├─ blockers
+   │  └─ [blocker][better] the root purpose is 1 layer deep; it owes at least 3
+   │     └─ fix: nest each \`- why:\` at least 2 columns under the last, in one chain; bullets at one indent, one column in, or side by side in branches add no depth
+   └─ summary
+      ├─ 1 blocker
+      └─ 0 nitpicks"
+`;
+
+exports[`asVisionRootPurposeReport given: [case6] whys in another form when: [t0] the depth lane reports then: stdout matches the snapshot 1`] = `
+"🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: present
+   ├─ layers: 0 of 3
+   ├─ blockers
+   │  └─ [blocker][better] the root purpose is 0 layers deep; it owes at least 3
+   │     └─ fix: write the first \`- why:\` bullet under the header, then nest each next why one indent under it; a \`- why:\` inside a code fence is an example, not a layer
+   ├─ nitpicks
+   │  └─ [nitpick][better] the root purpose holds 3 whys in a form the lane does not read
+   │     └─ fix: rewrite each as a \`- why:\` bullet outside any \`>\` quote, nested 2 to 5 columns under the layer it answers
+   └─ summary
+      ├─ 1 blocker
+      └─ 1 nitpick"
+`;
+
+exports[`asVisionRootPurposeReport given: [case7] one placeholder among two real layers when: [t0] the depth lane reports then: stdout matches the snapshot 1`] = `
+"🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: present
+   ├─ layers: 2 of 3
+   ├─ blockers
+   │  ├─ [blocker][better] the root purpose holds no motive in 1 layer (scaffold text or a blank \`- why:\`)
+   │  │  └─ fix: write the motive itself in each, in place of the blank or the scaffold; drop the angle brackets, since a motive wrapped in \`<…>\` reads as scaffold
+   │  └─ [blocker][better] the root purpose is 2 layers deep; it owes at least 3
+   │     └─ fix: fill the scaffold layers first; each filled layer counts toward depth
+   └─ summary
+      ├─ 2 blockers
+      └─ 0 nitpicks"
+`;
+
+exports[`asVisionRootPurposeReport given: [case8] three real layers beside whys in another form when: [t0] the depth lane reports then: stdout matches the snapshot 1`] = `
+"🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: present
+   ├─ layers: 3 of 3
+   ├─ nitpicks
+   │  └─ [nitpick][better] the root purpose holds 2 whys in a form the lane does not read
+   │     └─ fix: rewrite each as a \`- why:\` bullet outside any \`>\` quote, nested 2 to 5 columns under the layer it answers
+   └─ summary
+      ├─ 0 blockers
+      └─ 1 nitpick"
+`;
+
+exports[`asVisionRootPurposeReport given: [case9] two real layers beside a why in another form when: [t0] the depth lane reports then: stdout matches the snapshot 1`] = `
+"🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: present
+   ├─ layers: 2 of 3
+   ├─ blockers
+   │  └─ [blocker][better] the root purpose is 2 layers deep; it owes at least 3
+   │     └─ fix: ask why of the deepest layer, and nest the answer as a \`- why:\` under it
+   ├─ nitpicks
+   │  └─ [nitpick][better] the root purpose holds 1 why in a form the lane does not read
+   │     └─ fix: rewrite each as a \`- why:\` bullet outside any \`>\` quote, nested 2 to 5 columns under the layer it answers
+   └─ summary
+      ├─ 1 blocker
+      └─ 1 nitpick"
+`;
+
+exports[`asVisionRootPurposeReport given: [case10] a root purpose deeper than the floor when: [t0] the depth lane reports then: stdout matches the snapshot 1`] = `
+"🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: present
+   ├─ layers: 4 of 3
+   └─ summary
+      ├─ 0 blockers
+      └─ 0 nitpicks"
+`;
+
+exports[`asVisionRootPurposeReport given: [case11] a section of prose, with no layer at all when: [t0] the depth lane reports then: stdout matches the snapshot 1`] = `
+"🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: present
+   ├─ layers: 0 of 3
+   ├─ blockers
+   │  └─ [blocker][better] the root purpose is 0 layers deep; it owes at least 3
+   │     └─ fix: write the first \`- why:\` bullet under the header, then nest each next why one indent under it; a \`- why:\` inside a code fence is an example, not a layer
+   └─ summary
+      ├─ 1 blocker
+      └─ 0 nitpicks"
+`;
