@@ -1,0 +1,296 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`skill.review.vision.root-purpose given: [case1] a vision whose root purpose is 3 layers deep when: [t0] the skill reads it then: the stdout matches the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+
+🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: present
+   ├─ layers: 3 of 3
+   └─ summary
+      ├─ 0 blockers
+      └─ 0 nitpicks"
+`;
+
+exports[`skill.review.vision.root-purpose given: [case2] a vision whose root purpose stops at 2 layers when: [t0] the skill reads it then: the stdout matches the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+
+🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: present
+   ├─ layers: 2 of 3
+   ├─ blockers
+   │  └─ [blocker][better] the root purpose is 2 layers deep; it owes at least 3
+   │     └─ fix: ask why of the deepest layer, and nest the answer as a \`- why:\` under it
+   └─ summary
+      ├─ 1 blocker
+      └─ 0 nitpicks"
+`;
+
+exports[`skill.review.vision.root-purpose given: [case3] a vision with no root purpose section when: [t0] the skill reads it then: the stdout matches the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+
+🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: absent
+   ├─ blockers
+   │  └─ [blocker][better] the vision has no \`## .the root purpose\` section
+   │     └─ fix: add \`## .the root purpose\`, exactly so (no text after it), as the first \`##\` section right under the title, with at least 3 nested \`- why:\` layers, each a motive; a header inside a code fence or an html comment does not count
+   └─ summary
+      ├─ 1 blocker
+      └─ 0 nitpicks"
+`;
+
+exports[`skill.review.vision.root-purpose given: [case4] a call the skill must refuse when: [t0] --vision is absent then: the refusal matches the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+
+🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --vision is required
+
+{
+  "hint": "rhx review.vision.root-purpose --vision '$route/1.vision.yield.md'"
+}"
+`;
+
+exports[`skill.review.vision.root-purpose given: [case4] a call the skill must refuse when: [t1] --vision names a yield that does not exist then: the refusal matches the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+
+🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: the vision yield is absent
+
+{
+  "vision": ".behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md",
+  "errno": "ENOENT",
+  "hint": "write .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md, then re-arrive"
+}"
+`;
+
+exports[`skill.review.vision.root-purpose given: [case4] a call the skill must refuse when: [t2] --vision climbs out of cwd then: the refusal matches the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+
+🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --vision must be inside cwd
+
+{
+  "vision": "../outside/1.vision.yield.md",
+  "cwd": "$REPO_DIR",
+  "hint": "pass the yield's path from cwd: --vision '$route/1.vision.yield.md'"
+}"
+`;
+
+exports[`skill.review.vision.root-purpose given: [case4] a call the skill must refuse when: [t3] --vision names the route dir, not the yield then: the refusal matches the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+
+🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: the vision path is not a file
+
+{
+  "vision": ".behavior/v2026_11_08.sandpine-lesson-reminders",
+  "errno": "EISDIR",
+  "hint": "name the yield itself: --vision '$route/1.vision.yield.md'"
+}"
+`;
+
+exports[`skill.review.vision.root-purpose given: [case4] a call the skill must refuse when: [t4] --vision names a yield the caller cannot read then: the refusal matches the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+
+🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: the vision yield is unreadable
+
+{
+  "vision": ".behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md",
+  "errno": "EACCES",
+  "hint": "grant read access to .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md, then re-arrive"
+}"
+`;
+
+exports[`skill.review.vision.root-purpose given: [case5] a human who asks for help when: [t0] --help is passed then: the usage matches the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+
+🦫 review.vision.root-purpose — check a vision yield's root purpose is present and 3 layers deep
+   ├─ usage: rhx review.vision.root-purpose --vision <path>
+   ├─ inputs
+   │  └─ --vision (required) the vision yield, inside cwd
+   ├─ example
+   │  └─ rhx review.vision.root-purpose --vision '.behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md'
+   └─ exit codes
+      ├─ 0: a verdict was printed (blockers or none); the counts sit in the summary
+      └─ 2: bad input (--vision absent, outside cwd, no such file, not a file, or unreadable)"
+`;
+
+exports[`skill.review.vision.root-purpose given: [case6] a vision whose root purpose is a shape the depth lane refuses when: [t0] the root purpose is the scaffold left verbatim then: the stdout matches the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+
+🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: present
+   ├─ layers: 0 of 3
+   ├─ blockers
+   │  └─ [blocker][better] the root purpose holds no motive in 3 layers (scaffold text or a blank \`- why:\`)
+   │     └─ fix: write the motive itself in each, in place of the blank or the scaffold; drop the angle brackets, since a motive wrapped in \`<…>\` reads as scaffold
+   └─ summary
+      ├─ 1 blocker
+      └─ 0 nitpicks"
+`;
+
+exports[`skill.review.vision.root-purpose given: [case6] a vision whose root purpose is a shape the depth lane refuses when: [t0] the root purpose is three whys at one indent then: the stdout matches the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+
+🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: present
+   ├─ layers: 1 of 3
+   ├─ blockers
+   │  └─ [blocker][better] the root purpose is 1 layer deep; it owes at least 3
+   │     └─ fix: nest each \`- why:\` at least 2 columns under the last, in one chain; bullets at one indent, one column in, or side by side in branches add no depth
+   └─ summary
+      ├─ 1 blocker
+      └─ 0 nitpicks"
+`;
+
+exports[`skill.review.vision.root-purpose given: [case6] a vision whose root purpose is a shape the depth lane refuses when: [t0] the root purpose is whys in a numbered list then: the stdout matches the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+
+🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: present
+   ├─ layers: 0 of 3
+   ├─ blockers
+   │  └─ [blocker][better] the root purpose is 0 layers deep; it owes at least 3
+   │     └─ fix: write the first \`- why:\` bullet under the header, then nest each next why one indent under it; a \`- why:\` inside a code fence is an example, not a layer
+   ├─ nitpicks
+   │  └─ [nitpick][better] the root purpose holds 3 whys in a form the lane does not read
+   │     └─ fix: rewrite each as a \`- why:\` bullet outside any \`>\` quote, nested 2 to 5 columns under the layer it answers
+   └─ summary
+      ├─ 1 blocker
+      └─ 1 nitpick"
+`;
+
+exports[`skill.review.vision.root-purpose given: [case7] a 3-layer root purpose beside whys in another form when: [t0] the skill reads it then: the stdout matches the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+
+🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: present
+   ├─ layers: 3 of 3
+   ├─ nitpicks
+   │  └─ [nitpick][better] the root purpose holds 2 whys in a form the lane does not read
+   │     └─ fix: rewrite each as a \`- why:\` bullet outside any \`>\` quote, nested 2 to 5 columns under the layer it answers
+   └─ summary
+      ├─ 0 blockers
+      └─ 1 nitpick"
+`;
+
+exports[`skill.review.vision.root-purpose given: [case8] a yield whose shape the parser reads apart from a plain layer list when: [t0] the yield is a header and its layers only inside a code fence then: the stdout matches the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+
+🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: absent
+   ├─ blockers
+   │  └─ [blocker][better] the vision has no \`## .the root purpose\` section
+   │     └─ fix: add \`## .the root purpose\`, exactly so (no text after it), as the first \`##\` section right under the title, with at least 3 nested \`- why:\` layers, each a motive; a header inside a code fence or an html comment does not count
+   └─ summary
+      ├─ 1 blocker
+      └─ 0 nitpicks"
+`;
+
+exports[`skill.review.vision.root-purpose given: [case8] a yield whose shape the parser reads apart from a plain layer list when: [t0] the yield is a near-miss header at h3 then: the stdout matches the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+
+🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: absent
+   ├─ blockers
+   │  └─ [blocker][better] the vision has no \`## .the root purpose\` section
+   │     └─ fix: add \`## .the root purpose\`, exactly so (no text after it), as the first \`##\` section right under the title, with at least 3 nested \`- why:\` layers, each a motive; a header inside a code fence or an html comment does not count
+   └─ summary
+      ├─ 1 blocker
+      └─ 0 nitpicks"
+`;
+
+exports[`skill.review.vision.root-purpose given: [case8] a yield whose shape the parser reads apart from a plain layer list when: [t0] the yield is a near-miss header that ends in a colon then: the stdout matches the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+
+🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: absent
+   ├─ blockers
+   │  └─ [blocker][better] the vision has no \`## .the root purpose\` section
+   │     └─ fix: add \`## .the root purpose\`, exactly so (no text after it), as the first \`##\` section right under the title, with at least 3 nested \`- why:\` layers, each a motive; a header inside a code fence or an html comment does not count
+   └─ summary
+      ├─ 1 blocker
+      └─ 0 nitpicks"
+`;
+
+exports[`skill.review.vision.root-purpose given: [case8] a yield whose shape the parser reads apart from a plain layer list when: [t0] the yield is a section of prose, with no layer at all then: the stdout matches the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+
+🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: present
+   ├─ layers: 0 of 3
+   ├─ blockers
+   │  └─ [blocker][better] the root purpose is 0 layers deep; it owes at least 3
+   │     └─ fix: write the first \`- why:\` bullet under the header, then nest each next why one indent under it; a \`- why:\` inside a code fence is an example, not a layer
+   └─ summary
+      ├─ 1 blocker
+      └─ 0 nitpicks"
+`;
+
+exports[`skill.review.vision.root-purpose given: [case8] a yield whose shape the parser reads apart from a plain layer list when: [t0] the yield is four layers, past the floor then: the stdout matches the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+
+🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: present
+   ├─ layers: 4 of 3
+   └─ summary
+      ├─ 0 blockers
+      └─ 0 nitpicks"
+`;
+
+exports[`skill.review.vision.root-purpose given: [case8] a yield whose shape the parser reads apart from a plain layer list when: [t0] the yield is one scaffold layer beneath two real layers then: the stdout matches the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+
+🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: present
+   ├─ layers: 2 of 3
+   ├─ blockers
+   │  ├─ [blocker][better] the root purpose holds no motive in 1 layer (scaffold text or a blank \`- why:\`)
+   │  │  └─ fix: write the motive itself in each, in place of the blank or the scaffold; drop the angle brackets, since a motive wrapped in \`<…>\` reads as scaffold
+   │  └─ [blocker][better] the root purpose is 2 layers deep; it owes at least 3
+   │     └─ fix: fill the scaffold layers first; each filled layer counts toward depth
+   └─ summary
+      ├─ 2 blockers
+      └─ 0 nitpicks"
+`;
+
+exports[`skill.review.vision.root-purpose given: [case8] a yield whose shape the parser reads apart from a plain layer list when: [t0] the yield is two layers beside a why in another form then: the stdout matches the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=behaver/skill=review.vision.root-purpose
+
+🦫 root purpose
+   ├─ vision: .behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md
+   ├─ section: present
+   ├─ layers: 2 of 3
+   ├─ blockers
+   │  └─ [blocker][better] the root purpose is 2 layers deep; it owes at least 3
+   │     └─ fix: ask why of the deepest layer, and nest the answer as a \`- why:\` under it
+   ├─ nitpicks
+   │  └─ [nitpick][better] the root purpose holds 1 why in a form the lane does not read
+   │     └─ fix: rewrite each as a \`- why:\` bullet outside any \`>\` quote, nested 2 to 5 columns under the layer it answers
+   └─ summary
+      ├─ 1 blocker
+      └─ 1 nitpick"
+`;
