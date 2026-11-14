@@ -99,6 +99,8 @@ const loadPhoneNotifications = (): typeof import('./phoneNotifications') =>
   require('./phoneNotifications');
 const loadPhoneText = (): typeof import('./phoneText') =>
   require('./phoneText');
+const loadRadioComment = (): typeof import('./radioTaskComment') =>
+  require('./radioTaskComment');
 const loadRadioPull = (): typeof import('./radioTaskPull') =>
   require('./radioTaskPull');
 const loadRadioPush = (): typeof import('./radioTaskPush') =>
@@ -130,6 +132,7 @@ export const cli = {
     () => loadPhoneNotifications().cliPhoneNotifications,
   ),
   phoneText: asLazyCli(() => loadPhoneText().cliPhoneText),
+  radioTaskComment: asLazyCli(() => loadRadioComment().cliRadioTaskComment),
   radioTaskPull: asLazyCli(() => loadRadioPull().cliRadioTaskPull),
   radioTaskPush: asLazyCli(() => loadRadioPush().cliRadioTaskPush),
   radioTaskQueue: asLazyCli(() => loadRadioQueue().cliRadioTaskQueue),

@@ -489,6 +489,38 @@ describe('daoRadioTaskRecord', () => {
     });
   });
 
+  given('[case10.2] a comment record file with no thread and no body', () => {
+    const scene = useBeforeAll(async () =>
+      genDirWithFile({
+        slug: 'dao-record-case10-2',
+        name: 'record.k1.json',
+        content: JSON.stringify({
+          ...record,
+          kind: 'comment',
+          title: null,
+          exid: null,
+          description: null,
+        }),
+      }),
+    );
+
+    when('[t0] the dir is read strictly', () => {
+      const result = useThen('it fails', async () =>
+        getErrorOfReadAll({ dir: scene.dir }),
+      );
+
+      then('it fails loud at the read, and names both fields', () => {
+        expect(result.isMalfunction).toBe(true);
+        expect(result.message).toContain(
+          'exid: a comment record must name its thread',
+        );
+        expect(result.message).toContain(
+          'description: a comment record must carry its body',
+        );
+      });
+    });
+  });
+
   given('[case11] a record file name the fs cannot read as a file', () => {
     // .note = a dir in the place of a record file throws EISDIR on read, an fs fault
     const scene = useBeforeAll(async () => {

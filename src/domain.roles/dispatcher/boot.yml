@@ -11,10 +11,11 @@
 #   internals and the retired `radio.task.held` alias it no longer boots) and the four
 #   phone verbs (text, contacts, contacts.uses, daemon), whose headers boot in full,
 #   like each radio verb's, and name the receiver inbox, the group, the grove leg, and
-#   the stop hook.
+#   the stop hook. it covers the `radio.task.comment` verb too: a seat must see the
+#   comment path to choose it over a raw gh write beside the gate.
 #   measure: `npx rhachet roles cost --what src/domain.roles/dispatcher/boot.yml`
 budget:
-  tokens: 4_200
+  tokens: 4_700
 
 always:
   briefs:
