@@ -961,11 +961,17 @@ describe('work.surface', () => {
         const readCaveat = (): string => {
           const lines = readCrewPoll().split('\n');
           const i = lines.findIndex((line) => line.includes('⚠️  UNREACHED:'));
-          return i < 0 ? '' : lines.slice(i, i + 2).join('\n');
+          // the caveat line, its child, and the per-grove cure loop beneath it
+          return i < 0 ? '' : lines.slice(i, i + 5).join('\n');
         };
 
-        then('the caveat names the fix, and does not assert one cause', () => {
-          expect(readCaveat().includes('git.grove.wake')).toEqual(true);
+        then('the caveat names the fix, per grove, off the one cure', () => {
+          // an aws grove is handed a wake, a tailnet-only grove a tailnet
+          // check — so the caveat names the transformer, never one cure
+          expect(
+            readCaveat().includes('$(__grove_unreached_cure "$__ua")'),
+          ).toEqual(true);
+          expect(readCaveat().includes('git.grove.wake')).toEqual(false);
         });
 
         then(
@@ -1035,9 +1041,15 @@ describe('work.surface', () => {
             // reader back where they started — told to wake a grove that refuses
             const registry = 'groves/$__u.json';
             expect(readCrewPoll().includes(registry)).toEqual(true);
+            // the wake reads its row through grovework's one rows-dir reader
             expect(
               readCode(join(DIR_SKILLS, 'git.grove.wake.sh')).includes(
-                'groves/$GROVE.json',
+                '$(__grove_rows_dir)/$GROVE.json',
+              ),
+            ).toEqual(true);
+            expect(
+              readCode(join(DIR_SKILLS, 'work', 'grovework.sh')).includes(
+                '/.git.forest}/groves',
               ),
             ).toEqual(true);
           },
@@ -1199,7 +1211,7 @@ describe('work.surface', () => {
         );
 
         then(
-          'the asleep arm names a WAKE — never the boot that would fail',
+          'the asleep arm names the grove cure — never the boot that would fail',
           () => {
             // .why = the two cures are on different machines. `crew.boot` against a
             //        hibernated grove fails, so to route a reader there is worse
@@ -1207,7 +1219,7 @@ describe('work.surface', () => {
             const chain = readChain();
             const iAsleep = chain.indexOf('crew_state="asleep"');
             const cure = chain.slice(iAsleep, iAsleep + 200);
-            expect(cure.includes('git.grove.wake')).toEqual(true);
+            expect(cure.includes('__grove_unreached_cure')).toEqual(true);
             expect(cure.includes('git.crew.boot')).toEqual(false);
           },
         );

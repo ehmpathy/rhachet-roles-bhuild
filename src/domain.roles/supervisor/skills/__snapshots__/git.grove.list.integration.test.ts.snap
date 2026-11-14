@@ -1,0 +1,111 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`git.grove.list given: [case1] a forest of a hetzner row, an ec2 row, a relic, and a corrupt row when: [t0] it is listed with no probe then: the list reads as a snapshot 1`] = `
+"🌲 forest
+   ├─ 🌳 grove-sandpine-corrupt → 🟡 row unreadable — its fix is named above
+   ├─ 🌳 grove-sandpine-hetzner-v20261022 → camper@127.0.0.2:1 (ssh:grove-sandpine-hetzner-v20261022)
+   ├─ 🌳 grove-sandpine-hetzner-v20261023 → camper@grove-sandpine-hetzner-v20261023.invalid:22 (ssh:grove-sandpine-hetzner-v20261023)
+   ├─ 🌳 grove-sandpine-v20250101 → camper@grove-sandpine-v20250101.invalid:22 (ssh:grove-sandpine-v20250101)
+   └─ 🌳 grove-sandpine-v20260901 → camper@grove-sandpine-v20260901.invalid:22 (ssh:grove-sandpine-v20260901)
+"
+`;
+
+exports[`git.grove.list given: [case1] a forest of a hetzner row, an ec2 row, a relic, and a corrupt row when: [t1] it is listed with the probe then: the probe reads as a snapshot 1`] = `
+"🌲 forest
+   ├─ 🌳 grove-sandpine-corrupt → 🟡 row unreadable — its fix is named above
+   ├─ 🌳 grove-sandpine-hetzner-v20261022 → camper@127.0.0.2:1 (ssh:grove-sandpine-hetzner-v20261022)
+   │     ├─ 🔴 DOWN — no ssh banner: refused — the box answers; no sshd on this port
+   │     └─ fix → the box answered on 1 and refused — is sshd up there, and is 1 its port? (a stale ssm-era port reads this way; re-register — git grove set grove-sandpine-hetzner-v20261022 --at camper@127.0.0.2:22)
+   ├─ 🌳 grove-sandpine-hetzner-v20261023 → camper@grove-sandpine-hetzner-v20261023.invalid:22 (ssh:grove-sandpine-hetzner-v20261023)
+   │     ├─ 🔴 DOWN — no ssh banner: the name is unknown to dns — is it a tailnet peer?
+   │     └─ fix → check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove-sandpine-hetzner-v20261023.invalid
+   ├─ 🌳 grove-sandpine-v20250101 → camper@grove-sandpine-v20250101.invalid:22 (ssh:grove-sandpine-v20250101)
+   │     ├─ 🔴 DOWN — no ssh banner: the name is unknown to dns — is it a tailnet peer?
+   │     └─ fix → wake it — rhx git.grove.wake grove-sandpine-v20250101
+   └─ 🌳 grove-sandpine-v20260901 → camper@grove-sandpine-v20260901.invalid:22 (ssh:grove-sandpine-v20260901)
+         ├─ 🔴 DOWN — no ssh banner: the name is unknown to dns — is it a tailnet peer?
+         └─ fix → wake it — rhx git.grove.wake grove-sandpine-v20260901
+
+🛟 a grove did not greet with ssh — each row names its cure, by the cause it saw.
+   first, if every row reads DOWN, is THIS machine a peer? — tailscale status
+🛟 a row is unreadable — re-register it with the fix named above, then list again
+"
+`;
+
+exports[`git.grove.list given: [case1] a forest of a hetzner row, an ec2 row, a relic, and a corrupt row when: [t2] it is listed as json, with the probe then: the json contract reads as a snapshot 1`] = `
+[
+  {
+    "cause": null,
+    "name": "grove-sandpine-corrupt",
+    "power": null,
+    "reach": null,
+    "row": "unreadable",
+    "tunnel": null,
+  },
+  {
+    "cause": "refused — the box answers; no sshd on this port",
+    "host": "127.0.0.2",
+    "name": "grove-sandpine-hetzner-v20261022",
+    "port": 1,
+    "power": "none",
+    "reach": {
+      "host": "127.0.0.2",
+      "port": 1,
+      "user": "camper",
+    },
+    "row": "readable",
+    "tunnel": "down",
+  },
+  {
+    "cause": "the name is unknown to dns — is it a tailnet peer?",
+    "host": "grove-sandpine-hetzner-v20261023.invalid",
+    "name": "grove-sandpine-hetzner-v20261023",
+    "power": "none",
+    "reach": {
+      "host": "grove-sandpine-hetzner-v20261023.invalid",
+      "port": 22,
+      "user": "camper",
+    },
+    "row": "readable",
+    "tunnel": "down",
+  },
+  {
+    "account": "000000000000",
+    "cause": "the name is unknown to dns — is it a tailnet peer?",
+    "exid": "grove-sandpine-v20250101.invalid",
+    "host": "localhost",
+    "name": "grove-sandpine-v20250101",
+    "port": 36903,
+    "power": "aws",
+    "reach": {
+      "host": "grove-sandpine-v20250101.invalid",
+      "port": 22,
+      "user": "camper",
+    },
+    "row": "readable",
+    "tunnel": "down",
+  },
+  {
+    "account": "000000000000",
+    "cause": "the name is unknown to dns — is it a tailnet peer?",
+    "host": "grove-sandpine-v20260901.invalid",
+    "name": "grove-sandpine-v20260901",
+    "power": "aws",
+    "reach": {
+      "host": "grove-sandpine-v20260901.invalid",
+      "port": 22,
+      "user": "camper",
+    },
+    "row": "readable",
+    "tunnel": "down",
+  },
+]
+`;
+
+exports[`git.grove.list given: [case2] a forest whose only row is corrupt when: [t0] it is listed with the probe then: the render reads as a snapshot 1`] = `
+"🌲 forest
+   └─ 🌳 grove-sandpine-corrupt → 🟡 row unreadable — its fix is named above
+
+🛟 a row is unreadable — re-register it with the fix named above, then list again
+"
+`;

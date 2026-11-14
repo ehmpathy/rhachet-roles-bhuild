@@ -42,7 +42,7 @@ construction, and a healthy pane read from a tabless crew looks identical to one
 |---|---|
 | a human says a crew is **malformed / not booted / lacks a tab** | 🔴 `term.audit` FIRST |
 | you just ran `crew.show` or `crew.boot` | audit it — a verified boot, not a reported one |
-| a grove dropped, or a tunnel was reaped | every tab on it died. audit before you re-open |
+| a grove dropped, or left the tailnet | every tab on it died. audit before you re-open |
 | the poll says `😶 at work` and a human says otherwise | **the human reads the view.** you read the work. audit closes the gap |
 | you are about to `crew.read` to check a crew's HEALTH | 🔴 stop. that is the wrong instrument |
 

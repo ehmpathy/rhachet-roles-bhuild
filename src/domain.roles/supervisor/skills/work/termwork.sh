@@ -791,8 +791,10 @@ __term_tab_attach() {
 #     so a tab is never lost while a human reads what went wrong.
 #
 # .note = it does NOT call `git.grove.wake` on failure, on purpose. 14 crews ×
-#   3 tabs would stampede one box with 42 concurrent wakes. ONE wake heals every
-#   tab on its next retry, which is the same repair at 1/42 the cost.
+#   3 tabs would stampede one box with 42 concurrent wakes. for an ec2 grove ONE
+#   wake heals every tab on its next retry, the same repair at 1/42 the cost. a
+#   grove with no power lever never sleeps, so its tabs heal when the tailnet
+#   does; the retry line names that check.
 __term_attach_program() {
   local shell="$1"
   local session="$2"
@@ -815,6 +817,7 @@ __term_attach_program() {
     "  if ${attach}; then exit 0; fi" \
     '  printf "\n🦫 duct lost — the work is safe on the grove; only this view dropped.\n"' \
     '  printf "   retry in 5s  ·  ctrl-c for a shell (this tab stays open either way)\n"' \
+    '  printf "   if it persists: rhx git.grove.list names the cure per grove (a wake, or the tailnet)\n"' \
     '  sleep 5' \
     'done'
 }

@@ -120,6 +120,35 @@ every grove window at once, because every one of them rides the same single forw
 shell exits and the kitty dies instantly"* — for an absent tmux session. a reaped tunnel
 is the same mechanism with a later trigger, and it was not anticipated there.
 
+## .the mechanism changed, 2026-11-13 — the word held, as its etymology said it would
+
+the `port-forward` rejection above predicted this: *"were the relay to become a vpn or a
+wireguard link tomorrow, the tunnel would still be the tunnel."* the camp tailnet is that
+wireguard link. so the supervisor's reach moved off ssm (route
+`v2026_11_13.feat-supervisor-reach-over-tailnet`, issues #652/#653) and this term kept its
+name; only its `.what` was rewritten.
+
+⇒ a second datum for `howto.domain-discovery` move 2: a word named from the motive survived a
+full swap of its mechanism, where `port-forward` would now be false.
+
+### the ssm-era rows, retired from the say file
+
+these held while the tunnel was an ssm port-forward to `localhost:<port>`. none of them has a
+tailnet analog, so they left the definition and stay here as evidence:
+
+| the ssm-era error | the layer | the cure then |
+|---|---|---|
+| `Connection refused` on `localhost:<port>` | no local listener — the forward was reaped | `git.grove.wake` |
+| `Connection closed by 127.0.0.1 port <port>` | one channel broke; the forward was alive | retry (n=1, measured 2026-09-08) |
+| no error — degraded reach, crews drift to `😴 unread` | an orphan held the port: **bound but mute** | `git.grove.wake` (measured 2026-09-08: `duct [REPLACE] port 36903 bound but mute`) |
+
+⚠️ the bound-but-mute row taught one durable lesson that the tailnet keeps: **a bound port is a
+correlate of a live tunnel, never a record of one.** `git.grove.list` now waits for the ssh
+banner, not a bare connect, for that reason — a connect with no banner reads `MUTE`.
+
+⚠️ the `duct [SET]` arrears named in `.the OVERLOAD` above closed with the mechanism: the wake
+skill no longer prints a forward line at all, so the borrowed `duct` word left its output.
+
 ## .see also
 
 - `term=grove._.choice._.md` — the box a tunnel reaches, and why its slug is reminted

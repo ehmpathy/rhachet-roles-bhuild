@@ -12,7 +12,7 @@ per row, the source wins.
 
 ```
 camp              1 aws account — the elastic container of groves + their shared services
- └─ grove         0..N hibernation-ready ec2 work-boxes; elastic, self-hibernated when idle
+ └─ grove         0..N work-boxes, each reached over the camp tailnet; an ec2 grove self-hibernates when idle
      ├─ camper    1 OS login — the door every crew member enters by
      ├─ ground    1 OS login — the PRIVILEGED one; where root work happens
      └─ tree      0..N git worktrees on the box
@@ -25,7 +25,7 @@ camp              1 aws account — the elastic container of groves + their shar
 | term | it IS | it is NOT | declared in |
 |---|---|---|---|
 | **camp** | an aws **account** that holds an elastic set of groves + the vpc / nat / iam / cross-account reach they share | an env, a fleet, a workspace, or merely "an account" | `sandpine/infrastructure` |
-| **grove** | a hibernation-ready cloud **work-box** in a camp — many git trees, durable authorized keys, hibernates itself after idle | an ec2, a vm, a devbox, a sandbox | `sandpine/infrastructure` |
+| **grove** | a **work-box** in a camp, reached over the camp tailnet — many git trees, durable authorized keys; an ec2 grove hibernates itself after idle, a box with no aws lever never sleeps | an ec2, a vm, a devbox, a sandbox | `sandpine/infrastructure` |
 | **camper** | the **OS login user** the crew ssh in as, and whose `~/.ssh/authorized_keys` the crew keys land on | 🔴 a clone. `clone-user`, `crew-user`, `grove-user`, `ec2-user`, `ubuntu`, `login-user` are **forbidden** synonyms | `sandpine/infrastructure` |
 | **ground** | the **privileged** OS user — `NOPASSWD` sudo, `authorized_keys` = admin key only | the camper. two logins, and that split is the whole boundary | `sandpine/infrastructure` |
 | **clone** | a live (or revivable) instance of an **actor**; shares its actor's brain, roles, config, and differs from peers only by **session** | a session, an instance, a process, a thread | `ehmpathy/rhachet` |

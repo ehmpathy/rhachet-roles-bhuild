@@ -229,7 +229,9 @@ if [[ "$GROVE" == "local" ]]; then
 else
   # the grove must be REGISTERED — the ssh alias is written by a wake, so a
   # name absent from the forest has no alias and ssh would fall through to dns
-  REGISTRY="${GIT_FOREST_DIR:-$HOME/.git.forest}/groves/$GROVE.json"
+  # the forest location lives in ONE reader, shared with wake, list, and send
+  source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/work/grovework.sh"
+  REGISTRY="$(__grove_rows_dir)/$GROVE.json"
   if [[ ! -f "$REGISTRY" ]]; then
     echo "🐢 bummer dude — grove '$GROVE' is not registered" >&2
     echo "" >&2

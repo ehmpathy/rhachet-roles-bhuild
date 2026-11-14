@@ -1,0 +1,6 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`grovework given: [case3] a grove that did not answer when: [t0] its row has no power lever (hetzner), alias on disk then: the cure reads as a snapshot 1`] = `
+"check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove-sandpine-hetzner-v20261022-1
+"
+`;

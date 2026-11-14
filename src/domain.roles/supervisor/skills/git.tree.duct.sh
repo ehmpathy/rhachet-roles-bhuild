@@ -235,7 +235,7 @@ if [[ -z "$host" ]]; then
 else
   if ! git_root="$(ssh -n "$host" 'printf "%s/git" "$HOME"')"; then
     echo "error: could not reach grove '$host'" >&2
-    echo "       wake it: rhx git.grove.wake $host" >&2
+    echo "       $(__grove_unreached_cure "$host")" >&2
     exit 1
   fi
 fi

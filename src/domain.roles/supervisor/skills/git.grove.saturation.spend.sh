@@ -138,7 +138,10 @@ done
 [[ "$TOP" =~ ^[0-9]+$ ]]    || { echo "✋ git.grove.saturation.spend: --top must be an integer, got '$TOP'" >&2; exit 2; }
 [[ -n "$TIMEOUT" ]] || TIMEOUT=$(( WINDOW + 20 ))
 
-GROVES_DIR="${GIT_FOREST_DIR:-$HOME/.git.forest}/groves"
+# the reach of a row lives in ONE reader, shared with wake, list, saturation,
+# and every no-answer cure — so spend probes exactly where the wake reaches
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/work/grovework.sh"
+GROVES_DIR="$(__grove_rows_dir)"
 if [[ ! -d "$GROVES_DIR" ]]; then
   echo "🐢 bummer dude — no forest registry at $GROVES_DIR" >&2
   echo "" >&2
@@ -192,19 +195,34 @@ fi
 #       ssh twice and print one grove's cpu twice, which a reader would tally
 #       as two groves (term=false-report).
 #
-# ⚠️ the key is host:port, never the NAME.
+# ⚠️ the key is host:port, never the NAME — read through the one reach reader,
+#    so an ssm-era relic keys on its exid:22, where the tailnet reaches it.
+# 🔴 the PROBER is the camper entry, never `.ground` (F03): the supervisor reads
+#    as camper, the seat the wish names, and `.ground` sorts first. a grove
+#    registered ONLY as `.ground` still probes through it; any refusal reads loud.
 ######################################################################
 declare -A GROVE_ENTRIES=()
 declare -A GROVE_PROBER=()
+declare -A GROVE_USER=()    # host:port -> the prober's ssh user
+declare -A GROVE_HOST=()    # host:port -> the prober's tailnet host
+declare -A GROVE_PORT=()    # host:port -> the prober's ssh port
 GROVES=()
 
 for e in "${ENTRIES[@]:-}"; do
   [[ -n "$e" ]] || continue
-  key=$(jq -r '"\(.host // "?"):\(.port // "?")"' "$GROVES_DIR/$e.json")
+  IFS=$'\t' read -r _ r_host r_port r_user _ _ <<< "$(__grove_reach_of "$GROVES_DIR/$e.json")"
+  [[ -n "$r_host" ]] || continue   # unreadable: the reader named it on stderr
+  key="$r_host:$r_port"
   if [[ -z "${GROVE_ENTRIES[$key]:-}" ]]; then
     GROVES+=("$key"); GROVE_PROBER[$key]="$e"; GROVE_ENTRIES[$key]="$e"
+    GROVE_USER[$key]="$r_user"; GROVE_HOST[$key]="$r_host"; GROVE_PORT[$key]="$r_port"
   else
     GROVE_ENTRIES[$key]="${GROVE_ENTRIES[$key]} $e"
+    # a camper entry displaces a ground prober — never the reverse
+    if [[ "${GROVE_USER[$key]}" == "ground" && "$r_user" != "ground" ]]; then
+      GROVE_PROBER[$key]="$e"
+      GROVE_USER[$key]="$r_user"
+    fi
   fi
 done
 
@@ -325,10 +343,11 @@ for key in "${GROVES[@]}"; do
     if [[ "$key" == "local" ]]; then
       timeout "$TIMEOUT" bash -c "$PROBE" > "$WORK/$slug.out" 2> "$WORK/$slug.err" || rc=$?
     else
-      alias=$(jq -r '.sshAlias // .name' "$GROVES_DIR/$e.json")
-      timeout "$TIMEOUT" ssh -n \
-        -o BatchMode=yes -o ConnectTimeout=8 -o StrictHostKeyChecking=accept-new \
-        "$alias" "$PROBE" > "$WORK/$slug.out" 2> "$WORK/$slug.err" || rc=$?
+      # over the tailnet, as the prober's user, with HostName pinned so a stale
+      # ssm-era alias of the same name cannot send it into a dead tunnel (F08)
+      __grove_reach_ssh_opts host="${GROVE_HOST[$key]}" port="${GROVE_PORT[$key]}" wait=8
+      timeout "$TIMEOUT" ssh -n "${GROVE_REACH_SSH_OPTS[@]}" \
+        "${GROVE_USER[$key]}@${GROVE_HOST[$key]}" "$PROBE" > "$WORK/$slug.out" 2> "$WORK/$slug.err" || rc=$?
     fi
     echo "$rc" > "$WORK/$slug.rc"
   ) &
@@ -348,8 +367,14 @@ for key in "${GROVES[@]}"; do
     if [[ "$FORMAT" == "json" ]]; then
       echo "grove=$names state=unread rc=$rc"
     else
-      hint="wake it: rhx git.grove.wake ${GROVE_PROBER[$key]}"
+      hint="$(__grove_unreached_cure "${GROVE_PROBER[$key]}" via=row)"
       [[ "$rc" == "124" ]] && state="💤 asleep (timeout ${TIMEOUT}s)" || state="💥 unread (rc=$rc)"
+      # a refusal proves the box is up and the tailnet carried the connect: the
+      # same cure the saturation sweep and the list hand it
+      if grep -q 'Connection refused' "$WORK/$slug.err" 2>/dev/null; then
+        state="🔴 refused (rc=$rc)"
+        hint="$(__grove_refused_cure name="${GROVE_PROBER[$key]}" host="${GROVE_HOST[$key]}" port="${GROVE_PORT[$key]}")"
+      fi
       echo "   🌳 $names"
       echo "      └─ $state"
       echo "         └─ $hint"

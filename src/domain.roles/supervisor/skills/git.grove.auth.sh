@@ -805,7 +805,7 @@ else
 
   if ! sessions=$(__grove_sh "$scan" 2>/dev/null); then
     echo "💥 git.grove.auth: could not reach the grove '$host'" >&2
-    echo "   check it is awake: rhx git.grove.wake $host --mode plan" >&2
+    echo "   $(__grove_unreached_cure "$host")" >&2
     exit 1
   fi
 

@@ -633,11 +633,11 @@ if [[ "$BOXES" == "true" && "${#CREW_STONES[@]}" -gt 0 ]]; then
       echo "   │  └─ 😴 a seat on a grove that did not ANSWER — its box is the duct registry's"
       echo "   │     record of the last poll that reached it, never a live read. so it is absent"
       echo "   │     from EVERY tally above and not one line here is a claim about the clone:"
-      echo "   │     present and absent are both possible. ⛔ a crew.read exits 1 — wake first"
+      echo "   │     present and absent are both possible. ⛔ a crew.read exits 1 — reach the grove first, per its cure"
       while IFS= read -r __na; do
         [[ -n "$__na" ]] || continue
         __na_seat="${__na%%=*}"; __na_grove="${__na##*=}"
-        echo "   │     └─ ${__na_seat%%/*} / ${__na_seat##*/} — rhx git.grove.wake ${__na_grove}"
+        echo "   │     └─ ${__na_seat%%/*} / ${__na_seat##*/} — $(__grove_unreached_cure "${__na_grove}")"
       done <<< "$STONE_NOSTONE_ASLEEP_WHO"
     fi
     # the zero is stated rather than elided, on purpose: `✂️ 0 clipped` is a
@@ -956,7 +956,7 @@ if [[ "$BOXES" == "true" && "${#CREW_BOXES[@]}" -gt 0 ]]; then
       __bw_grove="$(__crew_ledger_grove_of "$__bwt")"
       __bw_host="$(__crew_grove_host "${__bw_grove:-local}" 2>/dev/null || printf '')"
       if [[ -n "$__bw_host" ]] && __crew_host_unreached "$__bw_host"; then
-        echo "   │     └─ $__bwt / $__bwr — its grove did not answer; a read exits 1 — rhx git.grove.wake $__bw_host"
+        echo "   │     └─ $__bwt / $__bwr — its grove did not answer; a read exits 1 — $(__grove_unreached_cure "$__bw_host")"
       elif [[ "$__bs" == "🪦absent" ]]; then
         echo "   │     └─ $__bwt / $__bwr — the host holds no such session; a read cannot settle it — rhx git.crew.boot --tree $__bwt --roles $__bwr"
       else
