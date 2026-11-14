@@ -799,10 +799,18 @@ __term_attach_program() {
   local shell="$1"
   local session="$2"
   local host="${3:-}"
-  local attach
+  local attach remote
 
+  # 🔴 .why the remote command checks $TERM before it attaches
+  #   ssh carries the human's own $TERM to the grove — kitty's is `xterm-kitty`.
+  #   a box that lacks that terminfo makes `tmux attach` refuse the terminal, so
+  #   the loop below would print `duct lost` forever over a duct that is up.
+  #   measured 2026-11-14: a hetzner grove (no kitty terminfo) beside an ec2
+  #   grove that carried it. the check runs ON THE GROVE, so a box that knows
+  #   the terminal keeps it, and one that does not falls back to xterm-256color.
   if [[ -n "$host" ]]; then
-    attach="ssh -t $(printf '%q' "$host") \"tmux attach-session -t '${session}'\""
+    remote='infocmp "$TERM" >/dev/null 2>&1 || export TERM=xterm-256color; '"tmux attach-session -t '${session}'"
+    attach="ssh -t $(printf '%q' "$host") $(printf '%q' "$remote")"
   else
     attach="tmux attach-session -t '${session}'"
   fi

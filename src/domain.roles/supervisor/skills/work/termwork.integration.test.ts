@@ -691,4 +691,71 @@ describe('termwork', () => {
       );
     });
   });
+
+  // 🔴 a remote tab attaches with the human's own $TERM. kitty sets
+  //    `xterm-kitty`, and a box that lacks its terminfo makes `tmux attach`
+  //    refuse the terminal — so the tab loops on `duct lost` forever while the
+  //    duct is up. measured 2026-11-14 on a hetzner grove (no kitty terminfo),
+  //    beside an ec2 grove that carried it. the attach must fall back, ON THE
+  //    GROVE, to a terminal the box knows.
+  given('[case10] a remote tab, on a grove that lacks the human terminfo', () => {
+    /**
+     * .mock = `ssh` and `tmux`, as stubs first on PATH
+     * .why  = a real attach needs a live grove and a tty. the ssh stub runs the
+     *         remote command locally, so the grove-side shell is the code under
+     *         test; the tmux stub records the TERM it was handed
+     * .real = the 5.3 verification: `git.crew.show` against the hetzner grove
+     */
+    const runAttach = (input: { term: string }) => {
+      const dir = tempDirs.genOne({ slug: 'term-attach' });
+      writeFileSync(
+        join(dir, 'ssh'),
+        '#!/usr/bin/env bash\nexec bash -c "${@: -1}"\n',
+        { mode: 0o755 },
+      );
+      writeFileSync(
+        join(dir, 'tmux'),
+        '#!/usr/bin/env bash\nprintf "%s\\n" "$TERM" | tee "$TERM_SEEN_FILE"\n',
+        { mode: 0o755 },
+      );
+      const run = runTerm({
+        termworkDir: tempDirs.genOne({ slug: 'term-reg' }),
+        socketDir: genSocketDir({ slug: 'attach' }),
+        body: [
+          `export PATH='${dir}':"$PATH"`,
+          `export TERM='${input.term}'`,
+          `export TERM_SEEN_FILE='${join(dir, 'term.seen')}'`,
+          "prog=$(__term_attach_program /bin/sh 'verify/mechanic' grove-sandpine-hetzner-v20261022)",
+          'bash -c "$prog"',
+          'echo "rc=$?"',
+        ].join('\n'),
+      });
+      const seen = existsSync(join(dir, 'term.seen'))
+        ? readFileSync(join(dir, 'term.seen'), 'utf8').trim()
+        : null;
+      return { run, seen };
+    };
+
+    when('[t0] the human TERM is one the grove has no terminfo for', () => {
+      const result = useBeforeAll(async () =>
+        runAttach({ term: 'xterm-nosuch-term' }),
+      );
+
+      then('the attach succeeds, so the tab does not loop', () => {
+        expect(result.run.stdout).toContain('rc=0');
+      });
+
+      then('🔴 tmux is handed a terminal the grove knows', () => {
+        expect(result.seen).toEqual('xterm-256color');
+      });
+    });
+
+    when('[t1] the human TERM is one the grove knows', () => {
+      const result = useBeforeAll(async () => runAttach({ term: 'xterm' }));
+
+      then('it is kept — the fallback fires only where it must', () => {
+        expect(result.seen).toEqual('xterm');
+      });
+    });
+  });
 });
