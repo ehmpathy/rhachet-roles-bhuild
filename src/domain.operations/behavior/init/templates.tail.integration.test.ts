@@ -889,11 +889,17 @@ describe('templates.tail', () => {
           },
         );
 
-        then('a removal ignores the always-dirty route record', () => {
-          expect(scene.preship).toContain(
-            '(a route record path does not count: it rides either way)',
-          );
-        });
+        then(
+          'a removal never stages a dir that would sweep in the record or scratch',
+          () => {
+            expect(scene.preship).toContain(
+              'a staged dir takes every dirty path under it, the route record and scratch included',
+            );
+            expect(scene.preship).not.toContain(
+              'a route record path does not count',
+            );
+          },
+        );
 
         then('the hold rewind names its cascade into 7.reflect', () => {
           expect(scene.preship).toContain(
@@ -948,7 +954,7 @@ describe('templates.tail', () => {
               'stage the nearest parent dir that still exists',
             );
             expect(scene.preship).toContain(
-              'else hold the removal (`.a hold`), the path named — never raw `git rm`',
+              'else hold the removal (`.a hold`), the path named, for a human to stage — never raw `git rm`',
             );
           },
         );
