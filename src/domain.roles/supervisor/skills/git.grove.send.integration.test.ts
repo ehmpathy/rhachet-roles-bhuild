@@ -105,6 +105,10 @@ describe('git.grove.send', () => {
         expect(result.stderr).toContain('tailscale status');
         expect(result.stderr).not.toContain('git.grove.wake');
       });
+
+      then('the words a human reads are pinned', () => {
+        expect(result.stderr).toMatchSnapshot();
+      });
     });
 
     when('[t1] a file is sent', () => {
@@ -119,6 +123,10 @@ describe('git.grove.send', () => {
         expect(result.exit).toEqual(1);
         expect(result.stderr).toContain('the write failed');
         expect(result.stderr).toContain('tailscale status');
+      });
+
+      then('the words a human reads are pinned', () => {
+        expect(result.stderr).toMatchSnapshot();
       });
     });
   });

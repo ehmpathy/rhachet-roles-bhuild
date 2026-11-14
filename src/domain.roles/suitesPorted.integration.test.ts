@@ -59,6 +59,7 @@ const DIR_ROLES = __dirname;
  *         | F13 | supervisor | 7 → 14 | `crewwork` cut into eight parts by subject — verbs, husk, heal, pane, modal, fell, poll, grove |
  *         | F13 | supervisor | 14 → 23 | `work.surface` cut into ten parts by subject — layout, remote, auth, classify, poll, rows, scope, heal, stones, alerts |
  *         | boot-budget | supervisor | 23 → 24 | `work.harness` — clamps that a driver the timeout killed throws, never reads as `exit 1` |
+ *         | tailnet-reach | supervisor | 24 → 26 | `grovework` (the one reach reader) and `ductwork.unreachable` (the cure follows the cause) |
  *         | F13 | prioritizer | 2 → 8 | `ecowork` cut into seven parts by subject — quant, goal, migrate, graph, render, mirror, commit |
  *
  * 🔴 .and the comment at [t0] used to say "a ratchet floor rather than an
@@ -70,7 +71,7 @@ const DIR_ROLES = __dirname;
  *         header is a cache, and this one had gone stale against its own line.
  */
 const SUITES_PORTED = [
-  { role: 'supervisor', inWork: true, quant: 24 },
+  { role: 'supervisor', inWork: true, quant: 26 },
   { role: 'prioritizer', inWork: true, quant: 8 },
 ];
 
@@ -84,11 +85,15 @@ const SUITES_PORTED = [
  */
 const SUITES_OUTSIDE_WORK = [
   'prioritizer/skills/eco.seed.integration.test.ts',
+  'supervisor/skills/git.grove.list.integration.test.ts',
   'supervisor/skills/git.grove.saturation.census.integration.test.ts',
   'supervisor/skills/git.grove.saturation.forks.integration.test.ts',
+  'supervisor/skills/git.grove.saturation.reach.integration.test.ts',
   'supervisor/skills/git.grove.saturation.spend.integration.test.ts',
   'supervisor/skills/git.grove.saturation.timeout.integration.test.ts',
   'supervisor/skills/git.grove.saturation.words.integration.test.ts',
+  'supervisor/skills/git.grove.send.integration.test.ts',
+  'supervisor/skills/git.grove.wake.tailnet.integration.test.ts',
   'supervisor/skills/git.tree.behavior.gates.integration.test.ts',
 ];
 

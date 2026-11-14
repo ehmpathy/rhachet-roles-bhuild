@@ -13,5 +13,8 @@
 | `case=F09-row-host-pins-a-drifted-tailnet-name` | a row's `.host` pins a drifted tailnet name (`…-1`); `.exid` stays the fallback | clean | best-guessed | 80% |
 | `case=F10-live-done-means-belong-to-5.3` | the live hetzner + ec2 done-means are measured in 5.3, not 5.1 | clean | disputed, council awaited | 90% |
 | `case=F11-declapract-husky-files-are-out-of-scope` | declapract-owned `.husky/*` files are left as rendered; a defect reseeds upstream | clean | disputed, council awaited | 85% |
+| `case=F12-driver-writes-the-hetzner-row` | the driver writes the hetzner grove row, local config, so 5.3 can run case=1 live | clean | settled by the foreman | 95% |
 | `case=F13-git-grove-set-is-the-registry-writer` | every hint keeps `git grove set` as the registry writer; a `git.grove.set` verb reseeds | clean | disputed, council awaited | 85% |
 | `case=F14-reach-seam-decomposition-rides-a-followup` | the reach-seam decompositions and extra render snapshots ride one followup dream | clean | disputed, council awaited | 80% |
+| `case=F15-case1-boots-a-scratch-tree-then-unseats-it` | case=1 boots a scratch tree + purpose marker on the hetzner box, then removes every trace | clean | best-guessed | 85% |
+| `case=F16-ec2-alias-convergence-awaits-a-wake-with-the-grove-org` | the ec2 tailnet reach is proven on the pinned road; its alias converges on one human wake from an ahbode repo | clean | best-guessed | 80% |

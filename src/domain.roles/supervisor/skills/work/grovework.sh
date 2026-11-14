@@ -12,8 +12,8 @@
 #                  none — no power lever; the grove does not sleep
 #           reach  ssh <user>@<host> -p <port>, over the tailnet
 #
-# .note = a lib of definitions only. a caller sources it; it runs naught at
-#         source time.
+# .note = sourced, never executed: a lib of definitions only. a caller sources
+#         it; it runs naught at source time.
 ######################################################################
 
 # .what = the dir that holds one json row per grove
