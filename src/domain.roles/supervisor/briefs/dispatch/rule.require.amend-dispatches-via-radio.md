@@ -29,20 +29,6 @@ upsert's success report is byte-identical to a complete one.
 
 pass only the description; the radio re-wraps its own envelope.
 
-## .when the upsert cannot edit
-
-an upsert needs edit rights on the issue. where the signer lacks them (an issue another author
-opened), or where the amendment is a note rather than a rewrite, comment through the radio:
-
-```sh
-cat <note>.md | rhx radio.task.comment --via gh.issues --into <org>/<repo> \
-  --exid <N> --comment @stdin
-```
-
-it rides the same `radio.uses` gate: held when blocked, posted once, never a raw `gh issue comment`.
-a comment sits below the whole wish, so prefer the upsert where it can land. `radio.task.pull`
-reads a task's title and body, not its comments; tell the dispatchee to read the thread.
-
 ## .the general form
 
 > when a raw CLI is blocked, ask **"is there an rhx skill that owns this surface?"** before you
@@ -51,7 +37,7 @@ reads a task's title and body, not its comments; tell the dispatchee to read the
 
 ## .enforcement
 
-- a `gh issue comment` / `gh issue edit` on a radio-dispatched task = **blocker** (`radio.task.comment` is the paved comment path)
+- a `gh issue comment` / `gh issue edit` on a radio-dispatched task = **blocker**
 - an upsert sent from typed text rather than from the local wish file = **blocker**
 - an upsert with no read-back = **nitpick**
 - a raw CLI retried after a hard block, with no check for an rhx skill that owns the surface =

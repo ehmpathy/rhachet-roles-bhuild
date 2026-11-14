@@ -8,8 +8,6 @@
     { "patterns": ["skill.review.behavior.caseValidBehavior"] },
     // skill.radio.task.push.via-gh-issues: ~24s (github api calls + search index latency)
     { "patterns": ["skill.radio.task.push.via-gh-issues"] },
-    // skill.radio.task.comment.via-gh-issues: real github api calls (a demo issue, a post, a re-read)
-    { "patterns": ["skill.radio.task.comment.via-gh-issues"] },
     // skill.init.behavior.*: split into subscopes for parallelism (~20-55s each)
     { "patterns": ["skill.init.behavior.consumer"] },
     { "patterns": ["skill.init.behavior.scaffold"] },

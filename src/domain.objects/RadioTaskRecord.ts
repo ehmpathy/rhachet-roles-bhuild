@@ -7,22 +7,20 @@ import { RadioTaskRepo } from './RadioTaskRepo';
 import type { RadioTaskStatus } from './RadioTaskStatus';
 
 /**
- * .what = one radio write (a radio.task.push or radio.task.comment attempt), transcribed before the gate
+ * .what = one radio.task.push attempt, transcribed before the gate
  * .why = the local write is the transaction: a blocked push is held here,
  *        and the next push that gets through delivers it on its own terms
  */
 interface RadioTaskRecord {
   /**
-   * identity of the push: create = (repo, title), update = (repo, exid, status),
-   * comment = (repo, exid, sha of the body)
+   * identity of the push: create = (repo, title), update = (repo, exid, status)
    */
   key: string;
 
   /**
-   * create = a new task (--title); update = a change to an extant task (--exid);
-   * comment = a comment on an extant thread (radio.task.comment)
+   * create = a new task (--title); update = a change to an extant task (--exid)
    */
-  kind: 'create' | 'update' | 'comment';
+  kind: 'create' | 'update';
 
   /**
    * target repository
@@ -50,9 +48,7 @@ interface RadioTaskRecord {
   title: string | null;
 
   /**
-   * task description (null for an update that leaves it as is); for a comment, the comment's body
-   *
-   * .note = a comment's body is part of its key, so it is never amended in place
+   * task description (null for an update that leaves it as is)
    */
   description: string | null;
 

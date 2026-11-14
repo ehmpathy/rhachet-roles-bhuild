@@ -13,20 +13,6 @@ type HeldEntry = { record: RadioTaskRecord; lift: string | null };
 type HeldState = ReturnType<typeof asRadioTaskRecordState> | 'behind the halt';
 
 /**
- * .what = the noun for what is held: tasks, comments, or both
- * .why = the stop reminder names what waits; a held comment is not a task
- */
-const asHeldNoun = (input: { held: HeldEntry[] }): string => {
-  const isOne = input.held.length === 1;
-  const comments = input.held.filter(
-    ({ record }) => record.kind === 'comment',
-  ).length;
-  if (comments === 0) return isOne ? 'task' : 'tasks';
-  if (comments === input.held.length) return isOne ? 'comment' : 'comments';
-  return 'tasks or comments';
-};
-
-/**
  * .what = the state of each held record, read against the whole backlog, in line order
  * .why = two states turn on the rest of the line, not the record alone:
  *        - a record behind an earlier update waits only while that record is still held; once
@@ -179,11 +165,8 @@ export const asRadioHeldOutput = (input: {
 }): string | null => {
   const { held, mode } = input;
   const count = held.length;
-  const noun = asHeldNoun({ held });
+  const noun = count === 1 ? 'task' : 'tasks';
   const them = count === 1 ? 'it' : 'them';
-  // a held comment is delivered by the next comment too, not only the next push
-  const isAnyComment = held.some(({ record }) => record.kind === 'comment');
-  const nextSend = isAnyComment ? 'next push or comment' : 'next push';
   const states = asHeldStates({ held });
   const lifts = [...new Set(held.flatMap(({ lift }) => (lift ? [lift] : [])))];
   const isAnyOwed = states.some((state) => state !== 'not reached');
@@ -194,7 +177,7 @@ export const asRadioHeldOutput = (input: {
     if (states.includes('set aside'))
       return 'see each fix: rhx radio.task.queue get';
     if (states.includes('halted')) return `the next drain retries ${them}`;
-    return `${nextSend} delivers ${them}`;
+    return `next push delivers ${them}`;
   })();
   if (mode === 'hook.onStop' && count === 0) return null;
   if (mode === 'hook.onStop' && isAnyOwed)
@@ -203,7 +186,7 @@ export const asRadioHeldOutput = (input: {
       ...(lifts.length ? [`lift: ${lifts.join(' + ')}`] : []),
     ].join(' · ')} · ${tail}`;
   if (mode === 'hook.onStop')
-    return `🦫 ${count} ${noun} held, the radio is open · ${nextSend} delivers ${them}`;
+    return `🦫 ${count} ${noun} held, the radio is open · next push delivers ${them}`;
 
   // list: the whole backlog, one row per record with its state, then its lift or its fixes
   if (count === 0) return '🦫 naught held for the radio';
@@ -236,8 +219,8 @@ export const asRadioHeldOutput = (input: {
         }),
         {
           line: isAnyOwed
-            ? `then the ${nextSend}, or \`rhx radio.task.queue drain\`, delivers the backlog`
-            : `the radio is open, so the ${nextSend}, or \`rhx radio.task.queue drain\`, delivers the backlog`,
+            ? 'then the next push, or `rhx radio.task.queue drain`, delivers the backlog'
+            : 'the radio is open, so the next push, or `rhx radio.task.queue drain`, delivers the backlog',
           children: [],
         },
       ],

@@ -20,7 +20,6 @@ export const runRhachetSkill = (input: {
   repoDir: string;
   timeout?: number;
   env?: Record<string, string | undefined>;
-  stdin?: string;
 }): SkillResult => {
   const args = input.args ? `-- ${input.args}` : '';
   const timeout = input.timeout ?? 60000;
@@ -39,8 +38,6 @@ export const runRhachetSkill = (input: {
           ...input.env,
         },
         stdio: ['pipe', 'pipe', 'pipe'],
-        // a body piped via @stdin, as a clone pipes one
-        ...(input.stdin !== undefined ? { input: input.stdin } : {}),
       },
     );
     return {

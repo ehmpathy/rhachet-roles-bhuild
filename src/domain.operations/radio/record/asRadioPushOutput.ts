@@ -1,18 +1,17 @@
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 import { asTaskDetailOutput } from '@src/domain.operations/radio/cli/asTaskDetailOutput';
-import { asCommentDetailOutput } from '@src/domain.operations/radio/record/asCommentDetailOutput';
 
 import { asRadioAuthShown } from './asRadioAuthShown';
 import { asRadioDeliveredExid } from './asRadioDeliveredExid';
 import { asRadioDeliveredLine } from './asRadioDeliveredLine';
 import { asRadioDrainSections } from './asRadioDrainSections';
-import { asRadioErrorFixLines } from './asRadioErrorFixLines';
+import { asRadioErrorHeadline } from './asRadioErrorHeadline';
+import { asRadioErrorHintLines } from './asRadioErrorHintLines';
 import { asRadioQueueFixLines } from './asRadioQueueFixLines';
 import { asRadioReasonBehindOnIssue } from './asRadioReasonBehindOnIssue';
 import { asRadioRefusalText } from './asRadioRefusalText';
 import { asRadioReplayWarnLines } from './asRadioReplayWarnLines';
 import { asRadioTaskRecordLabel } from './asRadioTaskRecordLabel';
-import { asRadioTaskRecordSubjectLine } from './asRadioTaskRecordSubjectLine';
 import { asRadioTaskRepoSlug } from './asRadioTaskRepoSlug';
 import { asRadioTreeLines } from './asRadioTreeLines';
 import { isRadioFateBehindHalt } from './isRadioFateBehindHalt';
@@ -123,11 +122,7 @@ const asHeldFixBranch = (input: {
   held: Extract<RadioTaskRecordFate, { fate: 'held' }>;
 }): RadioTreeBranch => {
   const { lift, detail, record } = input.held;
-  // a held comment is sent by the next comment too, so it says so; a task keeps main's line
-  const next =
-    record.kind === 'comment'
-      ? 'then the next push or comment delivers the backlog first'
-      : 'then the next push delivers the backlog first';
+  const next = 'then the next push delivers the backlog first';
   const queue = asRadioQueueFixLines({ record, authOverride: null, detail });
   const behind = asRadioReasonBehindOnIssue({ reason: record.reason });
   // a stored auth no drain replays needs an amend too; "the next push delivers it" would
@@ -158,25 +153,11 @@ const asHeldFixBranch = (input: {
   // no fault on record: naught to fix, it waits only for its turn
   if (!detail && !record.reason)
     return { line: 'naught to fix: no fault on record', children: [next] };
-
-  // a comment that faulted may have posted before the fault; a reworded retry would post twice.
-  // an auth fault is raised before any send, so naught can be live
-  const isPostPossible = record.reason !== 'upstream:auth';
-  const live =
-    record.kind === 'comment' && isPostPossible
-      ? [
-          'the comment may be live already: never reword it; the drain reads the thread and posts it at most once',
-        ]
-      : [];
   if (!detail)
-    return {
-      line: `fix it: ${record.reason}`,
-      children: [...queue, ...live, next],
-    };
-  const fix = asRadioErrorFixLines({ message: detail });
+    return { line: `fix it: ${record.reason}`, children: [...queue, next] };
   return {
-    line: `fix it: ${fix.headline}`,
-    children: [...fix.hints, ...queue, ...live, next],
+    line: `fix it: ${asRadioErrorHeadline({ message: detail })}`,
+    children: [...asRadioErrorHintLines({ message: detail }), ...queue, next],
   };
 };
 
@@ -202,10 +183,7 @@ export const asRadioPushOutput = (input: {
   });
   const othersAll = [...othersSections.drained, ...othersSections.closedOrHeld];
   const facts = [
-    {
-      line: asRadioTaskRecordSubjectLine({ record: pushed.record }),
-      children: [],
-    },
+    { line: `task    = ${asRadioTaskRecordLabel(pushed)}`, children: [] },
     { line: `into    = ${asTarget(pushed)}`, children: [] },
   ];
 
@@ -260,23 +238,8 @@ export const asRadioPushOutput = (input: {
       }),
     ].join('\n');
 
-  // a comment delivered alone: what landed on which thread, and where it was recorded; a kept
-  // comment landed naught, so it opens as a landed push does, never as a new write
-  if (othersAll.length === 0 && 'comment' in pushed)
-    return [
-      pushed.outcome === 'kept' ? '🦫 already delivered' : '🦫 onto the pile!',
-      '',
-      asCommentDetailOutput({
-        label: asRadioTaskRecordLabel(pushed),
-        url: pushed.comment.url,
-        via: pushed.record.via,
-        outcome: pushed.outcome,
-        recorded: `${home.dir}/`,
-      }),
-    ].join('\n');
-
   // delivered, alone: today's output, plus where it was recorded
-  if (othersAll.length === 0 && 'task' in pushed)
+  if (othersAll.length === 0)
     return [
       '🦫 onto the pile!',
       '',

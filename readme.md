@@ -143,37 +143,6 @@ npx rhachet run --repo bhuild --role dispatcher --skill radio.task.push \
   --description "works without network"
 ```
 
-### radio.task.comment
-
-comment on an extant task, issue, or pr through the radio — behind `radio.uses`, held when blocked, and posted once (a body already on the thread is kept, never posted twice).
-
-```sh
-# comment on an issue or pr
-npx rhachet run --repo bhuild --role dispatcher --skill radio.task.comment \
-  --via gh.issues \
-  --into sandpine/svc-lessons \
-  --exid 489 \
-  --comment "the tide table test passes now"
-
-# pipe a longer body
-cat note.md | npx rhachet run --repo bhuild --role dispatcher --skill radio.task.comment \
-  --via gh.issues \
-  --into @this \
-  --exid 489 \
-  --comment @stdin
-
-# comment on a local filesystem task (an entry in its comment log)
-npx rhachet run --repo bhuild --role dispatcher --skill radio.task.comment \
-  --via os.fileops \
-  --into @this \
-  --exid wax-the-rental-boards-1a2b \
-  --comment "board 7 needs a new fin"
-```
-
-a blocked comment is held QUEUED (exit 2) and sent, oldest first, by the next push or comment that gets through; `radio.task.queue get` lists it beside held tasks.
-
-`radio.task.pull` reads a task's title and body, not its comments; a reader sees the comment on the thread itself.
-
 ### radio.task.pull
 
 pull tasks from a radio channel. lists available tasks or retrieves specific task details.

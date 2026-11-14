@@ -70,9 +70,7 @@ describe('getOneRadioPushRecordAfterDrain', () => {
           context,
         );
         const exid =
-          created.pushed.fate === 'delivered' && 'task' in created.pushed
-            ? created.pushed.task.exid
-            : null;
+          created.pushed.fate === 'delivered' ? created.pushed.task.exid : null;
         if (!exid) throw new Error('scene: the create never delivered');
 
         // push A (claim) and push B (deliver) are both held, A first

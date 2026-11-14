@@ -7,11 +7,10 @@ import { isRadioTaskRecordRequeuedByPush } from './isRadioTaskRecordRequeuedByPu
 
 const genRecord = (input: {
   recordStatus: RadioTaskRecordStatus;
-  kind?: RadioTaskRecord['kind'];
 }): RadioTaskRecord =>
   new RadioTaskRecord({
     key: 'a1b2c3d4e5f60718',
-    kind: input.kind ?? 'create',
+    kind: 'create',
     repo: new RadioTaskRepo({ owner: 'sandpine', name: 'svc-lessons' }),
     via: RadioChannel.GH_ISSUES,
     auth: null,
@@ -79,18 +78,6 @@ const TEST_CASES = [
       description: null,
     },
     expect: { output: false },
-  },
-  {
-    description:
-      'a delivered comment re-queues on a repeat: the thread findsert decides kept or posted (F13)',
-    given: {
-      before: genRecord({
-        recordStatus: RadioTaskRecordStatus.DELIVERED,
-        kind: 'comment',
-      }),
-      description: 'remind each surfer a day ahead\n',
-    },
-    expect: { output: true },
   },
 ];
 
