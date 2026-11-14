@@ -39,32 +39,35 @@ const BRAIN_OF_LANE_DEFAULT = '(bhrain default)';
 
 /**
  * .what = the brain a stone's phase prescribes, read from its numeric prefix
- * .why  = the phase rule: a stone's phase is its place in the route
+ * .why  = the phase rule: a stone's phase is its place in the route. the ship tail splits:
+ *         6.preship is build work (sonnet), 7.reflect is design work (opus) — F2
  */
 const getOneBrainForStonePhase = (input: { stoneName: string }): string => {
   const prefix = Number(input.stoneName.split('.')[0]);
   if (prefix >= 1 && prefix <= 3) return BRAIN_DESIGN;
-  if (prefix >= 4 && prefix <= 5) return BRAIN_BUILD;
-  throw new ConstraintError('stone has a prefix outside 1.–5.', {
+  if (prefix >= 4 && prefix <= 6) return BRAIN_BUILD;
+  if (prefix === 7) return BRAIN_DESIGN;
+  throw new ConstraintError('stone has a prefix outside 1.–7.', {
     stoneName: input.stoneName,
     hint: 'give the new prefix a phase in getOneBrainForStonePhase',
   });
 };
 
+type StoneBrainWalked = {
+  stone: string;
+  declared: string | null;
+  landed: string | null;
+};
+
 /**
- * .what = walks a route in bhrain's order and records the brain each stone lands on
+ * .what = the brain each stone lands on, from stones in bhrain's order
  * .why  = mirrors bhrain's dispatch: a guard's brain applies on entry, and an unguarded
  *         stone keeps the brain of the stone before it
  */
-const getAllStoneBrainsByWalk = async (input: {
-  route: string;
-}): Promise<
-  { stone: string; declared: string | null; landed: string | null }[]
-> => {
-  const stones = await getAllStones({ route: input.route });
-  return stones.reduce<
-    { stone: string; declared: string | null; landed: string | null }[]
-  >((walked, stone) => {
+const asStoneBrainsWalked = (input: {
+  stones: Awaited<ReturnType<typeof getAllStones>>;
+}): StoneBrainWalked[] =>
+  input.stones.reduce<StoneBrainWalked[]>((walked, stone) => {
     const declared = stone.guard?.brain?.choice ?? null;
     const landedPrior = walked.at(-1)?.landed ?? null;
     return [
@@ -72,7 +75,15 @@ const getAllStoneBrainsByWalk = async (input: {
       { stone: stone.name, declared, landed: declared ?? landedPrior },
     ];
   }, []);
-};
+
+/**
+ * .what = walks a route in bhrain's order and records the brain each stone lands on
+ * .why  = reads the route through bhrain's own reader, then derives the walk
+ */
+const getAllStoneBrainsByWalk = async (input: {
+  route: string;
+}): Promise<StoneBrainWalked[]> =>
+  asStoneBrainsWalked({ stones: await getAllStones({ route: input.route }) });
 
 describe('initBehaviorDir.brain', () => {
   BEHAVIOR_SIZE_ORDER.forEach((size, sizeIndex) =>

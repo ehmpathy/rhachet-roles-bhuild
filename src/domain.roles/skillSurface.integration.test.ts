@@ -81,7 +81,7 @@ import { readFileSync } from 'fs';
 import { basename, join } from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
-import { getAllFilesRecursive } from './.test/getAllFilesRecursive';
+import { getAllFilesRecursive } from '../.test/utils/getAllFilesRecursive';
 import { tempDirs } from './.test/tempDirs';
 
 const DIR_ROLES = join(__dirname);

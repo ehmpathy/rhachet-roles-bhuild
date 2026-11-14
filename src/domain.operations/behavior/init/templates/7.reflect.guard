@@ -1,0 +1,55 @@
+# provenance = self-referential source template; enables `rhx route.guard.upgrade` idempotency
+provenance:
+  uri: node_modules/rhachet-roles-bhuild/dist/domain.operations/behavior/init/templates/7.reflect.guard
+
+# brain = the brain the driver runs on for this stone; reflection is design work, so it drives on opus
+brain: claude-opus-5-5[1m]
+
+# guard for the reflect stone
+#
+# self-reviews only: no peer lane and no judges.
+artifacts:
+  - "$route/7.reflect.yield.md"
+
+reviews:
+  self:
+    - slug: has-read-the-record-not-memory
+      say: |
+        double-check: is each item drawn from the record, not from memory?
+
+        - for each item, can you cite where it shows: a review file, a passage line, a yield, a dream?
+        - did you read the peer rounds per stone, the re-raised blockers, the halts and holds?
+        - if you wrote "naught to improve", what in the record backs it?
+
+    - slug: has-gone-three-whys-deep
+      say: |
+        double-check: does every item go three whys deep?
+
+        - is each layer a deeper cause, or a restatement of the one above?
+        - does each layer carry its own lesson, cure, and owner?
+        - would a fourth why change the cure? if so, the third layer was not the root
+
+    - slug: has-placed-each-cure-in-its-owner-repo
+      say: |
+        double-check: does each lesson and each cure land in the repo that owns it?
+
+        - this repo → is the cure in the diff, and was an extant brief extended rather than duplicated?
+        - another repo → is there a task from `rhx radio.task.push --via gh.issues`, with an owner
+          read from the role package's `repository` field, and a dream linked in the route?
+        - does any cross-repo task quote record content? (forbidden)
+        - did you edit another repo by hand? (forbidden)
+
+    - slug: has-rewatched-after-a-cure
+      say: |
+        double-check: if a cure or the record commit landed, is the pr still green?
+
+        paste the `### ship` section of your yield:
+        - the pushed sha (`git log -1 --format=%H`)
+        - the final output of `rhx git.release --watch`
+
+        did the watch report green after your last push?
+
+        held arm: if a commit or push was held, paste the `### held` line of `### ship` and the
+        last watch output. there is no pushed head to confirm — do not claim one.
+
+  peer: []

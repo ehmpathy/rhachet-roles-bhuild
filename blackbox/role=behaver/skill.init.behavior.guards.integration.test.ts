@@ -206,6 +206,15 @@ describe('skill.init.behavior.guards', () => {
         );
       });
 
+      then('the ship tail guards each carry a roster, since self-reviews are their only gate', () => {
+        // .why = 6.preship and 7.reflect hold `peer: []` and no judges (F5), so an empty
+        //        roster would let either stone pass on naught
+        const templates = getRostersFromTemplates().map((r) => r.template);
+        expect(templates).toEqual(
+          expect.arrayContaining(['6.preship.guard', '7.reflect.guard']),
+        );
+      });
+
       then('every slug reads as dash-case, since bhrain drops dotted slugs', () => {
         for (const roster of getRostersFromTemplates())
           for (const slug of roster.slugs)

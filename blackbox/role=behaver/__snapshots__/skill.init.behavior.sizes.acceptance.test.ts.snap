@@ -9,6 +9,10 @@ exports[`init.behavior.sizes given: [case1] --size nano when: [t0] init.behavior
   "5.1.execution.from_vision.stone",
   "5.3.verification.guard",
   "5.3.verification.stone",
+  "6.preship.guard",
+  "6.preship.stone",
+  "7.reflect.guard",
+  "7.reflect.stone",
   "refs/template.[feedback].v1.[given].by_human.md",
 ]
 `;
@@ -22,6 +26,10 @@ exports[`init.behavior.sizes given: [case1] --size nano when: [t0] init.behavior
    ├─ + 5.1.execution.from_vision.stone
    ├─ + 5.3.verification.guard
    ├─ + 5.3.verification.stone
+   ├─ + 6.preship.guard
+   ├─ + 6.preship.stone
+   ├─ + 7.reflect.guard
+   ├─ + 7.reflect.stone
    └─ + refs/template.[feedback].v1.[given].by_human.md
 
 🌲 go on then,
@@ -56,6 +64,10 @@ exports[`init.behavior.sizes given: [case2] --size mini when: [t0] init.behavior
   "5.3.verification.stone",
   "5.5.playtest.guard",
   "5.5.playtest.stone",
+  "6.preship.guard",
+  "6.preship.stone",
+  "7.reflect.guard",
+  "7.reflect.stone",
   "refs/template.[feedback].v1.[given].by_human.md",
 ]
 `;
@@ -80,6 +92,10 @@ exports[`init.behavior.sizes given: [case2] --size mini when: [t0] init.behavior
    ├─ + 5.3.verification.stone
    ├─ + 5.5.playtest.guard
    ├─ + 5.5.playtest.stone
+   ├─ + 6.preship.guard
+   ├─ + 6.preship.stone
+   ├─ + 7.reflect.guard
+   ├─ + 7.reflect.stone
    └─ + refs/template.[feedback].v1.[given].by_human.md
 
 🌲 go on then,
@@ -124,6 +140,10 @@ exports[`init.behavior.sizes given: [case3] --size medi (default) when: [t0] ini
   "5.3.verification.stone",
   "5.5.playtest.guard",
   "5.5.playtest.stone",
+  "6.preship.guard",
+  "6.preship.stone",
+  "7.reflect.guard",
+  "7.reflect.stone",
   "refs/template.[feedback].v1.[given].by_human.md",
 ]
 `;
@@ -158,6 +178,10 @@ exports[`init.behavior.sizes given: [case3] --size medi (default) when: [t0] ini
    ├─ + 5.3.verification.stone
    ├─ + 5.5.playtest.guard
    ├─ + 5.5.playtest.stone
+   ├─ + 6.preship.guard
+   ├─ + 6.preship.stone
+   ├─ + 7.reflect.guard
+   ├─ + 7.reflect.stone
    └─ + refs/template.[feedback].v1.[given].by_human.md
 
 🌲 go on then,
@@ -214,6 +238,10 @@ exports[`init.behavior.sizes given: [case4] --size mega when: [t0] init.behavior
   "5.3.verification.stone",
   "5.5.playtest.guard",
   "5.5.playtest.stone",
+  "6.preship.guard",
+  "6.preship.stone",
+  "7.reflect.guard",
+  "7.reflect.stone",
   "refs/template.[feedback].v1.[given].by_human.md",
 ]
 `;
@@ -260,6 +288,10 @@ exports[`init.behavior.sizes given: [case4] --size mega when: [t0] init.behavior
    ├─ + 5.3.verification.stone
    ├─ + 5.5.playtest.guard
    ├─ + 5.5.playtest.stone
+   ├─ + 6.preship.guard
+   ├─ + 6.preship.stone
+   ├─ + 7.reflect.guard
+   ├─ + 7.reflect.stone
    └─ + refs/template.[feedback].v1.[given].by_human.md
 
 🌲 go on then,
@@ -318,6 +350,10 @@ exports[`init.behavior.sizes given: [case5] --size giga when: [t0] init.behavior
    ├─ + 5.3.verification.stone
    ├─ + 5.5.playtest.guard
    ├─ + 5.5.playtest.stone
+   ├─ + 6.preship.guard
+   ├─ + 6.preship.stone
+   ├─ + 7.reflect.guard
+   ├─ + 7.reflect.stone
    └─ + refs/template.[feedback].v1.[given].by_human.md
 
 🌲 go on then,
@@ -351,6 +387,10 @@ exports[`init.behavior.sizes given: [case6] --size composes with --guard when: [
    ├─ + 5.3.verification.stone
    ├─ + 5.5.playtest.guard
    ├─ + 5.5.playtest.stone
+   ├─ + 6.preship.guard
+   ├─ + 6.preship.stone
+   ├─ + 7.reflect.guard
+   ├─ + 7.reflect.stone
    └─ + refs/template.[feedback].v1.[given].by_human.md
 
 🌲 go on then,

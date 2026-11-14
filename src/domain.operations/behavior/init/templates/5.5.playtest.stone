@@ -126,6 +126,13 @@ emit to
 - ✗ fail if: {specific failure indicator}
 ```
 
+### the file ledger
+
+each file this stone writes or fixes (an acceptance test, a ux fix) appends one line to the
+`### filediff` section of `$BEHAVIOR_DIR_REL/5.1.execution.*.yield.md`: `[+] <path>`,
+`[~] <path>`, or `[-] <path>`. 6.preship stages from that ledger, so a file left off it ships
+uncommitted.
+
 ---
 
 the guard will block until the foreman approves after the playtest run.

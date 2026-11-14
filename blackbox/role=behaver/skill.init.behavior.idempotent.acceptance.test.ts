@@ -178,4 +178,63 @@ describe('init.behavior.idempotent', () => {
       });
     });
   });
+
+  given('[case10] direct: a route inited before the tail, re-inited at its own size', () => {
+    when('[t0] init.behavior --size nano runs on a nano route that lacks the tail', () => {
+      const TAIL_FILES = [
+        '6.preship.stone',
+        '6.preship.guard',
+        '7.reflect.stone',
+        '7.reflect.guard',
+      ];
+
+      const scene = useBeforeAll(async () => {
+        const consumer = genConsumerRepo({
+          branchName: 'feature/pre-tail-reinit-test',
+        });
+
+        // init a nano route, then remove its tail, so it reads as one inited before the tail
+        const first = runInitBehaviorSkillDirect({
+          args: '--name pre-tail --size nano',
+          repoDir: consumer.repoDir,
+        });
+        if (first.exitCode !== 0)
+          throw new Error(
+            `the first init failed: exit=${first.exitCode}, stdout=${first.stdout}`,
+          );
+        const behaviorRoot = path.join(consumer.repoDir, '.behavior');
+        const behaviorDirNames = fs.readdirSync(behaviorRoot);
+        if (behaviorDirNames.length !== 1)
+          throw new Error(
+            `expected one behavior dir, found: ${behaviorDirNames.join(', ')}`,
+          );
+        const behaviorDir = path.join(behaviorRoot, behaviorDirNames[0]!);
+        TAIL_FILES.forEach((name) => fs.rmSync(path.join(behaviorDir, name)));
+
+        // re-init at the route's own size
+        const reinit = runInitBehaviorSkillDirect({
+          args: '--name pre-tail --size nano',
+          repoDir: consumer.repoDir,
+        });
+
+        return { ...consumer, behaviorDir, reinit };
+      });
+
+      then('the stdout shows the tail created and the rest kept', () => {
+        expect(scene.reinit.exitCode).toBe(0);
+        TAIL_FILES.forEach((name) =>
+          expect(scene.reinit.stdout).toContain(`+ ${name}`),
+        );
+        expect(scene.reinit.stdout).toContain('✓ 0.wish.md');
+        expect(scene.reinit.stdout).toContain('✓ 1.vision.stone');
+        expect(asSnapshotStable(scene.reinit.stdout)).toMatchSnapshot();
+      });
+
+      then('the four tail files are on disk again', () => {
+        TAIL_FILES.forEach((name) =>
+          expect(fs.existsSync(path.join(scene.behaviorDir, name))).toBe(true),
+        );
+      });
+    });
+  });
 });

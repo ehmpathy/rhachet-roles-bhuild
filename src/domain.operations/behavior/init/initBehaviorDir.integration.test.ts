@@ -698,4 +698,50 @@ describe('initBehaviorDir.integration', () => {
       });
     });
   });
+
+  given(
+    '[case8] a route inited before the tail, re-inited at its own size',
+    () => {
+      when(
+        '[t0] a nano route lacks 6.preship and 7.reflect, and the driver edited a stone',
+        () => {
+          then(
+            'the re-init adds only the four tail files and keeps the edited stone byte for byte',
+            () => {
+              // init a nano route, then strip it back to its pre-tail shape
+              const behaviorDirRel = '.behavior/v2025_01_01.test-feature';
+              initBehaviorDir({ behaviorDir, behaviorDirRel, size: 'nano' });
+              const tailNames = [
+                '6.preship.stone',
+                '6.preship.guard',
+                '7.reflect.stone',
+                '7.reflect.guard',
+              ];
+              tailNames.forEach((name) =>
+                fs.rmSync(path.join(behaviorDir, name)),
+              );
+
+              // the driver edited a stone of its own
+              const editedPath = path.join(behaviorDir, '1.vision.stone');
+              const editedContent = 'the driver edited this stone\n';
+              fs.writeFileSync(editedPath, editedContent);
+
+              // re-init at the route's own size
+              const result = initBehaviorDir({
+                behaviorDir,
+                behaviorDirRel,
+                size: 'nano',
+              });
+
+              expect([...result.created].sort()).toEqual([...tailNames].sort());
+              expect(result.kept).toContain('1.vision.stone');
+              expect(fs.readFileSync(editedPath, 'utf-8')).toEqual(
+                editedContent,
+              );
+            },
+          );
+        },
+      );
+    },
+  );
 });

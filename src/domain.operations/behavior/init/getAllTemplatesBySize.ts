@@ -28,6 +28,10 @@ const BEHAVIOR_SIZE_CONFIG = {
       '5.1.execution.from_vision.guard',
       '5.3.verification.stone', // tests should never be forgotten
       '5.3.verification.guard',
+      '6.preship.stone', // ship tail: every size ends green on a pull (#590)
+      '6.preship.guard',
+      '7.reflect.stone', // then reflects on what to do better, three whys deep
+      '7.reflect.guard',
     ],
     dels: [],
   },

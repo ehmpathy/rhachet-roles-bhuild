@@ -1,4 +1,4 @@
-import { readdirSync, statSync } from 'fs';
+import { lstatSync, readdirSync } from 'fs';
 import { join } from 'path';
 
 /**
@@ -24,10 +24,6 @@ import { join } from 'path';
  *         and `Recursively` is an adverb, where the house shape is
  *         `[verb][...noun][adj]` (`rule.require.order.noun_adj`).
  *
- * .found by = peer review i010, `arch-opport-decomposition` nitpick.1 — which
- *         argued from clarity. the synonym above is the stronger ground, and it
- *         was found only by a grep for the precedent the reviewer implied.
- *
  * .note = this lives under `.test/` deliberately — `tsconfig.build.json`
  *         excludes `**‌/.test/**‌/*`, so a dev-only helper cannot compile into
  *         `dist/` as a shipped asset. that is the exact defect `case=8` found
@@ -37,7 +33,8 @@ import { join } from 'path';
 export const getAllFilesRecursive = (input: { dir: string }): string[] =>
   readdirSync(input.dir).flatMap((entry) => {
     const path = join(input.dir, entry);
-    return statSync(path).isDirectory()
+    // lstat, so a link is never followed: a link cycle cannot recurse, a broken link cannot throw
+    return lstatSync(path).isDirectory()
       ? getAllFilesRecursive({ dir: path })
       : [path];
   });
