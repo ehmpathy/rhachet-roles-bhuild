@@ -961,8 +961,26 @@ describe('work.surface', () => {
         const readCaveat = (): string => {
           const lines = readCrewPoll().split('\n');
           const i = lines.findIndex((line) => line.includes('⚠️  UNREACHED:'));
-          // the caveat line, its child, and the per-grove cure loop beneath it
-          return i < 0 ? '' : lines.slice(i, i + 10).join('\n');
+          return i < 0 ? '' : lines.slice(i, i + 2).join('\n');
+        };
+
+        /**
+         * the per-grove cure roll beneath the caveat — its own subject, bounded
+         * by its loop: from the `for __ua` line to the `done` that closes it.
+         * a fixed window would let a token from a neighbour make it green
+         */
+        const readCaveatRoll = (): string => {
+          const lines = readCrewPoll().split('\n');
+          const i = lines.findIndex((line) => line.includes('⚠️  UNREACHED:'));
+          if (i < 0) return '';
+          const iFor = lines.findIndex(
+            (line, n) => n > i && /^\s*for __ua_i in /.test(line),
+          );
+          if (iFor < 0) return '';
+          const iDone = lines.findIndex(
+            (line, n) => n > iFor && /^\s*done\b/.test(line),
+          );
+          return iDone < 0 ? '' : lines.slice(iFor, iDone + 1).join('\n');
         };
 
         then(
@@ -970,22 +988,25 @@ describe('work.surface', () => {
           () => {
             // .why = two unreached groves once rendered two `└─` siblings at
             //        one depth, so the tree claimed two last children
-            expect(readCaveat().includes("__ua_glyph='├─'")).toEqual(true);
+            const roll = readCaveatRoll();
+            expect(roll.includes("__ua_glyph='├─'")).toEqual(true);
             expect(
-              readCaveat().includes(
+              roll.includes(
                 "if (( __ua_i == __ua_last )); then __ua_glyph='└─'; fi",
               ),
             ).toEqual(true);
-            expect(readCaveat().includes('│      └─ $__ua —')).toEqual(false);
+            expect(roll.includes('│      └─ $__ua —')).toEqual(false);
           },
         );
 
         then('the caveat names the fix, per grove, off the one cure', () => {
           // an aws grove is handed a wake, a tailnet-only grove a tailnet
           // check — so the caveat names the transformer, never one cure
-          expect(
-            readCaveat().includes('$(__grove_unreached_cure "$__ua")'),
-          ).toEqual(true);
+          const roll = readCaveatRoll();
+          expect(roll.includes('$(__grove_unreached_cure "$__ua")')).toEqual(
+            true,
+          );
+          expect(roll.includes('git.grove.wake')).toEqual(false);
           expect(readCaveat().includes('git.grove.wake')).toEqual(false);
         });
 

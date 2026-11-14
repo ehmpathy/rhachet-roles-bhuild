@@ -261,7 +261,7 @@ __grove_refused_cure() {
       *) echo "💥 MalfunctionError: __grove_refused_cure got an unnamed arg '$arg' (name= host= port=)" >&2; return 1 ;;
     esac
   done
-  printf 'the box answered on %s and refused — is sshd up there, and is %s its port? (a stale ssm-era port reads this way; re-register — git grove set %s --at camper@%s:22)' "$port" "$port" "$name" "$host"
+  printf 'the box answered on %s and refused — is sshd up there, and is %s its port? (a stale port in the row reads this way; re-register — git grove set %s --at camper@%s:22)' "$port" "$port" "$name" "$host"
 }
 
 # .what = the cure for a grove that did not answer, per its power

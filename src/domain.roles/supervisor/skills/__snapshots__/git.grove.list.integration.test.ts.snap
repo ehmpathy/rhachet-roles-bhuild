@@ -2,7 +2,8 @@
 
 exports[`git.grove.list given: [case1] a forest of a hetzner row, an ec2 row, a relic, and a corrupt row when: [t0] it is listed with no probe then: the list reads as a snapshot 1`] = `
 "🌲 forest
-   ├─ 🌳 grove-sandpine-corrupt → 🟡 row unreadable — its fix is named above
+   ├─ 🌳 grove-sandpine-corrupt → 🟡 row unreadable — not json
+   │     └─ fix → re-register it — git grove set grove-sandpine-corrupt --at camper@<tailnet-host>:22
    ├─ 🌳 grove-sandpine-hetzner-v20261022 → camper@127.0.0.2:1 (ssh:grove-sandpine-hetzner-v20261022)
    ├─ 🌳 grove-sandpine-hetzner-v20261023 → camper@grove-sandpine-hetzner-v20261023.invalid:22 (ssh:grove-sandpine-hetzner-v20261023)
    ├─ 🌳 grove-sandpine-v20250101 → camper@grove-sandpine-v20250101.invalid:22 (ssh:grove-sandpine-v20250101)
@@ -12,10 +13,11 @@ exports[`git.grove.list given: [case1] a forest of a hetzner row, an ec2 row, a 
 
 exports[`git.grove.list given: [case1] a forest of a hetzner row, an ec2 row, a relic, and a corrupt row when: [t1] it is listed with the probe then: the probe reads as a snapshot 1`] = `
 "🌲 forest
-   ├─ 🌳 grove-sandpine-corrupt → 🟡 row unreadable — its fix is named above
+   ├─ 🌳 grove-sandpine-corrupt → 🟡 row unreadable — not json
+   │     └─ fix → re-register it — git grove set grove-sandpine-corrupt --at camper@<tailnet-host>:22
    ├─ 🌳 grove-sandpine-hetzner-v20261022 → camper@127.0.0.2:1 (ssh:grove-sandpine-hetzner-v20261022)
    │     ├─ 🔴 DOWN — no ssh banner: refused — the box answers; no sshd on this port
-   │     └─ fix → the box answered on 1 and refused — is sshd up there, and is 1 its port? (a stale ssm-era port reads this way; re-register — git grove set grove-sandpine-hetzner-v20261022 --at camper@127.0.0.2:22)
+   │     └─ fix → the box answered on 1 and refused — is sshd up there, and is 1 its port? (a stale port in the row reads this way; re-register — git grove set grove-sandpine-hetzner-v20261022 --at camper@127.0.0.2:22)
    ├─ 🌳 grove-sandpine-hetzner-v20261023 → camper@grove-sandpine-hetzner-v20261023.invalid:22 (ssh:grove-sandpine-hetzner-v20261023)
    │     ├─ 🔴 DOWN — no ssh banner: the name is unknown to dns — is it a tailnet peer?
    │     └─ fix → check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove-sandpine-hetzner-v20261023.invalid
@@ -28,7 +30,7 @@ exports[`git.grove.list given: [case1] a forest of a hetzner row, an ec2 row, a 
 
 🛟 a grove did not greet with ssh — each row names its cure, by the cause it saw.
    first, if every row reads DOWN, is THIS machine a peer? — tailscale status
-🛟 a row is unreadable — re-register it with the fix named above, then list again
+🛟 a row is unreadable — re-register it with the fix on its row, then list again
 "
 `;
 
@@ -104,15 +106,17 @@ exports[`git.grove.list given: [case1] a forest of a hetzner row, an ec2 row, a 
 
 exports[`git.grove.list given: [case2] a forest whose only row is corrupt when: [t0] it is listed with the probe then: the render reads as a snapshot 1`] = `
 "🌲 forest
-   └─ 🌳 grove-sandpine-corrupt → 🟡 row unreadable — its fix is named above
+   └─ 🌳 grove-sandpine-corrupt → 🟡 row unreadable — not json
+         └─ fix → re-register it — git grove set grove-sandpine-corrupt --at camper@<tailnet-host>:22
 
-🛟 a row is unreadable — re-register it with the fix named above, then list again
+🛟 a row is unreadable — re-register it with the fix on its row, then list again
 "
 `;
 
 exports[`git.grove.list given: [case3] a grove whose sshd greets, one that accepts and stays mute, and one that greets with a non-ssh banner when: [t0] the three groves are listed with the probe then: the live, mute, and odd renders read as a snapshot 1`] = `
 "🌲 forest
-   ├─ 🌳 grove-sandpine-corrupt → 🟡 row unreadable — its fix is named above
+   ├─ 🌳 grove-sandpine-corrupt → 🟡 row unreadable — not json
+   │     └─ fix → re-register it — git grove set grove-sandpine-corrupt --at camper@<tailnet-host>:22
    ├─ 🌳 grove-sandpine-hetzner-live → camper@127.0.0.3:<port.live> (ssh:grove-sandpine-hetzner-live)
    │     └─ 🟢 live
    ├─ 🌳 grove-sandpine-hetzner-mute → camper@127.0.0.3:<port.mute> (ssh:grove-sandpine-hetzner-mute)
@@ -125,6 +129,73 @@ exports[`git.grove.list given: [case3] a grove whose sshd greets, one that accep
 🛟 a grove did not greet with ssh — each row names its cure, by the cause it saw.
    first, if every row reads DOWN, is THIS machine a peer? — tailscale status
 🛟 a listener answered that is not ssh — is the row's port the grove's sshd?
-🛟 a row is unreadable — re-register it with the fix named above, then list again
+🛟 a row is unreadable — re-register it with the fix on its row, then list again
+"
+`;
+
+exports[`git.grove.list given: [case4] a human who asks how to read the list when: [t0] --help is asked then: the help reads as a snapshot 1`] = `
+".what = list every registered grove, and PROBE whether it answers over the
+        camp tailnet
+
+.why  = a grove's ssh alias, user, host, and port are what every remote
+        duct address is built from, so a supervisor needs them enumerable
+        without a guess and without a login. host and port are read through
+        the one reach reader (work/grovework.sh), so a relic row (\`host:
+        localhost\`, a dead tunnel port) is listed where the wake will reach it.
+
+🔴 .and a registry row is CONFIG, never STATE — so a list alone answers
+   the wrong question. the row says where the grove SHOULD answer; it says
+   naught about whether it does.
+
+   ⇒ so this skill READS THE BANNER, which is the record rather than a
+     correlate. sshd greets every connection with \`SSH-2.0-…\` unprompted,
+     so that banner is proof the grove's sshd is alive and served us. it
+     needs no credential, no key, and no login — we hang up before a single
+     byte is sent back. measured 2026-09-08: a port that accepts and stays
+     silent is the costly case, since no call ever says \`Connection refused\`
+
+.the verdicts — the cure rides with each, per its cause, then per power
+  🟢 live  — connected, and \`SSH-2.0-…\` came back
+  🔴 mute  — connected, and no banner came back — a starved grove: read its load
+  🔴 down  — refused (sshd or its port), or a silence or unknown name
+  🟡 odd   — a listener answered that is not ssh: is the row's port right?
+
+  the cure for a silence or unknown name: an ec2 grove (power aws) is handed
+  \`rhx git.grove.wake\`, which is idempotent and per-leg. a grove with no aws
+  lever does not sleep, so it is handed the tailnet: \`tailscale status\`, then
+  \`tailscale ping <host>\`. a refusal, a mute, or an odd banner prove the
+  tailnet carried the connect, so none of them is handed the tailnet
+
+usage:
+  rhx git.grove.list
+  rhx git.grove.list --json      # the raw records + their probe verdict
+  rhx git.grove.list --no-probe  # config only, zero network — the old shape
+
+.why NO \`source ~/.bash_aliases\` here — this used to be a three-line
+     dispatch to \`git_alias_grove list\`, a function defined in the global
+     dotfile. that made the skill a SHIM over a file this repo does not own:
+
+       - \`bert/dev-env-setup\`'s \`install_env\` writes that dotfile, so
+         whichever copy wrote last won and a reinstall silently reverted it
+       - the skill could not run at all on a box whose dotfile was stale,
+         and said so — a skill that reports on its own installer is a skill
+         that does not work
+       - it is the exact defect work.surface [case1] clamps across this whole
+         surface, and this file was the one member that violated it
+
+     the registry is plain json on disk, so the skill reads it directly. its
+     wake peer already did; now the pair agree.
+
+guarantee:
+  - reads only; never wakes, never writes, never logs in. the probe opens
+    a tcp connection, reads the greeting the server volunteers, and hangs
+    up — it sends no byte, so it authenticates nothing and mutates nothing
+  - a probe is bounded by --timeout (default 5s; a first contact over a
+    tailnet relay can take a second), so an unreachable grove costs
+    seconds, never a hang
+  - exit 0 = listed (an EMPTY forest is a valid answer, not a failure).
+    ⚠️ a mute or down grove is REPORTED, never an error — this is a
+    read, and a broken tunnel is a finding rather than a malfunction
+  - exit 2 = constraint (no registry at all)
 "
 `;

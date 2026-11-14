@@ -142,12 +142,21 @@ describe('git.grove.list', () => {
           },
         );
 
-        then('stderr names the corrupt row and its fix', () => {
-          expect(result.stderr).toContain(
-            'ConstraintError: grove row unreadable',
-          );
-          expect(result.stderr).toContain('git grove set');
-        });
+        then(
+          '🔴 the corrupt row carries its own cause and fix, on its row',
+          () => {
+            // the reader's error block once landed on stderr, mid-tree, under
+            // no row of its own; the row now hangs its fix as its child
+            expect(result.stdout).toContain(
+              'grove-sandpine-corrupt → 🟡 row unreadable — not json',
+            );
+            expect(result.stdout).toMatch(
+              /grove-sandpine-corrupt → 🟡 row unreadable — not json\n {3}[│ ] {5}└─ fix → re-register it — git grove set grove-sandpine-corrupt --at/,
+            );
+            expect(result.stdout).not.toContain('named above');
+            expect(result.stderr).not.toContain('grove row unreadable');
+          },
+        );
 
         then('the list reads as a snapshot', () => {
           expect(result.stdout).toMatchSnapshot();
@@ -174,6 +183,8 @@ describe('git.grove.list', () => {
             expect(refused).toContain('is sshd up there, and is 1 its port?');
             expect(refused).not.toContain('tailscale');
             expect(refused).not.toContain('git.grove.wake');
+            // the wish: a hint names the tailnet path, never ssm
+            expect(refused).not.toContain('ssm');
           },
         );
 
@@ -391,6 +402,24 @@ describe('git.grove.list', () => {
       );
 
       then('the render reads as a snapshot', () => {
+        expect(result.stdout).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case4] a human who asks how to read the list', () => {
+    when('[t0] --help is asked', () => {
+      const result = useBeforeAll(async () =>
+        runList({ rows: [], args: ['--help'] }),
+      );
+
+      then('it exits 0 and names the tailnet cure, never ssm', () => {
+        expect(result.exit).toEqual(0);
+        expect(result.stdout).toContain('--timeout');
+        expect(result.stdout).not.toContain('ssm');
+      });
+
+      then('the help reads as a snapshot', () => {
         expect(result.stdout).toMatchSnapshot();
       });
     });

@@ -438,6 +438,12 @@ describe('grovework', () => {
         expect(run.stderr).toContain('grove-sandpine-corrupt.json');
         expect(run.stderr).toContain('git grove set');
       });
+
+      then('the refusal reads as a snapshot', () => {
+        expect(
+          run.stderr.split(scene.forest).join('$FOREST_TMP'),
+        ).toMatchSnapshot();
+      });
     });
 
     when('[t1] its cure is asked for', () => {

@@ -68,6 +68,7 @@ if [[ " $* " == *" help "* || " $* " == *" --help "* || " $* " == *" -h "* ]]; t
   echo "usage:"
   echo "  rhx git.grove.wake <grove> [--mode plan|apply] [--env <env>]"
   echo "                     [--nat <exid>] [--port <port>] [--user <user>]"
+  echo "                     [--identity <path>] [--timeout <seconds>]"
   echo ""
   echo "options:"
   echo "  --mode      plan (preview) or apply (default)"
@@ -141,7 +142,7 @@ if [[ ! -f "$REGISTRY" ]]; then
   echo "      git grove set $GROVE --at camper@<tailnet-host>:22" >&2
   echo "    an ec2 grove, which aws powers up:" >&2
   echo "      git grove set $GROVE --exid $GROVE --env camp --account <id>" >&2
-  echo "    🟡 an account on a non-aws box sends the wake to hunt an ec2 that is not there" >&2
+  echo "    note: an account on a non-aws box sends the wake to hunt an ec2 that is not there" >&2
   echo "  or list what is registered —" >&2
   echo "    rhx git.grove.list" >&2
   exit 2
@@ -313,7 +314,7 @@ _drive_up() {
   local exid="$1" label="$2"
   local id; id=$(_find_by_exid "$exid")
   if [[ -z "$id" ]]; then
-    echo "      ├─ 💥 no instance tagged exid=$exid in account $ACCOUNT_ACTIVE" >&2
+    echo "      └─ 💥 no instance tagged exid=$exid in account $ACCOUNT_ACTIVE" >&2
     return 1
   fi
   local state
@@ -381,7 +382,7 @@ if command -v tailscale >/dev/null 2>&1; then
     TS_EXIT=0
   fi
   [[ "$TS_EXIT" == "0" ]] || {
-    echo "      ├─ ✋ ConstraintError: this machine is not a tailnet peer — tailscale status failed" >&2
+    echo "      └─ ✋ ConstraintError: this machine is not a tailnet peer — tailscale status failed" >&2
     echo "" >&2
     echo "  tailscale said:" >&2
     echo "    $(head -1 <<< "$TS_SAID")" >&2
@@ -425,7 +426,7 @@ done
 if [[ "$REACHED" != "true" ]]; then
   case "$SSH_SAID" in
     *"Permission denied"*)
-      echo "      ├─ ✋ ConstraintError: $USER_NAME@$HOST:$PORT answered, and refused our key" >&2
+      echo "      └─ ✋ ConstraintError: $USER_NAME@$HOST:$PORT answered, and refused our key" >&2
       echo "" >&2
       echo "  ssh said:" >&2
       echo "$SSH_SAID" | sed 's/^/    /' >&2
@@ -435,7 +436,7 @@ if [[ "$REACHED" != "true" ]]; then
       echo "    ssh -v -i $IDENTITY -p $PORT $USER_NAME@$HOST true" >&2
       exit 2 ;;
     *"REMOTE HOST IDENTIFICATION HAS CHANGED"*|*"Host key verification failed"*)
-      echo "      ├─ ✋ ConstraintError: $HOST answered with a host key this machine does not trust" >&2
+      echo "      └─ ✋ ConstraintError: $HOST answered with a host key this machine does not trust" >&2
       echo "" >&2
       echo "  ssh said:" >&2
       echo "$SSH_SAID" | sed 's/^/    /' >&2
@@ -447,7 +448,7 @@ if [[ "$REACHED" != "true" ]]; then
     *"Connection refused"*)
       # the tailnet carried the connect and the box is up: neither the tailnet
       # checks nor another wake can cure it (c34)
-      echo "      ├─ ✋ ConstraintError: $HOST answered on $PORT, and refused the connect" >&2
+      echo "      └─ ✋ ConstraintError: $HOST answered on $PORT, and refused the connect" >&2
       echo "" >&2
       echo "  ssh said:" >&2
       echo "$SSH_SAID" | sed 's/^/    /' >&2
@@ -457,7 +458,7 @@ if [[ "$REACHED" != "true" ]]; then
   esac
 fi
 if [[ "$REACHED" != "true" ]]; then
-  echo "      ├─ 💥 no ssh answer from $USER_NAME@$HOST:$PORT within ${TIMEOUT}s" >&2
+  echo "      └─ 💥 no ssh answer from $USER_NAME@$HOST:$PORT within ${TIMEOUT}s" >&2
   echo "" >&2
   if [[ -n "$SSH_SAID" ]]; then
     echo "  ssh said:" >&2
@@ -495,8 +496,11 @@ if [[ "$REACHED" != "true" ]]; then
     echo "  the box accepted the connect and sent no ssh banner in time:" >&2
     echo "" >&2
   fi
+  # the letter names a menu of two; a grove with no power lever has no (a)
+  STARVED_TAG="   "
+  [[ "$POWER" == "aws" ]] && STARVED_TAG="(b)"
   {
-    echo "  (b) 🔴 it is STARVED. a box thrashed under load cannot answer a handshake," >&2
+    echo "  $STARVED_TAG 🔴 it is STARVED. a box thrashed under load cannot answer a handshake," >&2
     echo "      so a second wake cures NAUGHT, and each one costs another ${TIMEOUT}s" >&2
     echo "      tell: git.grove.list reads 🔴 MUTE — the port accepts, yet no ssh" >&2
     echo "            banner comes back — rather than 🔴 DOWN, and saturation" >&2
@@ -504,7 +508,7 @@ if [[ "$REACHED" != "true" ]]; then
     echo "        rhx git.grove.list" >&2
     echo "        rhx git.grove.saturation $GROVE" >&2
     echo "      fix: the lever is LOAD — fell or stop crews, or provision more box." >&2
-    echo "           🟡 neither is reachable while it is mute, so this is a" >&2
+    echo "           neither is reachable while it is mute, so this is a" >&2
     echo "           PROVISION decision for a human" >&2
   }
   exit 1

@@ -804,8 +804,13 @@ describe('work.surface', () => {
             // the arm rides the one tailnet transformer, which holds both
             // checks in order; the rendered order is pinned in wake.tailnet [t1]
             expect(escalation()).toContain('$(__grove_tailnet_cure "$HOST")');
+            // bounded to the function body: its opener to the first close brace
             const lib = readCode(join(DIR_SKILLS, 'work', 'grovework.sh'));
-            const cure = lib.slice(lib.indexOf('__grove_tailnet_cure() {'));
+            const at = lib.indexOf('__grove_tailnet_cure() {');
+            expect(at).toBeGreaterThan(-1); // ANTI-VACUITY: the cure still exists
+            const end = lib.indexOf('\n}\n', at);
+            expect(end).toBeGreaterThan(at); // ANTI-VACUITY: bounded by its close
+            const cure = lib.slice(at, end);
             expect(cure.indexOf('tailscale status')).toBeGreaterThan(-1);
             expect(cure.indexOf('tailscale status')).toBeLessThan(
               cure.indexOf('tailscale ping %s'),
@@ -820,7 +825,25 @@ describe('work.surface', () => {
         });
 
         /**
-         * 🔴 the strongest tooth here. the probe that awaits the answer pins
+         * 🔴 the strongest tooth here. the remedy is real BY CONSTRUCTION when
+         *   it is the same call the skill itself makes before the escalation —
+         *   a phantom cannot satisfy this, and a typo in the verb cannot either.
+         *   the cure hands over `tailscale status`; the wake's own preflight runs
+         *   `tailscale status` above the arm. so the read a human is handed is
+         *   one the skill already proved it can run
+         */
+        then('🔴 and that read is the one the wake itself already runs', () => {
+          const src = readCode(join(DIR_SKILLS, 'git.grove.wake.sh'));
+          const before = src.slice(0, src.indexOf(escalation()));
+          expect(before).toContain('timeout 5 tailscale status');
+          const lib = readCode(join(DIR_SKILLS, 'work', 'grovework.sh'));
+          const at = lib.indexOf('__grove_tailnet_cure() {');
+          const cure = lib.slice(at, lib.indexOf('\n}\n', at));
+          expect(cure).toContain('tailscale status');
+        });
+
+        /**
+         * 🔴 the probe that awaits the answer pins
          *   HostName, so an ssm-era alias of the same name cannot send it into
          *   a dead tunnel (fulcrum F08) — and it is the shared reach probe, so
          *   wake and list cannot disagree about where a grove answers.
@@ -881,7 +904,12 @@ describe('work.surface', () => {
         then(
           'the hibernate cause survives, with its idempotent re-wake',
           () => {
-            const arm = escalation();
+            // bounded to the (a) arm alone: the host-key arm above it prints the
+            // same wake line, so the whole escalation would stay green without it
+            const block = escalation();
+            const start = block.indexOf('(a) it needs longer');
+            expect(start).toBeGreaterThan(-1);
+            const arm = block.slice(start, block.indexOf('STARVED', start));
             expect(arm).toContain('hibernate');
             expect(arm).toContain('rhx git.grove.wake $GROVE');
           },

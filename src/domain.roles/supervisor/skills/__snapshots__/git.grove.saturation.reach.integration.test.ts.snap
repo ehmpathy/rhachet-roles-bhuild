@@ -4,7 +4,7 @@ exports[`git.grove.saturation.reach given: [case1] one ec2 grove registered twic
 "🌲 grove saturation
 
 🌳 grove-sandpine-v20260901
-   └─ 🔴 refused — the box answered on 1 and refused — is sshd up there, and is 1 its port? (a stale ssm-era port reads this way; re-register — git grove set grove-sandpine-v20260901 --at camper@127.0.0.2:22)
+   └─ 🔴 refused — the box answered on 1 and refused — is sshd up there, and is 1 its port? (a stale port in the row reads this way; re-register — git grove set grove-sandpine-v20260901 --at camper@127.0.0.2:22)
 
    🟢 headroom   🟡 tight   🔴 saturated   ⚪ not measured
    stall = the share of time work WAITED on that resource (kernel PSI).
@@ -20,14 +20,14 @@ exports[`git.grove.saturation.reach given: [case1] one ec2 grove registered twic
 "🌲 grove saturation
 
 🌳 grove-sandpine-v20260901.ground + grove-sandpine-v20260901
-   └─ 🔴 refused — the box answered on 1 and refused — is sshd up there, and is 1 its port? (a stale ssm-era port reads this way; re-register — git grove set grove-sandpine-v20260901 --at camper@127.0.0.2:22)"
+   └─ 🔴 refused — the box answered on 1 and refused — is sshd up there, and is 1 its port? (a stale port in the row reads this way; re-register — git grove set grove-sandpine-v20260901 --at camper@127.0.0.2:22)"
 `;
 
 exports[`git.grove.saturation.reach given: [case2] a grove with no aws lever (hetzner) when: [t0] the sweep reads it and the box refuses the connect then: the refused render reads as a snapshot 1`] = `
 "🌲 grove saturation
 
 🌳 grove-sandpine-hetzner-v20261022
-   └─ 🔴 refused — the box answered on 2 and refused — is sshd up there, and is 2 its port? (a stale ssm-era port reads this way; re-register — git grove set grove-sandpine-hetzner-v20261022 --at camper@127.0.0.2:22)
+   └─ 🔴 refused — the box answered on 2 and refused — is sshd up there, and is 2 its port? (a stale port in the row reads this way; re-register — git grove set grove-sandpine-hetzner-v20261022 --at camper@127.0.0.2:22)
 
    🟢 headroom   🟡 tight   🔴 saturated   ⚪ not measured
    stall = the share of time work WAITED on that resource (kernel PSI).
@@ -43,7 +43,7 @@ exports[`git.grove.saturation.reach given: [case2] a grove with no aws lever (he
 "🌲 grove saturation
 
 🌳 grove-sandpine-hetzner-v20261023
-   └─ 💤 asleep — check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove-sandpine-hetzner-v20261023.invalid
+   └─ 😴 asleep — check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove-sandpine-hetzner-v20261023.invalid
 
    🟢 headroom   🟡 tight   🔴 saturated   ⚪ not measured
    stall = the share of time work WAITED on that resource (kernel PSI).
@@ -55,12 +55,34 @@ exports[`git.grove.saturation.reach given: [case2] a grove with no aws lever (he
 "
 `;
 
+exports[`git.grove.saturation.reach given: [case2] a grove with no aws lever (hetzner) when: [t2] the sweep reads it and its sshd answers (c25) then: the live render reads as a snapshot, its figures masked 1`] = `
+"🌳 grove-sandpine-hetzner-v20261022  ·  $BOX
+   ├─ cpu $FIGURES
+   │     ├─ churn $FIGURES
+   │     ├─ trend $FIGURES
+   │     ├─ stall $FIGURES
+   │     └─ life $FIGURES
+   ├─ ram $FIGURES
+   │     ├─ cache $FIGURES
+   │     ├─ swap $FIGURES
+   │     ├─ oom $FIGURES
+   │     ├─ stall $FIGURES
+   │     └─ life $FIGURES
+   ├─ disk $FIGURES
+   │     ├─ stall $FIGURES
+   │     └─ life $FIGURES
+   ├─ top $FIGURES
+   ├─ eats $FIGURES
+   ├─ greeds $FIGURES
+   └─ holds $FIGURES"
+`;
+
 exports[`git.grove.saturation.reach given: [case3] the spend peer reads the same pair when: [t0] spend reads it then: the spend render reads as a snapshot 1`] = `
 "🌲 grove spend — where the cpu went
 
    🌳 grove-sandpine-v20260901
       └─ 🔴 refused (rc=255)
-         └─ the box answered on 1 and refused — is sshd up there, and is 1 its port? (a stale ssm-era port reads this way; re-register — git grove set grove-sandpine-v20260901 --at camper@127.0.0.2:22)
+         └─ the box answered on 1 and refused — is sshd up there, and is 1 its port? (a stale port in the row reads this way; re-register — git grove set grove-sandpine-v20260901 --at camper@127.0.0.2:22)
 
 "
 `;

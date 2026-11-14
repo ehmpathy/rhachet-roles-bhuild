@@ -21,3 +21,5 @@
 | `case=F17-wake-rack-refusal-keeps-exit-1-this-round` | the wake's rack refusal keeps its extant exit 1; the flip to 2 rides a dream with a caller audit | clean | best-guessed | 85% |
 | `case=F18-repo-local-probe-skills-sit-outside-the-behavior-contract` | the two `.agent/repo=.this/` probe skills are unshipped dev tools; their suites ride a dream | clean | disputed, council awaited | 80% |
 | `case=F19-no-live-grove-in-ci-the-real-ssh-client-is-tested` | ci dials no live grove; the real ssh client and real aws run hermetic, the live grove leg is the 5.3 capture | clean | disputed, council awaited | 80% |
+| `case=F20-list-json-keeps-the-raw-row-beside-its-reach` | `git.grove.list --json` keeps the row's registered keys, its declared contract; `reach` is the key a caller dials by | clean | disputed, council awaited | 80% |
+| `case=F21-cross-verb-render-polish-rides-a-followup` | one-cause-one-phrase render polish and the extra no-answer render snapshots ride one followup dream | clean | disputed, council awaited | 80% |

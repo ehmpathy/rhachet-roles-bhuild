@@ -58,7 +58,7 @@
 #
 # guarantee:
 #   - READ-ONLY on every grove; never wakes one, never writes, never installs
-#   - an unreachable grove is REPORTED (💤 / 💥), never allowed to abort the
+#   - an unreachable grove is REPORTED (😴 / 💥), never allowed to abort the
 #     sweep — one down box must not hide a live forest
 #   - exit 0 = read (a down grove in a SWEEP is a valid answer, not a failure)
 #   - exit 1 = a grove you NAMED could not be read
@@ -1082,7 +1082,7 @@ for key in "${GROVES[@]}"; do
       # the cure takes an ENTRY name, never the host:port key — so hand back the
       # very entry this probe went through, and let the one cure reader choose
       # the wake (aws) or the tailnet (no power lever) for it
-      state="💤 asleep"; hint="$(__grove_unreached_cure "${GROVE_PROBER[$key]}" via=row)"
+      state="😴 asleep"; hint="$(__grove_unreached_cure "${GROVE_PROBER[$key]}" via=row)"
     elif [[ "$err" == *"timed out"* || "$err" == *"Timeout"* ]]; then
       # 🔴 SSH's OWN timeout, which is not rc 124 — and it landed in the
       #    catch-all below for the life of this sweep.

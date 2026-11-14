@@ -6,8 +6,8 @@
 # .why  = a grove's ssh alias, user, host, and port are what every remote
 #         duct address is built from, so a supervisor needs them enumerable
 #         without a guess and without a login. host and port are read through
-#         the one reach reader (work/grovework.sh), so a relic row from the ssm
-#         era (`host: localhost`) is listed where the wake will reach it.
+#         the one reach reader (work/grovework.sh), so a relic row (`host:
+#         localhost`, a dead tunnel port) is listed where the wake will reach it.
 #
 # 🔴 .and a registry row is CONFIG, never STATE — so a list alone answers
 #    the wrong question. the row says where the grove SHOULD answer; it says
@@ -56,8 +56,9 @@
 #   - reads only; never wakes, never writes, never logs in. the probe opens
 #     a tcp connection, reads the greeting the server volunteers, and hangs
 #     up — it sends no byte, so it authenticates nothing and mutates nothing
-#   - a probe is bounded by --timeout (default 5s; a first contact over a tailnet relay can take a second), so an unreachable grove
-#     costs seconds, never a hang
+#   - a probe is bounded by --timeout (default 5s; a first contact over a
+#     tailnet relay can take a second), so an unreachable grove costs
+#     seconds, never a hang
 #   - exit 0 = listed (an EMPTY forest is a valid answer, not a failure).
 #     ⚠️ a mute or down grove is REPORTED, never an error — this is a
 #     read, and a broken tunnel is a finding rather than a malfunction
@@ -242,14 +243,27 @@ for i in "${!FILES[@]}"; do
   f="${FILES[$i]}"
   [[ $i -eq $((${#FILES[@]} - 1)) ]] && glyph="└─" || glyph="├─"
 
-  IFS=$'\t' read -r power host port user alias name <<< "$(__grove_reach_of "$f")"
+  cont="│"; [[ $i -eq $((${#FILES[@]} - 1)) ]] && cont=" "
 
-  # an unreadable row is shown, never probed: an empty host has no answer to read
-  if [[ -z "$host" ]]; then
-    echo "   $glyph 🌳 $(basename "$f" .json) → 🟡 row unreadable — its fix is named above"
+  # the reader's stderr is captured, never let through: printed raw, its error
+  # block would land mid-tree, at the depth of the rows, under no row of its own
+  reach_said=$(__grove_reach_of "$f" 2>&1) || true
+
+  # an unreadable row is shown, never probed: no tab means no reach line came back
+  if [[ "$reach_said" != *$'\t'* ]]; then
+    row_why=$(head -1 <<< "$reach_said")
+    row_why="${row_why#*unreadable — }"
+    row_fix=$(grep -m1 'fix: ' <<< "$reach_said" || true)
+    row_fix="${row_fix#*fix: }"
+    row_name=$(basename "$f" .json)
+    row_fix="${row_fix:-re-register it — git grove set <grove> --at camper@<tailnet-host>:22}"
+    # the row's file names the grove, so the fix names it too, never a placeholder
+    echo "   $glyph 🌳 $row_name → 🟡 row unreadable — $row_why"
+    echo "   $cont     └─ fix → ${row_fix//<grove>/$row_name}"
     unreadable=1
     continue
   fi
+  IFS=$'\t' read -r power host port user alias name <<< "$reach_said"
 
   if [[ -z "$PROBE" ]]; then
     echo "   $glyph 🌳 $name → $user@$host:$port (ssh:$alias)"
@@ -265,7 +279,6 @@ for i in "${!FILES[@]}"; do
   esac
 
   echo "   $glyph 🌳 $name → $user@$host:$port (ssh:$alias)"
-  cont="│"; [[ $i -eq $((${#FILES[@]} - 1)) ]] && cont=" "
   if [[ "$verdict" == "live" ]]; then
     echo "   $cont     └─ $mark"
   else
@@ -295,6 +308,6 @@ if [[ -n "$PROBE" ]]; then
     echo "🛟 a listener answered that is not ssh — is the row's port the grove's sshd?"
   fi
   if [[ -n "${unreadable:-}" ]]; then
-    echo "🛟 a row is unreadable — re-register it with the fix named above, then list again"
+    echo "🛟 a row is unreadable — re-register it with the fix on its row, then list again"
   fi
 fi

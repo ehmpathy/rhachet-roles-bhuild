@@ -368,7 +368,7 @@ for key in "${GROVES[@]}"; do
       echo "grove=$names state=unread rc=$rc"
     else
       hint="$(__grove_unreached_cure "${GROVE_PROBER[$key]}" via=row)"
-      [[ "$rc" == "124" ]] && state="💤 asleep (timeout ${TIMEOUT}s)" || state="💥 unread (rc=$rc)"
+      [[ "$rc" == "124" ]] && state="😴 asleep (timeout ${TIMEOUT}s)" || state="💥 unread (rc=$rc)"
       # a refusal proves the box is up and the tailnet carried the connect: the
       # same cure the saturation sweep and the list hand it
       if grep -q 'Connection refused' "$WORK/$slug.err" 2>/dev/null; then

@@ -125,8 +125,14 @@ describe('git.grove.send', () => {
         expect(result.stderr).toContain('tailscale status');
       });
 
-      then('the words a human reads are pinned', () => {
-        expect(result.stderr).toMatchSnapshot();
+      then('the words a human reads are pinned, trunk and branch', () => {
+        // the failure branch hangs from the stdout trunk, so the pin holds both
+        // the temp dir name is random per run, so it is masked
+        const said = `${result.stdout}${result.stderr}`.replace(
+          /\/tmp\/work-test-grove-send-[^/]+/g,
+          '<tmp>',
+        );
+        expect(said).toMatchSnapshot();
       });
     });
   });
@@ -147,6 +153,11 @@ describe('git.grove.send', () => {
 
       then('the words a human reads are pinned', () => {
         expect(result.stderr).toMatchSnapshot();
+      });
+
+      then('the header a caller receives is pinned', () => {
+        expect(result.stdout).toContain('git.grove.send');
+        expect(result.stdout).toMatchSnapshot();
       });
     });
   });

@@ -354,7 +354,7 @@ __duct_say_unreachable() {
   case "$said" in
     *"Connection refused"*)
       if [[ -n "$absent" ]]; then
-        cause="the ssh alias does not dial this grove's tailnet host (absent, or an ssm-era relic), so the refusal is not the grove's"
+        cause="the ssh alias does not dial this grove's tailnet host (absent, or a stale alias), so the refusal is not the grove's"
         fix="$absent"
       else
         # through a converged alias, a refusal proves the tailnet carried the
@@ -364,19 +364,33 @@ __duct_say_unreachable() {
       fi ;;
     *"Connection timed out"*|*"Connection closed"*|*"No route to host"*|*"Operation timed out"*)
       cause="the grove is down, asleep, or off the tailnet"
-      fix="$(__grove_unreached_cure "$DUCT_HOST")" ;;
+      fix="$(__grove_unreached_cure "$DUCT_HOST")"
+      # a stale alias times out on its own dead port: the grove was never dialed
+      [[ -z "$absent" ]] || {
+        cause="the ssh alias does not dial this grove's tailnet host (absent, or a stale alias), so the timeout is not the grove's"
+        fix="$absent"
+      } ;;
     *"REMOTE HOST IDENTIFICATION HAS CHANGED"*|*"Host key verification failed"*)
       cause="the endpoint answers with an identity we do not trust"
       fix="ssh-keygen -R ${row_host:-<tailnet-host>}   # only once you know the box was rebuilt"
-      [[ -z "$absent" ]] || fix="$absent" ;;
+      # the cause and the fix name one layer: an alias that never dialed the
+      # grove leaves no host key of the grove's to distrust
+      [[ -z "$absent" ]] || {
+        cause="the ssh alias does not dial this grove's tailnet host (absent, or a stale alias), so the identity is not the grove's"
+        fix="$absent"
+      } ;;
     *"Permission denied"*)
       cause="the endpoint refused our key"
+      fix="ssh -v '$DUCT_HOST'   # check the alias' IdentityFile"
       # a registered grove with no alias on disk was dialed as the LOCAL user,
       # with no IdentityFile: the refusal is the absent alias, not the key
-      fix="ssh -v '$DUCT_HOST'   # check the alias' IdentityFile"
-      [[ -z "$absent" ]] || fix="$absent" ;;
+      [[ -z "$absent" ]] || {
+        cause="the ssh alias does not dial this grove's tailnet host (absent, or a stale alias), so ssh dialed as the local user and the grove never saw our key"
+        fix="$absent"
+      } ;;
     *"Could not resolve hostname"*|*"Name or service not known"*|*"nodename nor servname"*)
-      cause="'$DUCT_HOST' is not a host this machine knows"
+      # name the host ssh failed to look up: the row's, once the alias dials it
+      cause="'${row_host:-$DUCT_HOST}' is not a host this machine knows"
       fix="$(__grove_unreached_cure "$DUCT_HOST")" ;;
     *)
       cause="unmatched — ssh's words in the bucket are the only evidence"

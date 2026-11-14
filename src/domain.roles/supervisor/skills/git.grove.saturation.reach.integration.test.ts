@@ -117,6 +117,30 @@ const asSnap = (text: string): string =>
     .replace(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z/g, '$ISO_TIME')
     .replace(/\b\d{2}:\d{2}:\d{2}\b/g, '$CLOCK');
 
+/**
+ * .what = the shape of a live saturation render: the grove header and every section label
+ * .why  = a live box's figures, status glyphs, and process rows never hold twice, so
+ *         a snapshot pins the tree a human reads and the figures stay with the asserts.
+ *         each section prints its label on every branch (read, unreadable, none), so
+ *         the skeleton holds on any box
+ */
+const asSkeleton = (text: string): string =>
+  text
+    .split('\n')
+    .flatMap((line) => {
+      // the grove header: its row name holds; the facts the box reports do not
+      const header = line.match(/^(\s*🌳 \S+)/u);
+      if (header) return [`${header[1]}  ·  $BOX`];
+
+      // a section at depth 1 or 2: its glyphs and its label, the figures masked
+      const section = line.match(
+        /^(\s*(?:│\s+)?[├└]─ )(?:[🟢🟡🔴⚪] )?(cpu|ram|disk|churn|trend|stall|life|cache|swap|oom|top|eats|greeds|holds)\b/u,
+      );
+      if (section) return [`${section[1]}${section[2]} $FIGURES`];
+      return [];
+    })
+    .join('\n');
+
 describe('git.grove.saturation.reach', () => {
   afterAll(() => tempDirs.delAll());
 
@@ -235,7 +259,7 @@ describe('git.grove.saturation.reach', () => {
       );
 
       then('🔴 its cure names the tailnet, never the wake (c26)', () => {
-        expect(run.stdout).toContain('💤 asleep');
+        expect(run.stdout).toContain('😴 asleep');
         expect(run.stdout).toContain('tailscale status');
         expect(run.stdout).toContain(
           'tailscale ping grove-sandpine-hetzner-v20261023.invalid',
@@ -280,9 +304,16 @@ describe('git.grove.saturation.reach', () => {
         },
       );
 
+      then('the live render reads as a snapshot, its figures masked', () => {
+        expect(asSkeleton(run.stdout)).toContain(
+          '🌳 grove-sandpine-hetzner-v20261022  ·  $BOX',
+        );
+        expect(asSkeleton(run.stdout)).toMatchSnapshot();
+      });
+
       then('no reach failure is claimed on a box that answered', () => {
         expect(run.stdout).not.toContain('🔴 refused');
-        expect(run.stdout).not.toContain('💤 asleep');
+        expect(run.stdout).not.toContain('😴 asleep');
         expect(run.stdout).not.toContain('💥 unreadable');
         expect(run.stdout).not.toContain('git.grove.wake');
       });

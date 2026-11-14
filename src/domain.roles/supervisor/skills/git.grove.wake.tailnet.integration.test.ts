@@ -63,14 +63,16 @@ echo "ssh $*" >> "$STUB_LOG"
 exit "\${SSH_STUB_EXIT:-0}"
 `;
 // AWS_STUB_ACCOUNT names the session's account; AWS_STUB_STATE=stopped holds the
-// box stopped until a start-instances call marks it up
+// box stopped until a start-instances call marks it up. the nat and the box
+// answer two distinct ids, as two real instances do, so a render tells them apart
 const STUB_AWS = `#!/usr/bin/env bash
 echo "aws $*" >> "$STUB_LOG"
 case "$1 $2" in
   "sts get-caller-identity") echo "\${AWS_STUB_ACCOUNT:-000000000000}" ;;
   "ec2 start-instances") : > "$STUB_LOG.started" ;;
   "ec2 describe-instances")
-    if [[ "$*" != *State.Name* ]]; then echo "i-0sandpine0000001"
+    if [[ "$*" != *State.Name* && "$*" == *nat-sandpine* ]]; then echo "i-0sandpine0nat0001"
+    elif [[ "$*" != *State.Name* ]]; then echo "i-0sandpine0box0001"
     elif [[ "\${AWS_STUB_STATE:-}" == "stopped" && ! -f "$STUB_LOG.started" ]]; then echo "stopped"
     else echo "run""ning"; fi ;;
 esac
@@ -152,6 +154,8 @@ const runWake = (input: {
     root,
     stdout: out.stdout ?? '',
     stderr: out.stderr ?? '',
+    /** the trunk on stdout, then the failure that closes it on stderr — the order a terminal shows */
+    said: `${out.stdout ?? ''}${out.stderr ?? ''}`,
     exit: out.status,
     calls: readFileSync(log, 'utf8').split('\n').filter(Boolean),
     sshcfg: existsSync(pathCfg) ? readFileSync(pathCfg, 'utf8') : '',
@@ -301,7 +305,7 @@ describe('git.grove.wake.tailnet', () => {
       );
 
       then('the failure reads as a snapshot', () => {
-        expect(result.stderr).toMatchSnapshot();
+        expect(result.said).toMatchSnapshot();
       });
     });
 
@@ -345,6 +349,15 @@ describe('git.grove.wake.tailnet', () => {
           'Host grove-sandpine-hetzner-v20261022\n',
         );
       });
+
+      then(
+        'the render reads as a snapshot, the bare name in its header',
+        () => {
+          expect(
+            result.stdout.replace(/\S*\/home\//g, '$HOME_TMP/home/'),
+          ).toMatchSnapshot();
+        },
+      );
     });
 
     when('[t4] it is woken from a machine that is not a tailnet peer', () => {
@@ -371,7 +384,7 @@ describe('git.grove.wake.tailnet', () => {
       });
 
       then('the halt reads as a snapshot', () => {
-        expect(result.stderr).toMatchSnapshot();
+        expect(result.said).toMatchSnapshot();
       });
     });
 
@@ -408,7 +421,7 @@ describe('git.grove.wake.tailnet', () => {
 
       then('the halt reads as a snapshot', () => {
         expect(
-          result.stderr.replace(/\S*\/home\//g, '$HOME_TMP/home/'),
+          result.said.replace(/\S*\/home\//g, '$HOME_TMP/home/'),
         ).toMatchSnapshot();
       });
     });
@@ -440,7 +453,7 @@ describe('git.grove.wake.tailnet', () => {
 
       then('the halt reads as a snapshot', () => {
         expect(
-          result.stderr.replace(/\S*\/home\//g, '$HOME_TMP/home/'),
+          result.said.replace(/\S*\/home\//g, '$HOME_TMP/home/'),
         ).toMatchSnapshot();
       });
     });
@@ -482,7 +495,7 @@ describe('git.grove.wake.tailnet', () => {
       );
 
       then('the halt reads as a snapshot', () => {
-        expect(result.stderr).toMatchSnapshot();
+        expect(result.said).toMatchSnapshot();
       });
     });
 
@@ -519,7 +532,7 @@ describe('git.grove.wake.tailnet', () => {
 
       then('the starved halt reads as a snapshot', () => {
         expect(
-          result.stderr.replace(/\S*\/home\//g, '$HOME_TMP/home/'),
+          result.said.replace(/\S*\/home\//g, '$HOME_TMP/home/'),
         ).toMatchSnapshot();
       });
     });
@@ -549,7 +562,7 @@ describe('git.grove.wake.tailnet', () => {
       });
 
       then('the hint reads as a snapshot', () => {
-        expect(result.stderr).toMatchSnapshot();
+        expect(result.said).toMatchSnapshot();
       });
     });
   });
@@ -587,6 +600,12 @@ describe('git.grove.wake.tailnet', () => {
 
       then('no ssm call, ever', () => {
         expect(result.calls.filter((c) => c.startsWith('aws ssm'))).toEqual([]);
+      });
+
+      then('the start-and-await render reads as a snapshot', () => {
+        expect(
+          result.stdout.replace(/\S*\/home\//g, '$HOME_TMP/home/'),
+        ).toMatchSnapshot();
       });
     });
 
@@ -642,7 +661,7 @@ describe('git.grove.wake.tailnet', () => {
 
       then('the refusal reads as a snapshot', () => {
         expect(
-          result.stderr.replace(/\S*\/home\//g, '$HOME_TMP/home/'),
+          result.said.replace(/\S*\/home\//g, '$HOME_TMP/home/'),
         ).toMatchSnapshot();
       });
     });
@@ -680,6 +699,18 @@ describe('git.grove.wake.tailnet', () => {
           expect(result.calls.filter((c) => c.startsWith('ssh '))).toEqual([]);
         },
       );
+
+      then('the refusal reads as a snapshot', () => {
+        // the real aws words its own refusal; the wake's tree around it is ours
+        expect(
+          result.said
+            .replace(/\S*\/home\//g, '$HOME_TMP/home/')
+            .replace(
+              /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/g,
+              '$REQUEST_ID',
+            ),
+        ).toMatchSnapshot();
+      });
     });
 
     when('[t3] its row names a nat', () => {
@@ -703,6 +734,12 @@ describe('git.grove.wake.tailnet', () => {
         );
         expect(iNat).toBeGreaterThanOrEqual(0);
         expect(iBox).toBeGreaterThan(iNat);
+      });
+
+      then('the nat-then-box render reads as a snapshot', () => {
+        expect(
+          result.stdout.replace(/\S*\/home\//g, '$HOME_TMP/home/'),
+        ).toMatchSnapshot();
       });
     });
   });
@@ -791,7 +828,7 @@ describe('git.grove.wake.tailnet', () => {
       });
 
       then('the failure reads as a snapshot', () => {
-        expect(result.stderr).toMatchSnapshot();
+        expect(result.said).toMatchSnapshot();
       });
     });
 
@@ -856,7 +893,7 @@ describe('git.grove.wake.tailnet', () => {
         });
 
         then('the power failure reads as a snapshot', () => {
-          expect(result.stderr).toMatchSnapshot();
+          expect(result.said).toMatchSnapshot();
         });
       });
     },
@@ -888,8 +925,40 @@ describe('git.grove.wake.tailnet', () => {
 
       then('the halt reads as a snapshot, the temp forest masked', () => {
         expect(
-          result.stderr.replace(/\S*\/groves\//g, '$FOREST/groves/'),
+          result.said.replace(/\S*\/groves\//g, '$FOREST/groves/'),
         ).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case7] a caller who asks how to wake', () => {
+    when('[t0] the wake is run with --help', () => {
+      const result = useBeforeAll(async () =>
+        runWake({
+          row: { name: 'grove-sandpine-hetzner-v20261022' },
+          args: ['--help'],
+          sshcfg: null,
+          env: {},
+          credentials: false,
+        }),
+      );
+
+      then(
+        'it names the tailnet reach and the aws power leg, never ssm',
+        () => {
+          const said = `${result.stdout}${result.stderr}`;
+          expect(result.exit).toEqual(0);
+          expect(said).toContain('tailnet');
+          expect(said).not.toMatch(/\bssm\b(?! era| ?-era)/i);
+        },
+      );
+
+      then('it calls no aws and no ssh', () => {
+        expect(result.calls).toEqual([]);
+      });
+
+      then('the help reads as a snapshot', () => {
+        expect(`${result.stdout}${result.stderr}`).toMatchSnapshot();
       });
     });
   });
