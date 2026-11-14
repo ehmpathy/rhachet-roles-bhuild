@@ -1,38 +1,36 @@
 #!/usr/bin/env bash
 ######################################################################
-# .what = list every registered grove, and PROBE whether its tunnel carries
+# .what = list every registered grove, and PROBE whether it answers over the
+#         camp tailnet
 #
-# .why  = a grove's ssh alias, user, and port are what every remote duct
-#         address is built from, so a supervisor needs them enumerable
-#         without a guess and without a login.
+# .why  = a grove's ssh alias, user, host, and port are what every remote
+#         duct address is built from, so a supervisor needs them enumerable
+#         without a guess and without a login. host and port are read through
+#         the one reach reader (work/grovework.sh), so a relic row (`host:
+#         localhost`, a dead tunnel port) is listed where the wake will reach it.
 #
 # 🔴 .and a registry row is CONFIG, never STATE — so a list alone answers
-#    the wrong question. the row says where the tunnel SHOULD be; it says
-#    naught about whether anything crosses it.
-#
-#    ⚠️ the costly case has NO error to match on: an orphaned process still
-#    HOLDS localhost:<port>, so every check that asks "is the port bound?"
-#    answers yes, and no call ever yields a `Connection refused`. the fleet
-#    just goes quiet — crews drift to `😴 unread` while their work is fine,
-#    and the reach defect is attributed to the crews, or to the grove, or
-#    to load. measured 2026-09-08 on grove-sandpine-v20260901, the box that
-#    carried the whole fleet; `git.grove.wake` named it `bound but mute`
-#    and the poll's own UNREACHED warn never fired (term=grove.tunnel).
+#    the wrong question. the row says where the grove SHOULD answer; it says
+#    naught about whether it does.
 #
 #    ⇒ so this skill READS THE BANNER, which is the record rather than a
-#      correlate. a live tunnel forwards to the grove's :22, and sshd
-#      greets every connection with `SSH-2.0-…` unprompted. that greeting
-#      is proof traffic crossed. it needs no credential, no key, and no
-#      login — we hang up before a single byte is sent back.
+#      correlate. sshd greets every connection with `SSH-2.0-…` unprompted,
+#      so that banner is proof the grove's sshd is alive and served us. it
+#      needs no credential, no key, and no login — we hang up before a single
+#      byte is sent back. measured 2026-09-08: a port that accepts and stays
+#      silent is the costly case, since no call ever says `Connection refused`
 #
-# .the three verdicts, and the one cure
+# .the verdicts — the cure rides with each, per its cause, then per power
 #   🟢 live  — connected, and `SSH-2.0-…` came back
-#   🔴 mute  — connected, and no byte came back  → rhx git.grove.wake <grove>
-#   🔴 down  — refused; no listener at all       → rhx git.grove.wake <grove>
+#   🔴 mute  — connected, and no banner came back — a starved grove: read its load
+#   🔴 down  — refused (sshd or its port), or a silence or unknown name
+#   🟡 odd   — a listener answered that is not ssh: is the row's port right?
 #
-#   ⚠️ `mute` and `down` take the SAME cure, and that is deliberate — wake
-#   is idempotent and per-leg, so it repairs whichever leg is broken and
-#   prints `[KEEP]` for the rest. a healthy grove is unharmed by one.
+#   the cure for a silence or unknown name: an ec2 grove (power aws) is handed
+#   `rhx git.grove.wake`, which is idempotent and per-leg. a grove with no aws
+#   lever does not sleep, so it is handed the tailnet: `tailscale status`, then
+#   `tailscale ping <host>`. a refusal, a mute, or an odd banner prove the
+#   tailnet carried the connect, so none of them is handed the tailnet
 #
 # usage:
 #   rhx git.grove.list
@@ -58,8 +56,9 @@
 #   - reads only; never wakes, never writes, never logs in. the probe opens
 #     a tcp connection, reads the greeting the server volunteers, and hangs
 #     up — it sends no byte, so it authenticates nothing and mutates nothing
-#   - a probe is bounded by --timeout (default 3s), so an unreachable grove
-#     costs seconds, never a hang
+#   - a probe is bounded by --timeout (default 5s; a first contact over a
+#     tailnet relay can take a second), so an unreachable grove costs
+#     seconds, never a hang
 #   - exit 0 = listed (an EMPTY forest is a valid answer, not a failure).
 #     ⚠️ a mute or down grove is REPORTED, never an error — this is a
 #     read, and a broken tunnel is a finding rather than a malfunction
@@ -69,7 +68,7 @@ set -euo pipefail
 
 FORMAT="tree"
 PROBE="1"
-TIMEOUT="3"
+TIMEOUT="5"
 
 # ── probe one tunnel, without a login ────────────────────────────────
 # .why the BANNER and not a port check: a bound port proves a listener
@@ -79,27 +78,74 @@ TIMEOUT="3"
 #
 # ⚠️ `read -t` returns non-zero on timeout, and this file runs under
 # `set -e` — so every read sits inside an `if`, never bare.
+#
+# ⚠️ the connect is bounded too. over the tailnet, an offline peer does not
+# refuse — the SYN goes unanswered, and a bare `/dev/tcp` open waits out the
+# kernel's own retry clock (minutes). so the open and the read run together
+# under one `timeout`, and a `C` printed between them parts the two silences:
+#   no `C`  → the connect never completed  → down
+#   `C`     → accepted, then no banner     → mute
+#
+# out: verdict \t cause. the cause rides only on `down`, in fixed words, since
+# the three ways a grove reads down want three different next moves
 __grove_probe_tunnel() {
-  local host="$1" port="$2" banner=""
+  local host="$1" port="$2" said="" errfile err=""
+  errfile=$(mktemp)
+  said=$(timeout "$TIMEOUT" bash -c '
+    exec 3<>"/dev/tcp/$1/$2" || exit 9
+    printf C
+    IFS= read -r banner <&3 && printf "%s" "$banner"
+  ' _ "$host" "$port" 2>"$errfile") || true
+  err=$(head -1 "$errfile")
+  rm -f "$errfile"
 
-  # a refused connect is `down`. 2>/dev/null so bash's own "connection
-  # refused" chatter does not reach the caller's stderr as a fake error.
-  exec 3<>"/dev/tcp/${host}/${port}" 2>/dev/null || { printf 'down'; return 0; }
+  case "$said" in
+    CSSH-*) printf 'live\t\n' ;;
+    C)      printf 'mute\t\n' ;;   # accepted, then silent — a starved grove
+    C*)     printf 'odd\t\n' ;;    # a listener whose banner is not ssh
+    *)      printf 'down\t%s\n' "$(__grove_probe_down_cause "$err")" ;;
+  esac
+}
 
-  if IFS= read -r -t "$TIMEOUT" banner <&3; then
-    exec 3<&- 3>&-
-    case "$banner" in
-      SSH-*) printf 'live' ;;
-      # a listener that greets with something OTHER than ssh is not the
-      # tunnel we registered — say so rather than call it live
-      *)     printf 'odd' ;;
+# .what = the cause of a `down`, in fixed words, from the connect's own error
+__grove_probe_down_cause() {
+  case "$1" in
+    *refused*) printf 'refused — the box answers; no sshd on this port' ;;
+    *"not known"* | *"failure in name"* | *"No address"*) printf 'the name is unknown to dns — is it a tailnet peer?' ;;
+    "") printf 'no answer within %ss — asleep, or off the tailnet' "$TIMEOUT" ;;
+    *) printf '%s' "${1##*: }" ;;
+  esac
+}
+
+# .what = the fix for a grove that did not greet, per the cause the probe saw
+#   in:  verdict= cause= name= host= port=
+#   out: one line
+# .why  = a refusal, a mute connect, or a non-ssh banner each prove the tailnet
+#         CARRIED the connect, so the tailnet checks are the wrong cure for them;
+#         only a silence or an unknown name points at the tailnet (or, for an ec2
+#         box, at its sleep). a starved box is starved whatever its power
+__grove_probe_fix() {
+  local verdict="" cause="" name="" host="" port="" arg
+  for arg in "$@"; do
+    case "$arg" in
+      verdict=*) verdict="${arg#verdict=}" ;;
+      cause=*)   cause="${arg#cause=}" ;;
+      name=*)    name="${arg#name=}" ;;
+      host=*)    host="${arg#host=}" ;;
+      port=*)    port="${arg#port=}" ;;
+      *) echo "💥 MalfunctionError: __grove_probe_fix got an unnamed arg '$arg'" >&2; return 1 ;;
     esac
-  else
-    # accepted, then silent past the timeout — the mute case, and the whole
-    # reason this probe exists
-    exec 3<&- 3>&-
-    printf 'mute'
-  fi
+  done
+  case "$verdict:$cause" in
+    mute:*)
+      printf 'a starved grove — read its load: rhx git.grove.saturation --only %s (a wake cures naught here)' "$name" ;;
+    odd:*)
+      printf 'is %s the grove'"'"'s sshd port? if not, re-register — git grove set %s --at camper@%s:22' "$port" "$name" "$host" ;;
+    down:refused*)
+      __grove_refused_cure name="$name" host="$host" port="$port" ;;
+    *)
+      __grove_unreached_cure "$name" via=row ;;
+  esac
 }
 
 # rhachet forwards its own --skill/--repo/--role flags; drop them.
@@ -126,13 +172,19 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-GROVES_DIR="${GIT_FOREST_DIR:-$HOME/.git.forest}/groves"
+# the reach of a row lives in ONE reader, shared with wake, saturation, and
+# every no-answer cure — so the list probes exactly where the wake reaches
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/work/grovework.sh"
+GROVES_DIR="$(__grove_rows_dir)"
 
 if [[ ! -d "$GROVES_DIR" ]]; then
   echo "🐢 bummer dude — no forest registry at $GROVES_DIR" >&2
   echo "" >&2
-  echo "  fix: register a grove, which creates it —" >&2
-  echo "    rhx git.grove.set <grove> --exid <exid> --env camp --account <id>" >&2
+  echo "  fix: register a grove, in the shape of its box, which creates it —" >&2
+  echo "    a grove with no aws instance (hetzner, any box that never sleeps):" >&2
+  echo "      git grove set <grove> --at camper@<tailnet-host>:22" >&2
+  echo "    an ec2 grove, which aws powers up:" >&2
+  echo "      git grove set <grove> --exid <exid> --env camp --account <id>" >&2
   exit 2
 fi
 
@@ -150,13 +202,29 @@ if [[ "$FORMAT" == "json" ]]; then
     jq -s '.' "${FILES[@]}"
     exit 0
   fi
-  # .why an ADDITIVE field: every extant --json reader keeps its keys. a
-  # consumer that ignores `.tunnel` behaves exactly as before
+  # .why the fields beside the row, one axis each, never mixed:
+  #   `.row`    — registry state: `readable` or `unreadable`
+  #   `.power`  — the power axis (term=grove.power): `aws` or `none`
+  #   `.reach`  — the reach axis: the host:port:user it was probed at. a relic
+  #               row's `.host` is `localhost`, so without `.reach` the verdict
+  #               would read as a claim about the wrong host
+  #   `.tunnel` — the probe verdict (term=grove.tunnel); `.cause` rides on `down`
   # each jq emits ONE object; `jq -s` slurps them into the array a reader expects
   {
     for f in "${FILES[@]}"; do
-      verdict=$(__grove_probe_tunnel "$(jq -r '.host // "127.0.0.1"' "$f")" "$(jq -r '.port // 0' "$f")")
-      jq --arg v "$verdict" '. + { tunnel: $v }' "$f"
+      IFS=$'\t' read -r r_power r_host r_port r_user _ _ <<< "$(__grove_reach_of "$f")"
+      # an unreadable row stays in the array, marked, so the count never shrinks
+      # in silence; the reader named its fix on stderr. it was never probed, so
+      # its probe fields are null rather than a verdict
+      if [[ -z "$r_host" ]]; then
+        jq -n --arg name "$(basename "$f" .json)" \
+          '{ name: $name, row: "unreadable", power: null, reach: null, tunnel: null, cause: null }'
+        continue
+      fi
+      IFS=$'\t' read -r verdict cause <<< "$(__grove_probe_tunnel "$r_host" "$r_port")"
+      jq --arg v "$verdict" --arg cause "$cause" --arg power "$r_power" --arg host "$r_host" \
+        --arg port "$r_port" --arg user "$r_user" \
+        '. + { row: "readable", power: $power, reach: { host: $host, port: ($port | tonumber), user: $user }, tunnel: $v, cause: (if $cause == "" then null else $cause end) }' "$f"
     done
   } | jq -s '.'
   exit 0
@@ -175,47 +243,71 @@ for i in "${!FILES[@]}"; do
   f="${FILES[$i]}"
   [[ $i -eq $((${#FILES[@]} - 1)) ]] && glyph="└─" || glyph="├─"
 
-  name=$(jq -r '.name // "?"' "$f")
-  user=$(jq -r '.user // "?"' "$f")
-  host=$(jq -r '.host // "?"' "$f")
-  port=$(jq -r '.port // "?"' "$f")
-  alias=$(jq -r '.sshAlias // .name // "?"' "$f")
+  cont="│"; [[ $i -eq $((${#FILES[@]} - 1)) ]] && cont=" "
+
+  # the reader's stderr is captured, never let through: printed raw, its error
+  # block would land mid-tree, at the depth of the rows, under no row of its own
+  reach_said=$(__grove_reach_of "$f" 2>&1) || true
+
+  # an unreadable row is shown, never probed: no tab means no reach line came back
+  if [[ "$reach_said" != *$'\t'* ]]; then
+    row_why=$(head -1 <<< "$reach_said")
+    row_why="${row_why#*unreadable — }"
+    row_fix=$(grep -m1 'fix: ' <<< "$reach_said" || true)
+    row_fix="${row_fix#*fix: }"
+    row_name=$(basename "$f" .json)
+    row_fix="${row_fix:-re-register it — git grove set <grove> --at camper@<tailnet-host>:22}"
+    # the row's file names the grove, so the fix names it too, never a placeholder
+    echo "   $glyph 🌳 $row_name → 🟡 row unreadable — $row_why"
+    echo "   $cont     └─ fix → ${row_fix//<grove>/$row_name}"
+    unreadable=1
+    continue
+  fi
+  IFS=$'\t' read -r power host port user alias name <<< "$reach_said"
 
   if [[ -z "$PROBE" ]]; then
     echo "   $glyph 🌳 $name → $user@$host:$port (ssh:$alias)"
     continue
   fi
 
-  verdict=$(__grove_probe_tunnel "$host" "$port")
+  IFS=$'\t' read -r verdict cause <<< "$(__grove_probe_tunnel "$host" "$port")"
   case "$verdict" in
     live) mark="🟢 live" ;;
-    mute) mark="🔴 MUTE — bound, but no greeting"; broken=1 ;;
-    down) mark="🔴 DOWN — no listener on the port";  broken=1 ;;
-    odd)  mark="🟡 odd — a listener answered, and it is not ssh"; broken=1 ;;
+    mute) mark="🔴 MUTE — connected, but no ssh banner within ${TIMEOUT}s (a starved grove reads this way)"; unanswered=1 ;;
+    down) mark="🔴 DOWN — no ssh banner: $cause";  unanswered=1 ;;
+    odd)  mark="🟡 odd — a listener answered, and it is not ssh"; odd=1 ;;
   esac
 
   echo "   $glyph 🌳 $name → $user@$host:$port (ssh:$alias)"
-  cont="│"; [[ $i -eq $((${#FILES[@]} - 1)) ]] && cont=" "
   if [[ "$verdict" == "live" ]]; then
     echo "   $cont     └─ $mark"
   else
     # 🔴 the cure rides WITH the finding — a verdict a reader must go look
-    # up is a verdict they will act on late (rule.require.errors-name-the-fix)
+    # up is a verdict they will act on late (rule.require.errors-name-the-fix).
+    # the cure is per cause, then per power: only a silence is the tailnet's
     echo "   $cont     ├─ $mark"
-    echo "   $cont     └─ fix → rhx git.grove.wake $name"
+    echo "   $cont     └─ fix → $(__grove_probe_fix verdict="$verdict" cause="$cause" name="$name" host="$host" port="$port")"
   fi
 done
 
 # ── the closing verdict ──────────────────────────────────────────────
 # .why say the clean case OUT LOUD: a report that prints rows and stops
 # leaves the reader to tally it themselves, and a silent pass reads the
-# same as a check that never ran
+# same as a check that never ran. one line per CAUSE: an unreadable row or a
+# non-ssh listener is no tailnet silence, so it is never sent to `tailscale status`
 if [[ -n "$PROBE" ]]; then
   echo ""
-  if [[ -n "${broken:-}" ]]; then
-    echo "🛟 a tunnel is broken — wake it. the verb is idempotent and per-leg,"
-    echo "   so it repairs only what is down and prints [KEEP] for the rest"
-  else
-    echo "🌊 every tunnel carries — each one greeted with SSH-2.0"
+  if [[ -z "${unanswered:-}${odd:-}${unreadable:-}" ]]; then
+    echo "🌊 every grove answers over the tailnet — each one greeted with SSH-2.0"
+  fi
+  if [[ -n "${unanswered:-}" ]]; then
+    echo "🛟 a grove did not greet with ssh — each row names its cure, by the cause it saw."
+    echo "   first, if every row reads DOWN, is THIS machine a peer? — tailscale status"
+  fi
+  if [[ -n "${odd:-}" ]]; then
+    echo "🛟 a listener answered that is not ssh — is the row's port the grove's sshd?"
+  fi
+  if [[ -n "${unreadable:-}" ]]; then
+    echo "🛟 a row is unreadable — re-register it with the fix on its row, then list again"
   fi
 fi

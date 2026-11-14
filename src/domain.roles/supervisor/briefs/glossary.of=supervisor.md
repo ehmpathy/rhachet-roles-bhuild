@@ -15,7 +15,9 @@ this package, at `ehmpathy/rhachet-roles-bhuild:.agent/repo=.this/role=any/brief
 |---|---|---|
 | **grove** | the machine a tree's crew runs on — `local`, `house://<slug>`, or `cloud://<slug>` | box, host, server, remote, runner |
 | **grove.house** | a grove the house owns and operates, reached over a wire | onprem, self-hosted, edge, private |
-| **grove.tunnel** | the ssm port-forward that carries every reach to one grove | session, link, pipe |
+| **grove.tunnel** | the tailnet path that carries every reach to one grove, as camper | session, link, pipe |
+| **grove.power** | the lever that switches a grove's box on — `aws` (wake powers it up) or `none` (it never sleeps) | cloud, provider, platform |
+| **grove.reach** | where, and as whom, the tailnet gets to a grove's box — one host, one port, one user | endpoint, address, target, dest |
 | **grove.purpose** | what a grove is FOR — and so whether a crew may live on it | tier, class, env |
 | **crew** | the set of clones that work ONE tree | team, pod, worker set |
 | **crew.reflector** | the third seat in the standard crew, beside mechanic and foreman | reviewer, critic, auditor |

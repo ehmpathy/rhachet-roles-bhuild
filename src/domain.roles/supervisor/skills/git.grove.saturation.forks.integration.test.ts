@@ -217,8 +217,12 @@ given(
           expect(code).toContain('rhx git.grove.saturation --only');
         });
 
-        then('and the asleep hint emits its own', () => {
-          expect(code).toContain('wake it: rhx git.grove.wake');
+        then('and the asleep hint emits its own, per the grove power', () => {
+          // the shared cure reader emits `wake it — rhx git.grove.wake <entry>`
+          // for an ec2 grove, or the tailnet reads for one with no aws lever
+          expect(code).toContain(
+            'state="😴 asleep"; hint="$(__grove_unreached_cure',
+          );
         });
       },
     );

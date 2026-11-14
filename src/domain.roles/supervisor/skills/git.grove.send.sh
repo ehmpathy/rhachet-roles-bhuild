@@ -70,6 +70,10 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+# a `cloud://` prefix is a FORM, never a different grove: every crew verb
+# hands a grove as `cloud://<name>`, and prune, spend, and wake strip it too
+GROVE="${GROVE#cloud://}"
+
 if [[ -z "$GROVE" ]]; then
   echo "✋ usage: rhx git.grove.send <grove> --what '<cmd>'" >&2
   echo "   list them: rhx git.grove.list" >&2
@@ -99,7 +103,8 @@ fi
 
 # the grove must be REGISTERED — the ssh alias is written by a wake, so a name
 # absent from the forest has no alias and ssh would fall through to dns
-REGISTRY="${GIT_FOREST_DIR:-$HOME/.git.forest}/groves/$GROVE.json"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/work/grovework.sh"
+REGISTRY="$(__grove_rows_dir)/$GROVE.json"
 if [[ ! -f "$REGISTRY" ]]; then
   echo "🐢 bummer dude — grove '$GROVE' is not registered" >&2
   echo "" >&2
@@ -166,7 +171,7 @@ if [[ -n "$FILE" ]]; then
   # stdin: forwarded on purpose
   if ! ssh "$SSH_ALIAS" "mkdir -p \"\$(dirname $INTO_Q)\" && cat > $INTO_Q" < "$FILE"; then
     echo "   └─ 💥 the write failed" >&2
-    echo "      check the grove is awake: rhx git.grove.wake $GROVE" >&2
+    echo "      └─ if the grove did not answer: $(__grove_unreached_cure "$GROVE")" >&2
     exit 1
   fi
 
@@ -195,5 +200,17 @@ echo ""
 #      the shape wake's hint has always implied (`cat x | ... --what 'cat > y'`).
 #      with no pipe the tty is stdin and ssh forwards none of it — so the
 #      absent-pipe case costs the caller no surprise.
+#
+# .why rc 255 is ssh's own failure (the remote command's code passes through
+#      otherwise): it gets the grove's cure, since a bare 255 renders as a
+#      generic failure with no next step
+SEND_RC=0
 # stdin: forwarded on purpose
-ssh "$SSH_ALIAS" "$WHAT"
+ssh "$SSH_ALIAS" "$WHAT" || SEND_RC=$?
+if [[ "$SEND_RC" -eq 255 ]]; then
+  echo "" >&2
+  echo "💥 MalfunctionError: ssh could not reach $GROVE (rc 255), so the command never ran" >&2
+  echo "   └─ fix: $(__grove_unreached_cure "$GROVE")" >&2
+  exit 1
+fi
+exit "$SEND_RC"

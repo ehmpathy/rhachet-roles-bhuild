@@ -633,12 +633,20 @@ if [[ "$BOXES" == "true" && "${#CREW_STONES[@]}" -gt 0 ]]; then
       echo "   │  └─ 😴 a seat on a grove that did not ANSWER — its box is the duct registry's"
       echo "   │     record of the last poll that reached it, never a live read. so it is absent"
       echo "   │     from EVERY tally above and not one line here is a claim about the clone:"
-      echo "   │     present and absent are both possible. ⛔ a crew.read exits 1 — wake first"
+      echo "   │     present and absent are both possible. ⛔ a crew.read exits 1 — reach the grove first, per its cure"
+      # one branch per seat; only the last takes the last-child glyph
+      __na_rows=()
       while IFS= read -r __na; do
-        [[ -n "$__na" ]] || continue
-        __na_seat="${__na%%=*}"; __na_grove="${__na##*=}"
-        echo "   │     └─ ${__na_seat%%/*} / ${__na_seat##*/} — rhx git.grove.wake ${__na_grove}"
+        [[ -n "$__na" ]] && __na_rows+=("$__na")
       done <<< "$STONE_NOSTONE_ASLEEP_WHO"
+      __na_last=$(( ${#__na_rows[@]} - 1 ))
+      for __na_i in "${!__na_rows[@]}"; do
+        __na="${__na_rows[$__na_i]}"
+        __na_seat="${__na%%=*}"; __na_grove="${__na##*=}"
+        __na_glyph='├─'
+        if (( __na_i == __na_last )); then __na_glyph='└─'; fi
+        echo "   │     $__na_glyph ${__na_seat%%/*} / ${__na_seat##*/} — $(__grove_unreached_cure "${__na_grove}")"
+      done
     fi
     # the zero is stated rather than elided, on purpose: `✂️ 0 clipped` is a
     # positive assertion that every stone was read to its end. an elided term
@@ -956,7 +964,7 @@ if [[ "$BOXES" == "true" && "${#CREW_BOXES[@]}" -gt 0 ]]; then
       __bw_grove="$(__crew_ledger_grove_of "$__bwt")"
       __bw_host="$(__crew_grove_host "${__bw_grove:-local}" 2>/dev/null || printf '')"
       if [[ -n "$__bw_host" ]] && __crew_host_unreached "$__bw_host"; then
-        echo "   │     └─ $__bwt / $__bwr — its grove did not answer; a read exits 1 — rhx git.grove.wake $__bw_host"
+        echo "   │     └─ $__bwt / $__bwr — its grove did not answer; a read exits 1 — $(__grove_unreached_cure "$__bw_host")"
       elif [[ "$__bs" == "🪦absent" ]]; then
         echo "   │     └─ $__bwt / $__bwr — the host holds no such session; a read cannot settle it — rhx git.crew.boot --tree $__bwt --roles $__bwr"
       else

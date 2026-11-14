@@ -1,7 +1,7 @@
 # define.camp-mythology — six words from three repos; where this disagrees with the source, the source wins
 camp → grove → (camper · ground) → tree → crew → clone
 - camp = an aws ACCOUNT that holds an elastic set of groves + shared vpc/nat/iam/reach · ✗ env, fleet, deploy env (`sandpine/infrastructure`)
-- grove = hibernation-ready cloud work-box; many trees, durable keys, self-hibernates idle · ✗ ec2, vm, devbox (`sandpine/infrastructure`)
+- grove = tailnet work-box; many trees, durable keys; ec2 self-hibernates idle · ✗ ec2, vm, devbox (`sandpine/infrastructure`)
 - camper = the OS LOGIN crews ssh in as · 🔴 NOT a clone; ✗ clone-user, crew-user, grove-user, login-user (ground is a login too)
 - ground = the PRIVILEGED OS login (NOPASSWD sudo, admin key only)
 - clone = live/revivable instance of an actor; differs from peers only by session (`ehmpathy/rhachet`)

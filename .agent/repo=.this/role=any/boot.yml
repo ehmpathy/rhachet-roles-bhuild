@@ -18,6 +18,14 @@ always:
     ref:
       - briefs/domain.terms/**
       - briefs/evidence/**
+    # .why not: each reason and example path is one ref line, ~70 of them, and they
+    #      pushed this boot past its 30k budget. no path is lost: every
+    #      `term=*._.choice._.md` names its own reason file under `## .reason`, so a
+    #      reader computes it from the cluster it already holds
+    #      (rule.always.boot-an-oversized-subdomain-as-its-catalog)
+    not:
+      - briefs/domain.terms/term=*._.choice.reason.md
+      - briefs/domain.terms/term=*._.choice.example=*.md
   skills:
     say:
       - skills/**

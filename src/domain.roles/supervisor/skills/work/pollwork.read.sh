@@ -92,7 +92,7 @@ fi
 #     where every consumer can see it, computed once.
 __unreached_asleep=()
 __unreached_gone=()
-__forest_groves="${GIT_FOREST_DIR:-$HOME/.git.forest}/groves"
+__forest_groves="$(__grove_rows_dir)"
 for __u in "${HOSTS_UNREACHED[@]}"; do
   if [[ -f "$__forest_groves/$__u.json" ]]; then
     __unreached_asleep+=("$__u")
@@ -131,7 +131,8 @@ if (( ${#HOSTS_UNREACHED[@]} > 0 )); then
   #
   # ⚠️ the two take OPPOSITE cures, which is what makes the union a defect
   #    rather than a terseness:
-  #      registered + no answer  → the tunnel is down. `git.grove.wake` repairs it
+  #      registered + no answer  → the box sleeps or is off the tailnet. the
+  #                                cure is per grove (__grove_unreached_cure)
   #      not registered          → the grove is GONE. no wake exists; the crews
   #                                named on it are orphans on a box that was
   #                                recreated out from under them, and the move is
@@ -141,7 +142,15 @@ if (( ${#HOSTS_UNREACHED[@]} > 0 )); then
   #    two populations are settled identically wherever either is read.
   if (( ${#__unreached_asleep[@]} > 0 )); then
     echo "   ├─ ⚠️  UNREACHED: ${__unreached_asleep[*]}"
-    echo "   │   └─ registered, no answer — crews there render 😴 asleep, NOT down — rhx git.grove.wake <grove>"
+    echo "   │   └─ registered, no answer — crews there render 😴 asleep, NOT down"
+    # one branch per grove; only the last takes the last-child glyph
+    __ua_last=$(( ${#__unreached_asleep[@]} - 1 ))
+    for __ua_i in "${!__unreached_asleep[@]}"; do
+      __ua="${__unreached_asleep[$__ua_i]}"
+      __ua_glyph='├─'
+      if (( __ua_i == __ua_last )); then __ua_glyph='└─'; fi
+      echo "   │      $__ua_glyph $__ua — $(__grove_unreached_cure "$__ua")"
+    done
   fi
   if (( ${#__unreached_gone[@]} > 0 )); then
     echo "   ├─ ⚠️  RETIRED: ${__unreached_gone[*]}"

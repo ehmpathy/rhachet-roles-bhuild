@@ -1,0 +1,184 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`ductwork.unreachable given: [case1] a hetzner grove (no aws lever) that ssh cannot reach when: [t0] ssh timed out, and the alias is on disk then: the render reads as a snapshot 1`] = `
+"✋ duct.read: cannot reach 'grove-sandpine-hetzner-v20261022'
+   ├─ what:  ssh itself failed, so the duct was never asked
+   ├─ ssh said
+   │  ├─
+   │  │
+   │  │  ssh: connect to host grove-sandpine-hetzner-v20261022-1 port 22: Connection timed out
+   │  │
+   │  └─
+   ├─ cause: the grove is down, asleep, or off the tailnet
+   ├─ fix:   check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove-sandpine-hetzner-v20261022-1
+   └─ note:  the session state is UNKNOWN — absent and present are both possible
+"
+`;
+
+exports[`ductwork.unreachable given: [case1] a hetzner grove (no aws lever) that ssh cannot reach when: [t1] ssh timed out, and this machine never woke it (no alias) then: the render reads as a snapshot 1`] = `
+"✋ duct.read: cannot reach 'grove-sandpine-hetzner-v20261022'
+   ├─ what:  ssh itself failed, so the duct was never asked
+   ├─ ssh said
+   │  ├─
+   │  │
+   │  │  ssh: connect to host grove-sandpine-hetzner-v20261022 port 22: Connection timed out
+   │  │
+   │  └─
+   ├─ cause: the ssh alias does not dial this grove's tailnet host (absent, or a stale alias), so the timeout is not the grove's
+   ├─ fix:   write its ssh alias first — rhx git.grove.wake grove-sandpine-hetzner-v20261022 (power none: it touches no aws), then retry
+   └─ note:  the session state is UNKNOWN — absent and present are both possible
+"
+`;
+
+exports[`ductwork.unreachable given: [case1] a hetzner grove (no aws lever) that ssh cannot reach when: [t2] the bare name was refused as the local user (no alias) then: the render reads as a snapshot 1`] = `
+"✋ duct.read: cannot reach 'grove-sandpine-hetzner-v20261022'
+   ├─ what:  ssh itself failed, so the duct was never asked
+   ├─ ssh said
+   │  ├─
+   │  │
+   │  │  surfer@grove-sandpine-hetzner-v20261022: Permission denied (publickey).
+   │  │
+   │  └─
+   ├─ cause: the ssh alias does not dial this grove's tailnet host (absent, or a stale alias), so ssh dialed as the local user and the grove never saw our key
+   ├─ fix:   write its ssh alias first — rhx git.grove.wake grove-sandpine-hetzner-v20261022 (power none: it touches no aws), then retry
+   └─ note:  the session state is UNKNOWN — absent and present are both possible
+"
+`;
+
+exports[`ductwork.unreachable given: [case1] a hetzner grove (no aws lever) that ssh cannot reach when: [t3] the alias is on disk, and the key is refused then: the render reads as a snapshot 1`] = `
+"✋ duct.read: cannot reach 'grove-sandpine-hetzner-v20261022'
+   ├─ what:  ssh itself failed, so the duct was never asked
+   ├─ ssh said
+   │  ├─
+   │  │
+   │  │  camper@grove-sandpine-hetzner-v20261022-1: Permission denied (publickey).
+   │  │
+   │  └─
+   ├─ cause: the endpoint refused our key
+   ├─ fix:   ssh -v 'grove-sandpine-hetzner-v20261022'   # check the alias' IdentityFile
+   └─ note:  the session state is UNKNOWN — absent and present are both possible
+"
+`;
+
+exports[`ductwork.unreachable given: [case1] a hetzner grove (no aws lever) that ssh cannot reach when: [t4] the box answered with a changed host key then: the render reads as a snapshot 1`] = `
+"✋ duct.read: cannot reach 'grove-sandpine-hetzner-v20261022'
+   ├─ what:  ssh itself failed, so the duct was never asked
+   ├─ ssh said
+   │  ├─
+   │  │
+   │  │  @@@ WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED! @@@
+   │  │
+   │  └─
+   ├─ cause: the endpoint answers with an identity we do not trust
+   ├─ fix:   ssh-keygen -R grove-sandpine-hetzner-v20261022-1   # only once you know the box was rebuilt
+   └─ note:  the session state is UNKNOWN — absent and present are both possible
+"
+`;
+
+exports[`ductwork.unreachable given: [case1] a hetzner grove (no aws lever) that ssh cannot reach when: [t5] the box refused the connect (no sshd on its port) then: the render reads as a snapshot 1`] = `
+"✋ duct.read: cannot reach 'grove-sandpine-hetzner-v20261022'
+   ├─ what:  ssh itself failed, so the duct was never asked
+   ├─ ssh said
+   │  ├─
+   │  │
+   │  │  ssh: connect to host grove-sandpine-hetzner-v20261022-1 port 22: Connection refused
+   │  │
+   │  └─
+   ├─ cause: the box answered, and no sshd listens on its port
+   ├─ fix:   is sshd up on the grove, and is the row's port its sshd? see where it stops — ssh -v 'grove-sandpine-hetzner-v20261022'
+   └─ note:  the session state is UNKNOWN — absent and present are both possible
+"
+`;
+
+exports[`ductwork.unreachable given: [case1] a hetzner grove (no aws lever) that ssh cannot reach when: [t6] the name is unknown to this machine then: the render reads as a snapshot 1`] = `
+"✋ duct.read: cannot reach 'grove-sandpine-hetzner-v20261022'
+   ├─ what:  ssh itself failed, so the duct was never asked
+   ├─ ssh said
+   │  ├─
+   │  │
+   │  │  ssh: Could not resolve hostname grove-sandpine-hetzner-v20261022-1: Name or service not known
+   │  │
+   │  └─
+   ├─ cause: 'grove-sandpine-hetzner-v20261022-1' is not a host this machine knows
+   ├─ fix:   check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove-sandpine-hetzner-v20261022-1
+   └─ note:  the session state is UNKNOWN — absent and present are both possible
+"
+`;
+
+exports[`ductwork.unreachable given: [case1] a hetzner grove (no aws lever) that ssh cannot reach when: [t7] a host key changed, and this machine never woke it (no alias) then: the render reads as a snapshot 1`] = `
+"✋ duct.read: cannot reach 'grove-sandpine-hetzner-v20261022'
+   ├─ what:  ssh itself failed, so the duct was never asked
+   ├─ ssh said
+   │  ├─
+   │  │
+   │  │  @@@ WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED! @@@
+   │  │
+   │  └─
+   ├─ cause: the ssh alias does not dial this grove's tailnet host (absent, or a stale alias), so the identity is not the grove's
+   ├─ fix:   write its ssh alias first — rhx git.grove.wake grove-sandpine-hetzner-v20261022 (power none: it touches no aws), then retry
+   └─ note:  the session state is UNKNOWN — absent and present are both possible
+"
+`;
+
+exports[`ductwork.unreachable given: [case2] an ec2 grove whose alias on disk is the ssm-era relic (localhost:36903) when: [t0] ssh is refused at the dead tunnel port then: the render reads as a snapshot 1`] = `
+"✋ duct.read: cannot reach 'grove-sandpine-v20260901'
+   ├─ what:  ssh itself failed, so the duct was never asked
+   ├─ ssh said
+   │  ├─
+   │  │
+   │  │  ssh: connect to host localhost port 36903: Connection refused
+   │  │
+   │  └─
+   ├─ cause: the ssh alias does not dial this grove's tailnet host (absent, or a stale alias), so the refusal is not the grove's
+   ├─ fix:   wake it — rhx git.grove.wake grove-sandpine-v20260901 (it writes the ssh alias every crew verb rides)
+   └─ note:  the session state is UNKNOWN — absent and present are both possible
+"
+`;
+
+exports[`ductwork.unreachable given: [case2] an ec2 grove whose alias on disk is the ssm-era relic (localhost:36903) when: [t1] ssh timed out through the relic alias then: the render reads as a snapshot 1`] = `
+"✋ duct.read: cannot reach 'grove-sandpine-v20260901'
+   ├─ what:  ssh itself failed, so the duct was never asked
+   ├─ ssh said
+   │  ├─
+   │  │
+   │  │  ssh: connect to host localhost port 36903: Connection timed out
+   │  │
+   │  └─
+   ├─ cause: the ssh alias does not dial this grove's tailnet host (absent, or a stale alias), so the timeout is not the grove's
+   ├─ fix:   wake it — rhx git.grove.wake grove-sandpine-v20260901 (it writes the ssh alias every crew verb rides)
+   └─ note:  the session state is UNKNOWN — absent and present are both possible
+"
+`;
+
+exports[`ductwork.unreachable given: [case3] duct.send --keys at a grove duct (the approval path) when: [t0] ssh cannot reach the grove (rc 255) then: the render reads as a snapshot 1`] = `
+"✋ duct.send: cannot reach 'grove-sandpine-hetzner-v20261022', so the session was never asked for
+   fix: check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove-sandpine-hetzner-v20261022-1
+"
+`;
+
+exports[`ductwork.unreachable given: [case3] duct.send --keys at a grove duct (the approval path) when: [t1] the grove answers and holds no such session (rc 1) then: the render reads as a snapshot 1`] = `
+"✋ duct.send: session 'svc-lessons/mechanic' is absent on 'grove-sandpine-hetzner-v20261022'
+   note: this asked the GROVE, not this box, and the grove answered
+   fix: list the ducts there —
+     rhx duct.list --on 'duct://grove-sandpine-hetzner-v20261022/*'
+"
+`;
+
+exports[`ductwork.unreachable given: [case4] the lib duct.send --keys at a grove duct (crew heal, boot, pane cures) when: [t0] ssh cannot reach the grove (rc 255) then: the render reads as a snapshot 1`] = `
+"✋ duct.send: cannot reach 'grove-sandpine-hetzner-v20261022', so the session was never asked for
+   fix: check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove-sandpine-hetzner-v20261022-1"
+`;
+
+exports[`ductwork.unreachable given: [case4] the lib duct.send --keys at a grove duct (crew heal, boot, pane cures) when: [t1] the grove answers and holds no such session (rc 1) then: the render reads as a snapshot 1`] = `
+"✋ duct.send: session 'svc-lessons/mechanic' is absent on 'grove-sandpine-hetzner-v20261022'
+   note: this asked the GROVE, not this box, and the grove answered
+   fix: read which seats are up — rhx git.crew.poll --live"
+`;
+
+exports[`ductwork.unreachable given: [case5] the crew poll header rolls two unreached groves, one per power when: [t0] a hetzner grove and an ec2 grove both did not answer then: the render reads as a snapshot 1`] = `
+"   ├─ ⚠️  UNREACHED: grove-sandpine-hetzner-v20261022 grove-sandpine-v20260901
+   │   └─ registered, no answer — crews there render 😴 asleep, NOT down
+   │      ├─ grove-sandpine-hetzner-v20261022 — check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove-sandpine-hetzner-v20261022-1
+   │      └─ grove-sandpine-v20260901 — wake it — rhx git.grove.wake grove-sandpine-v20260901
+"
+`;

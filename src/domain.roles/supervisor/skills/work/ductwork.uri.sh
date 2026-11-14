@@ -345,20 +345,53 @@ __duct_say_unreachable() {
   #   worse defect than the word. openssh owns this vocabulary; we only read it.
   #   the same allowance the aws api's enum names already hold in this repo.
   ####################################################################
-  local cause fix
+  local cause fix row_host="" absent=""
+  row_host=$(__grove_host_of "$DUCT_HOST")
+  # an alias that does not dial the row's reach (absent, or an ssm-era relic on
+  # localhost:<tunnel port>) explains a refusal, a key refusal, and a host key
+  # alike: ssh never dialed the grove at all. so the alias write comes first
+  absent=$(__grove_alias_absent_cure "$DUCT_HOST")
   case "$said" in
-    *"Connection refused"*|*"Connection timed out"*|*"Connection closed"*|*"No route to host"*|*"Operation timed out"*)
-      cause="the grove is down, asleep, or its tunnel is dead"
-      fix="rhx git.grove.wake <grove>" ;;
+    *"Connection refused"*)
+      if [[ -n "$absent" ]]; then
+        cause="the ssh alias does not dial this grove's tailnet host (absent, or a stale alias), so the refusal is not the grove's"
+        fix="$absent"
+      else
+        # through a converged alias, a refusal proves the tailnet carried the
+        # connect: no sleep, no peer issue
+        cause="the box answered, and no sshd listens on its port"
+        fix="is sshd up on the grove, and is the row's port its sshd? see where it stops — ssh -v '$DUCT_HOST'"
+      fi ;;
+    *"Connection timed out"*|*"Connection closed"*|*"No route to host"*|*"Operation timed out"*)
+      cause="the grove is down, asleep, or off the tailnet"
+      fix="$(__grove_unreached_cure "$DUCT_HOST")"
+      # a stale alias times out on its own dead port: the grove was never dialed
+      [[ -z "$absent" ]] || {
+        cause="the ssh alias does not dial this grove's tailnet host (absent, or a stale alias), so the timeout is not the grove's"
+        fix="$absent"
+      } ;;
     *"REMOTE HOST IDENTIFICATION HAS CHANGED"*|*"Host key verification failed"*)
       cause="the endpoint answers with an identity we do not trust"
-      fix="rhx git.grove.trust.gen --grove <grove>" ;;
+      fix="ssh-keygen -R ${row_host:-<tailnet-host>}   # only once you know the box was rebuilt"
+      # the cause and the fix name one layer: an alias that never dialed the
+      # grove leaves no host key of the grove's to distrust
+      [[ -z "$absent" ]] || {
+        cause="the ssh alias does not dial this grove's tailnet host (absent, or a stale alias), so the identity is not the grove's"
+        fix="$absent"
+      } ;;
     *"Permission denied"*)
       cause="the endpoint refused our key"
-      fix="ssh -v '$DUCT_HOST'   # check the alias' IdentityFile" ;;
+      fix="ssh -v '$DUCT_HOST'   # check the alias' IdentityFile"
+      # a registered grove with no alias on disk was dialed as the LOCAL user,
+      # with no IdentityFile: the refusal is the absent alias, not the key
+      [[ -z "$absent" ]] || {
+        cause="the ssh alias does not dial this grove's tailnet host (absent, or a stale alias), so ssh dialed as the local user and the grove never saw our key"
+        fix="$absent"
+      } ;;
     *"Could not resolve hostname"*|*"Name or service not known"*|*"nodename nor servname"*)
-      cause="'$DUCT_HOST' is not a host this machine knows"
-      fix="rhx git.grove.wake <grove>   # writes the ssh alias" ;;
+      # name the host ssh failed to look up: the row's, once the alias dials it
+      cause="'${row_host:-$DUCT_HOST}' is not a host this machine knows"
+      fix="$(__grove_unreached_cure "$DUCT_HOST")" ;;
     *)
       cause="unmatched — ssh's words in the bucket are the only evidence"
       fix="ssh -v '$DUCT_HOST'   # verbose, to see where it stops" ;;

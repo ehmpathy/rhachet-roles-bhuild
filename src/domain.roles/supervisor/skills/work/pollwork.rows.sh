@@ -232,9 +232,10 @@ for tree in "${TREES[@]}"; do
     #    session list, which is byte-identical to a grove holding no crew —
     #    so with no arm here every crew on a hibernated grove renders `down`,
     #    and `down` promises a `crew.boot` that would fail on a box that is
-    #    not up. the cure is one step earlier: wake it, THEN judge it.
+    #    not up. the cure is one step earlier: reach it, THEN judge it — the
+    #    wake for an ec2 grove, the tailnet for one with no aws lever.
     crew_glyph="😴"; crew_state="asleep"
-    crew_who="grove did not answer — rhx git.grove.wake $crew_host"
+    crew_who="grove did not answer — $(__grove_unreached_cure "$crew_host")"
   elif [[ -z "$crew_host" && "$verdict" == "unknown" && "$detail" == *"no worktree"* ]]; then
     # no duct, no tree — the rows are litter a fell left behind
     #

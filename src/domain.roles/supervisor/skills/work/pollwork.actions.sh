@@ -588,7 +588,9 @@ done
 # .why ABOVE phantom, and named with the grove: an asleep crew is the only
 #      row here whose cure is on a DIFFERENT machine, and a reader who meets
 #      it beneath the litter row will price it as litter
-(( ASLEEP > 0 ))   && ACTIONS+=("😴 $ASLEEP asleep     — unread, not down — rhx git.grove.wake ${HOSTS_UNREACHED[0]:-<grove>}")
+#      the cure is per power: the wake for an ec2 grove, the tailnet for one
+#      with no aws lever (work/grovework.sh)
+(( ASLEEP > 0 ))   && ACTIONS+=("😴 $ASLEEP asleep     — unread, not down — $(__grove_unreached_cure "${HOSTS_UNREACHED[0]:-<grove>}")")
 # 🔴 phantom NAMES its trees and emits a runnable cure per tree — task #38.
 #   it was the last state in this footer whose line was PROSE: a count, a
 #   description, and no command. every peer above hands over a line a reader
