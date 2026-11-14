@@ -109,3 +109,22 @@ exports[`git.grove.list given: [case2] a forest whose only row is corrupt when: 
 🛟 a row is unreadable — re-register it with the fix named above, then list again
 "
 `;
+
+exports[`git.grove.list given: [case3] a grove whose sshd greets, one that accepts and stays mute, and one that greets with a non-ssh banner when: [t0] the three groves are listed with the probe then: the live, mute, and odd renders read as a snapshot 1`] = `
+"🌲 forest
+   ├─ 🌳 grove-sandpine-corrupt → 🟡 row unreadable — its fix is named above
+   ├─ 🌳 grove-sandpine-hetzner-live → camper@127.0.0.3:<port.live> (ssh:grove-sandpine-hetzner-live)
+   │     └─ 🟢 live
+   ├─ 🌳 grove-sandpine-hetzner-mute → camper@127.0.0.3:<port.mute> (ssh:grove-sandpine-hetzner-mute)
+   │     ├─ 🔴 MUTE — connected, but no ssh banner within 2s (a starved grove reads this way)
+   │     └─ fix → a starved grove — read its load: rhx git.grove.saturation --only grove-sandpine-hetzner-mute (a wake cures naught here)
+   └─ 🌳 grove-sandpine-hetzner-odd → camper@127.0.0.3:<port.odd> (ssh:grove-sandpine-hetzner-odd)
+         ├─ 🟡 odd — a listener answered, and it is not ssh
+         └─ fix → is <port.odd> the grove's sshd port? if not, re-register — git grove set grove-sandpine-hetzner-odd --at camper@127.0.0.3:22
+
+🛟 a grove did not greet with ssh — each row names its cure, by the cause it saw.
+   first, if every row reads DOWN, is THIS machine a peer? — tailscale status
+🛟 a listener answered that is not ssh — is the row's port the grove's sshd?
+🛟 a row is unreadable — re-register it with the fix named above, then list again
+"
+`;

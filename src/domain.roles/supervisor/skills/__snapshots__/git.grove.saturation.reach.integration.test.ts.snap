@@ -1,0 +1,66 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`git.grove.saturation.reach given: [case1] one ec2 grove registered twice: camper, and .ground when: [t0] the sweep reads it then: the refused render reads as a snapshot 1`] = `
+"🌲 grove saturation
+
+🌳 grove-sandpine-v20260901
+   └─ 🔴 refused — the box answered on 1 and refused — is sshd up there, and is 1 its port? (a stale ssm-era port reads this way; re-register — git grove set grove-sandpine-v20260901 --at camper@127.0.0.2:22)
+
+   🟢 headroom   🟡 tight   🔴 saturated   ⚪ not measured
+   stall = the share of time work WAITED on that resource (kernel PSI).
+   'some' = at least one task waited
+   'full'  = every NON-IDLE task stalled — a ratio, and idle tasks leave
+             the denominator. a clone awaiting the network counts as idle,
+             so a high 'full' can sit beside a fleet that feels fast.
+             read it as CONTENTION AMONG THE RUNNABLE, never as throughput.
+"
+`;
+
+exports[`git.grove.saturation.reach given: [case1] one ec2 grove registered twice: camper, and .ground when: [t1] the whole forest is swept, so both entries fold onto one grove then: the folded render reads as a snapshot 1`] = `
+"🌲 grove saturation
+
+🌳 grove-sandpine-v20260901.ground + grove-sandpine-v20260901
+   └─ 🔴 refused — the box answered on 1 and refused — is sshd up there, and is 1 its port? (a stale ssm-era port reads this way; re-register — git grove set grove-sandpine-v20260901 --at camper@127.0.0.2:22)"
+`;
+
+exports[`git.grove.saturation.reach given: [case2] a grove with no aws lever (hetzner) when: [t0] the sweep reads it and the box refuses the connect then: the refused render reads as a snapshot 1`] = `
+"🌲 grove saturation
+
+🌳 grove-sandpine-hetzner-v20261022
+   └─ 🔴 refused — the box answered on 2 and refused — is sshd up there, and is 2 its port? (a stale ssm-era port reads this way; re-register — git grove set grove-sandpine-hetzner-v20261022 --at camper@127.0.0.2:22)
+
+   🟢 headroom   🟡 tight   🔴 saturated   ⚪ not measured
+   stall = the share of time work WAITED on that resource (kernel PSI).
+   'some' = at least one task waited
+   'full'  = every NON-IDLE task stalled — a ratio, and idle tasks leave
+             the denominator. a clone awaiting the network counts as idle,
+             so a high 'full' can sit beside a fleet that feels fast.
+             read it as CONTENTION AMONG THE RUNNABLE, never as throughput.
+"
+`;
+
+exports[`git.grove.saturation.reach given: [case2] a grove with no aws lever (hetzner) when: [t1] the sweep reads it and its tailnet name is unknown then: the asleep render reads as a snapshot 1`] = `
+"🌲 grove saturation
+
+🌳 grove-sandpine-hetzner-v20261023
+   └─ 💤 asleep — check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove-sandpine-hetzner-v20261023.invalid
+
+   🟢 headroom   🟡 tight   🔴 saturated   ⚪ not measured
+   stall = the share of time work WAITED on that resource (kernel PSI).
+   'some' = at least one task waited
+   'full'  = every NON-IDLE task stalled — a ratio, and idle tasks leave
+             the denominator. a clone awaiting the network counts as idle,
+             so a high 'full' can sit beside a fleet that feels fast.
+             read it as CONTENTION AMONG THE RUNNABLE, never as throughput.
+"
+`;
+
+exports[`git.grove.saturation.reach given: [case3] the spend peer reads the same pair when: [t0] spend reads it then: the spend render reads as a snapshot 1`] = `
+"🌲 grove spend — where the cpu went
+
+   🌳 grove-sandpine-v20260901
+      └─ 🔴 refused (rc=255)
+         └─ the box answered on 1 and refused — is sshd up there, and is 1 its port? (a stale ssm-era port reads this way; re-register — git grove set grove-sandpine-v20260901 --at camper@127.0.0.2:22)
+
+"
+`;

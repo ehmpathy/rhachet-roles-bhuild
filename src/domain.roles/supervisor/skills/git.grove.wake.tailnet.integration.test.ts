@@ -100,6 +100,8 @@ const runWake = (input: {
   rowText?: string;
   /** a prior run's root, so a re-run shares its HOME (the alias block names $HOME's key path) */
   root?: string;
+  /** leave `aws` off the stub dir, so the real aws cli answers */
+  awsReal?: boolean;
 }) => {
   const root = input.root ?? tempDirs.genOne({ slug: 'grove-wake-tailnet' });
   const home = join(root, 'home');
@@ -116,7 +118,8 @@ const runWake = (input: {
   if (input.sshcfg !== null)
     writeFileSync(join(home, '.ssh', 'config'), input.sshcfg);
   writeFileSync(join(bin, 'ssh'), STUB_SSH, { mode: 0o755 });
-  writeFileSync(join(bin, 'aws'), STUB_AWS, { mode: 0o755 });
+  if (!input.awsReal)
+    writeFileSync(join(bin, 'aws'), STUB_AWS, { mode: 0o755 });
   writeFileSync(join(bin, 'rhx'), STUB_RHX, { mode: 0o755 });
   writeFileSync(join(bin, 'tailscale'), STUB_TAILSCALE, { mode: 0o755 });
   writeFileSync(log, '');
@@ -434,6 +437,12 @@ describe('git.grove.wake.tailnet', () => {
         );
         expect(result.stderr).not.toContain('tailscale');
       });
+
+      then('the halt reads as a snapshot', () => {
+        expect(
+          result.stderr.replace(/\S*\/home\//g, '$HOME_TMP/home/'),
+        ).toMatchSnapshot();
+      });
     });
 
     when('[t7] the box refuses the connect (no sshd on its port)', () => {
@@ -507,6 +516,12 @@ describe('git.grove.wake.tailnet', () => {
           expect(result.stderr).not.toContain('tailscale');
         },
       );
+
+      then('the starved halt reads as a snapshot', () => {
+        expect(
+          result.stderr.replace(/\S*\/home\//g, '$HOME_TMP/home/'),
+        ).toMatchSnapshot();
+      });
     });
   });
 
@@ -594,6 +609,12 @@ describe('git.grove.wake.tailnet', () => {
         ).toEqual([]);
         expect(result.calls.filter((c) => c.startsWith('ssh '))).toEqual([]);
       });
+
+      then('the plan reads as a snapshot', () => {
+        expect(
+          result.stdout.replace(/\S*\/home\//g, '$HOME_TMP/home/'),
+        ).toMatchSnapshot();
+      });
     });
 
     when('[t2] the session is in another account', () => {
@@ -615,6 +636,47 @@ describe('git.grove.wake.tailnet', () => {
           expect(
             result.calls.filter((c) => c.includes('start-instances')),
           ).toEqual([]);
+          expect(result.calls.filter((c) => c.startsWith('ssh '))).toEqual([]);
+        },
+      );
+
+      then('the refusal reads as a snapshot', () => {
+        expect(
+          result.stderr.replace(/\S*\/home\//g, '$HOME_TMP/home/'),
+        ).toMatchSnapshot();
+      });
+    });
+
+    /**
+     * .what = the one case that calls the real aws: its lack-of-creds failure
+     * .why  = every other case stubs aws (a start costs money). this one hands
+     *         the real aws cli a key the real sts refuses, so the contract the
+     *         wake leans on — no readable account, no paid act — is proven
+     *         against the service itself, not a stub
+     */
+    when('[t4] the real aws refuses the session (no valid credentials)', () => {
+      const result = useBeforeAll(async () =>
+        runWake({
+          row: ROW_EC2_RELIC,
+          args: [ROW_EC2_RELIC.name],
+          sshcfg: null,
+          env: {
+            AWS_DEFAULT_REGION: 'us-east-1',
+            AWS_EC2_METADATA_DISABLED: 'true',
+          },
+          credentials: true,
+          awsReal: true,
+        }),
+      );
+
+      then(
+        '🔴 it exits 1 at the account guard — no account read, no start, no dial',
+        () => {
+          expect(result.exit).toEqual(1);
+          expect(result.stderr).toContain('cannot read the active aws account');
+          expect(result.stderr).toContain(
+            'rhx keyrack unlock --owner ehmpath --env',
+          );
           expect(result.calls.filter((c) => c.startsWith('ssh '))).toEqual([]);
         },
       );

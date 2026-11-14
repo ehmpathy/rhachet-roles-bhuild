@@ -12,8 +12,8 @@
  *         - refused: a `/dev/tcp` open to 127.0.0.2 on a port with no listener
  *         - unknown name: a host under `.invalid`, which never names a box
  *           (rfc 6761), so it fails at once with no dns in reach
- *         - live and mute: two local listeners — one writes an ssh banner, one
- *           accepts and stays silent
+ *         - live, mute, and odd: three local listeners — one writes an ssh
+ *           banner, one accepts and stays silent, one writes an http banner
  *         (rule.require.hermetic-tests)
  */
 import { spawn, spawnSync } from 'child_process';
@@ -87,7 +87,7 @@ const runList = (input: { args: string[]; rows: { name: string }[] }) => {
  */
 const runListAsync = (input: {
   args: string[];
-  rows: { name: string }[];
+  rows: ({ name: string } & Record<string, unknown>)[];
 }): Promise<{ stdout: string; exit: number | null }> =>
   new Promise((done) => {
     const child = spawn('bash', [PATH_LIST, ...input.args], {
@@ -270,55 +270,100 @@ describe('git.grove.list', () => {
   );
 
   given(
-    '[case3] a grove whose sshd greets, and a grove that accepts and stays mute',
+    '[case3] a grove whose sshd greets, one that accepts and stays mute, and one that greets with a non-ssh banner',
     () => {
-      const scene = useBeforeAll(async () => {
-        const live = await genListener({ banner: 'SSH-2.0-OpenSSH_stub\r\n' });
-        const mute = await genListener({ banner: null });
-        const rowLive = {
-          name: 'grove-sandpine-hetzner-live',
-          host: '127.0.0.3',
-          port: (live.address() as AddressInfo).port,
-        };
-        const rowMute = {
-          name: 'grove-sandpine-hetzner-mute',
-          host: '127.0.0.3',
-          port: (mute.address() as AddressInfo).port,
-        };
-        const result = await runListAsync({
-          rows: [rowLive, rowMute],
-          args: ['--timeout', '2'],
-        });
-        live.close();
-        mute.close();
-        return { result };
+      const listeners = useBeforeAll(async () => ({
+        live: await genListener({ banner: 'SSH-2.0-OpenSSH_stub\r\n' }),
+        mute: await genListener({ banner: null }),
+        odd: await genListener({ banner: 'HTTP/1.1 400 Bad Request\r\n' }),
+      }));
+      afterAll(() => {
+        listeners.live.close();
+        listeners.mute.close();
+        listeners.odd.close();
       });
 
-      then('the greeted grove reads 🟢 live, with no fix', () => {
-        const rows = scene.result.stdout.split('🌳');
-        const live = rows.find((r) =>
-          r.includes('grove-sandpine-hetzner-live →'),
+      /** .what = the ephemeral port of a listener */
+      const portOf = (server: Server): number =>
+        (server.address() as AddressInfo).port;
+
+      when('[t0] the three groves are listed with the probe', () => {
+        const result = useBeforeAll(async () =>
+          runListAsync({
+            rows: [
+              {
+                name: 'grove-sandpine-hetzner-live',
+                host: '127.0.0.3',
+                port: portOf(listeners.live),
+              },
+              {
+                name: 'grove-sandpine-hetzner-mute',
+                host: '127.0.0.3',
+                port: portOf(listeners.mute),
+              },
+              {
+                name: 'grove-sandpine-hetzner-odd',
+                host: '127.0.0.3',
+                port: portOf(listeners.odd),
+              },
+            ],
+            args: ['--timeout', '2'],
+          }),
         );
-        expect(live).toContain('🟢 live');
-        expect(live).not.toContain('fix →');
-      });
 
-      then(
-        '🔴 the mute grove is handed its load, never the tailnet, never the wake',
-        () => {
-          // the row ends at the blank line; the closing verdict below is not its own
-          const rows = scene.result.stdout.split('\n\n')[0]!.split('🌳');
-          const mute = rows.find((r) =>
-            r.includes('grove-sandpine-hetzner-mute →'),
-          );
-          expect(mute).toContain('🔴 MUTE');
-          expect(mute).toContain(
-            'rhx git.grove.saturation --only grove-sandpine-hetzner-mute',
-          );
-          expect(mute).not.toContain('tailscale');
-          expect(mute).not.toContain('git.grove.wake');
-        },
-      );
+        /** .what = one grove's row, cut at the blank line that ends the rows */
+        const rowOf = (name: string): string | undefined =>
+          result.stdout
+            .split('\n\n')[0]!
+            .split('🌳')
+            .find((r) => r.includes(`${name} →`));
+
+        then('the greeted grove reads 🟢 live, with no fix', () => {
+          const live = rowOf('grove-sandpine-hetzner-live');
+          expect(live).toContain('🟢 live');
+          expect(live).not.toContain('fix →');
+        });
+
+        then(
+          '🔴 the mute grove is handed its load, never the tailnet, never the wake',
+          () => {
+            const mute = rowOf('grove-sandpine-hetzner-mute');
+            expect(mute).toContain('🔴 MUTE');
+            expect(mute).toContain(
+              'rhx git.grove.saturation --only grove-sandpine-hetzner-mute',
+            );
+            expect(mute).not.toContain('tailscale');
+            expect(mute).not.toContain('git.grove.wake');
+          },
+        );
+
+        then(
+          '🟡 the odd grove is asked whether its port is sshd, never the tailnet, never the wake',
+          () => {
+            const odd = rowOf('grove-sandpine-hetzner-odd');
+            expect(odd).toContain(
+              '🟡 odd — a listener answered, and it is not ssh',
+            );
+            expect(odd).toContain(
+              'git grove set grove-sandpine-hetzner-odd --at camper@127.0.0.3:22',
+            );
+            expect(odd).not.toContain('tailscale');
+            expect(odd).not.toContain('git.grove.wake');
+          },
+        );
+
+        then('the live, mute, and odd renders read as a snapshot', () => {
+          // the listener ports are ephemeral, so each is masked to its role
+          const masked = result.stdout
+            .split(String(portOf(listeners.live)))
+            .join('<port.live>')
+            .split(String(portOf(listeners.mute)))
+            .join('<port.mute>')
+            .split(String(portOf(listeners.odd)))
+            .join('<port.odd>');
+          expect(masked).toMatchSnapshot();
+        });
+      });
     },
   );
 

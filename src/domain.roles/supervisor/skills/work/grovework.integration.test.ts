@@ -478,6 +478,10 @@ describe('grovework', () => {
             );
             expect(run.stderr).toContain(thisCase.cause);
             expect(run.stderr).toContain(thisCase.fix);
+            // the whole refusal tree, with the temp forest masked
+            expect(
+              run.stderr.split(scene.forest).join('$FOREST_TMP'),
+            ).toMatchSnapshot();
           }),
         );
       });

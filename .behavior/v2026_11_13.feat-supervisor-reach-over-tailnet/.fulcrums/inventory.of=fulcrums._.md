@@ -18,3 +18,6 @@
 | `case=F14-reach-seam-decomposition-rides-a-followup` | the reach-seam decompositions and extra render snapshots ride one followup dream | clean | disputed, council awaited | 80% |
 | `case=F15-case1-boots-a-scratch-tree-then-unseats-it` | case=1 boots a scratch tree + purpose marker on the hetzner box, then removes every trace | clean | best-guessed | 85% |
 | `case=F16-ec2-alias-convergence-awaits-a-wake-with-the-grove-org` | the ec2 tailnet reach is proven on the pinned road; its alias converges on one human wake from an ahbode repo | clean | best-guessed | 80% |
+| `case=F17-wake-rack-refusal-keeps-exit-1-this-round` | the wake's rack refusal keeps its extant exit 1; the flip to 2 rides a dream with a caller audit | clean | best-guessed | 85% |
+| `case=F18-repo-local-probe-skills-sit-outside-the-behavior-contract` | the two `.agent/repo=.this/` probe skills are unshipped dev tools; their suites ride a dream | clean | disputed, council awaited | 80% |
+| `case=F19-no-live-grove-in-ci-the-real-ssh-client-is-tested` | ci dials no live grove; the real ssh client and real aws run hermetic, the live grove leg is the 5.3 capture | clean | disputed, council awaited | 80% |

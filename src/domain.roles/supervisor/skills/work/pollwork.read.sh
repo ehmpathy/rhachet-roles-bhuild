@@ -143,8 +143,13 @@ if (( ${#HOSTS_UNREACHED[@]} > 0 )); then
   if (( ${#__unreached_asleep[@]} > 0 )); then
     echo "   ├─ ⚠️  UNREACHED: ${__unreached_asleep[*]}"
     echo "   │   └─ registered, no answer — crews there render 😴 asleep, NOT down"
-    for __ua in "${__unreached_asleep[@]}"; do
-      echo "   │      └─ $__ua — $(__grove_unreached_cure "$__ua")"
+    # one branch per grove; only the last takes the last-child glyph
+    __ua_last=$(( ${#__unreached_asleep[@]} - 1 ))
+    for __ua_i in "${!__unreached_asleep[@]}"; do
+      __ua="${__unreached_asleep[$__ua_i]}"
+      __ua_glyph='├─'
+      if (( __ua_i == __ua_last )); then __ua_glyph='└─'; fi
+      echo "   │      $__ua_glyph $__ua — $(__grove_unreached_cure "$__ua")"
     done
   fi
   if (( ${#__unreached_gone[@]} > 0 )); then

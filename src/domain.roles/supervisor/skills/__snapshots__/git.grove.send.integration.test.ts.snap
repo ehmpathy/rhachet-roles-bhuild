@@ -13,3 +13,5 @@ exports[`git.grove.send given: [case1] a hetzner grove (no aws lever) that ssh c
       └─ if the grove did not answer: check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove-sandpine-hetzner-v20261022-1
 "
 `;
+
+exports[`git.grove.send given: [case2] a grove that answers, and a command that fails there when: [t0] the remote command exits 3 then: the words a human reads are pinned 1`] = `""`;

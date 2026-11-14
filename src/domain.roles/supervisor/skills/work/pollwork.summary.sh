@@ -634,11 +634,19 @@ if [[ "$BOXES" == "true" && "${#CREW_STONES[@]}" -gt 0 ]]; then
       echo "   │     record of the last poll that reached it, never a live read. so it is absent"
       echo "   │     from EVERY tally above and not one line here is a claim about the clone:"
       echo "   │     present and absent are both possible. ⛔ a crew.read exits 1 — reach the grove first, per its cure"
+      # one branch per seat; only the last takes the last-child glyph
+      __na_rows=()
       while IFS= read -r __na; do
-        [[ -n "$__na" ]] || continue
-        __na_seat="${__na%%=*}"; __na_grove="${__na##*=}"
-        echo "   │     └─ ${__na_seat%%/*} / ${__na_seat##*/} — $(__grove_unreached_cure "${__na_grove}")"
+        [[ -n "$__na" ]] && __na_rows+=("$__na")
       done <<< "$STONE_NOSTONE_ASLEEP_WHO"
+      __na_last=$(( ${#__na_rows[@]} - 1 ))
+      for __na_i in "${!__na_rows[@]}"; do
+        __na="${__na_rows[$__na_i]}"
+        __na_seat="${__na%%=*}"; __na_grove="${__na##*=}"
+        __na_glyph='├─'
+        if (( __na_i == __na_last )); then __na_glyph='└─'; fi
+        echo "   │     $__na_glyph ${__na_seat%%/*} / ${__na_seat##*/} — $(__grove_unreached_cure "${__na_grove}")"
+      done
     fi
     # the zero is stated rather than elided, on purpose: `✂️ 0 clipped` is a
     # positive assertion that every stone was read to its end. an elided term

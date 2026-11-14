@@ -4,3 +4,38 @@ exports[`grovework given: [case3] a grove that did not answer when: [t0] its row
 "check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove-sandpine-hetzner-v20261022-1
 "
 `;
+
+exports[`grovework given: [case5] a row that is json, yet contradicts itself or its grammar when: [t0] the reach of each row is read then: a host with a byte outside its grammar is refused 1`] = `
+"✋ ConstraintError: grove row unreadable — host 'h1\\nProxyCommand x' is outside [A-Za-z0-9._:-], or starts with '-'
+   ├─ row: $FOREST_TMP/groves/grove-sandpine-badhost.json
+   └─ fix: re-register it — git grove set <grove> --at camper@<tailnet-host>:22
+"
+`;
+
+exports[`grovework given: [case5] a row that is json, yet contradicts itself or its grammar when: [t0] the reach of each row is read then: a port that is not a number is refused 1`] = `
+"✋ ConstraintError: grove row unreadable — port '22x' is not a number
+   ├─ row: $FOREST_TMP/groves/grove-sandpine-badport.json
+   └─ fix: re-register it — git grove set <grove> --at camper@<tailnet-host>:22
+"
+`;
+
+exports[`grovework given: [case5] a row that is json, yet contradicts itself or its grammar when: [t0] the reach of each row is read then: a user that starts with "-" is refused (it would be an ssh option) 1`] = `
+"✋ ConstraintError: grove row unreadable — user '-oProxyCommand=x' is outside [A-Za-z0-9._-], or starts with '-'
+   ├─ row: $FOREST_TMP/groves/grove-sandpine-dashuser.json
+   └─ fix: re-register it — git grove set <grove> --at camper@<tailnet-host>:22
+"
+`;
+
+exports[`grovework given: [case5] a row that is json, yet contradicts itself or its grammar when: [t0] the reach of each row is read then: 🔴 a nat with no account is refused, never a nat dropped in silence 1`] = `
+"✋ ConstraintError: grove row unreadable — nat, but no account — its power lever cannot be found
+   ├─ row: $FOREST_TMP/groves/grove-sandpine-nat-noacct.json
+   └─ fix: name its account — git grove set <grove> --account <12-digit id>
+"
+`;
+
+exports[`grovework given: [case5] a row that is json, yet contradicts itself or its grammar when: [t0] the reach of each row is read then: 🔴 type ec2 with no account is refused, never read as power none 1`] = `
+"✋ ConstraintError: grove row unreadable — type ec2, but no account — its power lever cannot be found
+   ├─ row: $FOREST_TMP/groves/grove-sandpine-ec2-noacct.json
+   └─ fix: name its account — git grove set <grove> --account <12-digit id>
+"
+`;

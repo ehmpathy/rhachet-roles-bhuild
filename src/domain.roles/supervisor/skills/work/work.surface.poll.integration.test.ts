@@ -962,8 +962,23 @@ describe('work.surface', () => {
           const lines = readCrewPoll().split('\n');
           const i = lines.findIndex((line) => line.includes('⚠️  UNREACHED:'));
           // the caveat line, its child, and the per-grove cure loop beneath it
-          return i < 0 ? '' : lines.slice(i, i + 5).join('\n');
+          return i < 0 ? '' : lines.slice(i, i + 10).join('\n');
         };
+
+        then(
+          '🔴 only the last grove of the roll takes the last-child glyph',
+          () => {
+            // .why = two unreached groves once rendered two `└─` siblings at
+            //        one depth, so the tree claimed two last children
+            expect(readCaveat().includes("__ua_glyph='├─'")).toEqual(true);
+            expect(
+              readCaveat().includes(
+                "if (( __ua_i == __ua_last )); then __ua_glyph='└─'; fi",
+              ),
+            ).toEqual(true);
+            expect(readCaveat().includes('│      └─ $__ua —')).toEqual(false);
+          },
+        );
 
         then('the caveat names the fix, per grove, off the one cure', () => {
           // an aws grove is handed a wake, a tailnet-only grove a tailnet

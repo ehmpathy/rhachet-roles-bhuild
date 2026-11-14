@@ -144,6 +144,10 @@ describe('git.grove.send', () => {
         expect(result.exit).toEqual(3);
         expect(result.stderr).not.toContain('MalfunctionError');
       });
+
+      then('the words a human reads are pinned', () => {
+        expect(result.stderr).toMatchSnapshot();
+      });
     });
   });
 });

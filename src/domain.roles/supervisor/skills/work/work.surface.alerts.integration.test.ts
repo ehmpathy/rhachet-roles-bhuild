@@ -11,7 +11,7 @@
  */
 import { readdirSync } from 'fs';
 import { join } from 'path';
-import { given, then, when } from 'test-fns';
+import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
   asCode,
@@ -693,17 +693,26 @@ describe('work.surface', () => {
         .sort();
 
       when('[t0] every shell file under skills/ is read as code', () => {
+        // the corpus is read once; each tooth filters the same memo
+        const corpus = useBeforeAll(async () => ({
+          codeOf: new Map(
+            files.map((f) => [f, readCode(join(DIR_SKILLS, f))] as const),
+          ),
+        }));
+        const codeOf = (f: string): string => corpus.codeOf.get(f) ?? '';
+
         then('the subject set is the whole surface, never empty', () => {
           expect(files.length).toBeGreaterThan(40); // ANTI-VACUITY
           expect(files).toContain('work/grovework.sh');
           expect(files).toContain('git.grove.wake.sh');
+          expect(corpus.codeOf.size).toEqual(files.length);
         });
 
         then(
           '🔴 no file but the wake and the cure names `git.grove.wake`',
           () => {
             const namers = files.filter((f) =>
-              readCode(join(DIR_SKILLS, f)).includes('git.grove.wake'),
+              codeOf(f).includes('git.grove.wake'),
             );
             expect(namers).toEqual(['git.grove.wake.sh', 'work/grovework.sh']);
           },
@@ -718,20 +727,14 @@ describe('work.surface', () => {
               .filter(
                 (f) => !['git.grove.wake.sh', 'work/grovework.sh'].includes(f),
               )
-              .filter((f) =>
-                /\bwake (it|first|the grove)\b/i.test(
-                  readCode(join(DIR_SKILLS, f)),
-                ),
-              );
+              .filter((f) => /\bwake (it|first|the grove)\b/i.test(codeOf(f)));
             expect(prescribers).toEqual([]);
           },
         );
 
         then('🔴 no file reaches a box through ssm', () => {
           const ssm = files.filter((f) =>
-            /\baws ssm\b|\bssm start-session\b/.test(
-              readCode(join(DIR_SKILLS, f)),
-            ),
+            /\baws ssm\b|\bssm start-session\b/.test(codeOf(f)),
           );
           expect(ssm).toEqual([]);
         });
