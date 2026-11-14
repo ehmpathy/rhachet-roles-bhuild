@@ -35,4 +35,20 @@ describe('asOsFileopsPathSegment', () => {
       expect(error.message).toContain('is not a plain path segment');
     }),
   );
+
+  test('an exid refusal shows an exid-shaped example, and no metadata tail', () => {
+    const error = getError(() =>
+      asOsFileopsPathSegment({ value: '../../etc', of: 'exid' }),
+    );
+    expect(error.message).toContain('e.g. board-7');
+    expect(error.message).not.toContain('e.g. sandpine');
+    expect(error.message).not.toContain('{');
+  });
+
+  test('an owner refusal shows an owner-shaped example', () => {
+    const error = getError(() =>
+      asOsFileopsPathSegment({ value: 'sand/pine', of: 'owner' }),
+    );
+    expect(error.message).toContain('e.g. sandpine');
+  });
 });

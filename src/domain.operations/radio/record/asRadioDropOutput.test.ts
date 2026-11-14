@@ -51,6 +51,7 @@ describe('asRadioDropOutput', () => {
         record: genDropped(),
         path: '.behavior/.radio/record.a1b2c3d4e5f60718.json',
         behind: 2,
+        behindComments: 0,
         deliverNeedsClaim: null,
         isAlreadyDropped: false,
       });
@@ -68,6 +69,7 @@ describe('asRadioDropOutput', () => {
         record: genDropped(),
         path: '.behavior/.radio/record.a1b2c3d4e5f60718.json',
         behind: 1,
+        behindComments: 0,
         deliverNeedsClaim: null,
         isAlreadyDropped: false,
       });
@@ -78,12 +80,47 @@ describe('asRadioDropOutput', () => {
         );
       });
     });
+
+    when('[t2] one comment waits behind it, and naught else', () => {
+      const output = asRadioDropOutput({
+        record: genDropped(),
+        path: '.behavior/.radio/record.a1b2c3d4e5f60718.json',
+        behind: 1,
+        behindComments: 1,
+        deliverNeedsClaim: null,
+        isAlreadyDropped: false,
+      });
+
+      then('it names a comment, not an update', () => {
+        expect(output).toContain(
+          '1 comment on #599 waits behind it; it sends next drain',
+        );
+      });
+    });
+
+    when('[t3] an update and a comment wait behind it', () => {
+      const output = asRadioDropOutput({
+        record: genDropped(),
+        path: '.behavior/.radio/record.a1b2c3d4e5f60718.json',
+        behind: 2,
+        behindComments: 1,
+        deliverNeedsClaim: null,
+        isAlreadyDropped: false,
+      });
+
+      then('it names both kinds', () => {
+        expect(output).toContain(
+          '2 updates or comments on #599 wait behind it; they send next drain',
+        );
+      });
+    });
   });
 
   given('[case1] a dropped update, the #599 shape', () => {
     when('[t0] the drop renders', () => {
       const output = asRadioDropOutput({
         behind: 0,
+        behindComments: 0,
         deliverNeedsClaim: null,
         isAlreadyDropped: false,
         record: new RadioTaskRecord({
@@ -119,12 +156,60 @@ describe('asRadioDropOutput', () => {
     });
   });
 
+  given('[case5] a dropped comment, held at a shut gate', () => {
+    when('[t0] the drop renders', () => {
+      const output = asRadioDropOutput({
+        behind: 0,
+        behindComments: 0,
+        deliverNeedsClaim: null,
+        isAlreadyDropped: false,
+        record: new RadioTaskRecord({
+          key: 'c0ffee0123456789',
+          kind: 'comment',
+          repo: new RadioTaskRepo({ owner: 'sandpine', name: 'svc-lessons' }),
+          via: RadioChannel.GH_ISSUES,
+          auth: null,
+          idem: null,
+          title: null,
+          description: 'the tide table test passes now',
+          exid: '489',
+          status: null,
+          recordStatus: RadioTaskRecordStatus.DROPPED,
+          reason: 'dropped: said in standup instead',
+          heldSeq: 3,
+          deliveredExid: null,
+        }),
+        path: '.behavior/.radio/record.c0ffee0123456789.json',
+      });
+
+      then(
+        'it names the comment, the why, where its body is kept, and how to queue it again',
+        () => {
+          expect(output).toContain('🦫 dropped from the radio, never sent');
+          expect(output).toContain('comment = #489 → sandpine/svc-lessons');
+          expect(output).toContain(
+            'why     = dropped: said in standup instead',
+          );
+          expect(output).toContain(
+            'kept at = .behavior/.radio/record.c0ffee0123456789.json',
+          );
+          expect(output).toContain(
+            'a re-run of the same comment queues it again',
+          );
+          expect(output).not.toContain('re-push of the same task');
+          expect(output).toMatchSnapshot();
+        },
+      );
+    });
+  });
+
   given('[case3] a retry of a drop already made', () => {
     when('[t0] the drop renders', () => {
       const output = asRadioDropOutput({
         record: genDropped(),
         path: '.behavior/.radio/record.a1b2c3d4e5f60718.json',
         behind: 0,
+        behindComments: 0,
         deliverNeedsClaim: null,
         isAlreadyDropped: true,
       });
@@ -149,6 +234,7 @@ describe('asRadioDropOutput', () => {
           record: genDropped(),
           path: '.behavior/.radio/record.a1b2c3d4e5f60718.json',
           behind: 1,
+          behindComments: 0,
           deliverNeedsClaim: genDeliverHeld(),
           isAlreadyDropped: false,
         });

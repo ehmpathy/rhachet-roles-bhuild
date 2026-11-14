@@ -87,6 +87,8 @@ const loadFeedbackTakeSet = (): typeof import('./feedback.take.set') =>
   require('./feedback.take.set');
 const loadInit = (): typeof import('./init.behavior') =>
   require('./init.behavior');
+const loadRadioComment = (): typeof import('./radioTaskComment') =>
+  require('./radioTaskComment');
 const loadRadioPull = (): typeof import('./radioTaskPull') =>
   require('./radioTaskPull');
 const loadRadioPush = (): typeof import('./radioTaskPush') =>
@@ -108,6 +110,7 @@ export const cli = {
   feedbackTakeSet: asLazyCli(() => loadFeedbackTakeSet().feedbackTakeSet),
   giveFeedback: asLazyCli(() => loadFeedbackGive().feedbackGive), // backwards compat
   initBehavior: asLazyCli(() => loadInit().initBehavior),
+  radioTaskComment: asLazyCli(() => loadRadioComment().cliRadioTaskComment),
   radioTaskPull: asLazyCli(() => loadRadioPull().cliRadioTaskPull),
   radioTaskPush: asLazyCli(() => loadRadioPush().cliRadioTaskPush),
   radioTaskQueue: asLazyCli(() => loadRadioQueue().cliRadioTaskQueue),
