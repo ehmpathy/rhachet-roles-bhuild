@@ -101,8 +101,10 @@ test. this stone gates on self-reviews alone, so a red you cannot fix is a halt.
    - `[+]` and `[~]` lines: `rhx git.stage.add <paths>`
    - `[-]` lines: `git.stage.add` refuses a path absent from disk. stage the nearest parent dir
      that still exists, and only when `git status --porcelain <dir>` shows no dirty path under it
-     off the ledger (a route record path does not count: it rides either way). else hold the
-     removal (`.a hold`), the path named — never raw `git rm`
+     off the allowlist. a staged dir takes every dirty path under it, the route record and
+     scratch included, so a removal under the route dir itself (where `.route/` is always dirty)
+     cannot ride this way. else hold the removal (`.a hold`), the path named, for a human to
+     stage — never raw `git rm`
    - a path the record names that is absent, or that `git check-ignore` reports ignored, is
      not staged: say so in `### before`
 3. preflight: `rhx git.commit.set -m @stdin --mode plan --unstaged ignore --push`. the grammar,
