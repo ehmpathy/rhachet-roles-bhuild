@@ -1,7 +1,7 @@
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 
 import { asRadioAuthShown } from './asRadioAuthShown';
-import { asRadioTaskRecordSubjectLine } from './asRadioTaskRecordSubjectLine';
+import { asRadioTaskRecordLabel } from './asRadioTaskRecordLabel';
 import { asRadioTaskRepoSlug } from './asRadioTaskRepoSlug';
 import { asRadioTreeLines } from './asRadioTreeLines';
 
@@ -33,7 +33,7 @@ export const asRadioAmendOutput = (input: {
       branches: [
         { line: `uuid    = ${after.key}`, children: [] },
         {
-          line: `${asRadioTaskRecordSubjectLine({ record: after })} → ${asRadioTaskRepoSlug({ repo: after.repo })}`,
+          line: `task    = ${asRadioTaskRecordLabel({ record: after })} → ${asRadioTaskRepoSlug({ repo: after.repo })}`,
           children: [],
         },
         {

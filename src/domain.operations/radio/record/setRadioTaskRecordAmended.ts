@@ -4,7 +4,6 @@ import { relative } from 'path';
 import { daoRadioTaskRecord } from '@src/access/daos/daoRadioTaskRecord';
 import { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 
-import { asRadioTaskRepoSlug } from './asRadioTaskRepoSlug';
 import { getOneRadioTaskRecordHeldByKey } from './getOneRadioTaskRecordHeldByKey';
 import { isRadioRecordAuthReplayable } from './isRadioRecordAuthReplayable';
 import { withRadioDrainLock } from './withRadioDrainLock';
@@ -55,13 +54,6 @@ const _setRadioTaskRecordAmended = async (
     { key: input.key, verb: 'set' },
     context,
   );
-
-  // a comment's body is its identity (asRadioTaskRecordKeyOfComment), so it is never amended
-  // .note = the key rides in the message, since metadata prints as raw json
-  if (record.kind === 'comment' && input.description !== null)
-    throw new ConstraintError(
-      `--description cannot amend a held comment; its body is its identity. drop it and comment again: rhx radio.task.queue del --uuid ${record.key} --why "<why>", then rhx radio.task.comment --via ${record.via} --into ${asRadioTaskRepoSlug({ repo: record.repo })} --exid ${record.exid} --comment @stdin`,
-    );
 
   // write the amend whole; heldSeq and identity are kept. a new auth clears the last fault: it
   // was the verdict on the old auth, so `queue get` must not repeat its advice. a body-only

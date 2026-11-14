@@ -1,4 +1,3 @@
-import { asCommentKeptNote } from './asCommentKeptNote';
 import { asRadioDeliveredLine } from './asRadioDeliveredLine';
 import { asRadioDrainHeldRow } from './asRadioDrainHeldRow';
 import { asRadioRefusalText } from './asRadioRefusalText';
@@ -6,20 +5,6 @@ import { asRadioTaskRecordLabel } from './asRadioTaskRecordLabel';
 import type { RadioTaskRecordFate } from './RadioTaskRecordFate';
 
 type RadioTreeBranch = { line: string; children: string[] };
-
-/**
- * .what = one drained record as a line, with a note when upstream already held it
- * .why = a found task or a kept comment sent naught, and the line must not read as a new write
- */
-const asDrainedLine = (input: {
-  fate: Extract<RadioTaskRecordFate, { fate: 'delivered' }>;
-}): string => {
-  if (input.fate.outcome === 'found')
-    return `${asRadioDeliveredLine(input.fate)} (already upstream — marked delivered)`;
-  if (input.fate.outcome === 'kept')
-    return `${asRadioDeliveredLine(input.fate)} (${asCommentKeptNote({ via: input.fate.record.via })})`;
-  return asRadioDeliveredLine(input.fate);
-};
 
 /**
  * .what = the sections a drain reports: what went, what closed, what still waits
@@ -35,7 +20,13 @@ export const asRadioDrainSections = (input: {
 }): { drained: RadioTreeBranch[]; closedOrHeld: RadioTreeBranch[] } => {
   // the drained lines print in drain order, so their order alone is the place in line
   const drained = input.fates.flatMap((fate) =>
-    fate.fate === 'delivered' ? [asDrainedLine({ fate })] : [],
+    fate.fate === 'delivered'
+      ? [
+          fate.outcome === 'found'
+            ? `${asRadioDeliveredLine(fate)} (already upstream — marked delivered)`
+            : asRadioDeliveredLine(fate),
+        ]
+      : [],
   );
   const refused = input.fates.flatMap((fate) =>
     fate.fate === 'refused'

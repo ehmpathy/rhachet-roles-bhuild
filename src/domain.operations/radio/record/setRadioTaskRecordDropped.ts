@@ -27,7 +27,6 @@ const _setRadioTaskRecordDropped = async (
   record: RadioTaskRecord;
   path: string;
   behind: number;
-  behindComments: number;
   deliverNeedsClaim: RadioTaskRecord | null;
   isAlreadyDropped: boolean;
 }> => {
@@ -68,8 +67,6 @@ const _setRadioTaskRecordDropped = async (
       daoRadioTaskRecord.get.path({ dir, key: dropped.key }),
     ),
     behind: behindAll.length,
-    behindComments: behindAll.filter((record) => record.kind === 'comment')
-      .length,
     deliverNeedsClaim,
     isAlreadyDropped,
   };
