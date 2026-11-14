@@ -10,6 +10,6 @@ exports[`git.grove.send given: [case1] a hetzner grove (no aws lever) that ssh c
 
 exports[`git.grove.send given: [case1] a hetzner grove (no aws lever) that ssh cannot reach when: [t1] a file is sent then: the words a human reads are pinned 1`] = `
 "   └─ 💥 the write failed
-      if the grove did not answer: check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove-sandpine-hetzner-v20261022-1
+      └─ if the grove did not answer: check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove-sandpine-hetzner-v20261022-1
 "
 `;

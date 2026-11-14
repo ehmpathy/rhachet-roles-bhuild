@@ -195,7 +195,7 @@ exports[`git.grove.wake.tailnet given: [case5] a grove that is not registered wh
       git grove set grove-sandpine-unregistered --at camper@<tailnet-host>:22
     an ec2 grove, which aws powers up:
       git grove set grove-sandpine-unregistered --exid grove-sandpine-unregistered --env camp --account <id>
-    ⚠️ an account on a non-aws box sends the wake to hunt an ec2 that is not there
+    🟡 an account on a non-aws box sends the wake to hunt an ec2 that is not there
   or list what is registered —
     rhx git.grove.list
 "

@@ -171,7 +171,7 @@ if [[ -n "$FILE" ]]; then
   # stdin: forwarded on purpose
   if ! ssh "$SSH_ALIAS" "mkdir -p \"\$(dirname $INTO_Q)\" && cat > $INTO_Q" < "$FILE"; then
     echo "   └─ 💥 the write failed" >&2
-    echo "      if the grove did not answer: $(__grove_unreached_cure "$GROVE")" >&2
+    echo "      └─ if the grove did not answer: $(__grove_unreached_cure "$GROVE")" >&2
     exit 1
   fi
 

@@ -141,7 +141,7 @@ if [[ ! -f "$REGISTRY" ]]; then
   echo "      git grove set $GROVE --at camper@<tailnet-host>:22" >&2
   echo "    an ec2 grove, which aws powers up:" >&2
   echo "      git grove set $GROVE --exid $GROVE --env camp --account <id>" >&2
-  echo "    ⚠️ an account on a non-aws box sends the wake to hunt an ec2 that is not there" >&2
+  echo "    🟡 an account on a non-aws box sends the wake to hunt an ec2 that is not there" >&2
   echo "  or list what is registered —" >&2
   echo "    rhx git.grove.list" >&2
   exit 2
