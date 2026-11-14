@@ -1,5 +1,19 @@
-// diagnose: ask the pinned claude cli per brain with the ehmpath/test key; print the verdict, never the key
+/**
+ * .what = ask the pinned claude cli once per brain id, with the ehmpath/test key; print each verdict
+ * .why  = the brain.claude contract test slices stdout to 500 chars, so a red run hides whether
+ *         the model id or the account is the cause. the key never reaches stdout or stderr
+ */
 import { spawnSync } from 'child_process';
+
+// parse cli stdout as json; only a syntax error means "not json", all else throws
+const asParsedJsonOrNull = (text) => {
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    if (error instanceof SyntaxError) return null;
+    throw error;
+  }
+};
 
 const sourced = spawnSync('rhx', ['keyrack', 'source', '--owner', 'ehmpath', '--env', 'test', '--key', 'ANTHROPIC_API_KEY', '--lenient'], { encoding: 'utf-8' });
 const match = /ANTHROPIC_API_KEY=['"]?([^'"\n]+)/.exec(sourced.stdout ?? '');
@@ -17,8 +31,7 @@ for (const brain of brains) {
     timeout: 180000,
     env: { ...process.env, ANTHROPIC_API_KEY: apiKey },
   });
-  let parsed = null;
-  try { parsed = JSON.parse(answer.stdout); } catch { /* not json */ }
+  const parsed = asParsedJsonOrNull(answer.stdout ?? '');
   console.log('\n=== brain', brain, 'exit', answer.status);
   console.log('stderr:', (answer.stderr ?? '').split(apiKey).join('<key>').slice(0, 800));
   if (parsed) {

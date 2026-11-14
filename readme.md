@@ -59,6 +59,13 @@ npx rhachet run --repo bhuild --role behaver --skill init.behavior \
   --name say-hello
 ```
 
+every route ends with `6.preship` (ship to a green pr) then `7.reflect` (lessons and cures). the
+tail calls skills from three more roles, so enroll them before a route reaches it: ehmpathy
+`mechanic`, bhuild `dispatcher`, and bhuild `dreamer`. a route
+inited before that tail gains it by a re-init at its own `--size`: the re-init writes every absent
+file of that size and keeps every extant one, so it also restores any stone removed with
+`route.stone.del`. a bare re-run uses the default size, `medi`, and adds every medi stone.
+
 ### bind.behavior
 
 bind, unbind, or query branch-to-behavior binds.

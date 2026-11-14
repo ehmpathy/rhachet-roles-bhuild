@@ -1,9 +1,9 @@
-# F3 · the sense of "inside open hours a commit lands after 20:00 CT"
+# F3 · the sense of "inside open hours a commit lands after the open-hours cutoff"
 
-- **the fork**: (a) bake "after 20:00 CT" into the preship stone text; (b) the stone defers to an
+- **the fork**: (a) bake "after the open-hours cutoff" into the preship stone text; (b) the stone defers to an
   operator config for the hour and zone; (c) drop the clause from the template.
 - **taken (best guess)**: read it as "a commit made inside the operator's open hours waits until
-  after 20:00 CT", and (b) for where the hour lives.
+  after the open-hours cutoff", and (b) for where the hour lives.
 - **rework**: clean — a sentence in one template.
 - **confidence**: 35% — the reason for the hold, and the bounds of "open hours", are not stated.
 - **where**: `1.vision.yield.md` q3; c8.

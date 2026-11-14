@@ -137,3 +137,28 @@ exports[`init.behavior.idempotent given: [case9] direct: idempotent reruns prese
    ├─ branch bound to behavior, to boot via hooks
    └─ branch bound to route, to drive via hooks"
 `;
+
+exports[`init.behavior.idempotent given: [case10] direct: a route inited before the tail, re-inited at its own size when: [t0] init.behavior --size nano runs on a nano route that lacks the tail then: the stdout shows the tail created and the rest kept 1`] = `
+"🦫 oh, behave!
+   ├─ ✓ 0.wish.md
+   ├─ ✓ 1.vision.guard
+   ├─ ✓ 1.vision.stone
+   ├─ ✓ 5.1.execution.from_vision.guard
+   ├─ ✓ 5.1.execution.from_vision.stone
+   ├─ ✓ 5.3.verification.guard
+   ├─ ✓ 5.3.verification.stone
+   ├─ + 6.preship.guard
+   ├─ + 6.preship.stone
+   ├─ + 7.reflect.guard
+   ├─ + 7.reflect.stone
+   └─ ✓ refs/template.[feedback].v1.[given].by_human.md
+
+🌲 go on then,
+   ├─ .behavior/v{DATE}.pre-tail/0.wish.md
+   └─ tip: use --open to open the wish automatically
+
+🍄 we'll remember,
+   ├─ branch feature/pre-tail-reinit-test <-> behavior v{DATE}.pre-tail
+   ├─ branch bound to behavior, to boot via hooks
+   └─ branch bound to route, to drive via hooks"
+`;

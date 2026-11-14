@@ -1,4 +1,4 @@
-ship the route's work: green locally on the full suite, then a green pull. never merge.
+ship the route's work: green locally on the full suite, then a green pr. never merge.
 
 ---
 
@@ -12,45 +12,221 @@ names: a stone that names a commit as its deliverable.
 ## .why
 
 a route that ends at verification or playtest leaves its work on the box: suite green, nobody can
-see it, nobody can merge it. the pull is how the work reaches the commander.
+see it, nobody can merge it. the pr is how the work reaches the human who merges it.
+
+## .the roles the tail needs
+
+this stone and `7.reflect` call skills outside `behaver` and the bhrain driver. enroll them first:
+
+| role | skills the tail calls |
+|---|---|
+| ehmpathy `mechanic` | `git.repo.test`, `git.commit.set`, `git.commit.push`, `git.stage.add`, `git.release`, `show.gh.test.errors`, `cicd.deflake`, `symlink` |
+| bhuild `dispatcher` | `radio.task.push` |
+| bhuild `dreamer` | `catch.dream` |
+
+## .the record you keep
+
+- **the route record** = `$BEHAVIOR_DIR_REL/.route/`, `$BEHAVIOR_DIR_REL/.radio/`, and the two tail
+  yields. it changes on every stone, so no step keys on "the tree is clean". it rides the record
+  commit at the end of `7.reflect`, never this stone's commit
+- **the deliverable** = every file of the route dir outside the route record and scratch: each
+  non-tail stone's yield, stamp, and peer artifacts (e.g. `1.vision.experience.*`), `.fulcrums/`,
+  `.reviews/`, and the `dreams/` links
+- **scratch** = `drafts/`, `appendix/`, `archive/`, a stale `blocker/`. scratch never rides
+- **a work change** = an uncommitted path on the allowlist (step 2)
+- **`### rounds`** in the yield: one line per try of each bounded loop (fix round, watch). count
+  from this ledger, never from memory. a count resets when a human unblocks a halt on it, or when
+  its cause changes; the line names which
 
 ## .the steps
 
-1. **run the full suite**: `rhx git.repo.test --what all --mode apply`.
-   paste each command, its summary line, and its exit code into the yield.
-   red → fix the cause, then run it again. no commit on red.
+### 0. re-entry
 
-2. **commit at the done gate**: `rhx git.commit.set -m @stdin --mode apply --push`.
-   the push opens the pull, or updates the one an earlier checkpoint opened.
+key on the commit, never on the tree. read the pr: `gh pr view --json state,headRefOid`. this read
+learns only whether an earlier push landed; it grades no green — that is step 3's watch.
 
-3. **watch the pull**: `rhx git.release --watch`. then prove the watch saw your push:
-   `gh pr view --json headRefOid,statusCheckRollup` — `headRefOid` must equal `git rev-parse HEAD`,
-   and the rollup must be non-empty and all green. either fails → watch again.
-   a green on an older head (an earlier checkpoint's) does not count.
-   - red → `rhx show.gh.test.errors`, fix the cause, commit, push, watch again
-   - a flake → `rhx cicd.deflake init`, never a blind re-run
+- a pr that is `MERGED` or `CLOSED` → halt (`--as blocked`) with that state verbatim
+- no pr yet: no work change → an earlier run committed but its push did not land; push only, via
+  `rhx git.commit.push --mode apply` (that push opens the pr), then step 3. a work change → step 1
+- a pr, no work change, local head (`git log -1 --format=%H`) equal to `headRefOid` → step 3
+- a pr, no work change, local head not equal to `headRefOid` → push only, as above, then step 3
+- a pr and a work change → step 1
 
-4. **stop**. never `--apply`, never merge. the commander merges at the release gate.
+a second run, after a full or a partial first run, adds no commit of its own.
 
-## .when a commit is refused
+### 1. the full suite
 
-a refused commit is **held, never a halt**:
+every test kind the repo's cicd runs, in two calls (`--what all` covers lint, unit, integration,
+and acceptance; types and format run apart):
 
-- paste the refusal verbatim into the yield, under `## .held`
-- name the grant it asks for, as printed
-- name what is held: the done work, uncommitted
-- go on to the next stone. the director lands a held commit when the switch opens
+- `rhx git.repo.test --what types,format --mode apply`
+- `rhx git.repo.test --what all --against local --env test --mode apply`
+- a kind the repo's `test:*` scripts declare beyond these (e.g. `test:commits`) is named and run
+  too. the yield lists each kind run, so a skipped kind shows
 
-never route around a refusal: no raw `git commit`, no new branch, no `--no-verify`, no force push,
-no wait loop.
+pass the tool's max timeout to each call. a call the tool cuts off is no try: re-run it free,
+**at most 3 cut-offs per call**; a fourth → halt (`--as blocked`) with the cut-off output verbatim.
 
-## .when a push is refused
+paste each command, its summary line, and its exit code. sort the outcome by what the skill
+printed, never by the exit code alone (a red suite and a refused input both exit 2):
 
-the same hold, with one exception: a hook failure you can fix (a lint the local suite skipped) is
-fixed, committed, and pushed again — the hook passes on its own terms, never bypassed.
+- a test failed → fix the cause, run again. no commit on red. **at most 3 fix rounds**; still red
+  → halt (`--as blocked`) with the last failure verbatim
+- the skill refused its input or a credential (a flag it names as absent, a locked keyrack) →
+  halt now, with the refusal and its printed hint verbatim. a fix round cannot unlock a key
+- the same test fails on `main` too → not this change's red: halt with both runs verbatim
 
-any other refusal (a grant only a human holds, a protected ref, a branch another party pushed to)
-is pasted verbatim under `## .held`, with the grant or the party it needs, and you go on.
+a fix round never turns red green with a skip, an `.only`, a loosened assertion, or a deleted
+test. this stone gates on self-reviews alone, so a red you cannot fix is a halt.
+
+### 2. commit at the done gate
+
+1. write the yield's `### before`: the head sha (`git log -1 --format=%H`) and the allowlist you
+   will stage. step 0 and the landed check below read it after a lost context
+2. stage the allowlist: the deliverable plus each path in the `### filediff` section of the
+   route's `5.1.execution.*.yield.md` — the route's file ledger. the ledger is the source, never
+   memory, never the git status output minus a deny list. a fix round in step 1 or step 3 appends
+   its own lines to the ledger first. what never rides: `.log/`, `.temp/`, and scratch. never
+   `--unstaged include`: it sweeps another route in the same worktree into the commit
+   - **no ledger** (a route from before the ledger, re-init'd to gain the tail): build it once,
+     now, into the 5.1 yield's `### filediff`. read `git diff --name-status origin/main...HEAD`
+     and `git status --porcelain`, and judge each path by hand: this route's, or not. write only
+     this route's
+   - **read the ledger by path, last line wins**: `[+]` then `[-]` of a path never committed
+     cancels (stage naught); `[-]` then `[+]` is a `[~]`. settle every path's net line before any
+     stage call, since one absent path fails the whole `git.stage.add` call
+   - **reconcile**: read `git status --porcelain` as a check, never as the source. each dirty
+     path that is neither on the ledger nor scratch is one this route forgot (add its ledger
+     line) or one another party owns (name it in `### before` as left, never staged)
+   - `[+]` and `[~]` lines: `rhx git.stage.add <paths>`
+   - `[-]` lines: `git.stage.add` refuses a path absent from disk. stage the nearest parent dir
+     that still exists, and only when `git status --porcelain <dir>` shows no dirty path under it
+     off the ledger (a route record path does not count: it rides either way). else hold the
+     removal (`.a hold`), the path named — never raw `git rm`
+   - a path the record names that is absent, or that `git check-ignore` reports ignored, is
+     not staged: say so in `### before`
+3. preflight: `rhx git.commit.set -m @stdin --mode plan --unstaged ignore --push`. the grammar,
+   no-quota-granted, push, and sponsor refusals fire here, before any quota is spent. a spent
+   quota (no uses left) is checked only at apply, so step 4 can still be refused: that refusal
+   is a grant refusal, held as below. the plan lists the staged set: it must equal the
+   `### before` allowlist. a path staged by another party is not yours to unstage: hold the
+   commit (`.a hold`), the extra paths named
+4. commit: `rhx git.commit.set -m @stdin --mode apply --unstaged ignore --push`
+
+the message keys on **branch state**, never on this stone's own count:
+
+- the branch holds no behavioral commit yet → `feat(scope):` or `fix(scope):`, per the branch
+  bind. `--promise is-netnew-behavior` only when the branch has no level and the wish adds a new
+  behavior — never to dodge a refusal
+- the branch already holds one (an earlier route, a human's commit) → `cont(scope):`
+- unsure which → the step 3 preflight refuses a wrong prefix and prints the one it demands; write
+  that header
+
+the body, in this shape (the pr title and body come from the first behavioral commit, so this is
+the human's view of the pr):
+
+```
+what shipped: {one line per deliverable}
+route: $BEHAVIOR_DIR_REL
+issue: {closes #N, or refs #N when part of the wish is deferred}
+held: {each ### held item, or: none}
+```
+
+sort a refusal by who can clear it:
+
+- **an input refusal** — a file left unstaged, a message of the wrong shape → fix it and run
+  step 2 again, inside the 3-round bound
+- **a grant refusal** — no commit quota, quota spent, push not allowed, stage not allowed, no
+  sponsor bound → held, never a halt (see `.a hold`)
+- **the pr cannot open: the seaturtle keyrack token is absent** — read the ambient gh login:
+  `gh api --method GET user --jq .login`. the bot's login → push again with
+  `rhx git.commit.push --mode apply --auth as-human`. any other login → held, like a refused push:
+  a pr opened under a human account is a public write under that human's identity
+- **a push only, refused because HEAD is not the bot's commit** (a human committed last) → held,
+  never a grant refusal: the human pushes their own commit. note that the supplier pushes with
+  `--force-with-lease`, so a push only is safe only over a branch no other party pushed to
+- **the commit landed, the push failed** — `git.commit.set` exits 2 here too, after the commit
+  exists. before any re-run, read `git log -1 --format=%H` against `### before`: a head that
+  moved means the commit landed. never commit again — push only, as step 0 does
+
+### 3. watch the pr
+
+`rhx git.release --watch`, in the foreground (it needs a tty; never background it), with the
+tool's max timeout (the watch caps itself at 15 minutes), until it reports green for the head you
+pushed. paste the pushed sha (`git log -1 --format=%H`) and the watch's final output into `### pr`.
+
+- the tool cut the watch off before its own cap → no try: re-run it free, **at most 3 cut-offs**;
+  a fourth → halt (`--as blocked`) with the cut-off output verbatim
+- the watch hit its own cap with no verdict → watch again, **at most 3 watches**; still none →
+  halt (`--as blocked`) with the watch output verbatim
+- red → `rhx show.gh.test.errors`, fix the cause, commit (step 2), push, back to step 3.
+  **at most 3 fix rounds**; still red → halt (`--as blocked`) with the failed checks verbatim
+- a flake → `rhx cicd.deflake init`, never a blind re-run
+
+every loop in this stone shares one bound: 3 tries, counted in `### rounds`, then a halt with the
+cause verbatim.
+
+### 4. stop
+
+never `--apply`, never merge. the human merges at the release gate.
+
+## .a refused commit
+
+a grant refusal is **held, never a halt**. the done work stays on the tree, recorded, and the
+route goes on to `7.reflect`.
+
+## .a refused push
+
+held, the same as a commit — with one exception: a hook failure you can fix (a lint the local
+suite skipped) is fixed, committed, and pushed again. the hook passes on its own terms, never
+bypassed.
+
+any other rejection — auth, a protected ref, a branch another party pushed to (non-fast-forward)
+— is pasted verbatim under `### held`, with the grant or the party it needs, and you go on.
+never a force push over another party's commits.
+
+## .a hold
+
+a hold is durable and discoverable, never a lone yield line:
+
+- the yield's `### held` names the refusal verbatim, the human who can grant it, the grant
+  command as the skill printed it (e.g. `rhx git.commit.uses set --quant N --push allow`, plus
+  `--stage allow`), and N: the commits this route still needs — 1 for this stone, plus 1 per fix
+  round and per in-repo reflect cure, plus 1 for reflect's record commit
+- the same record goes off the box, to the repo's own issue tracker:
+  `rhx radio.task.push --via gh.issues --into @this --title "<route slug>: held <stone> commit, round <n>" --description @stdin`
+  with a description in this shape:
+
+  ```
+  held: {the refusal, verbatim}
+  grant: {the grant command, as printed}
+  route: $BEHAVIOR_DIR_REL
+  message: {the commit message the grant will land}
+  land via: rhx route.stone.set --stone 6.preship --as rewound, then 6.preship's commit and watch steps
+  ```
+
+  the route reads complete after a hold, so the rewind is the way back in: once the grant lands,
+  the human (or a driver they send) rewinds 6.preship and drives it again. step 0 then reads the
+  held work as a work change. the rewind cascades to `7.reflect` too: its rerun reads its own
+  prior yield first, keeps the lessons it already wrote, and counts a `found` task as delivered
+
+  the title carries the stone and the round, so a second hold is a second task. a `found` outcome
+  for a hold not yet sent means it was not delivered: the yield says so. a shut radio gate holds
+  the task in `$BEHAVIOR_DIR_REL/.radio/` and delivers it on the next push that gets through
+- a hold at a step-3 fix round leaves the pr red: the yield says so verbatim. never claim a green
+  you did not see
+
+## .an absent skill
+
+`rhx` cannot find a skill the tail calls → paste the error, name its role from the table above,
+and halt (`--as blocked`). a halt, not a hold: a hold waits for a grant, and an absent tool has
+none to wait for. one exception: if only `radio.task.push` is absent at a hold, the hold is still
+written to `### held` and printed to stdout, and the route goes on.
+
+## .forbidden around any refusal
+
+no raw `git commit`, no new branch, no `--no-verify`, no force push, no sleep-and-retry loop. the
+bounded re-watch in step 3 is a fresh call per watch, not a loop around a refusal.
 
 ## .emit
 
@@ -60,14 +236,22 @@ emit to
 ```
 ## preship
 
-### suite
-- the full suite, each command + summary + exit code, verbatim
+### rounds
+- {loop}: try {n} — {outcome} (or: reset — {why})
 
-### pull
-- the pull url
-- the pushed sha (`git rev-parse HEAD`)
-- the `headRefOid` and rollup, verbatim
+### suite
+- each kind run: command + summary + exit code, verbatim
+
+### before
+- head: {sha before the commit}
+- allowlist: {each path staged}
+
+### pr
+- the pr url
+- the pushed sha (`git log -1 --format=%H`)
+- the watch's final output, verbatim
+- (or: held — see ### held)
 
 ### held
-- each refusal verbatim, the grant it needs, and what it holds (or: none)
+- each refusal verbatim, the human who can grant it, the grant command, N, and the task it went to (or: none)
 ```

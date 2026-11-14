@@ -18,13 +18,13 @@ const TEMPLATES_DIR = join(__dirname, 'templates');
  * .what = recursively read all files in a directory
  * .why = templates may be in subdirectories (e.g., refs/)
  */
-const getAllFilesRecursive = (dir: string, prefix = ''): string[] => {
+const getAllFilePathsRelative = (dir: string, prefix = ''): string[] => {
   const entries = readdirSync(dir, { withFileTypes: true });
   const files: string[] = [];
   for (const entry of entries) {
     const relPath = prefix ? `${prefix}/${entry.name}` : entry.name;
     if (entry.isDirectory()) {
-      files.push(...getAllFilesRecursive(join(dir, entry.name), relPath));
+      files.push(...getAllFilePathsRelative(join(dir, entry.name), relPath));
     } else {
       files.push(relPath);
     }
@@ -60,7 +60,7 @@ export const initBehaviorDir = (input: {
   mkdirSync(input.behaviorDir, { recursive: true });
 
   // read all template files (recursive to include subdirectories like refs/)
-  const templateFiles = getAllFilesRecursive(TEMPLATES_DIR);
+  const templateFiles = getAllFilePathsRelative(TEMPLATES_DIR);
 
   // determine which templates to process
   const templatesToProcess = computeTemplatesToProcess({
