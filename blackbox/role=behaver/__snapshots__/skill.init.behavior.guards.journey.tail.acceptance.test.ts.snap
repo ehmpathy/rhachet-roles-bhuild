@@ -12,17 +12,7 @@ exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard be
    │  └─ brain = claude-sonnet-5-5[1m]
    │
    └─ ✋ halted, brain switch could not land
-      ├─ this driver runs = unknown — no clone address was confirmed
-      │
-      ├─ why
-      │  ├─ this driver is not an enrolled clone, so \`clone say\` has naught to address
-      │  └─ the usual cause is a driver launched directly rather than by \`rhx enroll\`
-      │
-      ├─ fix: re-enroll the driver with a slug, then re-enter the stone
-      │  └─ rhx enroll claude --as @:driver --roles driver
-      │
-      └─ or: remove \`brain:\` from the stone's guard, and inherit the brain deliberately
-         └─ .behavior/v{DATE}.full-journey/6.preship.guard"
+<host cause, masked>"
 `;
 
 exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard behavior opened at its tail when: [t1] preship pass attempted with no yield then: blocked 1`] = `
@@ -159,17 +149,7 @@ exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard be
    │  └─ brain = claude-opus-5-5[1m]
    │
    └─ ✋ halted, brain switch could not land
-      ├─ this driver runs = unknown — no clone address was confirmed
-      │
-      ├─ why
-      │  ├─ this driver is not an enrolled clone, so \`clone say\` has naught to address
-      │  └─ the usual cause is a driver launched directly rather than by \`rhx enroll\`
-      │
-      ├─ fix: re-enroll the driver with a slug, then re-enter the stone
-      │  └─ rhx enroll claude --as @:driver --roles driver
-      │
-      └─ or: remove \`brain:\` from the stone's guard, and inherit the brain deliberately
-         └─ .behavior/v{DATE}.full-journey/7.reflect.guard"
+<host cause, masked>"
 `;
 
 exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard behavior opened at its tail when: [t5] reflect is promised and passed then: allowed after it 1`] = `
@@ -185,6 +165,101 @@ exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard be
       └─ rhx route.drive"
 `;
 
+exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard behavior opened at its tail when: [t5] reflect is promised and passed then: blocked before the promise 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+
+🦉 the way speaks for itself
+
+🗿 route.stone.set
+   ├─ stone = 7.reflect
+   └─ passage = blocked (review.self required)
+
+🌕 lets reflect
+   │
+   ├─ review.self 1/1
+   │  ├─ slug = has-stub-review
+   │  ├─ question all, especially yourself
+   │  └─ see the guide below
+   │
+   ├─ stillness 🪷
+   │  ├─
+   │  │
+   │  │  so it is. a chance to slow down, breathe, and see clearly.
+   │  │
+   │  │  self review time is a sanctuary. a gift. a luxury not always available.
+   │  │
+   │  │  it is not every day one has a quiet moment to take a slow,
+   │  │  methodical, patient, and thorough review.
+   │  │
+   │  │  tea first. then, we proceed 🍵
+   │  │
+   │  └─
+   │
+   ├─ before you begin 🪷
+   │  ├─
+   │  │
+   │  │  - clear your mind. this is dedicated review time.
+   │  │  - open each artifact mentioned in the guide
+   │  │  - read through them slowly, line by line
+   │  │  - question every assumption made
+   │  │  - look with fresh eyes, as if for the first time
+   │  │
+   │  └─
+   │
+   ├─ here's the guide
+   │  ├─
+   │  │
+   │  │  stub self-review; the real roster is read in isolation.
+   │  │
+   │  └─
+   │
+   ├─ be here now 🪷
+   │  ├─
+   │  │
+   │  │  refocus.
+   │  │
+   │  │  the review is the work.
+   │  │  not a step to complete.
+   │  │  not a gate to pass.
+   │  │  not a checkbox to check.
+   │  │
+   │  │  it is the work itself.
+   │  │
+   │  │  you do not care about the stone.
+   │  │  you only care about the review.
+   │  │
+   │  └─
+   │
+   ├─ walk the way 🪷
+   │  │
+   │  ├─ articulate into
+   │  │  ├─ .behavior/v{DATE}.full-journey/review/self/for.7.reflect._.has-stub-review.md
+   │  │  └─ the guard looks precisely here, write exactly to this path
+   │  │
+   │  ├─ for each found issue 🪘
+   │  │  ├─
+   │  │  │
+   │  │  │  articulate how it was fixed
+   │  │  │  so you remember for next time
+   │  │  │
+   │  │  └─
+   │  │
+   │  └─ for each non issue 🪘
+   │     ├─
+   │     │
+   │     │  articulate why it holds
+   │     │  so others can learn from it
+   │     │
+   │     └─
+   │
+   └─ when you've truly reflected, run
+      └─ rhx route.stone.set --stone 7.reflect --as promised --that has-stub-review \\
+         --into .behavior/v{DATE}.full-journey/review/self/for.7.reflect._.has-stub-review.md
+🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+   └─ ✋ blocked by constraints
+"
+`;
+
 exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard behavior opened at its tail when: [t6] the driver drives past the last stone then: the route is complete: no next stone 1`] = `
 "🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
 
@@ -192,4 +267,21 @@ exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard be
 
 🗿 route.drive
    └─ route complete! 🌴🤙"
+`;
+
+exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard behavior opened at its tail when: [t7] the ship tool is called where no role was enrolled (case=16, c27) then: the call fails loud: the error a stranger meets, snapped 1`] = `
+"
+✋ ConstraintError: no skill "git.commit.set" found with --repo ehmpathy
+
+tip: did you \`npx rhachet roles link\` the --role this skill comes from?
+
+{
+  "input": {
+    "slugRepo": "ehmpathy",
+    "slugSkill": "git.commit.set"
+  }
+}
+
+[args] run,--repo,ehmpathy,--skill,git.commit.set,--,--help
+"
 `;

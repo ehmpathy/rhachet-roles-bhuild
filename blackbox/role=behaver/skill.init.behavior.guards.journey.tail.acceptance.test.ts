@@ -9,6 +9,7 @@ import {
   genGuardedBehaviorScene,
   getStonesPassed,
   promiseAllReviewSelfs,
+  runSkill,
   setRouteDriven,
   setStoneAs,
   setStonesDeleted,
@@ -24,9 +25,28 @@ import { asSnapshotStable } from './.test/skill.init.behavior.utils';
  * .note = the self-review roster is stubbed to one slug per guard (genGuardedBehaviorScene), per
  *         rule.forbid.live-review-rosters-in-acceptance-journeys; `peer: []` and the absent
  *         `judges:` stay verbatim, since they are the shape under test
- * .note = no commit or push runs: a temp repo has no remote. the ship acts are template text,
- *         held by templates.tail.integration.test.ts
+ * .note = the ship commit and push never run: a temp repo has no remote. the one `git commit`
+ *         here is setup (the drop of `src/`). the ship acts are template text, held by
+ *         templates.tail.integration.test.ts
+ * .note = route.drive halts at each tail stone (the brain switch cannot land in a test session);
+ *         the frontier is proven by its `stone =` and `brain =` rows, the snap stops at the halt
+ *         line, and passage is driven by `route.stone.set` directly
  */
+/**
+ * .what = a drive's output, with the host's cause under the halt line masked
+ * .why  = the cause printed under the halt is the host's: a `clone whoami` probe that times out
+ *         on one host fails at once on another, and each prints a different tree of lines. the
+ *         mask keeps the halt line and marks where the cause sits, so the snap is the same on
+ *         every host and a drift in the frame around it still shows
+ */
+const HALT_LINE = 'halted, brain switch could not land';
+const asDriveOutputThroughHalt = (input: { output: string }): string => {
+  const index = input.output.indexOf(HALT_LINE);
+  return index === -1
+    ? input.output
+    : `${input.output.slice(0, index + HALT_LINE.length)}\n<host cause, masked>`;
+};
+
 describe('skill.init.behavior.guards.journey.tail', () => {
   given('[case1] a heavy-guard behavior opened at its tail', () => {
     const scene = useBeforeAll(async () => {
@@ -109,6 +129,22 @@ describe('skill.init.behavior.guards.journey.tail', () => {
       // [t6] the drive past the last stone
       const finalDrive = setRouteDriven(behavior);
 
+      // [t7] the ship tool in a consumer that enrolled no role (case=16, c27): a nested git
+      //      repo with the scene's node_modules but no .agent/, so no role is linked
+      const repoUnenrolledDir = path.join(behavior.repoDir, '.temp', 'unenrolled');
+      fs.mkdirSync(repoUnenrolledDir, { recursive: true });
+      execSync('git init -q', { cwd: repoUnenrolledDir, stdio: 'pipe' });
+      fs.symlinkSync(
+        path.join(behavior.repoDir, 'node_modules'),
+        path.join(repoUnenrolledDir, 'node_modules'),
+      );
+      const skillUnenrolled = runSkill({
+        repo: 'ehmpathy',
+        skill: 'git.commit.set',
+        args: '--help',
+        cwd: repoUnenrolledDir,
+      });
+
       return {
         ...behavior,
         preshipDrive,
@@ -119,6 +155,7 @@ describe('skill.init.behavior.guards.journey.tail', () => {
         reflectPassWithoutPromise,
         reflectPassAfterPromise,
         finalDrive,
+        skillUnenrolled,
       };
     });
 
@@ -127,9 +164,12 @@ describe('skill.init.behavior.guards.journey.tail', () => {
     when('[t0] the driver enters the tail', () => {
       then('the frontier is 6.preship, on sonnet, the build brain', () => {
         const output = asCallOutput({ call: scene.preshipDrive });
-        expect(asSnapshotStable(output)).toMatchSnapshot();
+        expect(
+          asSnapshotStable(asDriveOutputThroughHalt({ output })),
+        ).toMatchSnapshot();
         expect(output).toContain('stone = 6.preship');
         expect(output).toContain('brain = claude-sonnet-5-5[1m]');
+        expect(output).toContain('halted, brain switch could not land');
       });
     });
 
@@ -162,18 +202,21 @@ describe('skill.init.behavior.guards.journey.tail', () => {
     when('[t4] the driver drives on', () => {
       then('the frontier is 7.reflect, on opus, the design brain', () => {
         const output = asCallOutput({ call: scene.reflectDrive });
-        expect(asSnapshotStable(output)).toMatchSnapshot();
+        expect(
+          asSnapshotStable(asDriveOutputThroughHalt({ output })),
+        ).toMatchSnapshot();
         expect(output).toContain('stone = 7.reflect');
         expect(output).toContain('brain = claude-opus-5-5[1m]');
+        expect(output).toContain('halted, brain switch could not land');
       });
     });
 
     when('[t5] reflect is promised and passed', () => {
       then('blocked before the promise', () => {
         expect(scene.reflectPassWithoutPromise.code).not.toEqual(0);
-        expect(asCallOutput({ call: scene.reflectPassWithoutPromise })).toContain(
-          'review.self required',
-        );
+        const output = asCallOutput({ call: scene.reflectPassWithoutPromise });
+        expect(asSnapshotStable(output)).toMatchSnapshot();
+        expect(output).toContain('review.self required');
       });
 
       then('allowed after it', () => {
@@ -199,6 +242,15 @@ describe('skill.init.behavior.guards.journey.tail', () => {
         expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).not.toContain('stone = 6.preship');
         expect(output).not.toContain('stone = 7.reflect');
+      });
+    });
+
+    when('[t7] the ship tool is called where no role was enrolled (case=16, c27)', () => {
+      then('the call fails loud: the error a stranger meets, snapped', () => {
+        expect(scene.skillUnenrolled.code).not.toEqual(0);
+        const output = asCallOutput({ call: scene.skillUnenrolled });
+        expect(asSnapshotStable(output)).toMatchSnapshot();
+        expect(output).toContain('git.commit.set');
       });
     });
   });

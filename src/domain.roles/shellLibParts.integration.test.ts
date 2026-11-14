@@ -27,7 +27,7 @@ import { copyFileSync, readdirSync, readFileSync } from 'fs';
 import { basename, dirname, join } from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
-import { getAllFilesRecursive } from './.test/getAllFilesRecursive';
+import { getAllFilesRecursive } from '../.test/utils/getAllFilesRecursive';
 import { getShellLibParts } from './.test/getShellLibWhole';
 import { tempDirs } from './.test/tempDirs';
 
