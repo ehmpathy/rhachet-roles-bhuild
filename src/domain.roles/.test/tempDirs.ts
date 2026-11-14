@@ -22,9 +22,8 @@
  *         BY the lift's own test suites is the defect the split exists to end.
  *
  * .how  = `src/domain.roles/.test/` is the common ancestor of every role dir,
- *         and it already holds shared suite operations
- *         (`getAllFilesRecursive`). the supervisor's tmux/crew-specific harness
- *         stays where it is.
+ *         so a suite operation every role shares lives here. the
+ *         supervisor's tmux/crew-specific harness stays where it is.
  *
  * .note = ONE export, a single object, and that shape is load-central rather
  *         than cosmetic. the three operations are the only legal moves on one

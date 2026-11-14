@@ -7,8 +7,8 @@ brain: claude-sonnet-5-5[1m]
 
 # guard for the preship stone
 #
-# self-reviews only: no peer lane and no judges. the commander's gate is the merge, so a peer
-# round here would only re-read a pull the commander reads anyway.
+# self-reviews only: no peer lane and no judges. the human's gate is the merge, so a peer round
+# here would only re-read a pr the human reads anyway.
 artifacts:
   - "$route/6.preship.yield.md"
 
@@ -18,38 +18,43 @@ reviews:
       say: |
         double-check: did the full suite pass locally before the commit?
 
-        paste, for each suite, verbatim from your terminal:
+        paste, for each kind run, verbatim from your terminal:
         - the exact command you ran
         - the final summary line (counts)
         - the exit code
 
+        did both calls run — `--what types,format` and `--what all --against local --env test`?
         a claim with no paste is a feigned review. red anywhere → you did not commit.
 
     - slug: has-watched-the-head-green
       say: |
-        double-check: is the pull green for the commit you pushed — not an older one?
+        double-check: is the pr green for the commit you pushed — not an older one?
 
-        paste, verbatim:
-        - `git rev-parse HEAD`
-        - `gh pr view --json headRefOid,statusCheckRollup`
+        paste the `### pr` section of your yield:
+        - the pushed sha (`git log -1 --format=%H`)
+        - the final output of `rhx git.release --watch`
 
-        do the two shas match? is the rollup non-empty, and is every check green?
-        `rhx git.release --watch` alone does not prove it: it can report done before github
-        registers the checks for your push.
+        did the watch report green after your last push?
+
+        held arm: if a commit or push was held, paste the `### held` record and the last watch
+        output instead. there is no pushed head to confirm — do not claim one.
 
     - slug: has-held-not-bypassed
       say: |
         double-check: did any commit or push refuse?
 
-        - is each refusal pasted verbatim under `## .held`, with the grant it asks for?
-        - did you reach for raw git, a new branch, --no-verify, or a force push? (forbidden)
-        - did you go on, rather than halt? a refusal is held, never a halt
+        a **grant** refusal is held, never a halt. a refused suite, an absent skill, and a spent
+        bound are halts.
 
-    - slug: has-left-the-merge-to-the-commander
+        - is each hold under `### held`, verbatim, with the grant command, N, and the task it went to?
+        - did you reach for raw git, a new branch, --no-verify, or a force push? (forbidden)
+        - if the pr could not open, was `--auth as-human` used only under the bot's login?
+
+    - slug: has-left-the-merge-to-the-human
       say: |
-        double-check: did you leave the merge to the commander?
+        double-check: did you leave the merge to the human?
 
         - did you run `--apply`, or merge, or enable automerge? (forbidden)
-        - the stone ends at a green watch. the commander merges at the release gate
+        - the stone ends at a green watch. the human merges at the release gate
 
   peer: []

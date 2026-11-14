@@ -40,3 +40,9 @@ blueprint `6.preship.stone` preamble; `## open questions` q9; `### critipath →
 ruled (a) by the director (2026-11-04): prose, no leaf skill. **why**: the head-green verdict
 belongs to `git.release --watch` upstream (ehmpathy/rhachet-roles-ehmpathy#1149), and a copy here
 rebuilds the supplier-layer cure F18 removed. F18 stands. re-entry stays prose: it is one read.
+
+**a seam the verdict's reason does not cover** (raised i006, r011 blocker.1): the ledger-to-stage
+logic (net line per path, nearest extant parent for a removal, the off-ledger dirty check) is ours,
+and no supplier owns it. so the upstream-ownership reason does not reach it. as built, it is prose
+plus a net-effect sentence and a pin. a transformer `asStagePlanFromLedger` with a data-driven test
+is a clean rework, open for the commander at pr review.

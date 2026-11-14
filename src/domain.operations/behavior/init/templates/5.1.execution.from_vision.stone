@@ -13,3 +13,8 @@ track your progress
 
 emit todos and check them off into
 - $BEHAVIOR_DIR_REL/5.1.execution.from_vision.yield.md
+
+and keep a `### filediff` section in that yield: the route's file ledger, as built (never as
+planned). one path per line, each `[+] <path>` (added), `[~] <path>` (changed), or `[-] <path>`
+(removed). no globs, no grouped lines. every later stone that writes a file appends its line here.
+6.preship stages from this ledger.

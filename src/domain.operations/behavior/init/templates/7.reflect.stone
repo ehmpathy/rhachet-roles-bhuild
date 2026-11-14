@@ -4,8 +4,15 @@ reflect: what could we have done better, and what should we generalize?
 
 ## .what
 
-this is the last stone. the work has shipped to a pull. now you turn the route's friction into
+this is the last stone. the work has shipped to a pr. now you turn the route's friction into
 lessons and tools, so the next route goes smoother.
+
+- **enbrief** = write a lesson down as a brief — a rule or lesson `.md` in the owner repo's role
+  briefs — so every later route boots with it
+- **entool** = build the cure as a tool — a skill, a hook, a test — in the owner repo, so the
+  defect cannot recur
+- **fulcrum** = a design call where a small choice tipped a large outcome; each is one row in the
+  route's `.fulcrums/` inventory
 
 ## .why
 
@@ -16,20 +23,75 @@ repo that owns it, reaches every route after this one.
 
 1. **name what went worse than it could have.** read the record, not memory:
    - the peer rounds per stone, and the blockers raised more than once
-   - the halts, the holds, the fulcrums, the dreams caught
-   - the preship yield: red runs, flakes, refusals
+   - the halts, the holds, the fulcrums (`$BEHAVIOR_DIR_REL/.fulcrums/`), the dreams caught
+   - the preship yield: red runs, flakes, refusals, `### held`
 
    "naught to improve" is a claim; the record must back it.
 
-2. **per item, go three whys deep**: the why, the why of why, the why of why of why.
-   each layer is a deeper cause, never a restatement.
+2. **per item, go three whys deep**: the why, the why of why, the why of why of why. each layer
+   is a deeper cause, never a restatement.
 
-3. **at each layer, enbrief the lesson and entool the cure — in the repo that owns it.**
-   - this repo → the cure lands in this diff: run the full suite, commit, push onto the same pull,
-     and re-watch to green before you pass. a refused commit is held, as in 6.preship.
-   - another repo → `rhx radio.task.push --into <repo>` with the cure's shape, and catch a dream
-     symlinked at $BEHAVIOR_DIR_REL/dreams/. never edit another repo by hand.
-   - no owner found → say so, and catch a dream that names the gap.
+3. **at each layer, enbrief the lesson and entool the cure — in the repo that owns that layer.**
+   the deepest cause often belongs to another repo than the first.
+   - the lesson first: grep the owner repo's briefs for it. an extant brief is extended or
+     sharpened, never duplicated
+   - **this repo** → the cure lands onto the same pr,
+     through 6.preship's steps `### 0. re-entry`, `### 1. the full suite`,
+     `### 2. commit at the done gate`, and `### 3. watch the pr`.
+     the cure's allowlist is the paths the cure added, changed, or removed: write it under
+     `### ship` before you stage, and read it as the allowlist at re-entry, so an uncommitted
+     cure reads as a work change. re-watch to green before you pass. a refused
+     commit or push is held, as in 6.preship. the cure's state lives in this yield's own
+     `### ship` section, never in the passed preship yield
+   - **another repo** → the owner comes from a source, never a guess: the installed role
+     package's `package.json` `repository` field. dispatch the cure, one task per item per layer:
+     `rhx radio.task.push --via gh.issues --into <owner/repo> --title "<route slug>: <item slug>, layer <n>" --description @stdin`.
+     exit 2 with the task QUEUED is a recorded hold (the radio gate was shut), not a failure; a
+     `found` outcome for a task no run of this route sent means the cure was not delivered — say so.
+     a rerun after a rewind reads this yield first: a task an earlier run sent, now `found`, is
+     delivered
+   - **what leaves the repo**: a cross-repo item names the lesson and the cure's shape only. it
+     quotes no record content — no review findings, fixtures, yields, or names from the route
+   - **no owner found** → say so, and catch a dream that names the gap
+   - each dream: `rhx catch.dream --name <item slug>`, then link it in the route:
+     `rhx symlink --at "$BEHAVIOR_DIR_REL/dreams/<dream file>" --to ".dream/<dream file>" --mode relative --idem findsert`
+
+4. **the record commit**: one commit and push of the route record onto the same pr, through
+   6.preship's steps `### 2. commit at the done gate` and `### 3. watch the pr`, then re-watched under the same bound (3
+   tries per loop). the allowlist is the record: `$BEHAVIOR_DIR_REL/.route/`,
+   `$BEHAVIOR_DIR_REL/.radio/` (only when it exists and `git check-ignore` does not report it
+   ignored), both tail yields, and each dream this stone caught (`.dream/<file>` and its
+   `$BEHAVIOR_DIR_REL/dreams/` link). it lands before `--as passed`. the record commit's own
+   watch result goes into this stone's self-review promise, never the yield, so the yield the
+   commit carries stays clean. two things stay on the box: the passage line of that last pass,
+   and the promise file. a refused commit or push is held, as in 6.preship.
+   why: a route record left on the box is the very defect this tail exists to end
+
+never `--apply`, never merge.
+
+## .an absent skill
+
+`rhx` cannot find `catch.dream`, `radio.task.push`, or a ship skill → as in 6.preship's
+`.an absent skill`: paste the error, name its role from 6.preship's table, and halt
+(`--as blocked`).
+
+## .a held preship
+
+read `### held` in `$BEHAVIOR_DIR_REL/6.preship.yield.md` before any commit. not `none` → the
+feature is still on the box, so hold the cure commit and the record commit too: commit naught.
+add each to `### held` in this yield, with the allowlist and the message, and note "behind the
+6.preship hold". a grant that lands mid-stone changes naught here: the feature lands first, via
+6.preship's rewind (its `.a hold`), and a cure commit first would title the pr after the cure.
+then go on through the steps, and pass.
+
+## .a pr already merged or closed
+
+the human may merge the pr before this stone ends. read it first: `gh pr view --json state,headRefOid`.
+a `MERGED` or `CLOSED` pr takes no cure commit and no record commit, and opens no new branch.
+hold each one instead, and send the hold off the box:
+`rhx radio.task.push --via gh.issues --into @this --title "<route slug>: held reflect commit, pr <state>" --description @stdin`,
+with the pr state verbatim, the allowlist, and the commit message the next route will land. then
+pass: the hold is the record, and the route does not end blocked on a merge it asked for.
 
 ## .emit
 
@@ -41,9 +103,23 @@ emit to
 
 ### item: {what went worse than it could have}
 - evidence: {where in the record}
-- why: ...
-- why of why: ...
-- why of why of why: ...
-- lesson: {the brief, and where it went}
-- cure: {the tool, the repo that owns it, and the commit or task that carries it}
+- why: {the first cause}
+  - lesson: {the brief, extended or new, and where it went}
+  - cure: {the tool, and the commit or task that carries it}
+  - owner: {the repo that owns this layer, and the source that names it}
+- why of why: {the deeper cause}
+  - lesson: ...
+  - cure: ...
+  - owner: ...
+- why of why of why: {the root}
+  - lesson: ...
+  - cure: ...
+  - owner: ...
+
+### ship
+- before: {head sha before each cure commit}
+- allowlist: {each path the cure staged}
+- rounds: {loop}: try {n} — {outcome}
+- pr: the pushed sha (`git log -1 --format=%H`) and the watch's final output, verbatim
+- held: each refusal verbatim, the grant command, and N (or: none)
 ```

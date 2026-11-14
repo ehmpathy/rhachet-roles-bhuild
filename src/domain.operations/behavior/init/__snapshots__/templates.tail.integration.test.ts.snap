@@ -1,0 +1,514 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`templates.tail given: [case1] the 6.preship templates when: [t0] the stone is read then: the stone text is snapped 1`] = `
+"ship the route's work: green locally on the full suite, then a green pr. never merge.
+
+---
+
+## .what
+
+this is the ship gate. the route's work leaves the local tree here.
+
+this stone **asks for a commit**. it is the warrant \`rule.forbid.commits-the-route-did-not-ask-for\`
+names: a stone that names a commit as its deliverable.
+
+## .why
+
+a route that ends at verification or playtest leaves its work on the box: suite green, nobody can
+see it, nobody can merge it. the pr is how the work reaches the human who merges it.
+
+## .the roles the tail needs
+
+this stone and \`7.reflect\` call skills outside \`behaver\` and the bhrain driver. enroll them first:
+
+| role | skills the tail calls |
+|---|---|
+| ehmpathy \`mechanic\` | \`git.repo.test\`, \`git.commit.set\`, \`git.commit.push\`, \`git.stage.add\`, \`git.release\`, \`show.gh.test.errors\`, \`cicd.deflake\`, \`symlink\` |
+| bhuild \`dispatcher\` | \`radio.task.push\` |
+| bhuild \`dreamer\` | \`catch.dream\` |
+
+## .the record you keep
+
+- **the route record** = \`$BEHAVIOR_DIR_REL/.route/\`, \`$BEHAVIOR_DIR_REL/.radio/\`, and the two tail
+  yields. it changes on every stone, so no step keys on "the tree is clean". it rides the record
+  commit at the end of \`7.reflect\`, never this stone's commit
+- **the deliverable** = every file of the route dir outside the route record and scratch: each
+  non-tail stone's yield, stamp, and peer artifacts (e.g. \`1.vision.experience.*\`), \`.fulcrums/\`,
+  \`.reviews/\`, and the \`dreams/\` links
+- **scratch** = \`drafts/\`, \`appendix/\`, \`archive/\`, a stale \`blocker/\`. scratch never rides
+- **a work change** = an uncommitted path on the allowlist (step 2)
+- **\`### rounds\`** in the yield: one line per try of each bounded loop (fix round, watch). count
+  from this ledger, never from memory. a count resets when a human unblocks a halt on it, or when
+  its cause changes; the line names which
+
+## .the steps
+
+### 0. re-entry
+
+key on the commit, never on the tree. read the pr: \`gh pr view --json state,headRefOid\`. this read
+learns only whether an earlier push landed; it grades no green — that is step 3's watch.
+
+- a pr that is \`MERGED\` or \`CLOSED\` → halt (\`--as blocked\`) with that state verbatim
+- no pr yet: no work change → an earlier run committed but its push did not land; push only, via
+  \`rhx git.commit.push --mode apply\` (that push opens the pr), then step 3. a work change → step 1
+- a pr, no work change, local head (\`git log -1 --format=%H\`) equal to \`headRefOid\` → step 3
+- a pr, no work change, local head not equal to \`headRefOid\` → push only, as above, then step 3
+- a pr and a work change → step 1
+
+a second run, after a full or a partial first run, adds no commit of its own.
+
+### 1. the full suite
+
+every test kind the repo's cicd runs, in two calls (\`--what all\` covers lint, unit, integration,
+and acceptance; types and format run apart):
+
+- \`rhx git.repo.test --what types,format --mode apply\`
+- \`rhx git.repo.test --what all --against local --env test --mode apply\`
+- a kind the repo's \`test:*\` scripts declare beyond these (e.g. \`test:commits\`) is named and run
+  too. the yield lists each kind run, so a skipped kind shows
+
+pass the tool's max timeout to each call. a call the tool cuts off is no try: re-run it free,
+**at most 3 cut-offs per call**; a fourth → halt (\`--as blocked\`) with the cut-off output verbatim.
+
+paste each command, its summary line, and its exit code. sort the outcome by what the skill
+printed, never by the exit code alone (a red suite and a refused input both exit 2):
+
+- a test failed → fix the cause, run again. no commit on red. **at most 3 fix rounds**; still red
+  → halt (\`--as blocked\`) with the last failure verbatim
+- the skill refused its input or a credential (a flag it names as absent, a locked keyrack) →
+  halt now, with the refusal and its printed hint verbatim. a fix round cannot unlock a key
+- the same test fails on \`main\` too → not this change's red: halt with both runs verbatim
+
+a fix round never turns red green with a skip, an \`.only\`, a loosened assertion, or a deleted
+test. this stone gates on self-reviews alone, so a red you cannot fix is a halt.
+
+### 2. commit at the done gate
+
+1. write the yield's \`### before\`: the head sha (\`git log -1 --format=%H\`) and the allowlist you
+   will stage. step 0 and the landed check below read it after a lost context
+2. stage the allowlist: the deliverable plus each path in the \`### filediff\` section of the
+   route's \`5.1.execution.*.yield.md\` — the route's file ledger. the ledger is the source, never
+   memory, never the git status output minus a deny list. a fix round in step 1 or step 3 appends
+   its own lines to the ledger first. what never rides: \`.log/\`, \`.temp/\`, and scratch. never
+   \`--unstaged include\`: it sweeps another route in the same worktree into the commit
+   - **no ledger** (a route from before the ledger, re-init'd to gain the tail): build it once,
+     now, into the 5.1 yield's \`### filediff\`. read \`git diff --name-status origin/main...HEAD\`
+     and \`git status --porcelain\`, and judge each path by hand: this route's, or not. write only
+     this route's
+   - **read the ledger by path, last line wins**: \`[+]\` then \`[-]\` of a path never committed
+     cancels (stage naught); \`[-]\` then \`[+]\` is a \`[~]\`. settle every path's net line before any
+     stage call, since one absent path fails the whole \`git.stage.add\` call
+   - **reconcile**: read \`git status --porcelain\` as a check, never as the source. each dirty
+     path that is neither on the ledger nor scratch is one this route forgot (add its ledger
+     line) or one another party owns (name it in \`### before\` as left, never staged)
+   - \`[+]\` and \`[~]\` lines: \`rhx git.stage.add <paths>\`
+   - \`[-]\` lines: \`git.stage.add\` refuses a path absent from disk. stage the nearest parent dir
+     that still exists, and only when \`git status --porcelain <dir>\` shows no dirty path under it
+     off the ledger (a route record path does not count: it rides either way). else hold the
+     removal (\`.a hold\`), the path named — never raw \`git rm\`
+   - a path the record names that is absent, or that \`git check-ignore\` reports ignored, is
+     not staged: say so in \`### before\`
+3. preflight: \`rhx git.commit.set -m @stdin --mode plan --unstaged ignore --push\`. the grammar,
+   no-quota-granted, push, and sponsor refusals fire here, before any quota is spent. a spent
+   quota (no uses left) is checked only at apply, so step 4 can still be refused: that refusal
+   is a grant refusal, held as below. the plan lists the staged set: it must equal the
+   \`### before\` allowlist. a path staged by another party is not yours to unstage: hold the
+   commit (\`.a hold\`), the extra paths named
+4. commit: \`rhx git.commit.set -m @stdin --mode apply --unstaged ignore --push\`
+
+the message keys on **branch state**, never on this stone's own count:
+
+- the branch holds no behavioral commit yet → \`feat(scope):\` or \`fix(scope):\`, per the branch
+  bind. \`--promise is-netnew-behavior\` only when the branch has no level and the wish adds a new
+  behavior — never to dodge a refusal
+- the branch already holds one (an earlier route, a human's commit) → \`cont(scope):\`
+- unsure which → the step 3 preflight refuses a wrong prefix and prints the one it demands; write
+  that header
+
+the body, in this shape (the pr title and body come from the first behavioral commit, so this is
+the human's view of the pr):
+
+\`\`\`
+what shipped: {one line per deliverable}
+route: $BEHAVIOR_DIR_REL
+issue: {closes #N, or refs #N when part of the wish is deferred}
+held: {each ### held item, or: none}
+\`\`\`
+
+sort a refusal by who can clear it:
+
+- **an input refusal** — a file left unstaged, a message of the wrong shape → fix it and run
+  step 2 again, inside the 3-round bound
+- **a grant refusal** — no commit quota, quota spent, push not allowed, stage not allowed, no
+  sponsor bound → held, never a halt (see \`.a hold\`)
+- **the pr cannot open: the seaturtle keyrack token is absent** — read the ambient gh login:
+  \`gh api --method GET user --jq .login\`. the bot's login → push again with
+  \`rhx git.commit.push --mode apply --auth as-human\`. any other login → held, like a refused push:
+  a pr opened under a human account is a public write under that human's identity
+- **a push only, refused because HEAD is not the bot's commit** (a human committed last) → held,
+  never a grant refusal: the human pushes their own commit. note that the supplier pushes with
+  \`--force-with-lease\`, so a push only is safe only over a branch no other party pushed to
+- **the commit landed, the push failed** — \`git.commit.set\` exits 2 here too, after the commit
+  exists. before any re-run, read \`git log -1 --format=%H\` against \`### before\`: a head that
+  moved means the commit landed. never commit again — push only, as step 0 does
+
+### 3. watch the pr
+
+\`rhx git.release --watch\`, in the foreground (it needs a tty; never background it), with the
+tool's max timeout (the watch caps itself at 15 minutes), until it reports green for the head you
+pushed. paste the pushed sha (\`git log -1 --format=%H\`) and the watch's final output into \`### pr\`.
+
+- the tool cut the watch off before its own cap → no try: re-run it free, **at most 3 cut-offs**;
+  a fourth → halt (\`--as blocked\`) with the cut-off output verbatim
+- the watch hit its own cap with no verdict → watch again, **at most 3 watches**; still none →
+  halt (\`--as blocked\`) with the watch output verbatim
+- red → \`rhx show.gh.test.errors\`, fix the cause, commit (step 2), push, back to step 3.
+  **at most 3 fix rounds**; still red → halt (\`--as blocked\`) with the failed checks verbatim
+- a flake → \`rhx cicd.deflake init\`, never a blind re-run
+
+every loop in this stone shares one bound: 3 tries, counted in \`### rounds\`, then a halt with the
+cause verbatim.
+
+### 4. stop
+
+never \`--apply\`, never merge. the human merges at the release gate.
+
+## .a refused commit
+
+a grant refusal is **held, never a halt**. the done work stays on the tree, recorded, and the
+route goes on to \`7.reflect\`.
+
+## .a refused push
+
+held, the same as a commit — with one exception: a hook failure you can fix (a lint the local
+suite skipped) is fixed, committed, and pushed again. the hook passes on its own terms, never
+bypassed.
+
+any other rejection — auth, a protected ref, a branch another party pushed to (non-fast-forward)
+— is pasted verbatim under \`### held\`, with the grant or the party it needs, and you go on.
+never a force push over another party's commits.
+
+## .a hold
+
+a hold is durable and discoverable, never a lone yield line:
+
+- the yield's \`### held\` names the refusal verbatim, the human who can grant it, the grant
+  command as the skill printed it (e.g. \`rhx git.commit.uses set --quant N --push allow\`, plus
+  \`--stage allow\`), and N: the commits this route still needs — 1 for this stone, plus 1 per fix
+  round and per in-repo reflect cure, plus 1 for reflect's record commit
+- the same record goes off the box, to the repo's own issue tracker:
+  \`rhx radio.task.push --via gh.issues --into @this --title "<route slug>: held <stone> commit, round <n>" --description @stdin\`
+  with a description in this shape:
+
+  \`\`\`
+  held: {the refusal, verbatim}
+  grant: {the grant command, as printed}
+  route: $BEHAVIOR_DIR_REL
+  message: {the commit message the grant will land}
+  land via: rhx route.stone.set --stone 6.preship --as rewound, then 6.preship's commit and watch steps
+  \`\`\`
+
+  the route reads complete after a hold, so the rewind is the way back in: once the grant lands,
+  the human (or a driver they send) rewinds 6.preship and drives it again. step 0 then reads the
+  held work as a work change. the rewind cascades to \`7.reflect\` too: its rerun reads its own
+  prior yield first, keeps the lessons it already wrote, and counts a \`found\` task as delivered
+
+  the title carries the stone and the round, so a second hold is a second task. a \`found\` outcome
+  for a hold not yet sent means it was not delivered: the yield says so. a shut radio gate holds
+  the task in \`$BEHAVIOR_DIR_REL/.radio/\` and delivers it on the next push that gets through
+- a hold at a step-3 fix round leaves the pr red: the yield says so verbatim. never claim a green
+  you did not see
+
+## .an absent skill
+
+\`rhx\` cannot find a skill the tail calls → paste the error, name its role from the table above,
+and halt (\`--as blocked\`). a halt, not a hold: a hold waits for a grant, and an absent tool has
+none to wait for. one exception: if only \`radio.task.push\` is absent at a hold, the hold is still
+written to \`### held\` and printed to stdout, and the route goes on.
+
+## .forbidden around any refusal
+
+no raw \`git commit\`, no new branch, no \`--no-verify\`, no force push, no sleep-and-retry loop. the
+bounded re-watch in step 3 is a fresh call per watch, not a loop around a refusal.
+
+## .emit
+
+emit to
+- $BEHAVIOR_DIR_REL/6.preship.yield.md
+
+\`\`\`
+## preship
+
+### rounds
+- {loop}: try {n} — {outcome} (or: reset — {why})
+
+### suite
+- each kind run: command + summary + exit code, verbatim
+
+### before
+- head: {sha before the commit}
+- allowlist: {each path staged}
+
+### pr
+- the pr url
+- the pushed sha (\`git log -1 --format=%H\`)
+- the watch's final output, verbatim
+- (or: held — see ### held)
+
+### held
+- each refusal verbatim, the human who can grant it, the grant command, N, and the task it went to (or: none)
+\`\`\`
+"
+`;
+
+exports[`templates.tail given: [case1] the 6.preship templates when: [t1] the guard is read then: the guard text is snapped 1`] = `
+"# provenance = self-referential source template; enables \`rhx route.guard.upgrade\` idempotency
+provenance:
+  uri: node_modules/rhachet-roles-bhuild/dist/domain.operations/behavior/init/templates/6.preship.guard
+
+# brain = the brain the driver runs on for this stone; ship work drives on sonnet
+brain: claude-sonnet-5-5[1m]
+
+# guard for the preship stone
+#
+# self-reviews only: no peer lane and no judges. the human's gate is the merge, so a peer round
+# here would only re-read a pr the human reads anyway.
+artifacts:
+  - "$route/6.preship.yield.md"
+
+reviews:
+  self:
+    - slug: has-full-suite-green-locally
+      say: |
+        double-check: did the full suite pass locally before the commit?
+
+        paste, for each kind run, verbatim from your terminal:
+        - the exact command you ran
+        - the final summary line (counts)
+        - the exit code
+
+        did both calls run — \`--what types,format\` and \`--what all --against local --env test\`?
+        a claim with no paste is a feigned review. red anywhere → you did not commit.
+
+    - slug: has-watched-the-head-green
+      say: |
+        double-check: is the pr green for the commit you pushed — not an older one?
+
+        paste the \`### pr\` section of your yield:
+        - the pushed sha (\`git log -1 --format=%H\`)
+        - the final output of \`rhx git.release --watch\`
+
+        did the watch report green after your last push?
+
+        held arm: if a commit or push was held, paste the \`### held\` record and the last watch
+        output instead. there is no pushed head to confirm — do not claim one.
+
+    - slug: has-held-not-bypassed
+      say: |
+        double-check: did any commit or push refuse?
+
+        a **grant** refusal is held, never a halt. a refused suite, an absent skill, and a spent
+        bound are halts.
+
+        - is each hold under \`### held\`, verbatim, with the grant command, N, and the task it went to?
+        - did you reach for raw git, a new branch, --no-verify, or a force push? (forbidden)
+        - if the pr could not open, was \`--auth as-human\` used only under the bot's login?
+
+    - slug: has-left-the-merge-to-the-human
+      say: |
+        double-check: did you leave the merge to the human?
+
+        - did you run \`--apply\`, or merge, or enable automerge? (forbidden)
+        - the stone ends at a green watch. the human merges at the release gate
+
+  peer: []
+"
+`;
+
+exports[`templates.tail given: [case2] the 7.reflect templates when: [t0] the stone is read then: the stone text is snapped 1`] = `
+"reflect: what could we have done better, and what should we generalize?
+
+---
+
+## .what
+
+this is the last stone. the work has shipped to a pr. now you turn the route's friction into
+lessons and tools, so the next route goes smoother.
+
+- **enbrief** = write a lesson down as a brief — a rule or lesson \`.md\` in the owner repo's role
+  briefs — so every later route boots with it
+- **entool** = build the cure as a tool — a skill, a hook, a test — in the owner repo, so the
+  defect cannot recur
+- **fulcrum** = a design call where a small choice tipped a large outcome; each is one row in the
+  route's \`.fulcrums/\` inventory
+
+## .why
+
+a lesson that stays in one session dies with it. a lesson enbriefed, and a cure entooled in the
+repo that owns it, reaches every route after this one.
+
+## .the steps
+
+1. **name what went worse than it could have.** read the record, not memory:
+   - the peer rounds per stone, and the blockers raised more than once
+   - the halts, the holds, the fulcrums (\`$BEHAVIOR_DIR_REL/.fulcrums/\`), the dreams caught
+   - the preship yield: red runs, flakes, refusals, \`### held\`
+
+   "naught to improve" is a claim; the record must back it.
+
+2. **per item, go three whys deep**: the why, the why of why, the why of why of why. each layer
+   is a deeper cause, never a restatement.
+
+3. **at each layer, enbrief the lesson and entool the cure — in the repo that owns that layer.**
+   the deepest cause often belongs to another repo than the first.
+   - the lesson first: grep the owner repo's briefs for it. an extant brief is extended or
+     sharpened, never duplicated
+   - **this repo** → the cure lands onto the same pr,
+     through 6.preship's steps \`### 0. re-entry\`, \`### 1. the full suite\`,
+     \`### 2. commit at the done gate\`, and \`### 3. watch the pr\`.
+     the cure's allowlist is the paths the cure added, changed, or removed: write it under
+     \`### ship\` before you stage, and read it as the allowlist at re-entry, so an uncommitted
+     cure reads as a work change. re-watch to green before you pass. a refused
+     commit or push is held, as in 6.preship. the cure's state lives in this yield's own
+     \`### ship\` section, never in the passed preship yield
+   - **another repo** → the owner comes from a source, never a guess: the installed role
+     package's \`package.json\` \`repository\` field. dispatch the cure, one task per item per layer:
+     \`rhx radio.task.push --via gh.issues --into <owner/repo> --title "<route slug>: <item slug>, layer <n>" --description @stdin\`.
+     exit 2 with the task QUEUED is a recorded hold (the radio gate was shut), not a failure; a
+     \`found\` outcome for a task no run of this route sent means the cure was not delivered — say so.
+     a rerun after a rewind reads this yield first: a task an earlier run sent, now \`found\`, is
+     delivered
+   - **what leaves the repo**: a cross-repo item names the lesson and the cure's shape only. it
+     quotes no record content — no review findings, fixtures, yields, or names from the route
+   - **no owner found** → say so, and catch a dream that names the gap
+   - each dream: \`rhx catch.dream --name <item slug>\`, then link it in the route:
+     \`rhx symlink --at "$BEHAVIOR_DIR_REL/dreams/<dream file>" --to ".dream/<dream file>" --mode relative --idem findsert\`
+
+4. **the record commit**: one commit and push of the route record onto the same pr, through
+   6.preship's steps \`### 2. commit at the done gate\` and \`### 3. watch the pr\`, then re-watched under the same bound (3
+   tries per loop). the allowlist is the record: \`$BEHAVIOR_DIR_REL/.route/\`,
+   \`$BEHAVIOR_DIR_REL/.radio/\` (only when it exists and \`git check-ignore\` does not report it
+   ignored), both tail yields, and each dream this stone caught (\`.dream/<file>\` and its
+   \`$BEHAVIOR_DIR_REL/dreams/\` link). it lands before \`--as passed\`. the record commit's own
+   watch result goes into this stone's self-review promise, never the yield, so the yield the
+   commit carries stays clean. two things stay on the box: the passage line of that last pass,
+   and the promise file. a refused commit or push is held, as in 6.preship.
+   why: a route record left on the box is the very defect this tail exists to end
+
+never \`--apply\`, never merge.
+
+## .an absent skill
+
+\`rhx\` cannot find \`catch.dream\`, \`radio.task.push\`, or a ship skill → as in 6.preship's
+\`.an absent skill\`: paste the error, name its role from 6.preship's table, and halt
+(\`--as blocked\`).
+
+## .a held preship
+
+read \`### held\` in \`$BEHAVIOR_DIR_REL/6.preship.yield.md\` before any commit. not \`none\` → the
+feature is still on the box, so hold the cure commit and the record commit too: commit naught.
+add each to \`### held\` in this yield, with the allowlist and the message, and note "behind the
+6.preship hold". a grant that lands mid-stone changes naught here: the feature lands first, via
+6.preship's rewind (its \`.a hold\`), and a cure commit first would title the pr after the cure.
+then go on through the steps, and pass.
+
+## .a pr already merged or closed
+
+the human may merge the pr before this stone ends. read it first: \`gh pr view --json state,headRefOid\`.
+a \`MERGED\` or \`CLOSED\` pr takes no cure commit and no record commit, and opens no new branch.
+hold each one instead, and send the hold off the box:
+\`rhx radio.task.push --via gh.issues --into @this --title "<route slug>: held reflect commit, pr <state>" --description @stdin\`,
+with the pr state verbatim, the allowlist, and the commit message the next route will land. then
+pass: the hold is the record, and the route does not end blocked on a merge it asked for.
+
+## .emit
+
+emit to
+- $BEHAVIOR_DIR_REL/7.reflect.yield.md
+
+\`\`\`
+## reflect
+
+### item: {what went worse than it could have}
+- evidence: {where in the record}
+- why: {the first cause}
+  - lesson: {the brief, extended or new, and where it went}
+  - cure: {the tool, and the commit or task that carries it}
+  - owner: {the repo that owns this layer, and the source that names it}
+- why of why: {the deeper cause}
+  - lesson: ...
+  - cure: ...
+  - owner: ...
+- why of why of why: {the root}
+  - lesson: ...
+  - cure: ...
+  - owner: ...
+
+### ship
+- before: {head sha before each cure commit}
+- allowlist: {each path the cure staged}
+- rounds: {loop}: try {n} — {outcome}
+- pr: the pushed sha (\`git log -1 --format=%H\`) and the watch's final output, verbatim
+- held: each refusal verbatim, the grant command, and N (or: none)
+\`\`\`
+"
+`;
+
+exports[`templates.tail given: [case2] the 7.reflect templates when: [t1] the guard is read then: the guard text is snapped 1`] = `
+"# provenance = self-referential source template; enables \`rhx route.guard.upgrade\` idempotency
+provenance:
+  uri: node_modules/rhachet-roles-bhuild/dist/domain.operations/behavior/init/templates/7.reflect.guard
+
+# brain = the brain the driver runs on for this stone; reflection is design work, so it drives on opus
+brain: claude-opus-5-5[1m]
+
+# guard for the reflect stone
+#
+# self-reviews only: no peer lane and no judges.
+artifacts:
+  - "$route/7.reflect.yield.md"
+
+reviews:
+  self:
+    - slug: has-read-the-record-not-memory
+      say: |
+        double-check: is each item drawn from the record, not from memory?
+
+        - for each item, can you cite where it shows: a review file, a passage line, a yield, a dream?
+        - did you read the peer rounds per stone, the re-raised blockers, the halts and holds?
+        - if you wrote "naught to improve", what in the record backs it?
+
+    - slug: has-gone-three-whys-deep
+      say: |
+        double-check: does every item go three whys deep?
+
+        - is each layer a deeper cause, or a restatement of the one above?
+        - does each layer carry its own lesson, cure, and owner?
+        - would a fourth why change the cure? if so, the third layer was not the root
+
+    - slug: has-placed-each-cure-in-its-owner-repo
+      say: |
+        double-check: does each lesson and each cure land in the repo that owns it?
+
+        - this repo → is the cure in the diff, and was an extant brief extended rather than duplicated?
+        - another repo → is there a task from \`rhx radio.task.push --via gh.issues\`, with an owner
+          read from the role package's \`repository\` field, and a dream linked in the route?
+        - does any cross-repo task quote record content? (forbidden)
+        - did you edit another repo by hand? (forbidden)
+
+    - slug: has-rewatched-after-a-cure
+      say: |
+        double-check: if a cure or the record commit landed, is the pr still green?
+
+        paste the \`### ship\` section of your yield:
+        - the pushed sha (\`git log -1 --format=%H\`)
+        - the final output of \`rhx git.release --watch\`
+
+        did the watch report green after your last push?
+
+        held arm: if a commit or push was held, paste the \`### held\` line of \`### ship\` and the
+        last watch output. there is no pushed head to confirm — do not claim one.
+
+  peer: []
+"
+`;
