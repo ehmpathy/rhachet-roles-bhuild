@@ -117,8 +117,8 @@ importers:
         specifier: link:.
         version: 'link:'
       rhachet-roles-ehmpathy:
-        specifier: 1.42.0
-        version: 1.42.0(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))
+        specifier: 1.43.0
+        version: 1.43.0(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))
       rhachet-roles-ghlitch:
         specifier: 0.4.0
         version: 0.4.0(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))
@@ -4510,8 +4510,8 @@ packages:
     resolution: {integrity: sha512-nIMR3dQZhYw0/mHdZ6V5Rb6HVinyy/WcggeLZU1g0p/eckLY8n8vxMRVzjxcuzafu9mZmuBBErT5jIZDMZYNbg==}
     engines: {node: '>=8.0.0'}
 
-  rhachet-roles-ehmpathy@1.42.0:
-    resolution: {integrity: sha512-ywkHUNurFwSUSRijlyqSthoS8Zfy7x+1PRmzC1FCSFwK5YIUyThx2zWWG416iEmZSVLj6sGd6uoiJ6YCNHglAA==}
+  rhachet-roles-ehmpathy@1.43.0:
+    resolution: {integrity: sha512-K4uO1dcmfnR/1LmZB0WU9k/uML71Ao9jcIri32XiGBnW8TKpa3ejfMf450eR2jf9oVNj0r4cXGuIak7k/6fHcw==}
     engines: {node: '>=8.0.0'}
 
   rhachet-roles-ghlitch@0.4.0:
@@ -9370,7 +9370,7 @@ snapshots:
       helpful-errors: 1.5.3
       joi: 17.4.0
       rhachet: 1.51.0(declastruct-aws@1.5.2(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))(zod@4.3.4))(zod@4.3.4)
-      rhachet-roles-ehmpathy: 1.42.0(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))
+      rhachet-roles-ehmpathy: 1.43.0(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))
       type-fns: 1.21.0
       uuid-fns: 1.1.3
     transitivePeerDependencies:
@@ -11193,7 +11193,7 @@ snapshots:
       - rhachet
       - ws
 
-  rhachet-roles-ehmpathy@1.42.0(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5)):
+  rhachet-roles-ehmpathy@1.43.0(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5)):
     dependencies:
       '@atjsh/llmlingua-2': 2.0.3(@huggingface/transformers@3.8.1)(@tensorflow/tfjs@4.22.0(seedrandom@3.0.5))(js-tiktoken@1.0.21)
       '@ehmpathy/as-command': 1.0.5
