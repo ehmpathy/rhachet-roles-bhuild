@@ -1,7 +1,8 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard behavior opened at its tail when: [t0] the driver enters the tail then: the frontier is 6.preship, on sonnet, the build brain 1`] = `
-"🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
+"[stdout]
+🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
 
 🦉 where were we?
 
@@ -11,14 +12,16 @@ exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard be
    │  ├─ stone = 6.preship
    │  └─ brain = claude-sonnet-5-5[1m]
    │
-   └─ ✋ halted, brain switch could not land
-<host cause, masked>"
+   └─ ✋ halted, brain switch could not land"
 `;
 
-exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard behavior opened at its tail when: [t1] preship pass attempted with no yield then: blocked 1`] = `
-"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard behavior opened at its tail when: [t1] preship pass attempted with no yield then: blocked: no yield on the stone 1`] = `
+"[stdout]
+🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
+
+[stderr]
 🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
    └─ ✋ blocked by constraints
 
@@ -30,7 +33,8 @@ error: BadRequestError: artifact not found; run route.stone.get --stone 6.preshi
 `;
 
 exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard behavior opened at its tail when: [t2] preship pass attempted with a yield, no promise then: blocked by the unpromised self-review 1`] = `
-"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+"[stdout]
+🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
 
@@ -119,13 +123,15 @@ exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard be
    └─ when you've truly reflected, run
       └─ rhx route.stone.set --stone 6.preship --as promised --that has-stub-review \\
          --into .behavior/v{DATE}.full-journey/review/self/for.6.preship._.has-stub-review.md
+
+[stderr]
 🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
-   └─ ✋ blocked by constraints
-"
+   └─ ✋ blocked by constraints"
 `;
 
 exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard behavior opened at its tail when: [t3] preship pass attempted after the promise then: allowed: no peer round, no judge 1`] = `
-"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+"[stdout]
+🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
 
@@ -138,7 +144,8 @@ exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard be
 `;
 
 exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard behavior opened at its tail when: [t4] the driver drives on then: the frontier is 7.reflect, on opus, the design brain 1`] = `
-"🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
+"[stdout]
+🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
 
 🦉 where were we?
 
@@ -148,25 +155,12 @@ exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard be
    │  ├─ stone = 7.reflect
    │  └─ brain = claude-opus-5-5[1m]
    │
-   └─ ✋ halted, brain switch could not land
-<host cause, masked>"
+   └─ ✋ halted, brain switch could not land"
 `;
 
-exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard behavior opened at its tail when: [t5] reflect is promised and passed then: allowed after it 1`] = `
-"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
-
-🦉 the way speaks for itself
-
-🗿 route.stone.set
-   ├─ stone = 7.reflect
-   ├─ passage = allowed (artifacts only)
-   │
-   └─ the way continues, run
-      └─ rhx route.drive"
-`;
-
-exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard behavior opened at its tail when: [t5] reflect is promised and passed then: blocked before the promise 1`] = `
-"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard behavior opened at its tail when: [t5] reflect is promised and passed then: [a] blocked before the self-review promise 1`] = `
+"[stdout]
+🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
 
@@ -255,13 +249,29 @@ exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard be
    └─ when you've truly reflected, run
       └─ rhx route.stone.set --stone 7.reflect --as promised --that has-stub-review \\
          --into .behavior/v{DATE}.full-journey/review/self/for.7.reflect._.has-stub-review.md
+
+[stderr]
 🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
-   └─ ✋ blocked by constraints
-"
+   └─ ✋ blocked by constraints"
+`;
+
+exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard behavior opened at its tail when: [t5] reflect is promised and passed then: [b] allowed after the self-review promise 1`] = `
+"[stdout]
+🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+
+🦉 the way speaks for itself
+
+🗿 route.stone.set
+   ├─ stone = 7.reflect
+   ├─ passage = allowed (artifacts only)
+   │
+   └─ the way continues, run
+      └─ rhx route.drive"
 `;
 
 exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard behavior opened at its tail when: [t6] the driver drives past the last stone then: the route is complete: no next stone 1`] = `
-"🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
+"[stdout]
+🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
 
 🦉 where were we?
 
@@ -269,8 +279,8 @@ exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard be
    └─ route complete! 🌴🤙"
 `;
 
-exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard behavior opened at its tail when: [t7] the ship tool is called where no role was enrolled (case=16, c27) then: the call fails loud: the error a stranger meets, snapped 1`] = `
-"
+exports[`skill.init.behavior.guards.journey.tail given: [case1] a heavy-guard behavior opened at its tail when: [t7] the ship tool is called where no role was enrolled then: the call fails loud with the error rhachet prints for an absent skill 1`] = `
+"[stderr]
 ✋ ConstraintError: no skill "git.commit.set" found with --repo ehmpathy
 
 tip: did you \`npx rhachet roles link\` the --role this skill comes from?
@@ -282,6 +292,20 @@ tip: did you \`npx rhachet roles link\` the --role this skill comes from?
   }
 }
 
-[args] run,--repo,ehmpathy,--skill,git.commit.set,--,--help
-"
+[args] run,--repo,ehmpathy,--skill,git.commit.set,--,--help"
+`;
+
+exports[`skill.init.behavior.guards.journey.tail given: [case2] a nano route finished before the tail, re-inited at its own size when: [t2] the driver drives the re-inited route then: the frontier reopens at 6.preship, on sonnet 1`] = `
+"[stdout]
+🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
+
+🦉 where were we?
+
+🗿 route.drive
+   ├─ where do we go?
+   │  ├─ route = .behavior/v{DATE}.full-journey
+   │  ├─ stone = 6.preship
+   │  └─ brain = claude-sonnet-5-5[1m]
+   │
+   └─ ✋ halted, brain switch could not land"
 `;

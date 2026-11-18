@@ -8,6 +8,7 @@ import { given, then, useBeforeAll, when } from 'test-fns';
 import {
   genConsumerRepo,
   GITHUB_DEMO_REPO,
+  RUN_GITHUB_ROBOT_TEST,
   runRhachetSkill,
   sanitizeOutput,
 } from '../.test/infra';
@@ -189,7 +190,10 @@ describe('radio.task.push via gh.issues', () => {
 
   given('[case1] push new task to gh.issues (default auth via keyrack)', () => {
 
-    when('[t0] push with title and description (no --auth flag)', () => {
+    // .skip = off where GITHUB_ROBOT_LIVE is unset (a local default run); [t1] below needs no token
+    // .why  = writes a real issue via the default auth, the robot token only ci holds
+    // .real = ci sets GITHUB_ROBOT_LIVE=true (.github/workflows/.test.yml), so every pr runs it
+    when.runIf(RUN_GITHUB_ROBOT_TEST)('[t0] push with title and description (no --auth flag)', () => {
       const result = useBeforeAll(async () =>
         runRadioTaskPush({
           repoDir: scene.consumer.repoDir, homeDir: scene.homeDir,
@@ -249,7 +253,11 @@ describe('radio.task.push via gh.issues', () => {
     });
   });
 
-  given('[case2] status transitions on gh.issues', () => {
+  // .skip = [case2]-[case6] off where GITHUB_ROBOT_LIVE is unset (a local default run)
+  // .why  = each writes a real issue via the default auth, the robot token only ci holds; a
+  //         fleet host holds no github token (its writes go through --auth as-human)
+  // .real = ci sets GITHUB_ROBOT_LIVE=true (.github/workflows/.test.yml), so every pr runs them
+  given.runIf(RUN_GITHUB_ROBOT_TEST)('[case2] status transitions on gh.issues', () => {
     let issueNumber: string;
 
     when('[t0] create then claim task', () => {
@@ -307,7 +315,7 @@ describe('radio.task.push via gh.issues', () => {
     });
   });
 
-  given('[case3] idempotency on gh.issues', () => {
+  given.runIf(RUN_GITHUB_ROBOT_TEST)('[case3] idempotency on gh.issues', () => {
     const uniqueTitle = `findsert test ${Date.now()}`;
 
     when('[t0] findsert mode with duplicate title', () => {
@@ -347,7 +355,7 @@ describe('radio.task.push via gh.issues', () => {
     });
   });
 
-  given('[case4] gh.issues task format', () => {
+  given.runIf(RUN_GITHUB_ROBOT_TEST)('[case4] gh.issues task format', () => {
     when('[t0] task is pushed to gh.issues', () => {
       const result = useBeforeAll(async () =>
         runRadioTaskPush({
@@ -367,7 +375,7 @@ describe('radio.task.push via gh.issues', () => {
     });
   });
 
-  given('[case5] @stdin reads piped description', () => {
+  given.runIf(RUN_GITHUB_ROBOT_TEST)('[case5] @stdin reads piped description', () => {
     const uniqueTitle = `stdin test ${Date.now()}`;
     const stdinContent = 'this content was piped via stdin';
 
@@ -397,7 +405,7 @@ describe('radio.task.push via gh.issues', () => {
     });
   });
 
-  given('[case6] findsert searches target repo not cwd repo', () => {
+  given.runIf(RUN_GITHUB_ROBOT_TEST)('[case6] findsert searches target repo not cwd repo', () => {
     const uniqueTitle = `cross-repo findsert ${Date.now()}`;
 
     when('[t0] findsert from consumer repo to demo repo', () => {

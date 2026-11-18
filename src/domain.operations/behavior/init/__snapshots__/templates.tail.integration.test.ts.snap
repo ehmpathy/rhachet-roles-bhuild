@@ -19,7 +19,12 @@ see it, nobody can merge it. the pr is how the work reaches the human who merges
 
 ## .the roles the tail needs
 
-this stone and \`7.reflect\` call skills outside \`behaver\` and the bhrain driver. enroll them first:
+this stone and \`7.reflect\` call skills outside \`behaver\` and the bhrain driver. enroll them first,
+with their packages (\`rhachet-roles-ehmpathy\`, \`rhachet-roles-bhuild\`) installed:
+
+\`\`\`sh
+npx rhachet init --roles +mechanic +dispatcher +dreamer
+\`\`\`
 
 | role | skills the tail calls |
 |---|---|
@@ -34,7 +39,8 @@ this stone and \`7.reflect\` call skills outside \`behaver\` and the bhrain driv
   commit at the end of \`7.reflect\`, never this stone's commit
 - **the deliverable** = every file of the route dir outside the route record and scratch: each
   non-tail stone's yield, stamp, and peer artifacts (e.g. \`1.vision.experience.*\`), \`.fulcrums/\`,
-  \`.reviews/\`, and the \`dreams/\` links
+  and the \`dreams/\` links. review files are ignored by the route's own \`.gitignore\`, so they are
+  not listed
 - **scratch** = \`drafts/\`, \`appendix/\`, \`archive/\`, a stale \`blocker/\`. scratch never rides
 - **a work change** = an uncommitted path on the allowlist (step 2)
 - **\`### rounds\`** in the yield: one line per try of each bounded loop (fix round, watch). count
@@ -59,16 +65,25 @@ a second run, after a full or a partial first run, adds no commit of its own.
 
 ### 1. the full suite
 
-every test kind the repo's cicd runs, in two calls (\`--what all\` covers lint, unit, integration,
-and acceptance; types and format run apart):
+every test kind the repo's cicd runs, one kind per call, so each call is as short as the repo
+allows (a serial run of every kind can outlast the tool's cap):
 
 - \`rhx git.repo.test --what types,format --mode apply\`
-- \`rhx git.repo.test --what all --against local --env test --mode apply\`
+- \`rhx git.repo.test --what lint --mode apply\`
+- \`rhx git.repo.test --what unit --mode apply\`
+- \`rhx git.repo.test --what integration --mode apply\`
+- \`rhx git.repo.test --what acceptance --against local --env test --mode apply\`
 - a kind the repo's \`test:*\` scripts declare beyond these (e.g. \`test:commits\`) is named and run
   too. the yield lists each kind run, so a skipped kind shows
 
-pass the tool's max timeout to each call. a call the tool cuts off is no try: re-run it free,
-**at most 3 cut-offs per call**; a fourth → halt (\`--as blocked\`) with the cut-off output verbatim.
+pass the tool's max timeout to each call. past that cap:
+
+- the tool moves the call to the background → it still runs. await its end, then paste its
+  summary. never start a second run over it
+- the tool kills the call → a suite restarts from zero, so the kill counts as a try (a re-run is
+  free only for the watch, which resumes remote state). a kind killed 3 times → halt
+  (\`--as blocked\`) with the cut-off output verbatim, and name the kind: it needs a shorter scope or
+  a longer cap, which is a human's call
 
 paste each command, its summary line, and its exit code. sort the outcome by what the skill
 printed, never by the exit code alone (a red suite and a refused input both exit 2):
@@ -110,13 +125,13 @@ test. this stone gates on self-reviews alone, so a red you cannot fix is a halt.
      stage — never raw \`git rm\`
    - a path the record names that is absent, or that \`git check-ignore\` reports ignored, is
      not staged: say so in \`### before\`
-3. preflight: \`rhx git.commit.set -m @stdin --mode plan --unstaged ignore --push\`. the grammar,
+3. **the preflight**: \`rhx git.commit.set -m @stdin --mode plan --unstaged ignore --push\`. the grammar,
    no-quota-granted, push, and sponsor refusals fire here, before any quota is spent. a spent
-   quota (no uses left) is checked only at apply, so step 4 can still be refused: that refusal
+   quota (no uses left) is checked only at apply, so the apply below can still be refused: that refusal
    is a grant refusal, held as below. the plan lists the staged set: it must equal the
    \`### before\` allowlist. a path staged by another party is not yours to unstage: hold the
    commit (\`.a hold\`), the extra paths named
-4. commit: \`rhx git.commit.set -m @stdin --mode apply --unstaged ignore --push\`
+4. **the apply**: \`rhx git.commit.set -m @stdin --mode apply --unstaged ignore --push\`
 
 the message keys on **branch state**, never on this stone's own count:
 
@@ -124,7 +139,7 @@ the message keys on **branch state**, never on this stone's own count:
   bind. \`--promise is-netnew-behavior\` only when the branch has no level and the wish adds a new
   behavior — never to dodge a refusal
 - the branch already holds one (an earlier route, a human's commit) → \`cont(scope):\`
-- unsure which → the step 3 preflight refuses a wrong prefix and prints the one it demands; write
+- unsure which → the preflight refuses a wrong prefix and prints the one it demands; write
   that header
 
 the body, in this shape (the pr title and body come from the first behavioral commit, so this is
@@ -160,8 +175,9 @@ sort a refusal by who can clear it:
 tool's max timeout (the watch caps itself at 15 minutes), until it reports green for the head you
 pushed. paste the pushed sha (\`git log -1 --format=%H\`) and the watch's final output into \`### pr\`.
 
-- the tool cut the watch off before its own cap → no try: re-run it free, **at most 3 cut-offs**;
-  a fourth → halt (\`--as blocked\`) with the cut-off output verbatim
+- the tool cut the watch off before its own cap → no try: the watch resumes remote state, so
+  re-run it free, **at most 3 cut-offs**; a fourth → halt (\`--as blocked\`) with the cut-off output
+  verbatim
 - the watch hit its own cap with no verdict → watch again, **at most 3 watches**; still none →
   halt (\`--as blocked\`) with the watch output verbatim
 - red → \`rhx show.gh.test.errors\`, fix the cause, commit (step 2), push, back to step 3.
@@ -289,7 +305,8 @@ reviews:
         - the final summary line (counts)
         - the exit code
 
-        did both calls run — \`--what types,format\` and \`--what all --against local --env test\`?
+        did every kind run — \`types,format\`, \`lint\`, \`unit\`, \`integration\`, and \`acceptance\`?
+        a call the tool moved to the background: did you await its end, never start a second run?
         a claim with no paste is a feigned review. red anywhere → you did not commit.
 
     - slug: has-watched-the-head-green
@@ -371,8 +388,8 @@ repo that owns it, reaches every route after this one.
      the cure's allowlist is the paths the cure added, changed, or removed: write it under
      \`### ship\` before you stage, and read it as the allowlist at re-entry, so an uncommitted
      cure reads as a work change. re-watch to green before you pass. a refused
-     commit or push is held, as in 6.preship. the cure's state lives in this yield's own
-     \`### ship\` section, never in the passed preship yield
+     commit or push is held, as in 6.preship, and recorded per \`.a hold\` below. the cure's state
+     lives in this yield's own \`### ship\` section, never in the passed preship yield
    - **another repo** → the owner comes from a source, never a guess: the installed role
      package's \`package.json\` \`repository\` field. dispatch the cure, one task per item per layer:
      \`rhx radio.task.push --via gh.issues --into <owner/repo> --title "<route slug>: <item slug>, layer <n>" --description @stdin\`.
@@ -394,8 +411,33 @@ repo that owns it, reaches every route after this one.
    \`$BEHAVIOR_DIR_REL/dreams/\` link). it lands before \`--as passed\`. the record commit's own
    watch result goes into this stone's self-review promise, never the yield, so the yield the
    commit carries stays clean. two things stay on the box: the passage line of that last pass,
-   and the promise file. a refused commit or push is held, as in 6.preship.
-   why: a route record left on the box is the very defect this tail exists to end
+   and the promise file. a refused commit or push is held, as in 6.preship, and recorded per
+   \`.a hold\` below. why: a route record left on the box is the very defect this tail exists to end
+
+## .a hold
+
+a refused cure or record commit (or its push) is **held, never a halt**, and durable, never a lone
+yield line — the same bar as 6.preship's \`.a hold\`. a held record commit is the common case: a
+grant of 1 lands 6.preship and leaves naught for this stone.
+
+- this yield's \`### held\` names the refusal verbatim, the grant command as the skill printed it,
+  N (the commits still owed), the allowlist, and the commit message
+- the same record goes off the box:
+  \`rhx radio.task.push --via gh.issues --into @this --title "<route slug>: held reflect <cure|record> commit, round <n>" --description @stdin\`
+  with a description in this shape:
+
+  \`\`\`
+  held: {the refusal, verbatim}
+  grant: {the grant command, as printed}
+  route: $BEHAVIOR_DIR_REL
+  allowlist: {each path to stage}
+  message: {the commit message the grant will land}
+  land via: 6.preship's steps \`### 2. commit at the done gate\` and \`### 3. watch the pr\`, with the allowlist and message above
+  \`\`\`
+
+  the land recipe is the allowlist and the message, so a human (or a driver they send) lands it
+  with no rerun of this stone. a \`found\` outcome for a hold not yet sent means it was not
+  delivered: say so
 
 never \`--apply\`, never merge.
 
@@ -451,7 +493,9 @@ emit to
 - allowlist: {each path the cure staged}
 - rounds: {loop}: try {n} — {outcome}
 - pr: the pushed sha (\`git log -1 --format=%H\`) and the watch's final output, verbatim
-- held: each refusal verbatim, the grant command, and N (or: none)
+
+### held
+- each refusal verbatim, the grant command, N, the allowlist, the message, and the task it went to (or: none)
 \`\`\`
 "
 `;
@@ -508,8 +552,9 @@ reviews:
 
         did the watch report green after your last push?
 
-        held arm: if a commit or push was held, paste the \`### held\` line of \`### ship\` and the
-        last watch output. there is no pushed head to confirm — do not claim one.
+        held arm: if a commit or push was held, paste the \`### held\` section of your yield and the
+        last watch output. there is no pushed head to confirm — do not claim one. does the hold
+        name the allowlist and the message, and the task it went to?
 
   peer: []
 "

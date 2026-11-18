@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import { genTestGitRepo } from '../../.test/infra';
+import { genTestGitRepo, stripAnsi } from '../../.test/infra';
 
 /**
  * .what = the result of one skill call, as the journey records it
@@ -85,10 +85,22 @@ export const runSkill = (input: {
 };
 
 /**
- * .what = the combined output of a skill call
+ * .what = a call's output, with each stream under its own label
+ * .why  = rhachet prints its skill banner on stdout and again on stderr; joined with no seam, the
+ *         two read as one stream that repeats itself. a label per stream shows what a caller's
+ *         terminal holds, and where each line came from
  */
-export const asCallOutput = (input: { call: SkillCallResult }): string =>
-  input.call.stdout + input.call.stderr;
+export const asStreamsOutput = (input: { call: SkillCallResult }): string => {
+  // strip color codes before the trim, so a stream that opens on a bare color code reads blank
+  const stdout = stripAnsi(input.call.stdout).trim();
+  const stderr = stripAnsi(input.call.stderr).trim();
+  return [
+    stdout ? `[stdout]\n${stdout}` : null,
+    stderr ? `[stderr]\n${stderr}` : null,
+  ]
+    .filter((part): part is string => part !== null)
+    .join('\n\n');
+};
 
 /**
  * .what = marks a stone with a status via bhrain route.stone.set
@@ -620,6 +632,7 @@ export const asGuardWithSelfReviewsStubbed = (input: {
  */
 export const genGuardedBehaviorScene = (input: {
   prefix: string;
+  size: 'nano' | 'medi';
 }): {
   repoDir: string;
   behaviorDir: string;
@@ -649,7 +662,7 @@ export const genGuardedBehaviorScene = (input: {
   const initialized = runSkill({
     repo: 'bhuild',
     skill: 'init.behavior',
-    args: '--name full-journey --guard heavy',
+    args: `--name full-journey --guard heavy --size ${input.size}`,
     cwd: repoDir,
   });
   if (initialized.code !== 0)

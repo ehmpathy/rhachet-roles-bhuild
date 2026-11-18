@@ -1,6 +1,7 @@
 import { ConstraintError } from 'helpful-errors';
 import { getError, given, then, when } from 'test-fns';
 
+import { RUN_GITHUB_ROBOT_TEST } from '@src/.test/utils/RUN_GITHUB_ROBOT_TEST';
 import { shx } from '@src/infra/shell/shx';
 
 import { getGithubTokenByAuthArg } from './getGithubTokenByAuthArg';
@@ -82,7 +83,10 @@ describe('getGithubTokenByAuthArg.integration', () => {
     });
   });
 
-  given(
+  // .skip = off where GITHUB_ROBOT_LIVE is unset (a local default run)
+  // .why  = it mints the robot token, a github app secret only ci holds
+  // .real = ci sets GITHUB_ROBOT_LIVE=true (.github/workflows/.test.yml), so every pr runs it
+  given.runIf(RUN_GITHUB_ROBOT_TEST)(
     '[case3] --auth as-robot:via-keyrack(ehmpath) against real keyrack',
     () => {
       when('[t0] the beaver key is granted', () => {

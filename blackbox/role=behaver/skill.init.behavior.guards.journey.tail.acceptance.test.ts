@@ -5,7 +5,7 @@ import * as path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
-  asCallOutput,
+  asStreamsOutput,
   genGuardedBehaviorScene,
   getStonesPassed,
   promiseAllReviewSelfs,
@@ -29,28 +29,31 @@ import { asSnapshotStable } from './.test/skill.init.behavior.utils';
  *         here is setup (the drop of `src/`). the ship acts are template text, held by
  *         templates.tail.integration.test.ts
  * .note = route.drive halts at each tail stone (the brain switch cannot land in a test session);
- *         the frontier is proven by its `stone =` and `brain =` rows, the snap stops at the halt
- *         line, and passage is driven by `route.stone.set` directly
+ *         the frontier is proven by its `stone =` and `brain =` rows, the snap stops at the
+ *         halt header, and passage is driven by `route.stone.set` directly
  */
+
 /**
- * .what = a drive's output, with the host's cause under the halt line masked
- * .why  = the cause printed under the halt is the host's: a `clone whoami` probe that times out
- *         on one host fails at once on another, and each prints a different tree of lines. the
- *         mask keeps the halt line and marks where the cause sits, so the snap is the same on
- *         every host and a drift in the frame around it still shows
+ * .what = a drive's output, cut after its halt header
+ * .why  = the drive's claim under test is the frontier: its stone and its brain. below the halt
+ *         header sits the host's cause (a `clone whoami` probe that times out on one host fails
+ *         at once on another), so the snap keeps the header, which closes the tree, and stops
+ *         there; it reads the same on every host
  */
-const HALT_LINE = 'halted, brain switch could not land';
-const asDriveOutputThroughHalt = (input: { output: string }): string => {
-  const index = input.output.indexOf(HALT_LINE);
-  return index === -1
-    ? input.output
-    : `${input.output.slice(0, index + HALT_LINE.length)}\n<host cause, masked>`;
+const HALT_ROW = '└─ ✋ halted, brain switch could not land';
+const asDriveOutputThroughFrontier = (input: { output: string }): string => {
+  const index = input.output.indexOf(HALT_ROW);
+  if (index === -1) return input.output;
+  return input.output.slice(0, index + HALT_ROW.length);
 };
 
 describe('skill.init.behavior.guards.journey.tail', () => {
   given('[case1] a heavy-guard behavior opened at its tail', () => {
     const scene = useBeforeAll(async () => {
-      const behavior = genGuardedBehaviorScene({ prefix: 'journey-tail' });
+      const behavior = genGuardedBehaviorScene({
+        prefix: 'journey-tail',
+        size: 'medi',
+      });
 
       // drop the scene's src/: it exists for the execution guard, whose artifact glob
       // (`src/**/*`) would make route.stone.del retain 5.1 as a stone with work on record
@@ -163,9 +166,9 @@ describe('skill.init.behavior.guards.journey.tail', () => {
 
     when('[t0] the driver enters the tail', () => {
       then('the frontier is 6.preship, on sonnet, the build brain', () => {
-        const output = asCallOutput({ call: scene.preshipDrive });
+        const output = asStreamsOutput({ call: scene.preshipDrive });
         expect(
-          asSnapshotStable(asDriveOutputThroughHalt({ output })),
+          asSnapshotStable(asDriveOutputThroughFrontier({ output })),
         ).toMatchSnapshot();
         expect(output).toContain('stone = 6.preship');
         expect(output).toContain('brain = claude-sonnet-5-5[1m]');
@@ -174,9 +177,9 @@ describe('skill.init.behavior.guards.journey.tail', () => {
     });
 
     when('[t1] preship pass attempted with no yield', () => {
-      then('blocked', () => {
+      then('blocked: no yield on the stone', () => {
         expect(scene.preshipPassWithoutYield.code).not.toEqual(0);
-        const output = asCallOutput({ call: scene.preshipPassWithoutYield });
+        const output = asStreamsOutput({ call: scene.preshipPassWithoutYield });
         expect(asSnapshotStable(output)).toMatchSnapshot();
       });
     });
@@ -184,7 +187,7 @@ describe('skill.init.behavior.guards.journey.tail', () => {
     when('[t2] preship pass attempted with a yield, no promise', () => {
       then('blocked by the unpromised self-review', () => {
         expect(scene.preshipPassWithoutPromise.code).not.toEqual(0);
-        const output = asCallOutput({ call: scene.preshipPassWithoutPromise });
+        const output = asStreamsOutput({ call: scene.preshipPassWithoutPromise });
         expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('review.self required');
       });
@@ -193,7 +196,7 @@ describe('skill.init.behavior.guards.journey.tail', () => {
     when('[t3] preship pass attempted after the promise', () => {
       then('allowed: no peer round, no judge', () => {
         expect(scene.preshipPassAfterPromise.code).toEqual(0);
-        const output = asCallOutput({ call: scene.preshipPassAfterPromise });
+        const output = asStreamsOutput({ call: scene.preshipPassAfterPromise });
         expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('passage = allowed');
       });
@@ -201,9 +204,9 @@ describe('skill.init.behavior.guards.journey.tail', () => {
 
     when('[t4] the driver drives on', () => {
       then('the frontier is 7.reflect, on opus, the design brain', () => {
-        const output = asCallOutput({ call: scene.reflectDrive });
+        const output = asStreamsOutput({ call: scene.reflectDrive });
         expect(
-          asSnapshotStable(asDriveOutputThroughHalt({ output })),
+          asSnapshotStable(asDriveOutputThroughFrontier({ output })),
         ).toMatchSnapshot();
         expect(output).toContain('stone = 7.reflect');
         expect(output).toContain('brain = claude-opus-5-5[1m]');
@@ -212,16 +215,17 @@ describe('skill.init.behavior.guards.journey.tail', () => {
     });
 
     when('[t5] reflect is promised and passed', () => {
-      then('blocked before the promise', () => {
+      // the [a] / [b] marks sort the snaps in journey order, since jest writes snaps by name
+      then('[a] blocked before the self-review promise', () => {
         expect(scene.reflectPassWithoutPromise.code).not.toEqual(0);
-        const output = asCallOutput({ call: scene.reflectPassWithoutPromise });
+        const output = asStreamsOutput({ call: scene.reflectPassWithoutPromise });
         expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('review.self required');
       });
 
-      then('allowed after it', () => {
+      then('[b] allowed after the self-review promise', () => {
         expect(scene.reflectPassAfterPromise.code).toEqual(0);
-        const output = asCallOutput({ call: scene.reflectPassAfterPromise });
+        const output = asStreamsOutput({ call: scene.reflectPassAfterPromise });
         expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('passage = allowed');
       });
@@ -238,20 +242,137 @@ describe('skill.init.behavior.guards.journey.tail', () => {
 
     when('[t6] the driver drives past the last stone', () => {
       then('the route is complete: no next stone', () => {
-        const output = asCallOutput({ call: scene.finalDrive });
+        const output = asStreamsOutput({ call: scene.finalDrive });
         expect(asSnapshotStable(output)).toMatchSnapshot();
+        expect(output).toContain('route complete');
         expect(output).not.toContain('stone = 6.preship');
         expect(output).not.toContain('stone = 7.reflect');
       });
     });
 
-    when('[t7] the ship tool is called where no role was enrolled (case=16, c27)', () => {
-      then('the call fails loud: the error a stranger meets, snapped', () => {
+    // case=16, c27: a consumer with no mechanic role meets the absent skill at preship's first call
+    when('[t7] the ship tool is called where no role was enrolled', () => {
+      then('the call fails loud with the error rhachet prints for an absent skill', () => {
         expect(scene.skillUnenrolled.code).not.toEqual(0);
-        const output = asCallOutput({ call: scene.skillUnenrolled });
+        const output = asStreamsOutput({ call: scene.skillUnenrolled });
         expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('git.commit.set');
       });
     });
   });
+
+  // case=14 [t0]: a route finished before the tail existed, re-inited at its own --size, reopens
+  // at 6.preship. the re-init is the only upgrade path to the tail (F26)
+  given('[case2] a nano route finished before the tail, re-inited at its own size', () => {
+    const scene = useBeforeAll(async () => {
+      const behavior = genGuardedBehaviorScene({
+        prefix: 'journey-reinit',
+        size: 'nano',
+      });
+
+      // strip the tail, so the route is one init wrote before #590
+      setStonesDeleted({ ...behavior, stones: ['6.*', '7.*'] });
+
+      // finish the route: pass each of its three stones through its guard
+      setStoneFinished({ ...behavior, stone: '1.vision', approve: true });
+      setStoneFinished({
+        ...behavior,
+        stone: '5.1.execution.from_vision',
+        approve: false,
+      });
+      setStoneFinished({
+        ...behavior,
+        stone: '5.3.verification',
+        approve: false,
+      });
+
+      // [t0] the finished route, before the re-init: no next stone
+      const driveBeforeReinit = setRouteDriven(behavior);
+
+      // [t1] re-init at the route's own size: the tail returns
+      const reinit = runSkill({
+        repo: 'bhuild',
+        skill: 'init.behavior',
+        args: '--name full-journey --guard heavy --size nano',
+        cwd: behavior.repoDir,
+      });
+
+      // [t2] the drive reopens at the tail
+      const driveAfterReinit = setRouteDriven(behavior);
+
+      return { ...behavior, driveBeforeReinit, reinit, driveAfterReinit };
+    });
+
+    afterAll(() => scene.cleanup());
+
+    when('[t0] the finished route is driven before the re-init', () => {
+      then('the route is complete: every stone passed, no tail', () => {
+        const output = asStreamsOutput({ call: scene.driveBeforeReinit });
+        expect(output).toContain('route complete');
+        const passed = getStonesPassed(scene);
+        expect(passed).toContain('1.vision');
+        expect(passed).toContain('5.1.execution.from_vision');
+        expect(passed).toContain('5.3.verification');
+      });
+    });
+
+    when('[t1] the route is re-inited at its own size', () => {
+      then('the re-init adds the four tail files, and no other stone', () => {
+        expect(scene.reinit.code).toEqual(0);
+        const output = asStreamsOutput({ call: scene.reinit });
+        expect(output).toContain('+ 6.preship.stone');
+        expect(output).toContain('+ 6.preship.guard');
+        expect(output).toContain('+ 7.reflect.stone');
+        expect(output).toContain('+ 7.reflect.guard');
+        expect(output).not.toContain('+ 1.vision.stone');
+        expect(output).not.toContain('+ 5.1.execution.from_vision.stone');
+        expect(output).not.toContain('+ 5.3.verification.stone');
+      });
+    });
+
+    when('[t2] the driver drives the re-inited route', () => {
+      then('the frontier reopens at 6.preship, on sonnet', () => {
+        const output = asStreamsOutput({ call: scene.driveAfterReinit });
+        expect(
+          asSnapshotStable(asDriveOutputThroughFrontier({ output })),
+        ).toMatchSnapshot();
+        expect(output).toContain('stone = 6.preship');
+        expect(output).toContain('brain = claude-sonnet-5-5[1m]');
+      });
+    });
+  });
 });
+
+/**
+ * .what = passes one stone through its guard, as a driver would: yield, ask, promise each self
+ *         review, a human approval where the guard judges it, then pass
+ * .why  = [case2] needs a finished route, so each step fails loud here, never as a later frontier
+ *         that reads wrong for a reason the scene hid
+ */
+const setStoneFinished = (input: {
+  repoDir: string;
+  behaviorDir: string;
+  routeDir: string;
+  routeRel: string;
+  stone: string;
+  approve: boolean;
+}): void => {
+  // write the yield and stage it (the route dir is ignored; bhrain reads staged changes)
+  const yieldPath = path.join(input.behaviorDir, `${input.stone}.yield.md`);
+  fs.writeFileSync(yieldPath, `# ${input.stone}\n\ntest ${input.stone}.`);
+  execSync(`git add -f "${yieldPath}"`, { cwd: input.repoDir, stdio: 'pipe' });
+
+  // ask the first self review, then promise every one
+  setStoneAs({ ...input, as: 'passed' });
+  promiseAllReviewSelfs(input);
+
+  // a guard that judges `approved?` needs a human approval before the pass
+  if (input.approve) setStoneAs({ ...input, as: 'approved' });
+
+  // pass: the stubbed peers run, then the judges
+  const passed = setStoneAs({ ...input, as: 'passed' });
+  if (passed.code !== 0)
+    throw new Error(
+      `${input.stone} did not pass: code=${passed.code}, stdout=${passed.stdout}, stderr=${passed.stderr}`,
+    );
+};

@@ -4,7 +4,7 @@ import * as path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
-  asCallOutput,
+  asStreamsOutput,
   genGuardedBehaviorScene,
   getStonesPassed,
   promiseAllReviewSelfs,
@@ -26,7 +26,10 @@ import { asSnapshotStable } from './.test/skill.init.behavior.utils';
 describe('skill.init.behavior.guards.journey.vision', () => {
   given('[case1] a heavy-guard behavior at its vision stone', () => {
     const scene = useBeforeAll(async () => {
-      const behavior = genGuardedBehaviorScene({ prefix: 'journey-vision' });
+      const behavior = genGuardedBehaviorScene({
+        prefix: 'journey-vision',
+        size: 'medi',
+      });
 
       // enter the vision: bhrain applies its `brain:` (case=1, case=6)
       const visionDrive = setRouteDriven(behavior);
@@ -85,7 +88,7 @@ describe('skill.init.behavior.guards.journey.vision', () => {
     when('[t0] vision pass attempted without promises', () => {
       then('blocked by unpromised self-review', () => {
         expect(scene.visionPassWithoutPromises.code).not.toEqual(0);
-        const output = asCallOutput({ call: scene.visionPassWithoutPromises });
+        const output = asStreamsOutput({ call: scene.visionPassWithoutPromises });
         expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('review.self required');
       });
@@ -94,7 +97,7 @@ describe('skill.init.behavior.guards.journey.vision', () => {
     when('[t1] vision pass attempted after promises and approval', () => {
       then('allowed', () => {
         expect(scene.visionPassAfterApproval.code).toEqual(0);
-        const output = asCallOutput({ call: scene.visionPassAfterApproval });
+        const output = asStreamsOutput({ call: scene.visionPassAfterApproval });
         expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('passage = allowed');
       });
@@ -103,7 +106,7 @@ describe('skill.init.behavior.guards.journey.vision', () => {
     when('[t2] criteria pass attempted without promise', () => {
       then('blocked by unpromised self-review', () => {
         expect(scene.criteriaPassWithoutPromises.code).not.toEqual(0);
-        const output = asCallOutput({
+        const output = asStreamsOutput({
           call: scene.criteriaPassWithoutPromises,
         });
         expect(asSnapshotStable(output)).toMatchSnapshot();
@@ -114,7 +117,7 @@ describe('skill.init.behavior.guards.journey.vision', () => {
     when('[t3] criteria pass attempted after promises', () => {
       then('allowed (no judges)', () => {
         expect(scene.criteriaPassAfterPromises.code).toEqual(0);
-        const output = asCallOutput({ call: scene.criteriaPassAfterPromises });
+        const output = asStreamsOutput({ call: scene.criteriaPassAfterPromises });
         expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('passage = allowed');
       });
@@ -131,7 +134,7 @@ describe('skill.init.behavior.guards.journey.vision', () => {
     // and the enroll fix (catalog cell c16)
     when('[t4] the unenrolled driver enters the vision', () => {
       then('bhrain names opus, the design brain, and halts with the enroll fix', () => {
-        const output = asCallOutput({ call: scene.visionDrive });
+        const output = asStreamsOutput({ call: scene.visionDrive });
         expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('stone = 1.vision');
         expect(output).toContain('brain = claude-opus-5-5[1m]');

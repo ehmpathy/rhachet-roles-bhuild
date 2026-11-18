@@ -1,7 +1,7 @@
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { given, then, when } from 'test-fns';
+import { given, then, useBeforeAll, useThen, when } from 'test-fns';
 
 import { initBehaviorDir } from './initBehaviorDir';
 
@@ -700,48 +700,60 @@ describe('initBehaviorDir.integration', () => {
   });
 
   given(
-    '[case8] a route inited before the tail, re-inited at its own size',
+    '[case8] a nano route that lacks 6.preship and 7.reflect, with a stone the driver edited',
     () => {
-      when(
-        '[t0] a nano route lacks 6.preship and 7.reflect, and the driver edited a stone',
-        () => {
-          then(
-            'the re-init adds only the four tail files and keeps the edited stone byte for byte',
-            () => {
-              // init a nano route, then strip it back to its pre-tail shape
-              const behaviorDirRel = '.behavior/v2025_01_01.test-feature';
-              initBehaviorDir({ behaviorDir, behaviorDirRel, size: 'nano' });
-              const tailNames = [
-                '6.preship.stone',
-                '6.preship.guard',
-                '7.reflect.stone',
-                '7.reflect.guard',
-              ];
-              tailNames.forEach((name) =>
-                fs.rmSync(path.join(behaviorDir, name)),
-              );
+      const TAIL_NAMES = [
+        '6.preship.stone',
+        '6.preship.guard',
+        '7.reflect.stone',
+        '7.reflect.guard',
+      ];
+      const EDITED_CONTENT = 'the driver edited this stone\n';
 
-              // the driver edited a stone of its own
-              const editedPath = path.join(behaviorDir, '1.vision.stone');
-              const editedContent = 'the driver edited this stone\n';
-              fs.writeFileSync(editedPath, editedContent);
+      // init a nano route, strip it back to its pre-tail shape, edit one stone
+      const scene = useBeforeAll(async () => {
+        const sceneDir = fs.mkdtempSync(
+          path.join(os.tmpdir(), 'initBehaviorDir-reinit-test-'),
+        );
+        const behaviorDirRel = '.behavior/v2025_01_01.test-feature';
+        const sceneBehaviorDir = path.join(sceneDir, behaviorDirRel);
+        initBehaviorDir({
+          behaviorDir: sceneBehaviorDir,
+          behaviorDirRel,
+          size: 'nano',
+        });
+        TAIL_NAMES.forEach((name) =>
+          fs.rmSync(path.join(sceneBehaviorDir, name)),
+        );
+        const editedPath = path.join(sceneBehaviorDir, '1.vision.stone');
+        fs.writeFileSync(editedPath, EDITED_CONTENT);
+        return { sceneDir, sceneBehaviorDir, behaviorDirRel, editedPath };
+      });
 
-              // re-init at the route's own size
-              const result = initBehaviorDir({
-                behaviorDir,
-                behaviorDirRel,
-                size: 'nano',
-              });
+      afterAll(() => {
+        fs.rmSync(scene.sceneDir, { recursive: true, force: true });
+      });
 
-              expect([...result.created].sort()).toEqual([...tailNames].sort());
-              expect(result.kept).toContain('1.vision.stone');
-              expect(fs.readFileSync(editedPath, 'utf-8')).toEqual(
-                editedContent,
-              );
-            },
+      when('[t0] the route is re-inited at its own size', () => {
+        const result = useThen('the re-init succeeds', async () =>
+          initBehaviorDir({
+            behaviorDir: scene.sceneBehaviorDir,
+            behaviorDirRel: scene.behaviorDirRel,
+            size: 'nano',
+          }),
+        );
+
+        then('it adds only the four tail files', () => {
+          expect([...result.created].sort()).toEqual([...TAIL_NAMES].sort());
+        });
+
+        then('it keeps the edited stone byte for byte', () => {
+          expect(result.kept).toContain('1.vision.stone');
+          expect(fs.readFileSync(scene.editedPath, 'utf-8')).toEqual(
+            EDITED_CONTENT,
           );
-        },
-      );
+        });
+      });
     },
   );
 });
