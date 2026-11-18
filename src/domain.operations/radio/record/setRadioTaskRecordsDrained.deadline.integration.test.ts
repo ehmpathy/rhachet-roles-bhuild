@@ -22,6 +22,7 @@ const STUB_GH = `#!/usr/bin/env bash
 args="$*"
 case "$1 $2" in
   "api user") echo "stubbot"; exit 0 ;;
+  "repo view") echo '{"visibility":"PRIVATE"}'; exit 0 ;;
   "issue list") echo "[]" ;;
   "issue create")
     echo "$args" >> "$STUB_GH_DIR/creates.log"
@@ -80,6 +81,7 @@ const holdCreate = (input: { cwd: string; title: string }) =>
         description: `details for ${input.title}`,
         exid: null,
         status: null,
+        promise: null,
       },
     },
     { dir: path.join(input.cwd, '.behavior', '.radio'), cwd: input.cwd },

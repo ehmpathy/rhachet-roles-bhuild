@@ -34,7 +34,8 @@ export const setRadioTaskRecordsInLine = async (
     env: NodeJS.ProcessEnv;
     shx: ShellExecutor;
     authOverride?: string | null;
-    authLive?: { key: string; auth: string | null } | null;
+    promiseOverride?: string | null;
+    push?: { key: string; auth: string | null } | null;
     drainSendBudget?: { milliseconds: number };
     drainSendLimit?: {
       perCall: { milliseconds: number };
@@ -65,7 +66,10 @@ export const setRadioTaskRecordsInLine = async (
         ...prior,
         fates: [
           ...prior.fates,
-          asRadioFateUnreachedByBudget({ record: entry.record }),
+          asRadioFateUnreachedByBudget({
+            record: entry.record,
+            dir: entry.dir,
+          }),
         ],
       };
     return setRadioTaskRecordNextInLine({ prior, entry }, context);

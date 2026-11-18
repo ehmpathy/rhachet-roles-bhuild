@@ -28,6 +28,7 @@ const genRecord = (input: Partial<RadioTaskRecord> & { key: string }) =>
     reason: null,
     heldSeq: 1,
     deliveredExid: null,
+    promise: null,
     ...input,
   });
 

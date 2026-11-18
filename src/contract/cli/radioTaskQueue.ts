@@ -9,6 +9,7 @@
  *   radio.task.queue set   --uuid <uuid> --auth as-human  amend one held record (or --description)
  *   radio.task.queue del   --uuid <uuid> --why "<why>"    drop one, its body and why kept
  *   radio.task.queue drain [--auth as-human]              deliver now; a fault sets one record aside
+ *   radio.task.queue drain --promise <promise>            deliver now; vouch for every held public record
  *
  * guarantee:
  *   - get reads local records + radio.uses only; no network, no send
@@ -24,6 +25,7 @@ import { ConstraintError } from 'helpful-errors';
 import { z } from 'zod';
 
 import { asGithubAuthMode } from '@src/domain.operations/radio/auth/asGithubAuthMode';
+import { asRadioPromiseFromArg } from '@src/domain.operations/radio/cli/asRadioPromiseFromArg';
 import { asRadioAmendOutput } from '@src/domain.operations/radio/record/asRadioAmendOutput';
 import { asRadioDrainAuthNotice } from '@src/domain.operations/radio/record/asRadioDrainAuthNotice';
 import { asRadioDrainOutput } from '@src/domain.operations/radio/record/asRadioDrainOutput';
@@ -66,6 +68,10 @@ const schemaOfArgs = z.object({
       // del: why the record is dropped
       why: z.string().optional(),
 
+      // drain: the anonymized promise, for every held public record this drain sends. a bare
+      // `--promise` parses as `true`, so the union lets the value check refuse it by name
+      promise: z.union([z.string(), z.boolean()]).optional(),
+
       // rhachet passthrough args (optional, ignored)
       repo: z.string().optional(),
       role: z.string().optional(),
@@ -86,12 +92,17 @@ const HELP_TEXT = `
    │  ├─ rhx radio.task.queue get --when hook.onStop                one-line stop reminder (naught when none)
    │  ├─ rhx radio.task.queue set   --uuid <uuid> --auth as-human   amend one held record (or --description)
    │  ├─ rhx radio.task.queue del   --uuid <uuid> --why "<why>"     drop one, its body and why kept
-   │  └─ rhx radio.task.queue drain [--auth as-human]               deliver now; a fault sets one record aside
+   │  ├─ rhx radio.task.queue drain [--auth as-human]               deliver now; a fault sets one record aside
+   │  └─ rhx radio.task.queue drain --promise task-to-public-repo-is-anonymized
+   │     └─ deliver now, and vouch for every held public record
    │
    ├─ the line
    │  ├─ a rate limit or a github outage halts the drain; the rest wait in order
    │  ├─ any other fault sets its one record aside; the rest still deliver
-   │  └─ a later update to the same issue waits behind it, unsent, until it lands or is dropped
+   │  ├─ a later update to the same issue waits behind it, unsent, until it lands or is dropped
+   │  └─ a record with text bound for a public repo, and no promise, awaits one
+   │     ├─ read it at its record file first
+   │     └─ then \`drain --promise\`, which promises every held public record
    │
    ├─ exit codes
    │  ├─ drain
@@ -107,6 +118,8 @@ const HELP_TEXT = `
       │  └─ drain: sends every held record under this auth, this drain only
       ├─ --description  the new body (set; supports @stdin)
       ├─ --why          why the record is dropped (del, required)
+      ├─ --promise      task-to-public-repo-is-anonymized (drain): promises every held public record
+      │  └─ this drain sends, this drain only; never stored on a record
       ├─ --when         hook.onStop (get)
       └─ --help, -h     show this help
 `.trim();
@@ -260,9 +273,12 @@ const _cliRadioTaskQueue = async (): Promise<void> => {
   // drain: deliver every held record whose gate is open; exit 2 while any still waits, or if any was refused
   if (verb === 'drain') {
     const authOverride = asAuthFromArg({ raw: named.auth });
+    const promiseOverride = asRadioPromiseFromArg({
+      raw: named.promise ?? null,
+    });
     const { fates } = await setRadioTaskRecordsDrained(
       {},
-      { ...context, authOverride },
+      { ...context, authOverride, promiseOverride },
     );
     const backlog = getAllRadioTaskRecordsHeld({}, context).length;
 

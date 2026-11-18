@@ -44,6 +44,7 @@ wide="no"; if [ -n "$STUB_GH_WIDE_TOKEN" ] && [ "$GH_TOKEN" = "$STUB_GH_WIDE_TOK
 claimed="no"; if [ -f "$STUB_GH_DIR/claimed.$repo.$3" ]; then claimed="yes"; fi
 case "$1 $2" in
   "api user") echo "stubbot"; exit 0 ;;
+  "repo view") echo '{"visibility":"PRIVATE"}'; exit 0 ;;
 esac
 if [ "$mode" = "rate-limit" ]; then echo "API rate limit exceeded for installation ID 1" >&2; exit 1; fi
 if [ "$mode" = "unreachable" ]; then echo "GraphQL: Could not resolve to a Repository with the name '$repo'. (repository)" >&2; exit 1; fi
@@ -160,6 +161,7 @@ const holdPush = (input: {
           (input.title ? `details for ${input.title}` : null),
         exid: input.exid ?? null,
         status: input.status ?? null,
+        promise: null,
       },
     },
     { dir: path.join(input.cwd, '.behavior', '.radio'), cwd: input.cwd },
@@ -201,6 +203,7 @@ const pushCarrier = async (input: { cwd: string; homeDir: string }) => {
         description: 'rent a board by the hour',
         exid: null,
         status: null,
+        promise: null,
       },
     },
     { dir, cwd: input.cwd },

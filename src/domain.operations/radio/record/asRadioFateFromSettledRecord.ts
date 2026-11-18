@@ -1,6 +1,8 @@
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 import { RadioTaskRecordStatus } from '@src/domain.objects/RadioTaskRecordStatus';
 
+import { asRadioPromiseHoldDetail } from '../promise/asRadioPromiseHoldDetail';
+import { isRadioPromiseHoldReason } from '../promise/isRadioPromiseHoldReason';
 import type { RadioTaskRecordFate } from './RadioTaskRecordFate';
 
 /**
@@ -11,6 +13,8 @@ import type { RadioTaskRecordFate } from './RadioTaskRecordFate';
  *
  * .note = total over RadioTaskRecordStatus: QUEUED alone has no settled fate, and returns null,
  *         so the caller can fail loud on a record no drain reached
+ * .note = a record the promise gate dropped stores the machine code; its detail renders the
+ *         human why from that code, never the raw code
  */
 export const asRadioFateFromSettledRecord = (input: {
   record: RadioTaskRecord;
@@ -32,7 +36,9 @@ export const asRadioFateFromSettledRecord = (input: {
       return {
         fate: 'refused',
         record,
-        detail: record.reason ?? 'dropped via radio.task.queue del',
+        detail: isRadioPromiseHoldReason(record.reason)
+          ? `dropped: ${asRadioPromiseHoldDetail({ reason: record.reason, cause: null })}`
+          : (record.reason ?? 'dropped via radio.task.queue del'),
       };
     case RadioTaskRecordStatus.QUEUED:
       return null;

@@ -1,15 +1,20 @@
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 
+import { asRadioPromiseHoldDetail } from '../promise/asRadioPromiseHoldDetail';
+import { isRadioPromiseHoldReason } from '../promise/isRadioPromiseHoldReason';
 import { asRadioAuthShown } from './asRadioAuthShown';
+import { asRadioAwaitPromiseCountLine } from './asRadioAwaitPromiseCountLine';
 import { asRadioQueueFixLines } from './asRadioQueueFixLines';
 import { asRadioReasonBehindOnIssue } from './asRadioReasonBehindOnIssue';
 import { asRadioReplayWarnLines } from './asRadioReplayWarnLines';
 import { asRadioTaskRecordLabel } from './asRadioTaskRecordLabel';
+import { asRadioTaskRecordPath } from './asRadioTaskRecordPath';
 import { asRadioTaskRecordState } from './asRadioTaskRecordState';
 import { asRadioTaskRepoSlug } from './asRadioTaskRepoSlug';
 import { asRadioTreeLines } from './asRadioTreeLines';
+import { isRadioTaskRecordTextUnvouched } from './isRadioTaskRecordTextUnvouched';
 
-type HeldEntry = { record: RadioTaskRecord; lift: string | null };
+type HeldEntry = { record: RadioTaskRecord; dir: string; lift: string | null };
 type HeldState = ReturnType<typeof asRadioTaskRecordState> | 'behind the halt';
 
 /**
@@ -63,6 +68,17 @@ const asStateAhead = (input: {
 };
 
 /**
+ * .what = the claim of an unreadable visibility, as a prefix to the awaits-promise line
+ * .why = `public-repo:unpromised` already reads as its claim; an unreadable code does not say the
+ *        repo is treated as public, so its claim leads the line. other reasons yield no prefix
+ */
+const asAwaitClaimPrefix = (input: { reason: string | null }): string => {
+  if (!isRadioPromiseHoldReason(input.reason)) return '';
+  if (input.reason === 'public-repo:unpromised') return '';
+  return `${asRadioPromiseHoldDetail({ reason: input.reason, cause: null })}; `;
+};
+
+/**
  * .what = the state lines of one held record: the plain word, the code it rests on, and for a
  *         record behind another, a pointer to the fix that frees it
  * .why = a reader acts on the word (lift, amend, wait); the code is what `asRadioQueueFixLines`
@@ -104,6 +120,14 @@ const asHeldStateLines = (input: {
       `state: not reached (was behind ${behind.aheadKey}, no longer held; re-checked on next drain)`,
     ];
 
+  // held for its promise: a plain drain holds it again; only a vouch, once read, sends it.
+  // an unreadable visibility carries its claim here, since the code alone does not say the
+  // repo is treated as public and the fix lines below carry only moves
+  if (state === 'awaits promise')
+    return [
+      `state: awaits promise (${record.reason}): ${asAwaitClaimPrefix({ reason: record.reason })}a drain sends it only with --promise`,
+    ];
+
   // no reason on record: naught holds it but its turn
   if (!record.reason)
     return [`state: ${state} (no fault on record; the next drain sends it)`];
@@ -111,6 +135,12 @@ const asHeldStateLines = (input: {
   // a gate reason on a record whose gate has since opened is history, not a cause
   if (state === 'not reached')
     return [`state: not reached (last held: ${record.reason}; since opened)`];
+
+  // a promise hold set aside: its claim rides on the state line; the fix lines carry only moves
+  if (isRadioPromiseHoldReason(record.reason))
+    return [
+      `state: ${state} (${record.reason}): ${asRadioPromiseHoldDetail({ reason: record.reason, cause: null })}`,
+    ];
   return [`state: ${state} (${record.reason})`];
 };
 
@@ -128,17 +158,24 @@ const asStateCountPhrases = (input: {
     entry,
     state: input.states[index],
   }));
-  const phrases: [HeldState, string, boolean][] = [
-    ['held at gate', 'at a gate', false],
-    ['set aside', 'set aside', true],
-    ['halted', 'halted', true],
-    ['behind the halt', 'behind the halt', false],
-    ['waits behind', 'behind an earlier update to the same issue', false],
-    ['not reached', 'not reached', false],
+  // a phrase reads after its count, so the verb agrees with it ("1 awaits", "2 await")
+  const phrases: [HeldState, (count: number) => string, boolean][] = [
+    ['held at gate', () => 'at a gate', false],
+    ['set aside', () => 'set aside', true],
+    ['halted', () => 'halted', true],
+    ['behind the halt', () => 'behind the halt', false],
+    ['waits behind', () => 'behind an earlier update to the same issue', false],
+    [
+      'awaits promise',
+      (count) => `${count === 1 ? 'awaits' : 'await'} an anonymized promise`,
+      true,
+    ],
+    ['not reached', () => 'not reached', false],
   ];
-  return phrases.flatMap(([state, phrase, isCodeShown]) => {
+  return phrases.flatMap(([state, asPhrase, isCodeShown]) => {
     const matched = entries.filter((one) => one.state === state);
     if (!matched.length) return [];
+    const phrase = asPhrase(matched.length);
     const codes = [
       ...new Set(matched.flatMap(({ entry }) => entry.record.reason ?? [])),
     ];
@@ -146,6 +183,31 @@ const asStateCountPhrases = (input: {
       ? [`${matched.length} ${phrase} (${codes.join(', ')})`]
       : [`${matched.length} ${phrase}`];
   });
+};
+
+/**
+ * .what = the last line of the held list: what delivers the backlog
+ * .why = a record that awaits a promise is not delivered by the next push or a plain drain, so
+ *        the footer counts it apart and names its one move
+ * .note = a record held for another reason, whose text goes to gh.issues with no promise, may yet
+ *         meet a public repo; the list reads no visibility, so the footer names the vouch it needs
+ */
+const asFooterLine = (input: {
+  held: HeldEntry[];
+  states: HeldState[];
+  isAnyOwed: boolean;
+}): string => {
+  const awaits = input.states.filter((state) => state === 'awaits promise');
+  if (awaits.length)
+    return `the next push, or \`rhx radio.task.queue drain\`, delivers the rest; ${asRadioAwaitPromiseCountLine({ count: awaits.length })}`;
+  const hedge = input.held.some(({ record }) =>
+    isRadioTaskRecordTextUnvouched({ record }),
+  )
+    ? '; a public repo needs `drain --promise task-to-public-repo-is-anonymized`, once checked'
+    : '';
+  return input.isAnyOwed
+    ? `then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog${hedge}`
+    : `the radio is open, so the next push, or \`rhx radio.task.queue drain\`, delivers the backlog${hedge}`;
 };
 
 /**
@@ -176,6 +238,8 @@ export const asRadioHeldOutput = (input: {
   const tail = (() => {
     if (states.includes('set aside'))
       return 'see each fix: rhx radio.task.queue get';
+    if (states.includes('awaits promise'))
+      return 'read each at its record file (`rhx radio.task.queue get`), then `drain --promise` (it promises every held public record)';
     if (states.includes('halted')) return `the next drain retries ${them}`;
     return `next push delivers ${them}`;
   })();
@@ -211,18 +275,17 @@ export const asRadioHeldOutput = (input: {
               ...asRadioReplayWarnLines({ record: entry.record }),
               ...asRadioQueueFixLines({
                 record: entry.record,
+                recordPath: asRadioTaskRecordPath(
+                  { dir: entry.dir, key: entry.record.key },
+                  { cwd: process.cwd() }, // cwd is the repo root, by contract (rule.forbid.cwd-override)
+                ),
                 authOverride: null,
                 detail: null,
               }),
             ],
           };
         }),
-        {
-          line: isAnyOwed
-            ? 'then the next push, or `rhx radio.task.queue drain`, delivers the backlog'
-            : 'the radio is open, so the next push, or `rhx radio.task.queue drain`, delivers the backlog',
-          children: [],
-        },
+        { line: asFooterLine({ held, states, isAnyOwed }), children: [] },
       ],
     }),
   ].join('\n');

@@ -70,9 +70,11 @@ describe('daoRadioTaskViaGhIssues — shell safety and send timeout', () => {
         resetStub();
         fs.writeFileSync(path.join(dir, 'sleep'), '20');
         const startedMs = Date.now();
+        // 2s, not less: the stub must start and log its argv before the kill, and bash startup
+        // on a loaded box can outlast a few hundred ms; 2s is still a tenth of the 20s stall
         const error = await getError(
           runGhCommand(
-            { args: ['issue', 'list'], timeout: { milliseconds: 300 } },
+            { args: ['issue', 'list'], timeout: { milliseconds: 2_000 } },
             context,
           ),
         );
@@ -86,6 +88,8 @@ describe('daoRadioTaskViaGhIssues — shell safety and send timeout', () => {
 
       then('it fails loud as a malfunction, never hangs', () => {
         expect(result.isMalfunction).toEqual(true);
+        // the kill fires at the 2s timeout; 5s is that plus slack for the kill, as the bound was
+        // before; a stall that ran to its 20s would cross it four times over
         expect(result.elapsedMs).toBeLessThan(5_000);
       });
 

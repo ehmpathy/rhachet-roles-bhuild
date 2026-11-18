@@ -75,6 +75,7 @@ const pushViaRecorder = async (input: {
   title?: string | null;
   exid?: string | null;
   status?: RadioTaskStatus | null;
+  promise?: string | null;
   env?: NodeJS.ProcessEnv;
 }) => {
   const context = {
@@ -96,6 +97,7 @@ const pushViaRecorder = async (input: {
         description: input.title ? `details for ${input.title}` : null,
         exid: input.exid ?? null,
         status: input.status ?? null,
+        promise: input.promise ?? null,
       },
     },
     { dir: home.dir, cwd: input.cwd },
@@ -240,6 +242,10 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
     owner: 'ehmpathy',
     name: 'rhachet-roles-bhuild-demo',
   });
+
+  // the demo repo is public, and its test texts hold no private detail; each push to it vouches,
+  // so the request reaches upstream and meets the fault under test, never the promise gate
+  const promiseDemo = 'task-to-public-repo-is-anonymized';
   afterAll(() => {
     [
       repoOpen,
@@ -418,6 +424,7 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
                 ...lost.record,
                 recordStatus: RadioTaskRecordStatus.QUEUED,
                 deliveredExid: null,
+                promise: null,
               }),
             });
             const pushed = await pushViaRecorder({
@@ -487,6 +494,7 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
           expect(result.others).toEqual([
             expect.objectContaining({
               fate: 'held',
+              dir: expect.stringMatching(/\.behavior\/\.radio$/),
               lift: `rhx radio.uses --org ${repoShut.owner} allow`,
             }),
           ]);
@@ -708,6 +716,7 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
             await pushViaRecorder({
               ...scene,
               repo: repoGhDemo,
+              promise: promiseDemo,
               via: RadioChannel.GH_ISSUES,
               auth: 'as-robot:env(RADIO_RECORDER_TEST_TOKEN_REJECTED)',
               title: 'task gh',
@@ -738,6 +747,7 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
             () => {
               expect(result.others[0]).toMatchObject({
                 fate: 'held',
+                dir: expect.stringMatching(/\.behavior\/\.radio$/),
                 halt: false,
                 record: expect.objectContaining({
                   title: 'task gh',
@@ -826,6 +836,7 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
             const pushed = await pushViaRecorder({
               ...scene,
               repo: repoGhDemo,
+              promise: promiseDemo,
               via: RadioChannel.GH_ISSUES,
               auth: 'as-robot:env(RADIO_RECORDER_TEST_TOKEN_REJECTED)',
               title: 'task gh',
@@ -844,6 +855,7 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
               // toMatchObject matches the nested record in part
               expect(result.pushed).toMatchObject({
                 fate: 'held',
+                dir: expect.stringMatching(/\.behavior\/\.radio$/),
                 record: { title: 'task gh', reason: 'upstream:401' },
               });
               expect(
@@ -886,6 +898,7 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
             await pushViaRecorder({
               ...scene,
               repo: repoGhDemo,
+              promise: promiseDemo,
               via: RadioChannel.GH_ISSUES,
               auth: 'as-robot:env(RADIO_RECORDER_TEST_TOKEN_REJECTED)',
               title: 'task gh',
@@ -1367,6 +1380,7 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
               reason: 'radio.uses blocked',
               heldSeq: 1,
               deliveredExid: null,
+              promise: null,
             }),
             heldAt: '2026-01-01T00:00:00Z', // note: a pinned stamp never drifts, and the gate exempts .ts files
             settledAt: null,

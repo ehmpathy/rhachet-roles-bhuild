@@ -25,6 +25,7 @@ export const setRadioTaskRecordHeldBehindOnIssue = (input: {
   return {
     fate: 'held',
     record,
+    dir: input.dir,
     lift: null,
     detail: `behind ${asRadioTaskRecordLabel({ record: input.ahead.record })} on the same issue: unsent, sends once it lands or is dropped`,
     halt: false,

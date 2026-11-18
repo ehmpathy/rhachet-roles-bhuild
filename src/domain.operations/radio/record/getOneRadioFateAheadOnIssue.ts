@@ -1,6 +1,7 @@
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 
 import { asRadioTaskRepoSlug } from './asRadioTaskRepoSlug';
+import { isRadioTaskRecordAheadBlocksBehind } from './isRadioTaskRecordAheadBlocksBehind';
 import type { RadioTaskRecordFate } from './RadioTaskRecordFate';
 
 type HeldFate = Extract<RadioTaskRecordFate, { fate: 'held' }>;
@@ -14,6 +15,8 @@ type HeldFate = Extract<RadioTaskRecordFate, { fate: 'held' }>;
  * .note = a create (no exid) names no issue yet, so it never waits on another record
  * .note = a gate-held record ahead is skipped: the same repo meets the same gate, so the record
  *         behind is held at that gate too, and its gate reason must stay its reason
+ * .note = only a record ahead that orders this one counts (isRadioTaskRecordAheadBlocksBehind):
+ *         a text-only edit ahead never holds a status-only step behind
  */
 export const getOneRadioFateAheadOnIssue = (input: {
   record: RadioTaskRecord;
@@ -31,7 +34,11 @@ export const getOneRadioFateAheadOnIssue = (input: {
       fate.lift === null &&
       fate.record.exid === exid &&
       fate.record.via === input.record.via &&
-      asRadioTaskRepoSlug({ repo: fate.record.repo }) === slug,
+      asRadioTaskRepoSlug({ repo: fate.record.repo }) === slug &&
+      isRadioTaskRecordAheadBlocksBehind({
+        ahead: fate.record,
+        behind: input.record,
+      }),
   );
   return ahead ?? null;
 };

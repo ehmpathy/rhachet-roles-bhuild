@@ -26,6 +26,7 @@ const genRecord = (input: {
     reason: null,
     heldSeq: input.heldSeq,
     deliveredExid: null,
+    promise: null,
   });
 
 const claim = genRecord({

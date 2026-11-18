@@ -24,6 +24,7 @@ const genDropped = (): RadioTaskRecord =>
     reason: 'dropped: claim moot, the issue is closed',
     heldSeq: 1,
     deliveredExid: null,
+    promise: null,
   });
 
 const genDeliverHeld = (): RadioTaskRecord =>
@@ -42,6 +43,7 @@ const genDeliverHeld = (): RadioTaskRecord =>
     reason: null,
     heldSeq: 2,
     deliveredExid: null,
+    promise: null,
   });
 
 describe('asRadioDropOutput', () => {
@@ -101,6 +103,7 @@ describe('asRadioDropOutput', () => {
           reason: 'dropped: superseded by #604',
           heldSeq: 1,
           deliveredExid: null,
+          promise: null,
         }),
         path: '.behavior/.radio/record.a1b2c3d4e5f60718.json',
       });
@@ -135,6 +138,34 @@ describe('asRadioDropOutput', () => {
         );
         expect(output).toContain(
           'why     = dropped: claim moot, the issue is closed (kept)',
+        );
+        expect(output).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case5] a del on a record the promise gate already dropped', () => {
+    // reachable: the nudge prints the record path, which carries its key
+    when('[t0] the drop renders', () => {
+      const output = asRadioDropOutput({
+        record: new RadioTaskRecord({
+          ...genDropped(),
+          kind: 'create',
+          title: 'lesson reminder flakes',
+          description: 'the 9am reminder sends twice',
+          exid: null,
+          status: null,
+          reason: 'public-repo:unpromised',
+        }),
+        path: '.behavior/.radio/record.a1b2c3d4e5f60718.json',
+        behind: 0,
+        deliverNeedsClaim: null,
+        isAlreadyDropped: true,
+      });
+
+      then('the why names the promise gate, never the bare code', () => {
+        expect(output).toContain(
+          'the promise gate dropped it: public repo, no anonymized promise on this record',
         );
         expect(output).toMatchSnapshot();
       });

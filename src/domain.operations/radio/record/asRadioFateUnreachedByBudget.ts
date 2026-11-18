@@ -16,9 +16,11 @@ export const DETAIL_UNREACHED_BY_BUDGET =
  */
 export const asRadioFateUnreachedByBudget = (input: {
   record: RadioTaskRecord;
+  dir: string;
 }): RadioTaskRecordFate => ({
   fate: 'held',
   record: input.record,
+  dir: input.dir,
   lift: null,
   detail: DETAIL_UNREACHED_BY_BUDGET,
   halt: false,

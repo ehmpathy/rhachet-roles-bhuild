@@ -31,6 +31,7 @@ const genRecord = (input: Partial<RadioTaskRecord>): RadioTaskRecord =>
     reason: null,
     heldSeq: 1,
     deliveredExid: null,
+    promise: null,
     ...input,
   });
 
@@ -55,6 +56,7 @@ const genHeld = (input: {
   halt?: boolean;
 }): RadioTaskRecordFate => ({
   fate: 'held',
+  dir: '.behavior/.radio',
   record: genRecord(input.record),
   lift: input.lift ?? null,
   detail: input.detail,
@@ -369,6 +371,7 @@ describe('asRadioDrainSections', () => {
         fates: [
           asRadioFateUnreachedByBudget({
             record: genRecord({ reason: 'upstream:access' }),
+            dir: '.behavior/.radio',
           }),
         ],
       });
@@ -393,6 +396,7 @@ describe('asRadioDrainSections', () => {
         fates: [
           asRadioFateRepushedMidSend({
             record: genRecord({ reason: 'upstream:401' }),
+            dir: '.behavior/.radio',
           }),
         ],
       });

@@ -1,8 +1,20 @@
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 
+import { asRadioPromiseHoldDetail } from '../promise/asRadioPromiseHoldDetail';
+import { isRadioPromiseHoldReason } from '../promise/isRadioPromiseHoldReason';
 import { asRadioTaskRecordLabel } from './asRadioTaskRecordLabel';
 import { asRadioTaskRepoSlug } from './asRadioTaskRepoSlug';
 import { asRadioTreeLines } from './asRadioTreeLines';
+
+/**
+ * .what = the why of a drop, as a human reads it
+ * .why = a record the promise gate dropped stores the machine code; the drop shows what it says
+ */
+const asWhyShown = (input: { reason: string | null }): string => {
+  if (isRadioPromiseHoldReason(input.reason))
+    return `the promise gate dropped it: ${asRadioPromiseHoldDetail({ reason: input.reason, cause: null })}`;
+  return `${input.reason}`;
+};
 
 /**
  * .what = the stdout of `radio.task.queue del`
@@ -49,7 +61,10 @@ export const asRadioDropOutput = (input: {
       ...asRadioTreeLines({
         branches: [
           { line: `uuid    = ${input.record.key}`, children: [] },
-          { line: `why     = ${input.record.reason} (kept)`, children: [] },
+          {
+            line: `why     = ${asWhyShown({ reason: input.record.reason })} (kept)`,
+            children: [],
+          },
           { line: `kept at = ${input.path}`, children: [] },
           ...behindBranches,
           ...claimBranches,
@@ -66,7 +81,10 @@ export const asRadioDropOutput = (input: {
           line: `task    = ${asRadioTaskRecordLabel(input)} → ${asRadioTaskRepoSlug({ repo: input.record.repo })}`,
           children: [],
         },
-        { line: `why     = ${input.record.reason}`, children: [] },
+        {
+          line: `why     = ${asWhyShown({ reason: input.record.reason })}`,
+          children: [],
+        },
         { line: `kept at = ${input.path}`, children: [] },
         ...behindBranches,
         ...claimBranches,

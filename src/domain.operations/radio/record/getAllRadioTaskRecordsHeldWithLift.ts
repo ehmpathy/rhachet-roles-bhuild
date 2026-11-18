@@ -15,7 +15,7 @@ import { getAllRadioTaskRecordsHeld } from './getAllRadioTaskRecordsHeld';
 export const getAllRadioTaskRecordsHeldWithLift = async (
   input: Record<string, never>,
   context: { cwd: string; homeDir: string | undefined },
-): Promise<{ record: RadioTaskRecord; lift: string | null }[]> => {
+): Promise<{ record: RadioTaskRecord; dir: string; lift: string | null }[]> => {
   // load the gate states once
   const states = await getAllRadioUsagePermissions(
     { cwd: context.cwd },
@@ -23,8 +23,9 @@ export const getAllRadioTaskRecordsHeldWithLift = async (
   );
 
   // pair each held record with the command that lifts its gate
-  return getAllRadioTaskRecordsHeld({}, context).map(({ record }) => ({
+  return getAllRadioTaskRecordsHeld({}, context).map(({ record, dir }) => ({
     record,
+    dir,
     lift: asRadioTaskRecordLift({ record, states }),
   }));
 };

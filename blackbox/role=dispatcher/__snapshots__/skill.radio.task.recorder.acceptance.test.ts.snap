@@ -119,12 +119,17 @@ exports[`radio.task.push — the radio.recorder given: [case2] a record file on 
    │  ├─ rhx radio.task.queue get --when hook.onStop                one-line stop reminder (naught when none)
    │  ├─ rhx radio.task.queue set   --uuid <uuid> --auth as-human   amend one held record (or --description)
    │  ├─ rhx radio.task.queue del   --uuid <uuid> --why "<why>"     drop one, its body and why kept
-   │  └─ rhx radio.task.queue drain [--auth as-human]               deliver now; a fault sets one record aside
+   │  ├─ rhx radio.task.queue drain [--auth as-human]               deliver now; a fault sets one record aside
+   │  └─ rhx radio.task.queue drain --promise task-to-public-repo-is-anonymized
+   │     └─ deliver now, and vouch for every held public record
    │
    ├─ the line
    │  ├─ a rate limit or a github outage halts the drain; the rest wait in order
    │  ├─ any other fault sets its one record aside; the rest still deliver
-   │  └─ a later update to the same issue waits behind it, unsent, until it lands or is dropped
+   │  ├─ a later update to the same issue waits behind it, unsent, until it lands or is dropped
+   │  └─ a record with text bound for a public repo, and no promise, awaits one
+   │     ├─ read it at its record file first
+   │     └─ then \`drain --promise\`, which promises every held public record
    │
    ├─ exit codes
    │  ├─ drain
@@ -140,6 +145,8 @@ exports[`radio.task.push — the radio.recorder given: [case2] a record file on 
       │  └─ drain: sends every held record under this auth, this drain only
       ├─ --description  the new body (set; supports @stdin)
       ├─ --why          why the record is dropped (del, required)
+      ├─ --promise      task-to-public-repo-is-anonymized (drain): promises every held public record
+      │  └─ this drain sends, this drain only; never stored on a record
       ├─ --when         hook.onStop (get)
       └─ --help, -h     show this help"
 `;
@@ -215,7 +222,8 @@ exports[`radio.task.push — the radio.recorder given: [case5] two clones run on
   "recordStatus": "DELIVERED",
   "reason": null,
   "heldSeq": 1,
-  "deliveredExid": "<exid>"
+  "deliveredExid": "<exid>",
+  "promise": null
 }
 
 # .behavior/.radio/record.<key>.json
@@ -233,6 +241,7 @@ exports[`radio.task.push — the radio.recorder given: [case5] two clones run on
   "via": "os.fileops",
   "auth": null,
   "idem": null,
+  "promise": null,
   "heldSeq": 2,
   "recordStatus": "DELIVERED",
   "reason": null,
@@ -254,6 +263,7 @@ exports[`radio.task.push — the radio.recorder given: [case5] two clones run on
   "via": "os.fileops",
   "auth": null,
   "idem": null,
+  "promise": null,
   "heldSeq": 3,
   "recordStatus": "DELIVERED",
   "reason": null,
@@ -275,6 +285,7 @@ exports[`radio.task.push — the radio.recorder given: [case5] two clones run on
   "via": "os.fileops",
   "auth": null,
   "idem": null,
+  "promise": null,
   "heldSeq": 4,
   "recordStatus": "DELIVERED",
   "reason": null,
@@ -405,7 +416,7 @@ exports[`radio.task.push — the radio.recorder given: [case7] a drain crosses a
 🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
    └─ ✋ blocked by constraints
 
-✋ ConstraintError: drain does not read --uuid. drop it, then run again. drain reads --auth (see --help). to act on one record, run \`rhx radio.task.queue set --uuid <uuid>\` or \`rhx radio.task.queue del --uuid <uuid>\`."
+✋ ConstraintError: drain does not read --uuid. drop it, then run again. drain reads --auth, --promise (see --help). to act on one record, run \`rhx radio.task.queue set --uuid <uuid>\` or \`rhx radio.task.queue del --uuid <uuid>\`."
 `;
 
 exports[`radio.task.push — the radio.recorder given: [case7] a drain crosses a fault through rhachet, via a stub gh (#511, #513, case=5, case=7) when: [t2] the clone amends the set-aside update to as-human, then drains (#513, #603) then: the drain exits 0: the queue is empty 1`] = `
@@ -426,5 +437,5 @@ exports[`radio.task.push — the radio.recorder given: [case7] a drain crosses a
    ├─ changed
    │  └─ auth: as-robot:env(RADIO_ACPT_JOURNEY_TOKEN) → as-human
    ├─ kept at = .behavior/.radio/record.<uuid>.json
-   └─ naught sent; its place in line is kept, and the next push, or \`rhx radio.task.queue drain\`, sends it"
+   └─ naught sent; its place in line is kept, and the next push, or \`rhx radio.task.queue drain\`, sends it; a public repo needs \`drain --promise task-to-public-repo-is-anonymized\`, once checked"
 `;

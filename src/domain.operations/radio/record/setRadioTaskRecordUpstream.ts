@@ -13,11 +13,8 @@ import { asRadioFateUnreachedByBudget } from './asRadioFateUnreachedByBudget';
 import { asRadioTaskRepoSlug } from './asRadioTaskRepoSlug';
 import { asRadioUpstreamReason } from './asRadioUpstreamReason';
 import type { RadioDrainDeadline } from './genRadioDrainDeadline';
-import {
-  RADIO_DRAIN_AUTH_DERIVE_CAP,
-  RADIO_DRAIN_SEND_LIMIT_DEFAULT,
-} from './genRadioDrainSendBudget';
-import { genRadioGhSendLimit } from './genRadioGhSendLimit';
+import { RADIO_DRAIN_AUTH_DERIVE_CAP } from './genRadioDrainSendBudget';
+import { genRadioGhSendLimitForStep } from './genRadioGhSendLimitForStep';
 import { getOneRaceWithinBound } from './getOneRaceWithinBound';
 import { getOneRadioContextForRecord } from './getOneRadioContextForRecord';
 import { isRadioDrainDeadlineNear } from './isRadioDrainDeadlineNear';
@@ -27,7 +24,9 @@ import { isRadioTaskRecordRepushedSince } from './isRadioTaskRecordRepushedSince
 import { isRadioUpstreamReasonHalt } from './isRadioUpstreamReasonHalt';
 import type { RadioTaskRecordFate } from './RadioTaskRecordFate';
 import type { ShellExecutor } from './ShellExecutor';
+import { setRadioTaskRecordHeld } from './setRadioTaskRecordHeld';
 import { setRadioTaskRecordHeldAtGate } from './setRadioTaskRecordHeldAtGate';
+import { setRadioTaskRecordHeldOnPromiseGate } from './setRadioTaskRecordHeldOnPromiseGate';
 import { setRadioTaskRecordSettled } from './setRadioTaskRecordSettled';
 import { setRadioTaskUpstreamFromRecord } from './setRadioTaskUpstreamFromRecord';
 
@@ -38,8 +37,12 @@ import { setRadioTaskUpstreamFromRecord } from './setRadioTaskUpstreamFromRecord
  *
  * .note = context.authOverride (a `drain --auth`) sends this record under that auth for
  *         this drain only; the record on disk keeps its own auth (F3)
- * .note = context.drainSendLimit bounds one send: each gh call and the whole send (default
- *         60s per call, 90s per send)
+ * .note = the promise gate runs after the auth derive and before the request: a record that
+ *         carries text and no promise goes out only to a repo read as private or internal.
+ *         context.promiseOverride (a `drain --promise`) vouches for this drain only, never stored;
+ *         context.push names the live push, whose own record the gate drops rather than holds
+ * .note = context.drainSendLimit bounds each step: each gh call, and the visibility read and
+ *         the request apart, each on its own clock (default 60s per call, 90s per step)
  * .note = context.drainDeadline (the lock's) bounds every step here: the auth derive, its
  *         shell, and the send each take at most what the drain has left. past it, the record
  *         is left QUEUED and unsent, never sent late, so a drain whose lease ran out cannot
@@ -53,7 +56,8 @@ export const setRadioTaskRecordUpstream = async (
     env: NodeJS.ProcessEnv;
     shx: ShellExecutor;
     authOverride?: string | null;
-    authLive?: { key: string; auth: string | null } | null;
+    promiseOverride?: string | null;
+    push?: { key: string; auth: string | null } | null;
     drainSendLimit?: {
       perCall: { milliseconds: number };
       perSend: { milliseconds: number };
@@ -85,7 +89,7 @@ export const setRadioTaskRecordUpstream = async (
       {
         record,
         authOverride: context.authOverride ?? null,
-        authLive: context.authLive ?? null,
+        push: context.push ?? null,
       },
       {
         env: context.env,
@@ -106,7 +110,7 @@ export const setRadioTaskRecordUpstream = async (
     'expired' in authRace &&
     isRadioDrainStepClippedByDeadline({ cap: authCap, bound: authBound })
   )
-    return asRadioFateUnreachedByBudget({ record });
+    return asRadioFateUnreachedByBudget({ record, dir });
   const auth =
     'expired' in authRace
       ? { fault: asRadioAuthDeriveStallError({ cap: authCap }) }
@@ -114,40 +118,38 @@ export const setRadioTaskRecordUpstream = async (
 
   // too near the deadline to send: leave it queued and unsent, for the next drain
   if (isRadioDrainDeadlineNear({ deadline: context.drainDeadline }))
-    return asRadioFateUnreachedByBudget({ record });
+    return asRadioFateUnreachedByBudget({ record, dir });
 
   // hold if the credentials cannot be derived now
-  if ('fault' in auth) {
-    const heldOnAuth = setRadioTaskRecordSettled({
-      dir,
+  if ('fault' in auth)
+    return setRadioTaskRecordHeld({
       record,
+      dir,
       change: { reason: 'upstream:auth' },
-    });
-
-    // a re-push since the read is a new request: its fate is unknown, not this fault
-    if (isRadioTaskRecordRepushedSince({ read: record, current: heldOnAuth }))
-      return asRadioFateRepushedMidSend({ record: heldOnAuth });
-    return {
-      fate: 'held',
-      record: heldOnAuth,
-      lift: null,
       detail: asRadioErrorDetail({
         message: auth.fault.message,
         hint: asRadioErrorHint({ error: auth.fault }),
       }),
       halt: false,
-    };
-  }
+    });
+
+  // hold unvouched text bound for a public repo: the promise gate, before any request
+  const heldOnPromise = await setRadioTaskRecordHeldOnPromiseGate(
+    { record, dir, promiseOverride: context.promiseOverride ?? null },
+    {
+      radioContext: auth.radioContext,
+      push: context.push ?? null,
+      drainSendLimit: context.drainSendLimit,
+      drainDeadline: context.drainDeadline,
+    },
+  );
+  if (heldOnPromise) return heldOnPromise;
 
   // send it, each gh call bound by what the send has left, and the send by what the drain
   // has left; a refusal closes it for good
-  const sendLimit = context.drainSendLimit ?? RADIO_DRAIN_SEND_LIMIT_DEFAULT;
-  const limit = genRadioGhSendLimit({
-    perCall: sendLimit.perCall,
-    perSend: asRadioDrainStepBound({
-      cap: sendLimit.perSend,
-      deadline: context.drainDeadline,
-    }),
+  const limit = genRadioGhSendLimitForStep({
+    sendLimit: context.drainSendLimit,
+    deadline: context.drainDeadline,
   });
   const send = await setRadioTaskUpstreamFromRecord(
     { record },
@@ -165,7 +167,7 @@ export const setRadioTaskRecordUpstream = async (
 
     // a re-push since the read left the record queued: say so, not refused
     if (isRadioTaskRecordRepushedSince({ read: record, current: refused }))
-      return asRadioFateRepushedMidSend({ record: refused });
+      return asRadioFateRepushedMidSend({ record: refused, dir });
     return {
       fate: 'refused',
       record: refused,
@@ -173,32 +175,20 @@ export const setRadioTaskRecordUpstream = async (
     };
   }
 
-  // a fault holds it: a wall halts the drain; any other sets this one aside (#511)
+  // a fault holds it: a wall halts the drain; any other sets this one aside (#511).
+  // a re-push since the read is reported re-pushed, and a wall still halts the drain
   if ('fault' in send) {
     const reason = asRadioUpstreamReason({ message: send.faultText });
-    const heldOnFault = setRadioTaskRecordSettled({
-      dir,
+    return setRadioTaskRecordHeld({
       record,
+      dir,
       change: { reason },
-    });
-
-    // a re-push since the read is a new request: report it re-pushed, never the old fault;
-    // a wall still halts the drain, since a rate limit or an outage binds every send
-    if (isRadioTaskRecordRepushedSince({ read: record, current: heldOnFault }))
-      return {
-        ...asRadioFateRepushedMidSend({ record: heldOnFault }),
-        halt: isRadioUpstreamReasonHalt({ reason }),
-      };
-    return {
-      fate: 'held',
-      record: heldOnFault,
-      lift: null,
       detail: asRadioErrorDetail({
         message: send.fault.message,
         hint: asRadioErrorHint({ error: send.fault }),
       }),
       halt: isRadioUpstreamReasonHalt({ reason }),
-    };
+    });
   }
 
   // mark it delivered, with the exid upstream holds it under
@@ -214,7 +204,7 @@ export const setRadioTaskRecordUpstream = async (
 
   // a re-push since the read left the record queued: say so, not delivered
   if (isRadioTaskRecordRepushedSince({ read: record, current: delivered }))
-    return asRadioFateRepushedMidSend({ record: delivered });
+    return asRadioFateRepushedMidSend({ record: delivered, dir });
   return {
     fate: 'delivered',
     record: delivered,

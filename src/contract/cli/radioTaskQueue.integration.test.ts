@@ -265,6 +265,31 @@ describe('radio.task.queue.integration — CLI contract', () => {
         expect(result.error?.message).toContain('--uuid, --why');
       });
     });
+
+    when(
+      '[t3] set runs with a --promise, as though it vouched one record',
+      () => {
+        then(
+          'it refuses before any write, and names what set reads',
+          async () => {
+            const result = await runQueue({
+              argvTail: [
+                'set',
+                '--uuid',
+                'a1b2c3d4e5f60718',
+                '--promise',
+                'task-to-public-repo-is-anonymized',
+              ],
+            });
+            expect(result.error).toBeInstanceOf(ConstraintError);
+            expect(result.error?.message).toContain(
+              'set does not read --promise',
+            );
+            expect(result.error?.message).toMatchSnapshot();
+          },
+        );
+      },
+    );
   });
 
   given('[case15] set with a blank --description', () => {
@@ -319,6 +344,7 @@ mode="ok"
 if [ -n "$repo" ] && [ -f "$STUB_GH_DIR/mode.$repo" ]; then mode="$(cat "$STUB_GH_DIR/mode.$repo")"; fi
 case "$1 $2" in
   "api user") echo "stubbot"; exit 0 ;;
+  "repo view") echo '{"visibility":"PRIVATE"}'; exit 0 ;;
 esac
 if [ "$mode" = "rate-limit" ]; then echo "API rate limit exceeded for installation ID 1" >&2; exit 1; fi
 if [ "$mode" = "access-update" ] && [ "$1 $2" = "issue edit" ]; then echo "GraphQL: Resource not accessible by integration (updateIssue)" >&2; exit 1; fi
@@ -478,6 +504,7 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
             (input.title ? `details for ${input.title}` : null),
           exid: input.exid ?? null,
           status: input.status ?? null,
+          promise: null,
         },
       },
       { dir: input.scene.dir, cwd: input.scene.cwd },

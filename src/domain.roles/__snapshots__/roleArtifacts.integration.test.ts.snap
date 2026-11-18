@@ -301,7 +301,7 @@ between clones via the phone.
 
 ### radio — broadcast tasks
 
-- \`radio.task.push\` - broadcast tasks to a channel (gh.issues, os.fileops)
+- \`radio.task.push\` - broadcast tasks to a channel (gh.issues, os.fileops); text into a public repo needs \`--promise\`
 - \`radio.task.pull\` - receive tasks from a channel
 - \`radio.task.queue\` - read, amend, drop, and drain the tasks held for the radio: \`get | set | del | drain\` (a blocked push is held, then delivered by the next push or drain that gets through; a record that upstream refuses or faults on is set aside and the rest still deliver; a record file that cannot be read fails loud, named, with its fix, and is never skipped)
 
@@ -488,12 +488,14 @@ direct text between a director and its crews, both ways, with no pane keystroke.
 #   --status    task status: QUEUED, CLAIMED, DELIVERED
 #   --idem      idempotency mode: findsert or upsert
 #   --auth      as-human | as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd)
+#   --promise   task-to-public-repo-is-anonymized (text into a public repo needs it)
 #   --help, -h  show usage and exit
 #
 # guarantee:
 #   - records every push first, into $route/.radio/ (or .behavior/.radio/ if unbound)
 #   - a push that radio.uses blocks is held QUEUED (exit 2), never lost
 #   - the next push that gets through delivers the held backlog first, oldest first
+#   - text into a public repo sends naught without --promise: dropped, exit 2, nudged
 #   - validates required args (--via, --into, --title/--description or --exid)
 #   - enforces lifecycle order on status transitions
 #   - creates backups on edit
@@ -522,6 +524,7 @@ direct text between a director and its crews, both ways, with no pane keystroke.
 #   radio.task.queue.sh set --uuid <uuid> --auth as-human   # amend one held record
 #   radio.task.queue.sh del --uuid <uuid> --why "<why>"     # drop one, why kept
 #   radio.task.queue.sh drain [--auth as-human]             # deliver now
+#   radio.task.queue.sh drain --promise task-to-public-repo-is-anonymized  # vouch held public records
 #
 # guarantee:
 #   - get reads local records + radio.uses only; no network, no send
@@ -529,6 +532,7 @@ direct text between a director and its crews, both ways, with no pane keystroke.
 #   - drain meets each record's radio.uses gate; exit 2 while any waits, or if it refused one
 #   - a flag or positional a verb does not read is refused before it acts
 #   - a rate limit or outage halts the drain; any other fault sets one aside
+#   - a text record bound for a public repo is held until a drain --promise vouches it
 #   - hook.onStop never exits 2, so never blocks the stop
 ######################################################################
 

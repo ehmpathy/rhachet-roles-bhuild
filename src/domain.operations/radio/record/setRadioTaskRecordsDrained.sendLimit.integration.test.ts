@@ -27,6 +27,7 @@ mode="ok"
 if [ -n "$repo" ] && [ -f "$STUB_GH_DIR/mode.$repo" ]; then mode="$(cat "$STUB_GH_DIR/mode.$repo")"; fi
 case "$1 $2" in
   "api user") echo "stubbot"; exit 0 ;;
+  "repo view") echo '{"visibility":"PRIVATE"}'; exit 0 ;;
 esac
 if [ "$mode" = "stall" ]; then exec sleep 20; fi
 if [ "$mode" = "slow" ]; then sleep 1; fi
@@ -102,6 +103,7 @@ const holdCreate = (input: {
         description: `details for ${input.title}`,
         exid: null,
         status: null,
+        promise: null,
       },
     },
     { dir: path.join(input.cwd, '.behavior', '.radio'), cwd: input.cwd },

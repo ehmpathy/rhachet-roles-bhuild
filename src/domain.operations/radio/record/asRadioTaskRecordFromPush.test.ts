@@ -1,3 +1,5 @@
+import { given, then, when } from 'test-fns';
+
 import { IdempotencyMode } from '@src/domain.objects/IdempotencyMode';
 import { RadioChannel } from '@src/domain.objects/RadioChannel';
 import { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
@@ -8,6 +10,7 @@ import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
 import { asRadioTaskRecordFromPush } from './asRadioTaskRecordFromPush';
 
 const repo = new RadioTaskRepo({ owner: 'sandpine', name: 'svc-lessons' });
+const PROMISE = 'task-to-public-repo-is-anonymized';
 
 const genRecord = (input: {
   recordStatus: RadioTaskRecordStatus;
@@ -27,6 +30,7 @@ const genRecord = (input: {
     reason: null,
     heldSeq: 3,
     deliveredExid: null,
+    promise: null,
   });
 
 const genPush = (input: { description: string | null }) => ({
@@ -38,6 +42,7 @@ const genPush = (input: { description: string | null }) => ({
   description: input.description,
   exid: '42',
   status: RadioTaskStatus.CLAIMED,
+  promise: null,
 });
 
 const TEST_CASES = [
@@ -126,5 +131,126 @@ describe('asRadioTaskRecordFromPush', () => {
       heldSeq: 3,
     });
     expect(record.auth).toEqual('as-robot:env(TOKEN)');
+  });
+
+  given('[case-promise] a push and the promise it carries', () => {
+    when('[t0] a push with its own body passes a promise', () => {
+      then('the record keeps the promise', () => {
+        const record = asRadioTaskRecordFromPush({
+          key: 'a1b2c3d4e5f60718',
+          push: {
+            ...genPush({ description: 'remind each surfer a day ahead' }),
+            promise: PROMISE,
+          },
+          before: null,
+          heldSeq: 3,
+        });
+        expect(record.promise).toEqual(PROMISE);
+      });
+    });
+
+    when('[t1] a status-only push passes a promise', () => {
+      then('the record stores no promise: it vouches for no text', () => {
+        const record = asRadioTaskRecordFromPush({
+          key: 'a1b2c3d4e5f60718',
+          push: { ...genPush({ description: null }), promise: PROMISE },
+          before: genRecord({ recordStatus: RadioTaskRecordStatus.QUEUED }),
+          heldSeq: 3,
+        });
+        expect(record.promise).toBeNull();
+        expect(record.description).toEqual('remind each surfer a day ahead');
+      });
+    });
+
+    when(
+      '[t2] a title-only push over an inherited body passes a promise',
+      () => {
+        then('the record stores no promise: it cannot vouch that body', () => {
+          const record = asRadioTaskRecordFromPush({
+            key: 'a1b2c3d4e5f60718',
+            push: {
+              ...genPush({ description: null }),
+              title: 'book-a-lesson reminder',
+              promise: PROMISE,
+            },
+            before: genRecord({ recordStatus: RadioTaskRecordStatus.QUEUED }),
+            heldSeq: 3,
+          });
+          expect(record.description).toEqual('remind each surfer a day ahead');
+          expect(record.promise).toBeNull();
+        });
+      },
+    );
+
+    when(
+      '[t3] a title-only push with no body to inherit passes a promise',
+      () => {
+        then('the record keeps the promise', () => {
+          const record = asRadioTaskRecordFromPush({
+            key: 'a1b2c3d4e5f60718',
+            push: {
+              ...genPush({ description: null }),
+              title: 'book-a-lesson reminder',
+              promise: PROMISE,
+            },
+            before: null,
+            heldSeq: 3,
+          });
+          expect(record.description).toBeNull();
+          expect(record.promise).toEqual(PROMISE);
+        });
+      },
+    );
+
+    when('[t4] a re-push passes no promise over a vouched record', () => {
+      then('the record never inherits the promise before it', () => {
+        const before = new RadioTaskRecord({
+          ...genRecord({ recordStatus: RadioTaskRecordStatus.QUEUED }),
+          promise: PROMISE,
+        });
+        const record = asRadioTaskRecordFromPush({
+          key: 'a1b2c3d4e5f60718',
+          push: genPush({ description: null }),
+          before,
+          heldSeq: 3,
+        });
+        expect(record.promise).toBeNull();
+      });
+    });
+  });
+
+  given('[case-dropped] a status-only re-run over a dropped record', () => {
+    when('[t0] the promise gate dropped it', () => {
+      then('its body is not inherited', () => {
+        const before = new RadioTaskRecord({
+          ...genRecord({ recordStatus: RadioTaskRecordStatus.DROPPED }),
+          reason: 'public-repo:unpromised',
+        });
+        const record = asRadioTaskRecordFromPush({
+          key: 'a1b2c3d4e5f60718',
+          push: genPush({ description: null }),
+          before,
+          heldSeq: 3,
+        });
+        expect(record.description).toBeNull();
+        expect(record.recordStatus).toEqual(RadioTaskRecordStatus.QUEUED);
+      });
+    });
+
+    when('[t1] a human dropped it, not the gate', () => {
+      then('its body is still inherited', () => {
+        const before = new RadioTaskRecord({
+          ...genRecord({ recordStatus: RadioTaskRecordStatus.DROPPED }),
+          reason: 'dropped: wrong repo',
+        });
+        const record = asRadioTaskRecordFromPush({
+          key: 'a1b2c3d4e5f60718',
+          push: genPush({ description: null }),
+          before,
+          heldSeq: 3,
+        });
+        expect(record.description).toEqual('remind each surfer a day ahead');
+      });
+    });
   });
 });

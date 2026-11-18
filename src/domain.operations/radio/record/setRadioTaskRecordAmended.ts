@@ -57,7 +57,9 @@ const _setRadioTaskRecordAmended = async (
 
   // write the amend whole; heldSeq and identity are kept. a new auth clears the last fault: it
   // was the verdict on the old auth, so `queue get` must not repeat its advice. a body-only
-  // amend cures no auth fault, so the fault and its fix stay on record
+  // amend cures no auth fault, so the fault and its fix stay on record. a new body clears the
+  // promise: a promise vouches only for the text it came with, so the next drain re-reads the
+  // repo's visibility and holds the new text if it is public
   const after = daoRadioTaskRecord.set.upsert({
     dir,
     record: new RadioTaskRecord({
@@ -65,6 +67,7 @@ const _setRadioTaskRecordAmended = async (
       auth: input.auth ?? record.auth,
       description: input.description ?? record.description,
       reason: input.auth === null ? record.reason : null,
+      promise: input.description === null ? record.promise : null,
     }),
   });
 

@@ -12,6 +12,9 @@ describe('getCliArgs', () => {
       role: z.string().optional(),
       skill: z.string().optional(),
       s: z.string().optional(),
+      description: z.union([z.string(), z.boolean()]).optional(),
+      d: z.union([z.string(), z.boolean()]).optional(),
+      verbose: z.boolean().optional(),
     }),
     ordered: z.array(z.string()).default([]),
   });
@@ -60,6 +63,44 @@ describe('getCliArgs', () => {
       });
     }),
   );
+
+  const valueEmpty = String();
+
+  given('[case4] an empty value after a long flag', () => {
+    when('[t0] the args are parsed', () => {
+      then('it is kept as an empty string, never a bare flag', () => {
+        const args = getCliArgs({
+          schema,
+          argv: ['--description', valueEmpty, '--verbose'],
+        });
+        expect(args.named.description).toEqual(valueEmpty);
+        expect(args.named.verbose).toEqual(true);
+      });
+    });
+  });
+
+  given('[case5] an empty value after a short flag', () => {
+    when('[t0] the args are parsed', () => {
+      then('it is kept as an empty string', () => {
+        const args = getCliArgs({ schema, argv: ['-d', valueEmpty] });
+        expect(args.named.d).toEqual(valueEmpty);
+      });
+    });
+  });
+
+  given('[case6] a long flag with no value, or one before another flag', () => {
+    when('[t0] the args are parsed', () => {
+      then('it reads as true', () => {
+        expect(
+          getCliArgs({ schema, argv: ['--verbose'] }).named.verbose,
+        ).toEqual(true);
+        expect(
+          getCliArgs({ schema, argv: ['--description', '--verbose'] }).named
+            .description,
+        ).toEqual(true);
+      });
+    });
+  });
 });
 
 /**

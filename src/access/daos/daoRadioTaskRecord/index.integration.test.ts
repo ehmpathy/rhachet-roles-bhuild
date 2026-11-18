@@ -33,6 +33,7 @@ const record = new RadioTaskRecord({
   reason: null,
   heldSeq: 1,
   deliveredExid: null,
+  promise: null,
 });
 
 /**
@@ -263,6 +264,77 @@ describe('daoRadioTaskRecord', () => {
         expect(found).toEqual(record);
         expect(Object.keys(found ?? {})).not.toContain('heldAt');
         expect(Object.keys(found ?? {})).not.toContain('settledAt');
+      });
+    });
+  });
+
+  given('[case6.1] a record file written before the promise field', () => {
+    const scene = useBeforeAll(async () => {
+      const { promise: _promise, ...fieldsOld } = record;
+      return genDirWithFile({
+        slug: 'dao-record-case6-1',
+        name: 'record.k1.json',
+        content: JSON.stringify(fieldsOld, null, 2),
+      });
+    });
+
+    when('[t0] the record is read, then written back', () => {
+      const found = useThen('it reads', async () => {
+        const recordFound = await daoRadioTaskRecord.get.one.byUnique({
+          dir: scene.dir,
+          key: 'k1',
+        });
+        if (recordFound)
+          daoRadioTaskRecord.set.upsert({
+            dir: scene.dir,
+            record: recordFound,
+          });
+        return {
+          record: recordFound,
+          keys: Object.keys(
+            JSON.parse(fs.readFileSync(scene.pathFile, 'utf8')) as object,
+          ),
+        };
+      });
+
+      then('the record reads as no promise', () => {
+        expect(found.record).toEqual(record);
+        expect(found.record?.promise).toBeNull();
+      });
+
+      then('the file keeps its key order, with promise appended last', () => {
+        expect(found.keys.at(-1)).toEqual('promise');
+        expect(found.keys.slice(0, -1)).toEqual(
+          Object.keys(record).filter((key) => key !== 'promise'),
+        );
+      });
+    });
+  });
+
+  given('[case6.2] a record that carries a promise', () => {
+    const scene = useBeforeAll(async () => ({
+      dir: path.join(genTempDir({ slug: 'dao-record-case6-2' }), '.radio'),
+    }));
+    const recordPromised = new RadioTaskRecord({
+      ...record,
+      promise: 'task-to-public-repo-is-anonymized',
+    });
+
+    when('[t0] the record is upserted, then read back', () => {
+      const found = useThen('it round-trips', async () => {
+        daoRadioTaskRecord.set.upsert({
+          dir: scene.dir,
+          record: recordPromised,
+        });
+        return daoRadioTaskRecord.get.one.byUnique({
+          dir: scene.dir,
+          key: 'k1',
+        });
+      });
+
+      then('the promise reads back', () => {
+        expect(found?.promise).toEqual('task-to-public-repo-is-anonymized');
+        expect(found).toEqual(recordPromised);
       });
     });
   });

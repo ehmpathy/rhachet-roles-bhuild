@@ -23,6 +23,7 @@ const genRecord = (input: { reason: string | null }): RadioTaskRecord =>
     reason: input.reason,
     heldSeq: 1,
     deliveredExid: null,
+    promise: null,
   });
 
 const AMEND =
@@ -132,6 +133,7 @@ describe('asRadioQueueFixLines', () => {
           const linesAll = FIX_CASES.flatMap((thisCase) =>
             asRadioQueueFixLines({
               record: genRecord({ reason: thisCase.given.reason }),
+              recordPath: '.behavior/.radio/record.a1b2c3d4e5f60718.json',
               authOverride: null,
               detail: null,
             }),
@@ -156,6 +158,7 @@ describe('asRadioQueueFixLines', () => {
                     ? (thisCase.given.auth ?? null)
                     : null,
               }),
+              recordPath: '.behavior/.radio/record.a1b2c3d4e5f60718.json',
               authOverride:
                 'authOverride' in thisCase.given
                   ? (thisCase.given.authOverride ?? null)
@@ -170,4 +173,57 @@ describe('asRadioQueueFixLines', () => {
       });
     }),
   );
+
+  given('[case-promise] a record held for its anonymized promise', () => {
+    const recordPath = '.behavior/.radio/record.a1b2c3d4e5f60718.json';
+    const linesOf = (input: { reason: string }) =>
+      asRadioQueueFixLines({
+        record: genRecord({ reason: input.reason }),
+        recordPath,
+        authOverride: null,
+        detail: null,
+      });
+
+    when('[t0] the repo reads public', () => {
+      const lines = linesOf({ reason: 'public-repo:unpromised' });
+      then(
+        'it names the record path, the scrub, the vouch, and the drop',
+        () => {
+          const text = lines.join('\n');
+          expect(text).toContain(recordPath);
+          expect(text).toContain(
+            'rhx radio.task.queue set --uuid a1b2c3d4e5f60718 --description @stdin',
+          );
+          expect(text).toContain(
+            'rhx radio.task.queue drain --promise task-to-public-repo-is-anonymized',
+          );
+          expect(lines.at(-1)).toEqual(DROP);
+          expect(lines).toMatchSnapshot();
+        },
+      );
+    });
+
+    when('[t1] the visibility read failed on the auth', () => {
+      const lines = linesOf({ reason: 'public-repo:unreadable-auth' });
+      then('it leads with the as-human amend', () => {
+        expect(lines[0]).toContain('--auth as-human');
+        expect(lines.join('\n')).toContain('drain --promise');
+        expect(lines).toMatchSnapshot();
+      });
+    });
+
+    when('[t2] the visibility read failed on aught else', () => {
+      const lines = linesOf({ reason: 'public-repo:unreadable' });
+      then(
+        'it leads with the check, never an as-human amend, nor a restated verdict',
+        () => {
+          // the row's fault or state line already says the read failed; the fix lines carry moves
+          expect(lines[0]).toContain('check its title and body');
+          expect(lines.join('\n')).not.toContain('visibility');
+          expect(lines.join('\n')).not.toContain('--auth as-human');
+          expect(lines).toMatchSnapshot();
+        },
+      );
+    });
+  });
 });

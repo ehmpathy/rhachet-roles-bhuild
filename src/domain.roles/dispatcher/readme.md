@@ -7,7 +7,7 @@ between clones via the phone.
 
 ### radio — broadcast tasks
 
-- `radio.task.push` - broadcast tasks to a channel (gh.issues, os.fileops)
+- `radio.task.push` - broadcast tasks to a channel (gh.issues, os.fileops); text into a public repo needs `--promise`
 - `radio.task.pull` - receive tasks from a channel
 - `radio.task.queue` - read, amend, drop, and drain the tasks held for the radio: `get | set | del | drain` (a blocked push is held, then delivered by the next push or drain that gets through; a record that upstream refuses or faults on is set aside and the rest still deliver; a record file that cannot be read fails loud, named, with its fix, and is never skipped)
 

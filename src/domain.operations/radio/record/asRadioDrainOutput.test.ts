@@ -30,6 +30,7 @@ const genRecord = (input: Partial<RadioTaskRecord>): RadioTaskRecord =>
     reason: null,
     heldSeq: 1,
     deliveredExid: null,
+    promise: null,
     ...input,
   });
 
@@ -69,6 +70,7 @@ describe('asRadioDrainOutput', () => {
         fates: [
           {
             fate: 'held',
+            dir: '.behavior/.radio',
             record: genRecord({
               kind: 'update',
               title: null,
@@ -127,6 +129,7 @@ describe('asRadioDrainOutput', () => {
         fates: [
           {
             fate: 'held',
+            dir: '.behavior/.radio',
             record: genRecord({ reason: 'upstream:rate-limit' }),
             lift: null,
             detail: 'API rate limit exceeded',
@@ -134,6 +137,7 @@ describe('asRadioDrainOutput', () => {
           },
           {
             fate: 'held',
+            dir: '.behavior/.radio',
             record: genRecord({
               key: 'b1b2c3d4e5f60718',
               title: 'board rentals',
@@ -167,6 +171,7 @@ describe('asRadioDrainOutput', () => {
         fates: [
           {
             fate: 'held',
+            dir: '.behavior/.radio',
             record: genRecord({ reason: 'radio.uses:blocked — org' }),
             lift: 'rhx radio.uses --org sandpine allow',
             detail: null,
@@ -267,6 +272,7 @@ describe('asRadioDrainOutput', () => {
               key: 'b1b2c3d4e5f60718',
               title: 'wetsuit sizes',
             }),
+            dir: '.behavior/.radio',
           }),
         ],
         backlog: 1,
@@ -295,6 +301,7 @@ describe('asRadioDrainOutput', () => {
         fates: [
           asRadioFateRepushedMidSend({
             record: genRecord({ title: 'wetsuit sizes' }),
+            dir: '.behavior/.radio',
           }),
         ],
         backlog: 1,

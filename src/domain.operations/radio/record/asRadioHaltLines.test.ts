@@ -23,6 +23,7 @@ const genRecord = (input: { reason: string | null }): RadioTaskRecord =>
     reason: input.reason,
     heldSeq: 1,
     deliveredExid: null,
+    promise: null,
   });
 
 const CASES = [
@@ -62,6 +63,7 @@ describe('asRadioHaltLines', () => {
             asRadioHaltLines({
               fate: {
                 fate: 'held',
+                dir: '.behavior/.radio',
                 record: genRecord({ reason: thisCase.given.reason }),
                 lift: null,
                 detail: 'HTTP 429: API rate limit exceeded',

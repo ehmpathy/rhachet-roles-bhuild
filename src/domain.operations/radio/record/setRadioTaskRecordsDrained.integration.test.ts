@@ -41,6 +41,7 @@ mode="ok"
 if [ -n "$repo" ] && [ -f "$STUB_GH_DIR/mode.$repo" ]; then mode="$(cat "$STUB_GH_DIR/mode.$repo")"; fi
 case "$1 $2" in
   "api user") echo "stubbot"; exit 0 ;;
+  "repo view") echo '{"visibility":"PRIVATE"}'; exit 0 ;;
 esac
 if [ "$mode" = "rate-limit" ]; then echo "API rate limit exceeded for installation ID 1" >&2; exit 1; fi
 if [ "$mode" = "access" ] && [ "$2" = "create" ]; then echo "GraphQL: Resource not accessible by integration (createIssue)" >&2; exit 1; fi
@@ -113,6 +114,7 @@ const holdPush = (input: {
         description: input.title ? `details for ${input.title}` : null,
         exid: input.exid ?? null,
         status: input.status ?? null,
+        promise: null,
       },
     },
     { dir: path.join(input.cwd, '.behavior', '.radio'), cwd: input.cwd },
@@ -226,6 +228,7 @@ describe('radio.task.queue — drain, set, del', () => {
         then('the access fault is set aside as upstream:access', () => {
           expect(result.fates[0]).toMatchObject({
             fate: 'held',
+            dir: expect.stringMatching(/\.behavior\/\.radio$/),
             halt: false,
             record: { reason: 'upstream:access' },
           });
@@ -368,6 +371,7 @@ describe('radio.task.queue — drain, set, del', () => {
       then('the rate limit halts the drain', () => {
         expect(result.fates[0]).toMatchObject({
           fate: 'held',
+          dir: expect.stringMatching(/\.behavior\/\.radio$/),
           halt: true,
           record: { reason: 'upstream:rate-limit' },
         });
@@ -435,6 +439,7 @@ describe('radio.task.queue — drain, set, del', () => {
           () => {
             expect(result.fates[0]).toMatchObject({
               fate: 'held',
+              dir: expect.stringMatching(/\.behavior\/\.radio$/),
               halt: false,
               record: {
                 recordStatus: RadioTaskRecordStatus.QUEUED,

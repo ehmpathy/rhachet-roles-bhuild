@@ -34,7 +34,65 @@ const REJECT_CASES = [
   {
     description: 'a new task with an empty description is rejected',
     given: { repo, exid: null, title: 'fix it', description: '', status: null },
-    expect: { message: '--description required for new task' },
+    expect: { message: '--description is empty; a new task needs a body' },
+  },
+  {
+    description:
+      'an update with an empty description is rejected, so it cannot wipe the body',
+    given: { repo, exid: '5', title: null, description: '', status: null },
+    expect: { message: '--description is empty' },
+  },
+  {
+    description:
+      'an update with a blank piped description is rejected, status or not',
+    given: {
+      repo,
+      exid: '5',
+      title: null,
+      description: '\n',
+      status: RadioTaskStatus.CLAIMED,
+    },
+    expect: { message: '--description is empty' },
+  },
+  {
+    description:
+      'a new task with a blank piped description is rejected as a create with no body',
+    given: {
+      repo,
+      exid: null,
+      title: 'fix it',
+      description: '  \n',
+      status: null,
+    },
+    expect: { message: '--description is empty; a new task needs a body' },
+  },
+  {
+    description:
+      'an update with an empty title is rejected, so it cannot wipe the title',
+    given: { repo, exid: '5', title: '', description: null, status: null },
+    expect: { message: '--title is empty' },
+  },
+  {
+    description: 'an update with a blank title is rejected, body or not',
+    given: { repo, exid: '5', title: '  ', description: 'body', status: null },
+    expect: { message: '--title is empty' },
+  },
+  {
+    description: 'a new task with a blank title is rejected as a create',
+    given: { repo, exid: null, title: '  ', description: 'body', status: null },
+    expect: { message: '--title required for new tasks' },
+  },
+  {
+    description:
+      'an empty exid is rejected, so an update record never sends as a create',
+    given: {
+      repo,
+      exid: '',
+      title: null,
+      description: null,
+      status: RadioTaskStatus.CLAIMED,
+    },
+    expect: { message: '--exid is empty' },
   },
 ];
 
@@ -59,6 +117,16 @@ const ACCEPT_CASES = [
       status: RadioTaskStatus.CLAIMED,
     },
   },
+  {
+    description: 'an update with a body passes whole',
+    given: {
+      repo,
+      exid: '123',
+      title: null,
+      description: 'the new body\n',
+      status: null,
+    },
+  },
 ];
 
 describe('asPushTaskFromArgs', () => {
@@ -73,6 +141,7 @@ describe('asPushTaskFromArgs', () => {
           expect(error.message).toContain(thisCase.expect.message);
           expect(error.message).toContain('add --');
           expect(error.message).not.toContain('{');
+          expect(error.message).toMatchSnapshot();
         });
       });
     }),

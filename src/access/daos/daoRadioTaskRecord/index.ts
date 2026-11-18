@@ -126,6 +126,7 @@ const schemaOfRecordFile = z.object({
   reason: z.string().nullable(),
   heldSeq: z.number(),
   deliveredExid: z.string().nullable(),
+  promise: z.string().nullable().default(null), // a file written before the field reads as no promise
 });
 
 /**
@@ -173,18 +174,25 @@ const asRecordFromFileJson = (input: { json: unknown }): RadioTaskRecord => {
  * .what = the parsed fields, in the key order the file held them
  * .why = the parse emits keys in schema order. a record read and written back must keep its bytes,
  *        or each drain churns the diff of a tracked record file with no change in sense
+ * .note = a key the shape defaults but the file lacks (a field added after the file was written)
+ *         is appended after the file's own keys, so the file's order holds and the field is present
  */
 const asRecordFieldsInFileOrder = <
   TParsed extends Record<string, unknown>,
 >(input: {
   json: Record<string, unknown>;
   parsed: TParsed;
-}): TParsed =>
-  Object.fromEntries(
-    Object.keys(input.json)
-      .filter((key) => key in input.parsed)
-      .map((key) => [key, input.parsed[key]]),
+}): TParsed => {
+  const keysOfFile = Object.keys(input.json).filter(
+    (key) => key in input.parsed,
+  );
+  const keysDefaulted = Object.keys(input.parsed).filter(
+    (key) => !(key in input.json),
+  );
+  return Object.fromEntries(
+    [...keysOfFile, ...keysDefaulted].map((key) => [key, input.parsed[key]]),
   ) as TParsed; // note: the same keys as parsed, since the parse strips only keys the file holds beyond the shape
+};
 
 /**
  * .what = does a record file still hold a clock field a prior version wrote

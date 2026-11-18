@@ -47,6 +47,7 @@ const genRecord = (input: { auth: string | null }) =>
     reason: null,
     heldSeq: 1,
     deliveredExid: null,
+    promise: null,
   });
 
 describe('getOneRadioContextForRecord — a stored auth never runs a shell', () => {
@@ -62,7 +63,7 @@ describe('getOneRadioContextForRecord — a stored auth never runs a shell', () 
     when('[t0] a drain replays it, with no live auth', () => {
       const result = useThen('it is held', async () => {
         const derived = await getOneRadioContextForRecord(
-          { record, authOverride: null, authLive: null },
+          { record, authOverride: null, push: null },
           context,
         );
         return {
@@ -97,7 +98,7 @@ describe('getOneRadioContextForRecord — a stored auth never runs a shell', () 
       when('[t0] the push sends its own record', () => {
         const result = useThen('it derives the token', async () => {
           const derived = await getOneRadioContextForRecord(
-            { record, authOverride: null, authLive: { key: record.key, auth } },
+            { record, authOverride: null, push: { key: record.key, auth } },
             context,
           );
           return {
@@ -128,7 +129,7 @@ describe('getOneRadioContextForRecord — a stored auth never runs a shell', () 
       when('[t0] a drain replays it, with no live auth', () => {
         const result = useThen('it is held', async () => {
           const derived = await getOneRadioContextForRecord(
-            { record, authOverride: null, authLive: null },
+            { record, authOverride: null, push: null },
             context,
           );
           return {
@@ -183,6 +184,7 @@ describe('getOneRadioContextForRecord — a stored auth never runs a shell', () 
               description: 'count the boards',
               exid: null,
               status: null,
+              promise: null,
             },
           },
           { dir: path.join(scene.cwd, '.behavior', '.radio'), cwd: scene.cwd },
@@ -242,6 +244,7 @@ describe('getOneRadioContextForRecord — a stored auth never runs a shell', () 
             description: 'alert the surfers',
             exid: null,
             status: null,
+            promise: null,
           };
 
           // the record a merge planted, with a stored shell auth
@@ -303,7 +306,7 @@ describe('getOneRadioContextForRecord — a stored auth never runs a shell', () 
               auth: 'as-robot:env(SANDPINE_SECRET_ACCESS_KEY)',
             }),
             authOverride: null,
-            authLive: null,
+            push: null,
           },
           { env, shx },
         );
@@ -335,7 +338,7 @@ describe('getOneRadioContextForRecord — a stored auth never runs a shell', () 
                 auth: 'as-robot:env(SANDPINE_GITHUB_TOKEN)',
               }),
               authOverride: null,
-              authLive: null,
+              push: null,
             },
             { env, shx },
           );
@@ -362,7 +365,7 @@ describe('getOneRadioContextForRecord — a stored auth never runs a shell', () 
           {
             record,
             authOverride: null,
-            authLive: { key: record.key, auth: record.auth },
+            push: { key: record.key, auth: record.auth },
           },
           { env, shx },
         );

@@ -15,11 +15,11 @@ import type { ShellExecutor } from './ShellExecutor';
  */
 const isRadioRecordAuthLive = (input: {
   record: RadioTaskRecord;
-  authLive: { key: string; auth: string | null } | null;
+  push: { key: string; auth: string | null } | null;
 }): boolean =>
-  input.authLive !== null &&
-  input.authLive.key === input.record.key &&
-  input.authLive.auth === input.record.auth;
+  input.push !== null &&
+  input.push.key === input.record.key &&
+  input.push.auth === input.record.auth;
 
 /**
  * .what = the channel context a record sends through, or the auth fault that bars it
@@ -33,7 +33,7 @@ export const getOneRadioContextForRecord = async (
   input: {
     record: RadioTaskRecord;
     authOverride: string | null;
-    authLive: { key: string; auth: string | null } | null;
+    push: { key: string; auth: string | null } | null;
   },
   context: { env: NodeJS.ProcessEnv; shx: ShellExecutor },
 ): Promise<

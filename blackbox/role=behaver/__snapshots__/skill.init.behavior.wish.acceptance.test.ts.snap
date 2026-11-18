@@ -92,10 +92,7 @@ exports[`init.behavior.wish given: [case3] --wish @stdin with empty stdin when: 
 
 exports[`init.behavior.wish given: [case3] --wish @stdin with empty stdin when: [t0] init.behavior executed with empty piped stdin then: stdout matches snapshot 1`] = `""`;
 
-exports[`init.behavior.wish given: [case3b] --wish with empty inline content when: [t0] init.behavior executed with --wish "" then: stderr matches snapshot 1`] = `
-"⛈️  error: input invalid
-   └─ --wish must be a string, got undefined"
-`;
+exports[`init.behavior.wish given: [case3b] --wish with empty inline content when: [t0] init.behavior executed with --wish "" then: stderr matches snapshot 1`] = `"error: --wish requires content"`;
 
 exports[`init.behavior.wish given: [case3b] --wish with empty inline content when: [t0] init.behavior executed with --wish "" then: stdout matches snapshot 1`] = `""`;
 

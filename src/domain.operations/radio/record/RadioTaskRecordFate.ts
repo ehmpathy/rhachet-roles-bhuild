@@ -4,6 +4,9 @@ import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 /**
  * .what = the fate of one record after an attempt to send it
  * .why = the drain reports each record by its fate; `halt` stops the drain
+ *
+ * .note = a held fate carries the record dir it was settled in, so a render can name the one
+ *         file that holds the record's full text (asRadioTaskRecordPath)
  */
 export type RadioTaskRecordFate =
   | {
@@ -16,6 +19,7 @@ export type RadioTaskRecordFate =
   | {
       fate: 'held';
       record: RadioTaskRecord;
+      dir: string;
       lift: string | null;
       detail: string | null;
       halt: boolean;

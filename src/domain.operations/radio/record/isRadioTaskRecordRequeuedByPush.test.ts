@@ -23,6 +23,7 @@ const genRecord = (input: {
     reason: null,
     heldSeq: 1,
     deliveredExid: null,
+    promise: null,
   });
 
 const TEST_CASES = [

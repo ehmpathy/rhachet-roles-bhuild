@@ -44,6 +44,18 @@ const asStable401Output = (input: { output: string }): string =>
   });
 
 /**
+ * .what = mask the bytes of the live promise pair ([case10]) that vary per run
+ * .why = the title carries Date.now(); github mints the exid; the date and the robot login
+ *        depend on the day and the host. all else is the contract, snapped as is
+ */
+const asStableLivePromiseOutput = (input: { output: string }): string =>
+  sanitizeOutput(input.output)
+    .replace(/public nudge test \d+/g, 'public nudge test <ts>')
+    .replace(/exid: \d+/g, 'exid: <exid>')
+    .replace(/pushedBy: \S+/g, 'pushedBy: <gh-login>')
+    .replace(/pushedAt: \d{4}-\d{2}-\d{2}/g, 'pushedAt: <date>');
+
+/**
  * .what = invoke radio.uses skill to set up permissions
  * .why = radio.task.push/pull requires radio.uses permission
  */
@@ -72,6 +84,14 @@ const runRadioUses = (input: {
 };
 
 /**
+ * .what = the promise each text push into the demo repo carries
+ * .why = the demo repo is public, so a push with text and no promise halts at the promise gate;
+ *        these cases test the send itself, and their test texts hold no private detail. the gate
+ *        is tested in skill.radio.task.push.promise.acceptance.test.ts
+ */
+const PROMISE_DEMO = 'task-to-public-repo-is-anonymized';
+
+/**
  * .what = runs radio.task.push via rhachet dispatch
  * .why = tests the skill as a consumer would invoke it
  */
@@ -87,6 +107,7 @@ const runRadioTaskPush = (input: {
   idem?: string;
   homeDir?: string;
   env?: Record<string, string>;
+  withoutPromise?: boolean; // the one case that meets the promise gate against real github
 }) => {
   const args = [
     `--via ${input.via}`,
@@ -97,6 +118,11 @@ const runRadioTaskPush = (input: {
     input.exid ? `--exid "${input.exid}"` : '',
     input.status ? `--status ${input.status}` : '',
     input.idem ? `--idem ${input.idem}` : '',
+    input.into === GITHUB_DEMO_REPO &&
+    (input.title || input.description) &&
+    !input.withoutPromise
+      ? `--promise ${PROMISE_DEMO}`
+      : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -127,7 +153,7 @@ const runRadioTaskPushWithStdin = (input: {
   stdin: string;
   homeDir?: string;
 }): { stdout: string; stderr: string; output: string; exitCode: number } => {
-  const command = `echo "${input.stdin}" | npx rhachet run --repo bhuild --role dispatcher --skill radio.task.push -- --via ${input.via} --into "${input.into}" --title "${input.title}" --description @stdin`;
+  const command = `echo "${input.stdin}" | npx rhachet run --repo bhuild --role dispatcher --skill radio.task.push -- --via ${input.via} --into "${input.into}" --title "${input.title}" --description @stdin --promise ${PROMISE_DEMO}`;
 
   try {
     const stdout = execSync(command, {
@@ -581,6 +607,66 @@ describe('radio.task.push via gh.issues', () => {
         // snap the skill's own stream: rhachet frames stdout and stderr each with a banner
         expect(result.stdout).toContain('🦫 held for the radio');
         expect(asStable401Output({ output: result.stdout })).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case10] a text push into the public demo repo, read by real github', () => {
+    const title = `public nudge test ${Date.now()}`;
+
+    when('[t0] push with no --promise', () => {
+      const result = useBeforeAll(async () =>
+        runRadioTaskPush({
+          repoDir: scene.consumer.repoDir, homeDir: scene.homeDir,
+          via: 'gh.issues',
+          into: GITHUB_DEMO_REPO,
+          title,
+          description: 'acceptance test of the promise gate on a real public repo',
+          withoutPromise: true,
+        }),
+      );
+
+      then('exits with code 2, and sends no issue', () => {
+        expect(result.exitCode).toBe(2);
+        expect(result.output).not.toContain('created');
+      });
+
+      then('the nudge names the repo as public, read from github itself', () => {
+        expect(result.stdout).toContain('🦫 hold up — this task goes to a public repo');
+        expect(result.stdout).toContain(`repo: ${GITHUB_DEMO_REPO} (public)`);
+      });
+
+      then('the last line is the same command with the promise added', () => {
+        const lastLine = result.stdout.trim().split('\n').pop() ?? '';
+        expect(lastLine).toContain(`--into ${GITHUB_DEMO_REPO}`);
+        expect(lastLine).toContain(`--promise ${PROMISE_DEMO}`);
+      });
+
+      then('the live nudge matches snapshot, volatile bytes masked', () => {
+        // a committed snap is compared under jest --ci; ci holds the robot token, so it runs here
+        expect(asStableLivePromiseOutput({ output: result.stdout })).toMatchSnapshot();
+      });
+    });
+
+    when('[t1] the same push, re-run with --promise', () => {
+      const result = useBeforeAll(async () =>
+        runRadioTaskPush({
+          repoDir: scene.consumer.repoDir, homeDir: scene.homeDir,
+          via: 'gh.issues',
+          into: GITHUB_DEMO_REPO,
+          title,
+          description: 'acceptance test of the promise gate on a real public repo',
+        }),
+      );
+
+      then('exits with code 0, and the issue is created', () => {
+        expect(result.exitCode).toBe(0);
+        expect(result.output).toContain('created');
+        expect(result.output).toMatch(/exid: \d+/);
+      });
+
+      then('the live created output matches snapshot, volatile bytes masked', () => {
+        expect(asStableLivePromiseOutput({ output: result.stdout })).toMatchSnapshot();
       });
     });
   });

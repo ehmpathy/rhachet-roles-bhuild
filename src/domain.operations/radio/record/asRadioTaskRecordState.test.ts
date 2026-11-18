@@ -23,6 +23,7 @@ const genRecord = (input: { reason: string | null }): RadioTaskRecord =>
     reason: input.reason,
     heldSeq: 1,
     deliveredExid: null,
+    promise: null,
   });
 
 const STATE_CASES = [
@@ -87,6 +88,24 @@ const STATE_CASES = [
     description: 'no reason at all leaves it not reached',
     given: { reason: null, lift: null },
     expect: { output: 'not reached' },
+  },
+  {
+    description: 'a public repo with no promise holds it for its promise',
+    given: { reason: 'public-repo:unpromised', lift: null },
+    expect: { output: 'awaits promise' },
+  },
+  {
+    description: 'an unreadable visibility holds it for its promise too',
+    given: { reason: 'public-repo:unreadable-auth', lift: null },
+    expect: { output: 'awaits promise' },
+  },
+  {
+    description: 'a shut gate wins over a promise hold',
+    given: {
+      reason: 'public-repo:unreadable',
+      lift: 'rhx radio.uses --org sandpine allow',
+    },
+    expect: { output: 'held at gate' },
   },
 ];
 

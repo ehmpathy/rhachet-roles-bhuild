@@ -86,6 +86,15 @@ interface RadioTaskRecord {
    * external id upstream assigned on delivery (null until delivered)
    */
   deliveredExid: string | null;
+
+  /**
+   * the vouch this push came with, that its text is anonymized for a public repo (null: none)
+   *
+   * .note = taken only from the push at hand, and only when that push passed text itself; a re-push
+   *         with no --promise, or with no text, clears it, so a vouch never covers text it did not
+   *         come with. an amend of the description clears it too
+   */
+  promise: string | null;
 }
 
 class RadioTaskRecord
@@ -101,6 +110,7 @@ class RadioTaskRecord
     'recordStatus',
     'reason',
     'deliveredExid',
+    'promise',
   ] as const;
   public static nested = { repo: RadioTaskRepo };
 }

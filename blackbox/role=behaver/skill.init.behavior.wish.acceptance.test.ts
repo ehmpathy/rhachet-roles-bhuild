@@ -138,12 +138,12 @@ describe('init.behavior.wish', () => {
         }),
       );
 
-      then('exit code is non-zero', () => {
-        expect(result.exitCode).not.toBe(0);
+      then('exit code is 2, as for an empty @stdin wish', () => {
+        expect(result.exitCode).toBe(2);
       });
 
-      then('error message indicates --wish is undefined', () => {
-        expect(result.stderr).toContain('--wish must be a string');
+      then('error message indicates --wish requires content', () => {
+        expect(result.stderr).toContain('--wish requires content');
       });
 
       then('stdout matches snapshot', () => {

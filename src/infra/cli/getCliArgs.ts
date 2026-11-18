@@ -46,8 +46,8 @@ const getCliArgsRaw = (
         continue;
       }
 
-      // check if next arg is a value (not another flag)
-      if (next && !next.startsWith('--')) {
+      // next arg is a value unless it is a flag; an empty string is a value
+      if (next !== undefined && !next.startsWith('--')) {
         named[key] = next;
         i++; // skip the value
       } else {
@@ -59,7 +59,7 @@ const getCliArgsRaw = (
       const key = arg.slice(1);
       const next = argv[i + 1];
 
-      if (next && !next.startsWith('-')) {
+      if (next !== undefined && !next.startsWith('-')) {
         named[key] = next;
         i++;
       } else {

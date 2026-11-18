@@ -22,6 +22,7 @@ const before = new RadioTaskRecord({
   reason: 'upstream:access',
   heldSeq: 4,
   deliveredExid: null,
+  promise: null,
 });
 
 const PATH_KEPT = '.behavior/.radio/record.a1b2c3d4e5f60718.json';
@@ -86,6 +87,118 @@ describe('asRadioAmendOutput', () => {
           'auth: as-robot:shx(…), will not replay → as-human',
         );
         expect(output).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case5] a body amend on a record that carried a promise', () => {
+    const vouched = new RadioTaskRecord({
+      ...before,
+      reason: 'public-repo:unpromised',
+      promise: 'task-to-public-repo-is-anonymized',
+    });
+
+    when('[t0] the body changes, so the promise is cleared', () => {
+      const output = asRadioAmendOutput({
+        before: vouched,
+        after: new RadioTaskRecord({
+          ...vouched,
+          description: 'remind each surfer two days ahead',
+          promise: null,
+        }),
+        path: PATH_KEPT,
+      });
+
+      then('it says the promise is cleared and how to vouch again', () => {
+        expect(output).toContain(
+          'promise: cleared (it vouched for the old body); a public repo holds the new one until `drain --promise`',
+        );
+        // the footer agrees: a plain drain would hold it again
+        expect(output).toContain(
+          'it sends only with `rhx radio.task.queue drain --promise',
+        );
+        expect(output).not.toContain(
+          'or `rhx radio.task.queue drain`, sends it',
+        );
+        expect(output).toMatchSnapshot();
+      });
+    });
+
+    when('[t1] only the auth changes, so the promise is kept', () => {
+      const output = asRadioAmendOutput({
+        before: vouched,
+        after: new RadioTaskRecord({ ...vouched, auth: 'as-human' }),
+        path: PATH_KEPT,
+      });
+
+      then('it says naught of the promise', () => {
+        expect(output).not.toContain('promise:');
+      });
+    });
+  });
+
+  given('[case6] a gate-held record, whose repo the amend cannot read', () => {
+    const gateHeld = new RadioTaskRecord({
+      ...before,
+      reason: 'radio.uses:blocked',
+    });
+
+    when('[t0] its text goes to gh.issues with no promise', () => {
+      const output = asRadioAmendOutput({
+        before: gateHeld,
+        after: new RadioTaskRecord({
+          ...gateHeld,
+          description: 'a scrubbed reminder note',
+        }),
+        path: PATH_KEPT,
+      });
+
+      then('the footer names the vouch a public repo needs', () => {
+        expect(output).toContain(
+          'sends it; a public repo needs `drain --promise task-to-public-repo-is-anonymized`, once checked',
+        );
+        expect(output).toMatchSnapshot();
+      });
+    });
+
+    when('[t1] the record carries a promise', () => {
+      const output = asRadioAmendOutput({
+        before: new RadioTaskRecord({
+          ...gateHeld,
+          promise: 'task-to-public-repo-is-anonymized',
+        }),
+        after: new RadioTaskRecord({
+          ...gateHeld,
+          promise: 'task-to-public-repo-is-anonymized',
+          auth: 'as-human',
+        }),
+        path: PATH_KEPT,
+      });
+
+      then('the footer says a plain drain sends it', () => {
+        expect(output).toContain(
+          'the next push, or `rhx radio.task.queue drain`, sends it',
+        );
+        expect(output).not.toContain('a public repo needs');
+      });
+    });
+
+    when('[t2] the record goes to os.fileops', () => {
+      const output = asRadioAmendOutput({
+        before: new RadioTaskRecord({
+          ...gateHeld,
+          via: RadioChannel.OS_FILEOPS,
+        }),
+        after: new RadioTaskRecord({
+          ...gateHeld,
+          via: RadioChannel.OS_FILEOPS,
+          auth: 'as-human',
+        }),
+        path: PATH_KEPT,
+      });
+
+      then('the footer names no promise', () => {
+        expect(output).not.toContain('a public repo needs');
       });
     });
   });
