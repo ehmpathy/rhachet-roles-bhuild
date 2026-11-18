@@ -80,10 +80,12 @@ a tracked repo-local file, read by the checkpoint text: `.behavior/.checkpoint.j
   public repos over a named list.
 
 - **where**: `1.vision.yield.md` q1; c12, c22, `case=8`.
-- **verdict**: **deferred** out of this behavior (director, 2026-10-24: F1 sat unruled 3h and held 3
-  other crews). it leaves with the vision + blueprint checkpoints — the only stones that would push
-  before the finish, and the sole subject F1 governs. this behavior ships 6.preship + 7.reflect with
-  the push policy repos have today: no stone pushes before preship, and preship pushes at the finish,
-  which the wish prescribes for pii repos too. so no pii read is needed here, and no new push lands
-  early. the follow-up behavior carries F1, with the fail-safe above as its best guess:
-  `dreams/2026_10_24.feat-init-behavior-checkpoint-commits-with-pii-hold.dream.md`.
+- **verdict**: **shipped in this behavior, as the flagged best guess above** (commander,
+  2026-11-18: no pr splits; one task, one tree, one pr). the vision + blueprint checkpoints and the
+  pii hold land on the same pr as 6.preship + 7.reflect. the build: each checkpoint fires on the
+  approval halt, stages the route dir alone, pushes only on an exact `{ "push": "allow" }` in
+  `.behavior/.checkpoint.jsonc`, and else commits local for 6.preship to push. 7.reflect sends a
+  cross-repo item off the box only under the same opt-in, and else holds it via
+  `radio.task.push --via os.fileops --into @this` for a human to send. no template names a pii repo;
+  `orgNamesAbsent` forbids the three names in `src/`. the commander may still prefer a named list
+  (q8): a swap is the dirty rework graded above.

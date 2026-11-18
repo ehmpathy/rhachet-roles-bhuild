@@ -52,6 +52,12 @@ repo that owns it, reaches every route after this one.
      delivered
    - **what leaves the repo**: a cross-repo item names the lesson and the cure's shape only. it
      quotes no record content — no review findings, fixtures, yields, or names from the route
+   - **whether it leaves now**: read `.behavior/.checkpoint.jsonc` first. only its exact content
+     `{ "push": "allow" }` (a human opted this repo in) sends the item to the owner's issues, as
+     above. absent, unreadable, or any other content → the item stays on the box, held for a human
+     to read and send:
+     `rhx radio.task.push --via os.fileops --into @this --title "<route slug>: <item slug>, layer <n>, for <owner/repo>" --description @stdin`.
+     a repo whose records hold private data never writes the marker
    - **no owner found** → say so, and catch a dream that names the gap
    - each dream: `rhx catch.dream --name <item slug>`, then link it in the route:
      `rhx symlink --at "$BEHAVIOR_DIR_REL/dreams/<dream file>" --to ".dream/<dream file>" --mode relative --idem findsert`

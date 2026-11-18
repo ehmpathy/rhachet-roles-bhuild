@@ -40,6 +40,11 @@ describe('orgNamesAbsent', () => {
     'caller-region',
     'marketplace-lead-capture',
     '10kpm',
+    // the private-data repos a route must never push early; init.behavior reads an opt-in
+    // marker instead of a list, so no template names them
+    'rhigh',
+    'mhedic',
+    'mhonie',
   ];
 
   // what `build:complete:dist` copies into `dist/` — every shipped kind

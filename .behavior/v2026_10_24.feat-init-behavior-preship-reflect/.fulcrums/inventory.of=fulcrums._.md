@@ -1,27 +1,26 @@
 # inventory.of=fulcrums
 
 every entry was reserved for the commander (the wish: "a blueprint question goes to the commander,
-never best-guessed"). the director ruled F2–F6 at the 1.vision grant gate (2026-10-24). F1 is
-**deferred** out of this behavior, with the checkpoints it governs, to the follow-up behavior
-`dreams/2026_10_24.feat-init-behavior-checkpoint-commits-with-pii-hold.dream.md` (director's split,
-2026-10-24). F10 is a flagged best guess, by the director's word. the director ruled F11, F12,
-F15, F16, F17, F18 and F19–F21 at the blueprint (2026-11-04). the commander's open questions are q1 (F10), q6 and q8
-(F3, F4) — each departs from his wish or his scope.
+never best-guessed"). the director ruled F2–F6 at the 1.vision grant gate (2026-10-24). F1 ships
+in this behavior, with the checkpoints it governs, by the commander's rule (2026-11-18: one task,
+one tree, one pr); its fail-safe best guess is the build. F10 is a flagged best guess, by the
+director's word. the director ruled F11, F12, F15, F16, F17, F18 and F19–F21 at the blueprint
+(2026-11-04). the commander's open questions are q1 (F10) and q8 (F1, F3, F4) — each departs from
+his wish.
 
-**no open fulcrum in this behavior is both dirty and risky.** F1 has left the behavior: here it
-ships no change, so its rework and risk here are none. its grade in the follow-up (rework dirty,
-risk medium) lives in the follow-up dream and in `inventory.of=fulcrums.case=F1-pii-repo-detection.md`.
-every fulcrum that remains is clean.
+**one fulcrum in this behavior is dirty: F1** (rework dirty, risk medium). no default, omission,
+or stale marker pushes a pii repo early; the one residual leak needs a human to opt a pii repo in.
+every other fulcrum is clean.
 
 risk grades the harm that ships if the call is wrong: **high** = irreversible (a leak, a merge),
 **medium** = a stall or a misled driver that a later round catches, **low** = a clean rework.
 
 | case | title | rework | status | confidence | risk |
 |------|-------|--------|--------|------------|------|
-| F1 | how a repo is known as pii — moved to the follow-up behavior `dreams/2026_10_24.feat-init-behavior-checkpoint-commits-with-pii-hold.dream.md` | none | deferred | 100% — no F1 change ships here; only `6.preship.stone` asks for a push (clamped by `templates.tail` case3) | none |
+| F1 | how a repo is known as pii | dirty | ⚑ **flagged best guess, shipped** (commander, 2026-11-18: fold in) — no repo is read as pii; a checkpoint pushes only on an exact `{ "push": "allow" }` in `.behavior/.checkpoint.jsonc`, else commits local for 6.preship to push; 7.reflect sends cross-repo items off the box under the same opt-in, else holds them via `os.fileops`. clamped by `templates.tail` case3 | 80% safe as stated; 50% the commander accepts the friction on public repos | medium — the one leak path is a human who opts a pii repo in; irreversible, but no default reaches it |
 | F2 | the brain of 6.preship and 7.reflect | clean | **ruled** — preship sonnet, reflect opus | 100% | low — one `brain:` line per guard; a wrong pick costs tokens or depth, never a ship |
 | F3 | the open-hours clock | clean | **ruled** — the clock stays out of the template; a refused commit is held, never a halt | 100% | low — the clock lives in the director's switch, so no template ever holds a stale hour |
-| F4 | a refused commit: halt or go on | clean | **ruled** — note the hold and go on; the director lands it when the switch opens. ships here in 6.preship; its checkpoint half moves with F1 | 100% | medium — a hold the driver forgets to note leaves a done route uncommitted with no record; `has-held-not-bypassed` and the template test pin the note |
+| F4 | a refused commit: halt or go on | clean | **ruled** — note the hold and go on; the director lands it when the switch opens. ships in 6.preship and in each checkpoint, where a human lands the held commit | 100% | medium — a hold the driver forgets to note leaves a done route uncommitted with no record; `has-held-not-bypassed` and the template test pin the note |
 | F5 | the guards of 6.preship and 7.reflect | clean | **ruled** — self-reviews only | 100% | medium — no peer lane reads a feigned paste; the `has-full-suite-green-locally` and `has-watched-the-head-green` reviews demand the paste, and the commander's release gate is the backstop |
 | F6 | reflect's in-repo cures after a green pull | clean | **ruled** — the fix rides the same pull and is re-watched | 100% | medium — a cure pushed with no re-watch would leave a red head behind a green claim; `has-rewatched-after-a-cure` holds it |
 | F7 | a consumer with no mechanic role | clean | settled by precedent (q7) | 90% | low — preship halts at its first ship call with the absent skill named; no harm ships |
