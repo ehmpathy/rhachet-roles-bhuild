@@ -38,3 +38,12 @@ exports[`asRadioDropOutput given: [case4] a dropped claim with its deliver behin
    │  └─ or drop the deliver too: rhx radio.task.queue del --uuid f0e1d2c3b4a59687 --why "its claim was dropped"
    └─ a re-push of the same task queues it again"
 `;
+
+exports[`asRadioDropOutput given: [case5] a dropped comment, held at a shut gate when: [t0] the drop renders then: it names the comment, the why, where its body is kept, and how to queue it again 1`] = `
+"🦫 dropped from the radio, never sent
+   ├─ uuid    = c0ffee0123456789
+   ├─ comment = #489 → sandpine/svc-lessons
+   ├─ why     = dropped: said in standup instead
+   ├─ kept at = .behavior/.radio/record.c0ffee0123456789.json
+   └─ a re-run of the same comment queues it again"
+`;

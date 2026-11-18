@@ -12,6 +12,7 @@
 # guarantee:
 #   - only paths HEAD tracks, under each --path, that differ are touched
 #   - modified or deleted → HEAD content; untracked files are never touched
+#   - a symlink is restored as a symlink, never flattened to a file
 #   - the index is never touched
 #   - plan mode by default; writes naught in plan
 ######################################################################
@@ -46,7 +47,19 @@ while IFS= read -r FILE; do
   echo "   ├─ ${FILE}"
   [[ "$MODE" == "apply" ]] || continue
   mkdir -p "$(dirname "$ROOT/$FILE")"
-  git show "HEAD:$FILE" > "$ROOT/$FILE"
+
+  # a symlink (mode 120000) stays a symlink, never a flat file
+  OBJMODE="$(git -C "$ROOT" ls-tree HEAD -- "$FILE" | cut -d' ' -f1)"
+  if [[ -z "$OBJMODE" ]]; then
+    echo "💥 MalfunctionError: ${FILE} is absent at HEAD; naught written" >&2
+    exit 1
+  fi
+  if [[ "$OBJMODE" == "120000" ]]; then
+    rm -f "$ROOT/$FILE"
+    ln -s "$(git -C "$ROOT" show "HEAD:$FILE")" "$ROOT/$FILE"
+    continue
+  fi
+  git -C "$ROOT" show "HEAD:$FILE" > "$ROOT/$FILE"
 done < <(git -C "$ROOT" diff --no-renames --name-only HEAD -- "${PATHS[@]}")
 
 echo "   └─ restored ${COUNT} (mode=${MODE})"

@@ -16,6 +16,7 @@
 # guarantee:
 #   - only paths in `git diff --name-status <base> HEAD` are touched
 #   - added outside --keep → removed; modified or deleted → base content
+#   - a symlink is restored as a symlink, never flattened to a file
 #   - plan mode by default; writes naught in plan
 ######################################################################
 set -euo pipefail
@@ -46,6 +47,24 @@ if [[ "$MODE" != "plan" && "$MODE" != "apply" ]]; then
 fi
 
 ROOT="$(git rev-parse --show-toplevel)"
+
+# write one path as it stands at a ref; a symlink (mode 120000) stays a symlink, never a flat file
+write_path_at_ref() {
+  local ref="$1" file="$2" objmode
+  objmode="$(git -C "$ROOT" ls-tree "$ref" -- "$file" | cut -d' ' -f1)"
+  if [[ -z "$objmode" ]]; then
+    echo "💥 MalfunctionError: ${file} is absent at ${ref}; naught written" >&2
+    exit 1
+  fi
+  mkdir -p "$(dirname "$ROOT/$file")"
+  if [[ "$objmode" == "120000" ]]; then
+    rm -f "$ROOT/$file"
+    ln -s "$(git show "$ref:$file")" "$ROOT/$file"
+    return
+  fi
+  git show "$ref:$file" > "$ROOT/$file"
+}
+
 KEPT=0
 CUT=0
 while IFS=$'\t' read -r STATUS FILE; do
@@ -58,8 +77,7 @@ while IFS=$'\t' read -r STATUS FILE; do
   [[ "$MODE" == "apply" ]] || continue
   # an added path under --untrack stays on disk (from HEAD) and leaves the index only
   if [[ "$STATUS" == "A" && -n "$UNTRACK" && "$FILE" == "$UNTRACK"* ]]; then
-    mkdir -p "$(dirname "$ROOT/$FILE")"
-    git show "HEAD:$FILE" > "$ROOT/$FILE"
+    write_path_at_ref HEAD "$FILE"
     git rm --cached --quiet -- "$FILE"
     continue
   fi
@@ -67,8 +85,7 @@ while IFS=$'\t' read -r STATUS FILE; do
     rm -f "$ROOT/$FILE"
     continue
   fi
-  mkdir -p "$(dirname "$ROOT/$FILE")"
-  git show "$BASE:$FILE" > "$ROOT/$FILE"
+  write_path_at_ref "$BASE" "$FILE"
 done < <(git diff --no-renames --name-status "$BASE" HEAD)
 
 echo "   └─ kept ${KEPT}, cut ${CUT} (mode=${MODE})"

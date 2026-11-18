@@ -11,6 +11,7 @@ import { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 import { RadioTaskRecordStatus } from '@src/domain.objects/RadioTaskRecordStatus';
 import { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
 import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
+import { setRadioTaskRecordFromComment } from '@src/domain.operations/radio/record/setRadioTaskRecordFromComment';
 import { setRadioTaskRecordFromPush } from '@src/domain.operations/radio/record/setRadioTaskRecordFromPush';
 
 import { cliRadioTaskPush } from './radioTaskPush';
@@ -328,6 +329,8 @@ if [ "$mode" = "access-claim" ] && [ "$1 $2" = "issue edit" ]; then echo "GraphQ
 if [ "$mode" = "open" ] && [ "$1 $2" = "issue view" ]; then echo '{"number":599,"title":"🎙️ task - board rentals open friday","body":"**description**\\n\\nboard rentals open friday","state":"OPEN","assignees":[],"createdAt":"2026-10-20T00:00:00Z","author":{"login":"stubbot"}}'; exit 0; fi
 if [ "$mode" = "not-radio" ] && [ "$1 $2" = "issue view" ]; then echo '{"number":599,"title":"wetsuit rack is broken","body":"filed by hand","state":"OPEN","assignees":[],"createdAt":"2026-10-20T00:00:00Z","author":{"login":"bert"}}'; exit 0; fi
 if [ "$mode" = "absent" ] && [ "$1 $2" = "issue view" ]; then echo "GraphQL: Could not resolve to an issue or pull request with the number of 599. (repository.issue)" >&2; exit 1; fi
+if [ "$1 $2" = "issue view" ] && printf '%s' "$args" | grep -qE -- '--json [a-z,]*comments'; then echo '{"number":599,"comments":[]}'; exit 0; fi
+if [ "$1 $2" = "issue comment" ]; then echo "https://github.com/stub/stub/issues/$3#issuecomment-1"; exit 0; fi
 case "$1 $2" in
   "issue view") echo '{"number":599,"title":"🎙️ task - board rentals open friday","body":"**description**\\n\\nboard rentals open friday","state":"OPEN","assignees":[{"login":"stubbot"}],"createdAt":"2026-10-20T00:00:00Z","author":{"login":"stubbot"}}' ;;
   "issue edit"|"issue close") echo "https://github.com/stub/stub/issues/599" ;;
@@ -761,6 +764,307 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
           expect(result.exitCode).toEqual(0);
           expect(result.stdout).toContain('systemMessage');
           expect(asMaskedStdout(result)).toMatchSnapshot();
+        });
+      });
+    },
+  );
+
+  given('[case12c] a held comment behind a rate limit on another repo', () => {
+    const scene = useBeforeAll(async () => {
+      setStubMode({ repo: repoForecast, mode: 'rate-limit' });
+      setStubMode({ repo: repoRentals, mode: 'ok' });
+      const one = genScene({ slug: 'radio-queue-journey-c12c' });
+      holdPush({ scene: one, repo: repoForecast, title: 'tide widget' });
+      const comment = setRadioTaskRecordFromComment(
+        {
+          comment: {
+            repo: repoRentals,
+            via: RadioChannel.GH_ISSUES,
+            auth: authEnv,
+            exid: '489',
+            body: 'the rental wetsuits are rinsed',
+          },
+        },
+        { dir: one.dir, cwd: one.cwd },
+      ).record;
+      const callsBefore = getStubCalls().length;
+      const drained = await runQueueInScene({
+        scene: one,
+        argvTail: ['drain'],
+      });
+      const callsDrain = getStubCalls().slice(callsBefore);
+      setStubMode({ repo: repoForecast, mode: 'ok' });
+      return { ...one, comment, drained, callsDrain };
+    });
+
+    when('[t0] the drain halts on the rate limit before the comment', () => {
+      then('it exits 2, and the comment is never posted', () => {
+        expect(scene.drained.exitCode).toEqual(2);
+        expect(
+          scene.callsDrain.some((call) => call.includes('issue comment')),
+        ).toBe(false);
+      });
+
+      then('the comment record waits, still QUEUED', () => {
+        const onDisk = daoRadioTaskRecord.get.one.byUnique({
+          dir: scene.dir,
+          key: scene.comment.key,
+        });
+        expect(onDisk?.recordStatus).toEqual(RadioTaskRecordStatus.QUEUED);
+      });
+
+      then(
+        'the drain names the comment as unsent, still in line behind the halt',
+        () => {
+          expect(scene.drained.stdout).toContain('comment on #489');
+          expect(scene.drained.stdout).toContain('upstream:rate-limit');
+          expect(asMaskedStdout(scene.drained)).toMatchSnapshot();
+        },
+      );
+    });
+
+    when('[t1] get runs after the drain', () => {
+      const result = useThen('it lists the queue', async () =>
+        runQueueInScene({ scene, argvTail: ['get'] }),
+      );
+
+      then(
+        'the comment is listed beside the halted task, as a human sees it',
+        () => {
+          expect(result.error).toBeNull();
+          expect(result.stdout).toContain('comment on #489');
+          expect(result.stdout).toContain('tide widget');
+          expect(asMaskedStdout(result)).toMatchSnapshot();
+        },
+      );
+    });
+  });
+
+  given(
+    '[case12b] a held comment behind a set-aside update on one issue (#394)',
+    () => {
+      const scene = useBeforeAll(async () => {
+        setStubMode({ repo: repoRentals, mode: 'access-update' });
+        const one = genScene({ slug: 'radio-queue-journey-c12b' });
+        const update = holdPush({
+          scene: one,
+          repo: repoRentals,
+          title: null,
+          exid: '599',
+          status: RadioTaskStatus.DELIVERED,
+          description: 'wetsuit rack moved to the shed',
+        });
+        const comment = setRadioTaskRecordFromComment(
+          {
+            comment: {
+              repo: repoRentals,
+              via: RadioChannel.GH_ISSUES,
+              auth: authEnv,
+              exid: '599',
+              body: 'the rack key hangs by the door',
+            },
+          },
+          { dir: one.dir, cwd: one.cwd },
+        ).record;
+        const callsBefore = getStubCalls().length;
+        const drained = await runQueueInScene({
+          scene: one,
+          argvTail: ['drain'],
+        });
+        const callsDrain = getStubCalls().slice(callsBefore);
+        return { ...one, update, comment, drained, callsDrain };
+      });
+
+      when('[t0] the drain meets the update first', () => {
+        then('it exits 2, and the comment is never posted', () => {
+          expect(scene.drained.exitCode).toEqual(2);
+          expect(
+            scene.callsDrain.some((call) => call.includes('issue comment')),
+          ).toBe(false);
+        });
+
+        then('the comment record waits, still QUEUED', () => {
+          const onDisk = daoRadioTaskRecord.get.one.byUnique({
+            dir: scene.dir,
+            key: scene.comment.key,
+          });
+          expect(onDisk?.recordStatus).toEqual(RadioTaskRecordStatus.QUEUED);
+        });
+      });
+
+      when('[t1] get runs after the drain', () => {
+        const result = useThen('it lists the queue', async () =>
+          runQueueInScene({ scene, argvTail: ['get'] }),
+        );
+
+        then('the comment reads as behind the earlier update', () => {
+          expect(result.error).toBeNull();
+          expect(result.stdout).toContain('comment on #599');
+          expect(result.stdout).toContain('upstream:access');
+          expect(result.stdout).toMatch(/same issue #599/);
+          expect(asMaskedStdout(result)).toMatchSnapshot();
+        });
+      });
+
+      when('[t1b] the held comment is amended to as-human', () => {
+        const result = useThen('it amends', async () =>
+          runQueueInScene({
+            scene,
+            argvTail: [
+              'set',
+              '--uuid',
+              scene.comment.key,
+              '--auth',
+              'as-human',
+            ],
+          }),
+        );
+
+        then('it names the comment and its new auth, and sends naught', () => {
+          expect(result.error).toBeNull();
+          expect(result.stdout).toContain('comment = #599');
+          expect(result.stdout).toContain('as-human');
+          const onDisk = daoRadioTaskRecord.get.one.byUnique({
+            dir: scene.dir,
+            key: scene.comment.key,
+          });
+          expect(onDisk?.auth).toEqual('as-human');
+          expect(asMaskedStdout(result)).toMatchSnapshot();
+        });
+      });
+
+      when('[t1c] the held comment is given a new --description', () => {
+        const result = useThen('it is refused', async () =>
+          runQueueInScene({
+            scene,
+            argvTail: [
+              'set',
+              '--uuid',
+              scene.comment.key,
+              '--description',
+              'the rack key hangs by the till',
+            ],
+          }),
+        );
+
+        then(
+          'a constraint: a comment body is its key; the fix names drop, then comment again',
+          () => {
+            expect(result.error).toBeInstanceOf(ConstraintError);
+            const onDisk = daoRadioTaskRecord.get.one.byUnique({
+              dir: scene.dir,
+              key: scene.comment.key,
+            });
+            expect(onDisk?.description).toEqual(
+              'the rack key hangs by the door',
+            );
+            expect(result.error?.message).toContain(
+              `del --uuid ${scene.comment.key} --why "<why>"`,
+            );
+            expect(result.error?.message).not.toContain('{');
+            expect(
+              result.error?.message.split(scene.comment.key).join('<uuid>'),
+            ).toMatchSnapshot();
+          },
+        );
+      });
+
+      when('[t2] the update is dropped', () => {
+        const result = useThen('it drops', async () =>
+          runQueueInScene({
+            scene,
+            argvTail: [
+              'del',
+              '--uuid',
+              scene.update.key,
+              '--why',
+              'the rack never moved',
+            ],
+          }),
+        );
+
+        then('it names the comment that now sends', () => {
+          expect(result.error).toBeNull();
+          expect(result.stdout).toContain(
+            '1 comment on #599 waits behind it; it sends next drain',
+          );
+          expect(asMaskedStdout(result)).toMatchSnapshot();
+        });
+      });
+
+      when('[t2b] the next drain runs, as the drop promised', () => {
+        const result = useThen('it drains', async () => {
+          const callsBefore = getStubCalls().length;
+          // the comment was amended to as-human at [t1b]; the stub gh stands in for the session
+          const drained = await runQueueInScene({
+            scene,
+            argvTail: ['drain'],
+            envOmit: ['NODE_ENV', 'JEST_WORKER_ID'],
+          });
+          return { drained, calls: getStubCalls().slice(callsBefore) };
+        });
+
+        then('the comment posts once, and its record is DELIVERED', () => {
+          expect(result.drained.error).toBeNull();
+          expect(
+            result.calls.filter((call) => call.includes('issue comment')),
+          ).toHaveLength(1);
+          const onDisk = daoRadioTaskRecord.get.one.byUnique({
+            dir: scene.dir,
+            key: scene.comment.key,
+          });
+          expect(onDisk?.recordStatus).toEqual(RadioTaskRecordStatus.DELIVERED);
+          expect(asMaskedStdout(result.drained)).toMatchSnapshot();
+        });
+      });
+
+      when('[t3] a second held comment is dropped', () => {
+        const result = useThen('it drops', async () => {
+          const second = setRadioTaskRecordFromComment(
+            {
+              comment: {
+                repo: repoRentals,
+                via: RadioChannel.GH_ISSUES,
+                auth: authEnv,
+                exid: '599',
+                body: 'the rack key is lost',
+              },
+            },
+            { dir: scene.dir, cwd: scene.cwd },
+          ).record;
+          const dropped = await runQueueInScene({
+            scene,
+            argvTail: [
+              'del',
+              '--uuid',
+              second.key,
+              '--why',
+              'said at the shop instead',
+            ],
+          });
+          return { second, dropped };
+        });
+
+        then('it names the comment, the why, and how to queue it again', () => {
+          expect(result.dropped.error).toBeNull();
+          expect(result.dropped.stdout).toContain(
+            '🦫 dropped from the radio, never sent',
+          );
+          expect(result.dropped.stdout).toContain('comment = #599');
+          expect(result.dropped.stdout).toContain('said at the shop instead');
+          expect(result.dropped.stdout).toContain(
+            'a re-run of the same comment queues it again',
+          );
+          expect(asMaskedStdout(result.dropped)).toMatchSnapshot();
+        });
+
+        then('the comment record is DROPPED, its body kept', () => {
+          const onDisk = daoRadioTaskRecord.get.one.byUnique({
+            dir: scene.dir,
+            key: result.second.key,
+          });
+          expect(onDisk?.recordStatus).toEqual(RadioTaskRecordStatus.DROPPED);
+          expect(onDisk?.description).toEqual('the rack key is lost');
         });
       });
     },
