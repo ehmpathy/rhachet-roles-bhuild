@@ -38,3 +38,5 @@ ignores:
   - rhachet-roles-bhrain
   - rhachet-roles-ehmpathy
   - rhachet-roles-rhachet
+  - rhachet-roles-bhrowser
+  - rhachet-roles-ghlitch
