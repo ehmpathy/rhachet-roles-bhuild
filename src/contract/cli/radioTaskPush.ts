@@ -35,39 +35,13 @@ import { z } from 'zod';
 import { IdempotencyMode } from '@src/domain.objects/IdempotencyMode';
 import { RadioChannel } from '@src/domain.objects/RadioChannel';
 import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
-import { getBranchBehaviorBind } from '@src/domain.operations/behavior/bind/getBranchBehaviorBind';
 import { asPushTaskFromArgs } from '@src/domain.operations/radio/cli/asPushTaskFromArgs';
 import { getOneRadioTaskRepoFromCliArg } from '@src/domain.operations/radio/cli/getOneRadioTaskRepoFromCliArg';
-import { asRadioLockWaitNotice } from '@src/domain.operations/radio/record/asRadioLockWaitNotice';
-import { asRadioPushOutput } from '@src/domain.operations/radio/record/asRadioPushOutput';
-import { asRadioPushSavedNotice } from '@src/domain.operations/radio/record/asRadioPushSavedNotice';
-import { asRadioTaskRecordHomeFromCwd } from '@src/domain.operations/radio/record/asRadioTaskRecordHomeFromCwd';
-import { getOneRadioPushDrainWithBacklog } from '@src/domain.operations/radio/record/getOneRadioPushDrainWithBacklog';
-import { getOneRadioTaskRecordHome } from '@src/domain.operations/radio/record/getOneRadioTaskRecordHome';
-import { isRadioPushDelivered } from '@src/domain.operations/radio/record/isRadioPushDelivered';
 import { setRadioTaskRecordFromPush } from '@src/domain.operations/radio/record/setRadioTaskRecordFromPush';
 import { getCliArgs } from '@src/infra/cli';
 import { getOneArgOrStdinText } from '@src/infra/cli/getOneArgOrStdinText';
-import { withFaultNotice } from '@src/infra/cli/withFaultNotice';
-import { isGitRepoAt } from '@src/infra/git/isGitRepoAt';
-import { shx } from '@src/infra/shell/shx';
 
-// ────────────────────────────────────────────────────────────────────
-// arg readers
-// ────────────────────────────────────────────────────────────────────
-
-/**
- * .what = the route bind of this branch, or null outside a git repo
- * .why  = the contract composes the behavior context's bind with the radio context's
- *         record home, so neither domain reaches into the other
- */
-const getOneBranchBindForRecord = (input: {
-  cwd: string;
-}): { behaviorDir: string | null; binds: string[] } | null => {
-  // outside a git repo, no branch can bind a route
-  if (!isGitRepoAt({ dir: input.cwd })) return null;
-  return getBranchBehaviorBind({}, { cwd: input.cwd });
-};
+import { setRadioTaskRecordThenDrain } from './setRadioTaskRecordThenDrain';
 
 // ────────────────────────────────────────────────────────────────────
 // schema
@@ -97,6 +71,9 @@ const schemaOfArgs = z.object({
 
     // optional: idempotency mode
     idem: z.nativeEnum(IdempotencyMode).optional(),
+
+    // a flag of radio.task.comment; declared so it is refused, never dropped
+    comment: z.string().optional(),
 
     // rhachet passthrough args (optional, ignored)
     repo: z.string().optional(),
@@ -149,6 +126,12 @@ export const cliRadioTaskPush = async (): Promise<void> => {
     process.exit(0);
   }
 
+  // refuse a comment flag: a silent drop would leave an empty update that reads as done
+  if (named.comment !== undefined)
+    throw new ConstraintError(
+      `--comment is not read by radio.task.push, which changes a task's title, body, or status; to comment on a task, issue, or pr, use rhx radio.task.comment --via ${named.via ?? '<via>'} --into ${named.into ?? '<into>'} --exid ${named.exid ?? '<n>'} --comment @stdin`,
+    );
+
   // validate required --via arg (not validated by schema to allow --help without it)
   // .note = the fix rides in the message, never in metadata — helpful-errors prints metadata as a raw json block
   if (!named.via)
@@ -184,58 +167,21 @@ export const cliRadioTaskPush = async (): Promise<void> => {
     status: named.status ?? null,
   });
 
-  // transcribe first: once recorded, this push is never lost.
-  // homeDir honors $HOME for the global-meter lookup (standard CLI convention):
-  // os.homedir() reads the OS passwd entry and cannot be isolated in-process
-  const context = {
-    cwd: process.cwd(),
-    homeDir: process.env.HOME,
-    env: process.env,
-    shx,
-    // a push blocked on another drain says so once, on stdout: rhachet drops stderr on exit 0
-    onLockWait: () => console.log(asRadioLockWaitNotice()),
-  };
-  const bind = getOneBranchBindForRecord({ cwd: context.cwd });
-  const home = getOneRadioTaskRecordHome({ bind }, context);
-  const { record, dir } = setRadioTaskRecordFromPush(
-    {
-      push: {
-        ...task,
-        via: named.via,
-        auth: named.auth ?? null,
-        idem: named.idem ?? null,
-      },
-    },
-    { dir: home.dir, cwd: context.cwd },
-  );
-
-  // name where the record lives: a re-push after a bind stays where it was first held
-  const homeOfRecord = asRadioTaskRecordHomeFromCwd(
-    { home: { ...home, dir } },
-    context,
-  );
-
-  // hold at a shut gate, or drain the backlog through an open one, then count what still waits;
-  // a fault in either (an unreadable record, a bad gate config) first says the push is saved
-  const { pushed, others, backlog } = await withFaultNotice({
-    logic: () =>
-      getOneRadioPushDrainWithBacklog(
-        { record, dir, authTyped: named.auth ?? null },
-        context,
+  // transcribe, then meet the gate and drain, via the path every radio write shares
+  const via = named.via;
+  await setRadioTaskRecordThenDrain({
+    transcribe: (home) =>
+      setRadioTaskRecordFromPush(
+        {
+          push: {
+            ...task,
+            via,
+            auth: named.auth ?? null,
+            idem: named.idem ?? null,
+          },
+        },
+        home,
       ),
-    notice: asRadioPushSavedNotice({ record, dir: homeOfRecord.dir }),
+    authTyped: named.auth ?? null,
   });
-
-  // report the fate of this push, and of the backlog it carried
-  console.log(
-    asRadioPushOutput({
-      pushed,
-      others,
-      home: homeOfRecord,
-      backlog: backlog.length,
-    }),
-  );
-
-  // exit 2 unless this push landed: a held or refused push was not delivered
-  if (!isRadioPushDelivered({ pushed })) process.exitCode = 2;
 };

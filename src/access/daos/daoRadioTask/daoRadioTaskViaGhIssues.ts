@@ -12,24 +12,16 @@ import { composeTaskIntoGhIssues } from '../../../domain.operations/radio/task/f
 import { extractTaskFromGhIssues } from '../../../domain.operations/radio/task/format/extractTaskFromGhIssues';
 import { asGhIssueNumber } from './asGhIssueNumber';
 import { genGhBodyTempFile } from './genGhBodyTempFile';
-import { getOneGhCallTimeout } from './getOneGhCallTimeout';
 import { isGithubIssueAbsent } from './isGithubIssueAbsent';
 import { isGithubRepoUnreachable } from './isGithubRepoUnreachable';
-import { runGhCommand } from './runGhCommand';
+import { runGhUnderSendLimit } from './runGhUnderSendLimit';
 
 /**
  * .what = run one gh call, as argv, under the radio's send bound
- * .why = every call in this dao shares one auth env (runGhCommand); its timeout is the
- *        per-call bound, cut to what the send has left when a drain sets a send limit
+ * .why = the shared bound (runGhUnderSendLimit), kept in this dao's positional call shape
  */
 const runGh = (args: string[], context: ContextGithubAuth): Promise<string> =>
-  runGhCommand(
-    {
-      args,
-      timeout: getOneGhCallTimeout({ limit: context.github.send ?? null }),
-    },
-    context,
-  );
+  runGhUnderSendLimit({ args }, context);
 
 /**
  * .what = the `--json` fields every issue read asks gh for

@@ -28,7 +28,89 @@ const genRecord = (input: {
     deliveredExid: null,
   });
 
+/**
+ * .what = a held comment on #489, shaped as radio.task.comment records it
+ */
+const genComment = (input: { key: string }): RadioTaskRecord =>
+  new RadioTaskRecord({
+    ...genRecord({ title: input.key }),
+    kind: 'comment',
+    title: null,
+    description: 'the tide table test passes now',
+    exid: '489',
+  });
+
 describe('asRadioHeldOutput', () => {
+  given('[case9] a held comment, alone and beside a held task', () => {
+    when('[t0] the stop reminder renders for one held comment', () => {
+      const output = asRadioHeldOutput({
+        held: [
+          {
+            record: genComment({ key: 'c' }),
+            lift: 'rhx radio.uses --global allow',
+          },
+        ],
+        mode: 'hook.onStop',
+      });
+
+      then(
+        'it names a comment, never a task, and the comment path that delivers it',
+        () => {
+          expect(output).toEqual(
+            '🦫 1 comment held for the radio · 1 at a gate · lift: rhx radio.uses --global allow · next push or comment delivers it',
+          );
+          expect(output).toMatchSnapshot();
+        },
+      );
+    });
+
+    when(
+      '[t1] the stop reminder renders for a held task and a held comment',
+      () => {
+        const output = asRadioHeldOutput({
+          held: [
+            {
+              record: genRecord({ title: 'a' }),
+              lift: 'rhx radio.uses --global allow',
+            },
+            {
+              record: genComment({ key: 'c' }),
+              lift: 'rhx radio.uses --global allow',
+            },
+          ],
+          mode: 'hook.onStop',
+        });
+
+        then('it names both kinds', () => {
+          expect(output).toEqual(
+            '🦫 2 tasks or comments held for the radio · 2 at a gate · lift: rhx radio.uses --global allow · next push or comment delivers them',
+          );
+        });
+      },
+    );
+
+    when('[t2] the list renders for one held comment', () => {
+      const output = asRadioHeldOutput({
+        held: [
+          {
+            record: genComment({ key: 'c' }),
+            lift: 'rhx radio.uses --global allow',
+          },
+        ],
+        mode: 'list',
+      });
+
+      then(
+        'its last line names the comment path that delivers the backlog',
+        () => {
+          expect(output).toContain(
+            'then the next push or comment, or `rhx radio.task.queue drain`, delivers the backlog',
+          );
+        },
+      );
+    });
+  });
+
   given('[case1] three tasks held, the gate shut (S2)', () => {
     const held = ['a', 'b', 'c'].map((title) => ({
       record: genRecord({ title }),

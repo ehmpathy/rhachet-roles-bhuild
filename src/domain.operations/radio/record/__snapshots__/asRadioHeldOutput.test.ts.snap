@@ -111,6 +111,8 @@ exports[`asRadioHeldOutput given: [case2] one task held, the gate open (S3) when
 
 exports[`asRadioHeldOutput given: [case3] no task held (S1) when: [t1] the list renders then: it says naught is held 1`] = `"🦫 naught held for the radio"`;
 
+exports[`asRadioHeldOutput given: [case9] a held comment, alone and beside a held task when: [t0] the stop reminder renders for one held comment then: it names a comment, never a task, and the comment path that delivers it 1`] = `"🦫 1 comment held for the radio · 1 at a gate · lift: rhx radio.uses --global allow · next push or comment delivers it"`;
+
 exports[`asRadioHeldOutput given: [case9] held records with a stored auth, one of which no drain will replay when: [t0] the list renders then: the row whose auth will not replay says so once, with an amend line that holds a placeholder 1`] = `
 "🦫 held for the radio
    ├─ amended task amended → ehmpathy/rhachet

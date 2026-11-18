@@ -111,22 +111,39 @@ const asRecordKeyFromFileName = (input: { path: string }): string =>
  * .note = keys outside the shape are stripped, so the clock fields a prior version wrote
  *         (`heldAt`, `settledAt`) never reach the domain object, nor the next write
  */
-const schemaOfRecordFile = z.object({
-  key: z.string().regex(RECORD_KEY_PATTERN),
-  kind: z.enum(['create', 'update']),
-  repo: z.object({ owner: z.string(), name: z.string() }),
-  via: z.nativeEnum(RadioChannel),
-  auth: z.string().nullable(),
-  idem: z.nativeEnum(IdempotencyMode).nullable(),
-  title: z.string().nullable(),
-  description: z.string().nullable(),
-  exid: z.string().nullable(),
-  status: z.nativeEnum(RadioTaskStatus).nullable(),
-  recordStatus: z.nativeEnum(RadioTaskRecordStatus),
-  reason: z.string().nullable(),
-  heldSeq: z.number(),
-  deliveredExid: z.string().nullable(),
-});
+const schemaOfRecordFile = z
+  .object({
+    key: z.string().regex(RECORD_KEY_PATTERN),
+    kind: z.enum(['create', 'update', 'comment']),
+    repo: z.object({ owner: z.string(), name: z.string() }),
+    via: z.nativeEnum(RadioChannel),
+    auth: z.string().nullable(),
+    idem: z.nativeEnum(IdempotencyMode).nullable(),
+    title: z.string().nullable(),
+    description: z.string().nullable(),
+    exid: z.string().nullable(),
+    status: z.nativeEnum(RadioTaskStatus).nullable(),
+    recordStatus: z.nativeEnum(RadioTaskRecordStatus),
+    reason: z.string().nullable(),
+    heldSeq: z.number(),
+    deliveredExid: z.string().nullable(),
+  })
+  .superRefine((record, ctx) => {
+    // a comment names its thread and carries its body; without both it can never be sent
+    if (record.kind !== 'comment') return;
+    if (record.exid === null)
+      ctx.addIssue({
+        code: 'custom',
+        path: ['exid'],
+        message: 'a comment record must name its thread',
+      });
+    if (record.description === null)
+      ctx.addIssue({
+        code: 'custom',
+        path: ['description'],
+        message: 'a comment record must carry its body',
+      });
+  });
 
 /**
  * .what = each field a record file holds out of shape, as one line a human reads

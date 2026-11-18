@@ -8,6 +8,7 @@ import { asRadioDrainStepBound } from './asRadioDrainStepBound';
 import { asRadioErrorDetail } from './asRadioErrorDetail';
 import { asRadioErrorHeadline } from './asRadioErrorHeadline';
 import { asRadioErrorHint } from './asRadioErrorHint';
+import { asRadioFateDelivered } from './asRadioFateDelivered';
 import { asRadioFateRepushedMidSend } from './asRadioFateRepushedMidSend';
 import { asRadioFateUnreachedByBudget } from './asRadioFateUnreachedByBudget';
 import { asRadioTaskRepoSlug } from './asRadioTaskRepoSlug';
@@ -208,17 +209,12 @@ export const setRadioTaskRecordUpstream = async (
     change: {
       recordStatus: RadioTaskRecordStatus.DELIVERED,
       reason: null,
-      deliveredExid: send.sent.task.exid,
+      deliveredExid: send.sent.exid,
     },
   });
 
   // a re-push since the read left the record queued: say so, not delivered
   if (isRadioTaskRecordRepushedSince({ read: record, current: delivered }))
     return asRadioFateRepushedMidSend({ record: delivered });
-  return {
-    fate: 'delivered',
-    record: delivered,
-    task: send.sent.task,
-    outcome: send.sent.outcome,
-  };
+  return asRadioFateDelivered({ record: delivered, sent: send.sent });
 };

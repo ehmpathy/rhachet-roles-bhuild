@@ -1,0 +1,393 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`radio.task.comment given: [case1] a clone comments on a gh thread, via a stub gh (case=1, case=2, case=3, case=4, case=6) when: [t0] the gate is shut and the clone comments on #489 (the clamp, #567) then: the output says held, labeled as a comment on #489, with the lift 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+
+🦫 held for the radio
+   ├─ comment = #489
+   ├─ into    = sandpine/svc-lessons
+   ├─ status  = QUEUED (radio.uses:blocked — org)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ backlog = 1 awaits the radio
+   └─ lift it (human): rhx radio.uses --org sandpine allow
+      └─ then the next push or comment delivers the backlog first"
+`;
+
+exports[`radio.task.comment given: [case1] a clone comments on a gh thread, via a stub gh (case=1, case=2, case=3, case=4, case=6) when: [t1] a human lists what waits then: the held comment is listed, labeled as a comment ([case1b] lists it beside a held task) 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 held for the radio
+   ├─ <uuid> comment on #489 → sandpine/svc-lessons
+   │  ├─ state: held at gate (radio.uses:blocked — org)
+   │  ├─ auth: as-robot:env(RADIO_ACPT_COMMENT_TOKEN)
+   │  └─ lift it (human): rhx radio.uses --org sandpine allow
+   └─ then the next push or comment, or \`rhx radio.task.queue drain\`, delivers the backlog"
+`;
+
+exports[`radio.task.comment given: [case1] a clone comments on a gh thread, via a stub gh (case=1, case=2, case=3, case=4, case=6) when: [t3] the gate opens and the clone comments on a foreign pr #652 then: the held comment on #489 goes first, then the new one on #652 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+
+🦫 back in the river! the backlog is delivered
+   ├─ drained
+   │  └─ comment on #489
+   ├─ pushed
+   │  └─ comment on #652 (posted)
+   └─ backlog = 0"
+`;
+
+exports[`radio.task.comment given: [case1] a clone comments on a gh thread, via a stub gh (case=1, case=2, case=3, case=4, case=6) when: [t4] the same body is already on the thread, from another hand (case=3) then: exit code is 0, and it reads kept — naught posted 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+
+🦫 already delivered
+
+🎙️ kept: comment on #652 (already on the thread — naught posted)
+   ├─ url: https://github.com/sandpine/svc-lessons/pull/652#issuecomment-1
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.comment given: [case1] a clone comments on a gh thread, via a stub gh (case=1, case=2, case=3, case=4, case=6) when: [t5] the clone comments on a thread that does not exist (case=6) then: exit code is 2, and it reads refused, closed, with the fix 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+
+🦫 refused upstream
+   ├─ comment = #99999
+   ├─ into    = sandpine/svc-lessons
+   ├─ status  = REFUSED (#99999 not found in sandpine/svc-lessons; check --exid and --into, then comment again) — closed, never retried
+   └─ backlog = 0"
+`;
+
+exports[`radio.task.comment given: [case1] a clone comments on a gh thread, via a stub gh (case=1, case=2, case=3, case=4, case=6) when: [t6] a different body lands on the same thread (case=3 [t2]) then: the posted output names the act, the url, the channel, and where it was recorded 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+
+🦫 onto the pile!
+
+🎙️ posted: comment on #652
+   ├─ url: https://github.com/sandpine/svc-lessons/pull/652#issuecomment-1002
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.comment given: [case1] a clone comments on a gh thread, via a stub gh (case=1, case=2, case=3, case=4, case=6) when: [t6b] the same body is commented again, once its record has settled then: exit code is 0, and it reads kept — one thread read, naught posted (F13) 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+
+🦫 already delivered
+
+🎙️ kept: comment on #652 (already on the thread — naught posted)
+   ├─ url: https://github.com/sandpine/svc-lessons/pull/652#issuecomment-1002
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.comment given: [case1] a clone comments on a gh thread, via a stub gh (case=1, case=2, case=3, case=4, case=6) when: [t7] the gate is shut and the clone comments as-human, a robot token left in its env (case=8) then: the held as-human output and its queue row match the snapshot 1`] = `
+{
+  "comment": "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+
+🦫 held for the radio
+   ├─ comment = #489
+   ├─ into    = sandpine/svc-lessons
+   ├─ status  = QUEUED (radio.uses:blocked — org)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ backlog = 1 awaits the radio
+   └─ lift it (human): rhx radio.uses --org sandpine allow
+      └─ then the next push or comment delivers the backlog first",
+  "list": "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 held for the radio
+   ├─ <uuid> comment on #489 → sandpine/svc-lessons
+   │  ├─ state: held at gate (radio.uses:blocked — org)
+   │  ├─ auth: as-human
+   │  └─ lift it (human): rhx radio.uses --org sandpine allow
+   └─ then the next push or comment, or \`rhx radio.task.queue drain\`, delivers the backlog",
+}
+`;
+
+exports[`radio.task.comment given: [case1] a clone comments on a gh thread, via a stub gh (case=1, case=2, case=3, case=4, case=6) when: [t8] the gate opens and the same as-human comment goes out (case=8) then: the posted as-human output matches the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+
+🦫 onto the pile!
+
+🎙️ posted: comment on #489
+   ├─ url: https://github.com/sandpine/svc-lessons/issues/489#issuecomment-1001
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.comment given: [case1] a clone comments on a gh thread, via a stub gh (case=1, case=2, case=3, case=4, case=6) when: [t9] two comments wait — one on a thread that does not exist, one for an org whose gate stays shut — then a comment gets through then: the drain sections match the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+
+🦫 onto the pile!
+   ├─ pushed
+   │  └─ comment on #489 (posted)
+   ├─ refused — closed, never retried; rhx radio.task.queue get lists it no more, and its reason stays in its record file
+   │  └─ comment on #99999 — #99999 not found in sandpine/svc-lessons; check --exid and --into, then comment again
+   ├─ still held
+   │  └─ <uuid> comment on #7 → sandpine-school/board-rentals (radio.uses:blocked — default)
+   │     └─ lift it (human): rhx radio.uses allow
+   └─ backlog = 1 awaits the radio"
+`;
+
+exports[`radio.task.comment given: [case1] a clone comments on a gh thread, via a stub gh (case=1, case=2, case=3, case=4, case=6) when: [t10] the post lands, then the call times out (case=3, the origin of #406) then: exit code is 2, and it is held as a transient fault — never refused, never dropped 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+
+🦫 held for the radio
+   ├─ comment = #489
+   ├─ into    = sandpine/svc-lessons
+   ├─ status  = QUEUED (upstream:transient)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ still held
+   │  └─ <uuid> comment on #7 → sandpine-school/board-rentals (radio.uses:blocked — default)
+   │     └─ lift it (human): rhx radio.uses allow
+   ├─ backlog = 2 await the radio
+   └─ fix it: Post "https://api.github.com/graphql": dial tcp: lookup api.github.com: i/o timeout
+      ├─ the comment may be live already: never reword it; the drain reads the thread and posts it at most once
+      └─ then the next push or comment delivers the backlog first"
+`;
+
+exports[`radio.task.comment given: [case1] a clone comments on a gh thread, via a stub gh (case=1, case=2, case=3, case=4, case=6) when: [t12] a multi-line body is piped via @stdin (the headline use in --help) then: exit code is 0, and the thread holds the body with every line and blank line intact 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+
+🦫 onto the pile!
+   ├─ pushed
+   │  └─ comment on #489 (posted)
+   ├─ still held
+   │  └─ <uuid> comment on #7 → sandpine-school/board-rentals (radio.uses:blocked — default)
+   │     └─ lift it (human): rhx radio.uses allow
+   └─ backlog = 1 awaits the radio"
+`;
+
+exports[`radio.task.comment given: [case1] a clone comments on a gh thread, via a stub gh (case=1, case=2, case=3, case=4, case=6) when: [t13] the clone comments with --auth as-robot:env(VAR) where VAR is not set then: exit code is 2, held as a caller-fixable auth fault, with no post made 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+
+🦫 held for the radio
+   ├─ comment = #489
+   ├─ into    = sandpine/svc-lessons
+   ├─ status  = QUEUED (upstream:auth)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ still held
+   │  └─ <uuid> comment on #7 → sandpine-school/board-rentals (radio.uses:blocked — default)
+   │     └─ lift it (human): rhx radio.uses allow
+   ├─ backlog = 2 await the radio
+   └─ fix it: ✋ ConstraintError: --auth as-robot:env(RADIO_ACPT_UNSET_TOKEN) specified but RADIO_ACPT_UNSET_TOKEN is not set
+      ├─ hint: set RADIO_ACPT_UNSET_TOKEN in the environment
+      ├─ amend it: rhx radio.task.queue set --uuid <uuid> --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --uuid <uuid> --why "<why>"
+      └─ then the next push or comment delivers the backlog first"
+`;
+
+exports[`radio.task.comment given: [case1b] a held comment and a held task wait side by side at a shut gate (#567: queue get lists both) when: [t0] a human lists what waits then: the held comment is listed beside the held task, each with the lift 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 held for the radio
+   ├─ <uuid> restock the wax rack → sandpine/svc-lessons
+   │  ├─ state: held at gate (radio.uses:blocked — org)
+   │  ├─ auth: as-robot:env(RADIO_ACPT_COMMENT_TOKEN)
+   │  └─ lift it (human): rhx radio.uses --org sandpine allow
+   ├─ <uuid> comment on #489 → sandpine/svc-lessons
+   │  ├─ state: held at gate (radio.uses:blocked — org)
+   │  ├─ auth: as-robot:env(RADIO_ACPT_COMMENT_TOKEN)
+   │  └─ lift it (human): rhx radio.uses --org sandpine allow
+   └─ then the next push or comment, or \`rhx radio.task.queue drain\`, delivers the backlog"
+`;
+
+exports[`radio.task.comment given: [case1b] a held comment and a held task wait side by side at a shut gate (#567: queue get lists both) when: [t1] the gate opens and a new task push gets through (case=2 [t2], row 32) then: the drained order matches the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 back in the river! the backlog is delivered
+   ├─ drained
+   │  ├─ #701 restock the wax rack
+   │  └─ comment on #489
+   ├─ pushed
+   │  └─ #702 rinse the wetsuits (created)
+   └─ backlog = 0"
+`;
+
+exports[`radio.task.comment given: [case2] a clone comments on an os.fileops task (case=7) when: [t0] the clone comments on the task then: exit code is 0, and one entry lands in the log beside the task 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+
+🦫 onto the pile!
+
+🎙️ posted: comment on #<exid>
+   ├─ via: os.fileops
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.comment given: [case2] a clone comments on an os.fileops task (case=7) when: [t1] the same body is posted from a fresh record dir, as a second clone would then: it reads kept, and the log still holds one entry 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+
+🦫 already delivered
+
+🎙️ kept: comment on #<exid> (already in the comment log — naught posted)
+   ├─ via: os.fileops
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.comment given: [case2] a clone comments on an os.fileops task (case=7) when: [t2] the clone comments on a task that does not exist then: exit code is 2, refused, and no log is written for it 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+
+🦫 refused upstream
+   ├─ comment = #no-such-task
+   ├─ into    = comment-acpt/repo-<run>
+   ├─ status  = REFUSED (#no-such-task not found in comment-acpt/repo-<run>; check --exid and --into, then comment again) — closed, never retried
+   └─ backlog = 0"
+`;
+
+exports[`radio.task.comment given: [case2] a clone comments on an os.fileops task (case=7) when: [t3] the gate is shut and the clone comments on the task (case=7 [t3], the os.fileops clamp) then: exit code is 2, held, and the log holds no entry for it 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+
+🦫 held for the radio
+   ├─ comment = #<exid>
+   ├─ into    = comment-acpt/repo-<run>
+   ├─ status  = QUEUED (radio.uses:blocked — org)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ backlog = 1 awaits the radio
+   └─ lift it (human): rhx radio.uses --org comment-acpt allow
+      └─ then the next push or comment delivers the backlog first"
+`;
+
+exports[`radio.task.comment given: [case2] a clone comments on an os.fileops task (case=7) when: [t4] the clone names --idem findsert, the comment's one mode (case=5 row 31) then: it is accepted, not refused: the shut gate holds it as before 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+
+🦫 held for the radio
+   ├─ comment = #<exid>
+   ├─ into    = comment-acpt/repo-<run>
+   ├─ status  = QUEUED (radio.uses:blocked — org)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ backlog = 1 awaits the radio
+   └─ lift it (human): rhx radio.uses --org comment-acpt allow
+      └─ then the next push or comment delivers the backlog first"
+`;
+
+exports[`radio.task.comment given: [case2] a clone comments on an os.fileops task (case=7) when: [t5] a second comment is held, its body lands in the log by another hand, then a plain task push gets through then: the drained lines match the snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 back in the river! the backlog is delivered
+   ├─ drained
+   │  ├─ comment on #<exid>
+   │  └─ comment on #<exid> (already in the comment log — naught posted)
+   ├─ pushed
+   │  └─ #<new-exid> rinse the wetsuits (created)
+   └─ backlog = 0"
+`;
+
+exports[`radio.task.comment given: [case3] a malformed comment is refused before it is recorded (case=5) when: [t0] the clone comments with no --exid then: exit code is 2, the fix is named, and no record is written 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --exid is required; name the task, issue, or pr number to comment on: --exid <n>"
+`;
+
+exports[`radio.task.comment given: [case3] a malformed comment is refused before it is recorded (case=5) when: [t1] the clone comments with a --title, a flag the skill does not read then: exit code is 2, the fix is named, and no record is written 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --title is not read by radio.task.comment, which only adds a comment; to change a task's title, body, or status, use rhx radio.task.push --via os.fileops --into sandpine/svc-lessons --exid 7 --title <title>"
+`;
+
+exports[`radio.task.comment given: [case3] a malformed comment is refused before it is recorded (case=5) when: [t2] the clone comments with a --description, a flag the skill does not read then: exit code is 2, the fix is named, and no record is written 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --description is not read by radio.task.comment, which only adds a comment; to change a task's title, body, or status, use rhx radio.task.push --via os.fileops --into sandpine/svc-lessons --exid 7 --description <description>"
+`;
+
+exports[`radio.task.comment given: [case3] a malformed comment is refused before it is recorded (case=5) when: [t3] the clone comments with an empty body then: exit code is 2, the fix is named, and no record is written 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --comment is empty; a comment needs a body. pass it, or pipe it via --comment @stdin"
+`;
+
+exports[`radio.task.comment given: [case3] a malformed comment is refused before it is recorded (case=5) when: [t4] the clone comments with --idem upsert then: exit code is 2, the fix is named, and no record is written 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --idem upsert does not apply to a comment, which is append-only; a comment is always findsert (the exact body already recorded is kept). omit --idem"
+`;
+
+exports[`radio.task.comment given: [case3] a malformed comment is refused before it is recorded (case=5) when: [t5] the clone comments with a --status, a flag the skill does not read then: exit code is 2, the fix is named, and no record is written 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --status is not read by radio.task.comment, which only adds a comment; to change a task's title, body, or status, use rhx radio.task.push --via os.fileops --into sandpine/svc-lessons --exid 7 --status <status>"
+`;
+
+exports[`radio.task.comment given: [case3] a malformed comment is refused before it is recorded (case=5) when: [t6] the clone comments with radio.task.push --comment, the literal form of #567, which push does not read then: exit code is 2, the fix is named, and no record is written 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --comment is not read by radio.task.push, which changes a task's title, body, or status; to comment on a task, issue, or pr, use rhx radio.task.comment --via os.fileops --into sandpine/svc-lessons --exid 7 --comment @stdin"
+`;
+
+exports[`radio.task.comment given: [case3] a malformed comment is refused before it is recorded (case=5) when: [t7] the clone comments with a gh body past the 65536-character cap, piped via @stdin then: exit code is 2, the fix is named, and no record is written 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --comment is 65537 characters; github caps a comment at 65536. trim the body, or split it across comments"
+`;
+
+exports[`radio.task.comment given: [case3] a malformed comment is refused before it is recorded (case=5) when: [t8] the clone comments with no --comment at all then: exit code is 2, the fix is named, and no record is written 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --comment is required; pass the body, or pipe it via --comment @stdin"
+`;
+
+exports[`radio.task.comment given: [case3] a malformed comment is refused before it is recorded (case=5) when: [t9] the clone comments with no --via then: exit code is 2, the fix is named, and no record is written 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --via is required; specify a channel: --via gh.issues or --via os.fileops"
+`;
+
+exports[`radio.task.comment given: [case3] a malformed comment is refused before it is recorded (case=5) when: [t10] the clone comments with no --into then: exit code is 2, the fix is named, and no record is written 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --into is required; use --into @this (current git repo) or --into owner/name"
+`;
+
+exports[`radio.task.comment given: [case3] a malformed comment is refused before it is recorded (case=5) when: [t11] the clone comments with a gh --exid that is not a number then: exit code is 2, the fix is named, and no record is written 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: exid "wax-the-rental-boards" is not a github issue number; a gh.issues exid is the issue's number, e.g. 599"
+`;
+
+exports[`radio.task.comment given: [case3] a malformed comment is refused before it is recorded (case=5) when: [t12] the clone comments with an os.fileops --exid that climbs out of its dir then: exit code is 2, the fix is named, and no record is written 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: os.fileops exid "../../etc" is not a plain path segment; use letters, digits, dot, dash, or underscore, with no "..", e.g. board-7"
+`;
+
+exports[`radio.task.comment given: [case4] a human asks for help when: [t0] --help runs then: it shows usage, the held rule, and every option 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.comment
+
+🦫 let's check the meter...
+
+🎙️ radio.task.comment --help
+   ├─ usage
+   │  ├─ rhx radio.task.comment --via gh.issues --into owner/repo --exid 489 --comment "..."
+   │  ├─ cat note.md | rhx radio.task.comment --via gh.issues --into @this --exid 489 --comment @stdin
+   │  └─ rhx radio.task.comment --via os.fileops --into @this --exid 123 --comment "..."
+   │
+   ├─ held, never lost
+   │  ├─ every comment is recorded first, into $route/.radio/ (or .behavior/.radio/)
+   │  ├─ a shut gate or an upstream fault holds it QUEUED, exit 2
+   │  ├─ the next push or comment that gets through delivers the backlog first, oldest first
+   │  ├─ see what waits: rhx radio.task.queue get
+   │  └─ lift a shut gate (human): rhx radio.uses allow
+   │
+   ├─ posted once
+   │  ├─ the task or thread is read first; a comment with the exact body already there is kept
+   │  └─ body, title, and status of the task or thread are never touched
+   │
+   └─ options
+      ├─ --via         channel: gh.issues or os.fileops (required)
+      ├─ --into        target: @this (current repo) or owner/repo (required)
+      ├─ --exid        the task, issue, or pr number to comment on (required)
+      ├─ --comment     the comment body (required; supports @stdin)
+      ├─ --auth        mode: as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd) | as-human
+      ├─ --idem        findsert, the only mode; upsert is refused, since a comment is append-only
+      └─ --help, -h    show this help"
+`;
