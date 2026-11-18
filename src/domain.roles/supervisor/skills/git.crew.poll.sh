@@ -133,7 +133,7 @@
 #
 #   😶 at work    one or more live ducts   -> the roles are named
 #   💀 down       no duct, tree on disk    -> rhx git.crew.boot
-#   😴 asleep     its grove did not answer -> rhx git.grove.wake <grove>
+#   😴 asleep     its grove did not answer -> wake (aws) or check the tailnet (none)
 #   👻 phantom    no duct, no tree HERE    -> a felled tree's stale rows
 #
 #   ⚠️ `asleep` and `down` are told apart by whether we could LOOK, never by

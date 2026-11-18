@@ -122,7 +122,7 @@ crew.boot() {
       #    an error that misreports its own subject is a term=false-report with
       #    a `💥` on it — the glyph makes it likelier to be believed, not less.
       echo "   └─ 💥 no worktree for '$tree' on $host, under ${CREWWORK_GIT_ROOT_REMOTE:-~/git}/*/_worktrees/" >&2
-      echo "      (or the grove is unreachable — check with: rhx git.grove.wake $host --mode plan)" >&2
+      echo "      (or the grove did not answer — $(__grove_unreached_cure "$host"))" >&2
       echo "      fix: make the tree there first, then re-boot" >&2
       return 2
     fi

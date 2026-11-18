@@ -1,0 +1,426 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`git.grove.wake.tailnet given: [case1] a hetzner grove — no aws lever, a tailnet host when: [t0] it is woken and ssh answers then: the wake reads as a snapshot 1`] = `
+"🐢 heres the wave...
+
+🌳 git.grove.wake grove-sandpine-hetzner-v20261022 --mode apply
+   ├─ power: none — no aws lever; this grove does not sleep
+   ├─ reach: camper@grove-sandpine-hetzner-v20261022-1:22, over the tailnet
+   └─ drive
+      ├─ ssh  answered as camper@grove-sandpine-hetzner-v20261022-1:22
+      └─ ssh  [SET] alias 'grove-sandpine-hetzner-v20261022' written (camper@grove-sandpine-hetzner-v20261022-1:22)
+
+🌳 grove's awake!
+   ├─ reach:  camper@grove-sandpine-hetzner-v20261022-1:22, over the tailnet
+   └─ reach it with:
+      ├─ ssh grove-sandpine-hetzner-v20261022
+      └─ rhx git.grove.send grove-sandpine-hetzner-v20261022 --what '<cmd>'
+"
+`;
+
+exports[`git.grove.wake.tailnet given: [case1] a hetzner grove — no aws lever, a tailnet host when: [t1] it is woken and ssh does not answer then: the failure reads as a snapshot 1`] = `
+"🐢 heres the wave...
+
+🌳 git.grove.wake grove-sandpine-hetzner-v20261022 --mode apply
+   ├─ power: none — no aws lever; this grove does not sleep
+   ├─ reach: camper@grove-sandpine-hetzner-v20261022-1:22, over the tailnet
+   └─ drive
+      └─ 💥 no ssh answer from camper@grove-sandpine-hetzner-v20261022-1:22 within 0s
+
+  ssh said:
+    ssh: connect to host grove-sandpine-hetzner-v20261022-1 port 22: Connection timed out
+
+  first, is THIS machine on the tailnet? a caller off it reaches no grove —
+    check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove-sandpine-hetzner-v20261022-1
+  a grove rebuilt joins the tailnet under a new \`-N\` suffix, and shows in that list;
+  pin the live name as the row's host —
+    git grove set grove-sandpine-hetzner-v20261022 --at camper@<tailnet-host>:22
+
+  if the tailnet checks pass, the box may be STARVED:
+
+      🔴 it is STARVED. a box thrashed under load cannot answer a handshake,
+      so a second wake cures NAUGHT, and each one costs another 0s
+      tell: git.grove.list reads 🔴 MUTE — the port accepts, yet no ssh
+            banner comes back — rather than 🔴 DOWN, and saturation
+            reads a full run queue
+        rhx git.grove.list
+        rhx git.grove.saturation grove-sandpine-hetzner-v20261022
+      fix: the lever is LOAD — fell or stop crews, or provision more box.
+           neither is reachable while it is mute, so this is a
+           PROVISION decision for a human
+"
+`;
+
+exports[`git.grove.wake.tailnet given: [case1] a hetzner grove — no aws lever, a tailnet host when: [t2] it is planned then: the plan reads as a snapshot 1`] = `
+"🐢 heres the wave...
+
+🌳 git.grove.wake grove-sandpine-hetzner-v20261022 --mode plan
+   ├─ power: none — no aws lever; this grove does not sleep
+   ├─ reach: camper@grove-sandpine-hetzner-v20261022-1:22, over the tailnet
+   └─ drive
+      └─ plan: re-run without --mode plan to wake (no ssh, no alias in plan)
+"
+`;
+
+exports[`git.grove.wake.tailnet given: [case1] a hetzner grove — no aws lever, a tailnet host when: [t3] it is named in the \`cloud://\` form a crew verb hands then: the render reads as a snapshot, the bare name in its header 1`] = `
+"🐢 heres the wave...
+
+🌳 git.grove.wake grove-sandpine-hetzner-v20261022 --mode apply
+   ├─ power: none — no aws lever; this grove does not sleep
+   ├─ reach: camper@grove-sandpine-hetzner-v20261022-1:22, over the tailnet
+   └─ drive
+      ├─ ssh  answered as camper@grove-sandpine-hetzner-v20261022-1:22
+      └─ ssh  [SET] alias 'grove-sandpine-hetzner-v20261022' written (camper@grove-sandpine-hetzner-v20261022-1:22)
+
+🌳 grove's awake!
+   ├─ reach:  camper@grove-sandpine-hetzner-v20261022-1:22, over the tailnet
+   └─ reach it with:
+      ├─ ssh grove-sandpine-hetzner-v20261022
+      └─ rhx git.grove.send grove-sandpine-hetzner-v20261022 --what '<cmd>'
+"
+`;
+
+exports[`git.grove.wake.tailnet given: [case1] a hetzner grove — no aws lever, a tailnet host when: [t4] it is woken from a machine that is not a tailnet peer then: the halt reads as a snapshot 1`] = `
+"🐢 heres the wave...
+
+🌳 git.grove.wake grove-sandpine-hetzner-v20261022 --mode apply
+   ├─ power: none — no aws lever; this grove does not sleep
+   ├─ reach: camper@grove-sandpine-hetzner-v20261022-1:22, over the tailnet
+   └─ drive
+      └─ ✋ ConstraintError: this machine is not a tailnet peer — tailscale status failed
+
+  tailscale said:
+    Logged out.
+
+  fix: rejoin the camp tailnet, then wake again —
+    tailscale up
+    rhx git.grove.wake grove-sandpine-hetzner-v20261022
+"
+`;
+
+exports[`git.grove.wake.tailnet given: [case1] a hetzner grove — no aws lever, a tailnet host when: [t5] the box answers, and refuses our key then: the halt reads as a snapshot 1`] = `
+"🐢 heres the wave...
+
+🌳 git.grove.wake grove-sandpine-hetzner-v20261022 --mode apply
+   ├─ power: none — no aws lever; this grove does not sleep
+   ├─ reach: camper@grove-sandpine-hetzner-v20261022-1:22, over the tailnet
+   └─ drive
+      └─ ✋ ConstraintError: camper@grove-sandpine-hetzner-v20261022-1:22 answered, and refused our key
+
+  ssh said:
+    camper@grove-sandpine-hetzner-v20261022-1: Permission denied (publickey).
+
+  fix: the tailnet reached it — the key is the cause. is the public half of
+       $HOME_TMP/home/.ssh/id_ed25519 in camper's authorized_keys on the grove? see where it stops —
+    ssh -v -i $HOME_TMP/home/.ssh/id_ed25519 -p 22 camper@grove-sandpine-hetzner-v20261022-1 true
+"
+`;
+
+exports[`git.grove.wake.tailnet given: [case1] a hetzner grove — no aws lever, a tailnet host when: [t6] the box answers with a changed host key then: the halt reads as a snapshot 1`] = `
+"🐢 heres the wave...
+
+🌳 git.grove.wake grove-sandpine-hetzner-v20261022 --mode apply
+   ├─ power: none — no aws lever; this grove does not sleep
+   ├─ reach: camper@grove-sandpine-hetzner-v20261022-1:22, over the tailnet
+   └─ drive
+      └─ ✋ ConstraintError: grove-sandpine-hetzner-v20261022-1 answered with a host key this machine does not trust
+
+  ssh said:
+    Host key verification failed.
+
+  fix: only once you know the box was rebuilt, drop the old key, then wake again —
+    ssh-keygen -R grove-sandpine-hetzner-v20261022-1
+    rhx git.grove.wake grove-sandpine-hetzner-v20261022
+"
+`;
+
+exports[`git.grove.wake.tailnet given: [case1] a hetzner grove — no aws lever, a tailnet host when: [t7] the box refuses the connect (no sshd on its port) then: the halt reads as a snapshot 1`] = `
+"🐢 heres the wave...
+
+🌳 git.grove.wake grove-sandpine-hetzner-v20261022 --mode apply
+   ├─ power: none — no aws lever; this grove does not sleep
+   ├─ reach: camper@grove-sandpine-hetzner-v20261022-1:22, over the tailnet
+   └─ drive
+      └─ ✋ ConstraintError: grove-sandpine-hetzner-v20261022-1 answered on 22, and refused the connect
+
+  ssh said:
+    ssh: connect to host grove-sandpine-hetzner-v20261022-1 port 22: Connection refused
+
+  fix: the box answered on 22 and refused — is sshd up there, and is 22 its port? (a stale port in the row reads this way; re-register — git grove set grove-sandpine-hetzner-v20261022 --at camper@grove-sandpine-hetzner-v20261022-1:22)
+"
+`;
+
+exports[`git.grove.wake.tailnet given: [case1] a hetzner grove — no aws lever, a tailnet host when: [t8] the box accepts the connect and sends no banner in time then: the starved halt reads as a snapshot 1`] = `
+"🐢 heres the wave...
+
+🌳 git.grove.wake grove-sandpine-hetzner-v20261022 --mode apply
+   ├─ power: none — no aws lever; this grove does not sleep
+   ├─ reach: camper@grove-sandpine-hetzner-v20261022-1:22, over the tailnet
+   └─ drive
+      └─ 💥 no ssh answer from camper@grove-sandpine-hetzner-v20261022-1:22 within 0s
+
+  ssh said:
+    Connection timed out during banner exchange
+    Connection to 100.64.0.9 port 22 timed out
+
+  the box accepted the connect and sent no ssh banner in time:
+
+      🔴 it is STARVED. a box thrashed under load cannot answer a handshake,
+      so a second wake cures NAUGHT, and each one costs another 0s
+      tell: git.grove.list reads 🔴 MUTE — the port accepts, yet no ssh
+            banner comes back — rather than 🔴 DOWN, and saturation
+            reads a full run queue
+        rhx git.grove.list
+        rhx git.grove.saturation grove-sandpine-hetzner-v20261022
+      fix: the lever is LOAD — fell or stop crews, or provision more box.
+           neither is reachable while it is mute, so this is a
+           PROVISION decision for a human
+"
+`;
+
+exports[`git.grove.wake.tailnet given: [case2] an ec2 grove whose row is an ssm-era relic, box up when: [t0] it is woken with live credentials then: the wake reads as a snapshot 1`] = `
+"🐢 heres the wave...
+
+🌳 git.grove.wake grove-sandpine-v20260901 --mode apply
+   ├─ exid:  grove-sandpine-v20260901
+   ├─ power: aws
+   ├─ reach: camper@grove-sandpine-v20260901:22, over the tailnet
+   ├─ env:   camp
+   ├─ account: 000000000000 ✔ matches the registry
+   └─ drive
+      ├─ box  i-0sandpine0box0001 [KEEP] already up
+      ├─ ssh  answered as camper@grove-sandpine-v20260901:22
+      ├─ ssh  [REPLACE] alias 'grove-sandpine-v20260901' differs from the registry (camper@grove-sandpine-v20260901:22)
+      └─ ssh  [SET] alias 'grove-sandpine-v20260901' written (camper@grove-sandpine-v20260901:22)
+
+🌳 grove's awake!
+   ├─ box:    i-0sandpine0box0001 (exid=grove-sandpine-v20260901, account 000000000000)
+   ├─ reach:  camper@grove-sandpine-v20260901:22, over the tailnet
+   └─ reach it with:
+      ├─ ssh grove-sandpine-v20260901
+      └─ rhx git.grove.send grove-sandpine-v20260901 --what '<cmd>'
+"
+`;
+
+exports[`git.grove.wake.tailnet given: [case2] an ec2 grove whose row is an ssm-era relic, box up when: [t1] it is woken again, with the alias already converged then: the converged render reads as a snapshot 1`] = `
+"🐢 heres the wave...
+
+🌳 git.grove.wake grove-sandpine-v20260901 --mode apply
+   ├─ exid:  grove-sandpine-v20260901
+   ├─ power: aws
+   ├─ reach: camper@grove-sandpine-v20260901:22, over the tailnet
+   ├─ env:   camp
+   ├─ account: 000000000000 ✔ matches the registry
+   └─ drive
+      ├─ box  i-0sandpine0box0001 [KEEP] already up
+      ├─ ssh  answered as camper@grove-sandpine-v20260901:22
+      └─ ssh  [KEEP] alias 'grove-sandpine-v20260901' matches the registry (camper@grove-sandpine-v20260901:22)
+
+🌳 grove's awake!
+   ├─ box:    i-0sandpine0box0001 (exid=grove-sandpine-v20260901, account 000000000000)
+   ├─ reach:  camper@grove-sandpine-v20260901:22, over the tailnet
+   └─ reach it with:
+      ├─ ssh grove-sandpine-v20260901
+      └─ rhx git.grove.send grove-sandpine-v20260901 --what '<cmd>'
+"
+`;
+
+exports[`git.grove.wake.tailnet given: [case2] an ec2 grove whose row is an ssm-era relic, box up when: [t2] it is woken and ssh does not answer then: the failure reads as a snapshot 1`] = `
+"🐢 heres the wave...
+
+🌳 git.grove.wake grove-sandpine-v20260901 --mode apply
+   ├─ exid:  grove-sandpine-v20260901
+   ├─ power: aws
+   ├─ reach: camper@grove-sandpine-v20260901:22, over the tailnet
+   ├─ env:   camp
+   ├─ account: 000000000000 ✔ matches the registry
+   └─ drive
+      ├─ box  i-0sandpine0box0001 [KEEP] already up
+      └─ 💥 no ssh answer from camper@grove-sandpine-v20260901:22 within 0s
+
+  ssh said:
+    ssh: connect to host grove-sandpine-v20260901 port 22: Connection timed out
+
+  first, is THIS machine on the tailnet? a caller off it reaches no grove —
+    check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove-sandpine-v20260901
+  a grove rebuilt joins the tailnet under a new \`-N\` suffix, and shows in that list;
+  pin the live name as the row's host —
+    git grove set grove-sandpine-v20260901 --at camper@<tailnet-host>:22
+
+  the box answers ec2, but not ssh. TWO causes, and their cures are
+  OPPOSITE — tell them apart before you act:
+
+  (a) it needs longer. a box resumed from hibernate must rejoin the
+      tailnet before its ssh answers, and that can outlast --timeout
+      fix: wake it again — a wake is idempotent
+        rhx git.grove.wake grove-sandpine-v20260901
+
+  (b) 🔴 it is STARVED. a box thrashed under load cannot answer a handshake,
+      so a second wake cures NAUGHT, and each one costs another 0s
+      tell: git.grove.list reads 🔴 MUTE — the port accepts, yet no ssh
+            banner comes back — rather than 🔴 DOWN, and saturation
+            reads a full run queue
+        rhx git.grove.list
+        rhx git.grove.saturation grove-sandpine-v20260901
+      fix: the lever is LOAD — fell or stop crews, or provision more box.
+           neither is reachable while it is mute, so this is a
+           PROVISION decision for a human
+"
+`;
+
+exports[`git.grove.wake.tailnet given: [case3] an ec2 grove, and the keyrack will not hand over credentials when: [t0] it is woken then: the power failure reads as a snapshot 1`] = `
+"🐢 heres the wave...
+
+🌳 git.grove.wake grove-sandpine-v20260901 --mode apply
+   ├─ exid:  grove-sandpine-v20260901
+   ├─ power: aws
+   ├─ reach: camper@grove-sandpine-v20260901:22, over the tailnet
+   ├─ env:   camp
+🔐 keyrack: AWS_PROFILE is locked 🔒 — rhx keyrack unlock
+   └─ ✋ the rack did not hand over AWS_PROFILE for env=camp
+
+  fix: the rack named it above — read that line, not this one.
+       locked 🔒 wants an unlock; absent 🫧 wants a set, and a
+       set overwrites a live value, so read it before you type.
+"
+`;
+
+exports[`git.grove.wake.tailnet given: [case4] a grove whose row is not json when: [t0] it is woken then: the halt reads as a snapshot, the temp forest masked 1`] = `
+"✋ ConstraintError: grove row unreadable — not json
+   ├─ row: $FOREST/groves/grove-sandpine-corrupt.json
+   └─ fix: re-register it — git grove set <grove> --at camper@<tailnet-host>:22
+"
+`;
+
+exports[`git.grove.wake.tailnet given: [case5] a grove that is not registered when: [t0] it is woken then: the hint reads as a snapshot 1`] = `
+"🐢 bummer dude — grove 'grove-sandpine-unregistered' is not registered
+
+  fix: register it in the shape of its box —
+    a grove with no aws instance (hetzner, any box that never sleeps):
+      git grove set grove-sandpine-unregistered --at camper@<tailnet-host>:22
+    an ec2 grove, which aws powers up:
+      git grove set grove-sandpine-unregistered --exid grove-sandpine-unregistered --env camp --account <id>
+    note: an account on a non-aws box sends the wake to hunt an ec2 that is not there
+  or list what is registered —
+    rhx git.grove.list
+"
+`;
+
+exports[`git.grove.wake.tailnet given: [case6] an ec2 grove whose box is stopped — the aws power leg when: [t0] it is woken with live credentials then: the start-and-await render reads as a snapshot 1`] = `
+"🐢 heres the wave...
+
+🌳 git.grove.wake grove-sandpine-v20260901 --mode apply
+   ├─ exid:  grove-sandpine-v20260901
+   ├─ power: aws
+   ├─ reach: camper@grove-sandpine-v20260901:22, over the tailnet
+   ├─ env:   camp
+   ├─ account: 000000000000 ✔ matches the registry
+   └─ drive
+      ├─ box  i-0sandpine0box0001 [UPDATE] stopped → running
+      │  └─ ✔ up
+      ├─ ssh  answered as camper@grove-sandpine-v20260901:22
+      └─ ssh  [SET] alias 'grove-sandpine-v20260901' written (camper@grove-sandpine-v20260901:22)
+
+🌳 grove's awake!
+   ├─ box:    i-0sandpine0box0001 (exid=grove-sandpine-v20260901, account 000000000000)
+   ├─ reach:  camper@grove-sandpine-v20260901:22, over the tailnet
+   └─ reach it with:
+      ├─ ssh grove-sandpine-v20260901
+      └─ rhx git.grove.send grove-sandpine-v20260901 --what '<cmd>'
+"
+`;
+
+exports[`git.grove.wake.tailnet given: [case6] an ec2 grove whose box is stopped — the aws power leg when: [t1] it is planned then: the plan reads as a snapshot 1`] = `
+"🐢 heres the wave...
+
+🌳 git.grove.wake grove-sandpine-v20260901 --mode plan
+   ├─ exid:  grove-sandpine-v20260901
+   ├─ power: aws
+   ├─ reach: camper@grove-sandpine-v20260901:22, over the tailnet
+   ├─ env:   camp
+   ├─ account: 000000000000 ✔ matches the registry
+   └─ drive
+      ├─ box  i-0sandpine0box0001 [UPDATE] stopped → running
+      └─ plan: re-run without --mode plan to wake (no ssh, no alias in plan)
+"
+`;
+
+exports[`git.grove.wake.tailnet given: [case6] an ec2 grove whose box is stopped — the aws power leg when: [t2] the session is in another account then: the refusal reads as a snapshot 1`] = `
+"🐢 heres the wave...
+
+🌳 git.grove.wake grove-sandpine-v20260901 --mode apply
+   ├─ exid:  grove-sandpine-v20260901
+   ├─ power: aws
+   ├─ reach: camper@grove-sandpine-v20260901:22, over the tailnet
+   ├─ env:   camp
+   └─ ✋ wrong aws account: active=111111111111, grove 'grove-sandpine-v20260901' lives in 000000000000
+
+  why: a wake against the wrong account would hunt a box that is not
+       there, or drive state where it does not belong
+  fix: drop the stale session so this sources the grove's own env —
+    unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
+"
+`;
+
+exports[`git.grove.wake.tailnet given: [case6] an ec2 grove whose box is stopped — the aws power leg when: [t3] its row names a nat then: the nat-then-box render reads as a snapshot 1`] = `
+"🐢 heres the wave...
+
+🌳 git.grove.wake grove-sandpine-v20260901 --mode apply
+   ├─ exid:  grove-sandpine-v20260901
+   ├─ power: aws
+   ├─ reach: camper@grove-sandpine-v20260901:22, over the tailnet
+   ├─ env:   camp
+   ├─ account: 000000000000 ✔ matches the registry
+   └─ drive
+      ├─ nat  i-0sandpine0nat0001 [UPDATE] stopped → running
+      │  └─ ✔ up
+      ├─ box  i-0sandpine0box0001 [KEEP] already up
+      ├─ ssh  answered as camper@grove-sandpine-v20260901:22
+      └─ ssh  [SET] alias 'grove-sandpine-v20260901' written (camper@grove-sandpine-v20260901:22)
+
+🌳 grove's awake!
+   ├─ box:    i-0sandpine0box0001 (exid=grove-sandpine-v20260901, account 000000000000)
+   ├─ reach:  camper@grove-sandpine-v20260901:22, over the tailnet
+   └─ reach it with:
+      ├─ ssh grove-sandpine-v20260901
+      └─ rhx git.grove.send grove-sandpine-v20260901 --what '<cmd>'
+"
+`;
+
+exports[`git.grove.wake.tailnet given: [case6] an ec2 grove whose box is stopped — the aws power leg when: [t4] the real aws refuses the session (no valid credentials) then: the refusal reads as a snapshot 1`] = `
+"🐢 heres the wave...
+
+🌳 git.grove.wake grove-sandpine-v20260901 --mode apply
+   ├─ exid:  grove-sandpine-v20260901
+   ├─ power: aws
+   ├─ reach: camper@grove-sandpine-v20260901:22, over the tailnet
+   ├─ env:   camp
+   └─ 💥 cannot read the active aws account
+
+  fix: unlock the env's credentials —
+    rhx keyrack unlock --owner ehmpath --env camp
+"
+`;
+
+exports[`git.grove.wake.tailnet given: [case7] a caller who asks how to wake when: [t0] the wake is run with --help then: the help reads as a snapshot 1`] = `
+"git.grove.wake — power a grove up if it sleeps, then reach it over the tailnet
+
+usage:
+  rhx git.grove.wake <grove> [--mode plan|apply] [--env <env>]
+                     [--nat <exid>] [--port <port>] [--user <user>]
+                     [--identity <path>] [--timeout <seconds>]
+
+options:
+  --mode      plan (preview) or apply (default)
+  --env       aws env for credentials; default from registry, else camp
+  --nat       NAT exid to resume first; default from registry
+  --port      ssh port on the grove; default from registry, else 22
+              (a relic row's tunnel port reads as 22)
+  --user      ssh login user; default from registry, else camper
+  --identity  ssh IdentityFile; default ~/.ssh/id_ed25519
+  --timeout   seconds to await an ssh answer; default 300 after an aws
+              resume, 10 for a grove with no power lever
+
+to take it down: rhx git.grove.stop <grove>
+"
+`;

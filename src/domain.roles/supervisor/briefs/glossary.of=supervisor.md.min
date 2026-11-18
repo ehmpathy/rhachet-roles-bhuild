@@ -1,10 +1,11 @@
 # glossary — one word per concept; a synonym in a verdict, command, or brief = drift
-each term forbids its synonyms, listed in the full `.md` beside this file — read it before you coin a word.
+each term forbids the synonyms its full `.md` lists — read it before you coin a word.
 
 ## layers
 grove = machine a tree's crew runs on — local · house://<slug> · cloud://<slug>
 grove.house = grove the house owns and runs, reached over a wire
-grove.tunnel = ssm port-forward that carries every reach to one grove
+grove.tunnel = tailnet path of every reach, as camper
+grove.power = on-switch: aws (wake) · none (never sleeps)
 grove.purpose = what a grove is FOR, so whether a crew may live on it
 crew = clones that work ONE tree · crew.reflector = third seat beside mechanic and foreman
 duct = addressable channel to one worker's keyboard, by uri

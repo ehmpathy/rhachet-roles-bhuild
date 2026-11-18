@@ -48,7 +48,7 @@ each is a claim about the WORK, never a preference:
 | when | why exempt |
 |---|---|
 | the work's subject IS this machine — a `repo=.this` skill, a local hook, this repo's own `.agent/` | a grove cannot exercise it |
-| every grove is unreachable | try `rhx git.grove.wake <grove>` first; a local sprout is the fallback only if the wake fails, and it is then a caught dream to migrate |
+| every grove is unreachable | run each grove's own cure first (`rhx git.grove.list` names it: a wake for an ec2 box, the tailnet checks for a box that never sleeps); a local sprout is the fallback only if the cure fails, and it is then a caught dream to migrate |
 | the human says local, explicitly | their box, their call |
 
 "it is a small change" is NOT a carve-out — size predicts neither crew lifetime nor lid-close
@@ -64,7 +64,7 @@ human and a clone each carry by hand.
 ## .enforcement
 
 - a sprout with no `--grove`, or `--grove local`, outside the carve-outs = **blocker**
-- a local sprout taken because a grove was asleep, with no wake attempted = **blocker**
+- a local sprout taken because a grove was asleep, with no cure attempted = **blocker**
 - a local sprout from a genuinely unreachable grove, no dream caught to migrate it = **nitpick**
 - a grove slug typed from memory rather than read from `git.grove.list` = **nitpick**
 

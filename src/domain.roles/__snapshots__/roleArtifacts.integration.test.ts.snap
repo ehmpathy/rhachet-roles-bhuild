@@ -1091,12 +1091,13 @@ blocker: any self-grant · an edit that yields an ungranted pass · a grant sent
 
 <brief.say path="src/domain.roles/supervisor/briefs/glossary.of=supervisor.md.min">
 # glossary — one word per concept; a synonym in a verdict, command, or brief = drift
-each term forbids its synonyms, listed in the full \`.md\` beside this file — read it before you coin a word.
+each term forbids the synonyms its full \`.md\` lists — read it before you coin a word.
 
 ## layers
 grove = machine a tree's crew runs on — local · house://<slug> · cloud://<slug>
 grove.house = grove the house owns and runs, reached over a wire
-grove.tunnel = ssm port-forward that carries every reach to one grove
+grove.tunnel = tailnet path of every reach, as camper
+grove.power = on-switch: aws (wake) · none (never sleeps)
 grove.purpose = what a grove is FOR, so whether a crew may live on it
 crew = clones that work ONE tree · crew.reflector = third seat beside mechanic and foreman
 duct = addressable channel to one worker's keyboard, by uri
@@ -1171,7 +1172,7 @@ blocker: a decision off a gauge where a counter was available · a cut to asked-
 # define.camp-mythology — six words from three repos; where this disagrees with the source, the source wins
 camp → grove → (camper · ground) → tree → crew → clone
 - camp = an aws ACCOUNT that holds an elastic set of groves + shared vpc/nat/iam/reach · ✗ env, fleet, deploy env (\`sandpine/infrastructure\`)
-- grove = hibernation-ready cloud work-box; many trees, durable keys, self-hibernates idle · ✗ ec2, vm, devbox (\`sandpine/infrastructure\`)
+- grove = tailnet work-box; many trees, durable keys; ec2 self-hibernates idle · ✗ ec2, vm, devbox (\`sandpine/infrastructure\`)
 - camper = the OS LOGIN crews ssh in as · 🔴 NOT a clone; ✗ clone-user, crew-user, grove-user, login-user (ground is a login too)
 - ground = the PRIVILEGED OS login (NOPASSWD sudo, admin key only)
 - clone = live/revivable instance of an actor; differs from peers only by session (\`ehmpathy/rhachet\`)

@@ -61,10 +61,19 @@ duct.send() {
     __duct_parse_uri "$uri" || return 2
 
     if __duct_is_remote; then
-      if ! ssh -n "$DUCT_HOST" "$(__duct_tmux_cmd)has-session -t '$DUCT_SESSION'" 2>/dev/null; then
+      # rc 255 is ssh's own failure: the grove was never asked. any other
+      # nonzero is tmux's answer: the grove answered, and holds no such session
+      local has_rc=0
+      ssh -n "$DUCT_HOST" "$(__duct_tmux_cmd)has-session -t '$DUCT_SESSION'" 2>/dev/null || has_rc=$?
+      if [[ "$has_rc" -eq 255 ]]; then
+        echo "✋ duct.send: cannot reach '$DUCT_HOST', so the session was never asked for" >&2
+        echo "   fix: $(__grove_unreached_cure "$DUCT_HOST")" >&2
+        return 2
+      fi
+      if [[ "$has_rc" -ne 0 ]]; then
         echo "✋ duct.send: session '$DUCT_SESSION' is absent on '$DUCT_HOST'" >&2
-        echo "   note: this asked the GROVE, not this box" >&2
-        echo "   fix: confirm the grove is awake — rhx git.grove.wake $DUCT_HOST" >&2
+        echo "   note: this asked the GROVE, not this box, and the grove answered" >&2
+        echo "   fix: read which seats are up — rhx git.crew.poll --live" >&2
         return 2
       fi
       # shellcheck disable=SC2086

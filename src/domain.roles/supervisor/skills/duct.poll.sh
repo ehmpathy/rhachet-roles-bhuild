@@ -1086,7 +1086,7 @@ for uri_file in "$tmpdir"/*.uri; do
     # timeout's own exit code — the duct did not answer in time. common
     # for a hibernated remote grove; NOT a break, so it is named apart.
     verdict="⏳ timeout (${timeout_s}s) — unreachable or asleep"
-    pane="(no answer within ${timeout_s}s — if this is a remote grove, it may be hibernated)"
+    pane="(no answer within ${timeout_s}s — if this is a remote grove, it may sleep or be off the tailnet)"
     n_slow=$((n_slow + 1))
   elif [[ "$code" != "0" ]]; then
     verdict="💥 malfunction"
@@ -1553,7 +1553,8 @@ echo "   ├─ 💥 malfunction: $n_broke"
 echo "   └─ shown: $shown${changed_only:+ (--changed)}"
 if [[ "$n_slow" -gt 0 ]]; then
   echo ""
-  echo "🛟 a ⏳ duct is likely a hibernated remote grove"
+  echo "🛟 a ⏳ duct is a remote grove that did not answer — asleep (ec2), or off the tailnet"
+  echo "   ├─ see which, per grove: rhx git.grove.list"
   echo "   └─ skip remote entirely with: rhx duct.poll --local"
 fi
 

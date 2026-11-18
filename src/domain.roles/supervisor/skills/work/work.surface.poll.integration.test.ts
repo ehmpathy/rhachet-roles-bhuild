@@ -964,8 +964,50 @@ describe('work.surface', () => {
           return i < 0 ? '' : lines.slice(i, i + 2).join('\n');
         };
 
-        then('the caveat names the fix, and does not assert one cause', () => {
-          expect(readCaveat().includes('git.grove.wake')).toEqual(true);
+        /**
+         * the per-grove cure roll beneath the caveat — its own subject, bounded
+         * by its loop: from the `for __ua` line to the `done` that closes it.
+         * a fixed window would let a token from a neighbour make it green
+         */
+        const readCaveatRoll = (): string => {
+          const lines = readCrewPoll().split('\n');
+          const i = lines.findIndex((line) => line.includes('⚠️  UNREACHED:'));
+          if (i < 0) return '';
+          const iFor = lines.findIndex(
+            (line, n) => n > i && /^\s*for __ua_i in /.test(line),
+          );
+          if (iFor < 0) return '';
+          const iDone = lines.findIndex(
+            (line, n) => n > iFor && /^\s*done\b/.test(line),
+          );
+          return iDone < 0 ? '' : lines.slice(iFor, iDone + 1).join('\n');
+        };
+
+        then(
+          '🔴 only the last grove of the roll takes the last-child glyph',
+          () => {
+            // .why = two unreached groves once rendered two `└─` siblings at
+            //        one depth, so the tree claimed two last children
+            const roll = readCaveatRoll();
+            expect(roll.includes("__ua_glyph='├─'")).toEqual(true);
+            expect(
+              roll.includes(
+                "if (( __ua_i == __ua_last )); then __ua_glyph='└─'; fi",
+              ),
+            ).toEqual(true);
+            expect(roll.includes('│      └─ $__ua —')).toEqual(false);
+          },
+        );
+
+        then('the caveat names the fix, per grove, off the one cure', () => {
+          // an aws grove is handed a wake, a tailnet-only grove a tailnet
+          // check — so the caveat names the transformer, never one cure
+          const roll = readCaveatRoll();
+          expect(roll.includes('$(__grove_unreached_cure "$__ua")')).toEqual(
+            true,
+          );
+          expect(roll.includes('git.grove.wake')).toEqual(false);
+          expect(readCaveat().includes('git.grove.wake')).toEqual(false);
         });
 
         then(
@@ -1035,9 +1077,15 @@ describe('work.surface', () => {
             // reader back where they started — told to wake a grove that refuses
             const registry = 'groves/$__u.json';
             expect(readCrewPoll().includes(registry)).toEqual(true);
+            // the wake reads its row through grovework's one rows-dir reader
             expect(
               readCode(join(DIR_SKILLS, 'git.grove.wake.sh')).includes(
-                'groves/$GROVE.json',
+                '$(__grove_rows_dir)/$GROVE.json',
+              ),
+            ).toEqual(true);
+            expect(
+              readCode(join(DIR_SKILLS, 'work', 'grovework.sh')).includes(
+                '/.git.forest}/groves',
               ),
             ).toEqual(true);
           },
@@ -1199,7 +1247,7 @@ describe('work.surface', () => {
         );
 
         then(
-          'the asleep arm names a WAKE — never the boot that would fail',
+          'the asleep arm names the grove cure — never the boot that would fail',
           () => {
             // .why = the two cures are on different machines. `crew.boot` against a
             //        hibernated grove fails, so to route a reader there is worse
@@ -1207,7 +1255,7 @@ describe('work.surface', () => {
             const chain = readChain();
             const iAsleep = chain.indexOf('crew_state="asleep"');
             const cure = chain.slice(iAsleep, iAsleep + 200);
-            expect(cure.includes('git.grove.wake')).toEqual(true);
+            expect(cure.includes('__grove_unreached_cure')).toEqual(true);
             expect(cure.includes('git.crew.boot')).toEqual(false);
           },
         );

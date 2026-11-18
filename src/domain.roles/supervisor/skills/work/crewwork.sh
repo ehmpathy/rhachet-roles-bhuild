@@ -569,7 +569,7 @@ __crew_unreached_caveat() {
 #       retired grove and hand over a command that exits 2 by construction.
 __crew_unreached_guide() {
   local count="${1:-0}" grove="${2:-<grove>}" retired="${3:-0}"
-  (( count > 0 )) && echo "   └─ 😴 a tree on an unreached grove is INVISIBLE to this verdict — rhx git.grove.wake $grove"
+  (( count > 0 )) && echo "   └─ 😴 a tree on an unreached grove is INVISIBLE to this verdict — $(__grove_unreached_cure "$grove")"
   (( retired > 0 )) && echo "   └─ 🪦 a tree on a RETIRED grove is invisible too, and no wake reaches it — the grove is gone — rhx git.grove.list"
   return 0
 }

@@ -397,15 +397,19 @@ given('[case11] a grove is addressed in the words its peer verbs use', () => {
         ).toEqual(true);
       });
 
-      then('🔴 the RE-READ branch offers a WAKE, and no bigger clock', () => {
+      then('🔴 the RE-READ branch offers the CURE, and no bigger clock', () => {
         const end = src.indexOf('\n    }', at);
         expect(end).toBeGreaterThan(at); // ANTI-VACUITY: the builder is closed
         const body = src.slice(at, end);
         const split = body.indexOf('else');
         expect(split).toBeGreaterThan(-1); // ANTI-VACUITY: both branches exist
 
+        // the cure is per power — the wake for an ec2 grove, the tailnet for a
+        // grove with no aws lever — so it is the one shared cure reader
         const reread = body.slice(0, split);
-        expect(reread.includes('rhx git.grove.wake ${entry}')).toEqual(true);
+        expect(
+          reread.includes('$(__grove_unreached_cure "${entry}" via=row)'),
+        ).toEqual(true);
         // 🔴 the whole cure: no doubled clock on the second failure
         expect(reread.includes('TIMEOUT * 2')).toEqual(false);
         // and it must not silently upgrade a failed READ into a verdict

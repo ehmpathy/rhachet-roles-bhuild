@@ -240,11 +240,19 @@ if [[ "$have_keys" -eq 1 ]]; then
   #      discarded is the cheapest defect there is, and the hardest to see.
   ####################################################################
   if [[ "$is_remote" -eq 1 ]]; then
-    if ! ssh -n "$duct_host" "tmux has-session -t '$tmux_target'" 2>/dev/null; then
+    # rc 255 is ssh's own failure: the grove was never asked. any other
+    # nonzero is tmux's answer: the grove answered, and holds no such session
+    has_rc=0
+    ssh -n "$duct_host" "tmux has-session -t '$tmux_target'" 2>/dev/null || has_rc=$?
+    if [[ "$has_rc" -eq 255 ]]; then
+      echo "✋ duct.send: cannot reach '$duct_host', so the session was never asked for" >&2
+      echo "   fix: $(__grove_unreached_cure "$duct_host")" >&2
+      exit 2
+    fi
+    if [[ "$has_rc" -ne 0 ]]; then
       echo "✋ duct.send: session '$tmux_target' is absent on '$duct_host'" >&2
-      echo "   note: this asked the GROVE, not this box" >&2
-      echo "   fix: confirm the grove is awake, then the duct —" >&2
-      echo "     rhx git.grove.wake $duct_host" >&2
+      echo "   note: this asked the GROVE, not this box, and the grove answered" >&2
+      echo "   fix: list the ducts there —" >&2
       echo "     rhx duct.list --on 'duct://$duct_host/*'" >&2
       exit 2
     fi

@@ -58,7 +58,7 @@
 #
 # guarantee:
 #   - READ-ONLY on every grove; never wakes one, never writes, never installs
-#   - an unreachable grove is REPORTED (💤 / 💥), never allowed to abort the
+#   - an unreachable grove is REPORTED (😴 / 💥), never allowed to abort the
 #     sweep — one down box must not hide a live forest
 #   - exit 0 = read (a down grove in a SWEEP is a valid answer, not a failure)
 #   - exit 1 = a grove you NAMED could not be read
@@ -105,7 +105,10 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-GROVES_DIR="${GIT_FOREST_DIR:-$HOME/.git.forest}/groves"
+# the reach of a row lives in ONE reader, shared with wake, list, and every
+# no-answer cure — so the sweep probes exactly where the wake reaches
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/work/grovework.sh"
+GROVES_DIR="$(__grove_rows_dir)"
 if [[ ! -d "$GROVES_DIR" ]]; then
   echo "🐢 bummer dude — no forest registry at $GROVES_DIR" >&2
   echo "" >&2
@@ -154,7 +157,16 @@ fi
 #       forest capacity would double it.
 #
 # ⚠️ the key is host:port, never the NAME. the names differ by design; the
-#    endpoint is what says "the same grove".
+#    endpoint is what says "the same grove". it is read through the one reach
+#    reader, so an ssm-era relic (`localhost:<tunnel>`) keys on its exid:22,
+#    where the tailnet reaches it.
+#
+# 🔴 the PROBER is the camper entry, never `.ground` (fulcrum F03). the wish
+#    names camper as the seat every supervisor reach rides; a sweep that rode
+#    the first entry by sort order — `.ground` sorts first — would read as the
+#    admin seat, and go dark on any box whose ground key is not this machine's.
+#    a grove registered ONLY as `.ground` still probes through it; any refusal
+#    reads loud.
 #
 # ⚠️ `box` is a FORBIDDEN synonym of grove (term=grove._.choice._.md), so the
 #    fold is named for what it folds onto. the tension this surfaces — that
@@ -164,16 +176,27 @@ fi
 ######################################################################
 declare -A GROVE_ENTRIES=()  # host:port -> the entry names on it, space joined
 declare -A GROVE_PROBER=()   # host:port -> the one entry we ssh through
+declare -A GROVE_USER=()     # host:port -> the prober's ssh user
+declare -A GROVE_HOST=()     # host:port -> the prober's tailnet host
+declare -A GROVE_PORT=()     # host:port -> the prober's ssh port
 GROVES=()
 
 for e in "${ENTRIES[@]}"; do
-  key=$(jq -r '"\(.host // "?"):\(.port // "?")"' "$GROVES_DIR/$e.json")
+  IFS=$'\t' read -r _ r_host r_port r_user _ _ <<< "$(__grove_reach_of "$GROVES_DIR/$e.json")"
+  [[ -n "$r_host" ]] || continue   # unreadable: the reader named it on stderr
+  key="$r_host:$r_port"
   if [[ -z "${GROVE_ENTRIES[$key]:-}" ]]; then
     GROVES+=("$key")
     GROVE_PROBER[$key]="$e"
+    GROVE_USER[$key]="$r_user"; GROVE_HOST[$key]="$r_host"; GROVE_PORT[$key]="$r_port"
     GROVE_ENTRIES[$key]="$e"
   else
     GROVE_ENTRIES[$key]="${GROVE_ENTRIES[$key]} $e"
+    # a camper entry displaces a ground prober — never the reverse
+    if [[ "${GROVE_USER[$key]}" == "ground" && "$r_user" != "ground" ]]; then
+      GROVE_PROBER[$key]="$e"
+      GROVE_USER[$key]="$r_user"
+    fi
   fi
 done
 
@@ -921,10 +944,11 @@ for key in "${GROVES[@]}"; do
     if [[ "$key" == "local" ]]; then
       SAT_SELF_ROOT="$SELF_ROOT" timeout "$TIMEOUT" bash -c "$PROBE" > "$WORK/$slug.out" 2> "$WORK/$slug.err" || rc=$?
     else
-      alias=$(jq -r '.sshAlias // .name' "$GROVES_DIR/$e.json")
-      timeout "$TIMEOUT" ssh -n \
-        -o BatchMode=yes -o ConnectTimeout=8 -o StrictHostKeyChecking=accept-new \
-        "$alias" "$PROBE" > "$WORK/$slug.out" 2> "$WORK/$slug.err" || rc=$?
+      # over the tailnet, as the prober's user, with HostName pinned so a stale
+      # ssm-era alias of the same name cannot send it into a dead tunnel (F08)
+      __grove_reach_ssh_opts host="${GROVE_HOST[$key]}" port="${GROVE_PORT[$key]}" wait=8
+      timeout "$TIMEOUT" ssh -n "${GROVE_REACH_SSH_OPTS[@]}" \
+        "${GROVE_USER[$key]}@${GROVE_HOST[$key]}" "$PROBE" > "$WORK/$slug.out" 2> "$WORK/$slug.err" || rc=$?
     fi
     echo "$rc" > "$WORK/$slug.rc"
   ) &
@@ -1011,7 +1035,7 @@ for key in "${GROVES[@]}"; do
     __sat_next_move() {
       local entry="$1"
       if (( TIMEOUT > SATURATION_TIMEOUT_DEFAULT )); then
-        printf '%s' "🔴 this was ALREADY a re-read at ${TIMEOUT}s and it failed again, so a transient flap is REFUTED — a longer clock is no longer the lever, and this probe will not settle it. the box is unreachable in the sense that matters: wake it — rhx git.grove.wake ${entry}   ⚠️ still NOT a claim that the box is saturated; a failed read never is. and \`rhx git.crew.poll\` grades this grove by its own independent session list, so read that before you conclude aught about the crews on it"
+        printf '%s' "🔴 this was ALREADY a re-read at ${TIMEOUT}s and it failed again, so a transient flap is REFUTED — a longer clock is no longer the lever, and this probe will not settle it. the box is unreachable in the sense that matters: $(__grove_unreached_cure "${entry}" via=row)   ⚠️ still NOT a claim that the box is saturated; a failed read never is. and \`rhx git.crew.poll\` grades this grove by its own independent session list, so read that before you conclude aught about the crews on it"
       else
         printf '%s' "re-read ONCE before you act — rhx git.grove.saturation --only ${entry} --timeout $((TIMEOUT * 2))   ⚠️ ONCE. if that read fails too, the clock is not the lever and this line will say so"
       fi
@@ -1042,10 +1066,23 @@ for key in "${GROVES[@]}"; do
       #   hand back a confirm scoped to this one grove rather than a re-sweep.
       state="⏳ timeout"
       hint="a timeout IS a saturation signal — this probe is cheap, so a box that cannot answer inside ${TIMEOUT}s is likely LOADED, not merely far. confirm before you dismiss it: $(__sat_next_move "${GROVE_PROBER[$key]}")"
-    elif [[ "$err" == *"Connection refused"* || "$err" == *"No route to host"* ]]; then
-      # the wake takes an ENTRY name, never the host:port key — so hand back the
-      # very entry this probe went through, which is one a caller can paste
-      state="💤 asleep"; hint="wake it: rhx git.grove.wake ${GROVE_PROBER[$key]}"
+    elif [[ "$err" == *"Connection refused"* ]]; then
+      # a refusal proves the tailnet carried the connect and the box is up: not
+      # asleep, and neither the tailnet checks nor a wake can cure it
+      state="🔴 refused"
+      hint="$(__grove_refused_cure name="${GROVE_PROBER[$key]}" host="${GROVE_HOST[$key]}" port="${GROVE_PORT[$key]}")"
+    elif [[ "$err" == *"No route to host"* \
+         || ( "$err" == *"connect to host"* && "$err" == *"timed out"* ) \
+         || "$err" == *"Could not resolve hostname"* || "$err" == *"Name or service not known"* ]]; then
+      # no answer on the tailnet at all: refused, no route, a connect that timed
+      # out (an offline tailnet peer drops the SYN — it never refuses), or a
+      # tailnet name that does not answer. ⚠️ ssh's words quoted verbatim, the
+      # `resolve` among them: matchers against another program's output.
+      #
+      # the cure takes an ENTRY name, never the host:port key — so hand back the
+      # very entry this probe went through, and let the one cure reader choose
+      # the wake (aws) or the tailnet (no power lever) for it
+      state="😴 asleep"; hint="$(__grove_unreached_cure "${GROVE_PROBER[$key]}" via=row)"
     elif [[ "$err" == *"timed out"* || "$err" == *"Timeout"* ]]; then
       # 🔴 SSH's OWN timeout, which is not rc 124 — and it landed in the
       #    catch-all below for the life of this sweep.

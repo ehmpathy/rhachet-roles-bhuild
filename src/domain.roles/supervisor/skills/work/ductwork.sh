@@ -306,6 +306,18 @@ __duct_get_duct_host() {
 }
 
 ######################################################################
+# the peer libs
+######################################################################
+
+# .what = the grove reach reader, a PEER lib (not a part): where a grove answers,
+#         and the cure when it does not, per its power
+# .why  = every duct and crew verb that names a cure asks this one reader, so no
+#         verb hands a grove with no aws lever the wake. ductwork loads it itself,
+#         not via crewwork's `__crew_load_peers`, because the duct verbs source
+#         ductwork alone
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/grovework.sh" || return 1
+
+######################################################################
 # the parts
 ######################################################################
 

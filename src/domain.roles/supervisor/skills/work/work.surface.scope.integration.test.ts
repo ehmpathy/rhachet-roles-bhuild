@@ -1078,9 +1078,11 @@ describe('work.surface', () => {
 
         then("and the cure it emits is the grove's, named per seat", () => {
           const arm = src.slice(asleepAt, asleepAt + 1200);
-          expect(arm.includes('rhx git.grove.wake ${__na_grove}')).toEqual(
-            true,
-          );
+          // the cure comes off the one no-answer transformer, per grove: an
+          // aws grove is handed a wake, a tailnet-only grove a tailnet check
+          expect(
+            arm.includes('$(__grove_unreached_cure "${__na_grove}")'),
+          ).toEqual(true);
           // per seat, never a bare count — [case49]'s rule, same footer family
           expect(arm.includes('${__na_seat%%/*} / ${__na_seat##*/}')).toEqual(
             true,
@@ -1165,15 +1167,17 @@ describe('work.surface', () => {
           expect(src.includes('__bw_host="${CREW_HOST')).toEqual(false);
         });
 
-        then('🔴 and an unreached seat gets a WAKE, never a read', () => {
+        then('🔴 and an unreached seat gets its CURE, never a read', () => {
           const end = src.indexOf('\n      fi', at);
           expect(end).toBeGreaterThan(at); // ANTI-VACUITY: the ladder is closed
           const ladder = src.slice(at, end);
           expect(
             ladder.includes('__crew_host_unreached "$__bw_host"; then'),
           ).toEqual(true);
-          // the wake arm must precede — and exclude — the read arm
-          const wakeAt = ladder.indexOf('rhx git.grove.wake $__bw_host');
+          // the cure arm must precede — and exclude — the read arm
+          const wakeAt = ladder.indexOf(
+            '$(__grove_unreached_cure "$__bw_host")',
+          );
           const readAt = ladder.indexOf('rhx git.crew.read --tree $__bwt');
           expect(wakeAt).toBeGreaterThan(-1); // ANTI-VACUITY
           expect(readAt).toBeGreaterThan(wakeAt);

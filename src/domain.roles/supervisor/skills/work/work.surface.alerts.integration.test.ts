@@ -9,8 +9,9 @@
  *         it whole. the suite's shared fixtures, and its account of what it
  *         runs against and why, live in work.surface.harness.ts.
  */
+import { readdirSync } from 'fs';
 import { join } from 'path';
-import { given, then, when } from 'test-fns';
+import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
   asCode,
@@ -672,29 +673,99 @@ describe('work.surface', () => {
   );
 
   /**
-   * 🌙 [case63] — `git.grove.wake`'s ssm-timeout escalation
+   * 🌙 [case65] — every no-answer hint rides the one cure, as a CLASS
    *
-   *   measured 2026-09-21, tick 19. the escalation ended on
+   *   [case63] scans the wake alone, and a handful of hint sites are pinned one
+   *   at a time. a hint written by hand at any other site — a bare
+   *   `rhx git.grove.wake $grove` — would hand a grove with no aws lever the
+   *   wake as its only cure, with every per-site clamp still green.
+   *
+   *   so the whole surface is read: outside the wake itself, only the cure
+   *   (`__grove_unreached_cure`, in work/grovework.sh) may name the wake. and no
+   *   file reaches a box through ssm.
+   */
+  given(
+    '[case65] the wake is named only by the wake and the one cure; no file reaches through ssm',
+    () => {
+      const files = (readdirSync(DIR_SKILLS, { recursive: true }) as string[])
+        .filter((f) => f.endsWith('.sh'))
+        .filter((f) => !/(^|\/)(\.test|__snapshots__)\//.test(f))
+        .sort();
+
+      when('[t0] every shell file under skills/ is read as code', () => {
+        // the corpus is read once; each tooth filters the same memo
+        const corpus = useBeforeAll(async () => ({
+          codeOf: new Map(
+            files.map((f) => [f, readCode(join(DIR_SKILLS, f))] as const),
+          ),
+        }));
+        const codeOf = (f: string): string => corpus.codeOf.get(f) ?? '';
+
+        then('the subject set is the whole surface, never empty', () => {
+          expect(files.length).toBeGreaterThan(40); // ANTI-VACUITY
+          expect(files).toContain('work/grovework.sh');
+          expect(files).toContain('git.grove.wake.sh');
+          expect(corpus.codeOf.size).toEqual(files.length);
+        });
+
+        then(
+          '🔴 no file but the wake and the cure names `git.grove.wake`',
+          () => {
+            const namers = files.filter((f) =>
+              codeOf(f).includes('git.grove.wake'),
+            );
+            expect(namers).toEqual(['git.grove.wake.sh', 'work/grovework.sh']);
+          },
+        );
+
+        then(
+          '🔴 no file but the wake and the cure prescribes a wake in prose',
+          () => {
+            // the verb name is one road; prose ("wake first", "wake it") is the
+            // other, and it hands a grove with no aws lever the same wrong cure
+            const prescribers = files
+              .filter(
+                (f) => !['git.grove.wake.sh', 'work/grovework.sh'].includes(f),
+              )
+              .filter((f) => /\bwake (it|first|the grove)\b/i.test(codeOf(f)));
+            expect(prescribers).toEqual([]);
+          },
+        );
+
+        then('🔴 no file reaches a box through ssm', () => {
+          const ssm = files.filter((f) =>
+            /\baws ssm\b|\bssm start-session\b/.test(codeOf(f)),
+          );
+          expect(ssm).toEqual([]);
+        });
+      });
+    },
+  );
+
+  /**
+   * 🌙 [case63] — `git.grove.wake`'s no-answer escalation
+   *
+   *   measured 2026-09-21, tick 19. the escalation then ended on
    *
    *     rhx aws.ec2.get --tag exid=$EXID --ssm --env $ENV
    *
    *   and that skill is in NO linked role — `rhx` exits 2 with
    *   `no skill "aws.ec2.get" found`. ⇒ an error that names a fix which
-   *   cannot run is `term=false-report` at its most expensive: the reader
-   *   spends the call, and learns only that the instrument lied.
+   *   cannot run is `term=false-report` at its most expensive.
    *
-   *   🔴 and the skill ALREADY RUNS the real read, at the probe loop above
-   *   the block. so it pointed at a phantom while it held the genuine
-   *   command in its own hand.
+   *   the wake now reaches every grove over the tailnet, and ssm leaves the
+   *   supervisor whole. so the escalation hands over the tailnet's own
+   *   reads — `tailscale status` here first, then `tailscale ping <host>` —
+   *   and never names ssm.
    *
-   *   the second half of the same defect: the block stated ONE cause
+   *   the second half of the same defect: the block once stated ONE cause
    *   (hibernate needs longer) and one cure (wake again). september was
-   *   STARVED — thrashed under load, so its agent never got serviced — and
-   *   there a second wake cures naught and costs another timeout window.
-   *   two causes with OPPOSITE cures, told apart by MUTE-vs-DOWN.
+   *   STARVED — thrashed under load — and there a second wake cures naught
+   *   and costs another timeout window. two causes with OPPOSITE cures, told
+   *   apart by MUTE-vs-DOWN. that split still holds for a grove aws powers.
    */
   given(
-    '[case63] the wake escalation names a runnable read and BOTH causes',
+    '[case63] the wake escalation names the tailnet reads and BOTH causes',
     () => {
       /**
        * ⚠️ SLICED to the escalation block. both bounds are CODE lines —
@@ -703,9 +774,9 @@ describe('work.surface', () => {
        */
       const escalation = (): string => {
         const src = readCode(join(DIR_SKILLS, 'git.grove.wake.sh'));
-        const at = src.indexOf('if [[ "$SSM_READY" != "true" ]]; then');
+        const at = src.indexOf('if [[ "$REACHED" != "true" ]]; then');
         expect(at).toBeGreaterThan(-1); // ANTI-VACUITY: the block still exists
-        const end = src.indexOf('ssm  Online', at);
+        const end = src.indexOf('ssh  answered as', at);
         expect(end).toBeGreaterThan(at); // ANTI-VACUITY: bounded by its successor
         return src.slice(at, end);
       };
@@ -727,26 +798,64 @@ describe('work.surface', () => {
           },
         );
 
-        then('it hands over the ssm read directly', () => {
-          expect(escalation()).toContain(
-            'aws ssm describe-instance-information',
+        then(
+          '🔴 it names the tailnet: this machine first, then the grove',
+          () => {
+            // the arm rides the one tailnet transformer, which holds both
+            // checks in order; the rendered order is pinned in wake.tailnet [t1]
+            expect(escalation()).toContain('$(__grove_tailnet_cure "$HOST")');
+            // bounded to the function body: its opener to the first close brace
+            const lib = readCode(join(DIR_SKILLS, 'work', 'grovework.sh'));
+            const at = lib.indexOf('__grove_tailnet_cure() {');
+            expect(at).toBeGreaterThan(-1); // ANTI-VACUITY: the cure still exists
+            const end = lib.indexOf('\n}\n', at);
+            expect(end).toBeGreaterThan(at); // ANTI-VACUITY: bounded by its close
+            const cure = lib.slice(at, end);
+            expect(cure.indexOf('tailscale status')).toBeGreaterThan(-1);
+            expect(cure.indexOf('tailscale status')).toBeLessThan(
+              cure.indexOf('tailscale ping %s'),
+            );
+          },
+        );
+
+        then('🔴 and ssm is absent from the WHOLE skill', () => {
+          expect(readCode(join(DIR_SKILLS, 'git.grove.wake.sh'))).not.toMatch(
+            /\bssm\b/,
           );
         });
 
         /**
          * 🔴 the strongest tooth here. the remedy is real BY CONSTRUCTION when
-         *   it is the same call the skill's own probe loop makes — a phantom
-         *   cannot satisfy this, and a typo in the verb cannot either.
+         *   it is the same call the skill itself makes before the escalation —
+         *   a phantom cannot satisfy this, and a typo in the verb cannot either.
+         *   the cure hands over `tailscale status`; the wake's own preflight runs
+         *   `tailscale status` above the arm. so the read a human is handed is
+         *   one the skill already proved it can run
          */
-        then(
-          '🔴 and that read is the one the probe loop itself already runs',
-          () => {
-            const src = readCode(join(DIR_SKILLS, 'git.grove.wake.sh'));
-            const arm = escalation();
-            const probe = src.slice(0, src.indexOf(arm));
-            expect(probe).toContain('aws ssm describe-instance-information');
-          },
-        );
+        then('🔴 and that read is the one the wake itself already runs', () => {
+          const src = readCode(join(DIR_SKILLS, 'git.grove.wake.sh'));
+          const before = src.slice(0, src.indexOf(escalation()));
+          expect(before).toContain('timeout 5 tailscale status');
+          const lib = readCode(join(DIR_SKILLS, 'work', 'grovework.sh'));
+          const at = lib.indexOf('__grove_tailnet_cure() {');
+          const cure = lib.slice(at, lib.indexOf('\n}\n', at));
+          expect(cure).toContain('tailscale status');
+        });
+
+        /**
+         * 🔴 the probe that awaits the answer pins
+         *   HostName, so an ssm-era alias of the same name cannot send it into
+         *   a dead tunnel (fulcrum F08) — and it is the shared reach probe, so
+         *   wake and list cannot disagree about where a grove answers.
+         */
+        then('🔴 the await rides the shared reach probe', () => {
+          const src = readCode(join(DIR_SKILLS, 'git.grove.wake.sh'));
+          const probe = src.slice(0, src.indexOf(escalation()));
+          expect(probe).toContain(
+            '__grove_reach_ssh_opts host="$HOST" port="$PORT"',
+          );
+          expect(probe).toContain('"${GROVE_REACH_SSH_OPTS[@]}"');
+        });
       });
 
       when('[t1] the causes are read', () => {
@@ -795,7 +904,12 @@ describe('work.surface', () => {
         then(
           'the hibernate cause survives, with its idempotent re-wake',
           () => {
-            const arm = escalation();
+            // bounded to the (a) arm alone: the host-key arm above it prints the
+            // same wake line, so the whole escalation would stay green without it
+            const block = escalation();
+            const start = block.indexOf('(a) it needs longer');
+            expect(start).toBeGreaterThan(-1);
+            const arm = block.slice(start, block.indexOf('STARVED', start));
             expect(arm).toContain('hibernate');
             expect(arm).toContain('rhx git.grove.wake $GROVE');
           },

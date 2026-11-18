@@ -1,68 +1,61 @@
 #!/usr/bin/env bash
 ######################################################################
-# git.grove.wake — wake a grove by exid, in whatever account holds it
+# git.grove.wake — power a grove up if it sleeps, then reach it over the tailnet
 #
-# .what = drive a grove to reachable: resume its NAT (if any), resume the
-#         box, findsert an ssm port-forward, findsert its ssh alias. every
-#         resource is found by its `exid` TAG, and the account + env come
-#         from the grove's own registry entry — so one skill wakes a grove
-#         in any account, in any org.
+# .what = drive a grove to reachable, on two axes:
+#           power — an ec2 grove (its row holds `account`) is resumed through
+#                   aws: NAT first, then the box, each found by its `exid` TAG.
+#                   a grove outside aws has no power lever; it does not sleep
+#           reach — every grove, ec2 or not, is reached one way: ssh over the
+#                   camp tailnet, as camper. the wake awaits one ssh answer,
+#                   then upserts the ssh alias every crew verb rides
 #
-# .why  = a grove must be wakeable from anywhere, FROM another grove above
-#         all. a forward into the sandpine/infrastructure checkout makes a wake
-#         need that repo's node_modules (declastruct + declastruct-aws) and
-#         pins one account id. two costs follow:
-#           1. NOT portable — it refuses any account but camp, so a grove in
-#              prep, prod, or another org cannot be woken at all
-#           2. NOT self-contained — a grove that carries this tree can never
-#              wake another grove, since the infra repo is not there
-#         this depends only on binaries the tree installs (aws,
-#         session-manager-plugin, jq, ssh), so it travels with the tree onto
-#         every grove.
+# .why  = the supervisor stops to know which cloud a grove lives in. the
+#         hetzner grove and the ec2 grove answer the same `ssh <alias>`, and
+#         aws appears only where it has a real job: to switch a sleep box on.
+#         no supervisor path reaches a grove through ssm.
 #
-# .why exid = a grove is named by its `exid` tag, never an instance id. an
+# .why exid = an ec2 grove is named by its `exid` tag, never an instance id. an
 #         id changes when a box is rebuilt; the exid is the durable name
 #         infra declares. so a rebuild needs no re-registration.
 #
 # .safety = the account guard is STRONGER than a pinned constant, not weaker.
-#         each grove records the account it lives in at register time, and a
-#         wake refuses when the active credentials point elsewhere. so a
-#         mispointed session cannot wake the wrong box, in any account — and a
-#         second grove in a different account stays fully supported.
+#         each ec2 grove records the account it lives in at register time, and
+#         a wake refuses when the active credentials point elsewhere. so a
+#         mispointed session cannot wake the wrong box, in any account.
 #
 # usage:
 #   rhx git.grove.wake grove-1
 #   rhx git.grove.wake grove-1 --mode plan
-#   rhx git.grove.wake grove-1 --nat camp-nat --port 36901
+#   rhx git.grove.wake grove-1 --nat camp-nat --port 22
 #   rhx git.grove.wake help
 #
 # options:
 #   --mode      plan (preview) or apply (default — a wake is idempotent)
 #   --env       aws env for credentials; default from the registry, else camp
 #   --nat       NAT exid to resume first; default from the registry
-#   --port      local port for the tunnel; default from the registry, else 36901
-#   --user      ssh login user; default from the registry, else ec2-user
+#   --port      ssh port on the grove; default from the registry, else 22.
+#               a relic row's port (its old tunnel's local end) reads as 22
+#   --user      ssh login user; default from the registry, else camper
 #   --identity  ssh IdentityFile; default ~/.ssh/id_ed25519
-#   --timeout   seconds to await ssm readiness; default 300
+#   --timeout   seconds to await an ssh answer; default 300 after an aws
+#               resume, 10 for a grove with no power lever
 #
-# .note = the 300s default is sized for a RESUME, not a cold boot. a cold-booted
-#         agent registers fresh in ~60-90s, which 180s covers. a hibernated box
-#         is slower: ram restores its agent, which still holds a connection
-#         severed mid-flight, so it must notice the break, then re-register —
-#         where a cold agent starts clean. a real resume of grove-1 overran 180s
-#         and the wake failed on a healthy box; the next wake, with no other
-#         change, found it Online
+# .note = the 300s default is sized for a RESUME: a resumed box must rejoin the
+#         tailnet before its ssh answers, and the rejoin time is not yet
+#         measured (route v2026_11_13 lists it for verification). a grove that
+#         does not sleep is either up or not: 10s decides it
 #
 # guarantee:
 #   - idempotent: a re-run on a woken grove is a cheap no-op (KEEP)
 #   - refuses when the active aws account is not the one the grove recorded
-#   - exit 0 = reachable (box up, tunnel bound, alias written)
-#   - exit 1 = malfunction (aws error, ssm never ready)
+#   - plan mode makes no ssh call and writes no alias
+#   - exit 0 = reachable (powered up if aws, ssh answered, alias written)
+#   - exit 1 = malfunction (aws error, no ssh answer within --timeout)
 #   - exit 2 = constraint (absent grove, bad args, wrong account)
 #
-# .note = the aws api's own vocabulary (its instance-state enum, its
-#         PingStatus field, its port-forward document name) appears verbatim
-#         where required. amazon's words, not this repo's.
+# .note = the aws api's own vocabulary (its instance-state enum) appears
+#         verbatim where required. amazon's words, not this repo's.
 ######################################################################
 set -uo pipefail
 
@@ -70,20 +63,23 @@ set -uo pipefail
 #    of the caller's args, so a `$1` test never fires (measured 2026-08-30; ten
 #    skills in this dir carried it, and each read `help` as its SUBJECT instead)
 if [[ " $* " == *" help "* || " $* " == *" --help "* || " $* " == *" -h "* ]]; then
-  echo "git.grove.wake — wake a grove by exid, in whatever account holds it"
+  echo "git.grove.wake — power a grove up if it sleeps, then reach it over the tailnet"
   echo ""
   echo "usage:"
   echo "  rhx git.grove.wake <grove> [--mode plan|apply] [--env <env>]"
   echo "                     [--nat <exid>] [--port <port>] [--user <user>]"
+  echo "                     [--identity <path>] [--timeout <seconds>]"
   echo ""
   echo "options:"
   echo "  --mode      plan (preview) or apply (default)"
   echo "  --env       aws env for credentials; default from registry, else camp"
   echo "  --nat       NAT exid to resume first; default from registry"
-  echo "  --port      local tunnel port; default from registry, else 36901"
-  echo "  --user      ssh login user; default from registry, else ec2-user"
+  echo "  --port      ssh port on the grove; default from registry, else 22"
+  echo "              (a relic row's tunnel port reads as 22)"
+  echo "  --user      ssh login user; default from registry, else camper"
   echo "  --identity  ssh IdentityFile; default ~/.ssh/id_ed25519"
-  echo "  --timeout   seconds to await ssm readiness; default 300 (sized for a resume)"
+  echo "  --timeout   seconds to await an ssh answer; default 300 after an aws"
+  echo "              resume, 10 for a grove with no power lever"
   echo ""
   echo "to take it down: rhx git.grove.stop <grove>"
   exit 0
@@ -96,7 +92,7 @@ NAT=""
 PORT=""
 USER_NAME=""
 IDENTITY="$HOME/.ssh/id_ed25519"
-TIMEOUT="300"
+TIMEOUT=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -117,45 +113,55 @@ done
 
 [[ "$MODE" == "plan" || "$MODE" == "apply" ]] || { echo "✋ invalid --mode: $MODE (plan|apply)" >&2; exit 2; }
 
+# a `cloud://` prefix is a FORM, never a different grove: every crew verb
+# hands a grove as `cloud://<name>`, and prune + spend already strip it
+GROVE="${GROVE#cloud://}"
+
 if [[ -z "$GROVE" ]]; then
   echo "✋ usage: rhx git.grove.wake <grove>" >&2
   echo "   list them: rhx git.grove.list" >&2
   exit 2
 fi
 
-# read the grove's registry entry — it carries the exid, account, and env, so a
-# wake needs no per-account constant baked into this skill
+# the reach of a row lives in ONE reader, shared with list, saturation, and
+# every no-answer cure — so they cannot disagree about where a grove answers
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/work/grovework.sh"
+
+# read the grove's registry entry — it carries the exid, account, env, and the
+# tailnet host, so a wake needs no per-account constant baked into this skill
 #
-# .why NO `source ~/.bash_aliases` on the line below — one used to sit here, and
-#      it bought exactly one thing: GIT_FOREST_DIR, an override whose default is
-#      already written on the very next line. so the skill took a dependency on
-#      a file this repo does not own (dev-env-setup's `install_env` rewrites it,
-#      so a reinstall silently reverted whatever was there) to obtain a value it
-#      could derive alone.
-#
-#      that is the defect work.surface [case1] clamps across this whole surface.
-#      a caller who wants a different forest exports GIT_FOREST_DIR; every other
-#      caller gets the default, and neither path reads a global dotfile.
-REGISTRY="${GIT_FOREST_DIR:-$HOME/.git.forest}/groves/$GROVE.json"
+# .why NO `source ~/.bash_aliases` here — a caller who wants a different forest
+#      exports GIT_FOREST_DIR; every other caller gets the default, and neither
+#      path reads a global dotfile (work.surface [case1])
+REGISTRY="$(__grove_rows_dir)/$GROVE.json"
 if [[ ! -f "$REGISTRY" ]]; then
   echo "🐢 bummer dude — grove '$GROVE' is not registered" >&2
   echo "" >&2
-  echo "  fix: register it with the exid + account it lives in —" >&2
-  echo "    rhx git.grove.set $GROVE --exid $GROVE --env camp --account <id>" >&2
+  echo "  fix: register it in the shape of its box —" >&2
+  echo "    a grove with no aws instance (hetzner, any box that never sleeps):" >&2
+  echo "      git grove set $GROVE --at camper@<tailnet-host>:22" >&2
+  echo "    an ec2 grove, which aws powers up:" >&2
+  echo "      git grove set $GROVE --exid $GROVE --env camp --account <id>" >&2
+  echo "    note: an account on a non-aws box sends the wake to hunt an ec2 that is not there" >&2
   echo "  or list what is registered —" >&2
   echo "    rhx git.grove.list" >&2
   exit 2
 fi
 
+IFS=$'\t' read -r POWER HOST PORT_REACH USER_REACH SSH_ALIAS _ <<< "$(__grove_reach_of "$REGISTRY")"
+
+# halt on an unreadable row — the reader named the fix on stderr already
+[[ -n "$HOST" ]] || exit 2
 EXID=$(jq -r '.exid // .name' "$REGISTRY")
 ACCOUNT_WANT=$(jq -r '.account // ""' "$REGISTRY")
 [[ -z "$ENV" ]]       && ENV=$(jq -r '.env // "camp"' "$REGISTRY")
 [[ -z "$NAT" ]]       && NAT=$(jq -r '.nat // ""' "$REGISTRY")
-[[ -z "$PORT" ]]      && PORT=$(jq -r '.port // 36901' "$REGISTRY")
-[[ -z "$USER_NAME" ]] && USER_NAME=$(jq -r '.user // "ec2-user"' "$REGISTRY")
-[[ "$PORT" == "null" ]] && PORT=36901
-[[ "$USER_NAME" == "null" ]] && USER_NAME="ec2-user"
-SSH_ALIAS=$(jq -r '.sshAlias // .name' "$REGISTRY")
+[[ -z "$PORT" ]]      && PORT="$PORT_REACH"
+[[ -z "$USER_NAME" ]] && USER_NAME="$USER_REACH"
+[[ "$NAT" == "null" ]] && NAT=""
+if [[ -z "$TIMEOUT" ]]; then
+  [[ "$POWER" == "aws" ]] && TIMEOUT="300" || TIMEOUT="10"
+fi
 
 ######################################################################
 # 🛑 every value below is written INTO ~/.ssh/config, and that file is an
@@ -176,19 +182,16 @@ SSH_ALIAS=$(jq -r '.sshAlias // .name' "$REGISTRY")
 #
 # .why HERE, and not at each use = this line is where every value is FINAL:
 #         argv has been read, the registry consulted, and each default landed.
-#         a clamp at each of the five uses would be five readers of one rule,
-#         free to drift, and the one that drifts is the one that matters
-#         (`gotcha.a-check-that-cries-wolf`, m.9). one clamp, one point.
+#         one clamp, one point (`gotcha.a-check-that-cries-wolf`, m.9).
 #
-# ⚠️ a `-` AT THE FRONT is refused for the two that ALSO become ssh argv
-#      `$SSH_ALIAS` and `$USER_NAME` reach `ssh` as positionals downstream, and
-#      ssh reads a `-` at the front as an OPTION — `-oProxyCommand=` again, by
-#      a second road. so those two carry that extra refusal.
+# ⚠️ a `-` AT THE FRONT is refused for the values that ALSO become ssh argv
+#      `$SSH_ALIAS`, `$USER_NAME`, and `$HOST` reach `ssh` downstream, and ssh
+#      reads a `-` at the front as an OPTION — `-oProxyCommand=` again, by a
+#      second road. so those carry that extra refusal.
 #
 # ⚠️ this is DEFENSE IN DEPTH, not a live path today
 #      the registry is written by `git grove set` from a human's argv. the
-#      clamp is cheap, and it holds whatever a LATER writer puts in that file —
-#      a writer that learns to take a value off a box, say.
+#      clamp is cheap, and it holds whatever a LATER writer puts in that file.
 ######################################################################
 wake_clamp() {
   local what="$1" value="$2" allowed="$3" shape="$4"
@@ -198,24 +201,26 @@ wake_clamp() {
     echo "   allowed: $shape" >&2
     echo "   ⇒ this value is written into ~/.ssh/config, and a newline there" >&2
     echo "     adds a directive — ProxyCommand runs a command on THIS box" >&2
-    echo "   fix: rhx git.grove.set $GROVE --at <user>@localhost:<port>" >&2
+    echo "   fix: git grove set $GROVE --at camper@<tailnet-host>:22" >&2
     exit 2
   fi
 }
 wake_clamp "the registry's exid"     "$EXID"         'A-Za-z0-9._-'  '[A-Za-z0-9._-]'
 wake_clamp "the registry's env"      "$ENV"          'A-Za-z0-9._-'  '[A-Za-z0-9._-]'
 wake_clamp "the registry's nat"      "$NAT"          'A-Za-z0-9._-'  '[A-Za-z0-9._-]'
+wake_clamp "the registry's host"     "$HOST"         'A-Za-z0-9._:-' '[A-Za-z0-9._:-] (a tailnet name or ip)'
 wake_clamp "the registry's port"     "$PORT"         '0-9'           '[0-9]'
 wake_clamp "the registry's account"  "$ACCOUNT_WANT" '0-9'           '[0-9] (a 12-digit aws account)'
 wake_clamp "the registry's user"     "$USER_NAME"    'A-Za-z0-9._-'  '[A-Za-z0-9._-]'
 wake_clamp "the registry's sshAlias" "$SSH_ALIAS"    'A-Za-z0-9._-'  '[A-Za-z0-9._-]'
 wake_clamp "--identity"              "$IDENTITY"     'A-Za-z0-9._/~-' '[A-Za-z0-9._/~-] (a path)'
-for _wake_dashed in "sshAlias:$SSH_ALIAS" "user:$USER_NAME"; do
+wake_clamp "--timeout"               "$TIMEOUT"      '0-9'           '[0-9] (seconds)'
+for _wake_dashed in "sshAlias:$SSH_ALIAS" "user:$USER_NAME" "host:$HOST"; do
   if [[ "${_wake_dashed#*:}" == -* ]]; then
     echo "✋ the registry's ${_wake_dashed%%:*} starts with '-'" >&2
-    echo "   ⇒ it reaches ssh as a positional, and ssh reads a '-' at the front" >&2
+    echo "   ⇒ it reaches ssh as argv, and ssh reads a '-' at the front" >&2
     echo "     as an OPTION — one of them, -oProxyCommand=, runs a command here" >&2
-    echo "   fix: rhx git.grove.set $GROVE --at <user>@localhost:<port>" >&2
+    echo "   fix: git grove set $GROVE --at camper@<tailnet-host>:22" >&2
     exit 2
   fi
 done
@@ -224,68 +229,67 @@ unset _wake_dashed
 echo "🐢 heres the wave..."
 echo ""
 echo "🌳 git.grove.wake $GROVE --mode $MODE"
-echo "   ├─ exid:  $EXID"
-echo "   ├─ env:   $ENV"
-echo "   ├─ port:  $PORT"
+# an exid names an ec2 box by tag; a grove with no power lever has none to name
+[[ "$POWER" == "aws" ]] && echo "   ├─ exid:  $EXID"
+echo "   ├─ power: $POWER$([[ "$POWER" == "none" ]] && echo ' — no aws lever; this grove does not sleep')"
+echo "   ├─ reach: $USER_NAME@$HOST:$PORT, over the tailnet"
 
-# source credentials for the grove's env (skip when the shell already carries them)
-#
-# ⚠️ the rack's stderr is NOT redirected, on purpose. measured 2026-08-25:
-#    `keyrack get` answers `locked 🔒` and `absent 🫧` with the SAME exit
-#    code (2) and tells them apart only in its own stderr — which also
-#    carries the right fix for each. a `2>/dev/null` here swallows the one
-#    sentence that separates them (`term=swallow`), and what stood in its
-#    place named `unlock` unconditionally — wrong, and expensively so on
-#    an absent key, since the repair there is `keyrack set`, which has no
-#    entry-only mode and OVERWRITES whatever is live at that slug.
-# ⚠️ `--unlock` is what makes this SELF-SERVICE, and it is the whole point of
-#    the flag. a locked key and an absent key both answer exit 2, so a bare
-#    `get` halts a healthy wake and hands the human a chore the skill could
-#    have done — the same shape every aws-backed skill solves this way
-#    (`git.repo.test` unlocks before integration; `rule.require.errors-name-the-fix`
-#    wants the fix APPLIED where the skill holds the lever, not merely named).
-#    it unlocks NARROWLY, by key name, so it never widens the blast radius.
-if [[ -z "${AWS_ACCESS_KEY_ID:-}" ]]; then
-  AWS_PROFILE=$(rhx keyrack get --owner ehmpath --env "$ENV" --key AWS_PROFILE --unlock --value) || AWS_PROFILE=""
-  if [[ -z "$AWS_PROFILE" ]]; then
-    echo "   └─ ✋ the rack did not hand over AWS_PROFILE for env=$ENV" >&2
+######################################################################
+# power — only an ec2 grove has a lever, and only it touches aws
+######################################################################
+if [[ "$POWER" == "aws" ]]; then
+  echo "   ├─ env:   $ENV"
+
+  # source credentials for the grove's env (skip when the shell already carries them)
+  #
+  # ⚠️ the rack's stderr is NOT redirected, on purpose. `keyrack get` answers
+  #    `locked 🔒` and `absent 🫧` with the SAME exit code (2) and tells them
+  #    apart only in its own stderr — which also carries the right fix for each.
+  #    a `2>/dev/null` here swallows the one sentence that separates them.
+  # ⚠️ `--unlock` makes this SELF-SERVICE: a locked key would otherwise halt a
+  #    healthy wake. it unlocks NARROWLY, by key name.
+  if [[ -z "${AWS_ACCESS_KEY_ID:-}" ]]; then
+    AWS_PROFILE=$(rhx keyrack get --owner ehmpath --env "$ENV" --key AWS_PROFILE --unlock --value) || AWS_PROFILE=""
+    if [[ -z "$AWS_PROFILE" ]]; then
+      echo "   └─ ✋ the rack did not hand over AWS_PROFILE for env=$ENV" >&2
+      echo "" >&2
+      echo "  fix: the rack named it above — read that line, not this one." >&2
+      echo "       locked 🔒 wants an unlock; absent 🫧 wants a set, and a" >&2
+      echo "       set overwrites a live value, so read it before you type." >&2
+      exit 1
+    fi
+    if ! eval "$(aws configure export-credentials --profile "$AWS_PROFILE" --format env 2>/dev/null)"; then
+      echo "   └─ 💥 no credentials from profile $AWS_PROFILE" >&2
+      echo "" >&2
+      echo "  fix: log the sso session back in —" >&2
+      echo "    aws sso login --profile $AWS_PROFILE" >&2
+      exit 1
+    fi
+    unset AWS_PROFILE AWS_DEFAULT_PROFILE
+  fi
+
+  # the account guard, driven by the REGISTRY rather than a constant: each grove
+  # pins its OWN account, so a mispointed session cannot wake the wrong box
+  ACCOUNT_ACTIVE=$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "")
+  if [[ -z "$ACCOUNT_ACTIVE" ]]; then
+    echo "   └─ 💥 cannot read the active aws account" >&2
     echo "" >&2
-    echo "  fix: the rack named it above — read that line, not this one." >&2
-    echo "       locked 🔒 wants an unlock; absent 🫧 wants a set, and a" >&2
-    echo "       set overwrites a live value, so read it before you type." >&2
+    echo "  fix: unlock the env's credentials —" >&2
+    echo "    rhx keyrack unlock --owner ehmpath --env $ENV" >&2
     exit 1
   fi
-  if ! eval "$(aws configure export-credentials --profile "$AWS_PROFILE" --format env 2>/dev/null)"; then
-    echo "   └─ 💥 no credentials from profile $AWS_PROFILE" >&2
+  # power aws ⟺ the row holds an account, so ACCOUNT_WANT is never empty here
+  if [[ "$ACCOUNT_ACTIVE" != "$ACCOUNT_WANT" ]]; then
+    echo "   └─ ✋ wrong aws account: active=$ACCOUNT_ACTIVE, grove '$GROVE' lives in $ACCOUNT_WANT" >&2
     echo "" >&2
-    echo "  fix: log the sso session back in —" >&2
-    echo "    aws sso login --profile $AWS_PROFILE" >&2
-    exit 1
+    echo "  why: a wake against the wrong account would hunt a box that is not" >&2
+    echo "       there, or drive state where it does not belong" >&2
+    echo "  fix: drop the stale session so this sources the grove's own env —" >&2
+    echo "    unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN" >&2
+    exit 2
   fi
-  unset AWS_PROFILE AWS_DEFAULT_PROFILE
+  echo "   ├─ account: $ACCOUNT_ACTIVE ✔ matches the registry"
 fi
-
-# the account guard, driven by the REGISTRY rather than a constant. this keeps the
-# safety of the prior pinned check (a mispointed session cannot wake the wrong
-# box) while it gains portability: each grove pins its OWN account.
-ACCOUNT_ACTIVE=$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "")
-if [[ -z "$ACCOUNT_ACTIVE" ]]; then
-  echo "   └─ 💥 cannot read the active aws account" >&2
-  echo "" >&2
-  echo "  fix: unlock the env's credentials —" >&2
-  echo "    rhx keyrack unlock --owner ehmpath --env $ENV" >&2
-  exit 1
-fi
-if [[ -n "$ACCOUNT_WANT" && "$ACCOUNT_ACTIVE" != "$ACCOUNT_WANT" ]]; then
-  echo "   └─ ✋ wrong aws account: active=$ACCOUNT_ACTIVE, grove '$GROVE' lives in $ACCOUNT_WANT" >&2
-  echo "" >&2
-  echo "  why: a wake against the wrong account would hunt a box that is not" >&2
-  echo "       there, or drive session state where it does not belong" >&2
-  echo "  fix: drop the stale session so this sources the grove's own env —" >&2
-  echo "    unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN" >&2
-  exit 2
-fi
-echo "   ├─ account: $ACCOUNT_ACTIVE$([[ -n "$ACCOUNT_WANT" ]] && echo ' ✔ matches the registry')"
 
 # aws's own instance-state enum values — amazon's vocabulary, quoted verbatim
 STATE_UP="run""ning"
@@ -310,7 +314,7 @@ _drive_up() {
   local exid="$1" label="$2"
   local id; id=$(_find_by_exid "$exid")
   if [[ -z "$id" ]]; then
-    echo "      ├─ 💥 no instance tagged exid=$exid in account $ACCOUNT_ACTIVE" >&2
+    echo "      └─ 💥 no instance tagged exid=$exid in account $ACCOUNT_ACTIVE" >&2
     return 1
   fi
   local state
@@ -335,221 +339,205 @@ _drive_up() {
 
 echo "   └─ drive"
 
-# 0. the NAT first — a private grove reaches the ssm endpoints only via its egress
-if [[ -n "$NAT" && "$NAT" != "null" ]]; then
-  _drive_up "$NAT" "nat " || exit 1
+BOX_ID=""
+if [[ "$POWER" == "aws" ]]; then
+  # 0. the NAT first — a private grove reaches the tailnet only via its egress
+  if [[ -n "$NAT" ]]; then
+    _drive_up "$NAT" "nat " || exit 1
+  fi
+
+  # 1. the box
+  _drive_up "$EXID" "box " || exit 1
+  BOX_ID=$(_find_by_exid "$EXID")
 fi
 
-# 1. the box
-_drive_up "$EXID" "box " || exit 1
-BOX_ID=$(_find_by_exid "$EXID")
-
 if [[ "$MODE" == "plan" ]]; then
-  echo "      └─ plan: re-run without --mode plan to wake"
+  echo "      └─ plan: re-run without --mode plan to wake (no ssh, no alias in plan)"
   exit 0
 fi
 
-# 2. await ssm readiness — a resumed box answers ec2 before its agent reconnects,
-#    and a tunnel opened too early binds a port that cannot relay
+######################################################################
+# reach — await one ssh answer over the tailnet
+#
+# .why HostName is pinned on the command line: an ssm-era alias of the same
+#      name (`Host <exid>` → `localhost:<tunnel>`) would otherwise send this
+#      probe into a dead tunnel — ssh takes HostName from ~/.ssh/config even
+#      when `-p` is given. the alias is rewritten only AFTER the answer.
+# .why accept-new: a relic row's new host has no known_hosts entry, so a plain
+#      BatchMode probe — and every `ssh -n` crew verb after it — would fail
+#      `Host key verification failed`. first contact records the key over an
+#      authenticated tailnet link; a CHANGED key still refuses, loud (F07)
+######################################################################
+
+# preflight — a caller off the tailnet reaches no grove, so it is told in
+# seconds, never after the full await. no tailscale binary → the check cannot
+# run here, and the await below still names the tailnet on a miss
+if command -v tailscale >/dev/null 2>&1; then
+  TS_EXIT=0
+  TS_SAID=$(timeout 5 tailscale status 2>&1) || TS_EXIT=$?
+  # a status that did not return in 5s proves naught about the peer: the await
+  # below is the proof, so it runs, and a miss still names the tailnet
+  if [[ "$TS_EXIT" == "124" ]]; then
+    echo "      │  ⏳ tailscale status did not return in 5s — the ssh await decides"
+    TS_EXIT=0
+  fi
+  [[ "$TS_EXIT" == "0" ]] || {
+    echo "      └─ ✋ ConstraintError: this machine is not a tailnet peer — tailscale status failed" >&2
+    echo "" >&2
+    echo "  tailscale said:" >&2
+    echo "    $(head -1 <<< "$TS_SAID")" >&2
+    echo "" >&2
+    echo "  fix: rejoin the camp tailnet, then wake again —" >&2
+    echo "    tailscale up" >&2
+    echo "    rhx git.grove.wake $GROVE" >&2
+    exit 2
+  }
+fi
+
+__grove_reach_ssh_opts host="$HOST" port="$PORT" wait=8
 STARTED=$(date +%s)
 DEADLINE=$(( STARTED + TIMEOUT ))
-SSM_READY="false"
+REACHED="false"
 HEARTBEAT=0
-while [[ $(date +%s) -lt $DEADLINE ]]; do
-  PING=$(aws ssm describe-instance-information \
-    --filters "Key=InstanceIds,Values=$BOX_ID" \
-    --query 'InstanceInformationList[0].Ping''Status' --output text 2>/dev/null || echo "")
-  if [[ "$PING" == "Online" ]]; then SSM_READY="true"; break; fi
+SSH_SAID=""
+while :; do
+  SSH_SAID=$(ssh -n "${GROVE_REACH_SSH_OPTS[@]}" -i "$IDENTITY" "$USER_NAME@$HOST" true 2>&1) && { REACHED="true"; break; }
+  # a refusal BY the box is deterministic: a retry cannot change it, so it
+  # halts now with its own cure, never after the whole --timeout
+  case "$SSH_SAID" in
+    *"Permission denied"*|*"REMOTE HOST IDENTIFICATION HAS CHANGED"*|*"Host key verification failed"*) break ;;
+    # a box with no power lever does not boot under the wake, so a refusal is
+    # final; an ec2 box just started may refuse until its sshd is up, so it waits
+    *"Connection refused"*) [[ "$POWER" == "none" ]] && break ;;
+  esac
+  [[ $(date +%s) -ge $DEADLINE ]] && break
 
   # a silent multi-minute wait reads as a hang, so the human kills a healthy
   # wake. name the elapsed seconds every 30s so the wait is legibly a wait
   ELAPSED=$(( $(date +%s) - STARTED ))
   if [[ $(( ELAPSED / 30 )) -gt "$HEARTBEAT" ]]; then
     HEARTBEAT=$(( ELAPSED / 30 ))
-    echo "      │  ⏳ ssm not Online yet — ${ELAPSED}s of ${TIMEOUT}s"
+    echo "      │  ⏳ no ssh answer yet — ${ELAPSED}s of ${TIMEOUT}s"
   fi
   sleep 3
 done
-if [[ "$SSM_READY" != "true" ]]; then
-  echo "      ├─ 💥 ssm agent never came Online within ${TIMEOUT}s" >&2
+# the box answered, and refused: the tailnet path works, so its cure is the key
+# or the host key — never the tailnet checks, never another wake
+if [[ "$REACHED" != "true" ]]; then
+  case "$SSH_SAID" in
+    *"Permission denied"*)
+      echo "      └─ ✋ ConstraintError: $USER_NAME@$HOST:$PORT answered, and refused our key" >&2
+      echo "" >&2
+      echo "  ssh said:" >&2
+      echo "$SSH_SAID" | sed 's/^/    /' >&2
+      echo "" >&2
+      echo "  fix: the tailnet reached it — the key is the cause. is the public half of" >&2
+      echo "       $IDENTITY in $USER_NAME's authorized_keys on the grove? see where it stops —" >&2
+      echo "    ssh -v -i $IDENTITY -p $PORT $USER_NAME@$HOST true" >&2
+      exit 2 ;;
+    *"REMOTE HOST IDENTIFICATION HAS CHANGED"*|*"Host key verification failed"*)
+      echo "      └─ ✋ ConstraintError: $HOST answered with a host key this machine does not trust" >&2
+      echo "" >&2
+      echo "  ssh said:" >&2
+      echo "$SSH_SAID" | sed 's/^/    /' >&2
+      echo "" >&2
+      echo "  fix: only once you know the box was rebuilt, drop the old key, then wake again —" >&2
+      echo "    ssh-keygen -R $HOST" >&2
+      echo "    rhx git.grove.wake $GROVE" >&2
+      exit 2 ;;
+    *"Connection refused"*)
+      # the tailnet carried the connect and the box is up: neither the tailnet
+      # checks nor another wake can cure it (c34)
+      echo "      └─ ✋ ConstraintError: $HOST answered on $PORT, and refused the connect" >&2
+      echo "" >&2
+      echo "  ssh said:" >&2
+      echo "$SSH_SAID" | sed 's/^/    /' >&2
+      echo "" >&2
+      echo "  fix: $(__grove_refused_cure name="$GROVE" host="$HOST" port="$PORT")" >&2
+      exit 2 ;;
+  esac
+fi
+if [[ "$REACHED" != "true" ]]; then
+  echo "      └─ 💥 no ssh answer from $USER_NAME@$HOST:$PORT within ${TIMEOUT}s" >&2
   echo "" >&2
-  echo "  the box answers ec2, but its agent has not registered. TWO causes, and" >&2
-  echo "  their cures are OPPOSITE — tell them apart before you act:" >&2
-  echo "" >&2
-  echo "  (a) it needs longer. a box resumed from hibernate re-registers a severed" >&2
-  echo "      connection, which is slower than a cold boot's fresh one" >&2
-  echo "      fix: wake it again — a wake is idempotent" >&2
-  echo "        rhx git.grove.wake $GROVE" >&2
-  echo "" >&2
-  echo "  (b) 🔴 it is STARVED. a box thrashed under load cannot service its agent," >&2
-  echo "      so a second wake cures NAUGHT, and each one costs another ${TIMEOUT}s" >&2
-  echo "      tell: git.grove.list reads 🔴 MUTE — the port binds, yet no ssh" >&2
-  echo "            handshake completes — rather than 🔴 DOWN, and saturation" >&2
-  echo "            reads a full run queue" >&2
-  echo "        rhx git.grove.list" >&2
-  echo "        rhx git.grove.saturation $GROVE" >&2
-  echo "      fix: the lever is LOAD, never the tunnel — fell or stop crews, or" >&2
-  echo "           provision more box. ⚠️ neither is reachable while it is mute," >&2
-  echo "           so this is a PROVISION decision for a human" >&2
-  echo "" >&2
-  echo "  to read the agent state directly:" >&2
-  echo "    aws ssm describe-instance-information --filters Key=InstanceIds,Values=$BOX_ID" >&2
+  if [[ -n "$SSH_SAID" ]]; then
+    echo "  ssh said:" >&2
+    echo "$SSH_SAID" | sed 's/^/    /' >&2
+    echo "" >&2
+  fi
+  # a banner exchange that timed out means the connect landed: the tailnet carried
+  # it, so its checks are skipped and the starved cause leads
+  BANNER_TIMEOUT="false"
+  [[ "$SSH_SAID" == *"banner exchange"* ]] && BANNER_TIMEOUT="true"
+  if [[ "$BANNER_TIMEOUT" != "true" ]]; then
+    echo "  first, is THIS machine on the tailnet? a caller off it reaches no grove —" >&2
+    echo "    $(__grove_tailnet_cure "$HOST")" >&2
+    echo "  a grove rebuilt joins the tailnet under a new \`-N\` suffix, and shows in that list;" >&2
+    echo "  pin the live name as the row's host —" >&2
+    echo "    git grove set $GROVE --at $USER_NAME@<tailnet-host>:22" >&2
+    echo "" >&2
+  fi
+  # a starved box is starved whatever its power: the (b) cause prints for both
+  if [[ "$POWER" == "aws" ]]; then
+    echo "  the box answers ec2, but not ssh. TWO causes, and their cures are" >&2
+    echo "  OPPOSITE — tell them apart before you act:" >&2
+    echo "" >&2
+    echo "  (a) it needs longer. a box resumed from hibernate must rejoin the" >&2
+    echo "      tailnet before its ssh answers, and that can outlast --timeout" >&2
+    echo "      fix: wake it again — a wake is idempotent" >&2
+    echo "        rhx git.grove.wake $GROVE" >&2
+    echo "" >&2
+  fi
+  if [[ "$POWER" != "aws" && "$BANNER_TIMEOUT" != "true" ]]; then
+    echo "  if the tailnet checks pass, the box may be STARVED:" >&2
+    echo "" >&2
+  fi
+  if [[ "$POWER" != "aws" && "$BANNER_TIMEOUT" == "true" ]]; then
+    echo "  the box accepted the connect and sent no ssh banner in time:" >&2
+    echo "" >&2
+  fi
+  # the letter names a menu of two; a grove with no power lever has no (a)
+  STARVED_TAG="   "
+  [[ "$POWER" == "aws" ]] && STARVED_TAG="(b)"
+  {
+    echo "  $STARVED_TAG 🔴 it is STARVED. a box thrashed under load cannot answer a handshake," >&2
+    echo "      so a second wake cures NAUGHT, and each one costs another ${TIMEOUT}s" >&2
+    echo "      tell: git.grove.list reads 🔴 MUTE — the port accepts, yet no ssh" >&2
+    echo "            banner comes back — rather than 🔴 DOWN, and saturation" >&2
+    echo "            reads a full run queue" >&2
+    echo "        rhx git.grove.list" >&2
+    echo "        rhx git.grove.saturation $GROVE" >&2
+    echo "      fix: the lever is LOAD — fell or stop crews, or provision more box." >&2
+    echo "           neither is reachable while it is mute, so this is a" >&2
+    echo "           PROVISION decision for a human" >&2
+  }
   exit 1
 fi
-echo "      ├─ ssm  Online"
+echo "      ├─ ssh  answered as $USER_NAME@$HOST:$PORT"
 
-# 3. findsert the tunnel — reuse a port that already RELAYS, but replace one that
-#    is merely bound. a bound-but-mute port is the orphan case: an expired ssm
-#    session leaves session-manager-plugin with the port still held and no relay
-#    behind it, and a naive "port in use → done" check would call that success
-#    forever.
-PORT_HEX=$(printf '%04X' "$PORT")
-BOUND=$(awk -v p=":$PORT_HEX" '$2 ~ p && $4 == "0A"' /proc/net/tcp 2>/dev/null)
-RELAYS="false"
-if [[ -n "$BOUND" ]]; then
-  # a real relay answers with an ssh banner; scan ipv4 explicitly, since the
-  # tunnel binds one family while `localhost` names both
-  #
-  # 🛑 ⚠️ the match is `grep . >/dev/null`, never `grep -q .`. this read `-q`
-  #      until 2026-08-14, and the direction it failed is the destructive one:
-  #
-  #        `grep -q .` matches the FIRST non-empty line and exits at once.
-  #        `ssh-keyscan` is still mid-write — it emits a comment line, then one
-  #        key per algorithm, as each arrives — so it takes a SIGPIPE, and
-  #        pipefail hands the pipeline its 141 (`gotcha.pipefail-grep-q`).
-  #
-  #      ⇒ RELAYS stays "false" for a tunnel that RELAYS. the branch below then
-  #        reads [REPLACE], `pkill`s a healthy session-manager-plugin, and
-  #        rebuilds a tunnel that was already up. the await loop at the foot of
-  #        this block failed the same way, and reported
-  #        "💥 the tunnel did not relay within 40s" after 40s of a live relay
-  #
-  #      ⚠️ and it is a TIMING race, not merely a size one: keyscan writes as
-  #        each key type answers, so the window is open on every scan that takes
-  #        longer than the first key. that is why it flaked rather than failed
-  ssh-keyscan -T 15 -p "$PORT" 127.0.0.1 2>/dev/null | grep . >/dev/null && RELAYS="true"
-fi
-
-DOC_PORTFWD="AWS-StartPortFor""wardingSession"
-if [[ "$RELAYS" == "true" ]]; then
-  echo "      ├─ duct [KEEP] localhost:$PORT already relays"
-else
-  if [[ -n "$BOUND" ]]; then
-    echo "      ├─ duct [REPLACE] port $PORT bound but mute — an orphan holds it"
-    pkill -f "$DOC_PORTFWD.*$PORT" 2>/dev/null || true
-    pkill -f "session-manager-plugin.*$PORT" 2>/dev/null || true
-    sleep 2
-  fi
-  # detach the tunnel so it OUTLIVES this skill.
-  #
-  # `</dev/null` is the load-bearing part, not a tidy-up. session-manager-plugin
-  # reads its stdin to relay the session, so an inherited stdin that reaches EOF
-  # (which it does the moment the parent shell exits) makes the plugin quit — and
-  # it quits AFTER the port was bound, so the wake reports success while the
-  # tunnel is gone seconds later. `setsid` alone cannot prevent that: the process
-  # is not felled by a signal, it exits on its own read.
-  #
-  # the log is kept rather than discarded, so a tunnel that dies leaves evidence
-  # instead of a silent absence
-  TUNNEL_LOG="${XDG_STATE_HOME:-$HOME/.local/state}/git.grove/tunnel.$GROVE.log"
-  mkdir -p "$(dirname "$TUNNEL_LOG")"
-  setsid aws ssm start-session \
-    --target "$BOX_ID" \
-    --document-name "$DOC_PORTFWD" \
-    --parameters "portNumber=22,localPortNumber=$PORT" \
-    </dev/null >>"$TUNNEL_LOG" 2>&1 &
-  TUNNEL_PID=$!
-  disown 2>/dev/null || true
-
-  # await the relay, not merely the bind
-  for _ in $(seq 1 20); do
-    sleep 2
-    ssh-keyscan -T 5 -p "$PORT" 127.0.0.1 2>/dev/null | grep . >/dev/null && { RELAYS="true"; break; }
-  done
-  if [[ "$RELAYS" != "true" ]]; then
-    echo "      ├─ 💥 the tunnel did not relay within 40s" >&2
-    echo "" >&2
-    echo "  why: the port bound but no relay crossed it" >&2
-    echo "  read the tunnel's own log —" >&2
-    echo "    tail $TUNNEL_LOG" >&2
-    echo "  fix: sweep any orphan session, then retry —" >&2
-    echo "    rhx git.grove.stop --prune orphans" >&2
-    exit 1
-  fi
-
-  # confirm the tunnel process SURVIVED its own startup. a relay that answers now
-  # but whose process is already gone is the very bug this guard exists to catch
-  if ! kill -0 "$TUNNEL_PID" 2>/dev/null; then
-    echo "      ├─ 💥 the tunnel relayed, then its process exited at once" >&2
-    echo "" >&2
-    echo "  why: session-manager-plugin quit after it bound the port — most often" >&2
-    echo "       its stdin reached EOF, or the ssm session was refused" >&2
-    echo "  read its log —" >&2
-    echo "    tail $TUNNEL_LOG" >&2
-    exit 1
-  fi
-  echo "      ├─ duct [SET] localhost:$PORT → $EXID:22 (pid $TUNNEL_PID)"
-fi
-
-# 4. UPSERT the ssh alias, so `ssh <alias>` and every duct ride it
+# UPSERT the ssh alias, so `ssh <alias>` and every duct ride it
 #
 # ⚠️ .why the WHOLE block is compared, and not the name, and not one field
+#      a findsert on the NAME asks "does a record with this name exist?" and
+#      never "does that record say what the registry declares?". measured
+#      2026-08-11: a wake kept a stale `Port 36902` alias, reported awake, and
+#      the next send was refused. the first repair compared the port alone and
+#      regressed the user in the same run. ⇒ a partial comparison is the same
+#      defect at a smaller radius, so the comparison is the entire block,
+#      rendered from the registry, against the entire block on disk.
 #
-#      this findserted on the NAME: `grep -q "^Host $SSH_ALIAS$"`, keep what you
-#      find. that asks "does a record with this name exist?" and never "does that
-#      record say what the registry declares?" — two different questions, and the
-#      registry is free to change between runs.
+# ⚠️ the registry is the DECLARATION and this file is the copy. an ssm-era block
+#    (`HostName localhost`, `Port <tunnel>`) differs, so it converges here on the
+#    first wake after this change — the relic row needs no hand edit
 #
-#      .measured 2026-08-11, on a grove resumed after a sleep:
-#
-#        wake  → duct bound on 36901, "[KEEP] alias already written", 🌳 awake!
-#        alias → Port 36902          ← from an earlier run, now dead
-#        send  → ssh: connect to host localhost port 36902: Connection refused
-#
-#      so the wake reported a GREEN verdict for a seat no command could reach,
-#      and its own fix hint said "confirm the grove is awake" — which it was.
-#      the box was up, the duct was up, and one stale integer sat between them.
-#
-# ⚠️ .and the FIRST repair for that compared the PORT alone — which regressed the
-#      user in the same run it fixed the port. the stale block carried
-#      `User camper`; the registry declared none; the rewrite wrote the default
-#      `ec2-user`, and the next send answered `Permission denied (publickey)`.
-#
-#      ⇒ **a partial comparison is the same defect at a smaller radius.** every
-#        field it does not read is a field it cannot converge, and one it may now
-#        silently overwrite. so the comparison is the entire block, rendered from
-#        the registry, against the entire block on disk.
-#
-# ⇒ this is the `entry` / `slug` split once more (`term=entry`): a store that
-#   HOLDS a record says none of what the record's VALUE is. a findsert keyed on
-#   the name can never converge a value that drifted, so the record it guards is
-#   exactly the record it cannot repair (`rule.forbid.failhide`)
-#
-# ⚠️ the registry is the DECLARATION and this file is the copy. so a fact the
-#    registry does not hold cannot survive here — `git.grove.set <name>
-#    --at <user>@localhost:<port>` is where a seat's user is declared, and an
-#    entry with `"user": null` yields `ec2-user` by design, never by accident
+# .note = the keepalive lines are cheap on a direct link and keep an idle crew
+#         session from a silent drop on a flaky one
 SSHCFG="$HOME/.ssh/config"
 mkdir -p "$HOME/.ssh"; touch "$SSHCFG"
 
-# ⚠️ the keepalive is what stops the tunnel opened just above from expiry.
-#    `HostName localhost` is the tell: ssh does not reach the box, it reaches the
-#    local port session-manager-plugin relays. session manager applies its own
-#    `idleSessionTimeout` (default 20m) and counts SILENCE as idle — so an ssh
-#    session that sends no bytes is what makes SSM end the session, which drops
-#    the port, which kills the ssh.
-#
-#    step 3 above already handles the AFTERMATH of that: it detects the "bound
-#    but mute" orphan an expired session leaves and replaces it. this prevents
-#    the expiry instead, which is the half that was absent.
-#
-#    it reads to a human as "the connection died before the box slept" — and the
-#    box never slept: 1.2.power sets IdleAction=ignore and AllowHibernation=no,
-#    and no timer or alarm stops a grove. only `git.grove.stop` does. the two
-#    events are unrelated; one did not happen
 ALIAS_DECLARED="$(
   echo "Host $SSH_ALIAS"
-  echo "  HostName localhost"
+  echo "  HostName $HOST"
   echo "  Port $PORT"
   echo "  User $USER_NAME"
   echo "  IdentityFile $IDENTITY"
@@ -566,13 +554,13 @@ ALIAS_ON_DISK="$(awk -v a="Host $SSH_ALIAS" '
 ' "$SSHCFG")"
 
 if [[ "$ALIAS_ON_DISK" == "$ALIAS_DECLARED" ]]; then
-  echo "      └─ ssh  [KEEP] alias '$SSH_ALIAS' matches the registry ($USER_NAME@localhost:$PORT)"
+  echo "      └─ ssh  [KEEP] alias '$SSH_ALIAS' matches the registry ($USER_NAME@$HOST:$PORT)"
 else
   # a block that differs in ANY field is stripped, so the append below is the one
   # declaration left. two `Host` blocks of one name would leave ssh with the
   # first, which is the stale one
   if [[ -n "$ALIAS_ON_DISK" ]]; then
-    echo "      ├─ ssh  [REPLACE] alias '$SSH_ALIAS' differs from the registry ($USER_NAME@localhost:$PORT)"
+    echo "      ├─ ssh  [REPLACE] alias '$SSH_ALIAS' differs from the registry ($USER_NAME@$HOST:$PORT)"
     if awk -v a="Host $SSH_ALIAS" '
       $0 == a  { inblock = 1; next }
       /^Host /  { inblock = 0 }
@@ -582,19 +570,19 @@ else
     else
       rm -f "$SSHCFG.wake.tmp"
       echo "      └─ ✋ could not rewrite $SSHCFG to drop the stale alias" >&2
-      echo "         ⇒ every send to '$SSH_ALIAS' keeps the stale block, and the" >&2
-      echo "           duct itself is healthy on $PORT" >&2
+      echo "         ⇒ every send to '$SSH_ALIAS' keeps the stale block, while" >&2
+      echo "           the grove itself answered over the tailnet" >&2
       exit 1
     fi
   fi
   printf '\n%s\n' "$ALIAS_DECLARED" >> "$SSHCFG"
-  echo "      └─ ssh  [SET] alias '$SSH_ALIAS' written ($USER_NAME@localhost:$PORT)"
+  echo "      └─ ssh  [SET] alias '$SSH_ALIAS' written ($USER_NAME@$HOST:$PORT)"
 fi
 
 echo ""
 echo "🌳 grove's awake!"
-echo "   ├─ box:    $BOX_ID (exid=$EXID, account $ACCOUNT_ACTIVE)"
-echo "   ├─ tunnel: localhost:$PORT -> $EXID:22"
+[[ -n "$BOX_ID" ]] && echo "   ├─ box:    $BOX_ID (exid=$EXID, account $ACCOUNT_ACTIVE)"
+echo "   ├─ reach:  $USER_NAME@$HOST:$PORT, over the tailnet"
 echo "   └─ reach it with:"
 echo "      ├─ ssh $SSH_ALIAS"
 echo "      └─ rhx git.grove.send $GROVE --what '<cmd>'"

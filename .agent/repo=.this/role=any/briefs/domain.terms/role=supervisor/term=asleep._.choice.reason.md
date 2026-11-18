@@ -111,6 +111,17 @@ wrong disk.
                the field and `unread` takes the word. until then this is an argument with no
                instance behind it, and an instance is what the glossary grades on.
 
+- evidence, 2026-11-13 = **counter 2 no longer holds for every grove.** a grove off aws (the
+               hetzner grove, power `none`) never hibernates, so for it the dominant cause of no
+               answer is a tailnet fault, not sleep. counter 1 also weakened: a wake on that grove
+               has no box to power, so the reach route gave it a different cure
+               (`__grove_unreached_cure`: `tailscale status`, then `tailscale ping <host>`).
+               the director ruled (route `v2026_11_13.feat-supervisor-reach-over-tailnet`, fulcrum
+               F06) to keep `asleep` and change only the cure. so the word now over-claims for one
+               class of grove, and the cure, not the word, carries the cause. the dispute stays
+               OPEN; this is the first instance on record where the word's cause is wrong by
+               construction rather than by chance.
+
 ## .see also
 
 - `term=asleep._.choice._.md` — the term

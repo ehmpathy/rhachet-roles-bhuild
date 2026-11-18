@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`git.grove.send given: [case1] a hetzner grove (no aws lever) that ssh cannot reach when: [t0] a command is sent then: the words a human reads are pinned 1`] = `
+"ssh: connect to host grove-sandpine-hetzner-v20261022-1 port 22: Connection timed out
+
+💥 MalfunctionError: ssh could not reach grove-sandpine-hetzner-v20261022 (rc 255), so the command never ran
+   └─ fix: check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove-sandpine-hetzner-v20261022-1
+"
+`;
+
+exports[`git.grove.send given: [case1] a hetzner grove (no aws lever) that ssh cannot reach when: [t1] a file is sent then: the words a human reads are pinned, trunk and branch 1`] = `
+"🌳 git.grove.send grove-sandpine-hetzner-v20261022 --file <tmp>/wish.md --into ~/wish.md
+   ├─ bytes: 9
+   └─ 💥 the write failed
+      └─ if the grove did not answer: check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove-sandpine-hetzner-v20261022-1
+"
+`;
+
+exports[`git.grove.send given: [case2] a grove that answers, and a command that fails there when: [t0] the remote command exits 3 then: the header a caller receives is pinned 1`] = `
+"🌳 git.grove.send grove-sandpine-hetzner-v20261022 --what 'false'
+
+"
+`;
+
+exports[`git.grove.send given: [case2] a grove that answers, and a command that fails there when: [t0] the remote command exits 3 then: the words a human reads are pinned 1`] = `""`;

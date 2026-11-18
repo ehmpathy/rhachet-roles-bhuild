@@ -803,8 +803,10 @@ describe('work.surface', () => {
         expect(
           readDuctSend().includes('this asked the GROVE, not this box'),
         ).toEqual(true);
+        // the fix is per power — the wake for an ec2 grove, the tailnet for
+        // one with no aws lever — so it is the one shared cure reader
         expect(
-          readDuctSend().includes('rhx git.grove.wake $duct_host'),
+          readDuctSend().includes('$(__grove_unreached_cure "$duct_host")'),
         ).toEqual(true);
       });
     });

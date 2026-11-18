@@ -19,7 +19,7 @@ available, in either direction.
 
 ```
 😶 at work    one or more live ducts               -> the roles are named
-😴 asleep     the GROVE did not answer             -> rhx git.grove.wake <grove>
+😴 asleep     the GROVE did not answer             -> its cure, per power (wake · tailnet · alias)
 💀 down       no duct, tree on disk                -> rhx git.crew.boot
 👻 phantom    no duct, no tree                     -> a felled tree's stale rows
 ```
@@ -47,7 +47,7 @@ its own — so it fell to `❔unknown`, which asserts the pane was **held and ju
 
 | boundary | the word | the subject that went unseen | the cure |
 |---|---|---|---|
-| `crew` | **`asleep`** | a grove that did not answer | `rhx git.grove.wake <grove>` |
+| `crew` | **`asleep`** | a grove that did not answer | its cure per power: `rhx git.grove.wake <grove>` (aws, or no alias yet) · the tailnet checks (none) |
 | `duct.box` | `unread` | a pane whose capture was empty | re-read the duct |
 
 ⇒ two facts about this file earn the pointer:
@@ -90,7 +90,7 @@ it is the only row in the crew-axis set with that property, and it is why it ren
 the litter row rather than beneath it:
 
 ```
-😴 N asleep     — unread, not down — rhx git.grove.wake <grove>
+😴 N asleep     — unread, not down — <the cure for that grove's power>
 👻 N phantom    — felled trees whose registry rows remain
 ```
 

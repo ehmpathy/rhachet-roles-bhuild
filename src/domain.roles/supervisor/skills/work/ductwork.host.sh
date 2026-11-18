@@ -49,7 +49,7 @@ __duct_as_host_canonical() {
 # .why 3 here but 2 at the verb: this is an INTERNAL signal, and it needs a code
 #      that tmux's own exits cannot collide with — tmux uses 1 for "no server".
 #      the VERBS translate it to exit 2, the declared constraint code, because
-#      the caller is the one who fixes it (wake the grove)
+#      the caller is the one who fixes it (reach the grove, per its cure)
 #
 # .why a distinct code: this used to be one `ssh … 2>/dev/null`, so an empty
 #      stdout meant BOTH "this grove holds no ducts" and "the tunnel is down".
@@ -151,7 +151,7 @@ __duct_refresh_host() {
   sessions=$(__duct_list_host_sessions "$host") || reached=$?
   if [[ "$reached" != 0 ]]; then
     echo "✋ duct: could not reach '$host' — its ducts are left exactly as they were" >&2
-    echo "   └─ fix: wake it — rhx git.grove.wake $host" >&2
+    echo "   └─ fix: $(__grove_unreached_cure "$host")" >&2
     return 2
   fi
 
@@ -264,7 +264,7 @@ duct.list() {
     # would be a claim we cannot back — the grove may hold a dozen
     if [[ "$reached" != 0 ]]; then
       echo "   └─ ✋ unreachable — cannot say which ducts it holds"
-      echo "      fix: wake it — rhx git.grove.wake $host"
+      echo "      fix: $(__grove_unreached_cure "$host")"
       return 2
     fi
 
