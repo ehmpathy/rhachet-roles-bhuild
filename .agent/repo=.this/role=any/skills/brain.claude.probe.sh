@@ -9,7 +9,7 @@
 #         and the served model, never the key
 #
 # usage:
-#   brain.claude.probe.sh 'claude-opus-5-5[1m]' 'claude-sonnet-5'
+#   brain.claude.probe.sh 'claude-opus-5-5[1m]' 'claude-sonnet-5-5[1m]'
 #
 # guarantee:
 #   - does not unlock; run `rhx keyrack unlock --owner ehmpath --env test` first
@@ -31,7 +31,7 @@ while [[ $# -gt 0 ]]; do
   case $1 in
     --skill|--repo|--role)
       if [[ $# -lt 2 ]]; then
-        echo "✋ ConstraintError: $1 needs a value" >&2
+        echo "✋ ConstraintError: $1 needs a value, e.g. '$1 bhuild'; or drop it (rhx passes it for you)" >&2
         exit 2
       fi
       shift 2 ;;

@@ -237,4 +237,45 @@ describe('init.behavior.idempotent', () => {
       });
     });
   });
+
+  // F23: a bare re-init takes the default size (medi), so a nano route gains every stone medi adds.
+  // this pins that behavior as it ships; a council rule on F23 shows here as a snap diff.
+  // the silent size change is a known surprise: no warn, and the tip still names 0.wish.md. its
+  // cure is tracked in .dream/2026_10_24.init-behavior-warn-on-bare-reinit-of-extant-route.dream.md
+  given('[case11] direct: a nano route, re-inited with no --size', () => {
+    when('[t0] init.behavior runs bare on an extant nano route', () => {
+      const scene = useBeforeAll(async () => {
+        const consumer = genConsumerRepo({
+          branchName: 'feature/bare-reinit-test',
+        });
+
+        // init a nano route
+        const first = runInitBehaviorSkillDirect({
+          args: '--name bare-reinit --size nano',
+          repoDir: consumer.repoDir,
+        });
+        if (first.exitCode !== 0)
+          throw new Error(
+            `the first init failed: exit=${first.exitCode}, stdout=${first.stdout}`,
+          );
+
+        // re-init with no --size
+        const reinit = runInitBehaviorSkillDirect({
+          args: '--name bare-reinit',
+          repoDir: consumer.repoDir,
+        });
+
+        return { ...consumer, reinit };
+      });
+
+      then('the nano files are kept and the medi stones are added', () => {
+        expect(scene.reinit.exitCode).toBe(0);
+        expect(scene.reinit.stdout).toContain('✓ 0.wish.md');
+        expect(scene.reinit.stdout).toContain('✓ 6.preship.stone');
+        expect(scene.reinit.stdout).toContain('✓ 7.reflect.stone');
+        expect(scene.reinit.stdout).toMatch(/\+ \S+\.stone/);
+        expect(asSnapshotStable(scene.reinit.stdout)).toMatchSnapshot();
+      });
+    });
+  });
 });

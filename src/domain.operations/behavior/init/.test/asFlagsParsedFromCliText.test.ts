@@ -1,3 +1,5 @@
+import { given, then, when } from 'test-fns';
+
 import { asFlagsParsedFromCliText } from './asFlagsParsedFromCliText';
 
 const TEST_CASES = [
@@ -32,9 +34,15 @@ const TEST_CASES = [
 ];
 
 describe('asFlagsParsedFromCliText', () => {
-  TEST_CASES.map((thisCase) =>
-    test(thisCase.description, () => {
-      expect(asFlagsParsedFromCliText(thisCase.given)).toEqual(thisCase.expect);
+  TEST_CASES.map((thisCase, index) =>
+    given(`[case${index + 1}] ${thisCase.description}`, () => {
+      when('[t0] the text is parsed', () => {
+        then('it returns the expected flags', () => {
+          expect(asFlagsParsedFromCliText(thisCase.given)).toEqual(
+            thisCase.expect,
+          );
+        });
+      });
     }),
   );
 });

@@ -1,7 +1,8 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`skill.init.behavior.guards.journey.execution given: [case1] a heavy-guard behavior at its execution stone when: [t0] execution pass attempted without promises then: blocked by unpromised self-review 1`] = `
-"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+"[stdout]
+🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
 
@@ -90,13 +91,15 @@ exports[`skill.init.behavior.guards.journey.execution given: [case1] a heavy-gua
    └─ when you've truly reflected, run
       └─ rhx route.stone.set --stone 5.1.execution.phase0_to_phaseN --as promised --that has-stub-review \\
          --into .behavior/v{DATE}.full-journey/review/self/for.5.1.execution.phase0_to_phaseN._.has-stub-review.md
+
+[stderr]
 🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
-   └─ ✋ blocked by constraints
-"
+   └─ ✋ blocked by constraints"
 `;
 
 exports[`skill.init.behavior.guards.journey.execution given: [case1] a heavy-guard behavior at its execution stone when: [t1] execution pass attempted after promises then: allowed (no judges) 1`] = `
-"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+"[stdout]
+🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
    │
@@ -262,7 +265,8 @@ exports[`skill.init.behavior.guards.journey.execution given: [case1] a heavy-gua
 `;
 
 exports[`skill.init.behavior.guards.journey.execution given: [case1] a heavy-guard behavior at its execution stone when: [t2] the unenrolled driver enters the execution then: bhrain names sonnet, the build brain, and halts with the enroll fix 1`] = `
-"🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
+"[stdout]
+🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
 
 🦉 where were we?
 

@@ -4,7 +4,7 @@ import * as path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
-  asCallOutput,
+  asStreamsOutput,
   genGuardedBehaviorScene,
   getStonesPassed,
   promiseAllReviewSelfs,
@@ -26,7 +26,10 @@ import { asSnapshotStable } from './.test/skill.init.behavior.utils';
 describe('skill.init.behavior.guards.journey.blueprint', () => {
   given('[case1] a heavy-guard behavior at its blueprint stone', () => {
     const scene = useBeforeAll(async () => {
-      const behavior = genGuardedBehaviorScene({ prefix: 'journey-blueprint' });
+      const behavior = genGuardedBehaviorScene({
+        prefix: 'journey-blueprint',
+        size: 'medi',
+      });
       const stone = '3.3.1.blueprint.product';
 
       // write the blueprint artifact
@@ -45,7 +48,10 @@ describe('skill.init.behavior.guards.journey.blueprint', () => {
       // promise every self-review
       promiseAllReviewSelfs({ ...behavior, stone });
 
-      // create mock peer review file (reviewed? judge requires peer review artifacts)
+      // .mock = the peer review artifact the reviewed? judge reads
+      // .why  = a real peer lane shells to a paid brain per round; this journey grades the guard
+      //         wire (the judge reads the review, the stone passes), never a reviewer verdict
+      // .real = each peer reviewer is graded live by bhrain's own review suite
       fs.mkdirSync(path.join(behavior.routeDir, '.reviews'), {
         recursive: true,
       });
@@ -109,7 +115,7 @@ describe('skill.init.behavior.guards.journey.blueprint', () => {
     when('[t0] blueprint pass attempted without promises', () => {
       then('blocked by unpromised self-review', () => {
         expect(scene.passWithoutPromises.code).not.toEqual(0);
-        const output = asCallOutput({ call: scene.passWithoutPromises });
+        const output = asStreamsOutput({ call: scene.passWithoutPromises });
         expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('review.self required');
       });
@@ -118,7 +124,7 @@ describe('skill.init.behavior.guards.journey.blueprint', () => {
     when('[t1] blueprint pass attempted with promises but no approval', () => {
       then('blocked by judge', () => {
         expect(scene.passWithPromisesNoApproval.code).not.toEqual(0);
-        const output = asCallOutput({ call: scene.passWithPromisesNoApproval });
+        const output = asStreamsOutput({ call: scene.passWithPromisesNoApproval });
         expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output.toLowerCase()).toContain('judge');
       });
@@ -127,7 +133,7 @@ describe('skill.init.behavior.guards.journey.blueprint', () => {
     when('[t2] blueprint pass attempted after approval', () => {
       then('allowed', () => {
         expect(scene.passAfterApproval.code).toEqual(0);
-        const output = asCallOutput({ call: scene.passAfterApproval });
+        const output = asStreamsOutput({ call: scene.passAfterApproval });
         expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('passage = allowed');
       });
@@ -137,7 +143,7 @@ describe('skill.init.behavior.guards.journey.blueprint', () => {
       then('allowed at once, with the note `artifacts only`', () => {
         // the brain-only guard has no reviews and no judges (case=2 [t2])
         expect(scene.roadmapPass.code).toEqual(0);
-        const output = asCallOutput({ call: scene.roadmapPass });
+        const output = asStreamsOutput({ call: scene.roadmapPass });
         expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('passage = allowed');
         expect(output).toContain('artifacts only');
@@ -153,7 +159,7 @@ describe('skill.init.behavior.guards.journey.blueprint', () => {
 
     when('[t4] the unenrolled driver enters the roadmap, past the blueprint', () => {
       then('bhrain names sonnet, the build brain, and halts with the enroll fix', () => {
-        const output = asCallOutput({ call: scene.roadmapDrive });
+        const output = asStreamsOutput({ call: scene.roadmapDrive });
         expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('stone = 4.1.roadmap');
         expect(output).toContain('brain = claude-sonnet-5-5[1m]');

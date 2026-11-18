@@ -256,20 +256,54 @@ describe('templates.tail', () => {
       );
 
       then(
-        'it runs the full suite in two calls, types and format included (c4)',
+        'it runs the full suite one kind per call, types and format included (c4)',
         () => {
-          expect(scene.stone).toContain(
+          [
             'rhx git.repo.test --what types,format --mode apply',
-          );
-          expect(scene.stone).toContain(
-            'rhx git.repo.test --what all --against local --env test --mode apply',
-          );
+            'rhx git.repo.test --what lint --mode apply',
+            'rhx git.repo.test --what unit --mode apply',
+            'rhx git.repo.test --what integration --mode apply',
+            'rhx git.repo.test --what acceptance --against local --env test --mode apply',
+          ].forEach((call) => expect(scene.stone).toContain(call));
+          // one serial call of every kind can outlast the tool cap; it must not come back
+          expect(scene.stone).not.toContain('--what all');
         },
       );
 
       then('it re-enters on the commit, never on the tree (step 0)', () => {
         expect(scene.stone).toContain('gh pr view --json state,headRefOid');
         expect(scene.stone).toContain('`MERGED` or `CLOSED`');
+      });
+
+      then(
+        'a landed commit whose push failed is pushed only, never re-committed (c31)',
+        () => {
+          const flat = asProseFlat({ text: scene.stone });
+          expect(flat).toContain(
+            'no pr yet: no work change → an earlier run committed but its push did not land; push only, via `rhx git.commit.push --mode apply`',
+          );
+          expect(flat).toContain(
+            'a pr, no work change, local head not equal to `headRefOid` → push only',
+          );
+          expect(flat).toContain(
+            'never commit again — push only, as step 0 does',
+          );
+        },
+      );
+
+      then(
+        'an input refusal is fixed in the same bound, never held (c33)',
+        () => {
+          expect(asProseFlat({ text: scene.stone })).toContain(
+            '**an input refusal** — a file left unstaged, a message of the wrong shape → fix it and run step 2 again, inside the 3-round bound',
+          );
+        },
+      );
+
+      then('a red that main shares is a halt, not a fix round (c37)', () => {
+        expect(asProseFlat({ text: scene.stone })).toContain(
+          "the same test fails on `main` too → not this change's red: halt with both runs verbatim",
+        );
       });
 
       then('it stages the allowlist, then --unstaged ignore (F11)', () => {
@@ -311,12 +345,22 @@ describe('templates.tail', () => {
       );
 
       then(
-        'it bounds every loop at 3, a tool cut-off re-run free up to 3 (F17)',
+        'it bounds every loop at 3; only the watch re-runs a cut-off free (F17)',
         () => {
+          const flat = asProseFlat({ text: scene.stone });
           expect(scene.stone).toContain('at most 3 fix rounds');
           expect(scene.stone).toContain('at most 3 watches');
-          expect(scene.stone).toContain('re-run it free');
-          expect(scene.stone.match(/at most 3 cut-offs/g)?.length).toEqual(2);
+          // the watch resumes remote state, so its cut-off is free; a suite restarts from zero
+          expect(scene.stone.match(/at most 3 cut-offs/g)?.length).toEqual(1);
+          expect(flat).toContain(
+            'the watch resumes remote state, so re-run it free',
+          );
+          expect(flat).toContain(
+            'the tool kills the call → a suite restarts from zero, so the kill counts as a try',
+          );
+          expect(flat).toContain(
+            'the tool moves the call to the background → it still runs. await its end',
+          );
           expect(scene.stone).toContain('### rounds');
           expect(scene.stone).toContain('### before');
         },
@@ -499,6 +543,29 @@ describe('templates.tail', () => {
           expect(scene.stone).toContain(
             'a refused commit or push is held, as in 6.preship',
           );
+        },
+      );
+
+      then(
+        'a held cure or record commit goes off the box with a land recipe (c29)',
+        () => {
+          const hold = scene.stone.slice(
+            scene.stone.indexOf('## .a hold'),
+            scene.stone.indexOf('## .an absent skill'),
+          );
+          expect(hold).toContain(
+            'rhx radio.task.push --via gh.issues --into @this --title "<route slug>: held reflect <cure|record> commit, round <n>"',
+          );
+          expect(hold).toContain('allowlist: {each path to stage}');
+          expect(hold).toContain(
+            'message: {the commit message the grant will land}',
+          );
+          expect(hold).toContain(
+            "land via: 6.preship's steps `### 2. commit at the done gate` and `### 3. watch the pr`",
+          );
+          // one anchor: the yield skeleton holds a ### held section, as the guard names it
+          const emit = scene.stone.slice(scene.stone.indexOf('## .emit'));
+          expect(emit).toContain('### held');
         },
       );
 
@@ -750,8 +817,8 @@ describe('templates.tail', () => {
             },
           );
 
-          then('the stone names both suite calls', () => {
-            expect(plan.suiteCalls.length).toEqual(2);
+          then('the stone names one suite call per kind', () => {
+            expect(plan.suiteCalls.length).toEqual(5);
           });
 
           then(
@@ -760,7 +827,7 @@ describe('templates.tail', () => {
               plan.outputs.forEach((output) => {
                 // the skill reached its run: it prints the header of the first --what it runs
                 expect(output).toMatch(
-                  /🐚 git\.repo\.test --what (types|all)\b/,
+                  /🐚 git\.repo\.test --what (types|lint|unit|integration|acceptance)\b/,
                 );
                 expect(output).not.toContain('required for');
                 expect(output).not.toMatch(/unknown (option|argument)/);
@@ -943,7 +1010,7 @@ describe('templates.tail', () => {
 
         then('the commit prefix defers to the preflight when unsure', () => {
           expect(scene.preship).toContain(
-            'the step 3 preflight refuses a wrong prefix and prints the one it demands',
+            'the preflight refuses a wrong prefix and prints the one it demands',
           );
         });
 

@@ -1,3 +1,5 @@
+import { given, then, when } from 'test-fns';
+
 import { asRhxCallsFromTemplateText } from './asRhxCallsFromTemplateText';
 
 const TEST_CASES = [
@@ -86,14 +88,20 @@ const TEST_CASES = [
 ];
 
 describe('asRhxCallsFromTemplateText', () => {
-  TEST_CASES.map((thisCase) =>
-    test(thisCase.description, () => {
-      const calls = asRhxCallsFromTemplateText(thisCase.given).map((call) => ({
-        skill: call.skill,
-        args: call.args,
-        flags: call.flags,
-      }));
-      expect(calls).toEqual(thisCase.expect);
+  TEST_CASES.map((thisCase, index) =>
+    given(`[case${index + 1}] ${thisCase.description}`, () => {
+      when('[t0] the text is parsed', () => {
+        then('it returns the expected calls', () => {
+          const calls = asRhxCallsFromTemplateText(thisCase.given).map(
+            (call) => ({
+              skill: call.skill,
+              args: call.args,
+              flags: call.flags,
+            }),
+          );
+          expect(calls).toEqual(thisCase.expect);
+        });
+      });
     }),
   );
 });

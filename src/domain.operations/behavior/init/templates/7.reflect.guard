@@ -49,7 +49,8 @@ reviews:
 
         did the watch report green after your last push?
 
-        held arm: if a commit or push was held, paste the `### held` line of `### ship` and the
-        last watch output. there is no pushed head to confirm — do not claim one.
+        held arm: if a commit or push was held, paste the `### held` section of your yield and the
+        last watch output. there is no pushed head to confirm — do not claim one. does the hold
+        name the allowlist and the message, and the task it went to?
 
   peer: []

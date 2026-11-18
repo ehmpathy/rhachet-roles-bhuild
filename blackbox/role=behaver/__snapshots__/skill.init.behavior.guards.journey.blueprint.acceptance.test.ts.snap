@@ -1,7 +1,8 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`skill.init.behavior.guards.journey.blueprint given: [case1] a heavy-guard behavior at its blueprint stone when: [t0] blueprint pass attempted without promises then: blocked by unpromised self-review 1`] = `
-"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+"[stdout]
+🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
 
@@ -90,13 +91,15 @@ exports[`skill.init.behavior.guards.journey.blueprint given: [case1] a heavy-gua
    └─ when you've truly reflected, run
       └─ rhx route.stone.set --stone 3.3.1.blueprint.product --as promised --that has-stub-review \\
          --into .behavior/v{DATE}.full-journey/review/self/for.3.3.1.blueprint.product._.has-stub-review.md
+
+[stderr]
 🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
-   └─ ✋ blocked by constraints
-"
+   └─ ✋ blocked by constraints"
 `;
 
 exports[`skill.init.behavior.guards.journey.blueprint given: [case1] a heavy-guard behavior at its blueprint stone when: [t1] blueprint pass attempted with promises but no approval then: blocked by judge 1`] = `
-"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+"[stdout]
+🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
    │
@@ -273,6 +276,8 @@ exports[`skill.init.behavior.guards.journey.blueprint given: [case1] a heavy-gua
           └─ j2: $rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
               ├─ finished [time] ✗
               └─ reason: wait for human approval
+
+[stderr]
 🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
    └─ ✋ blocked by constraints
 
@@ -323,7 +328,8 @@ exports[`skill.init.behavior.guards.journey.blueprint given: [case1] a heavy-gua
 `;
 
 exports[`skill.init.behavior.guards.journey.blueprint given: [case1] a heavy-guard behavior at its blueprint stone when: [t2] blueprint pass attempted after approval then: allowed 1`] = `
-"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+"[stdout]
+🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
    │
@@ -504,7 +510,8 @@ exports[`skill.init.behavior.guards.journey.blueprint given: [case1] a heavy-gua
 `;
 
 exports[`skill.init.behavior.guards.journey.blueprint given: [case1] a heavy-guard behavior at its blueprint stone when: [t3] roadmap pass attempted after the blueprint then: allowed at once, with the note \`artifacts only\` 1`] = `
-"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+"[stdout]
+🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
 
@@ -517,7 +524,8 @@ exports[`skill.init.behavior.guards.journey.blueprint given: [case1] a heavy-gua
 `;
 
 exports[`skill.init.behavior.guards.journey.blueprint given: [case1] a heavy-guard behavior at its blueprint stone when: [t4] the unenrolled driver enters the roadmap, past the blueprint then: bhrain names sonnet, the build brain, and halts with the enroll fix 1`] = `
-"🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
+"[stdout]
+🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
 
 🦉 where were we?
 

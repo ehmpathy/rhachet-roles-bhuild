@@ -1,7 +1,8 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`skill.init.behavior.guards.journey.vision given: [case1] a heavy-guard behavior at its vision stone when: [t0] vision pass attempted without promises then: blocked by unpromised self-review 1`] = `
-"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+"[stdout]
+🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
 
@@ -90,13 +91,15 @@ exports[`skill.init.behavior.guards.journey.vision given: [case1] a heavy-guard 
    └─ when you've truly reflected, run
       └─ rhx route.stone.set --stone 1.vision --as promised --that has-stub-review \\
          --into .behavior/v{DATE}.full-journey/review/self/for.1.vision._.has-stub-review.md
+
+[stderr]
 🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
-   └─ ✋ blocked by constraints
-"
+   └─ ✋ blocked by constraints"
 `;
 
 exports[`skill.init.behavior.guards.journey.vision given: [case1] a heavy-guard behavior at its vision stone when: [t1] vision pass attempted after promises and approval then: allowed 1`] = `
-"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+"[stdout]
+🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
    │
@@ -147,7 +150,8 @@ exports[`skill.init.behavior.guards.journey.vision given: [case1] a heavy-guard 
 `;
 
 exports[`skill.init.behavior.guards.journey.vision given: [case1] a heavy-guard behavior at its vision stone when: [t2] criteria pass attempted without promise then: blocked by unpromised self-review 1`] = `
-"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+"[stdout]
+🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
 
@@ -236,13 +240,15 @@ exports[`skill.init.behavior.guards.journey.vision given: [case1] a heavy-guard 
    └─ when you've truly reflected, run
       └─ rhx route.stone.set --stone 2.1.criteria.blackbox --as promised --that has-stub-review \\
          --into .behavior/v{DATE}.full-journey/review/self/for.2.1.criteria.blackbox._.has-stub-review.md
+
+[stderr]
 🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
-   └─ ✋ blocked by constraints
-"
+   └─ ✋ blocked by constraints"
 `;
 
 exports[`skill.init.behavior.guards.journey.vision given: [case1] a heavy-guard behavior at its vision stone when: [t3] criteria pass attempted after promises then: allowed (no judges) 1`] = `
-"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+"[stdout]
+🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
 
 🦉 the way speaks for itself
 
@@ -255,7 +261,8 @@ exports[`skill.init.behavior.guards.journey.vision given: [case1] a heavy-guard 
 `;
 
 exports[`skill.init.behavior.guards.journey.vision given: [case1] a heavy-guard behavior at its vision stone when: [t4] the unenrolled driver enters the vision then: bhrain names opus, the design brain, and halts with the enroll fix 1`] = `
-"🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
+"[stdout]
+🪨 run solid skill repo=bhrain/role=driver/skill=route.drive
 
 🦉 where were we?
 

@@ -1,3 +1,5 @@
+import { given, then, when } from 'test-fns';
+
 import { asFlagsParsedFromShellText } from './asFlagsParsedFromShellText';
 
 const TEST_CASES = [
@@ -34,9 +36,15 @@ const TEST_CASES = [
 ];
 
 describe('asFlagsParsedFromShellText', () => {
-  TEST_CASES.map((thisCase) =>
-    test(thisCase.description, () => {
-      expect(asFlagsParsedFromShellText(thisCase.given)).toEqual(thisCase.expect);
+  TEST_CASES.map((thisCase, index) =>
+    given(`[case${index + 1}] ${thisCase.description}`, () => {
+      when('[t0] the text is parsed', () => {
+        then('it returns the expected flags', () => {
+          expect(asFlagsParsedFromShellText(thisCase.given)).toEqual(
+            thisCase.expect,
+          );
+        });
+      });
     }),
   );
 });

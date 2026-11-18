@@ -23,7 +23,8 @@ reviews:
         - the final summary line (counts)
         - the exit code
 
-        did both calls run — `--what types,format` and `--what all --against local --env test`?
+        did every kind run — `types,format`, `lint`, `unit`, `integration`, and `acceptance`?
+        a call the tool moved to the background: did you await its end, never start a second run?
         a claim with no paste is a feigned review. red anywhere → you did not commit.
 
     - slug: has-watched-the-head-green

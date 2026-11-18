@@ -5,7 +5,7 @@ import * as path from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
-  asCallOutput,
+  asStreamsOutput,
   genGuardedBehaviorScene,
   getStonesPassed,
   promiseAllReviewSelfs,
@@ -26,7 +26,10 @@ import { asSnapshotStable } from './.test/skill.init.behavior.utils';
 describe('skill.init.behavior.guards.journey.execution', () => {
   given('[case1] a heavy-guard behavior at its execution stone', () => {
     const scene = useBeforeAll(async () => {
-      const behavior = genGuardedBehaviorScene({ prefix: 'journey-execution' });
+      const behavior = genGuardedBehaviorScene({
+        prefix: 'journey-execution',
+        size: 'medi',
+      });
       const stone = '5.1.execution.phase0_to_phaseN';
 
       // drop the stones this suite never walks, so the drive's frontier is the execution
@@ -64,7 +67,10 @@ describe('skill.init.behavior.guards.journey.execution', () => {
       // promise every self-review
       promiseAllReviewSelfs({ ...behavior, stone });
 
-      // create mock peer review file (reviewed? judge requires peer review artifacts)
+      // .mock = the peer review artifact the reviewed? judge reads
+      // .why  = a real peer lane shells to a paid brain per round; this journey grades the guard
+      //         wire (the judge reads the review, the stone passes), never a reviewer verdict
+      // .real = each peer reviewer is graded live by bhrain's own review suite
       fs.mkdirSync(path.join(behavior.routeDir, '.reviews'), {
         recursive: true,
       });
@@ -97,7 +103,7 @@ describe('skill.init.behavior.guards.journey.execution', () => {
     when('[t0] execution pass attempted without promises', () => {
       then('blocked by unpromised self-review', () => {
         expect(scene.passWithoutPromises.code).not.toEqual(0);
-        const output = asCallOutput({ call: scene.passWithoutPromises });
+        const output = asStreamsOutput({ call: scene.passWithoutPromises });
         expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('review.self required');
       });
@@ -106,7 +112,7 @@ describe('skill.init.behavior.guards.journey.execution', () => {
     when('[t1] execution pass attempted after promises', () => {
       then('allowed (no judges)', () => {
         // assert the text first, so a refusal prints its own output in the failure
-        const output = asCallOutput({ call: scene.passAfterPromises });
+        const output = asStreamsOutput({ call: scene.passAfterPromises });
         expect(output).toContain('passage = allowed');
         expect(scene.passAfterPromises.code).toEqual(0);
         expect(asSnapshotStable(output)).toMatchSnapshot();
@@ -121,7 +127,7 @@ describe('skill.init.behavior.guards.journey.execution', () => {
 
     when('[t2] the unenrolled driver enters the execution', () => {
       then('bhrain names sonnet, the build brain, and halts with the enroll fix', () => {
-        const output = asCallOutput({ call: scene.executionDrive });
+        const output = asStreamsOutput({ call: scene.executionDrive });
         expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('stone = 5.1.execution.phase0_to_phaseN');
         expect(output).toContain('brain = claude-sonnet-5-5[1m]');
