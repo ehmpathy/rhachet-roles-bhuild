@@ -67,7 +67,21 @@ const SHELL_CALLS_ALLOWED = [
  * .what = this factory's own role names, never a consumer's
  * .why  = a shipped template speaks of "the human"; the director and commander are ours (case4)
  */
-const PATTERN_FACTORY_TERM = /\b(director|commander|checkpoint)\b/i;
+const PATTERN_FACTORY_TERM = /\b(director|commander)\b/i;
+
+/**
+ * .what = the stones that may commit before 6.preship: the two approval waits
+ * .why  = each commits its yield so a human reviews it off the box (case3); only a repo a human
+ *         opted in pushes it, so a repo with private data never pushes before the finish
+ */
+const CHECKPOINT_NAMES = ['1.vision.stone', '3.3.1.blueprint.product.stone'];
+
+/**
+ * .what = the opt-in marker a checkpoint reads, and the one content that lets it push
+ * .why  = fail-safe: absent, unreadable, or any other content means commit local (F1)
+ */
+const CHECKPOINT_MARKER = '.behavior/.checkpoint.jsonc';
+const CHECKPOINT_OPT_IN = '`{ "push": "allow" }`';
 
 /**
  * .what = the skill dirs of the roles the tail calls, plus the bhrain driver it runs under
@@ -616,54 +630,150 @@ describe('templates.tail', () => {
     });
   });
 
-  given('[case3] the one push point', () => {
-    // .why = the vision + blueprint checkpoints, and the pii hold they need (F1), are deferred to a
-    //        follow-up behavior. until it lands, no stone may commit or push before the finish, so
-    //        a pii repo can never push early. 7.reflect commits only through 6.preship's steps,
-    //        cited by name, so it names no ship call of its own
-    const scene = useBeforeAll(async () => ({
-      // walk every depth, refs/ included: a ship call in a ref would ship from every stone that cites it
-      namesWithShipCall: getAllFilesRecursive({ dir: TEMPLATES_DIR })
-        .filter((filePath) =>
-          PATTERN_SHIP_CALL.test(readFileSync(filePath, 'utf-8')),
-        )
-        .map((filePath) => path.relative(TEMPLATES_DIR, filePath))
-        .sort(),
-      reflect: getOneTemplateContentRequired({ name: '7.reflect.stone' }),
-    }));
+  given(
+    '[case3] the push points, and the opt-in that gates the early ones',
+    () => {
+      // .why = a repo with private data must never push before 6.preship. the two approval stones
+      //        commit their yields early, so a human reviews them off the box; each pushes only
+      //        where a human opted the repo in, and commits local otherwise (F1, fail-safe).
+      //        7.reflect commits only through 6.preship's steps, cited by name
+      const scene = useBeforeAll(async () => ({
+        // walk every depth, refs/ included: a ship call in a ref would ship from every stone that cites it
+        namesWithShipCall: getAllFilesRecursive({ dir: TEMPLATES_DIR })
+          .filter((filePath) =>
+            PATTERN_SHIP_CALL.test(readFileSync(filePath, 'utf-8')),
+          )
+          .map((filePath) => path.relative(TEMPLATES_DIR, filePath))
+          .sort(),
+        checkpoints: CHECKPOINT_NAMES.map((name) => ({
+          name,
+          section:
+            getOneTemplateContentRequired({ name }).split(
+              '## .checkpoint',
+            )[1] ?? '',
+        })),
+        reflect: getOneTemplateContentRequired({ name: '7.reflect.stone' }),
+      }));
 
-    when('[t0] every template is read', () => {
-      then('only 6.preship names a commit or a push call (c18)', () => {
-        expect(scene.namesWithShipCall).toEqual(['6.preship.stone']);
-      });
+      when('[t0] every template is read', () => {
+        then(
+          'only 6.preship and the two approval stones name a commit or a push call (c18)',
+          () => {
+            expect(scene.namesWithShipCall).toEqual(
+              [...CHECKPOINT_NAMES, '6.preship.stone'].sort(),
+            );
+          },
+        );
 
-      then(
-        "7.reflect ships its cures and record through 6.preship's steps, by name",
-        () => {
-          const reflectFlat = asProseFlat({ text: scene.reflect });
-          expect(reflectFlat).toContain(
-            "6.preship's steps `### 2. commit at the done gate` and `### 3. watch the pr`",
+        then('each approval stone carries a checkpoint section', () => {
+          scene.checkpoints.forEach((checkpoint) =>
+            expect({
+              name: checkpoint.name,
+              hasSection: checkpoint.section.length > 0,
+            }).toEqual({ name: checkpoint.name, hasSection: true }),
           );
-        },
-      );
+        });
 
-      then(
-        'each 6.preship step title 7.reflect cites is a real step title',
-        () => {
-          const preship = getOneTemplateContentRequired({
-            name: '6.preship.stone',
+        then(
+          'a checkpoint fires on the approval halt, never earlier (c10, c11)',
+          () => {
+            scene.checkpoints.forEach((checkpoint) =>
+              expect(asProseFlat({ text: checkpoint.section })).toContain(
+                'each time the guard halts on its approval judge (`halted, human approval required`), never earlier',
+              ),
+            );
+          },
+        );
+
+        then('a checkpoint stages the route dir alone (c10, c11)', () => {
+          scene.checkpoints.forEach((checkpoint) => {
+            expect(checkpoint.section).toContain(
+              '`rhx git.stage.add $BEHAVIOR_DIR_REL`',
+            );
+            expect(checkpoint.section).not.toContain('--unstaged include');
           });
-          const titlesCited = [
-            ...scene.reflect.matchAll(/`(### \d\. [^`]+)`/g),
-          ].map((match) => match[1]!);
-          expect(titlesCited.length).toBeGreaterThanOrEqual(4);
-          titlesCited.forEach((title) =>
-            expect(preship.split('\n')).toContain(title),
-          );
-        },
-      );
-    });
-  });
+        });
+
+        then(
+          'only the exact opt-in pushes; every other read commits local, for 6.preship to push (c12, c22, F1)',
+          () => {
+            scene.checkpoints.forEach((checkpoint) => {
+              const flat = asProseFlat({ text: checkpoint.section });
+              expect(flat).toContain(`read \`${CHECKPOINT_MARKER}\``);
+              expect(flat).toContain(
+                `its content is exactly ${CHECKPOINT_OPT_IN} → a human opted this repo in: commit and push, \`rhx git.commit.set -m @stdin --mode apply --unstaged ignore --push\``,
+              );
+              expect(flat).toContain(
+                'absent, unreadable, or any other content → commit local, with no push: `rhx git.commit.set -m @stdin --mode apply --unstaged ignore`. 6.preship pushes it with the work',
+              );
+              // the push call appears once, under the opt-in branch alone
+              expect(flat.match(/--push\b/g)?.length).toEqual(1);
+            });
+          },
+        );
+
+        then(
+          'a checkpoint commit never titles the pr, and carries no clock (c20, F3)',
+          () => {
+            scene.checkpoints.forEach((checkpoint) => {
+              expect(checkpoint.section).toContain('`docs(behavior):');
+              expect(checkpoint.section).not.toMatch(PATTERN_CLOCK);
+            });
+          },
+        );
+
+        then(
+          'a refused checkpoint is held, never a halt (c13, c26, F4)',
+          () => {
+            scene.checkpoints.forEach((checkpoint) =>
+              expect(asProseFlat({ text: checkpoint.section })).toContain(
+                'a refused stage, commit, or push is held, never a halt: paste the refusal verbatim at the top of the yield',
+              ),
+            );
+          },
+        );
+
+        then(
+          '7.reflect sends a cross-repo item off the box only under the same opt-in (c34)',
+          () => {
+            const reflectFlat = asProseFlat({ text: scene.reflect });
+            expect(reflectFlat).toContain(
+              `read \`${CHECKPOINT_MARKER}\` first. only its exact content ${CHECKPOINT_OPT_IN}`,
+            );
+            expect(reflectFlat).toContain(
+              'rhx radio.task.push --via os.fileops --into @this',
+            );
+          },
+        );
+
+        then(
+          "7.reflect ships its cures and record through 6.preship's steps, by name",
+          () => {
+            const reflectFlat = asProseFlat({ text: scene.reflect });
+            expect(reflectFlat).toContain(
+              "6.preship's steps `### 2. commit at the done gate` and `### 3. watch the pr`",
+            );
+          },
+        );
+
+        then(
+          'each 6.preship step title 7.reflect cites is a real step title',
+          () => {
+            const preship = getOneTemplateContentRequired({
+              name: '6.preship.stone',
+            });
+            const titlesCited = [
+              ...scene.reflect.matchAll(/`(### \d\. [^`]+)`/g),
+            ].map((match) => match[1]!);
+            expect(titlesCited.length).toBeGreaterThanOrEqual(4);
+            titlesCited.forEach((title) =>
+              expect(preship.split('\n')).toContain(title),
+            );
+          },
+        );
+      });
+    },
+  );
 
   given("[case4] the tail speaks paved calls, in a consumer's words", () => {
     const scene = useBeforeAll(async () => ({
@@ -689,7 +799,7 @@ describe('templates.tail', () => {
         ).toEqual(['git rev-parse HEAD']);
       });
 
-      then("no file names this factory's roles, or a checkpoint", () => {
+      then("no file names this factory's roles", () => {
         const filesWithTerm = scene.files
           .filter((file) => PATTERN_FACTORY_TERM.test(file.text))
           .map((file) => file.name);
