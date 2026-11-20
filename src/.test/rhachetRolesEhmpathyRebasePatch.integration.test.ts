@@ -147,7 +147,7 @@ describe('rhachet-roles-ehmpathy patch: git.branch.rebase --unstaged ignore', ()
 
       then('🔴 it refuses as a constraint', () => {
         expect(result.run.status).toEqual(2);
-        expect(result.run.stdout).toContain('error: unstaged changes found');
+        expect(result.run.stdout).toContain('ConstraintError: unstaged changes found');
       });
 
       then('🔴 the refusal names each path and the flag that cures it', () => {
@@ -194,7 +194,8 @@ describe('rhachet-roles-ehmpathy patch: git.branch.rebase --unstaged ignore', ()
       });
 
       then('the output names what it put back', () => {
-        expect(result.run.stdout).toContain('unstaged: put back as they were');
+        expect(result.run.stdout).toContain('set aside, put back');
+        expect(result.run.stdout).toContain('status: all put back');
       });
     });
   });
@@ -220,7 +221,7 @@ describe('rhachet-roles-ehmpathy patch: git.branch.rebase --unstaged ignore', ()
         expect(result.begin.status).toEqual(1);
         expect(result.begin.stdout).toContain('status: conflict');
         expect(result.begin.stdout).toContain(
-          'unstaged: held aside; put back at continue or abort',
+          'held aside until continue or abort puts them back',
         );
       });
 
