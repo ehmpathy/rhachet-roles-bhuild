@@ -14,8 +14,10 @@ import { getCliArgs } from '@src/infra/cli';
 const schemaOfArgs = z.object({
   named: z.object({
     // skill-specific args; optional here so its absence is refused below as exit 2, never
-    // as the schema's generic exit 1 (the vision contract: "exit 2 when --vision is absent")
-    vision: z.string().optional(),
+    // as the schema's generic exit 1 (the vision contract: "exit 2 when --vision is absent").
+    // a boolean is admitted too: the arg reader reads `--vision ''` as a bare flag (`true`),
+    // and that is an absent value, refused below the same way
+    vision: z.union([z.string(), z.boolean()]).optional(),
     // rhachet passthrough args (optional, ignored)
     repo: z.string().optional(),
     role: z.string().optional(),
@@ -33,10 +35,10 @@ const schemaOfArgs = z.object({
 export const reviewVisionRootPurpose = (): void => {
   const { named } = getCliArgs({ schema: schemaOfArgs });
 
-  // refuse an absent --vision; the guard always names the yield
-  if (!named.vision)
+  // refuse an absent or empty --vision; the guard always names the yield
+  if (typeof named.vision !== 'string' || !named.vision)
     throw new ConstraintError('--vision is required', {
-      hint: "rhx review.vision.root-purpose --vision '$route/1.vision.yield.md'",
+      hint: "rhx review.vision.root-purpose --vision '<route>/1.vision.yield.md'",
     });
 
   // read the verdict, then print it for the guard to tally

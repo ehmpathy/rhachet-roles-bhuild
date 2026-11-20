@@ -251,6 +251,66 @@ describe('asVisionRootPurposeReport', () => {
           );
         },
       );
+      then('stdout matches the snapshot', () => {
+        expect(report.stdout).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case13] a root purpose below another section', () => {
+    when('[t0] the depth lane reports', () => {
+      const report = asVisionRootPurposeReport({
+        vision: VISION,
+        purpose: getOneVisionRootPurpose({
+          markdown: [
+            '# vision',
+            '## the context',
+            '## .the root purpose',
+            '- why: a',
+            '  - why: b',
+            '    - why: c',
+          ].join('\n'),
+        }),
+      });
+      then('it is green, yet names the position as a nitpick', () => {
+        expect(report.blockers).toEqual(0);
+        expect(report.nitpicks).toEqual(1);
+        expect(report.stdout).toContain(
+          '[nitpick][better] the root purpose is not the first `##` section of the vision',
+        );
+      });
+      then('stdout matches the snapshot', () => {
+        expect(report.stdout).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case14] two root purpose headers', () => {
+    when('[t0] the depth lane reports', () => {
+      const report = asVisionRootPurposeReport({
+        vision: VISION,
+        purpose: getOneVisionRootPurpose({
+          markdown: [
+            '# vision',
+            '## .the root purpose',
+            '- why: a',
+            '  - why: b',
+            '    - why: c',
+            '## .the root purpose',
+            '- why: d',
+          ].join('\n'),
+        }),
+      });
+      then('it is green, yet names the second header as a nitpick', () => {
+        expect(report.blockers).toEqual(0);
+        expect(report.nitpicks).toEqual(1);
+        expect(report.stdout).toContain(
+          '[nitpick][better] the vision holds 2 `## .the root purpose` headers; the lane reads only the first',
+        );
+      });
+      then('stdout matches the snapshot', () => {
+        expect(report.stdout).toMatchSnapshot();
+      });
     });
   });
 });

@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { given, then, useBeforeAll, when } from 'test-fns';
+import { given, then, useBeforeAll, useThen, when } from 'test-fns';
 
 import { getOneBehaverBriefsDir } from '../../../domain.roles/.test/getOneBehaverBriefsDir';
 
@@ -43,21 +43,13 @@ describe('guardTemplateBriefPaths', () => {
     }));
 
     when('[t0] each behaver brief path they name is looked up', () => {
-      then('the templates name at least one behaver brief', () => {
-        expect(scene.paths.length).toBeGreaterThan(0);
-      });
-
-      then('every literal path names a brief the role ships', () => {
-        const absent = scene.paths
+      const lookup = useThen('it looks each one up', async () => ({
+        absentLiterals: scene.paths
           .filter(({ rel }) => !PATTERN_GLOB.test(rel))
           .filter(
             ({ rel }) => !fs.existsSync(path.join(DIR_OF_BEHAVER_BRIEFS, rel)),
-          );
-        expect(absent).toEqual([]);
-      });
-
-      then('every glob path roots in a dir the role ships', () => {
-        const absent = scene.paths
+          ),
+        absentGlobRoots: scene.paths
           .filter(({ rel }) => PATTERN_GLOB.test(rel))
           .map(({ guard, rel }) => ({
             guard,
@@ -67,8 +59,19 @@ describe('guardTemplateBriefPaths', () => {
           .filter(
             ({ root }) =>
               !fs.existsSync(path.join(DIR_OF_BEHAVER_BRIEFS, root)),
-          );
-        expect(absent).toEqual([]);
+          ),
+      }));
+
+      then('the templates name at least one behaver brief', () => {
+        expect(scene.paths.length).toBeGreaterThan(0);
+      });
+
+      then('every literal path names a brief the role ships', () => {
+        expect(lookup.absentLiterals).toEqual([]);
+      });
+
+      then('every glob path roots in a dir the role ships', () => {
+        expect(lookup.absentGlobRoots).toEqual([]);
       });
     });
   });

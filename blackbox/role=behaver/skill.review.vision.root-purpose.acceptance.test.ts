@@ -44,16 +44,19 @@ const runReviewVisionRootPurpose = (input: {
  * .what = a refusal's full output, ansi stripped, with the temp repo dir masked
  * .why  = each run mints a fresh temp dir (its name holds a clock time), and the cli
  *         names it by its realpath; the mask covers both forms so the snapshot is stable
- *         and holds no timestamp (rule.forbid.timestamps-in-tracked-files)
+ *         and holds no timestamp (rule.forbid.timestamps-in-tracked-files). a long run of
+ *         one letter (the overlong-name case) collapses to `a{N}`, so a diff stays legible
  */
 const asOutputMasked = (input: {
   result: { output: string };
   repoDir: string;
 }): string =>
-  [input.repoDir, fs.realpathSync(input.repoDir)].reduce(
-    (output, dir) => output.split(dir).join('$REPO_DIR'),
-    sanitizeOutput(input.result.output),
-  );
+  [input.repoDir, fs.realpathSync(input.repoDir)]
+    .reduce(
+      (output, dir) => output.split(dir).join('$REPO_DIR'),
+      sanitizeOutput(input.result.output),
+    )
+    .replace(/a{40,}/g, (run) => `a{${run.length}}`);
 
 /**
  * .what = the markdown of a vision whose root purpose holds the given layers
@@ -191,8 +194,8 @@ describe('skill.review.vision.root-purpose', () => {
       },
     ];
 
-    SHAPES.forEach((shape) =>
-      when(`[t0] the root purpose is ${shape.slug}`, () => {
+    SHAPES.forEach((shape, index) =>
+      when(`[t${index}] the root purpose is ${shape.slug}`, () => {
         const result = useBeforeAll(async () => {
           const { repoDir } = genRepoWithVision({
             markdown: [
@@ -374,10 +377,50 @@ describe('skill.review.vision.root-purpose', () => {
         }),
         expect: ['layers: 4 of 3', '0 blockers', '0 nitpicks'],
       },
+      {
+        slug: 'a root purpose below another section',
+        markdown: asYield({
+          body: [
+            '## the context',
+            '',
+            'the school runs four lessons a tide.',
+            '',
+            '## .the root purpose',
+            '',
+            ...asLayers({ layers: LAYERS_OF_MOTIVE }),
+          ],
+        }),
+        expect: [
+          'layers: 3 of 3',
+          '[nitpick][better] the root purpose is not the first `##` section of the vision',
+          '0 blockers',
+          '1 nitpick',
+        ],
+      },
+      {
+        slug: 'two root purpose sections',
+        markdown: asYield({
+          body: [
+            '## .the root purpose',
+            '',
+            ...asLayers({ layers: LAYERS_OF_MOTIVE }),
+            '',
+            '## .the root purpose',
+            '',
+            '- why: a reminder also cuts the calls to the front desk',
+          ],
+        }),
+        expect: [
+          'layers: 3 of 3',
+          '[nitpick][better] the vision holds 2 `## .the root purpose` headers; the lane reads only the first',
+          '0 blockers',
+          '1 nitpick',
+        ],
+      },
     ];
 
-    SHAPES.forEach((shape) =>
-      when(`[t0] the yield is ${shape.slug}`, () => {
+    SHAPES.forEach((shape, index) =>
+      when(`[t${index}] the yield is ${shape.slug}`, () => {
         const result = useBeforeAll(async () => {
           const { repoDir } = genRepoWithVision({ markdown: shape.markdown });
           return runReviewVisionRootPurpose({
@@ -418,6 +461,24 @@ describe('skill.review.vision.root-purpose', () => {
 
       then('the usage matches the snapshot', () => {
         expect(result.stdout).toMatchSnapshot();
+      });
+    });
+
+    when('[t1] -h is passed', () => {
+      const result = useBeforeAll(async () => ({
+        short: runReviewVisionRootPurpose({ repoDir: scene.repoDir, args: '-h' }),
+        long: runReviewVisionRootPurpose({
+          repoDir: scene.repoDir,
+          args: '--help',
+        }),
+      }));
+
+      then('it exits 0 with the same usage as --help, byte for byte', () => {
+        expect(result.short.exitCode).toEqual(0);
+        expect(result.short.stdout).toContain(
+          'usage: rhx review.vision.root-purpose --vision <path>',
+        );
+        expect(result.short.stdout).toEqual(result.long.stdout);
       });
     });
   });
@@ -532,6 +593,117 @@ describe('skill.review.vision.root-purpose', () => {
       then('it exits 2 and names the yield to pass instead', () => {
         expect(result.exitCode).toEqual(2);
         expect(result.output).toContain('the vision path is not a file');
+        expect(result.output).toContain(`--vision '${VISION_REL}'`);
+      });
+
+      then('the refusal matches the snapshot', () => {
+        expect(asOutputMasked({ result, repoDir: scene.repoDir })).toMatchSnapshot();
+      });
+    });
+
+    when('[t5] --vision names a yield that is a symlink loop', () => {
+      const result = useBeforeAll(async () => {
+        // a real loop: the yield is a symlink to itself, so realpath and the read each see ELOOP
+        const { repoDir } = genRepoWithVision({
+          markdown: asVisionMarkdown({ layers: LAYERS_OF_MOTIVE }),
+        });
+        const pathOfYield = path.join(repoDir, VISION_REL);
+        fs.rmSync(pathOfYield);
+        fs.symlinkSync(pathOfYield, pathOfYield);
+        return {
+          repoDir,
+          run: runReviewVisionRootPurpose({
+            repoDir,
+            args: `--vision '${VISION_REL}'`,
+          }),
+        };
+      });
+
+      then('it exits 2 and names the fix', () => {
+        expect(result.run.exitCode).toEqual(2);
+        expect(result.run.output).toContain('the vision path is a symlink loop');
+        expect(result.run.output).toContain(
+          'point the symlink at the real yield',
+        );
+      });
+
+      then('the refusal matches the snapshot', () => {
+        expect(
+          asOutputMasked({ result: result.run, repoDir: result.repoDir }),
+        ).toMatchSnapshot();
+      });
+    });
+
+    when('[t6] --vision runs through the yield, as if it were a dir', () => {
+      const result = useBeforeAll(async () => {
+        const { repoDir } = genRepoWithVision({
+          markdown: asVisionMarkdown({ layers: LAYERS_OF_MOTIVE }),
+        });
+        return {
+          repoDir,
+          run: runReviewVisionRootPurpose({
+            repoDir,
+            args: `--vision '${VISION_REL}/1.vision.yield.md'`,
+          }),
+        };
+      });
+
+      then('it exits 2 with a fix it can follow, never a raw ENOTDIR stack', () => {
+        expect(result.run.exitCode).toEqual(2);
+        expect(result.run.output).toContain(
+          'the vision path runs through a file',
+        );
+        // a path through a file cannot be written, so the fix names the yield instead
+        expect(result.run.output).not.toContain('then re-arrive');
+        expect(result.run.output).toContain(
+          "name the yield itself: --vision '<route>/1.vision.yield.md'",
+        );
+        // the code rides in the metadata; what must never show is a raw stack
+        expect(result.run.output).toContain('✋ ConstraintError');
+        expect(result.run.output).not.toMatch(/\n\s+at /);
+      });
+
+      then('the refusal matches the snapshot', () => {
+        expect(
+          asOutputMasked({ result: result.run, repoDir: result.repoDir }),
+        ).toMatchSnapshot();
+      });
+    });
+
+    when('[t7] --vision names a path past the os name limit', () => {
+      const result = useBeforeAll(async () =>
+        runReviewVisionRootPurpose({
+          repoDir: scene.repoDir,
+          args: `--vision '${ROUTE_REL}/${'a'.repeat(300)}.md'`,
+        }),
+      );
+
+      then('it exits 2 and names the fix, never a raw ENAMETOOLONG', () => {
+        expect(result.exitCode).toEqual(2);
+        expect(result.output).toContain(
+          'the vision path is too long for the os',
+        );
+        expect(result.output).toContain(
+          "name the yield itself: --vision '<route>/1.vision.yield.md'",
+        );
+      });
+
+      then('the refusal matches the snapshot', () => {
+        expect(asOutputMasked({ result, repoDir: scene.repoDir })).toMatchSnapshot();
+      });
+    });
+
+    when('[t8] --vision is passed with an empty value', () => {
+      const result = useBeforeAll(async () =>
+        runReviewVisionRootPurpose({
+          repoDir: scene.repoDir,
+          args: `--vision ''`,
+        }),
+      );
+
+      then('it exits 2 as absent, the same as no --vision at all', () => {
+        expect(result.exitCode).toEqual(2);
+        expect(result.output).toContain('--vision is required');
       });
 
       then('the refusal matches the snapshot', () => {

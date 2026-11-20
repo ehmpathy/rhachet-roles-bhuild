@@ -28,7 +28,7 @@ export const getOneVisionRootPurposeVerdict = (
     throw new ConstraintError('--vision must be inside cwd', {
       vision: input.vision,
       cwd: context.cwd,
-      hint: "pass the yield's path from cwd: --vision '$route/1.vision.yield.md'",
+      hint: "pass the yield's path from cwd: --vision '<route>/1.vision.yield.md'",
     });
 
   // read the yield, judge its root purpose, render the verdict
