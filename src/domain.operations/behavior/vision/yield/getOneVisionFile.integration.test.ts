@@ -69,9 +69,11 @@ describe('getOneVisionFile', () => {
         };
       });
 
-      then('it is absent, by its ENOTDIR code', () => {
+      then('it runs through a file, by its ENOTDIR code', () => {
         expect(result.error).toBeInstanceOf(ConstraintError);
-        expect(result.error.message).toContain('the vision yield is absent');
+        expect(result.error.message).toContain(
+          'the vision path runs through a file',
+        );
         expect(result.error.message).toContain('ENOTDIR');
       });
     });
@@ -107,7 +109,7 @@ describe('getOneVisionFile', () => {
       then('it is a constraint that names the loop', () => {
         expect(result.error).toBeInstanceOf(ConstraintError);
         expect(result.error.message).toContain(
-          'the vision path names no file it can read',
+          'the vision path is a symlink loop',
         );
       });
     });

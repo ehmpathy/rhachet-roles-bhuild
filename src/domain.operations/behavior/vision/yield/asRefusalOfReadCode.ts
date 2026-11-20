@@ -3,32 +3,44 @@
  *         the code is none the caller can fix
  * .why  = the one errno policy of the depth lane: the realpath walk climbs on exactly the codes
  *         the read then refuses, so the two can never drift apart
+ * .note = each hint is one move the caller can make; the path itself rides in the refusal's
+ *         `vision` field, so a hint that names no write need not echo it
  */
 export const asRefusalOfReadCode = (input: {
   code: string | null;
   pathRel: string;
 }): { message: string; hint: string } | null => {
-  // ENOTDIR: a path that runs through a file (`<yield>/x`) names no file, so it is absent too
-  if (input.code === 'ENOENT' || input.code === 'ENOTDIR')
+  if (input.code === 'ENOENT')
     return {
       message: 'the vision yield is absent',
       hint: `write ${input.pathRel}, then re-arrive`,
     };
+  // ENOTDIR: a path that runs through a file (`<yield>/x`); no write could make it exist
+  if (input.code === 'ENOTDIR')
+    return {
+      message: 'the vision path runs through a file',
+      hint: "a part of the path is a file, not a dir; name the yield itself: --vision '<route>/1.vision.yield.md'",
+    };
   if (input.code === 'EISDIR')
     return {
       message: 'the vision path is not a file',
-      hint: "name the yield itself: --vision '$route/1.vision.yield.md'",
+      // the caller named a dir; name the yield that would sit in it, a path they can paste
+      hint: `name the yield itself: --vision '${input.pathRel.replace(/\/+$/, '')}/1.vision.yield.md'`,
     };
   if (input.code === 'EACCES' || input.code === 'EPERM')
     return {
       message: 'the vision yield is unreadable',
       hint: `grant read access to ${input.pathRel}, then re-arrive`,
     };
-  // ELOOP: a symlink loop · ENAMETOOLONG: a path past the os limit; each names no file to read
-  if (input.code === 'ELOOP' || input.code === 'ENAMETOOLONG')
+  if (input.code === 'ELOOP')
     return {
-      message: 'the vision path names no file it can read',
-      hint: `point --vision at the yield itself, not a symlink loop or an overlong path: ${input.pathRel}`,
+      message: 'the vision path is a symlink loop',
+      hint: "point the symlink at the real yield, or name the yield itself: --vision '<route>/1.vision.yield.md'",
+    };
+  if (input.code === 'ENAMETOOLONG')
+    return {
+      message: 'the vision path is too long for the os',
+      hint: "name the yield itself: --vision '<route>/1.vision.yield.md'",
     };
   return null;
 };

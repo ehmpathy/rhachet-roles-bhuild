@@ -11,7 +11,7 @@
 # .how  = thin dispatcher to TypeScript implementation
 #
 # .args:
-#   --vision <path>   (required) the vision yield, inside cwd
+#   --vision <path>   (required) the vision yield, inside cwd: <route>/1.vision.yield.md
 #   --help, -h        print usage and exit 0
 #
 # .examples:
@@ -29,8 +29,10 @@
 #
 # .exit codes:
 #   - 0: a verdict was printed (blockers or none)
-#   - 2: bad input (--vision absent, outside cwd, no such file, not a
-#        file, or unreadable)
+#   - 1: a read fault the caller cannot fix (e.g. a disk error); retry
+#   - 2: bad input: --vision absent, outside cwd, or not a readable yield
+#        (absent, a dir, unreadable, a symlink loop, a path through a
+#        file, or too long for the os)
 ######################################################################
 
 set -euo pipefail
@@ -42,12 +44,13 @@ for arg in "$@"; do
 🦫 review.vision.root-purpose — check a vision yield's root purpose is present and 3 layers deep
    ├─ usage: rhx review.vision.root-purpose --vision <path>
    ├─ inputs
-   │  └─ --vision (required) the vision yield, inside cwd
+   │  └─ --vision (required) the vision yield, inside cwd: <route>/1.vision.yield.md
    ├─ example
    │  └─ rhx review.vision.root-purpose --vision '.behavior/v2026_11_08.sandpine-lesson-reminders/1.vision.yield.md'
    └─ exit codes
       ├─ 0: a verdict was printed (blockers or none); the counts sit in the summary
-      └─ 2: bad input (--vision absent, outside cwd, no such file, not a file, or unreadable)
+      ├─ 1: a read fault the caller cannot fix (e.g. a disk error); retry
+      └─ 2: bad input: --vision absent, outside cwd, or not a readable yield (absent, a dir, unreadable, a symlink loop, a path through a file, or too long for the os)
 USAGE
     exit 0
   fi

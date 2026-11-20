@@ -21,12 +21,13 @@ const TEST_CASES: {
     },
   },
   {
-    description: 'ENOTDIR: a path through a file is absent too',
+    description: 'ENOTDIR: a path through a file, which no write could create',
     given: { code: 'ENOTDIR' },
     expect: {
       refusal: {
-        message: 'the vision yield is absent',
-        hint: `write ${PATH_REL}, then re-arrive`,
+        message: 'the vision path runs through a file',
+        // never "write <path>": a path through a file cannot be written
+        hint: "a part of the path is a file, not a dir; name the yield itself: --vision '<route>/1.vision.yield.md'",
       },
     },
   },
@@ -36,7 +37,8 @@ const TEST_CASES: {
     expect: {
       refusal: {
         message: 'the vision path is not a file',
-        hint: "name the yield itself: --vision '$route/1.vision.yield.md'",
+        // the dir the caller named, with the yield name a paste would need
+        hint: `name the yield itself: --vision '${PATH_REL}/1.vision.yield.md'`,
       },
     },
   },
@@ -65,8 +67,8 @@ const TEST_CASES: {
     given: { code: 'ELOOP' },
     expect: {
       refusal: {
-        message: 'the vision path names no file it can read',
-        hint: `point --vision at the yield itself, not a symlink loop or an overlong path: ${PATH_REL}`,
+        message: 'the vision path is a symlink loop',
+        hint: "point the symlink at the real yield, or name the yield itself: --vision '<route>/1.vision.yield.md'",
       },
     },
   },
@@ -75,8 +77,8 @@ const TEST_CASES: {
     given: { code: 'ENAMETOOLONG' },
     expect: {
       refusal: {
-        message: 'the vision path names no file it can read',
-        hint: `point --vision at the yield itself, not a symlink loop or an overlong path: ${PATH_REL}`,
+        message: 'the vision path is too long for the os',
+        hint: "name the yield itself: --vision '<route>/1.vision.yield.md'",
       },
     },
   },

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { given, then, when } from 'test-fns';
+import { given, then, useThen, when } from 'test-fns';
 
 import { initBehaviorDir } from './initBehaviorDir';
 
@@ -701,23 +701,17 @@ describe('initBehaviorDir.integration', () => {
       });
 
       when('[t2] every guard template is read from source', () => {
-        then('each guard template uri points at its own file', () => {
+        const audit = useThen('it reads every guard template', async () => {
           // exhaustive, not sampled: a hand-typed uri on a new guard must not drift
           const templatesDir = path.join(__dirname, 'templates');
-          const guardTemplateNames = fs
+          const guards = fs
             .readdirSync(templatesDir)
-            .filter((name) => /\.guard(\.(light|heavy))?$/.test(name));
-          expect(guardTemplateNames.length).toBeGreaterThan(0);
-          const uriMismatches = guardTemplateNames.filter(
-            (name) =>
-              !fs
-                .readFileSync(path.join(templatesDir, name), 'utf-8')
-                .includes(`uri: ${templatesUriBase}/${name}\n`),
-          );
-          expect(uriMismatches).toEqual([]);
-        });
+            .filter((name) => /\.guard(\.(light|heavy))?$/.test(name))
+            .map((name) => ({
+              name,
+              content: fs.readFileSync(path.join(templatesDir, name), 'utf-8'),
+            }));
 
-        then('each guard template holds only the vars the driver binds', () => {
           // the vars `rhx route.guard.upgrade` accepts: bhrain's RUNTIME_GUARD_VAR_NAMES plus
           // the copy-time `$BEHAVIOR_DIR_REL`. any other `$word` — even in prompt prose — makes
           // the upgrade refuse the guard as `unknown var`, so an extant route can never adopt it.
@@ -732,20 +726,30 @@ describe('initBehaviorDir.integration', () => {
             ),
           ) as { RUNTIME_GUARD_VAR_NAMES: string[] };
           const varsAllowed = [...RUNTIME_GUARD_VAR_NAMES, '$BEHAVIOR_DIR_REL'];
-          const templatesDir = path.join(__dirname, 'templates');
-          const varsUnknown = fs
-            .readdirSync(templatesDir)
-            .filter((name) => /\.guard(\.(light|heavy))?$/.test(name))
-            .flatMap((name) =>
-              (
-                fs
-                  .readFileSync(path.join(templatesDir, name), 'utf-8')
-                  .match(/\$[A-Za-z_][A-Za-z0-9_]*/g) ?? []
+
+          return {
+            guardCount: guards.length,
+            uriMismatches: guards
+              .filter(
+                ({ name, content }) =>
+                  !content.includes(`uri: ${templatesUriBase}/${name}\n`),
               )
+              .map(({ name }) => name),
+            varsUnknown: guards.flatMap(({ name, content }) =>
+              (content.match(/\$[A-Za-z_][A-Za-z0-9_]*/g) ?? [])
                 .filter((token) => !varsAllowed.includes(token))
                 .map((token) => `${name}: ${token}`),
-            );
-          expect(varsUnknown).toEqual([]);
+            ),
+          };
+        });
+
+        then('each guard template uri points at its own file', () => {
+          expect(audit.guardCount).toBeGreaterThan(0);
+          expect(audit.uriMismatches).toEqual([]);
+        });
+
+        then('each guard template holds only the vars the driver binds', () => {
+          expect(audit.varsUnknown).toEqual([]);
         });
       });
     });
