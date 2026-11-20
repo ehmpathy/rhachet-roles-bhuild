@@ -1,7 +1,7 @@
 /**
- * .what = clamps on `git.branch.rebase --unstaged ignore`, which this repo adds to
- *         rhachet-roles-ehmpathy via patches/rhachet-roles-ehmpathy@1.41.0.patch
- *         until ehmpathy/rhachet-roles-ehmpathy#1189 ships it
+ * .what = clamps on `git.branch.rebase --unstaged ignore`, which rhachet-roles-ehmpathy
+ *         ships from 1.41.1 (ehmpathy/rhachet-roles-ehmpathy#1189); this repo once
+ *         carried it as a patch, and the clamp holds the installed skill to it
  *
  * .why  = a clone tree always holds two unstaged ambient settings files (a symlink
  *         and a file) that must stay out of every commit. the rebase skill refused
