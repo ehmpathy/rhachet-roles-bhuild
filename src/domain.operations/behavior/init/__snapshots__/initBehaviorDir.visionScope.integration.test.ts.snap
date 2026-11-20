@@ -20,6 +20,12 @@ exports[`initBehaviorDir.visionScope given: [case1] a vision route, guard=light 
     ],
     "slug": "experience-coverage",
   },
+  {
+    "files": [
+      ".behavior/v2026_10_19.vision-scope/1.vision.yield.md",
+    ],
+    "slug": "root-purpose-motive",
+  },
 ]
 `;
 
@@ -42,6 +48,12 @@ exports[`initBehaviorDir.visionScope given: [case2] a vision route, guard=heavy 
       ".behavior/v2026_10_19.vision-scope/1.vision.yield.md",
     ],
     "slug": "experience-coverage",
+  },
+  {
+    "files": [
+      ".behavior/v2026_10_19.vision-scope/1.vision.yield.md",
+    ],
+    "slug": "root-purpose-motive",
   },
 ]
 `;
