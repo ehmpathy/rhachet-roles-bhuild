@@ -178,4 +178,104 @@ describe('init.behavior.idempotent', () => {
       });
     });
   });
+
+  given('[case10] direct: a route inited before the tail, re-inited at its own size', () => {
+    when('[t0] init.behavior --size nano runs on a nano route that lacks the tail', () => {
+      const TAIL_FILES = [
+        '6.preship.stone',
+        '6.preship.guard',
+        '7.reflect.stone',
+        '7.reflect.guard',
+      ];
+
+      const scene = useBeforeAll(async () => {
+        const consumer = genConsumerRepo({
+          branchName: 'feature/pre-tail-reinit-test',
+        });
+
+        // init a nano route, then remove its tail, so it reads as one inited before the tail
+        const first = runInitBehaviorSkillDirect({
+          args: '--name pre-tail --size nano',
+          repoDir: consumer.repoDir,
+        });
+        if (first.exitCode !== 0)
+          throw new Error(
+            `the first init failed: exit=${first.exitCode}, stdout=${first.stdout}`,
+          );
+        const behaviorRoot = path.join(consumer.repoDir, '.behavior');
+        const behaviorDirNames = fs.readdirSync(behaviorRoot);
+        if (behaviorDirNames.length !== 1)
+          throw new Error(
+            `expected one behavior dir, found: ${behaviorDirNames.join(', ')}`,
+          );
+        const behaviorDir = path.join(behaviorRoot, behaviorDirNames[0]!);
+        TAIL_FILES.forEach((name) => fs.rmSync(path.join(behaviorDir, name)));
+
+        // re-init at the route's own size
+        const reinit = runInitBehaviorSkillDirect({
+          args: '--name pre-tail --size nano',
+          repoDir: consumer.repoDir,
+        });
+
+        return { ...consumer, behaviorDir, reinit };
+      });
+
+      then('the stdout shows the tail created and the rest kept', () => {
+        expect(scene.reinit.exitCode).toBe(0);
+        TAIL_FILES.forEach((name) =>
+          expect(scene.reinit.stdout).toContain(`+ ${name}`),
+        );
+        expect(scene.reinit.stdout).toContain('✓ 0.wish.md');
+        expect(scene.reinit.stdout).toContain('✓ 1.vision.stone');
+        expect(asSnapshotStable(scene.reinit.stdout)).toMatchSnapshot();
+      });
+
+      then('the four tail files are on disk again', () => {
+        TAIL_FILES.forEach((name) =>
+          expect(fs.existsSync(path.join(scene.behaviorDir, name))).toBe(true),
+        );
+      });
+    });
+  });
+
+  // F23: a bare re-init takes the default size (medi), so a nano route gains every stone medi adds.
+  // this pins that behavior as it ships; a council rule on F23 shows here as a snap diff.
+  // the silent size change is a known surprise: no warn, and the tip still names 0.wish.md. its
+  // cure is tracked in .dream/2026_10_24.init-behavior-warn-on-bare-reinit-of-extant-route.dream.md
+  given('[case11] direct: a nano route, re-inited with no --size', () => {
+    when('[t0] init.behavior runs bare on an extant nano route', () => {
+      const scene = useBeforeAll(async () => {
+        const consumer = genConsumerRepo({
+          branchName: 'feature/bare-reinit-test',
+        });
+
+        // init a nano route
+        const first = runInitBehaviorSkillDirect({
+          args: '--name bare-reinit --size nano',
+          repoDir: consumer.repoDir,
+        });
+        if (first.exitCode !== 0)
+          throw new Error(
+            `the first init failed: exit=${first.exitCode}, stdout=${first.stdout}`,
+          );
+
+        // re-init with no --size
+        const reinit = runInitBehaviorSkillDirect({
+          args: '--name bare-reinit',
+          repoDir: consumer.repoDir,
+        });
+
+        return { ...consumer, reinit };
+      });
+
+      then('the nano files are kept and the medi stones are added', () => {
+        expect(scene.reinit.exitCode).toBe(0);
+        expect(scene.reinit.stdout).toContain('✓ 0.wish.md');
+        expect(scene.reinit.stdout).toContain('✓ 6.preship.stone');
+        expect(scene.reinit.stdout).toContain('✓ 7.reflect.stone');
+        expect(scene.reinit.stdout).toMatch(/\+ \S+\.stone/);
+        expect(asSnapshotStable(scene.reinit.stdout)).toMatchSnapshot();
+      });
+    });
+  });
 });

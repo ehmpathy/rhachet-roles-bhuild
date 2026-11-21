@@ -34,7 +34,7 @@
 import { join } from 'path';
 import { given, then, useBeforeAll, when } from 'test-fns';
 
-import { getAllFilesRecursive } from './.test/getAllFilesRecursive';
+import { getAllFilesRecursive } from '../.test/utils/getAllFilesRecursive';
 
 const DIR_ROLES = __dirname;
 

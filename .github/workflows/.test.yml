@@ -180,8 +180,12 @@ jobs:
     needs: [install, enshard]
     # .why = BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN is a classic PAT (ghp_*) which the keyrack
     #        firewall rejects by design; pass it directly until it is rotated to a github-app token
+    # .why = GITHUB_ROBOT_LIVE turns on the live github-robot probes (RUN_GITHUB_ROBOT_TEST);
+    #        ci holds EHMPATH_BEAVER_GITHUB_TOKEN via the keyrack firewall, so the real writes
+    #        run here on every pr; a fleet host holds no such token, so they stay off locally
     env:
       BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}
+      GITHUB_ROBOT_LIVE: 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -268,8 +272,12 @@ jobs:
     needs: [install, enshard]
     # .why = BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN is a classic PAT (ghp_*) which the keyrack
     #        firewall rejects by design; pass it directly until it is rotated to a github-app token
+    # .why = GITHUB_ROBOT_LIVE turns on the live github-robot probes (RUN_GITHUB_ROBOT_TEST);
+    #        ci holds EHMPATH_BEAVER_GITHUB_TOKEN via the keyrack firewall, so the real writes
+    #        run here on every pr; a fleet host holds no such token, so they stay off locally
     env:
       BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN: ${{ secrets.BHUILD_DEMO_REPO_ACCESS_GITHUB_TOKEN }}
+      GITHUB_ROBOT_LIVE: 'true'
     strategy:
       fail-fast: false
       matrix:

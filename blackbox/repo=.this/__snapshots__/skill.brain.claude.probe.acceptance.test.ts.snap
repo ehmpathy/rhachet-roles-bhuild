@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`skill.brain.claude.probe given: [case1] the probe asked for help when: [t0] --help is passed then: it exits 0 and prints the header, with its usage line 1`] = `
+".what = ask the pinned claude cli once per brain id, with the
+        ehmpath/test ANTHROPIC_API_KEY, and print each verdict
+
+.why  = the brain.claude contract test slices stdout to 500 chars,
+        so a red run hides whether the cause is the model id or the
+        account behind the key; this probe prints is_error, result,
+        and the served model, never the key
+
+usage:
+  brain.claude.probe.sh 'claude-opus-5-5[1m]' 'claude-sonnet-5-5[1m]'
+
+guarantee:
+  - does not unlock; run \`rhx keyrack unlock --owner ehmpath --env test\` first
+  - the key never reaches stdout or stderr (masked as <key>)
+  - one real api call per brain id (cost: a few tokens each)"
+`;
+
+exports[`skill.brain.claude.probe given: [case2] the probe called with no brain id when: [t0] it runs with no args then: it refuses with exit 2 and names the fix 1`] = `"✋ ConstraintError: name at least one brain id, e.g. 'claude-opus-5-5[1m]'"`;
+
+exports[`skill.brain.claude.probe given: [case3] the probe called with a flag it does not declare when: [t0] --verbose is passed then: it refuses with exit 2 and names the flag 1`] = `"✋ ConstraintError: unknown flag '--verbose'; pass brain ids as plain args (see --help)"`;
+
+exports[`skill.brain.claude.probe given: [case4] the probe called with a rhachet arg and no value when: [t0] --repo is passed last then: it refuses with exit 2 and names the arg 1`] = `"✋ ConstraintError: --repo needs a value, e.g. '--repo bhuild'; or drop it (rhx passes it for you)"`;
