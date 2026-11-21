@@ -1,14 +1,14 @@
-# F21 — the dispatcher boot budget rises from 3_000 to 3_400 for the comment verb
+# F21 — the dispatcher boot budget rises from 4_200 to 4_700 for the comment verb
 
 raised by the enroll-verif-test-intent peer, 5.3 rounds 5 and 6, blocker.1. reserved for the
 commander, who reviews the pr.
 
 ## .the fork
 
-- **A** raise `budget.tokens` in `src/domain.roles/dispatcher/boot.yml` to 3_400, the linked render
-  (3,386) rounded up to the next 100, as the file's own rule asks
-- **B** keep 3_000, and cut the `radio.task.comment.sh` header (492 tokens) and others by ~390
-  tokens to fit
+- **A** raise `budget.tokens` in `src/domain.roles/dispatcher/boot.yml` to 4_700. the boot measures 4,553
+  at src, and the linked render fits under 4_700 (the clamp is green)
+- **B** keep 4_200, main's cap for the phone verbs, and cut the `radio.task.comment.sh` header
+  (492 tokens) and others by ~400 tokens to fit
 
 ## .taken — A, and why
 
@@ -16,7 +16,7 @@ commander, who reviews the pr.
   the gate (#567). a seat sees a skill through its header in the boot; a header cut to near naught
   undoes the reason the verb exists
 - refout, condense, and catalogize act on briefs. the growth is a skill header, which none of them
-  reach. a 390-token cut is nearly the whole header, so it would drop its guarantee lines (held
+  reach. a 400-token cut is nearly the whole header, so it would drop its guarantee lines (held
   QUEUED, posted once, never a body rewrite). `howto.keep-a-boot-under-budget` forbids that cut
 - `raise` is a lever that howto names, with the bound that it "sits in the diff, for review". the
   file records a prior raise (2_800 → 3_000) for the `queue` verb, with its reason in the header

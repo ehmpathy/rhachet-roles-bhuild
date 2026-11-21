@@ -22,4 +22,4 @@
 | [F18](./inventory.of=fulcrums.case=F18-zod-gate-exit-code-left.md) | the shared `getCliArgs` schema miss stays exit 1 behind `⛈️ error`; a fix for every skill is caught as a dream (5.3 ergonomics review) | clean | open | 80% |
 | [F19](./inventory.of=fulcrums.case=F19-live-pr-and-long-thread-unproven.md) | the live suite comments on an issue only; the pr and long-thread paths stay proven by stub and gh source (peer r3, 5.3 round 1) | clean | open | 80% |
 | [F20](./inventory.of=fulcrums.case=F20-caselist-frame-for-transformers.md) | pure transformer tests keep the caselist frame, no `[caseN]` / `when('[t0]')` (peer r7, 5.3 round 1) | clean | open | 80% |
-| [F21](./inventory.of=fulcrums.case=F21-dispatcher-boot-budget-raise.md) | the dispatcher boot budget rises 3_000 → 3_400 for the comment verb; reserved for the commander, named in the pr (peer r12, 5.3 rounds 5–6) | clean | open | 75% |
+| [F21](./inventory.of=fulcrums.case=F21-dispatcher-boot-budget-raise.md) | the dispatcher boot budget rises 4_200 → 4_700 for the comment verb; reserved for the commander, named in the pr (peer r12, 5.3 rounds 5–6) | clean | open | 75% |
