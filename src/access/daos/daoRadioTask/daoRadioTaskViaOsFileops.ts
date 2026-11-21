@@ -1,7 +1,6 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs/promises';
 import { today } from 'iso-time';
-import * as os from 'os';
 import * as path from 'path';
 
 import type { ContextGitRepo } from '../../../domain.objects/RadioContext';
@@ -11,6 +10,9 @@ import { RadioTaskStatus } from '../../../domain.objects/RadioTaskStatus';
 import { composeTaskIntoOsFileops } from '../../../domain.operations/radio/task/format/composeTaskIntoOsFileops';
 import { extractTaskFromOsFileops } from '../../../domain.operations/radio/task/format/extractTaskFromOsFileops';
 import { asOsFileopsPathSegment } from './asOsFileopsPathSegment';
+import { getOsFileopsCommentLogPath } from './getOsFileopsCommentLogPath';
+import { getOsFileopsRadioDir } from './getOsFileopsRadioDir';
+import { getOsFileopsTaskFilePath } from './getOsFileopsTaskFilePath';
 
 /**
  * .what = generate a short unique id
@@ -18,31 +20,6 @@ import { asOsFileopsPathSegment } from './asOsFileopsPathSegment';
  */
 const genShortId = (): string => {
   return crypto.randomUUID().slice(0, 8);
-};
-
-/**
- * .what = compute global radio directory path for a repo
- * .why = consistent path resolution for task storage
- */
-const getGlobalRadioDir = (repo: RadioTaskRepo): string => {
-  return path.join(
-    os.homedir(),
-    'git',
-    '.radio',
-    asOsFileopsPathSegment({ value: repo.owner, of: 'owner' }),
-    asOsFileopsPathSegment({ value: repo.name, of: 'name' }),
-  );
-};
-
-/**
- * .what = compute task file path from exid
- * .why = consistent file name for task storage
- */
-const getTaskFilePath = (radioDir: string, exid: string): string => {
-  return path.join(
-    radioDir,
-    `task.${asOsFileopsPathSegment({ value: exid, of: 'exid' })}._.md`,
-  );
 };
 
 /**
@@ -120,8 +97,11 @@ export const daoRadioTaskViaOsFileops = {
         input: { exid: string },
         context: ContextGitRepo,
       ): Promise<RadioTask | null> => {
-        const radioDir = getGlobalRadioDir(context.git.repo);
-        const filePath = getTaskFilePath(radioDir, input.exid);
+        const radioDir = getOsFileopsRadioDir({ repo: context.git.repo });
+        const filePath = getOsFileopsTaskFilePath({
+          radioDir,
+          exid: input.exid,
+        });
         if (!(await pathExists(filePath))) return null;
 
         const content = await fs.readFile(filePath, 'utf-8');
@@ -132,7 +112,7 @@ export const daoRadioTaskViaOsFileops = {
         input: { repo: RadioTaskRepo; title: string },
         context: ContextGitRepo,
       ): Promise<RadioTask | null> => {
-        const radioDir = getGlobalRadioDir(context.git.repo);
+        const radioDir = getOsFileopsRadioDir({ repo: context.git.repo });
 
         // list all task files and find by title
         if (!(await pathExists(radioDir))) return null;
@@ -161,7 +141,7 @@ export const daoRadioTaskViaOsFileops = {
       },
       context: ContextGitRepo,
     ): Promise<RadioTask[]> => {
-      const radioDir = getGlobalRadioDir(context.git.repo);
+      const radioDir = getOsFileopsRadioDir({ repo: context.git.repo });
       const limit = input.limit ?? 100;
 
       if (!(await pathExists(radioDir))) return [];
@@ -192,7 +172,7 @@ export const daoRadioTaskViaOsFileops = {
         const tasks: RadioTask[] = [];
         for (const flagFile of flagFiles.slice(0, limit)) {
           const exid = flagFile.replace('task.', '').replace(flagPattern, '');
-          const filePath = getTaskFilePath(radioDir, exid);
+          const filePath = getOsFileopsTaskFilePath({ radioDir, exid });
           if (await pathExists(filePath)) {
             const content = await fs.readFile(filePath, 'utf-8');
             tasks.push(extractTaskFromOsFileops({ content }));
@@ -221,7 +201,7 @@ export const daoRadioTaskViaOsFileops = {
       input: { task: RadioTask },
       context: ContextGitRepo,
     ): Promise<RadioTask> => {
-      const radioDir = getGlobalRadioDir(context.git.repo);
+      const radioDir = getOsFileopsRadioDir({ repo: context.git.repo });
 
       // check if task already exists
       const taskFound = await daoRadioTaskViaOsFileops.get.one.byUnique(
@@ -238,7 +218,7 @@ export const daoRadioTaskViaOsFileops = {
       const taskWithExid = new RadioTask({ ...input.task, exid });
 
       // write task file
-      const filePath = getTaskFilePath(radioDir, exid);
+      const filePath = getOsFileopsTaskFilePath({ radioDir, exid });
       const content = composeTaskIntoOsFileops({ task: taskWithExid });
       await fs.writeFile(filePath, content, 'utf-8');
 
@@ -255,7 +235,7 @@ export const daoRadioTaskViaOsFileops = {
       input: { task: RadioTask },
       context: ContextGitRepo,
     ): Promise<RadioTask> => {
-      const radioDir = getGlobalRadioDir(context.git.repo);
+      const radioDir = getOsFileopsRadioDir({ repo: context.git.repo });
 
       // check if task exists
       const taskFound = input.task.exid
@@ -279,7 +259,7 @@ export const daoRadioTaskViaOsFileops = {
       const exid = taskFound.exid;
 
       // create backup before overwrite
-      const taskFilePath = getTaskFilePath(radioDir, exid);
+      const taskFilePath = getOsFileopsTaskFilePath({ radioDir, exid });
       if (await pathExists(taskFilePath)) {
         const backupPath = getBackupFilePath(radioDir, exid);
         await fs.copyFile(taskFilePath, backupPath);
@@ -311,11 +291,16 @@ export const daoRadioTaskViaOsFileops = {
     input: { exid: string },
     context: ContextGitRepo,
   ): Promise<void> => {
-    const radioDir = getGlobalRadioDir(context.git.repo);
-    const filePath = getTaskFilePath(radioDir, input.exid);
+    const radioDir = getOsFileopsRadioDir({ repo: context.git.repo });
+    const filePath = getOsFileopsTaskFilePath({ radioDir, exid: input.exid });
     if (await pathExists(filePath)) {
       await fs.rm(filePath);
     }
     await removeStatusFlags(radioDir, input.exid);
+
+    // the task's comment log goes with it, so no orphan log outlives its task
+    await fs.rm(getOsFileopsCommentLogPath({ radioDir, exid: input.exid }), {
+      force: true,
+    });
   },
 };

@@ -11,8 +11,10 @@ import { RadioTaskRecordStatus } from '@src/domain.objects/RadioTaskRecordStatus
  *         tell a human re-run from a clone retry, so to keep a task out, the caller stops the
  *         push; `queue del` says so in its output ("a re-push of the same task queues it again")
  * .note = a record's identity is its key — (repo, title) for a create, (repo, exid, status)
- *         for an update — so a new status is a new record, never a re-push of this one.
- *         a push with no body asks for no body change, so it never re-queues a delivered record
+ *         for an update, (repo, exid, sha of the body) for a comment — so a new status is a new
+ *         record, never a re-push of this one. a push with no body asks for no body change, so it
+ *         never re-queues a delivered record; a delivered comment re-runs, and the thread
+ *         findsert answers it (`kept`, or posted afresh if the comment was deleted upstream)
  * .note = the switch is exhaustive: a new record status fails the type check here
  */
 export const isRadioTaskRecordRequeuedByPush = (input: {
@@ -34,8 +36,11 @@ export const isRadioTaskRecordRequeuedByPush = (input: {
     case RadioTaskRecordStatus.QUEUED:
       return false;
 
-    // a delivered record re-queues only for a new body
+    // a delivered task re-queues only for a new body. a delivered comment always re-runs: its
+    // send is a findsert on the thread (exact body, F3), so a repeat reads `kept` and posts naught,
+    // while a comment deleted upstream posts again (F13)
     case RadioTaskRecordStatus.DELIVERED:
+      if (input.before.kind === 'comment') return true;
       if (input.push.description === null) return false;
       return input.before.description !== input.push.description;
 

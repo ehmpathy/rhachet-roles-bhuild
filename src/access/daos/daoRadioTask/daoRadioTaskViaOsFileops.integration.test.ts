@@ -386,4 +386,47 @@ describe('daoRadioTaskViaOsFileops', () => {
       });
     });
   });
+
+  given('[case6] del a task that holds a comment log', () => {
+    const logPath = path.join(radioDir, 'task.test-006.comments.jsonl');
+    const scene = useBeforeAll(async () => {
+      await daoRadioTaskViaOsFileops.set.findsert(
+        {
+          task: new RadioTask({
+            exid: 'test-006',
+            title: 'task with comments',
+            description: 'test',
+            status: RadioTaskStatus.QUEUED,
+            repo: testRepo,
+            pushedBy: 'tester',
+            pushedAt: '2026-01-30' as IsoDateStamp,
+            claimedBy: null,
+            claimedAt: null,
+            deliveredAt: null,
+            branch: null,
+          }),
+        },
+        context,
+      );
+      await fs.writeFile(
+        logPath,
+        `${JSON.stringify({ body: 'board 7 needs a new fin' })}\n`,
+      );
+      await daoRadioTaskViaOsFileops.del({ exid: 'test-006' }, context);
+      const logFound = await fs
+        .access(logPath)
+        .then(() => true)
+        .catch(() => false);
+      return { logFound };
+    });
+
+    when('[t0] del is called', () => {
+      then(
+        'the comment log goes with its task, so no orphan log is left',
+        () => {
+          expect(scene.logFound).toBe(false);
+        },
+      );
+    });
+  });
 });
