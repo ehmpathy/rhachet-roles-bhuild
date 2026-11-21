@@ -1,0 +1,15 @@
+diff --git a/dist/domain.roles/mechanic/skills/git.pull/git.pull.operations.sh b/dist/domain.roles/mechanic/skills/git.pull/git.pull.operations.sh
+index 4386ec5a97c7625aeb41ca7a094d42ac55b911e4..fa14d35bc33e0b47adb4de3c5db4c6cd06d83de0 100755
+--- a/dist/domain.roles/mechanic/skills/git.pull/git.pull.operations.sh
++++ b/dist/domain.roles/mechanic/skills/git.pull/git.pull.operations.sh
+@@ -123,7 +123,9 @@ get_one_pull_text_secret_shape() {
+     'private key|-----BEGIN [A-Z ]*PRIVATE KEY-----'
+     'slack token|xox[abprs]-[A-Za-z0-9-]{10,}'
+     'stripe live key|(sk|rk)_live_[A-Za-z0-9]{16,}'
+-    'api secret key|sk-(ant-)?[A-Za-z0-9_-]{20,}'
++    # a key starts at line start or after a char outside [A-Za-z0-9_-], so a
++    # hyphenated word that holds sk- (task-to-public-repo-is-anonymized) is no key
++    'api secret key|(^|[^A-Za-z0-9_-])sk-(ant-)?[A-Za-z0-9_-]{20,}'
+     'google api key|AIza[0-9A-Za-z_-]{35}'
+   )
+   for shape in "${shapes[@]}"; do

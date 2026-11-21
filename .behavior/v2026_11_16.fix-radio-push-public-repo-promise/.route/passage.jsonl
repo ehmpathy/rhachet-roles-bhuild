@@ -575,3 +575,6 @@
 {"stone":"5.5.playtest","status":"promised","reason":"promised review.self: has-self-run-verification"}
 {"stone":"5.5.playtest","status":"arrived","reason":"entered guard reviews"}
 {"stone":"5.5.playtest","status":"blocked","blocker":"approval","reason":"wait for human approval"}
+{"stone":"5.5.playtest","status":"approved"}
+{"stone":"5.5.playtest","status":"arrived","reason":"entered guard reviews"}
+{"stone":"5.5.playtest","status":"passed"}

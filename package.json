@@ -122,7 +122,8 @@
   "packageManager": "pnpm@10.24.0",
   "pnpm": {
     "patchedDependencies": {
-      "test-fns@1.15.7": "patches/test-fns@1.15.7.patch"
+      "test-fns@1.15.7": "patches/test-fns@1.15.7.patch",
+      "rhachet-roles-ehmpathy@1.42.0": "patches/rhachet-roles-ehmpathy@1.42.0.patch"
     }
   }
 }
