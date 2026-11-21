@@ -441,6 +441,11 @@ if [[ "$VERB" == "gen" ]]; then
     --idem findsert --auth "$AUTH" 2>"$ERRFILE")" || {
     echo "💥 eco.seed gen: the push failed, so no issue exists and the row is untouched" >&2
     echo "   └─ $(tr '\n' ' ' <"$ERRFILE" | cut -c1-200)" >&2
+    # a push into a public repo halts with its --promise nudge on stdout; show it, or it is lost
+    if [[ -n "$pushed" ]]; then
+      echo "" >&2
+      printf '%s\n' "$pushed" >&2
+    fi
     exit 1
   }
   printf '%s\n' "$pushed" | sed 's/^/   │  /'

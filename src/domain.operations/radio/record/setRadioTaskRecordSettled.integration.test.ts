@@ -23,6 +23,7 @@ const asPush = (input: { description: string }) => ({
   description: input.description,
   exid: null,
   status: null,
+  promise: null,
 });
 
 /**
@@ -35,6 +36,7 @@ const asHalter = (input: { record: RadioTaskRecord }) => ({
     ...input.record,
     reason: 'upstream:rate-limit',
   }),
+  dir: '.behavior/.radio',
   lift: null,
   detail: 'api rate limit exceeded',
   halt: true,

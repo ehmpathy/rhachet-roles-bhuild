@@ -31,6 +31,7 @@ const genPush = (input: {
   description: input.exid ? null : 'remind the surfer of the lesson',
   exid: input.exid,
   status: input.status,
+  promise: null,
 });
 
 describe('getOneRadioPushRecordAfterDrain', () => {

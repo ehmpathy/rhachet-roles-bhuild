@@ -27,6 +27,7 @@ const genPush = (input: { repo: RadioTaskRepo; description: string }) => ({
   description: input.description,
   exid: null,
   status: null,
+  promise: null,
 });
 
 /**
@@ -316,4 +317,156 @@ describe('setRadioTaskRecordUpstream', () => {
       });
     },
   );
+
+  /**
+   * .what = the clamp: a text record into a public repo sends no request without its promise
+   * .why = a task text sent to a public repo cannot be taken back; the gate must sit before the
+   *        request, so the transport never sees an unvouched create or edit
+   */
+  given(
+    '[case4] the clamp: a text record into a public repo, with and without its promise',
+    () => {
+      const pathPrior = process.env.PATH;
+      const stubDir = genTempDir({ slug: 'radio-promise-clamp-stub-gh' });
+      const repoPublic = new RadioTaskRepo({
+        owner: 'sandpine',
+        name: 'spot-forecast-widget',
+      });
+      beforeAll(() => {
+        fs.writeFileSync(path.join(stubDir, 'gh'), STUB_GH_CLAMP, {
+          mode: 0o755,
+        });
+        process.env.STUB_GH_DIR = stubDir;
+        process.env.PATH = `${stubDir}:${pathPrior}`;
+        process.env.RADIO_PROMISE_CLAMP_TOKEN = 'ghp_promiseClampTokenStub0000';
+      });
+      afterAll(() => {
+        process.env.PATH = pathPrior;
+      });
+
+      /**
+       * .what = the gh calls of one verb the stub saw
+       */
+      const getCallsOf = (input: { verb: string }): string[] => {
+        const file = path.join(stubDir, 'calls.log');
+        if (!fs.existsSync(file)) return [];
+        return fs
+          .readFileSync(file, 'utf8')
+          .split('\n')
+          .filter((line) => line.startsWith(`${input.verb} `));
+      };
+
+      const scene = useBeforeAll(async () => {
+        const cwd = genTempDir({ slug: 'radio-promise-clamp', git: true });
+        const homeDir = genTempDir({ slug: 'radio-promise-clamp-home' });
+        fs.mkdirSync(path.join(cwd, '.meter'), { recursive: true });
+        fs.writeFileSync(
+          path.join(cwd, '.meter', 'radio.uses.jsonc'),
+          JSON.stringify({ state: 'allowed' }),
+        );
+        const dir = path.join(cwd, '.behavior', '.radio');
+        const context = { cwd, homeDir, env: process.env, shx, drainDeadline };
+        const { record } = setRadioTaskRecordFromPush(
+          {
+            push: {
+              ...genPush({
+                repo: repoPublic,
+                description: 'the swell widget reads stale after noon',
+              }),
+              title: 'swell widget reads stale',
+              via: RadioChannel.GH_ISSUES,
+              auth: 'as-robot:env(RADIO_PROMISE_CLAMP_TOKEN)',
+            },
+          },
+          { dir, cwd },
+        );
+        return { dir, context, record };
+      });
+
+      when('[t0] the drain reaches it with no promise', () => {
+        const result = useThen('it holds', async () => {
+          const fate = await setRadioTaskRecordUpstream(
+            { record: scene.record, dir: scene.dir },
+            scene.context,
+          );
+          return {
+            fate,
+            onDisk: daoRadioTaskRecord.get.one.byUnique({
+              dir: scene.dir,
+              key: scene.record.key,
+            }),
+            reads: getCallsOf({ verb: 'repo view' }).length,
+            creates: getCallsOf({ verb: 'issue create' }).length,
+            edits: getCallsOf({ verb: 'issue edit' }).length,
+          };
+        });
+
+        then('the visibility is read, once', () => {
+          expect(result.reads).toEqual(1);
+        });
+
+        then('no create and no edit request reaches the transport', () => {
+          expect(result.creates).toEqual(0);
+          expect(result.edits).toEqual(0);
+        });
+
+        then('the record is held QUEUED for its promise', () => {
+          expect(result.fate.fate).toEqual('held');
+          expect(result.onDisk?.recordStatus).toEqual(
+            RadioTaskRecordStatus.QUEUED,
+          );
+          expect(result.onDisk?.reason).toEqual('public-repo:unpromised');
+        });
+      });
+
+      when('[t1] the drain reaches it again, with the promise', () => {
+        const result = useThen('it sends', async () => {
+          const record = daoRadioTaskRecord.get.one.byUnique({
+            dir: scene.dir,
+            key: scene.record.key,
+          });
+          const fate = await setRadioTaskRecordUpstream(
+            { record: record!, dir: scene.dir },
+            {
+              ...scene.context,
+              promiseOverride: 'task-to-public-repo-is-anonymized',
+            },
+          );
+          return {
+            fate,
+            creates: getCallsOf({ verb: 'issue create' }).length,
+          };
+        });
+
+        then('exactly one create request reaches the transport', () => {
+          expect(result.creates).toEqual(1);
+        });
+
+        then('the record is delivered', () => {
+          expect(result.fate.fate).toEqual('delivered');
+        });
+      });
+    },
+  );
 });
+
+/**
+ * .mock = the gh cli, via a stub `gh` first on PATH
+ * .why  = the clamp counts the requests that reach the transport; a public repo that a test can
+ *         create issues in on demand would leak test text to the world, the very harm under test
+ * .real = src/access/daos/daoRadioTask/getOneGhRepoVisibility.integration.test.ts reads the real
+ *         demo repo's visibility; skill.radio.task.push.via-gh-issues creates real issues
+ * .note = the stub token is a marker, never a credential: no call it carries reaches github
+ */
+const STUB_GH_CLAMP = `#!/usr/bin/env bash
+echo "$1 $2 $3" >> "$STUB_GH_DIR/calls.log"
+case "$1 $2" in
+  "api user") echo "stubbot" ;;
+  "repo view") echo '{"visibility":"PUBLIC"}' ;;
+  "issue list") echo "[]" ;;
+  "issue create")
+    n="$(cat "$STUB_GH_DIR/seq" 2>/dev/null || echo 700)"; n=$((n + 1)); echo "$n" > "$STUB_GH_DIR/seq"
+    echo "https://github.com/stub/stub/issues/$n" ;;
+  *) echo "stub gh: unexpected call: $*" >&2; exit 1 ;;
+esac
+`;

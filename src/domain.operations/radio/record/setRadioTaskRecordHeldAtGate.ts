@@ -28,6 +28,7 @@ export const setRadioTaskRecordHeldAtGate = (input: {
     record: input.record,
     change: { reason: asRadioGateBlockedReason({ gate: input.gate }) },
   }),
+  dir: input.dir,
   lift: asRadioLiftCommand({
     level: input.gate.level,
     owner: input.record.repo.owner,

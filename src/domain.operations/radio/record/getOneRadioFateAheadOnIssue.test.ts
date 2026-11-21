@@ -32,6 +32,7 @@ const genUpdate = (input: {
     reason: input.reason,
     heldSeq: 1,
     deliveredExid: null,
+    promise: null,
   });
 
 const genHeld = (input: {
@@ -39,6 +40,7 @@ const genHeld = (input: {
   lift: string | null;
 }): RadioTaskRecordFate => ({
   fate: 'held',
+  dir: '.behavior/.radio',
   record: input.record,
   lift: input.lift,
   detail: null,
@@ -174,6 +176,55 @@ describe('getOneRadioFateAheadOnIssue', () => {
               ],
             });
             expect(ahead).toBeNull();
+          },
+        );
+      });
+    },
+  );
+
+  given(
+    '[case6] an earlier text-only update to the same issue, held for its promise',
+    () => {
+      const textAheadHeld = genHeld({
+        record: new RadioTaskRecord({
+          ...genUpdate({
+            key: 'a1b2c3d4e5f60718',
+            exid: '599',
+            status: RadioTaskStatus.CLAIMED,
+            reason: 'public-repo:unpromised',
+          }),
+          status: null,
+          description: 'lesson reminders send twice',
+        }),
+        lift: null,
+      });
+
+      when('[t0] a status-only update behind it looks ahead', () => {
+        then(
+          'it finds none: a status step does not wait behind text it does not touch',
+          () => {
+            const ahead = getOneRadioFateAheadOnIssue({
+              record: recordBehind,
+              fates: [textAheadHeld],
+            });
+            expect(ahead).toBeNull();
+          },
+        );
+      });
+
+      when('[t1] a text update behind it looks ahead', () => {
+        then(
+          'it finds the text ahead: a later edit must not land before the held one',
+          () => {
+            const ahead = getOneRadioFateAheadOnIssue({
+              record: new RadioTaskRecord({
+                ...recordBehind,
+                status: null,
+                description: 'retry a failed reminder twice',
+              }),
+              fates: [textAheadHeld],
+            });
+            expect(ahead?.record.key).toEqual('a1b2c3d4e5f60718');
           },
         );
       });

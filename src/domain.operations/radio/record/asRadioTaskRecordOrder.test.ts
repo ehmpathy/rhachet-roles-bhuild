@@ -35,6 +35,7 @@ const genUpdate = (input: {
     reason: null,
     heldSeq: input.heldSeq,
     deliveredExid: null,
+    promise: null,
   }),
 });
 

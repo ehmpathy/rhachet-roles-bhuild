@@ -1,0 +1,91 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asRadioPromiseNudgeOutput given: [case1] a create into a public repo, no promise when: [t0] the nudge renders then: it names the repo, the checklist, and the command last 1`] = `
+"🦫 hold up — this task goes to a public repo
+   ├─ repo: sandpine/svc-lessons (public)
+   ├─ the title and body must hold none of
+   │  ├─ the source org, repo, route path, or pr / issue numbers
+   │  ├─ internal endpoint, service, table or product names
+   │  └─ customer, revenue or other business detail
+   └─ this push: naught sent, naught queued; once checked, re-run the command below
+
+rhx radio.task.push --via gh.issues --into sandpine/svc-lessons --title 'lesson reminder flakes' --description 'the 9am reminder sends twice' --promise task-to-public-repo-is-anonymized"
+`;
+
+exports[`asRadioPromiseNudgeOutput given: [case2] a multi-line body when: [t0] the nudge renders then: the command prints flush-left, no rail inside the body 1`] = `
+"🦫 hold up — this task goes to a public repo
+   ├─ repo: sandpine/svc-lessons (public)
+   ├─ the title and body must hold none of
+   │  ├─ the source org, repo, route path, or pr / issue numbers
+   │  ├─ internal endpoint, service, table or product names
+   │  └─ customer, revenue or other business detail
+   └─ this push: naught sent, naught queued; once checked, re-run the command below
+
+rhx radio.task.push --via gh.issues --into sandpine/svc-lessons --title 'lesson reminder flakes' --description 'line one
+line two' --promise task-to-public-repo-is-anonymized"
+`;
+
+exports[`asRadioPromiseNudgeOutput given: [case3] a visibility read that failed on the auth when: [t0] the nudge renders then: it leads with the as-human re-run, and its command has no promise 1`] = `
+"🦫 hold up — this task may go to a public repo
+   ├─ repo: sandpine/svc-lessons (visibility unreadable on this auth — try as-human)
+   │  └─ cause: github auth failed: the robot token was rejected by github (401)
+   ├─ first: re-run with --auth as-human; a private repo then sends with no promise
+   ├─ or, with no human login or a public repo: check the text, then add --promise task-to-public-repo-is-anonymized instead
+   ├─ the title and body must hold none of
+   │  ├─ the source org, repo, route path, or pr / issue numbers
+   │  ├─ internal endpoint, service, table or product names
+   │  └─ customer, revenue or other business detail
+   └─ this push: naught sent, naught queued; once checked, re-run the command below
+
+rhx radio.task.push --via gh.issues --into sandpine/svc-lessons --title 'lesson reminder flakes' --description 'the 9am reminder sends twice' --auth as-human"
+`;
+
+exports[`asRadioPromiseNudgeOutput given: [case4] a status push whose record carries an earlier body when: [t0] the nudge renders then: it names the record path, the status-alone route, and re-pipes the body 1`] = `
+"🦫 hold up — this task goes to a public repo
+   ├─ repo: sandpine/svc-lessons (public)
+   ├─ this record carries a body from an earlier push, at .behavior/.radio/record.a1b2c3d4e5f60718.json
+   │  └─ a --promise here cannot vouch it; that body is dropped now
+   ├─ to send status alone: re-run the same command, as you ran it
+   ├─ to send the body too: check it (none of the three below), then re-pipe it into the command below
+   ├─ 1 update waits behind it on #5; its deliver needs this claim first
+   │  └─ a re-run sends that deliver first, and it is refused; push the deliver again once the claim lands
+   ├─ the title and body must hold none of
+   │  ├─ the source org, repo, route path, or pr / issue numbers
+   │  ├─ internal endpoint, service, table or product names
+   │  └─ customer, revenue or other business detail
+   └─ this push: naught sent, naught queued; once checked, run the command below with the body piped in
+
+rhx radio.task.push --via gh.issues --into sandpine/svc-lessons --exid 5 --status CLAIMED --description @stdin --promise task-to-public-repo-is-anonymized"
+`;
+
+exports[`asRadioPromiseNudgeOutput given: [case5] a nudge after a drain that carried a backlog when: [t0] the nudge renders then: the backlog shows first, then the nudge, the command last 1`] = `
+"🌊 the backlog
+   ├─ delivered
+   │  └─ wetsuit reorder → #41
+   └─ backlog = 0
+
+🦫 hold up — this task goes to a public repo
+   ├─ repo: sandpine/svc-lessons (public)
+   ├─ the title and body must hold none of
+   │  ├─ the source org, repo, route path, or pr / issue numbers
+   │  ├─ internal endpoint, service, table or product names
+   │  └─ customer, revenue or other business detail
+   ├─ re-pipe the checked body into the command below
+   │  └─ the body this push piped: .behavior/.radio/record.a1b2c3d4e5f60718.json
+   └─ this push: naught sent, naught queued; once checked, run the command below with the body piped in
+
+rhx radio.task.push --via gh.issues --into sandpine/svc-lessons --title 'lesson reminder flakes' --description @stdin --promise task-to-public-repo-is-anonymized"
+`;
+
+exports[`asRadioPromiseNudgeOutput given: [case6] a deliver that carries a note when: [t0] the nudge renders then: it names the status-only way out, and says naught was sent 1`] = `
+"🦫 hold up — this task goes to a public repo
+   ├─ repo: sandpine/svc-lessons (public)
+   ├─ to send status alone: re-run it without --description
+   ├─ the title and body must hold none of
+   │  ├─ the source org, repo, route path, or pr / issue numbers
+   │  ├─ internal endpoint, service, table or product names
+   │  └─ customer, revenue or other business detail
+   └─ this push: naught sent, naught queued; once checked, re-run the command below
+
+rhx radio.task.push --via gh.issues --into sandpine/svc-lessons --exid 5 --status DELIVERED --description 'shipped the size chart' --promise task-to-public-repo-is-anonymized"
+`;

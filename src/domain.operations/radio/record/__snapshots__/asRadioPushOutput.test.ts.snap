@@ -21,7 +21,8 @@ exports[`asRadioPushOutput given: [case2] a push blocked by radio.uses (C10) whe
    ├─ held at = .behavior/v2026_09_28.fix-radio-recorder/.radio/
    ├─ backlog = 2 await the radio
    └─ lift it (human): rhx radio.uses --global allow
-      └─ then the next push delivers the backlog first"
+      ├─ then the next push delivers the backlog first
+      └─ a public repo will owe --promise; pass it now if so"
 `;
 
 exports[`asRadioPushOutput given: [case3.2] a push held behind an earlier update to its issue when: [t0] the record ahead is set aside in the same drain then: it points to the record ahead, and promises a send only once that one lands or is dropped 1`] = `
@@ -103,7 +104,8 @@ exports[`asRadioPushOutput given: [case3] an unbound push held by an upstream fa
    ├─ held at = .behavior/.radio/ (branch bound to 2 routes: .behavior/v2026_01_01.alpha, .behavior/v2026_01_02.beta)
    ├─ backlog = 1 awaits the radio
    └─ lift it (human): rhx radio.uses allow
-      └─ then the next push delivers the backlog first"
+      ├─ then the next push delivers the backlog first
+      └─ a public repo will owe --promise; pass it now if so"
 `;
 
 exports[`asRadioPushOutput given: [case3] an unbound push held by an upstream fault (R2, C13) when: [t2] the fault hint carries its own tree then: the inner tree nests under its header, with no second glyph per line 1`] = `
@@ -184,6 +186,7 @@ exports[`asRadioPushOutput given: [case20] a push held at a shut gate, under an 
    ├─ held at = .behavior/v2026_09_28.fix-radio-recorder/.radio/
    ├─ backlog = 1 awaits the radio
    ├─ lift it (human): rhx radio.uses --org sandpine allow
+   │  └─ a public repo will owe --promise; pass it now if so
    └─ amend its auth (human): rhx radio.task.queue set --uuid f0e1d2c3b4a59687 --auth <auth>
       └─ auth: as-robot:shx(…), will not replay"
 `;

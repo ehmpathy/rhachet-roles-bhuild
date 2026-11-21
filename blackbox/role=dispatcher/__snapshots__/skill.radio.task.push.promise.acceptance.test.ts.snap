@@ -1,0 +1,887 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case1] a clone pushes a follow-up into a public repo (stub: PUBLIC) when: [t1] push title and body, no --promise then: exit 2, and the nudge ends with the exact command to re-run 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 hold up — this task goes to a public repo
+   ├─ repo: sandpine/spot-forecast-widget (public)
+   ├─ the title and body must hold none of
+   │  ├─ the source org, repo, route path, or pr / issue numbers
+   │  ├─ internal endpoint, service, table or product names
+   │  └─ customer, revenue or other business detail
+   └─ this push: naught sent, naught queued; once checked, re-run the command below
+
+rhx radio.task.push --via gh.issues --into sandpine/spot-forecast-widget --title 'retry lesson reminders' --description 'retry a failed reminder once' --auth 'as-robot:env(RADIO_PROMISE_TOKEN)' --promise task-to-public-repo-is-anonymized"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case1] a clone pushes a follow-up into a public repo (stub: PUBLIC) when: [t2] push --promise wrong-value then: exit 2, names the one valid value, and sends no request 1`] = `
+"
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --promise 'wrong-value' is not a promise this radio knows; the one valid value: --promise task-to-public-repo-is-anonymized"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case1] a clone pushes a follow-up into a public repo (stub: PUBLIC) when: [t3] re-run the exact command the nudge printed then: exit 0, and exactly one issue was created 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 onto the pile!
+
+🎙️ created: retry lesson reminders
+   ├─ exid: <exid>
+   ├─ status: QUEUED
+   ├─ repo: sandpine/spot-forecast-widget
+   ├─ pushedBy: stubbot
+   ├─ pushedAt: <date>
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case2] a clone pushes into a private and an internal repo (stub: PRIVATE, INTERNAL) when: [t1] push title and body to the private repo, no --promise then: exit 0, no nudge, one read, and one issue created 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 onto the pile!
+
+🎙️ created: board rentals open friday
+   ├─ exid: <exid>
+   ├─ status: QUEUED
+   ├─ repo: sandpine/spot-forecast-widget
+   ├─ pushedBy: stubbot
+   ├─ pushedAt: <date>
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case2] a clone pushes into a private and an internal repo (stub: PRIVATE, INTERNAL) when: [t2] push to the private repo with a stray --promise then: exit 0, one issue created, and no read: the promise settles it 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 onto the pile!
+
+🎙️ created: wetsuit sizes
+   ├─ exid: <exid>
+   ├─ status: QUEUED
+   ├─ repo: sandpine/spot-forecast-widget
+   ├─ pushedBy: stubbot
+   ├─ pushedAt: <date>
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case2] a clone pushes into a private and an internal repo (stub: PRIVATE, INTERNAL) when: [t3] push to the internal repo, no --promise then: exit 0, one read, and one issue created 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 onto the pile!
+
+🎙️ created: instructor shifts
+   ├─ exid: <exid>
+   ├─ status: QUEUED
+   ├─ repo: sandpine/instructor-schedule
+   ├─ pushedBy: stubbot
+   ├─ pushedAt: <date>
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case2] a clone pushes into a private and an internal repo (stub: PRIVATE, INTERNAL) when: [t4] edit the body of issue 41 in the private repo, no --promise then: exit 0, no nudge, and the edit carries the new body 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 onto the pile!
+
+🎙️ updated: stub issue title
+   ├─ exid: <exid>
+   ├─ status: QUEUED
+   ├─ repo: sandpine/spot-forecast-widget
+   ├─ pushedBy: stubbot
+   ├─ pushedAt: <date>
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case3] a clone pushes into a repo whose visibility cannot be read (stub: fail, garbage, unknown) when: [t1] push title and body, no --promise then: exit 2, and the nudge marks the repo as unreadable, treated as public 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 hold up — this task may go to a public repo
+   ├─ repo: sandpine/spot-forecast-widget (visibility unreadable — treated as public)
+   │  └─ cause: gh: the stub was told to fail
+   ├─ the title and body must hold none of
+   │  ├─ the source org, repo, route path, or pr / issue numbers
+   │  ├─ internal endpoint, service, table or product names
+   │  └─ customer, revenue or other business detail
+   └─ this push: naught sent, naught queued; once checked, re-run the command below
+
+rhx radio.task.push --via gh.issues --into sandpine/spot-forecast-widget --title 'retry lesson reminders' --description 'retry a failed reminder once' --auth 'as-robot:env(RADIO_PROMISE_TOKEN)' --promise task-to-public-repo-is-anonymized"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case3] a clone pushes into a repo whose visibility cannot be read (stub: fail, garbage, unknown) when: [t2] re-run with --promise then: exit 0, one issue created, and no read for this push 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 onto the pile!
+
+🎙️ created: retry lesson reminders
+   ├─ exid: <exid>
+   ├─ status: QUEUED
+   ├─ repo: sandpine/spot-forecast-widget
+   ├─ pushedBy: stubbot
+   ├─ pushedAt: <date>
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case3] a clone pushes into a repo whose visibility cannot be read (stub: fail, garbage, unknown) when: [t3] push --exid 41 --description, no --promise then: exit 2, the nudge prints the --exid 41 command with --promise, and no edit is sent 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 hold up — this task may go to a public repo
+   ├─ repo: sandpine/spot-forecast-widget (visibility unreadable — treated as public)
+   │  └─ cause: gh: the stub was told to fail
+   ├─ the title and body must hold none of
+   │  ├─ the source org, repo, route path, or pr / issue numbers
+   │  ├─ internal endpoint, service, table or product names
+   │  └─ customer, revenue or other business detail
+   └─ this push: naught sent, naught queued; once checked, re-run the command below
+
+rhx radio.task.push --via gh.issues --into sandpine/spot-forecast-widget --exid 41 --description 'rentals open at ten' --auth 'as-robot:env(RADIO_PROMISE_TOKEN)' --promise task-to-public-repo-is-anonymized"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case3] a clone pushes into a repo whose visibility cannot be read (stub: fail, garbage, unknown) when: [t4] push to a repo that answers non-json then: exit 2, and the nudge names the cause: visibility json unparsable 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 hold up — this task may go to a public repo
+   ├─ repo: sandpine/board-rentals (visibility unreadable — treated as public)
+   │  └─ cause: visibility json unparsable
+   ├─ the title and body must hold none of
+   │  ├─ the source org, repo, route path, or pr / issue numbers
+   │  ├─ internal endpoint, service, table or product names
+   │  └─ customer, revenue or other business detail
+   └─ this push: naught sent, naught queued; once checked, re-run the command below
+
+rhx radio.task.push --via gh.issues --into sandpine/board-rentals --title 'board rack count' --description 'count the racks' --auth 'as-robot:env(RADIO_PROMISE_TOKEN)' --promise task-to-public-repo-is-anonymized"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case3] a clone pushes into a repo whose visibility cannot be read (stub: fail, garbage, unknown) when: [t5] push to a repo that answers an unknown visibility then: exit 2, and the nudge names the unknown value as the cause 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 hold up — this task may go to a public repo
+   ├─ repo: sandpine/wetsuit-stock (visibility unreadable — treated as public)
+   │  └─ cause: visibility value "SECRET" unknown
+   ├─ the title and body must hold none of
+   │  ├─ the source org, repo, route path, or pr / issue numbers
+   │  ├─ internal endpoint, service, table or product names
+   │  └─ customer, revenue or other business detail
+   └─ this push: naught sent, naught queued; once checked, re-run the command below
+
+rhx radio.task.push --via gh.issues --into sandpine/wetsuit-stock --title 'wetsuit stock count' --description 'count the wetsuits' --auth 'as-robot:env(RADIO_PROMISE_TOKEN)' --promise task-to-public-repo-is-anonymized"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case4] a clone edits the title and body of a public issue (stub: PUBLIC) when: [t1] push --exid 41 with a new title and body, no --promise then: exit 2, the nudge prints the --exid 41 command, and no edit is sent 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 hold up — this task goes to a public repo
+   ├─ repo: sandpine/spot-forecast-widget (public)
+   ├─ the title and body must hold none of
+   │  ├─ the source org, repo, route path, or pr / issue numbers
+   │  ├─ internal endpoint, service, table or product names
+   │  └─ customer, revenue or other business detail
+   └─ this push: naught sent, naught queued; once checked, re-run the command below
+
+rhx radio.task.push --via gh.issues --into sandpine/spot-forecast-widget --exid 41 --title 'lesson reminder retry' --description 'retry once, then report' --auth 'as-robot:env(RADIO_PROMISE_TOKEN)' --promise task-to-public-repo-is-anonymized"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case4] a clone edits the title and body of a public issue (stub: PUBLIC) when: [t2] re-run with --promise then: exit 0, and exactly one edit carries the new body 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 onto the pile!
+
+🎙️ updated: lesson reminder retry
+   ├─ exid: <exid>
+   ├─ status: QUEUED
+   ├─ repo: sandpine/spot-forecast-widget
+   ├─ pushedBy: stubbot
+   ├─ pushedAt: <date>
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case4] a clone edits the title and body of a public issue (stub: PUBLIC) when: [t3] push via os.fileops with a stray --promise then: exit 0, and no visibility read and no issue create: the channel is not gh 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 onto the pile!
+
+🎙️ created: board wax order
+   ├─ exid: <exid>
+   ├─ status: QUEUED
+   ├─ repo: sandpine/spot-forecast-widget
+   ├─ pushedBy: stubbot
+   ├─ pushedAt: <date>
+   ├─ via: os.fileops
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case5] a clone claims an issue in a public repo, status only (stub: PUBLIC) when: [t1] push --exid 5 --status CLAIMED then: exit 0, no nudge, and no visibility read 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 onto the pile!
+
+🎙️ updated: stub issue title
+   ├─ exid: <exid>
+   ├─ status: CLAIMED
+   ├─ repo: sandpine/spot-forecast-widget
+   ├─ pushedBy: stubbot
+   ├─ pushedAt: <date>
+   ├─ claimedBy: stubbot
+   ├─ claimedAt: <date>
+   ├─ branch: feat/promise-journey
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case6] four pushes held behind a shut radio.uses gate: A public+promise, B public, C private, D unreadable when: [t0] the four pushes are held, then the queue is read then: a text push held at the gate says a public repo will owe a promise; the promised one does not 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 held for the radio
+   ├─ task    = retry lesson reminders
+   ├─ into    = sandpine/spot-forecast-widget
+   ├─ status  = QUEUED (radio.uses:blocked — org)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ backlog = 2 await the radio
+   └─ lift it (human): rhx radio.uses --org sandpine allow
+      ├─ then the next push delivers the backlog first
+      └─ a public repo will owe --promise; pass it now if so"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case6] four pushes held behind a shut radio.uses gate: A public+promise, B public, C private, D unreadable when: [t0] the four pushes are held, then the queue is read then: queue get lists four held records 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 held for the radio
+   ├─ <uuid> lesson reminder copy → sandpine/svc-lessons
+   │  ├─ state: held at gate (radio.uses:blocked — org)
+   │  ├─ auth: as-robot:env(RADIO_PROMISE_TOKEN)
+   │  └─ lift it (human): rhx radio.uses --org sandpine allow
+   ├─ <uuid> retry lesson reminders → sandpine/spot-forecast-widget
+   │  ├─ state: held at gate (radio.uses:blocked — org)
+   │  ├─ auth: as-robot:env(RADIO_PROMISE_TOKEN)
+   │  └─ lift it (human): rhx radio.uses --org sandpine allow
+   ├─ <uuid> rotate the wax order → sandpine/infrastructure
+   │  ├─ state: held at gate (radio.uses:blocked — org)
+   │  ├─ auth: as-robot:env(RADIO_PROMISE_TOKEN)
+   │  └─ lift it (human): rhx radio.uses --org sandpine allow
+   ├─ <uuid> coach roster sync → sandpine/coachbook
+   │  ├─ state: held at gate (radio.uses:blocked — org)
+   │  ├─ auth: as-robot:env(RADIO_PROMISE_TOKEN)
+   │  └─ lift it (human): rhx radio.uses --org sandpine allow
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog; a public repo needs \`drain --promise task-to-public-repo-is-anonymized\`, once checked"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case6] four pushes held behind a shut radio.uses gate: A public+promise, B public, C private, D unreadable when: [t1] open the radio.uses gate; queue drain then: each held row names its record file, the scrub, the vouch, and the drop 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 back in the river! part of the backlog is delivered
+   ├─ drained
+   │  ├─ #<exid> lesson reminder copy
+   │  └─ #<exid> rotate the wax order
+   ├─ still held
+   │  ├─ <uuid> retry lesson reminders → sandpine/spot-forecast-widget (public-repo:unpromised)
+   │  │  ├─ awaits: public repo, no anonymized promise on this record
+   │  │  ├─ check its title and body at .behavior/.radio/record.<uuid>.json: no source org, repo, route path, pr / issue numbers, internal names, or business detail
+   │  │  ├─ scrub the body if need be: rhx radio.task.queue set --uuid <uuid> --description @stdin
+   │  │  ├─ once checked, vouch: rhx radio.task.queue drain --promise task-to-public-repo-is-anonymized (it promises every held public record)
+   │  │  └─ or drop it: rhx radio.task.queue del --uuid <uuid> --why "<why>"
+   │  └─ <uuid> coach roster sync → sandpine/coachbook (public-repo:unreadable)
+   │     ├─ fault: visibility unreadable — treated as public
+   │     ├─ cause: gh: the stub was told to fail
+   │     ├─ check its title and body at .behavior/.radio/record.<uuid>.json: no source org, repo, route path, pr / issue numbers, internal names, or business detail
+   │     ├─ scrub the body if need be: rhx radio.task.queue set --uuid <uuid> --description @stdin
+   │     ├─ once checked, vouch: rhx radio.task.queue drain --promise task-to-public-repo-is-anonymized (it promises every held public record)
+   │     └─ or drop it: rhx radio.task.queue del --uuid <uuid> --why "<why>"
+   └─ backlog = 2 await the radio"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case6] four pushes held behind a shut radio.uses gate: A public+promise, B public, C private, D unreadable when: [t2] a promised push into a public repo flushes the backlog then: the push output shows its own create and both held rows, each with its reason 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 onto the pile!
+   ├─ pushed
+   │  └─ #<exid> surf report copy (created)
+   ├─ still held
+   │  ├─ <uuid> retry lesson reminders → sandpine/spot-forecast-widget (public-repo:unpromised)
+   │  │  ├─ awaits: public repo, no anonymized promise on this record
+   │  │  ├─ check its title and body at .behavior/.radio/record.<uuid>.json: no source org, repo, route path, pr / issue numbers, internal names, or business detail
+   │  │  ├─ scrub the body if need be: rhx radio.task.queue set --uuid <uuid> --description @stdin
+   │  │  ├─ once checked, vouch: rhx radio.task.queue drain --promise task-to-public-repo-is-anonymized (it promises every held public record)
+   │  │  └─ or drop it: rhx radio.task.queue del --uuid <uuid> --why "<why>"
+   │  └─ <uuid> coach roster sync → sandpine/coachbook (public-repo:unreadable)
+   │     ├─ fault: visibility unreadable — treated as public
+   │     ├─ cause: gh: the stub was told to fail
+   │     ├─ check its title and body at .behavior/.radio/record.<uuid>.json: no source org, repo, route path, pr / issue numbers, internal names, or business detail
+   │     ├─ scrub the body if need be: rhx radio.task.queue set --uuid <uuid> --description @stdin
+   │     ├─ once checked, vouch: rhx radio.task.queue drain --promise task-to-public-repo-is-anonymized (it promises every held public record)
+   │     └─ or drop it: rhx radio.task.queue del --uuid <uuid> --why "<why>"
+   └─ backlog = 2 await the radio"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case6] four pushes held behind a shut radio.uses gate: A public+promise, B public, C private, D unreadable when: [t3] queue drain --promise wrong-value then: exit 2, names the one valid value, and sends no request 1`] = `
+"
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --promise 'wrong-value' is not a promise this radio knows; the one valid value: --promise task-to-public-repo-is-anonymized"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case6] four pushes held behind a shut radio.uses gate: A public+promise, B public, C private, D unreadable when: [t4] queue drain --promise task-to-public-repo-is-anonymized then: exit 0, and B and D are created, one request each, with no read 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 back in the river! the backlog is delivered
+   ├─ drained
+   │  ├─ #<exid> retry lesson reminders
+   │  └─ #<exid> coach roster sync
+   └─ backlog = 0"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case6] four pushes held behind a shut radio.uses gate: A public+promise, B public, C private, D unreadable when: [t5] queue get then: naught waits 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 naught held for the radio"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case7] a private push flushes a backlog that holds a public record (stub: PUBLIC, PRIVATE) when: [t1] the gate opens, and a private push goes through then: queue get lists it in the state: awaits promise 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 held for the radio
+   ├─ <uuid> retry lesson reminders → sandpine/spot-forecast-widget
+   │  ├─ state: awaits promise (public-repo:unpromised): a drain sends it only with --promise
+   │  ├─ auth: as-robot:env(RADIO_PROMISE_TOKEN)
+   │  ├─ check its title and body at .behavior/.radio/record.<uuid>.json: no source org, repo, route path, pr / issue numbers, internal names, or business detail
+   │  ├─ scrub the body if need be: rhx radio.task.queue set --uuid <uuid> --description @stdin
+   │  ├─ once checked, vouch: rhx radio.task.queue drain --promise task-to-public-repo-is-anonymized (it promises every held public record)
+   │  └─ or drop it: rhx radio.task.queue del --uuid <uuid> --why "<why>"
+   └─ the next push, or \`rhx radio.task.queue drain\`, delivers the rest; 1 awaits an anonymized promise: \`drain --promise\`"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case7] a private push flushes a backlog that holds a public record (stub: PUBLIC, PRIVATE) when: [t1] the gate opens, and a private push goes through then: the output names the public record still held, with its fix 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 onto the pile!
+   ├─ pushed
+   │  └─ #<exid> tide chart refresh (created)
+   ├─ still held
+   │  └─ <uuid> retry lesson reminders → sandpine/spot-forecast-widget (public-repo:unpromised)
+   │     ├─ awaits: public repo, no anonymized promise on this record
+   │     ├─ check its title and body at .behavior/.radio/record.<uuid>.json: no source org, repo, route path, pr / issue numbers, internal names, or business detail
+   │     ├─ scrub the body if need be: rhx radio.task.queue set --uuid <uuid> --description @stdin
+   │     ├─ once checked, vouch: rhx radio.task.queue drain --promise task-to-public-repo-is-anonymized (it promises every held public record)
+   │     └─ or drop it: rhx radio.task.queue del --uuid <uuid> --why "<why>"
+   └─ backlog = 1 awaits the radio"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case8] the visibility read meets a rate limit, a reset socket, and a rejected token when: [t1] a held push meets a rate limit on the read; queue drain then: exit 2: the drain halts, the record stays queued, and the row names the read 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 naught delivered; the backlog still waits
+   ├─ still held
+   │  └─ <uuid> swell feed audit → sandpine/swell-feed (upstream:rate-limit)
+   │     ├─ fault: visibility read: upstream:rate-limit (HTTP 403: API rate limit exceeded for user ID 1)
+   │     ├─ halted: the line stops here
+   │     └─ wait, then: rhx radio.task.queue drain
+   └─ backlog = 1 awaits the radio"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case8] the visibility read meets a rate limit, a reset socket, and a rejected token when: [t2] the limit lifts; a held push meets a reset socket on the read; queue drain then: exit 2: the first record is delivered, the second halts at the read, and the row names it 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 back in the river! part of the backlog is delivered
+   ├─ drained
+   │  └─ #<exid> swell feed audit
+   ├─ still held
+   │  └─ <uuid> tide feed audit → sandpine/tide-feed (upstream:transient)
+   │     ├─ fault: visibility read: upstream:transient (read tcp 10.0.0.1:443: read ECONNRESET)
+   │     ├─ halted: the line stops here
+   │     └─ wait, then: rhx radio.task.queue drain
+   └─ backlog = 1 awaits the radio"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case8] the visibility read meets a rate limit, a reset socket, and a rejected token when: [t3] the socket recovers; a push meets a rejected token on the read then: exit 2, and the nudge leads with the auth fix, and its command re-runs as human with no promise 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🌊 the backlog
+   ├─ drained
+   │  └─ #<exid> tide feed audit
+   └─ backlog = 0
+
+🦫 hold up — this task may go to a public repo
+   ├─ repo: sandpine/wave-feed (visibility unreadable on this auth — try as-human)
+   │  └─ cause: github auth failed: the robot token was rejected by github (401)
+   ├─ first: re-run with --auth as-human; a private repo then sends with no promise
+   ├─ or, with no human login or a public repo: check the text, then add --promise task-to-public-repo-is-anonymized instead
+   ├─ the title and body must hold none of
+   │  ├─ the source org, repo, route path, or pr / issue numbers
+   │  ├─ internal endpoint, service, table or product names
+   │  └─ customer, revenue or other business detail
+   └─ this push: naught sent, naught queued; once checked, re-run the command below
+
+rhx radio.task.push --via gh.issues --into sandpine/wave-feed --title 'wave feed audit' --description 'audit the wave feed' --auth as-human"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case8] the visibility read meets a rate limit, a reset socket, and a rejected token when: [t4] a held push meets a rejected token on the read; queue drain then: exit 2, and the row leads with the as-human amend 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 naught delivered; the backlog still waits
+   ├─ still held
+   │  └─ <uuid> wave feed repair → sandpine/wave-feed (public-repo:unreadable-auth)
+   │     ├─ fault: visibility unreadable on this auth — try as-human
+   │     ├─ cause: github auth failed: the robot token was rejected by github (401)
+   │     ├─ first, try another auth: rhx radio.task.queue set --uuid <uuid> --auth as-human (a private repo then sends with no promise)
+   │     ├─ check its title and body at .behavior/.radio/record.<uuid>.json: no source org, repo, route path, pr / issue numbers, internal names, or business detail
+   │     ├─ scrub the body if need be: rhx radio.task.queue set --uuid <uuid> --description @stdin
+   │     ├─ once checked, vouch: rhx radio.task.queue drain --promise task-to-public-repo-is-anonymized (it promises every held public record)
+   │     └─ or drop it: rhx radio.task.queue del --uuid <uuid> --why "<why>"
+   └─ backlog = 1 awaits the radio"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case8] the visibility read meets a rate limit, a reset socket, and a rejected token when: [t5] a push, with the gate open, meets a reset socket on the read then: exit 2: no create, the record stays queued for the next drain, and no promise nudge — an outage is a wall, not a public repo 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 held for the radio
+   ├─ task    = tide feed repair
+   ├─ into    = sandpine/tide-feed
+   ├─ status  = QUEUED (upstream:transient)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ still held
+   │  └─ <uuid> wave feed repair → sandpine/wave-feed (public-repo:unreadable-auth)
+   │     ├─ fault: visibility unreadable on this auth — try as-human
+   │     ├─ cause: github auth failed: the robot token was rejected by github (401)
+   │     ├─ first, try another auth: rhx radio.task.queue set --uuid <uuid> --auth as-human (a private repo then sends with no promise)
+   │     ├─ check its title and body at .behavior/.radio/record.<uuid>.json: no source org, repo, route path, pr / issue numbers, internal names, or business detail
+   │     ├─ scrub the body if need be: rhx radio.task.queue set --uuid <uuid> --description @stdin
+   │     ├─ once checked, vouch: rhx radio.task.queue drain --promise task-to-public-repo-is-anonymized (it promises every held public record)
+   │     └─ or drop it: rhx radio.task.queue del --uuid <uuid> --why "<why>"
+   ├─ backlog = 2 await the radio
+   └─ fix it: visibility read: upstream:transient (read tcp 10.0.0.1:443: read ECONNRESET)
+      ├─ a public repo will owe --promise once the read clears; pass it now if so
+      └─ then the next push delivers the rest of the backlog first; 1 awaits an anonymized promise: \`drain --promise\`"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case9] refusals, help, and the stop line (stub: PUBLIC) when: [t1.1] queue drain with a bare --promise, and with an empty one (an unset $P) then: both exit 2, name the one valid value, and make no request 1`] = `
+"
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --promise (no value) is not a promise this radio knows; the one valid value: --promise task-to-public-repo-is-anonymized"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case9] refusals, help, and the stop line (stub: PUBLIC) when: [t1.1] queue drain with a bare --promise, and with an empty one (an unset $P) then: both exit 2, name the one valid value, and make no request 2`] = `
+"
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --promise '' is not a promise this radio knows; the one valid value: --promise task-to-public-repo-is-anonymized"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case9] refusals, help, and the stop line (stub: PUBLIC) when: [t1] push with a bare --promise then: exit 2, the valid value is named, and no record or request is made 1`] = `
+"
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --promise (no value) is not a promise this radio knows; the one valid value: --promise task-to-public-repo-is-anonymized"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case9] refusals, help, and the stop line (stub: PUBLIC) when: [t2] push with an empty body: --description with no text, and an empty @stdin then: an update with an empty body exits 2, names the empty body, and blanks no issue 1`] = `
+"
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --description is empty; add --description "..." with the body, pipe it via --description @stdin, or omit --description to leave the body as is"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case9] refusals, help, and the stop line (stub: PUBLIC) when: [t2] push with an empty body: --description with no text, and an empty @stdin then: an update with an empty title exits 2, names the empty title, and retitles no issue 1`] = `
+"
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --title is empty; add --title "..." with the new title, or omit --title to leave the title as is"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case9] refusals, help, and the stop line (stub: PUBLIC) when: [t2] push with an empty body: --description with no text, and an empty @stdin then: both exit 2, name the empty body (never "required"), and no record or request is made 1`] = `
+"
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --description is empty; a new task needs a body: add --description "..." with the text, or pipe a body that is not empty via --description @stdin"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case9] refusals, help, and the stop line (stub: PUBLIC) when: [t2] push with an empty body: --description with no text, and an empty @stdin then: both exit 2, name the empty body (never "required"), and no record or request is made 2`] = `
+"
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --description is empty; a new task needs a body: add --description "..." with the text, or pipe a body that is not empty via --description @stdin"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case9] refusals, help, and the stop line (stub: PUBLIC) when: [t3] queue set with an empty @stdin body then: exit 2, and the refusal names the empty body 1`] = `
+"
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --description is empty; pass the new body, e.g. --description "reminder: lesson at 9am", or pipe it via @stdin"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case9] refusals, help, and the stop line (stub: PUBLIC) when: [t4] both --help outputs then: each names the promise 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 let's check the meter...
+
+🎙️ radio.task.push --help
+   ├─ usage
+   │  ├─ rhx radio.task.push --via gh.issues --into owner/repo --title "..." --description "..."
+   │  ├─ rhx radio.task.push --via os.fileops --into @this --exid 123 --status CLAIMED
+   │  ├─ rhx radio.task.push --via gh.issues --into owner/repo --exid 599 --status CLAIMED --auth as-human
+   │  ├─ echo "details" | rhx radio.task.push --via gh.issues --into @this --title "..." --description @stdin
+   │  └─ rhx radio.task.push --via gh.issues --into owner/public-repo --title "..." --description "..." --promise task-to-public-repo-is-anonymized
+   │
+   ├─ held, never lost
+   │  ├─ every push is recorded first, into $route/.radio/ (or .behavior/.radio/)
+   │  ├─ a shut gate or an upstream fault holds it QUEUED, exit 2
+   │  ├─ the next push that gets through delivers the backlog first, oldest first
+   │  ├─ see what waits: rhx radio.task.queue get
+   │  └─ lift a shut gate (human): rhx radio.uses allow
+   │
+   ├─ a public repo needs a promise
+   │  ├─ a title or body sent to a public repo cannot be taken back
+   │  ├─ with no --promise, a push with text into a public repo stops before the send
+   │  │  ├─ so does one into a repo whose visibility cannot be read
+   │  │  └─ exit 2, a nudge, and this push is DROPPED: naught sent, naught queued
+   │  ├─ check the text holds no private detail, then re-run the printed command
+   │  └─ status-only updates and os.fileops need no promise
+   │
+   └─ options
+      ├─ --via         channel: gh.issues or os.fileops (required)
+      ├─ --into        target: @this (current repo) or owner/repo (required)
+      ├─ --title       task title (required for new tasks)
+      ├─ --description task description (required for new tasks; supports @stdin)
+      ├─ --exid        external id for updates
+      ├─ --status      status: QUEUED, CLAIMED, DELIVERED
+      ├─ --idem        idempotency: findsert or upsert
+      ├─ --auth        mode: as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd) | as-human
+      ├─ --promise     task-to-public-repo-is-anonymized (needed for text into a public repo)
+      └─ --help, -h    show this help"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case9] refusals, help, and the stop line (stub: PUBLIC) when: [t4] both --help outputs then: each names the promise 2`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 let's check the meter...
+
+🎙️ radio.task.queue --help
+   ├─ usage
+   │  ├─ rhx radio.task.queue get                                   what waits: uuid · task · reason · fix
+   │  ├─ rhx radio.task.queue get --when hook.onStop                one-line stop reminder (naught when none)
+   │  ├─ rhx radio.task.queue set   --uuid <uuid> --auth as-human   amend one held record (or --description)
+   │  ├─ rhx radio.task.queue del   --uuid <uuid> --why "<why>"     drop one, its body and why kept
+   │  ├─ rhx radio.task.queue drain [--auth as-human]               deliver now; a fault sets one record aside
+   │  └─ rhx radio.task.queue drain --promise task-to-public-repo-is-anonymized
+   │     └─ deliver now, and vouch for every held public record
+   │
+   ├─ the line
+   │  ├─ a rate limit or a github outage halts the drain; the rest wait in order
+   │  ├─ any other fault sets its one record aside; the rest still deliver
+   │  ├─ a later update to the same issue waits behind it, unsent, until it lands or is dropped
+   │  └─ a record with text bound for a public repo, and no promise, awaits one
+   │     ├─ read it at its record file first
+   │     └─ then \`drain --promise\`, which promises every held public record
+   │
+   ├─ exit codes
+   │  ├─ drain
+   │  │  ├─ 0  naught waits, naught refused
+   │  │  └─ 2  a record still waits, or this drain refused one (its why is in the output)
+   │  └─ get, set, del
+   │     └─ 0  done, even with records held; 2 only on a bad call
+   │
+   └─ options
+      ├─ --uuid         the record uuid \`get\` prints (set, del)
+      ├─ --auth         as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd) | as-human
+      │  ├─ set:   amends the one record --uuid names
+      │  └─ drain: sends every held record under this auth, this drain only
+      ├─ --description  the new body (set; supports @stdin)
+      ├─ --why          why the record is dropped (del, required)
+      ├─ --promise      task-to-public-repo-is-anonymized (drain): promises every held public record
+      │  └─ this drain sends, this drain only; never stored on a record
+      ├─ --when         hook.onStop (get)
+      └─ --help, -h     show this help"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case9] refusals, help, and the stop line (stub: PUBLIC) when: [t5] a public record is held for its promise; queue get --when hook.onStop then: exit 0, one line that leads with the read, never the vouch first 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+{"systemMessage":"🦫 1 task held for the radio · 1 awaits an anonymized promise (public-repo:unpromised) · read each at its record file (\`rhx radio.task.queue get\`), then \`drain --promise\` (it promises every held public record)"}"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case10] a promised record held at a shut gate, then amended (catalog #27) when: [t1] queue set --uuid <key> --description @stdin then: exit 0, the output names the promise cleared, and the record holds no promise 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 amended the held record
+   ├─ uuid    = <uuid>
+   ├─ task    = retry lesson reminders → sandpine/spot-forecast-widget
+   ├─ changed
+   │  ├─ description: amended
+   │  └─ promise: cleared (it vouched for the old body); a public repo holds the new one until \`drain --promise\`
+   ├─ kept at = .behavior/.radio/record.<uuid>.json
+   └─ naught sent; its place in line is kept, and it sends only with \`rhx radio.task.queue drain --promise task-to-public-repo-is-anonymized\`, once checked"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case10] a promised record held at a shut gate, then amended (catalog #27) when: [t2] open the radio.uses gate; queue drain then: exit 2, no create is sent, and the record is held for its promise again 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 naught delivered; the backlog still waits
+   ├─ still held
+   │  └─ <uuid> retry lesson reminders → sandpine/spot-forecast-widget (public-repo:unpromised)
+   │     ├─ awaits: public repo, no anonymized promise on this record
+   │     ├─ check its title and body at .behavior/.radio/record.<uuid>.json: no source org, repo, route path, pr / issue numbers, internal names, or business detail
+   │     ├─ scrub the body if need be: rhx radio.task.queue set --uuid <uuid> --description @stdin
+   │     ├─ once checked, vouch: rhx radio.task.queue drain --promise task-to-public-repo-is-anonymized (it promises every held public record)
+   │     └─ or drop it: rhx radio.task.queue del --uuid <uuid> --why "<why>"
+   └─ backlog = 1 awaits the radio"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case11] a public push is nudged while its drain carries a backlog (catalog #29) when: [t1] the gate opens; push to the public repo with no --promise then: exit 2: the nudge, then the backlog: one delivered, one held with its fix 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🌊 the backlog
+   ├─ drained
+   │  └─ #<exid> rotate the wax order
+   ├─ still held
+   │  └─ <uuid> audit the board racks → sandpine/infrastructure (upstream:auth)
+   │     ├─ fault: --auth as-robot:env(RADIO_PROMISE_ABSENT_TOKEN) specified but RADIO_PROMISE_ABSENT_TOKEN is not set
+   │     ├─ amend it: rhx radio.task.queue set --uuid <uuid> --auth as-human (needs a gh login on this host)
+   │     └─ or drop it: rhx radio.task.queue del --uuid <uuid> --why "<why>"
+   └─ backlog = 1 awaits the radio
+
+🦫 hold up — this task goes to a public repo
+   ├─ repo: sandpine/spot-forecast-widget (public)
+   ├─ the title and body must hold none of
+   │  ├─ the source org, repo, route path, or pr / issue numbers
+   │  ├─ internal endpoint, service, table or product names
+   │  └─ customer, revenue or other business detail
+   └─ this push: naught sent, naught queued; once checked, re-run the command below
+
+rhx radio.task.push --via gh.issues --into sandpine/spot-forecast-widget --title 'retry lesson reminders' --description 'retry a failed reminder once' --auth 'as-robot:env(RADIO_PROMISE_TOKEN)' --promise task-to-public-repo-is-anonymized"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case12] an --exid re-push inherits a body it did not pass (catalog #28) when: [t1] the gate opens; push --exid 5 --status CLAIMED, no body then: exit 2, and the nudge names the record path as text this push did not send 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 hold up — this task goes to a public repo
+   ├─ repo: sandpine/spot-forecast-widget (public)
+   ├─ this record carries a body from an earlier push, at .behavior/.radio/record.<uuid>.json
+   │  └─ a --promise here cannot vouch it; that body is dropped now
+   ├─ to send status alone: re-run the same command, as you ran it
+   ├─ to send the body too: check it (none of the three below), then re-pipe it into the command below
+   ├─ the title and body must hold none of
+   │  ├─ the source org, repo, route path, or pr / issue numbers
+   │  ├─ internal endpoint, service, table or product names
+   │  └─ customer, revenue or other business detail
+   └─ this push: naught sent, naught queued; once checked, run the command below with the body piped in
+
+rhx radio.task.push --via gh.issues --into sandpine/spot-forecast-widget --exid 5 --status CLAIMED --description @stdin --auth 'as-robot:env(RADIO_PROMISE_TOKEN)' --promise task-to-public-repo-is-anonymized"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case12] an --exid re-push inherits a body it did not pass (catalog #28) when: [t2] the same command, re-run as typed then: exit 0, one edit with no earlier body in it, and no read 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 onto the pile!
+
+🎙️ updated: stub issue title
+   ├─ exid: <exid>
+   ├─ status: CLAIMED
+   ├─ repo: sandpine/spot-forecast-widget
+   ├─ pushedBy: stubbot
+   ├─ pushedAt: <date>
+   ├─ claimedBy: stubbot
+   ├─ claimedAt: <date>
+   ├─ branch: feat/promise-journey
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case13] the printed command round-trips byte for byte (stub: PUBLIC) when: [t1] push a body with a quote, a dollar, a backtick, and a newline, no --promise then: exit 2, and the nudge holds the body quoted for a shell 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 hold up — this task goes to a public repo
+   ├─ repo: sandpine/spot-forecast-widget (public)
+   ├─ the title and body must hold none of
+   │  ├─ the source org, repo, route path, or pr / issue numbers
+   │  ├─ internal endpoint, service, table or product names
+   │  └─ customer, revenue or other business detail
+   └─ this push: naught sent, naught queued; once checked, re-run the command below
+
+rhx radio.task.push --via gh.issues --into sandpine/spot-forecast-widget --title 'quote probe' --description 'it'\\''s $HOME and \`tick\` and "quotes"
+second line' --auth 'as-robot:env(RADIO_PROMISE_TOKEN)' --promise task-to-public-repo-is-anonymized"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case14] a text and status push is nudged, then a status-only re-run (catalog #34) when: [t1] push --exid 5 --status DELIVERED --description <text>, no --promise then: exit 2, and the record is DROPPED 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 hold up — this task goes to a public repo
+   ├─ repo: sandpine/spot-forecast-widget (public)
+   ├─ to send status alone: re-run it without --description
+   ├─ the title and body must hold none of
+   │  ├─ the source org, repo, route path, or pr / issue numbers
+   │  ├─ internal endpoint, service, table or product names
+   │  └─ customer, revenue or other business detail
+   └─ this push: naught sent, naught queued; once checked, re-run the command below
+
+rhx radio.task.push --via gh.issues --into sandpine/spot-forecast-widget --exid 5 --status DELIVERED --description DROPPED-TEXT-DETAIL --auth 'as-robot:env(RADIO_PROMISE_TOKEN)' --promise task-to-public-repo-is-anonymized"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case14] a text and status push is nudged, then a status-only re-run (catalog #34) when: [t2] push --exid 5 --status DELIVERED then: exit 0, no nudge, and one edit with no dropped text in it 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 onto the pile!
+
+🎙️ updated: stub issue title
+   ├─ exid: <exid>
+   ├─ status: DELIVERED
+   ├─ repo: sandpine/spot-forecast-widget
+   ├─ pushedBy: stubbot
+   ├─ pushedAt: <date>
+   ├─ claimedBy: stubbot
+   ├─ claimedAt: <date>
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case15] an unvouched record is held at a shut gate, then a no-text push carries a stray --promise (catalog #39) when: [t1] the gate opens; push --exid 5 --status CLAIMED --promise <promise> then: exit 2, no request, and the nudge says a --promise here cannot vouch the body 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 hold up — this task goes to a public repo
+   ├─ repo: sandpine/spot-forecast-widget (public)
+   ├─ this record carries a body from an earlier push, at .behavior/.radio/record.<uuid>.json
+   │  └─ a --promise here cannot vouch it; that body is dropped now
+   ├─ to send status alone: re-run the same command, as you ran it
+   ├─ to send the body too: check it (none of the three below), then re-pipe it into the command below
+   ├─ the title and body must hold none of
+   │  ├─ the source org, repo, route path, or pr / issue numbers
+   │  ├─ internal endpoint, service, table or product names
+   │  └─ customer, revenue or other business detail
+   └─ this push: naught sent, naught queued; once checked, run the command below with the body piped in
+
+rhx radio.task.push --via gh.issues --into sandpine/spot-forecast-widget --exid 5 --status CLAIMED --description @stdin --auth 'as-robot:env(RADIO_PROMISE_TOKEN)' --promise task-to-public-repo-is-anonymized"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case15] an unvouched record is held at a shut gate, then a no-text push carries a stray --promise (catalog #39) when: [t2] the same command, re-run as typed then: exit 0, one edit for the status, and no earlier body in it 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 onto the pile!
+
+🎙️ updated: stub issue title
+   ├─ exid: <exid>
+   ├─ status: CLAIMED
+   ├─ repo: sandpine/spot-forecast-widget
+   ├─ pushedBy: stubbot
+   ├─ pushedAt: <date>
+   ├─ claimedBy: stubbot
+   ├─ claimedAt: <date>
+   ├─ branch: feat/promise-journey
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case16] a claim with text is nudged, with a deliver held behind it (catalog #33) when: [t1] the gate opens; push the claim with text again, no --promise then: exit 2, and the nudge names the update that waits and the deliver-needs-claim warn 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🌊 the backlog
+   ├─ still held
+   │  └─ <uuid> deliver #<exid> → sandpine/spot-forecast-widget (same issue #<exid>)
+   │     └─ behind claim #<exid> on the same issue: unsent, sends once it lands or is dropped
+   └─ backlog = 1 awaits the radio
+
+🦫 hold up — this task goes to a public repo
+   ├─ repo: sandpine/spot-forecast-widget (public)
+   ├─ 1 update waits behind it on #<exid>; its deliver needs this claim first
+   │  └─ a re-run sends that deliver first, and it is refused; push the deliver again once the claim lands
+   ├─ to send status alone: re-run it without --description
+   ├─ the title and body must hold none of
+   │  ├─ the source org, repo, route path, or pr / issue numbers
+   │  ├─ internal endpoint, service, table or product names
+   │  └─ customer, revenue or other business detail
+   └─ this push: naught sent, naught queued; once checked, re-run the command below
+
+rhx radio.task.push --via gh.issues --into sandpine/spot-forecast-widget --exid 5 --status CLAIMED --description 'claim note detail' --auth 'as-robot:env(RADIO_PROMISE_TOKEN)' --promise task-to-public-repo-is-anonymized"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case16] a claim with text is nudged, with a deliver held behind it (catalog #33) when: [t2] the status-only re-run the nudge printed: push --exid 5 --status CLAIMED then: exit 0, the claim lands with no dropped text; the deliver, sent first as the oldest, is refused in plain sight 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 onto the pile!
+   ├─ pushed
+   │  └─ claim #<exid> (updated)
+   ├─ refused — closed, never retried; rhx radio.task.queue get lists it no more, and its reason stays in its record file
+   │  └─ deliver #<exid> — cannot deliver unclaimed task
+   └─ backlog = 0"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case16] a claim with text is nudged, with a deliver held behind it (catalog #33) when: [t2] the status-only re-run the nudge printed: push --exid 5 --status CLAIMED then: exit 0, the claim lands with no dropped text; the deliver, sent first as the oldest, is refused in plain sight 2`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 naught held for the radio"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case17] a held public record is scrubbed, then vouched (the drained-record recovery) when: [t1] queue set --uuid <key> --description @stdin, with the scrubbed body then: exit 0, and the body is amended 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 amended the held record
+   ├─ uuid    = <uuid>
+   ├─ task    = coach notes → sandpine/spot-forecast-widget
+   ├─ changed
+   │  └─ description: amended
+   ├─ kept at = .behavior/.radio/record.<uuid>.json
+   └─ naught sent; its place in line is kept, and the next push, or \`rhx radio.task.queue drain\`, sends it; a public repo needs \`drain --promise task-to-public-repo-is-anonymized\`, once checked"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case17] a held public record is scrubbed, then vouched (the drained-record recovery) when: [t2] queue drain --promise task-to-public-repo-is-anonymized then: exit 0, one create, and its body is the scrubbed text, not the original 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 back in the river! the backlog is delivered
+   ├─ drained
+   │  └─ #<exid> coach notes
+   └─ backlog = 0"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case18] a nudged push is re-run with a scrubbed title (stub: PUBLIC) when: [t2] push the scrubbed title with --promise then: the scrubbed push lands on a new key, and the first stays DROPPED, never held 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 onto the pile!
+
+🎙️ created: retry lesson reminders
+   ├─ exid: <exid>
+   ├─ status: QUEUED
+   ├─ repo: sandpine/spot-forecast-widget
+   ├─ pushedBy: stubbot
+   ├─ pushedAt: <date>
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case19] a held public record is dropped by queue del, the third recovery move (catalog #43) when: [t2] queue del --uuid <key> --why, then a drain then: the drop exits 0, and the record is DROPPED on disk 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.queue
+
+🦫 dropped from the radio, never sent
+   ├─ uuid    = <uuid>
+   ├─ task    = wetsuit count → sandpine/spot-forecast-widget
+   ├─ why     = dropped: text not safe to publish
+   ├─ kept at = .behavior/.radio/record.<uuid>.json
+   └─ a re-push of the same task queues it again"
+`;
+
+exports[`radio.task.push — the promise gate, via a stub gh given: [case20] a new task with its body piped via --description @stdin into a public repo (catalog #45) when: [t0] push --description @stdin with a body, no --promise then: exit 2, no create, and the nudge asks to re-pipe the checked body, with its record path 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+
+🦫 hold up — this task goes to a public repo
+   ├─ repo: sandpine/spot-forecast-widget (public)
+   ├─ the title and body must hold none of
+   │  ├─ the source org, repo, route path, or pr / issue numbers
+   │  ├─ internal endpoint, service, table or product names
+   │  └─ customer, revenue or other business detail
+   ├─ re-pipe the checked body into the command below
+   │  └─ the body this push piped: .behavior/.radio/record.<uuid>.json
+   └─ this push: naught sent, naught queued; once checked, run the command below with the body piped in
+
+rhx radio.task.push --via gh.issues --into sandpine/spot-forecast-widget --title 'swell legend' --description @stdin --auth 'as-robot:env(RADIO_PROMISE_TOKEN)' --promise task-to-public-repo-is-anonymized"
+`;

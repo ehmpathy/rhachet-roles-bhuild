@@ -1,16 +1,44 @@
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 
+import { isRadioPromiseHoldReason } from '../promise/isRadioPromiseHoldReason';
+import { RADIO_PROMISE_PUBLIC_REPO } from '../promise/RADIO_PROMISE_PUBLIC_REPO';
+import type { RadioPromiseHoldReason } from '../promise/RadioPromiseHoldReason';
+import { isRadioUpstreamReasonCuredByAuth } from './isRadioUpstreamReasonCuredByAuth';
+
 /**
- * .what = the reasons another auth may cure: the robot may not write here, cannot see the
- *         repo, or holds no usable token
- * .why = these name `queue set --auth as-human` as their fix; a wall or a gate does not
+ * .what = the next moves for a record the promise gate holds
+ * .why = its text may not go public unchecked: the fix reads the full text at its record file
+ *        (`get` shows the title only), offers a scrub, then the vouch, then the drop
+ *
+ * .note = an unreadable read is no flake (a wall halts the drain instead), so no retry line;
+ *         an auth-cured read leads with the as-human amend, since a private repo then sends
+ *         with no promise
  */
-const REASONS_CURED_BY_AUTH = new Set([
-  'upstream:access',
-  'upstream:not-found',
-  'upstream:401',
-  'upstream:auth',
-]);
+const asRadioPromiseFixLines = (input: {
+  reason: RadioPromiseHoldReason;
+  key: string;
+  recordPath: string;
+  drop: string;
+}): string[] => {
+  const lines = [
+    `check its title and body at ${input.recordPath}: no source org, repo, route path, pr / issue numbers, internal names, or business detail`,
+    `scrub the body if need be: rhx radio.task.queue set --uuid ${input.key} --description @stdin`,
+    `once checked, vouch: rhx radio.task.queue drain --promise ${RADIO_PROMISE_PUBLIC_REPO} (it promises every held public record)`,
+    input.drop,
+  ];
+  switch (input.reason) {
+    case 'public-repo:unpromised':
+      return lines;
+    case 'public-repo:unreadable':
+      // the row above already says the read failed and the repo is treated as public
+      return lines;
+    case 'public-repo:unreadable-auth':
+      return [
+        `first, try another auth: rhx radio.task.queue set --uuid ${input.key} --auth as-human (a private repo then sends with no promise)`,
+        ...lines,
+      ];
+  }
+};
 
 /**
  * .what = is this fault the test-env guard's refusal of as-human
@@ -34,12 +62,22 @@ const isRadioTestEnvGuardFault = (input: { detail: string }): boolean =>
  */
 export const asRadioQueueFixLines = (input: {
   record: RadioTaskRecord;
+  recordPath: string;
   authOverride: string | null;
   detail: string | null;
 }): string[] => {
   const { key, reason } = input.record;
   const auth = input.authOverride ?? input.record.auth;
   const drop = `or drop it: rhx radio.task.queue del --uuid ${key} --why "<why>"`;
+
+  // held for its promise: read the text first, scrub it if need be, then vouch
+  if (isRadioPromiseHoldReason(reason))
+    return asRadioPromiseFixLines({
+      reason,
+      key,
+      recordPath: input.recordPath,
+      drop,
+    });
 
   // as-human refused by the test-env guard: the gh login is fine, so name the guard and a robot auth
   if (input.detail && isRadioTestEnvGuardFault({ detail: input.detail }))
@@ -49,12 +87,13 @@ export const asRadioQueueFixLines = (input: {
     ];
 
   // already as-human: a second as-human amend would loop; the gh login is the fix
-  if (reason && REASONS_CURED_BY_AUTH.has(reason) && auth === 'as-human')
+  const isCuredByAuth = isRadioUpstreamReasonCuredByAuth({ reason });
+  if (isCuredByAuth && auth === 'as-human')
     return [
       `check the gh login on this host: gh auth status (else: gh auth login), then: rhx radio.task.queue drain`,
       drop,
     ];
-  if (reason && REASONS_CURED_BY_AUTH.has(reason))
+  if (isCuredByAuth)
     return [
       `amend it: rhx radio.task.queue set --uuid ${key} --auth as-human (needs a gh login on this host)`,
       drop,

@@ -15,6 +15,7 @@
 #   radio.task.queue.sh set --uuid <uuid> --auth as-human   # amend one held record
 #   radio.task.queue.sh del --uuid <uuid> --why "<why>"     # drop one, why kept
 #   radio.task.queue.sh drain [--auth as-human]             # deliver now
+#   radio.task.queue.sh drain --promise task-to-public-repo-is-anonymized  # vouch held public records
 #
 # guarantee:
 #   - get reads local records + radio.uses only; no network, no send
@@ -22,6 +23,7 @@
 #   - drain meets each record's radio.uses gate; exit 2 while any waits, or if it refused one
 #   - a flag or positional a verb does not read is refused before it acts
 #   - a rate limit or outage halts the drain; any other fault sets one aside
+#   - a text record bound for a public repo is held until a drain --promise vouches it
 #   - hook.onStop never exits 2, so never blocks the stop
 ######################################################################
 

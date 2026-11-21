@@ -20,6 +20,8 @@
  *   --status      task status: QUEUED, CLAIMED, DELIVERED
  *   --idem        idempotency mode: findsert or upsert
  *   --auth        as-human | as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd)
+ *   --promise     task-to-public-repo-is-anonymized; a push with text into a public repo needs it,
+ *                 else it is DROPPED with a nudge that prints the exact re-run (exit 2)
  *   --help        show usage and exit
  *
  * usage:
@@ -37,8 +39,12 @@ import { RadioChannel } from '@src/domain.objects/RadioChannel';
 import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
 import { getBranchBehaviorBind } from '@src/domain.operations/behavior/bind/getBranchBehaviorBind';
 import { asPushTaskFromArgs } from '@src/domain.operations/radio/cli/asPushTaskFromArgs';
+import { asRadioPromiseFromArg } from '@src/domain.operations/radio/cli/asRadioPromiseFromArg';
 import { getOneRadioTaskRepoFromCliArg } from '@src/domain.operations/radio/cli/getOneRadioTaskRepoFromCliArg';
+import type { RadioPushArgs } from '@src/domain.operations/radio/cli/RadioPushArgs';
 import { asRadioLockWaitNotice } from '@src/domain.operations/radio/record/asRadioLockWaitNotice';
+import { asRadioPromiseNudgeOutput } from '@src/domain.operations/radio/record/asRadioPromiseNudgeOutput';
+import { asRadioPushBacklogBranches } from '@src/domain.operations/radio/record/asRadioPushBacklogBranches';
 import { asRadioPushOutput } from '@src/domain.operations/radio/record/asRadioPushOutput';
 import { asRadioPushSavedNotice } from '@src/domain.operations/radio/record/asRadioPushSavedNotice';
 import { asRadioTaskRecordHomeFromCwd } from '@src/domain.operations/radio/record/asRadioTaskRecordHomeFromCwd';
@@ -73,7 +79,7 @@ const getOneBranchBindForRecord = (input: {
 // schema
 // ────────────────────────────────────────────────────────────────────
 
-const schemaOfArgs = z.object({
+export const schemaOfArgs = z.object({
   named: z.object({
     // help flag
     help: z.boolean().optional(),
@@ -98,6 +104,10 @@ const schemaOfArgs = z.object({
     // optional: idempotency mode
     idem: z.nativeEnum(IdempotencyMode).optional(),
 
+    // optional: the anonymized promise a public repo needs. a bare `--promise` parses as
+    // `true`, so the union lets asRadioPromiseFromArg refuse it with the valid value named
+    promise: z.union([z.string(), z.boolean()]).optional(),
+
     // rhachet passthrough args (optional, ignored)
     repo: z.string().optional(),
     role: z.string().optional(),
@@ -119,7 +129,8 @@ const HELP_TEXT = `
    │  ├─ rhx radio.task.push --via gh.issues --into owner/repo --title "..." --description "..."
    │  ├─ rhx radio.task.push --via os.fileops --into @this --exid 123 --status CLAIMED
    │  ├─ rhx radio.task.push --via gh.issues --into owner/repo --exid 599 --status CLAIMED --auth as-human
-   │  └─ echo "details" | rhx radio.task.push --via gh.issues --into @this --title "..." --description @stdin
+   │  ├─ echo "details" | rhx radio.task.push --via gh.issues --into @this --title "..." --description @stdin
+   │  └─ rhx radio.task.push --via gh.issues --into owner/public-repo --title "..." --description "..." --promise task-to-public-repo-is-anonymized
    │
    ├─ held, never lost
    │  ├─ every push is recorded first, into $route/.radio/ (or .behavior/.radio/)
@@ -127,6 +138,14 @@ const HELP_TEXT = `
    │  ├─ the next push that gets through delivers the backlog first, oldest first
    │  ├─ see what waits: rhx radio.task.queue get
    │  └─ lift a shut gate (human): rhx radio.uses allow
+   │
+   ├─ a public repo needs a promise
+   │  ├─ a title or body sent to a public repo cannot be taken back
+   │  ├─ with no --promise, a push with text into a public repo stops before the send
+   │  │  ├─ so does one into a repo whose visibility cannot be read
+   │  │  └─ exit 2, a nudge, and this push is DROPPED: naught sent, naught queued
+   │  ├─ check the text holds no private detail, then re-run the printed command
+   │  └─ status-only updates and os.fileops need no promise
    │
    └─ options
       ├─ --via         channel: gh.issues or os.fileops (required)
@@ -137,6 +156,7 @@ const HELP_TEXT = `
       ├─ --status      status: QUEUED, CLAIMED, DELIVERED
       ├─ --idem        idempotency: findsert or upsert
       ├─ --auth        mode: as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd) | as-human
+      ├─ --promise     task-to-public-repo-is-anonymized (needed for text into a public repo)
       └─ --help, -h    show this help
 `.trim();
 
@@ -172,6 +192,21 @@ export const cliRadioTaskPush = async (): Promise<void> => {
     },
   });
 
+  // check the promise before any record or request: only its exact words count
+  const promise = asRadioPromiseFromArg({ raw: named.promise ?? null });
+
+  // the push as typed, for the exact command a promise nudge reprints
+  const args: RadioPushArgs = {
+    via: named.via,
+    into: named.into,
+    exid: named.exid ?? null,
+    status: named.status ?? null,
+    title: named.title ?? null,
+    description: named.description ?? null,
+    idem: named.idem ?? null,
+    auth: named.auth ?? null,
+  };
+
   // read the push whole before the gate: the record needs its body
   const description = getOneArgOrStdinText({
     raw: named.description ?? null,
@@ -204,6 +239,7 @@ export const cliRadioTaskPush = async (): Promise<void> => {
         via: named.via,
         auth: named.auth ?? null,
         idem: named.idem ?? null,
+        promise,
       },
     },
     { dir: home.dir, cwd: context.cwd },
@@ -217,7 +253,7 @@ export const cliRadioTaskPush = async (): Promise<void> => {
 
   // hold at a shut gate, or drain the backlog through an open one, then count what still waits;
   // a fault in either (an unreadable record, a bad gate config) first says the push is saved
-  const { pushed, others, backlog } = await withFaultNotice({
+  const { pushed, others, backlog, nudge } = await withFaultNotice({
     logic: () =>
       getOneRadioPushDrainWithBacklog(
         { record, dir, authTyped: named.auth ?? null },
@@ -225,6 +261,27 @@ export const cliRadioTaskPush = async (): Promise<void> => {
       ),
     notice: asRadioPushSavedNotice({ record, dir: homeOfRecord.dir }),
   });
+
+  // the promise gate dropped this push: nudge with the check and the exact re-run, exit 2
+  if (nudge) {
+    console.log(
+      asRadioPromiseNudgeOutput({
+        reason: nudge.reason,
+        detail: pushed.fate === 'held' ? pushed.detail : null,
+        record: nudge.record,
+        recordPath: nudge.recordPath,
+        args,
+        behind: nudge.behind.length,
+        deliverNeedsClaim: nudge.deliverNeedsClaim,
+        backlogBranches: asRadioPushBacklogBranches({
+          others,
+          backlog: backlog.length,
+        }),
+      }),
+    );
+    process.exitCode = 2;
+    return;
+  }
 
   // report the fate of this push, and of the backlog it carried
   console.log(

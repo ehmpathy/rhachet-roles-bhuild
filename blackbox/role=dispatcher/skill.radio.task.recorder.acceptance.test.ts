@@ -69,6 +69,7 @@ mode="ok"
 if [ -n "$repo" ] && [ -f "$STUB_GH_DIR/mode.$repo" ]; then mode="$(cat "$STUB_GH_DIR/mode.$repo")"; fi
 case "$1 $2" in
   "api user") echo "stubbot"; exit 0 ;;
+  "repo view") echo '{"visibility":"PRIVATE"}'; exit 0 ;;
 esac
 if [ "$mode" = "access-update" ] && [ "$1 $2" = "issue edit" ]; then echo "GraphQL: Resource not accessible by integration (updateIssue)" >&2; exit 1; fi
 if [ "$mode" = "access-update" ] && [ "$1 $2" = "issue close" ]; then echo "GraphQL: Resource not accessible by integration (updateIssue)" >&2; exit 1; fi

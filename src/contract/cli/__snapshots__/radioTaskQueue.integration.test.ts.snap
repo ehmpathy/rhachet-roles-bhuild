@@ -9,12 +9,17 @@ exports[`radio.task.queue.integration — CLI contract given: [case1] --help whe
    │  ├─ rhx radio.task.queue get --when hook.onStop                one-line stop reminder (naught when none)
    │  ├─ rhx radio.task.queue set   --uuid <uuid> --auth as-human   amend one held record (or --description)
    │  ├─ rhx radio.task.queue del   --uuid <uuid> --why "<why>"     drop one, its body and why kept
-   │  └─ rhx radio.task.queue drain [--auth as-human]               deliver now; a fault sets one record aside
+   │  ├─ rhx radio.task.queue drain [--auth as-human]               deliver now; a fault sets one record aside
+   │  └─ rhx radio.task.queue drain --promise task-to-public-repo-is-anonymized
+   │     └─ deliver now, and vouch for every held public record
    │
    ├─ the line
    │  ├─ a rate limit or a github outage halts the drain; the rest wait in order
    │  ├─ any other fault sets its one record aside; the rest still deliver
-   │  └─ a later update to the same issue waits behind it, unsent, until it lands or is dropped
+   │  ├─ a later update to the same issue waits behind it, unsent, until it lands or is dropped
+   │  └─ a record with text bound for a public repo, and no promise, awaits one
+   │     ├─ read it at its record file first
+   │     └─ then \`drain --promise\`, which promises every held public record
    │
    ├─ exit codes
    │  ├─ drain
@@ -30,6 +35,8 @@ exports[`radio.task.queue.integration — CLI contract given: [case1] --help whe
       │  └─ drain: sends every held record under this auth, this drain only
       ├─ --description  the new body (set; supports @stdin)
       ├─ --why          why the record is dropped (del, required)
+      ├─ --promise      task-to-public-repo-is-anonymized (drain): promises every held public record
+      │  └─ this drain sends, this drain only; never stored on a record
       ├─ --when         hook.onStop (get)
       └─ --help, -h     show this help"
 `;
@@ -52,9 +59,11 @@ exports[`radio.task.queue.integration — CLI contract given: [case9] set with a
 
 exports[`radio.task.queue.integration — CLI contract given: [case10] set on a key no record holds when: [t0] the queue skill runs then: fails with a constraint that names how to list uuids 1`] = `"✋ ConstraintError: no radio record with uuid a1b2c3d4e5f60718 in this worktree; run \`rhx radio.task.queue get\` to list the uuids"`;
 
-exports[`radio.task.queue.integration — CLI contract given: [case14] a verb with a flag it does not read when: [t0] drain runs with --uuid, as though it scoped the drain then: it refuses before any send, and names what drain reads 1`] = `"✋ ConstraintError: drain does not read --uuid. drop it, then run again. drain reads --auth (see --help). to act on one record, run \`rhx radio.task.queue set --uuid <uuid>\` or \`rhx radio.task.queue del --uuid <uuid>\`."`;
+exports[`radio.task.queue.integration — CLI contract given: [case14] a verb with a flag it does not read when: [t0] drain runs with --uuid, as though it scoped the drain then: it refuses before any send, and names what drain reads 1`] = `"✋ ConstraintError: drain does not read --uuid. drop it, then run again. drain reads --auth, --promise (see --help). to act on one record, run \`rhx radio.task.queue set --uuid <uuid>\` or \`rhx radio.task.queue del --uuid <uuid>\`."`;
 
-exports[`radio.task.queue.integration — CLI contract given: [case14] a verb with a flag it does not read when: [t1] drain runs with --mode plan, as though it previewed then: it refuses rather than send for real 1`] = `"✋ ConstraintError: drain does not read --mode. drop it, then run again. drain reads --auth (see --help)."`;
+exports[`radio.task.queue.integration — CLI contract given: [case14] a verb with a flag it does not read when: [t1] drain runs with --mode plan, as though it previewed then: it refuses rather than send for real 1`] = `"✋ ConstraintError: drain does not read --mode. drop it, then run again. drain reads --auth, --promise (see --help)."`;
+
+exports[`radio.task.queue.integration — CLI contract given: [case14] a verb with a flag it does not read when: [t3] set runs with a --promise, as though it vouched one record then: it refuses before any write, and names what set reads 1`] = `"✋ ConstraintError: set does not read --promise. drop it, then run again. set reads --uuid, --auth, --description, --title (see --help)."`;
 
 exports[`radio.task.queue.integration — CLI contract given: [case15] set with a blank --description when: [t0] the queue skill runs then: it refuses to blank the body 1`] = `"✋ ConstraintError: --description is empty; pass the new body, e.g. --description "reminder: lesson at 9am", or pipe it via @stdin"`;
 
@@ -77,7 +86,7 @@ exports[`radio.task.queue.integration — a journey across faults, via a stub gh
    ├─ changed
    │  └─ auth: as-robot:env(RADIO_QUEUE_JOURNEY_TOKEN) → as-human
    ├─ kept at = .behavior/.radio/record.<uuid>.json
-   └─ naught sent; its place in line is kept, and the next push, or \`rhx radio.task.queue drain\`, sends it"
+   └─ naught sent; its place in line is kept, and the next push, or \`rhx radio.task.queue drain\`, sends it; a public repo needs \`drain --promise task-to-public-repo-is-anonymized\`, once checked"
 `;
 
 exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case11] an update the robot may not write, and a create behind it when: [t2] drain --auth as-human, once the human may write the update then: the notice prints before the drain output 1`] = `
@@ -106,7 +115,7 @@ exports[`radio.task.queue.integration — a journey across faults, via a stub gh
    ├─ <uuid> swell alerts → sandpine/spot-forecast
    │  ├─ state: behind the halt (upstream:rate-limit): unsent, still in line; the next drain sends it once the halt clears
    │  └─ auth: as-robot:env(RADIO_QUEUE_JOURNEY_TOKEN)
-   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog; a public repo needs \`drain --promise task-to-public-repo-is-anonymized\`, once checked"
 `;
 
 exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case12] a set-aside update, an update behind it on one issue, and a rate limit when: [t1] get --when hook.onStop runs then: it prints the one-line reminder, never exit 2 1`] = `"{"systemMessage":"🦫 4 tasks held for the radio · 1 set aside (upstream:access) · 1 halted (upstream:rate-limit) · 1 behind the halt · 1 behind an earlier update to the same issue · see each fix: rhx radio.task.queue get"}"`;
@@ -127,7 +136,7 @@ exports[`radio.task.queue.integration — a journey across faults, via a stub gh
    ├─ changed
    │  └─ description: amended
    ├─ kept at = .behavior/.radio/record.<uuid>.json
-   └─ naught sent; its place in line is kept, and the next push, or \`rhx radio.task.queue drain\`, sends it"
+   └─ naught sent; its place in line is kept, and the next push, or \`rhx radio.task.queue drain\`, sends it; a public repo needs \`drain --promise task-to-public-repo-is-anonymized\`, once checked"
 `;
 
 exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case17] an update to an issue the radio may not edit (case=8 [t0] [t1]) when: [t0] the issue is not a radio task (filed by hand) then: it names why, and that the fix is by hand 1`] = `

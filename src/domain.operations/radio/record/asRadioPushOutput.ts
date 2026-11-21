@@ -1,19 +1,25 @@
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 import { asTaskDetailOutput } from '@src/domain.operations/radio/cli/asTaskDetailOutput';
 
+import { isRadioPromiseOwedByRecord } from '../promise/isRadioPromiseOwedByRecord';
 import { asRadioAuthShown } from './asRadioAuthShown';
+import { asRadioAwaitPromiseCountLine } from './asRadioAwaitPromiseCountLine';
+import { asRadioBacklogBranch } from './asRadioBacklogBranch';
 import { asRadioDeliveredExid } from './asRadioDeliveredExid';
 import { asRadioDeliveredLine } from './asRadioDeliveredLine';
 import { asRadioDrainSections } from './asRadioDrainSections';
 import { asRadioErrorHeadline } from './asRadioErrorHeadline';
 import { asRadioErrorHintLines } from './asRadioErrorHintLines';
+import { asRadioLineWithoutClassHeader } from './asRadioLineWithoutClassHeader';
 import { asRadioQueueFixLines } from './asRadioQueueFixLines';
 import { asRadioReasonBehindOnIssue } from './asRadioReasonBehindOnIssue';
 import { asRadioRefusalText } from './asRadioRefusalText';
 import { asRadioReplayWarnLines } from './asRadioReplayWarnLines';
 import { asRadioTaskRecordLabel } from './asRadioTaskRecordLabel';
+import { asRadioTaskRecordPath } from './asRadioTaskRecordPath';
 import { asRadioTaskRepoSlug } from './asRadioTaskRepoSlug';
 import { asRadioTreeLines } from './asRadioTreeLines';
+import { getAllRadioFatesAwaitPromise } from './getAllRadioFatesAwaitPromise';
 import { isRadioFateBehindHalt } from './isRadioFateBehindHalt';
 import type { RadioTaskRecordFate } from './RadioTaskRecordFate';
 
@@ -57,18 +63,6 @@ const asStatusReason = (input: { record: RadioTaskRecord }): string => {
 };
 
 /**
- * .what = the backlog line
- * .why = the count is the nudge; zero says the pond is clear
- */
-const asBacklogBranch = (input: { backlog: number }): RadioTreeBranch => ({
-  line:
-    input.backlog === 0
-      ? 'backlog = 0'
-      : `backlog = ${input.backlog} ${input.backlog === 1 ? 'awaits' : 'await'} the radio`,
-  children: [],
-});
-
-/**
  * .what = the header of a delivered push that rode a drain
  * .why = the one line a human skims must agree with the tail: "the backlog is delivered"
  *        only when naught is left held; a partial drain says part of it went
@@ -93,6 +87,7 @@ const asDrainHeader = (input: {
  */
 const asHeldFixBranches = (input: {
   held: Extract<RadioTaskRecordFate, { fate: 'held' }>;
+  others: RadioTaskRecordFate[];
 }): RadioTreeBranch[] => [
   asHeldFixBranch(input),
   ...asHeldAmendBranches(input),
@@ -120,18 +115,39 @@ const asHeldAmendBranches = (input: {
  */
 const asHeldFixBranch = (input: {
   held: Extract<RadioTaskRecordFate, { fate: 'held' }>;
+  others: RadioTaskRecordFate[];
 }): RadioTreeBranch => {
   const { lift, detail, record } = input.held;
-  const next = 'then the next push delivers the backlog first';
-  const queue = asRadioQueueFixLines({ record, authOverride: null, detail });
+  // a backlog record that awaits a promise is not sent by a plain push; count those apart
+  const awaits = getAllRadioFatesAwaitPromise({ fates: input.others });
+  const next = awaits.length
+    ? `then the next push delivers the rest of the backlog first; ${asRadioAwaitPromiseCountLine({ count: awaits.length })}`
+    : 'then the next push delivers the backlog first';
+  const queue = asRadioQueueFixLines({
+    record,
+    recordPath: asRadioTaskRecordPath(
+      { dir: input.held.dir, key: record.key },
+      { cwd: process.cwd() }, // cwd is the repo root, by contract (rule.forbid.cwd-override)
+    ),
+    authOverride: null,
+    detail,
+  });
   const behind = asRadioReasonBehindOnIssue({ reason: record.reason });
   // a stored auth no drain replays needs an amend too; "the next push delivers it" would
   // contradict it, since that push faults the record as upstream:auth until the auth is amended
   const isReplayable = asRadioReplayWarnLines({ record }).length === 0;
+  // a text push held at a shut gate may meet the promise gate once lifted; say so now, so the
+  // caller does not pay two lifts to learn it
+  const owesPromiseIfPublic = isRadioPromiseOwedByRecord({
+    record,
+    promiseOverride: null,
+  })
+    ? ['a public repo will owe --promise; pass it now if so']
+    : [];
   if (lift)
     return {
       line: `lift it (human): ${lift}`,
-      children: isReplayable ? [next] : [],
+      children: [...(isReplayable ? [next] : []), ...owesPromiseIfPublic],
     };
   if (isRadioFateBehindHalt({ fate: input.held }))
     return {
@@ -156,7 +172,7 @@ const asHeldFixBranch = (input: {
   if (!detail)
     return { line: `fix it: ${record.reason}`, children: [...queue, next] };
   return {
-    line: `fix it: ${asRadioErrorHeadline({ message: detail })}`,
+    line: `fix it: ${asRadioLineWithoutClassHeader({ line: asRadioErrorHeadline({ message: detail }) })}`,
     children: [...asRadioErrorHintLines({ message: detail }), ...queue, next],
   };
 };
@@ -197,7 +213,7 @@ export const asRadioPushOutput = (input: {
           ...facts,
           { line: `exid    = #${asRadioDeliveredExid(pushed)}`, children: [] },
           ...othersAll,
-          ...(othersAll.length ? [asBacklogBranch({ backlog })] : []),
+          ...(othersAll.length ? [asRadioBacklogBranch({ backlog })] : []),
         ],
       }),
     ].join('\n');
@@ -215,8 +231,8 @@ export const asRadioPushOutput = (input: {
           },
           { line: asHomeLine({ home }), children: [] },
           ...othersAll,
-          asBacklogBranch({ backlog }),
-          ...asHeldFixBranches({ held: pushed }),
+          asRadioBacklogBranch({ backlog }),
+          ...asHeldFixBranches({ held: pushed, others }),
         ],
       }),
     ].join('\n');
@@ -233,7 +249,7 @@ export const asRadioPushOutput = (input: {
             children: [],
           },
           ...othersAll,
-          asBacklogBranch({ backlog }),
+          asRadioBacklogBranch({ backlog }),
         ],
       }),
     ].join('\n');
@@ -263,7 +279,7 @@ export const asRadioPushOutput = (input: {
           children: [`${asRadioDeliveredLine(pushed)} (${pushed.outcome})`],
         },
         ...othersSections.closedOrHeld,
-        asBacklogBranch({ backlog }),
+        asRadioBacklogBranch({ backlog }),
       ],
     }),
   ].join('\n');

@@ -20,6 +20,7 @@ const read = new RadioTaskRecord({
   reason: null,
   heldSeq: 4,
   deliveredExid: null,
+  promise: null,
 });
 
 const TEST_CASES = [

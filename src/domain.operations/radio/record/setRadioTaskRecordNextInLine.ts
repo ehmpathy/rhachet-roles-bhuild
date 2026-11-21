@@ -34,7 +34,8 @@ export const setRadioTaskRecordNextInLine = async (
     env: NodeJS.ProcessEnv;
     shx: ShellExecutor;
     authOverride?: string | null;
-    authLive?: { key: string; auth: string | null } | null;
+    promiseOverride?: string | null;
+    push?: { key: string; auth: string | null } | null;
     drainSendLimit?: {
       perCall: { milliseconds: number };
       perSend: { milliseconds: number };

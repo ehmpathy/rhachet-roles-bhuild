@@ -24,6 +24,7 @@ const genScene = () => {
     title: 'lesson reminders',
     exid: null,
     status: null,
+    promise: null,
   };
   const { record } = setRadioTaskRecordFromPush(
     { push: { ...push, description: 'body in alpha' } },

@@ -26,12 +26,14 @@
 #   --status    task status: QUEUED, CLAIMED, DELIVERED
 #   --idem      idempotency mode: findsert or upsert
 #   --auth      as-human | as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd)
+#   --promise   task-to-public-repo-is-anonymized (text into a public repo needs it)
 #   --help, -h  show usage and exit
 #
 # guarantee:
 #   - records every push first, into $route/.radio/ (or .behavior/.radio/ if unbound)
 #   - a push that radio.uses blocks is held QUEUED (exit 2), never lost
 #   - the next push that gets through delivers the held backlog first, oldest first
+#   - text into a public repo sends naught without --promise: dropped, exit 2, nudged
 #   - validates required args (--via, --into, --title/--description or --exid)
 #   - enforces lifecycle order on status transitions
 #   - creates backups on edit

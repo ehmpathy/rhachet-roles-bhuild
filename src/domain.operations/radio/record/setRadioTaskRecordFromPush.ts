@@ -30,6 +30,7 @@ export const setRadioTaskRecordFromPush = (
       description: string | null;
       exid: string | null;
       status: RadioTaskStatus | null;
+      promise: string | null;
     };
   },
   context: { dir: string; cwd: string },

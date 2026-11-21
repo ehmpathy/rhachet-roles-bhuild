@@ -36,6 +36,36 @@ const TEST_CASES = [
     expect: { output: 'fault: Command failed: gh issue list' },
   },
   {
+    description: 'a record that awaits a promise reads as a wait, not a fault',
+    given: {
+      detail: 'public repo, no anonymized promise on this record',
+      reason: 'public-repo:unpromised',
+    },
+    expect: {
+      output: 'awaits: public repo, no anonymized promise on this record',
+    },
+  },
+  {
+    description: 'an unreadable repo is still a fault',
+    given: {
+      detail: 'visibility unreadable — treated as public',
+      reason: 'public-repo:unreadable',
+    },
+    expect: { output: 'fault: visibility unreadable — treated as public' },
+  },
+  {
+    description:
+      'a helpful-errors class header is cut, since the fault label already says so',
+    given: {
+      detail:
+        '✋ ConstraintError: --auth as-robot:env(TOKEN) specified but TOKEN is not set\nhint: export it',
+    },
+    expect: {
+      output:
+        'fault: --auth as-robot:env(TOKEN) specified but TOKEN is not set',
+    },
+  },
+  {
     description: 'no detail yields no line',
     given: { detail: null },
     expect: { output: null },
@@ -50,9 +80,9 @@ const TEST_CASES = [
 describe('asRadioFaultDetailLine', () => {
   TEST_CASES.map((thisCase) =>
     test(thisCase.description, () => {
-      expect(asRadioFaultDetailLine(thisCase.given)).toEqual(
-        thisCase.expect.output,
-      );
+      expect(
+        asRadioFaultDetailLine({ reason: null, ...thisCase.given }),
+      ).toEqual(thisCase.expect.output);
     }),
   );
 });

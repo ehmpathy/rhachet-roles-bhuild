@@ -19,6 +19,7 @@ export const setRadioTaskRecordHeldBehindHalt = (input: {
 }): RadioTaskRecordFate => {
   const fate = asRadioFateHeldBehindHalt({
     record: input.record,
+    dir: input.dir,
     halter: input.halter,
   });
   const record = setRadioTaskRecordSettled({

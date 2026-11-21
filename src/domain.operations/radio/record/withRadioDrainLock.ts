@@ -26,11 +26,12 @@ const asRadioLockDir = (input: { cwd: string }): string =>
   join(input.cwd, '.behavior', '.radio', '.locks');
 
 /**
- * .what = how long a call may wait for the lock before it says it waits
- * .why = an uncontended acquire takes milliseconds; past this beat, another holder has it
+ * .what = the probe acquire: one attempt, no wait
+ * .why = a held key fails it at once, so the wait notice fires only when another holder has
+ *        the lock — never on a slow but uncontended acquire on a loaded box
  */
-const RADIO_DRAIN_LOCK_WAIT_NOTICE_AFTER: { milliseconds: number } = {
-  milliseconds: 750,
+const RADIO_DRAIN_LOCK_PROBE_TIMEOUT: { milliseconds: number } = {
+  milliseconds: 0,
 };
 
 /**
@@ -76,55 +77,57 @@ export const withRadioDrainLock = <
     genRadioLockDirIgnore({ dir: lockDir });
     const lease = context.lockLease ?? RADIO_DRAIN_LOCK_LEASE_DEFAULT;
 
-    // a call still not inside the lock after a beat waits on another holder: say so once,
-    // so a `queue del` mid-drain never sits silent for up to two minutes
-    const wait = { entered: false };
-    const waitNotice = context.onLockWait
-      ? setTimeout(() => {
-          if (!wait.entered) context.onLockWait?.();
-        }, RADIO_DRAIN_LOCK_WAIT_NOTICE_AFTER.milliseconds)
-      : null;
-
     // the lock state lives on disk, so a guard built per call still shares it across calls
-    const drainGuarded = withSimpleMutex(
-      async (args: { input: TInput; context: TContext }) => {
-        wait.entered = true;
-
-        // the lease clock starts now, so the drain's deadline starts with it
-        const drainDeadline = genRadioDrainDeadline({ lease });
-        return logic(args.input, { ...args.context, drainDeadline });
-      },
-      {
-        key: () => 'radio.drain',
-        cache: createCache({
-          directory: { local: { path: lockDir } },
-        }),
-        lease: { duration: lease },
-        acquire: {
-          timeout:
-            context.lockAcquireTimeout ??
-            RADIO_DRAIN_LOCK_ACQUIRE_TIMEOUT_DEFAULT,
-          interval: { milliseconds: 50 },
+    const genDrainGuarded = (acquireTimeout: { milliseconds: number }) =>
+      withSimpleMutex(
+        async (args: { input: TInput; context: TContext }) => {
+          // the lease clock starts now, so the drain's deadline starts with it
+          const drainDeadline = genRadioDrainDeadline({ lease });
+          return logic(args.input, { ...args.context, drainDeadline });
         },
-      },
-    );
+        {
+          key: () => 'radio.drain',
+          cache: createCache({
+            directory: { local: { path: lockDir } },
+          }),
+          lease: { duration: lease },
+          acquire: {
+            timeout: acquireTimeout,
+            interval: { milliseconds: 50 },
+          },
+        },
+      );
+
+    // probe once with no wait; only a held key refuses it, so the notice is true when it
+    // fires, and a `queue del` mid-drain never sits silent for up to two minutes
+    const runGuarded = async (): Promise<TOutput> => {
+      try {
+        return await genDrainGuarded(RADIO_DRAIN_LOCK_PROBE_TIMEOUT)({
+          input,
+          context,
+        });
+      } catch (error) {
+        if (!(error instanceof SimpleMutexAcquireTimeoutError)) throw error;
+      }
+      context.onLockWait?.();
+      return genDrainGuarded(
+        context.lockAcquireTimeout ?? RADIO_DRAIN_LOCK_ACQUIRE_TIMEOUT_DEFAULT,
+      )({ input, context });
+    };
+
     // a wait past the bound, or a run past the lease, names the human's fix;
     // every other error passes unchanged
-    return drainGuarded({ input, context })
-      .finally(() => {
-        if (waitNotice) clearTimeout(waitNotice);
-      })
-      .catch((error: unknown) => {
-        if (error instanceof SimpleMutexLeaseExpiredError)
-          throw new ConstraintError(
-            'this drain ran past its lock lease; records not yet settled stay held; run rhx radio.task.queue drain again',
-            { lockDir, cause: error },
-          );
-        if (!(error instanceof SimpleMutexAcquireTimeoutError)) throw error;
+    return runGuarded().catch((error: unknown) => {
+      if (error instanceof SimpleMutexLeaseExpiredError)
         throw new ConstraintError(
-          'another drain holds the radio lock, so this call gave up its wait. wait for that drain to end, then retry; see the line with: rhx radio.task.queue get',
+          'this drain ran past its lock lease; records not yet settled stay held; run rhx radio.task.queue drain again',
           { lockDir, cause: error },
         );
-      });
+      if (!(error instanceof SimpleMutexAcquireTimeoutError)) throw error;
+      throw new ConstraintError(
+        'another drain holds the radio lock, so this call gave up its wait. wait for that drain to end, then retry; see the line with: rhx radio.task.queue get',
+        { lockDir, cause: error },
+      );
+    });
   };
 };

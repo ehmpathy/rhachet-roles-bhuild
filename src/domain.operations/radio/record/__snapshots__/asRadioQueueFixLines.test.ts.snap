@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asRadioQueueFixLines given: [case-promise] a record held for its anonymized promise when: [t0] the repo reads public then: it names the record path, the scrub, the vouch, and the drop 1`] = `
+[
+  "check its title and body at .behavior/.radio/record.a1b2c3d4e5f60718.json: no source org, repo, route path, pr / issue numbers, internal names, or business detail",
+  "scrub the body if need be: rhx radio.task.queue set --uuid a1b2c3d4e5f60718 --description @stdin",
+  "once checked, vouch: rhx radio.task.queue drain --promise task-to-public-repo-is-anonymized (it promises every held public record)",
+  "or drop it: rhx radio.task.queue del --uuid a1b2c3d4e5f60718 --why "<why>"",
+]
+`;
+
+exports[`asRadioQueueFixLines given: [case-promise] a record held for its anonymized promise when: [t1] the visibility read failed on the auth then: it leads with the as-human amend 1`] = `
+[
+  "first, try another auth: rhx radio.task.queue set --uuid a1b2c3d4e5f60718 --auth as-human (a private repo then sends with no promise)",
+  "check its title and body at .behavior/.radio/record.a1b2c3d4e5f60718.json: no source org, repo, route path, pr / issue numbers, internal names, or business detail",
+  "scrub the body if need be: rhx radio.task.queue set --uuid a1b2c3d4e5f60718 --description @stdin",
+  "once checked, vouch: rhx radio.task.queue drain --promise task-to-public-repo-is-anonymized (it promises every held public record)",
+  "or drop it: rhx radio.task.queue del --uuid a1b2c3d4e5f60718 --why "<why>"",
+]
+`;
+
+exports[`asRadioQueueFixLines given: [case-promise] a record held for its anonymized promise when: [t2] the visibility read failed on aught else then: it leads with the check, never an as-human amend, nor a restated verdict 1`] = `
+[
+  "check its title and body at .behavior/.radio/record.a1b2c3d4e5f60718.json: no source org, repo, route path, pr / issue numbers, internal names, or business detail",
+  "scrub the body if need be: rhx radio.task.queue set --uuid a1b2c3d4e5f60718 --description @stdin",
+  "once checked, vouch: rhx radio.task.queue drain --promise task-to-public-repo-is-anonymized (it promises every held public record)",
+  "or drop it: rhx radio.task.queue del --uuid a1b2c3d4e5f60718 --why "<why>"",
+]
+`;

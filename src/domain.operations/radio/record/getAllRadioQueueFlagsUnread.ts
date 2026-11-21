@@ -6,7 +6,7 @@ const FLAGS_READ_BY_VERB: Record<'get' | 'set' | 'del' | 'drain', string[]> = {
   get: ['when'],
   set: ['uuid', 'auth', 'description', 'title'],
   del: ['uuid', 'why'],
-  drain: ['auth'],
+  drain: ['auth', 'promise'],
 };
 
 /**

@@ -1,9 +1,12 @@
+import { asRadioPromiseHoldCauseLine } from '../promise/asRadioPromiseHoldCauseLine';
+import { isRadioPromiseHoldReason } from '../promise/isRadioPromiseHoldReason';
 import { asRadioFaultDetailLine } from './asRadioFaultDetailLine';
 import { asRadioHaltLines } from './asRadioHaltLines';
 import { asRadioNestedLines } from './asRadioNestedLines';
 import { asRadioQueueFixLines } from './asRadioQueueFixLines';
 import { asRadioReasonBehindOnIssue } from './asRadioReasonBehindOnIssue';
 import { asRadioTaskRecordLabel } from './asRadioTaskRecordLabel';
+import { asRadioTaskRecordPath } from './asRadioTaskRecordPath';
 import { asRadioTaskRepoSlug } from './asRadioTaskRepoSlug';
 import { isRadioFateBehindHalt } from './isRadioFateBehindHalt';
 import { isRadioFateRepushedMidSend } from './isRadioFateRepushedMidSend';
@@ -46,19 +49,30 @@ export const asRadioDrainHeldRow = (input: {
       lines: fate.detail ? [fate.detail] : [],
     });
 
-  // a fault of its own, or a wall: the fault, the halt, then the fix — a gate's lift sits
-  // under its own row, so it never reads as a lift for a faulted row beside it
+  // a fault of its own, or a wall: the fault (and a promise read's cause), the halt, then the
+  // fix — a gate's lift sits under its own row, so it never reads as a lift for a faulted row
+  const causePromise = isRadioPromiseHoldReason(fate.record.reason)
+    ? asRadioPromiseHoldCauseLine({ detail: fate.detail })
+    : null;
   return asRadioNestedLines({
     head: `${label} (${fate.record.reason ?? 'not reached'})`,
     lines: [
       ...(isRadioFateBehindHalt({ fate })
         ? []
-        : [asRadioFaultDetailLine({ detail: fate.detail })].filter(
-            (line): line is string => line !== null,
-          )),
+        : [
+            asRadioFaultDetailLine({
+              detail: fate.detail,
+              reason: fate.record.reason,
+            }),
+            causePromise,
+          ].filter((line): line is string => line !== null)),
       ...asRadioHaltLines({ fate }),
       ...asRadioQueueFixLines({
         record: fate.record,
+        recordPath: asRadioTaskRecordPath(
+          { dir: fate.dir, key: fate.record.key },
+          { cwd: process.cwd() }, // cwd is the repo root, by contract (rule.forbid.cwd-override)
+        ),
         authOverride: input.authOverride,
         detail: fate.detail,
       }),

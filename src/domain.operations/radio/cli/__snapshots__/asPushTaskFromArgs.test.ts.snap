@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asPushTaskFromArgs given: [case1] a new task with no title is rejected when: [t0] the push args are checked then: it throws a ConstraintError that names the fix 1`] = `"✋ ConstraintError: --title required for new tasks; add --title "..." or use --exid to update an extant task"`;
+
+exports[`asPushTaskFromArgs given: [case2] a new task with an empty title is rejected when: [t0] the push args are checked then: it throws a ConstraintError that names the fix 1`] = `"✋ ConstraintError: --title required for new tasks; add --title "..." or use --exid to update an extant task"`;
+
+exports[`asPushTaskFromArgs given: [case3] a new task with no description is rejected, before it is recorded when: [t0] the push args are checked then: it throws a ConstraintError that names the fix 1`] = `"✋ ConstraintError: --description required for new task; add --description "..." or pipe it via --description @stdin"`;
+
+exports[`asPushTaskFromArgs given: [case4] a new task with an empty description is rejected when: [t0] the push args are checked then: it throws a ConstraintError that names the fix 1`] = `"✋ ConstraintError: --description is empty; a new task needs a body: add --description "..." with the text, or pipe a body that is not empty via --description @stdin"`;
+
+exports[`asPushTaskFromArgs given: [case5] an update with an empty description is rejected, so it cannot wipe the body when: [t0] the push args are checked then: it throws a ConstraintError that names the fix 1`] = `"✋ ConstraintError: --description is empty; add --description "..." with the body, pipe it via --description @stdin, or omit --description to leave the body as is"`;
+
+exports[`asPushTaskFromArgs given: [case6] an update with a blank piped description is rejected, status or not when: [t0] the push args are checked then: it throws a ConstraintError that names the fix 1`] = `"✋ ConstraintError: --description is empty; add --description "..." with the body, pipe it via --description @stdin, or omit --description to leave the body as is"`;
+
+exports[`asPushTaskFromArgs given: [case7] a new task with a blank piped description is rejected as a create with no body when: [t0] the push args are checked then: it throws a ConstraintError that names the fix 1`] = `"✋ ConstraintError: --description is empty; a new task needs a body: add --description "..." with the text, or pipe a body that is not empty via --description @stdin"`;
+
+exports[`asPushTaskFromArgs given: [case8] an update with an empty title is rejected, so it cannot wipe the title when: [t0] the push args are checked then: it throws a ConstraintError that names the fix 1`] = `"✋ ConstraintError: --title is empty; add --title "..." with the new title, or omit --title to leave the title as is"`;
+
+exports[`asPushTaskFromArgs given: [case9] an update with a blank title is rejected, body or not when: [t0] the push args are checked then: it throws a ConstraintError that names the fix 1`] = `"✋ ConstraintError: --title is empty; add --title "..." with the new title, or omit --title to leave the title as is"`;
+
+exports[`asPushTaskFromArgs given: [case10] a new task with a blank title is rejected as a create when: [t0] the push args are checked then: it throws a ConstraintError that names the fix 1`] = `"✋ ConstraintError: --title required for new tasks; add --title "..." or use --exid to update an extant task"`;
+
+exports[`asPushTaskFromArgs given: [case11] an empty exid is rejected, so an update record never sends as a create when: [t0] the push args are checked then: it throws a ConstraintError that names the fix 1`] = `"✋ ConstraintError: --exid is empty; add --exid <issue number> to update an extant task, or omit --exid to create a new one"`;

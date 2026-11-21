@@ -3,13 +3,13 @@ import { getAllRadioQueueFlagsUnread } from './getAllRadioQueueFlagsUnread';
 const TEST_CASES = [
   {
     description: 'drain with a --uuid it would ignore',
-    given: { verb: 'drain' as const, flags: ['uuid', 'auth'] },
-    expect: { unread: ['uuid'], accepted: ['auth'] },
+    given: { verb: 'drain' as const, flags: ['uuid', 'auth', 'promise'] },
+    expect: { unread: ['uuid'], accepted: ['auth', 'promise'] },
   },
   {
     description: 'drain with a --mode it would ignore',
     given: { verb: 'drain' as const, flags: ['mode'] },
-    expect: { unread: ['mode'], accepted: ['auth'] },
+    expect: { unread: ['mode'], accepted: ['auth', 'promise'] },
   },
   {
     description: 'set with every flag it reads',
@@ -21,6 +21,15 @@ const TEST_CASES = [
     given: { verb: 'set' as const, flags: ['key', 'auth'] },
     expect: {
       unread: ['key'],
+      accepted: ['uuid', 'auth', 'description', 'title'],
+    },
+  },
+  {
+    description:
+      'set with a --promise, which only drain reads; a vouch is never stored by an amend',
+    given: { verb: 'set' as const, flags: ['uuid', 'promise'] },
+    expect: {
+      unread: ['promise'],
       accepted: ['uuid', 'auth', 'description', 'title'],
     },
   },

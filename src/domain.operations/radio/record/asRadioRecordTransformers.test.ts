@@ -45,6 +45,7 @@ const genRecord = (input: Partial<RadioTaskRecord>): RadioTaskRecord =>
     reason: null,
     heldSeq: 1,
     deliveredExid: null,
+    promise: null,
     ...input,
   });
 
@@ -57,6 +58,7 @@ const pushCreate = {
   description: 'the test flakes',
   exid: null,
   status: null,
+  promise: null,
 };
 
 const TEST_CASES = [
@@ -394,8 +396,10 @@ const TEST_CASES = [
     when: (): unknown => {
       const fate = asRadioFateHeldBehindHalt({
         record: genRecord({ key: 'later' }),
+        dir: '.behavior/.radio',
         halter: {
           fate: 'held',
+          dir: '.behavior/.radio',
           record: genRecord({ reason: 'upstream:401' }),
           lift: null,
           detail: 'token rejected',

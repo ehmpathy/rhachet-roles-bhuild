@@ -3,6 +3,7 @@ import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 import { asRadioTaskRecordOrder } from './asRadioTaskRecordOrder';
 import { asRadioTaskRepoSlug } from './asRadioTaskRepoSlug';
 import { getAllRadioTaskRecordsHeld } from './getAllRadioTaskRecordsHeld';
+import { isRadioTaskRecordAheadBlocksBehind } from './isRadioTaskRecordAheadBlocksBehind';
 
 /**
  * .what = every held record later in line that updates the same issue as this one, oldest first
@@ -29,6 +30,10 @@ export const getAllRadioTaskRecordsHeldOnIssue = (
         record.exid === exid &&
         record.via === input.record.via &&
         asRadioTaskRepoSlug({ repo: record.repo }) === slug &&
+        isRadioTaskRecordAheadBlocksBehind({
+          ahead: input.record,
+          behind: record,
+        }) &&
         asRadioTaskRecordOrder({
           a: { record },
           b: { record: input.record },

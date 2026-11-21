@@ -38,3 +38,10 @@ exports[`asRadioDropOutput given: [case4] a dropped claim with its deliver behin
    │  └─ or drop the deliver too: rhx radio.task.queue del --uuid f0e1d2c3b4a59687 --why "its claim was dropped"
    └─ a re-push of the same task queues it again"
 `;
+
+exports[`asRadioDropOutput given: [case5] a del on a record the promise gate already dropped when: [t0] the drop renders then: the why names the promise gate, never the bare code 1`] = `
+"🦫 already dropped, never sent; naught changed
+   ├─ uuid    = a1b2c3d4e5f60718
+   ├─ why     = the promise gate dropped it: public repo, no anonymized promise on this record (kept)
+   └─ kept at = .behavior/.radio/record.a1b2c3d4e5f60718.json"
+`;

@@ -33,6 +33,7 @@ const asPush = (input: { title: string }) => ({
   description: 'a body',
   exid: null,
   status: null,
+  promise: null,
 });
 
 describe('setRadioTaskRecordFromPush', () => {

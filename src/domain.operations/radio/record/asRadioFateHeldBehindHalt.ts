@@ -9,13 +9,15 @@ import type { RadioTaskRecordFate } from './RadioTaskRecordFate';
  */
 export const asRadioFateHeldBehindHalt = (input: {
   record: RadioTaskRecord;
+  dir: string;
   halter: Extract<RadioTaskRecordFate, { fate: 'held' }>;
-}): RadioTaskRecordFate => ({
+}): Extract<RadioTaskRecordFate, { fate: 'held' }> => ({
   fate: 'held',
   record: new RadioTaskRecord({
     ...input.record,
     reason: input.halter.record.reason,
   }),
+  dir: input.dir,
   lift: null,
   detail: input.halter.detail,
   halt: false,

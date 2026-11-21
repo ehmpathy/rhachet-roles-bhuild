@@ -34,6 +34,7 @@ const genScene = () => {
         description: 'remind each surfer the night before',
         exid: null,
         status: null,
+        promise: null,
       },
     },
     { dir, cwd },
@@ -112,6 +113,70 @@ describe('setRadioTaskRecordAmended', () => {
           'remind each surfer to pack a wetsuit',
         );
       });
+    });
+  });
+
+  given('[case2] a held create that carries an anonymized promise', () => {
+    const scene = useBeforeAll(async () => {
+      const cwd = genTempDir({ slug: 'radio-amend-promise', git: true });
+      const dir = path.join(cwd, '.behavior', '.radio');
+      const { record } = setRadioTaskRecordFromPush(
+        {
+          push: {
+            repo: new RadioTaskRepo({ owner: 'sandpine', name: 'svc-lessons' }),
+            via: RadioChannel.GH_ISSUES,
+            auth: null,
+            idem: null,
+            title: 'lesson reminders',
+            description: 'remind each surfer the night before',
+            exid: null,
+            status: null,
+            promise: 'task-to-public-repo-is-anonymized',
+          },
+        },
+        { dir, cwd },
+      );
+      return { cwd, dir, record };
+    });
+
+    when('[t0] only its auth is amended', () => {
+      const result = useThen('it is amended', async () =>
+        setRadioTaskRecordAmended(
+          { key: scene.record.key, auth: 'as-human', description: null },
+          { cwd: scene.cwd },
+        ),
+      );
+
+      then('the promise is kept, since the body it vouched for is kept', () => {
+        expect(result.after.promise).toEqual(
+          'task-to-public-repo-is-anonymized',
+        );
+      });
+    });
+
+    when('[t1] its body is amended', () => {
+      const result = useThen('it is amended', async () =>
+        setRadioTaskRecordAmended(
+          {
+            key: scene.record.key,
+            auth: null,
+            description: 'remind each surfer to pack a wetsuit',
+          },
+          { cwd: scene.cwd },
+        ),
+      );
+
+      then(
+        'the promise is cleared on disk, since it vouched for the old body',
+        () => {
+          expect(result.after.promise).toEqual(null);
+          const kept = daoRadioTaskRecord.get.one.byUnique({
+            dir: scene.dir,
+            key: scene.record.key,
+          });
+          expect(kept?.promise).toEqual(null);
+        },
+      );
     });
   });
 });

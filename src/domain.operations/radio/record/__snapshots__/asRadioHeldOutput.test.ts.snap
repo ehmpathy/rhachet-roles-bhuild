@@ -16,7 +16,7 @@ exports[`asRadioHeldOutput given: [case1] three tasks held, the gate shut (S2) w
    │  ├─ state: held at gate (radio.uses:blocked — global)
    │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
    │  └─ lift it (human): rhx radio.uses --global allow
-   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog; a public repo needs \`drain --promise task-to-public-repo-is-anonymized\`, once checked"
 `;
 
 exports[`asRadioHeldOutput given: [case2.1] two tasks set aside on an upstream fault, a third held at a shut gate when: [t0] the stop reminder renders then: it names the fault once beside the lift, never "the radio is open" 1`] = `"🦫 3 tasks held for the radio · 1 at a gate · 2 set aside (upstream:auth) · lift: rhx radio.uses --global allow · see each fix: rhx radio.task.queue get"`;
@@ -37,7 +37,33 @@ exports[`asRadioHeldOutput given: [case2.1] two tasks set aside on an upstream f
    │  ├─ state: held at gate (radio.uses:blocked — global)
    │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
    │  └─ lift it (human): rhx radio.uses --global allow
-   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog; a public repo needs \`drain --promise task-to-public-repo-is-anonymized\`, once checked"
+`;
+
+exports[`asRadioHeldOutput given: [case2.2.1] a task held for its anonymized promise when: [t0] the stop reminder renders then: it counts it as one that awaits a promise, the verb in the singular 1`] = `"🦫 1 task held for the radio · 1 awaits an anonymized promise (public-repo:unpromised) · read each at its record file (\`rhx radio.task.queue get\`), then \`drain --promise\` (it promises every held public record)"`;
+
+exports[`asRadioHeldOutput given: [case2.2.1] a task held for its anonymized promise when: [t1] the list renders then: it names the state, the record file, and the vouch 1`] = `
+"🦫 held for the radio
+   ├─ a task a → ehmpathy/rhachet
+   │  ├─ state: awaits promise (public-repo:unpromised): a drain sends it only with --promise
+   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  ├─ check its title and body at .behavior/.radio/record.a.json: no source org, repo, route path, pr / issue numbers, internal names, or business detail
+   │  ├─ scrub the body if need be: rhx radio.task.queue set --uuid a --description @stdin
+   │  ├─ once checked, vouch: rhx radio.task.queue drain --promise task-to-public-repo-is-anonymized (it promises every held public record)
+   │  └─ or drop it: rhx radio.task.queue del --uuid a --why "<why>"
+   └─ the next push, or \`rhx radio.task.queue drain\`, delivers the rest; 1 awaits an anonymized promise: \`drain --promise\`"
+`;
+
+exports[`asRadioHeldOutput given: [case2.2.2] a task held because its visibility could not be read when: [t0] the list renders then: the state line says the repo is treated as public, once 1`] = `
+"🦫 held for the radio
+   ├─ a task a → ehmpathy/rhachet
+   │  ├─ state: awaits promise (public-repo:unreadable): visibility unreadable — treated as public; a drain sends it only with --promise
+   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  ├─ check its title and body at .behavior/.radio/record.a.json: no source org, repo, route path, pr / issue numbers, internal names, or business detail
+   │  ├─ scrub the body if need be: rhx radio.task.queue set --uuid a --description @stdin
+   │  ├─ once checked, vouch: rhx radio.task.queue drain --promise task-to-public-repo-is-anonymized (it promises every held public record)
+   │  └─ or drop it: rhx radio.task.queue del --uuid a --why "<why>"
+   └─ the next push, or \`rhx radio.task.queue drain\`, delivers the rest; 1 awaits an anonymized promise: \`drain --promise\`"
 `;
 
 exports[`asRadioHeldOutput given: [case2.2] a task halted on a rate limit, the gate open when: [t0] the stop reminder renders then: it counts it halted, with no bare code as a fix 1`] = `"🦫 1 task held for the radio · 1 halted (upstream:rate-limit) · the next drain retries it"`;
@@ -47,7 +73,7 @@ exports[`asRadioHeldOutput given: [case2.2] a task halted on a rate limit, the g
    ├─ a task a → ehmpathy/rhachet
    │  ├─ state: halted (upstream:rate-limit)
    │  └─ auth: default (as-robot:via-keyrack(ehmpath))
-   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog; a public repo needs \`drain --promise task-to-public-repo-is-anonymized\`, once checked"
 `;
 
 exports[`asRadioHeldOutput given: [case2.3] two updates to one issue, the first set aside when: [t0] the list renders, the record ahead still held then: the record behind names the record ahead, never gate words 1`] = `
@@ -61,7 +87,7 @@ exports[`asRadioHeldOutput given: [case2.3] two updates to one issue, the first 
    │  ├─ state: waits behind a1a1a1a1a1a1a1a1 (same issue #599)
    │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
    │  └─ fix a1a1a1a1a1a1a1a1 above (amend, lift, or drop it); this one sends on the next drain after
-   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog; a public repo needs \`drain --promise task-to-public-repo-is-anonymized\`, once checked"
 `;
 
 exports[`asRadioHeldOutput given: [case2.3] two updates to one issue, the first set aside when: [t1] the stop reminder renders, the record ahead still held then: it counts the record behind as a wait, not a fault 1`] = `"🦫 2 tasks held for the radio · 1 set aside (upstream:access) · 1 behind an earlier update to the same issue · see each fix: rhx radio.task.queue get"`;
@@ -71,7 +97,7 @@ exports[`asRadioHeldOutput given: [case2.3] two updates to one issue, the first 
    ├─ b2b2b2b2b2b2b2b2 update #599 → ehmpathy/rhachet
    │  ├─ state: not reached (was behind a1a1a1a1a1a1a1a1, no longer held; re-checked on next drain)
    │  └─ auth: default (as-robot:via-keyrack(ehmpath))
-   └─ the radio is open, so the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+   └─ the radio is open, so the next push, or \`rhx radio.task.queue drain\`, delivers the backlog; a public repo needs \`drain --promise task-to-public-repo-is-anonymized\`, once checked"
 `;
 
 exports[`asRadioHeldOutput given: [case2.3] two updates to one issue, the first set aside when: [t3] the list renders, the record ahead just amended (no fault on it) then: the record behind says it sends right after, never to fix it again 1`] = `
@@ -83,7 +109,7 @@ exports[`asRadioHeldOutput given: [case2.3] two updates to one issue, the first 
    │  ├─ state: waits behind a1a1a1a1a1a1a1a1 (same issue #599)
    │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
    │  └─ sends right after a1a1a1a1a1a1a1a1 on the next drain
-   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog; a public repo needs \`drain --promise task-to-public-repo-is-anonymized\`, once checked"
 `;
 
 exports[`asRadioHeldOutput given: [case2.4] a halter and a record held unsent behind it when: [t0] the list renders then: only the first reads halted; the second reads behind the halt 1`] = `
@@ -94,7 +120,7 @@ exports[`asRadioHeldOutput given: [case2.4] a halter and a record held unsent be
    ├─ b task b → ehmpathy/rhachet
    │  ├─ state: behind the halt (upstream:rate-limit): unsent, still in line; the next drain sends it once the halt clears
    │  └─ auth: default (as-robot:via-keyrack(ehmpath))
-   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog; a public repo needs \`drain --promise task-to-public-repo-is-anonymized\`, once checked"
 `;
 
 exports[`asRadioHeldOutput given: [case2.4] a halter and a record held unsent behind it when: [t1] the stop reminder renders then: it counts the halter and the record behind it apart 1`] = `"🦫 2 tasks held for the radio · 1 halted (upstream:rate-limit) · 1 behind the halt · the next drain retries them"`;
@@ -106,7 +132,7 @@ exports[`asRadioHeldOutput given: [case2] one task held, the gate open (S3) when
    ├─ a task a → ehmpathy/rhachet
    │  ├─ state: not reached (last held: radio.uses:blocked — global; since opened)
    │  └─ auth: default (as-robot:via-keyrack(ehmpath))
-   └─ the radio is open, so the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+   └─ the radio is open, so the next push, or \`rhx radio.task.queue drain\`, delivers the backlog; a public repo needs \`drain --promise task-to-public-repo-is-anonymized\`, once checked"
 `;
 
 exports[`asRadioHeldOutput given: [case3] no task held (S1) when: [t1] the list renders then: it says naught is held 1`] = `"🦫 naught held for the radio"`;
@@ -126,7 +152,7 @@ exports[`asRadioHeldOutput given: [case9] held records with a stored auth, one o
    │  ├─ state: held at gate (radio.uses:blocked — global)
    │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
    │  └─ lift it (human): rhx radio.uses --global allow
-   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog; a public repo needs \`drain --promise task-to-public-repo-is-anonymized\`, once checked"
 `;
 
 exports[`asRadioHeldOutput given: [case10] a held record merged in with a planted shell auth (r10 blocker.1) when: [t0] the list renders then: no line carries the planted command, in a fix or a display 1`] = `
@@ -136,7 +162,7 @@ exports[`asRadioHeldOutput given: [case10] a held record merged in with a plante
    │  ├─ auth: as-robot:shx(…), will not replay
    │  ├─ lift it (human): rhx radio.uses --global allow
    │  └─ amend its auth (human): rhx radio.task.queue set --uuid planted --auth <auth>
-   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog; a public repo needs \`drain --promise task-to-public-repo-is-anonymized\`, once checked"
 `;
 
 exports[`asRadioHeldOutput given: [case11] two set-aside records whose fix is not an amend: one already as-human, one an unknown fault when: [t0] the list renders then: the unknown-fault row says the drain retries it, and that a drain writes 1`] = `
@@ -151,5 +177,5 @@ exports[`asRadioHeldOutput given: [case11] two set-aside records whose fix is no
    │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
    │  ├─ retry it and print its fault: rhx radio.task.queue drain (this sends every held record whose gate is open)
    │  └─ or drop it: rhx radio.task.queue del --uuid odd --why "<why>"
-   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog; a public repo needs \`drain --promise task-to-public-repo-is-anonymized\`, once checked"
 `;

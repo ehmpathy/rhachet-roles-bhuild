@@ -11,6 +11,7 @@ const genHeld = (input: {
   lift: string | null;
 }): RadioTaskRecordFate => ({
   fate: 'held',
+  dir: '.behavior/.radio',
   record: new RadioTaskRecord({
     key: 'a1b2c3d4e5f60718',
     kind: 'create',
@@ -26,6 +27,7 @@ const genHeld = (input: {
     reason: input.reason,
     heldSeq: 1,
     deliveredExid: null,
+    promise: null,
   }),
   lift: input.lift,
   detail: null,

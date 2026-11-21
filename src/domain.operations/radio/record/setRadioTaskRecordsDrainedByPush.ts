@@ -57,17 +57,15 @@ export const setRadioTaskRecordsDrainedByPush = async (
       others: [],
     };
 
-  // gate open: drain the backlog; a landed push is not in it, and stays landed (C3, C6)
-  // only the auth a human typed on this push is live; a bare re-push inherits the stored
-  // auth onto its record, so the record's auth is never proof the human typed it
+  // gate open: drain the backlog; a landed push is not in it, and stays landed (C3, C6).
+  // the push names its own record: only the auth a human typed on this push is live (a bare
+  // re-push inherits the stored auth, so the record's auth is never proof the human typed
+  // it), and the promise gate drops this record rather than hold it
   const drained = await setRadioTaskRecordsDrained(
     {},
     {
       ...context,
-      authLive:
-        input.authTyped === null
-          ? null
-          : { key: input.record.key, auth: input.authTyped },
+      push: { key: input.record.key, auth: input.authTyped },
     },
   );
 

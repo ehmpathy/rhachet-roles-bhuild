@@ -503,6 +503,15 @@ describe('eco.seed', () => {
         expect(scene.recordsInWorktree).toEqual([]);
       },
     );
+
+    // the push's own stdout carries its fix; proven here with a held line. the same echo carries a
+    // public repo's --promise nudge, which no case here runs (F29)
+    then(
+      '[t4] and the push stdout that names the fix reaches the caller, never discarded',
+      () => {
+        expect(scene.run.stderr).toContain('🦫 held for the radio');
+      },
+    );
   });
 
   // 🔴 a gate is named by SLUG, and a slug means naught in the repo the

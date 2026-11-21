@@ -20,6 +20,8 @@ import { withRadioDrainLock } from './withRadioDrainLock';
  *         after the line, any record that holds a legacy clock field (`heldAt`, `settledAt`)
  *         is written back without it, settled ones included, so a drain that completes
  *         leaves the record dirs clock-free
+ * .note = context.promiseOverride (a `drain --promise`) vouches for every held record this
+ *         drain sends, for this drain only; it is never stored on a record
  */
 const _setRadioTaskRecordsDrained = async (
   input: Record<string, never>,
@@ -29,7 +31,8 @@ const _setRadioTaskRecordsDrained = async (
     env: NodeJS.ProcessEnv;
     shx: ShellExecutor;
     authOverride?: string | null;
-    authLive?: { key: string; auth: string | null } | null;
+    promiseOverride?: string | null;
+    push?: { key: string; auth: string | null } | null;
     drainSendBudget?: { milliseconds: number };
     drainSendLimit?: {
       perCall: { milliseconds: number };

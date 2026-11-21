@@ -16,9 +16,11 @@ export const DETAIL_REPUSHED_MID_SEND =
  */
 export const asRadioFateRepushedMidSend = (input: {
   record: RadioTaskRecord;
+  dir: string;
 }): Extract<RadioTaskRecordFate, { fate: 'held' }> => ({
   fate: 'held',
   record: input.record,
+  dir: input.dir,
   lift: null,
   detail: DETAIL_REPUSHED_MID_SEND,
   halt: false,
