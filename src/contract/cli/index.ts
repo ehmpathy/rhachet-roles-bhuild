@@ -87,6 +87,18 @@ const loadFeedbackTakeSet = (): typeof import('./feedback.take.set') =>
   require('./feedback.take.set');
 const loadInit = (): typeof import('./init.behavior') =>
   require('./init.behavior');
+const loadPhoneContacts = (): typeof import('./phoneContacts') =>
+  require('./phoneContacts');
+const loadPhoneContactsUses = (): typeof import('./phoneContactsUses') =>
+  require('./phoneContactsUses');
+const loadPhoneDaemon = (): typeof import('./phoneDaemon') =>
+  require('./phoneDaemon');
+const loadPhoneInbox = (): typeof import('./phoneInbox') =>
+  require('./phoneInbox');
+const loadPhoneNotifications = (): typeof import('./phoneNotifications') =>
+  require('./phoneNotifications');
+const loadPhoneText = (): typeof import('./phoneText') =>
+  require('./phoneText');
 const loadRadioPull = (): typeof import('./radioTaskPull') =>
   require('./radioTaskPull');
 const loadRadioPush = (): typeof import('./radioTaskPush') =>
@@ -108,6 +120,16 @@ export const cli = {
   feedbackTakeSet: asLazyCli(() => loadFeedbackTakeSet().feedbackTakeSet),
   giveFeedback: asLazyCli(() => loadFeedbackGive().feedbackGive), // backwards compat
   initBehavior: asLazyCli(() => loadInit().initBehavior),
+  phoneContacts: asLazyCli(() => loadPhoneContacts().cliPhoneContacts),
+  phoneContactsUses: asLazyCli(
+    () => loadPhoneContactsUses().cliPhoneContactsUses,
+  ),
+  phoneDaemon: asLazyCli(() => loadPhoneDaemon().cliPhoneDaemon),
+  phoneInbox: asLazyCli(() => loadPhoneInbox().cliPhoneInbox),
+  phoneNotifications: asLazyCli(
+    () => loadPhoneNotifications().cliPhoneNotifications,
+  ),
+  phoneText: asLazyCli(() => loadPhoneText().cliPhoneText),
   radioTaskPull: asLazyCli(() => loadRadioPull().cliRadioTaskPull),
   radioTaskPush: asLazyCli(() => loadRadioPush().cliRadioTaskPush),
   radioTaskQueue: asLazyCli(() => loadRadioQueue().cliRadioTaskQueue),

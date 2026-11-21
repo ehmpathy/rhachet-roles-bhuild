@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { getCliArgvTail } from './getCliArgvTail';
+
 /**
  * .what = base schema for rhachet passthrough args
  *
@@ -22,6 +24,7 @@ export type RhachetArgs = z.infer<typeof schemaOfRhachetArgs>;
  */
 const getCliArgsRaw = (
   argv: string[],
+  options: { valueRawKeys: string[] },
 ): { named: Record<string, string | boolean>; ordered: string[] } => {
   const named: Record<string, string | boolean> = {};
   const ordered: string[] = [];
@@ -35,6 +38,13 @@ const getCliArgsRaw = (
     if (arg.startsWith('--')) {
       const key = arg.slice(2);
       const next = argv[i + 1];
+
+      // a free-text key takes the next arg whole, even an empty one or one that leads with `--`
+      if (options.valueRawKeys.includes(key)) {
+        if (next !== undefined) named[key] = next;
+        i++;
+        continue;
+      }
 
       // check if next arg is a value (not another flag)
       if (next && !next.startsWith('--')) {
@@ -103,23 +113,16 @@ type CliSchemaWithRhachetArgs = z.ZodObject<{
 export const getCliArgs = <T extends CliSchemaWithRhachetArgs>(input: {
   schema: T;
   argv?: string[];
+
+  /**
+   * keys whose value is free text: the next arg is always the value, so `--what ''` and
+   * `--what '--apply is blocked'` reach the caller as strings, never as a boolean flag
+   */
+  valueRawKeys?: string[];
 }): z.infer<T> => {
-  // drop script filename from argv if present
-  //
-  // rhachet skills use `tsx -e "import('pkg').then(m => m.cli.X())"` which
-  // has no script filename - argv[1] is already the first user arg.
-  //
-  // direct invocation like `tsx src/contract/cli/bind.behavior.ts` puts
-  // the script path in argv[1], which we need to skip.
-  //
-  // we detect the script filename by checking for `/cli/` in the path,
-  // since all CLI entry points live in src/contract/cli/.
-  const argvFirstIsScriptFilename = process.argv[1]?.includes('/cli/');
-  const argvWithoutScriptFilename = argvFirstIsScriptFilename
-    ? process.argv.slice(2)
-    : process.argv.slice(1);
-  const argv = input.argv ?? argvWithoutScriptFilename;
-  const raw = getCliArgsRaw(argv);
+  // the user args: argv with the node bin and any entry file path dropped
+  const argv = input.argv ?? getCliArgvTail({ argv: process.argv });
+  const raw = getCliArgsRaw(argv, { valueRawKeys: input.valueRawKeys ?? [] });
 
   // validate against schema
   const result = input.schema.safeParse(raw);
