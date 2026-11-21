@@ -1,6 +1,6 @@
 /**
  * .what = the text a value flag carries, or undefined when it carries none
- * .why = a bare value flag (`--to --what hi`, or an empty `"$ADDR"` in a booter command) parses
+ * .why = a bare value flag (`--into --what hi`, or an empty `"$ADDR"` in a booter command) parses
  *        as a boolean; read it as absent, so the verb refuses it as a caller fix (exit 2) with the
  *        usage, never as a schema malfunction (exit 1)
  */

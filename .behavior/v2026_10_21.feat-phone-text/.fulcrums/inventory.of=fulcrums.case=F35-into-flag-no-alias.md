@@ -1,4 +1,4 @@
-# F35 — the peer flag is `--into`, after the `into:` label; `--to` is refused, never aliased
+# F35 — the peer flag is `--into`, after the `into:` label; no alias, no refusal for `--to`
 
 ## .the fork
 
@@ -28,4 +28,7 @@ the order asked it as an open question. a human may want `--to` kept as an alias
 
 ## .verdict
 
-(best-guessed; named in pr #572 for the commander's review)
+ruled by the commander on pr #572: the flag is `--into` (option A), and the `--to` refusal goes too.
+a greenfield flag owes no backcompat, not even a refusal that names its new form. `--to` is now an
+unknown flag like any other. dispatched upstream as ehmpathy/rhachet-roles-ehmpathy#1439
+(`rule.forbid.backcompat-for-greenfield-contracts`).

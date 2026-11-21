@@ -2,7 +2,7 @@
  * .what = every value a repeatable flag carries, in the order given, in either form:
  *         `--<key> <value>` or `--<key>=<value>`
  * .why = `getCliArgs` keeps one value per key, the last; a flag that repeats for a list
- *        (`--to a --to b`) needs all of them
+ *        (`--into a --into b`) needs all of them
  */
 export const getAllCliArgValues = (input: {
   key: string;

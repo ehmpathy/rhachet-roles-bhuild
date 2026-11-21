@@ -36,7 +36,7 @@
 | F32 | the concurrency paths (eight writers, two daemon claims) are proven at the dao where the race is forced; one crashed-lock reclaim walks the cli | clean | best-guessed | 80% |
 | F33 | a malfunction's stack frames keep node's 4-space indent under the 3-space tree, via the one shared printer | clean | best-guessed | 75% |
 | F34 | the meter pitch prints only on the verbs the meter governs (`phone.contacts set`, `del`); the `(none)` grant hints sit beside it as peers | clean | best-guessed; named in pr #572 for the commander's review | 85% |
-| F35 | the peer flag is `--into`, after the `into:` label; `--to` is refused, never aliased | clean | best-guessed; named in pr #572 for the commander's review | 75% |
+| F35 | the peer flag is `--into`, after the `into:` label; no alias, no refusal for `--to` | clean | ruled by the commander: option A, refusal dropped | 75% |
 | F36 | a send wakes the receiver tree's daemon, spawned with cwd at that tree | clean | best-guessed | 85% |
 | F37 | a group mate is reached by its group alone; a lone text to one is refused | clean | best-guessed | 75% |
 | F38 | the grove leg: one ssh call per write by the registry alias; the far daemon says it; no say crosses a grove | clean | best-guessed; supersedes F13 | 70% |

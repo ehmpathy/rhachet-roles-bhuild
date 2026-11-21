@@ -28,7 +28,6 @@ import { asPhoneDaemonOutcomeOfAll } from '@src/domain.operations/phone/render/a
 import { asPhoneTextDelOutput } from '@src/domain.operations/phone/render/asPhoneTextDelOutput';
 import { asPhoneTextGetOutput } from '@src/domain.operations/phone/render/asPhoneTextGetOutput';
 import { asPhoneTextSetOutput } from '@src/domain.operations/phone/render/asPhoneTextSetOutput';
-import { genPhoneRefusal } from '@src/domain.operations/phone/render/genPhoneRefusal';
 import { getOnePhoneSelf } from '@src/domain.operations/phone/self/getOnePhoneSelf';
 import { delPhoneText } from '@src/domain.operations/phone/text/delPhoneText';
 import { getAllPhoneTexts } from '@src/domain.operations/phone/text/getAllPhoneTexts';
@@ -50,7 +49,6 @@ const schemaOfArgs = z.object({
     help: z.boolean().optional(),
     h: z.boolean().optional(),
     into: z.union([z.string(), z.boolean()]).optional(),
-    to: z.union([z.string(), z.boolean()]).optional(),
     what: z.string().optional(),
     re: z.union([z.string(), z.boolean()]).optional(),
     text: z.union([z.string(), z.boolean()]).optional(),
@@ -123,18 +121,6 @@ const _cliPhoneText = async (): Promise<void> => {
       'del --text <uuid>',
     ],
   });
-
-  // the peer flag is --into, after the label a text names its peer by; one name, no alias
-  if (named.to !== undefined)
-    throw genPhoneRefusal({
-      vibe: 'bummer, that flag swam upstream',
-      headline: '--to is now --into, after the into: label',
-      nodes: [
-        {
-          text: "send it as: rhx phone.text set --into <address> --what '...'",
-        },
-      ],
-    });
 
   // refuse a withdraw that names no text, before any clone lookup
   const textToWithdraw =

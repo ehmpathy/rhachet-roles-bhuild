@@ -3,7 +3,7 @@ import { asPhoneOutput } from './asPhoneOutput';
 /**
  * .what = the `phone.contacts set | del` output: what changed, and how many contacts remain
  * .note = a peer named twice is one peer; the drop is named, never silent, as `phone.text set`
- *         names a repeated --to
+ *         names a repeated --into
  */
 export const asPhoneContactsSetOutput = (input: {
   mode: 'grant' | 'revoke';
