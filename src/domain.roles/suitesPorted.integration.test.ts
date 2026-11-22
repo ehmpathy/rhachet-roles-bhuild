@@ -61,6 +61,7 @@ const DIR_ROLES = __dirname;
  *         | boot-budget | supervisor | 23 → 24 | `work.harness` — clamps that a driver the timeout killed throws, never reads as `exit 1` |
  *         | tailnet-reach | supervisor | 24 → 26 | `grovework` (the one reach reader) and `ductwork.unreachable` (the cure follows the cause) |
  *         | F13 | prioritizer | 2 → 8 | `ecowork` cut into seven parts by subject — quant, goal, migrate, graph, render, mirror, commit |
+ *         | concurrency | supervisor | 26 → 27 | `capacitywork` — the limit model of `git.grove.capacity`, cased through `limits()` |
  *
  * 🔴 .and the comment at [t0] used to say "a ratchet floor rather than an
  *         equality, since a suite added later must not turn this red" while the
@@ -71,7 +72,7 @@ const DIR_ROLES = __dirname;
  *         header is a cache, and this one had gone stale against its own line.
  */
 const SUITES_PORTED = [
-  { role: 'supervisor', inWork: true, quant: 26 },
+  { role: 'supervisor', inWork: true, quant: 27 },
   { role: 'prioritizer', inWork: true, quant: 8 },
 ];
 
@@ -82,9 +83,14 @@ const SUITES_PORTED = [
  * .note = `git.tree.behavior.gates` is not a port — it is the verification-stage
  *         clamp on vision case=1 `[t6]`–`[t9]`, the four sprout gates at the
  *         entrypoint. it sits beside the verb it grades, so it lands here
+ * .note = `git.crew.tokens` and `git.grove.capacity` are not ports either — they
+ *         are the suites of the two verbs the concurrency behavior added, beside
+ *         the verbs they grade
  */
 const SUITES_OUTSIDE_WORK = [
   'prioritizer/skills/eco.seed.integration.test.ts',
+  'supervisor/skills/git.crew.tokens.integration.test.ts',
+  'supervisor/skills/git.grove.capacity.integration.test.ts',
   'supervisor/skills/git.grove.list.integration.test.ts',
   'supervisor/skills/git.grove.saturation.census.integration.test.ts',
   'supervisor/skills/git.grove.saturation.forks.integration.test.ts',

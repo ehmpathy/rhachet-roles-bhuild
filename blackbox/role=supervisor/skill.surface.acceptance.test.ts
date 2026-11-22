@@ -38,12 +38,24 @@
  *         exclude is that defect's whole defense.
  */
 import { execSync } from 'child_process';
-import { existsSync, readdirSync } from 'fs';
+import { existsSync, readdirSync, writeFileSync } from 'fs';
+import { homedir } from 'os';
 import { join } from 'path';
 
 import { given, then, useBeforeAll, when } from 'test-fns';
 
+import { asKeyShape } from '../../src/domain.roles/.test/asKeyShape';
+import { tempDirs } from '../../src/domain.roles/.test/tempDirs';
+import {
+  genCall,
+  genFixtureHome,
+} from '../../src/domain.roles/supervisor/skills/git.crew.tokens.harness';
 import { genConsumerRepo, stripAnsi } from '../.test/infra';
+
+afterAll(() => tempDirs.delAll());
+
+// the one crew the fixture home holds, a sandpine behavior tree
+const TREE_FIXTURE = 'svc-lessons.beav.feat-book-a-lesson';
 
 /**
  * .what = mask the per-run values in a captured cli output
@@ -110,6 +122,7 @@ const getDirDelivered = (input: { dirLinked: string }): string => {
 const runAsHuman = (input: {
   command: string;
   repoDir: string;
+  env?: Record<string, string>;
 }): { output: string; exitCode: number } => {
   try {
     const stdout = execSync(`npx ${input.command}`, {
@@ -117,6 +130,7 @@ const runAsHuman = (input: {
       encoding: 'utf-8',
       timeout: 60000,
       stdio: ['pipe', 'pipe', 'pipe'],
+      env: { ...process.env, ...(input.env ?? {}) },
     });
     return { output: stdout.trim(), exitCode: 0 };
   } catch (error: unknown) {
@@ -310,6 +324,434 @@ describe('supervisor.surface acceptance (as consumer)', () => {
         expect(result.output).not.toMatch(
           /No such file or directory|Cannot find module/,
         );
+      });
+    });
+  });
+
+  /**
+   * .what = the two concurrency verbs, as a consumer meets them: the help that
+   *         names their inputs, the refusal a slip meets, and a real read, a
+   *         gate grant, and the levers, each on a hermetic fixture home
+   *
+   * .why  = this journey proves the PUBLISHED verb is found by name, explains
+   *         itself, refuses a slip loud with exit 2, and runs whole through the
+   *         built package (rule.require.help-on-demand,
+   *         rule.require.errors-name-the-fix). the fixture home holds the crews;
+   *         the gate's box is a fixture probe record, so its free slot is known
+   */
+  given('[case3] the concurrency verbs, invoked by name from a consumer', () => {
+    const scene = useBeforeAll(async () => {
+      const consumer = genConsumerRepo({ prefix: 'supervisor-concur-' });
+      execSync('npx rhachet roles link --repo bhuild --role supervisor', {
+        cwd: consumer.repoDir,
+        stdio: 'pipe',
+      });
+      const fixture = genFixtureHome({
+        slug: 'supervisor-concur-home',
+        crews: [
+          {
+            tree: TREE_FIXTURE,
+            branch: 'beav/feat-book-a-lesson',
+            bound: true,
+            account: 'bert@example.com',
+            calls: [genCall({ id: 'msg-a', minsAgo: 30 })],
+          },
+        ],
+      });
+      const record = join(fixture.home, 'capacity.record.json');
+      writeFileSync(
+        record,
+        JSON.stringify({
+          host: 'sandpine-box',
+          cpus: 4,
+          mem_total_kb: 16_777_216,
+          mem_avail_kb: 12_582_912,
+          psi_cpu_some_avg60: '0.00',
+          psi_mem_full_avg60: '0.00',
+          // the since-boot rows a live probe reads beside the minute ones
+          psi_cpu_some_life: '0.400',
+          psi_mem_some_life: '0.100',
+          sample_sec: 1,
+          busy_cores: 3,
+          forks_per_sec: 40,
+          crews: [
+            {
+              crew: join(fixture.home, 'git', 'sandpine', '_worktrees', TREE_FIXTURE),
+              kind: 'behavior',
+              seats: 1,
+              procs: 3,
+              rss_kb: 1_048_576,
+              cores: 1,
+            },
+          ],
+        }),
+      );
+      return {
+        ...consumer,
+        fixture,
+        env: {
+          HOME: fixture.home,
+          GIT_FOREST_DIR: fixture.forest,
+          // npx keeps its cache under the real home; the fixture home holds none
+          npm_config_cache: join(homedir(), '.npm'),
+          GIT_GROVE_CAPACITY_FIXTURE_RECORD: record,
+        },
+      };
+    });
+
+    (['git.crew.tokens', 'git.grove.capacity'] as const).forEach(
+      (verb, index) => {
+        when(`[t${index * 2}] \`rhx ${verb} --help\` is run`, () => {
+          const result = useBeforeAll(async () =>
+            runAsHuman({ command: `rhx ${verb} --help`, repoDir: scene.repoDir }),
+          );
+
+          then('the verb is found and answers with exit 0', () => {
+            expect(result.output).not.toMatch(/no skill .*found/);
+            expect({ exitCode: result.exitCode }).toEqual({ exitCode: 0 });
+          });
+
+          then('the help names usage, inputs, and an example', () => {
+            expect(result.output).toContain(verb);
+            expect(result.output).toMatch(/usage:/);
+            expect(result.output).toMatch(/inputs:/);
+            expect(result.output).toMatch(/example:/);
+          });
+
+          then('🔴 and the whole help surface holds its shape', () => {
+            expect(asSnapshotStable(result.output)).toMatchSnapshot();
+          });
+        });
+
+        when(`[t${index * 2 + 1}] \`rhx ${verb}\` meets an unknown flag`, () => {
+          const result = useBeforeAll(async () =>
+            runAsHuman({
+              command: `rhx ${verb} --bogus`,
+              repoDir: scene.repoDir,
+            }),
+          );
+
+          then('it refuses as a constraint, exit 2', () => {
+            expect({ exitCode: result.exitCode }).toEqual({ exitCode: 2 });
+          });
+
+          then('the refusal names the class and the flag at fault', () => {
+            expect(result.output).toContain(
+              "✋ ConstraintError: unknown flag '--bogus'",
+            );
+          });
+
+          then('🔴 and the refusal holds its shape', () => {
+            expect(asSnapshotStable(result.output)).toMatchSnapshot();
+          });
+        });
+      },
+    );
+
+    /**
+     * .what = the json record of one rhx run, read off the output
+     * .why  = rhx prints its runner banner ahead of the verb's stdout, so the record
+     *         is the text from the first `{` on
+     */
+    const asRecord = (input: { output: string }): ReturnType<typeof JSON.parse> => {
+      const plain = stripAnsi(input.output);
+      return JSON.parse(plain.slice(plain.indexOf('{')));
+    };
+
+    when('[t4] `rhx git.crew.tokens local --json` reads the fixture home', () => {
+      const result = useBeforeAll(async () =>
+        runAsHuman({
+          command: 'rhx git.crew.tokens local --json',
+          repoDir: scene.repoDir,
+          env: scene.env,
+        }),
+      );
+
+      then('it exits 0, and the local grove is read', () => {
+        expect({ exitCode: result.exitCode }).toEqual({ exitCode: 0 });
+        const record = asRecord(result);
+        expect(record.groves[0].state).toEqual('read');
+      });
+
+      then('the fixture crew is filed as a behavior crew, with a weight', () => {
+        const crew = asRecord(result).groves[0].record.crews.find(
+          (c: { crew: string }) => c.crew.endsWith(TREE_FIXTURE),
+        );
+        expect(crew.kind).toEqual('behavior');
+        expect(crew.weighted).toBeGreaterThan(0);
+      });
+
+      then('🔴 and the record holds its shape', () => {
+        expect(asKeyShape(asRecord(result))).toMatchSnapshot();
+      });
+    });
+
+    when('[t5] `rhx git.grove.capacity --grove local --for behavior` asks the gate', () => {
+      const result = useBeforeAll(async () =>
+        runAsHuman({
+          command:
+            'rhx git.grove.capacity --grove local --for behavior --key beav/feat-surf-forecast --sample 1 --json',
+          repoDir: scene.repoDir,
+          env: scene.env,
+        }),
+      );
+
+      then('it grants the one free slot, exit 0, under a hold named for the key', () => {
+        expect({ exitCode: result.exitCode }).toEqual({ exitCode: 0 });
+        const answer = asRecord(result);
+        expect(answer.granted).toEqual(true);
+        expect(answer.hold).toEqual('local.behavior.beav+feat-surf-forecast');
+      });
+
+      then('🔴 and the decision holds its shape', () => {
+        expect(asKeyShape(asRecord(result))).toMatchSnapshot();
+      });
+    });
+
+    // `--levers` is the only path that reads git.grove.capacity.levers.jsonc, so a run
+    // proves the table shipped beside the verb
+    when('[t6] `rhx git.grove.capacity local --levers` ranks the levers', () => {
+      const result = useBeforeAll(async () =>
+        runAsHuman({
+          command: 'rhx git.grove.capacity local --sample 1 --levers --json',
+          repoDir: scene.repoDir,
+          env: scene.env,
+        }),
+      );
+
+      then('it exits 0, the levers table read from the package', () => {
+        expect({ exitCode: result.exitCode }).toEqual({ exitCode: 0 });
+        expect(result.output).not.toContain('the levers table is unreadable');
+      });
+
+      then('the shipped levers are priced on the local grove', () => {
+        const slugs = asRecord(result).groves[0].levers.map(
+          (lever: { slug: string }) => lever.slug,
+        );
+        expect(slugs).toContain('slimmer-boot-briefs');
+        expect(slugs).toContain('small-context-forks');
+      });
+
+      then('🔴 and the levers record holds its shape', () => {
+        expect(asKeyShape(asRecord(result))).toMatchSnapshot();
+      });
+    });
+
+    /**
+     * .what = a human tree as a consumer reads it, only its clock-driven figures masked
+     * .why  = a key shape pins types, so a grant and a refusal share one; the tree is the
+     *         render a human reads, runner banner and all (5.3 i005 r10.nitpick.1, r11.4).
+     *         the fixture record fixes the box, so its slot counts, its stall marks and the
+     *         stall lines stay visible: a regression to `0 left` or a 99% line goes red
+     *         (5.3 i006 r10.nitpick.4, r11.1). only the token figures, which the burn
+     *         window reads off the clock, and a hold's lapse, which counts down, are masked
+     */
+    const TOKEN_FIGURE = String.raw`\d+(?:\.\d+)?[KMG]?`;
+    const asMaskedTree = (input: { output: string }): string =>
+      asSnapshotStable(input.output)
+        .split(scene.fixture.home)
+        .join('<home>')
+        .replace(new RegExp(`${TOKEN_FIGURE}/h\\b`, 'g'), 'N/h')
+        .replace(new RegExp(`(fleet: |forks |per crew-hour: behavior |· directive )${TOKEN_FIGURE}`, 'g'), '$1N')
+        .replace(new RegExp(`(: |\\]: )${TOKEN_FIGURE}( over | \\()`, 'g'), '$1N$2')
+        .replace(/(tokens_(?:5h|7d)) \d+/g, '$1 N')
+        .replace(/lapses in \d+ min/g, 'lapses in N min');
+
+    when('[t7] `rhx git.grove.capacity local` renders the read', () => {
+      const result = useBeforeAll(async () =>
+        runAsHuman({
+          command: 'rhx git.grove.capacity local --sample 1',
+          repoDir: scene.repoDir,
+          env: scene.env,
+        }),
+      );
+
+      then('it exits 0 and names each kind on the local grove', () => {
+        expect({ exitCode: result.exitCode }).toEqual({ exitCode: 0 });
+        expect(result.output).toContain('grove local:');
+        expect(result.output).toMatch(/behavior: affordable/);
+      });
+
+      then('🔴 and the read tree holds its shape', () => {
+        expect(asMaskedTree(result)).toMatchSnapshot();
+      });
+    });
+
+    // the hold of [t5] takes the box's one free slot: drop it, then ask as a human does
+    when('[t8] `rhx git.grove.capacity --for behavior` grants a slot, as a tree', () => {
+      const result = useBeforeAll(async () => {
+        const release = runAsHuman({
+          command: 'rhx git.grove.capacity --release local.behavior.beav+feat-surf-forecast',
+          repoDir: scene.repoDir,
+          env: scene.env,
+        });
+        expect(release.exitCode).toEqual(0);
+        return runAsHuman({
+          command:
+            'rhx git.grove.capacity --grove local --for behavior --key beav/feat-coachbook --sample 1',
+          repoDir: scene.repoDir,
+          env: scene.env,
+        });
+      });
+
+      then('it grants the slot, exit 0, the hold named for the key', () => {
+        expect({ exitCode: result.exitCode }).toEqual({ exitCode: 0 });
+        expect(result.output).toContain('✅ a behavior slot on local');
+        expect(result.output).toContain(
+          'rhx git.grove.capacity --release local.behavior.beav+feat-coachbook',
+        );
+      });
+
+      then('🔴 and the grant tree holds its shape', () => {
+        expect(asMaskedTree(result)).toMatchSnapshot();
+      });
+    });
+
+    // the grant of [t8] now holds the one slot: a second key meets a full box
+    when('[t9] a second key asks the full box, as a tree', () => {
+      const result = useBeforeAll(async () =>
+        runAsHuman({
+          command:
+            'rhx git.grove.capacity --grove local --for behavior --key beav/feat-cert-ingest --sample 1',
+          repoDir: scene.repoDir,
+          env: scene.env,
+        }),
+      );
+
+      then('the refusal passes through rhx as exit 2, the held slot named', () => {
+        expect({ exitCode: result.exitCode }).toEqual({ exitCode: 2 });
+        expect(result.output).toContain('✋ ConstraintError: no behavior slot on local');
+        expect(result.output).toContain('held by sprouts in flight: 1');
+      });
+
+      // the box has room, and the hold of [t8] alone fills it: the way out is that hold
+      then('it names the hold that fills the box, its lapse, and --release', () => {
+        expect(result.output).toMatch(
+          /└─ local\.behavior\.beav\+feat-coachbook · behavior · lapses in \d+ min/,
+        );
+        expect(result.output).toContain('rhx git.grove.capacity --release <hold>');
+        expect(result.output).not.toContain('idle crews');
+      });
+
+      then('🔴 and the full-box refusal tree holds its shape', () => {
+        expect(asMaskedTree(result)).toMatchSnapshot();
+      });
+    });
+
+    // a box whose cpu stall sits past the 🔴 line takes no sprout, whatever its free slots
+    when('[t10] a key asks a box stalled on cpu, as a tree', () => {
+      const result = useBeforeAll(async () => {
+        const stalled = join(scene.fixture.home, 'capacity.record.stalled.json');
+        writeFileSync(
+          stalled,
+          JSON.stringify({
+            host: 'sandpine-box',
+            cpus: 4,
+            mem_total_kb: 16_777_216,
+            mem_avail_kb: 12_582_912,
+            psi_cpu_some_avg60: '12.50',
+            psi_mem_full_avg60: '0.00',
+            psi_cpu_some_life: '0.400',
+            psi_mem_some_life: '0.100',
+            sample_sec: 1,
+            busy_cores: 1,
+            forks_per_sec: 40,
+            crews: [
+              {
+                crew: join(scene.fixture.home, 'git', 'sandpine', '_worktrees', TREE_FIXTURE),
+                kind: 'behavior',
+                seats: 1,
+                procs: 3,
+                rss_kb: 1_048_576,
+                cores: 1,
+              },
+            ],
+          }),
+        );
+        return runAsHuman({
+          command:
+            'rhx git.grove.capacity --grove local --for behavior --key beav/feat-spot-forecast-widget --sample 1',
+          repoDir: scene.repoDir,
+          env: { ...scene.env, GIT_GROVE_CAPACITY_FIXTURE_RECORD: stalled },
+        });
+      });
+
+      then('the stall refusal passes through rhx as exit 2, the stall and the seed named', () => {
+        expect({ exitCode: result.exitCode }).toEqual({ exitCode: 2 });
+        expect(result.output).toContain('cpu stall 🔴 12.50%');
+        expect(result.output).toContain('rhx radio.task.push');
+      });
+
+      then('🔴 and the stall refusal tree holds its shape', () => {
+        expect(asMaskedTree(result)).toMatchSnapshot();
+      });
+    });
+
+    // the human renders of the token verb, and of the levers table, through rhx (5.3 i006
+    // r10.nitpick.2, r11.6): [t4] and [t6] pin only their json key shapes
+    when('[t11] `rhx git.crew.tokens local` renders the read', () => {
+      const result = useBeforeAll(async () =>
+        runAsHuman({
+          command: 'rhx git.crew.tokens local',
+          repoDir: scene.repoDir,
+          env: scene.env,
+        }),
+      );
+
+      then('it exits 0 and files the fixture crew as a behavior crew', () => {
+        expect({ exitCode: result.exitCode }).toEqual({ exitCode: 0 });
+        expect(result.output).toContain('🌲 crew tokens over 180 min');
+        expect(result.output).toContain(`${TREE_FIXTURE} [behavior]`);
+      });
+
+      then('🔴 and the read tree holds its shape', () => {
+        expect(asMaskedTree(result)).toMatchSnapshot();
+      });
+    });
+
+    when('[t12] `rhx git.crew.tokens calibrate` renders the calibration', () => {
+      const result = useBeforeAll(async () =>
+        runAsHuman({
+          command: 'rhx git.crew.tokens calibrate',
+          repoDir: scene.repoDir,
+          env: scene.env,
+        }),
+      );
+
+      // the fixture home holds no cap ledger, so both windows read ⚪ and name the wire-up
+      then('it exits 0 and names the cap ledger to wire, per window', () => {
+        expect({ exitCode: result.exitCode }).toEqual({ exitCode: 0 });
+        expect(result.output).toContain('🌲 crew tokens · calibrate');
+        expect(result.output).toMatch(
+          /five_hour: ⚪ uncalibrated — the cap ledger holds no rows/,
+        );
+        expect(result.output).toMatch(
+          /seven_day: ⚪ uncalibrated — the cap ledger holds no rows/,
+        );
+      });
+
+      then('🔴 and the calibrate tree holds its shape', () => {
+        expect(asMaskedTree(result)).toMatchSnapshot();
+      });
+    });
+
+    when('[t13] `rhx git.grove.capacity local --levers` renders the levers', () => {
+      const result = useBeforeAll(async () =>
+        runAsHuman({
+          command: 'rhx git.grove.capacity local --sample 1 --levers',
+          repoDir: scene.repoDir,
+          env: scene.env,
+        }),
+      );
+
+      then('it exits 0 and ranks the shipped levers against the axis that binds', () => {
+        expect({ exitCode: result.exitCode }).toEqual({ exitCode: 0 });
+        expect(result.output).toContain('levers, by gain in behavior slots against cpu');
+        expect(result.output).toContain('slimmer-boot-briefs:');
+      });
+
+      then('🔴 and the levers tree holds its shape', () => {
+        expect(asMaskedTree(result)).toMatchSnapshot();
       });
     });
   });

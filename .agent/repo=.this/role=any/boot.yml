@@ -23,9 +23,11 @@ always:
     #      `term=*._.choice._.md` names its own reason file under `## .reason`, so a
     #      reader computes it from the cluster it already holds
     #      (rule.always.boot-an-oversized-subdomain-as-its-catalog)
+    # .note = `**/` so the globs match at any depth: the clusters sit one level down, in
+    #         `domain.terms/role=<role>/`, and a top-level glob matched none of them
     not:
-      - briefs/domain.terms/term=*._.choice.reason.md
-      - briefs/domain.terms/term=*._.choice.example=*.md
+      - briefs/domain.terms/**/term=*._.choice.reason.md
+      - briefs/domain.terms/**/term=*._.choice.example=*.md
   skills:
     say:
       - skills/**
