@@ -3,33 +3,29 @@
 # .what = a statusline command that logs each account's cap % to a
 #         gitignored ledger, then renders bhrain's route statusline
 #
-# .why  = the cap ledger (F8): pool calibration needs each account's
-#         5h and 7d % at many instants, and the statusline input is
-#         the one place claude code hands them over, per seat, free
-#         - transcripts name no account; the config dir's .claude.json
-#           names the account signed in at that tick
+# .why  = the cap ledger (F8): pool calibration needs each account's 5h
+#         and 7d % at many instants; the statusline input is the one place
+#         claude code hands them over, per seat, free. transcripts name no
+#         account; the config dir's .claude.json names the one signed in
 #
 # usage:
-#   as a statusLine command, in this seat's .claude/settings.local.json:
+#   statusLine command, in this seat's .claude/settings.local.json:
 #     { "statusLine": { "type": "command",
 #         "command": ".agent/repo=.this/role=any/skills/claude.statusline.caplog.sh" } }
-#   rhx claude.statusline.caplog --status   # is it wired? did it run? what did it log?
+#   rhx claude.statusline.caplog --status   # wired? ran? what it logged
 #
 # guarantee:
 #   - stdout is exactly bhrain's routeStatusLine for the same input
-#   - one ledger row per change of (account, 5h %, 7d %), per session,
-#     even when two seats of one worktree tick at once (a lock guards
-#     the read, the compare, and the append), plus a keepalive row once
-#     a flat % has gone CAPLOG_KEEPALIVE_MIN (4) unrecorded, so a quiet
-#     account never reads as a dead seat
-#   - the row shape and the change key are capwork's (the reader's own)
-#   - every run stamps a heartbeat, so "never ran" and "ran, no change"
-#     read apart
-#   - a ledger fault never breaks the render, and never hides: it lands
-#     in faults.log beside the ledger, or on stderr where that dir
-#     cannot be made; --status names it
+#   - one row per change of (account, 5h %, 7d %) per session, under a
+#     lock when two seats of one worktree tick at once; plus a keepalive
+#     row after CAPLOG_KEEPALIVE_MIN (4) flat, so a quiet account never
+#     reads as a dead seat
+#   - row shape and change key are capwork's (the reader's own)
+#   - a heartbeat per run, so "never ran" and "ran, no change" read apart
+#   - a ledger fault never breaks the render and never hides: faults.log
+#     beside the ledger, else stderr; --status names it
 #   - --status reads the ledger of the worktree it runs in, from any cwd
-#   - all files live under .log/role=any/skill=claude.statusline.caplog/
+#   - all files under .log/role=any/skill=claude.statusline.caplog/
 #     (gitignored; wall-clock time is fine there)
 ######################################################################
 set -uo pipefail

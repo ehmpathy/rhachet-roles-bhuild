@@ -4,9 +4,8 @@
 #         pressure, fork rate, per-crew ram + token burn, and the
 #         boot toll (what a seat or fork pays before its first word)
 #
-# .why  = the concurrency budget needs measured per-crew costs per grove
-#         - git.crew.tokens is absent on this grove, and blind to actor dirs
-#         - each read is raw evidence for the criteria and blueprint stones
+# .why  = the concurrency budget needs measured per-crew costs per grove;
+#         each read is raw evidence beside `rhx git.crew.tokens`
 #
 # usage:
 #   grove.census.sh                    # 60 min token window, 30s fork sample
