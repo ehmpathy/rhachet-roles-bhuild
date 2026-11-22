@@ -70,9 +70,13 @@ describe('daoRadioTaskViaGhIssues — shell safety and send timeout', () => {
         resetStub();
         fs.writeFileSync(path.join(dir, 'sleep'), '20');
         const startedMs = Date.now();
+
+        // run under 2s, so a loaded box starts the stub (and logs its call) before the kill.
+        // it still bites: the stub sleeps 20s, so a timeout that never fires breaks the 5s bound,
+        // and a retry on timeout logs a second call
         const error = await getError(
           runGhCommand(
-            { args: ['issue', 'list'], timeout: { milliseconds: 300 } },
+            { args: ['issue', 'list'], timeout: { milliseconds: 2_000 } },
             context,
           ),
         );

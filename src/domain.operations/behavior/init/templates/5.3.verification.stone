@@ -274,6 +274,13 @@ you move to handoff only when you can answer "yes" to all of the above and still
 
 update your checklist when all tests pass.
 
+### the file ledger
+
+each file this stone writes or fixes (a test, a snapshot, a prod fix) appends one line to the
+`### filediff` section of `$BEHAVIOR_DIR_REL/5.1.execution.*.yield.md`: `[+] <path>`,
+`[~] <path>`, or `[-] <path>`. 6.preship stages from that ledger, so a file left off it ships
+uncommitted.
+
 ---
 
 ### step 5: handoff (only if insurmountable)

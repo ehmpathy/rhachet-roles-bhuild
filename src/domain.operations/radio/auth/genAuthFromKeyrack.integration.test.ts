@@ -1,27 +1,34 @@
 import { ConstraintError } from 'helpful-errors';
 import { getError, given, then, when } from 'test-fns';
 
+import { RUN_GITHUB_ROBOT_TEST } from '../../../.test/utils/RUN_GITHUB_ROBOT_TEST';
 import { shx } from '../../../infra/shell/shx';
 import { genAuthFromKeyrack } from './genAuthFromKeyrack';
 
 describe('genAuthFromKeyrack.integration', () => {
-  given('[case1] keyrack with unlocked credentials', () => {
-    when('[t0] get EHMPATH_BEAVER_GITHUB_TOKEN', () => {
-      then('returns an ephemeral ghs_* token', async () => {
-        const result = await genAuthFromKeyrack(
-          {
-            owner: 'ehmpath',
-            env: 'test',
-            key: 'EHMPATH_BEAVER_GITHUB_TOKEN',
-          },
-          { shx },
-        );
+  // .skip = off where GITHUB_ROBOT_LIVE is unset (a local default run)
+  // .why  = it mints the robot token, a github app secret only ci holds
+  // .real = ci sets GITHUB_ROBOT_LIVE=true (.github/workflows/.test.yml), so every pr runs it
+  given.runIf(RUN_GITHUB_ROBOT_TEST)(
+    '[case1] keyrack with unlocked credentials',
+    () => {
+      when('[t0] get EHMPATH_BEAVER_GITHUB_TOKEN', () => {
+        then('returns an ephemeral ghs_* token', async () => {
+          const result = await genAuthFromKeyrack(
+            {
+              owner: 'ehmpath',
+              env: 'test',
+              key: 'EHMPATH_BEAVER_GITHUB_TOKEN',
+            },
+            { shx },
+          );
 
-        expect(result.token).toBeDefined();
-        expect(result.token.startsWith('ghs_')).toBe(true);
+          expect(result.token).toBeDefined();
+          expect(result.token.startsWith('ghs_')).toBe(true);
+        });
       });
-    });
-  });
+    },
+  );
 
   given('[case2] a key that was never set', () => {
     when('[t0] get a bogus key name (real keyrack returns absent)', () => {

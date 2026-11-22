@@ -1,7 +1,7 @@
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { given, then, when } from 'test-fns';
+import { given, then, useBeforeAll, useThen, when } from 'test-fns';
 
 import { initBehaviorDir } from './initBehaviorDir';
 
@@ -698,4 +698,62 @@ describe('initBehaviorDir.integration', () => {
       });
     });
   });
+
+  given(
+    '[case8] a nano route that lacks 6.preship and 7.reflect, with a stone the driver edited',
+    () => {
+      const TAIL_NAMES = [
+        '6.preship.stone',
+        '6.preship.guard',
+        '7.reflect.stone',
+        '7.reflect.guard',
+      ];
+      const EDITED_CONTENT = 'the driver edited this stone\n';
+
+      // init a nano route, strip it back to its pre-tail shape, edit one stone
+      const scene = useBeforeAll(async () => {
+        const sceneDir = fs.mkdtempSync(
+          path.join(os.tmpdir(), 'initBehaviorDir-reinit-test-'),
+        );
+        const behaviorDirRel = '.behavior/v2025_01_01.test-feature';
+        const sceneBehaviorDir = path.join(sceneDir, behaviorDirRel);
+        initBehaviorDir({
+          behaviorDir: sceneBehaviorDir,
+          behaviorDirRel,
+          size: 'nano',
+        });
+        TAIL_NAMES.forEach((name) =>
+          fs.rmSync(path.join(sceneBehaviorDir, name)),
+        );
+        const editedPath = path.join(sceneBehaviorDir, '1.vision.stone');
+        fs.writeFileSync(editedPath, EDITED_CONTENT);
+        return { sceneDir, sceneBehaviorDir, behaviorDirRel, editedPath };
+      });
+
+      afterAll(() => {
+        fs.rmSync(scene.sceneDir, { recursive: true, force: true });
+      });
+
+      when('[t0] the route is re-inited at its own size', () => {
+        const result = useThen('the re-init succeeds', async () =>
+          initBehaviorDir({
+            behaviorDir: scene.sceneBehaviorDir,
+            behaviorDirRel: scene.behaviorDirRel,
+            size: 'nano',
+          }),
+        );
+
+        then('it adds only the four tail files', () => {
+          expect([...result.created].sort()).toEqual([...TAIL_NAMES].sort());
+        });
+
+        then('it keeps the edited stone byte for byte', () => {
+          expect(result.kept).toContain('1.vision.stone');
+          expect(fs.readFileSync(scene.editedPath, 'utf-8')).toEqual(
+            EDITED_CONTENT,
+          );
+        });
+      });
+    },
+  );
 });

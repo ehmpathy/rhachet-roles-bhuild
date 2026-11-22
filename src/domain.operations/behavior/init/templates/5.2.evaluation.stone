@@ -85,6 +85,13 @@ for each divergence:
 |------------|------------|-----------|
 | ... | repair/blocker | ... |
 
+### the file ledger
+
+each file a repair writes appends one line to the
+`### filediff` section of `$BEHAVIOR_DIR_REL/5.1.execution.*.yield.md`: `[+] <path>`,
+`[~] <path>`, or `[-] <path>`. 6.preship stages from that ledger, so a file left off it ships
+uncommitted. (the "filediff tree" above is this stone's report; the ledger is the 5.1 yield's list.)
+
 ---
 
 emit into $BEHAVIOR_DIR_REL/5.2.evaluation.yield.md

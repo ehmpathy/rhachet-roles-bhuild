@@ -133,3 +133,24 @@ reference
 ---
 
 emit into $BEHAVIOR_DIR_REL/3.3.1.blueprint.product.yield.md
+
+---
+
+## .checkpoint
+
+commit the yield, so a human can review it off the box. do it each time the guard halts on its
+approval judge (`halted, human approval required`), never earlier:
+
+1. stage the route dir alone: `rhx git.stage.add $BEHAVIOR_DIR_REL`. naught to stage → skip to the wait
+2. read `.behavior/.checkpoint.jsonc`. no repo is assumed safe to push:
+   - its content is exactly `{ "push": "allow" }` → a human opted this repo in: commit and push,
+     `rhx git.commit.set -m @stdin --mode apply --unstaged ignore --push`
+   - absent, unreadable, or any other content → commit local, with no push:
+     `rhx git.commit.set -m @stdin --mode apply --unstaged ignore`. 6.preship pushes it with the work
+3. the header is never behavioral: `docs(behavior): blueprint for <route slug>`, so the first
+   behavioral commit, at 6.preship, still titles the pr. the message carries no date or time
+4. a refused stage, commit, or push is held, never a halt: paste the refusal verbatim at the top
+   of the yield, then wait for approval with the yield uncommitted. a human lands it
+
+a repo whose records hold private data never writes the marker. its yields leave the box only at
+6.preship, after a human approved the work.
