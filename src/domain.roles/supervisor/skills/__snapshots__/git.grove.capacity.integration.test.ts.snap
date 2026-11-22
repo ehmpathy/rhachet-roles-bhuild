@@ -283,18 +283,18 @@ exports[`git.grove.capacity given: [case2] the sprout gate, on a box with exactl
 `;
 
 exports[`git.grove.capacity given: [case3] a registered grove that cannot be reached when: [t0] the gate asks it for a slot then: the refusal matches its snapshot 1`] = `
-"✋ ConstraintError: no slot — grove-sandpine-v20260901 is unread (unreadable), so the gate gives no verdict
-   └─ exit 255: ssh: <the resolver says why>
+"✋ ConstraintError: no slot — grove-sandpine-v20260901 is unread (asleep), so the gate gives no verdict
+   └─ check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove.invalid
 "
 `;
 
 exports[`git.grove.capacity given: [case3] a registered grove that cannot be reached when: [t1] the read runs, and the token half cannot reach that grove then: the partial fleet render, masked, matches its snapshot 1`] = `
 "🌲 grove capacity (token cost over N min)
-   ├─ tokens, fleet-wide: ⚪ unread as a fleet sum — unreached: grove-sandpine-vN unreadable; each grove row below names why
+   ├─ tokens, fleet-wide: ⚪ unread as a fleet sum — unreached: grove-sandpine-vN asleep; each grove row below names why
    │  ├─ per crew-hour: behavior ⚪ · directive ⚪
    │  ├─ 5h: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
    │  └─ 7d: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
-   └─ grove-sandpine-vN: 💥 unreadable — no slot — exit <rc>: ssh: <the resolver says why>
+   └─ grove-sandpine-vN: 💤 asleep — no slot — check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove.invalid
 
 🥥 next
    ├─ ask for a slot: rhx git.grove.capacity --grove <g> --for behavior --key <branch>
@@ -621,11 +621,11 @@ exports[`git.grove.capacity given: [case11] the sprout gate, on a box whose ram 
 
 exports[`git.grove.capacity given: [case12] the default sweep, over local and one grove that cannot be reached when: [t0] the read runs with no grove named then: the mixed sweep render, masked, matches its snapshot 1`] = `
 "🌲 grove capacity (token cost over N min)
-   ├─ tokens, fleet-wide: ⚪ unread as a fleet sum — unreached: grove-sandpine-vN unreadable; each grove row below names why
+   ├─ tokens, fleet-wide: ⚪ unread as a fleet sum — unreached: grove-sandpine-vN asleep; each grove row below names why
    │  ├─ per crew-hour: behavior N · directive ⚪
    │  ├─ 5h: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
    │  └─ 7d: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
-   ├─ grove-sandpine-vN: 💥 unreadable — no slot — exit <rc>: ssh: <the resolver says why>
+   ├─ grove-sandpine-vN: 💤 asleep — no slot — check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove.invalid
    └─ grove local: <the live box, masked out>
 
 🥥 next
@@ -650,13 +650,13 @@ exports[`git.grove.capacity given: [case13] a registered grove that answers, but
 "
 `;
 
-exports[`git.grove.capacity given: [case14] a registered grove whose ssh connect is refused when: [t0] the read renders the tree then: the asleep render, masked, matches its snapshot 1`] = `
+exports[`git.grove.capacity given: [case14] a registered grove whose ssh connect is refused when: [t0] the read renders the tree then: the refused render, masked, matches its snapshot 1`] = `
 "🌲 grove capacity (token cost over N min)
-   ├─ tokens, fleet-wide: ⚪ unread as a fleet sum — unreached: grove-sandpine-vN asleep; each grove row below names why
+   ├─ tokens, fleet-wide: ⚪ unread as a fleet sum — unreached: grove-sandpine-vN refused; each grove row below names why
    │  ├─ per crew-hour: behavior ⚪ · directive ⚪
    │  ├─ 5h: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
    │  └─ 7d: ⚪ the cap ledger holds no rows — wire \`claude.statusline.caplog\` on each seat, then restart it
-   └─ grove-sandpine-vN: 💤 asleep — no slot — wake it: rhx git.grove.wake grove-sandpine-vN
+   └─ grove-sandpine-vN: ◯ refused — no slot — the box answered on N and refused — is sshd up there, and is N its port? (a stale port in the row reads this way; re-register — git grove set grove-sandpine-vN --at camper@grove.invalid:N)
 
 🥥 next
    ├─ ask for a slot: rhx git.grove.capacity --grove <g> --for behavior --key <branch>

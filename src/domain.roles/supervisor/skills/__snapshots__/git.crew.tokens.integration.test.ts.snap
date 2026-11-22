@@ -327,7 +327,7 @@ exports[`git.crew.tokens given: [case7] the one grove named cannot be reached wh
    │  ├─ behavior: ⚪ unread
    │  ├─ directive: ⚪ unread
    │  └─ other: ⚪ unread
-   └─ grove-sandpine-v20260901: 💥 unreadable — exit 255: ssh: Could not resolve hostname grove.invalid: Name or service not known
+   └─ grove-sandpine-v20260901: 💤 asleep — check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove.invalid
 "
 `;
 
@@ -388,7 +388,7 @@ exports[`git.crew.tokens given: [case8] a named grove that answers over ssh when
 "
 `;
 
-exports[`git.crew.tokens given: [case9] a named grove whose ssh connect times out when: [t1] the read renders the tree then: the timeout render matches its snapshot, the home masked 1`] = `
+exports[`git.crew.tokens given: [case9] a named grove whose ssh connect times out when: [t1] the read renders the tree then: the asleep render matches its snapshot, the home masked 1`] = `
 {
   "status": 1,
   "stdout": "🌲 crew tokens over 180 min (cost-weighted; a LOWER BOUND — see unreached)
@@ -397,7 +397,7 @@ exports[`git.crew.tokens given: [case9] a named grove whose ssh connect times ou
    │  ├─ behavior: ⚪ unread
    │  ├─ directive: ⚪ unread
    │  └─ other: ⚪ unread
-   └─ grove-sandpine-v20260901: ⏳ timeout — ssh got no answer; wake it if it sleeps: rhx git.grove.wake grove-sandpine-v20260901 — else re-read once: rhx git.crew.tokens grove-sandpine-v20260901 --timeout 180
+   └─ grove-sandpine-v20260901: 💤 asleep — check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove.invalid
 ",
 }
 `;
@@ -428,14 +428,14 @@ exports[`git.crew.tokens given: [case11] a named grove that answers, but holds n
 }
 `;
 
-exports[`git.crew.tokens given: [case12] a named grove whose ssh connect is refused when: [t0] the read renders the tree then: the asleep render matches its snapshot, the home masked 1`] = `
+exports[`git.crew.tokens given: [case12] a named grove whose ssh connect is refused when: [t0] the read renders the tree then: the refused render matches its snapshot, the home masked 1`] = `
 "🌲 crew tokens over 180 min (cost-weighted; a LOWER BOUND — see unreached)
    ├─ fleet: ⚪ unread — no grove answered (grove-sandpine-v20260901)
    ├─ per crew-hour, by kind
    │  ├─ behavior: ⚪ unread
    │  ├─ directive: ⚪ unread
    │  └─ other: ⚪ unread
-   └─ grove-sandpine-v20260901: 💤 asleep — wake it: rhx git.grove.wake grove-sandpine-v20260901
+   └─ grove-sandpine-v20260901: 🔴 refused — the box answered on 22 and refused — is sshd up there, and is 22 its port? (a stale port in the row reads this way; re-register — git grove set grove-sandpine-v20260901 --at camper@grove.invalid:22)
 "
 `;
 
@@ -447,5 +447,16 @@ exports[`git.crew.tokens given: [case13] a named grove whose ssh hangs past the 
    │  ├─ directive: ⚪ unread
    │  └─ other: ⚪ unread
    └─ grove-sandpine-v20260901: ⏳ timeout — a slow read is a load signal; re-read once: rhx git.crew.tokens grove-sandpine-v20260901 --timeout 4
+"
+`;
+
+exports[`git.crew.tokens given: [case14] a named ec2 grove that gives no answer at all when: [t0] the read renders the tree then: the ec2 asleep render matches its snapshot, the home masked 1`] = `
+"🌲 crew tokens over 180 min (cost-weighted; a LOWER BOUND — see unreached)
+   ├─ fleet: ⚪ unread — no grove answered (grove-sandpine-v20260901)
+   ├─ per crew-hour, by kind
+   │  ├─ behavior: ⚪ unread
+   │  ├─ directive: ⚪ unread
+   │  └─ other: ⚪ unread
+   └─ grove-sandpine-v20260901: 💤 asleep — wake it — rhx git.grove.wake grove-sandpine-v20260901
 "
 `;

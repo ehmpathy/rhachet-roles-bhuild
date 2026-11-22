@@ -2219,7 +2219,7 @@ describe('git.grove.capacity', () => {
 
         then('the dark grove reads under its own row, with no stutter', () => {
           expect(result.stdout).toContain(
-            '├─ grove-sandpine-v20260901: 💥 unreadable — no slot',
+            '├─ grove-sandpine-v20260901: 💤 asleep — no slot',
           );
           expect(result.stdout).not.toContain('grove grove-');
         });
@@ -2318,7 +2318,7 @@ describe('git.grove.capacity', () => {
     });
   });
 
-  // ssh itself refuses the connect: the box is down, so the row is asleep, with the wake
+  // ssh itself refuses the connect: the box is up and sshd said no, so the row is refused
   given('[case14] a registered grove whose ssh connect is refused', () => {
     const scene = useBeforeAll(async () => {
       const fixture = genFixtureHome({ slug: 'capacity-asleep', crews: [] });
@@ -2358,13 +2358,15 @@ describe('git.grove.capacity', () => {
         }),
       );
 
-      then('the grove row reads asleep, no slot, with the wake', () => {
+      // a refusal proves the tailnet carried the connect: neither a wake nor the tailnet cures it
+      then('the grove row reads refused, no slot, with the sshd cure', () => {
         expect(result.stdout).toContain(
-          '└─ grove-sandpine-v20260901: 💤 asleep — no slot — wake it: rhx git.grove.wake grove-sandpine-v20260901',
+          '└─ grove-sandpine-v20260901: 🔴 refused — no slot — the box answered on 22 and refused',
         );
+        expect(result.stdout).not.toContain('rhx git.grove.wake');
       });
 
-      then('the asleep render, masked, matches its snapshot', () => {
+      then('the refused render, masked, matches its snapshot', () => {
         expect(asMaskedRender({ stdout: result.stdout })).toMatchSnapshot();
       });
     });

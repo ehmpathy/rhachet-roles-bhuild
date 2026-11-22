@@ -1452,13 +1452,14 @@ describe('git.crew.tokens', () => {
         }),
       );
 
-      then('the grove reads timeout, with the wake and the re-read', () => {
+      // an offline tailnet peer drops the connect, it never refuses: no answer at all, so
+      // asleep. a row with no account has no power lever, so its cure is the tailnet, never a wake
+      then('the grove reads asleep, with the tailnet cure and no wake', () => {
         const row = JSON.parse(result.stdout).groves[0];
-        expect(row.state).toEqual('timeout');
-        expect(row.hint).toContain(
-          'rhx git.grove.wake grove-sandpine-v20260901',
-        );
-        expect(row.hint).toContain('--timeout');
+        expect(row.state).toEqual('asleep');
+        expect(row.hint).toContain('check the tailnet — tailscale status');
+        expect(row.hint).toContain('grove.invalid');
+        expect(row.hint).not.toContain('rhx git.grove.wake');
       });
     });
 
@@ -1473,14 +1474,14 @@ describe('git.crew.tokens', () => {
         }),
       );
 
-      then('the grove row reads timeout and carries the wake', () => {
-        expect(tree.stdout).toContain('grove-sandpine-v20260901: ⏳ timeout');
+      then('the grove row reads asleep and carries the tailnet cure', () => {
         expect(tree.stdout).toContain(
-          'rhx git.grove.wake grove-sandpine-v20260901',
+          'grove-sandpine-v20260901: 💤 asleep — check the tailnet',
         );
+        expect(tree.stdout).not.toContain('rhx git.grove.wake');
       });
 
-      then('the timeout render matches its snapshot, the home masked', () => {
+      then('the asleep render matches its snapshot, the home masked', () => {
         expect({
           status: tree.status,
           stdout: tree.stdout.split(scene.home).join('<home>'),
@@ -1625,9 +1626,14 @@ describe('git.crew.tokens', () => {
 
   /**
    * .what = a fixture home beside one registered grove, reached through a stub ssh
-   * .why  = the asleep and timeout cases differ only in what the stub ssh does
+   * .why  = the refused, asleep, and timeout cases differ only in what the stub ssh does,
+   *         and in whether the row holds an aws account (its power lever)
    */
-  const genSceneOfStubSsh = (input: { slug: string; ssh: string }) => {
+  const genSceneOfStubSsh = (input: {
+    slug: string;
+    ssh: string;
+    account: string | null;
+  }) => {
     const fixture = genFixtureHome({ slug: input.slug, crews: [] });
     writeFileSync(
       join(fixture.forest, 'groves', 'grove-sandpine-v20260901.json'),
@@ -1636,6 +1642,7 @@ describe('git.crew.tokens', () => {
         host: 'grove.invalid',
         port: 22,
         sshAlias: 'grove-sandpine',
+        ...(input.account ? { account: input.account, type: 'ec2' } : {}),
       }),
     );
     const bin = tempDirs.genOne({ slug: `${input.slug}-bin` });
@@ -1643,12 +1650,13 @@ describe('git.crew.tokens', () => {
     return { ...fixture, bin };
   };
 
-  // ssh itself refuses the connect: the box is down, so the row is asleep, with the wake
+  // ssh itself refuses the connect: the box is up and sshd said no, so the row is refused
   given('[case12] a named grove whose ssh connect is refused', () => {
     const scene = useBeforeAll(async () =>
       genSceneOfStubSsh({
         slug: 'crew-tokens-ssh-refused',
         ssh: '#!/usr/bin/env bash\necho "ssh: connect to host grove-sandpine port 22: Connection refused" >&2\nexit 255\n',
+        account: null,
       }),
     );
 
@@ -1667,17 +1675,23 @@ describe('git.crew.tokens', () => {
         expect(tree.status).toEqual(1);
       });
 
-      then('the grove row reads asleep, with the wake', () => {
-        expect(tree.stdout).toContain(
-          '└─ grove-sandpine-v20260901: 💤 asleep — wake it: rhx git.grove.wake grove-sandpine-v20260901',
-        );
-      });
+      // a refusal proves the tailnet carried the connect and the box is up: not asleep, and
+      // neither a wake nor the tailnet checks can cure it — the cure is sshd and its port
+      then(
+        'the grove row reads refused, with the sshd cure and no wake',
+        () => {
+          expect(tree.stdout).toContain(
+            '└─ grove-sandpine-v20260901: 🔴 refused — the box answered on 22 and refused',
+          );
+          expect(tree.stdout).not.toContain('rhx git.grove.wake');
+        },
+      );
 
       then('the header points to the unreached grove, never to unread', () => {
         expect(tree.stdout).toContain('a LOWER BOUND — see unreached)');
       });
 
-      then('the asleep render matches its snapshot, the home masked', () => {
+      then('the refused render matches its snapshot, the home masked', () => {
         expect(tree.stdout.split(scene.home).join('<home>')).toMatchSnapshot();
       });
     });
@@ -1689,6 +1703,7 @@ describe('git.crew.tokens', () => {
       genSceneOfStubSsh({
         slug: 'crew-tokens-ssh-hang',
         ssh: '#!/usr/bin/env bash\nexec sleep 30\n',
+        account: null,
       }),
     );
 
@@ -1716,6 +1731,49 @@ describe('git.crew.tokens', () => {
       then('the timeout render matches its snapshot, the home masked', () => {
         expect(tree.stdout.split(scene.home).join('<home>')).toMatchSnapshot();
       });
+    });
+  });
+
+  // a box with an aws account may sleep: no answer at all hands it the wake, the one
+  // lever that powers it up — the same cure git.grove.saturation hands that grove
+  given('[case14] a named ec2 grove that gives no answer at all', () => {
+    const scene = useBeforeAll(async () =>
+      genSceneOfStubSsh({
+        slug: 'crew-tokens-ssh-no-route',
+        ssh: '#!/usr/bin/env bash\necho "ssh: connect to host grove.invalid port 22: No route to host" >&2\nexit 255\n',
+        account: '123456789012',
+      }),
+    );
+
+    when('[t0] the read renders the tree', () => {
+      const tree = useThen('it renders', async () =>
+        runVerb({
+          path: PATH_TOKENS,
+          args: ['--grove', 'grove-sandpine-v20260901', '--timeout', '2'],
+          home: scene.home,
+          forest: scene.forest,
+          env: { PATH: `${scene.bin}:${process.env.PATH}` },
+        }),
+      );
+
+      then('it exits 1: the grove it was asked for went unread', () => {
+        expect(tree.status).toEqual(1);
+      });
+
+      then('the grove row reads asleep, with the wake', () => {
+        expect(tree.stdout).toContain(
+          '└─ grove-sandpine-v20260901: 💤 asleep — wake it — rhx git.grove.wake grove-sandpine-v20260901',
+        );
+      });
+
+      then(
+        'the ec2 asleep render matches its snapshot, the home masked',
+        () => {
+          expect(
+            tree.stdout.split(scene.home).join('<home>'),
+          ).toMatchSnapshot();
+        },
+      );
     });
   });
 });
