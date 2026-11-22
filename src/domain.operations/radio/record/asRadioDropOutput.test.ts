@@ -22,6 +22,7 @@ const genDropped = (): RadioTaskRecord =>
     status: RadioTaskStatus.CLAIMED,
     recordStatus: RadioTaskRecordStatus.DROPPED,
     reason: 'dropped: claim moot, the issue is closed',
+    reasonHeadline: null,
     heldSeq: 1,
     deliveredExid: null,
   });
@@ -40,6 +41,7 @@ const genDeliverHeld = (): RadioTaskRecord =>
     status: RadioTaskStatus.DELIVERED,
     recordStatus: RadioTaskRecordStatus.QUEUED,
     reason: null,
+    reasonHeadline: null,
     heldSeq: 2,
     deliveredExid: null,
   });
@@ -99,6 +101,7 @@ describe('asRadioDropOutput', () => {
           status: RadioTaskStatus.DELIVERED,
           recordStatus: RadioTaskRecordStatus.DROPPED,
           reason: 'dropped: superseded by #604',
+          reasonHeadline: null,
           heldSeq: 1,
           deliveredExid: null,
         }),

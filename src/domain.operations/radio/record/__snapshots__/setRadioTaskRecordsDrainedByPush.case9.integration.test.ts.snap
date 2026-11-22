@@ -96,3 +96,24 @@ exports[`radio.task.push — case=9, one push carries a mixed backlog given: [ca
    │  └─ deliver #599 — cannot deliver unclaimed task
    └─ backlog = 0"
 `;
+
+exports[`radio.task.push — case=9, one push carries a mixed backlog given: [case8] an upsert edit the bot may not write, at the head, nine dispatches behind it (#591) when: [t1] a later process reads the queue then: the queue reads as the reader sees it 1`] = `
+"🦫 held for the radio
+   ├─ 20297ffdb9087921 update #673 → sandpine/svc-lessons
+   │  ├─ state: set aside (upstream:access)
+   │  ├─ fault: GraphQL: Resource not accessible by integration (updateIssue)
+   │  ├─ auth: as-robot:env(RADIO_CASE9_TEST_TOKEN)
+   │  ├─ amend it: rhx radio.task.queue set --uuid 20297ffdb9087921 --auth as-human (needs a gh login on this host)
+   │  └─ or drop it: rhx radio.task.queue del --uuid 20297ffdb9087921 --why "<why>"
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+`;
+
+exports[`radio.task.push — case=9, one push carries a mixed backlog given: [case9] a refusal whose words carry a clock, held among others when: [t0] one more push lands, then the queue is read then: get still names the class and the fix, with no fault line 1`] = `
+"🦫 held for the radio
+   ├─ ec4564db8b4db5b3 update #674 → sandpine/tide-log
+   │  ├─ state: set aside (upstream:access)
+   │  ├─ auth: as-robot:env(RADIO_CASE9_TEST_TOKEN)
+   │  ├─ amend it: rhx radio.task.queue set --uuid ec4564db8b4db5b3 --auth as-human (needs a gh login on this host)
+   │  └─ or drop it: rhx radio.task.queue del --uuid ec4564db8b4db5b3 --why "<why>"
+   └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+`;

@@ -26,6 +26,7 @@ const genRecord = (input: Partial<RadioTaskRecord> & { key: string }) =>
     status: null,
     recordStatus: RadioTaskRecordStatus.QUEUED,
     reason: null,
+    reasonHeadline: null,
     heldSeq: 1,
     deliveredExid: null,
     ...input,
@@ -112,11 +113,16 @@ describe('setRadioTaskRecordsClockShed', () => {
         });
 
         then('each keeps its fate, its exid, and its place in line', () => {
+          // a null headline is left out of the file, so the file shape omits it
           expect(result.delivered).toEqual(
-            JSON.parse(JSON.stringify(scene.delivered)),
+            JSON.parse(
+              JSON.stringify({ ...scene.delivered, reasonHeadline: undefined }),
+            ),
           );
           expect(result.refused).toEqual(
-            JSON.parse(JSON.stringify(scene.refused)),
+            JSON.parse(
+              JSON.stringify({ ...scene.refused, reasonHeadline: undefined }),
+            ),
           );
         });
 

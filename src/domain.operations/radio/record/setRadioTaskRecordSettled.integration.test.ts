@@ -126,4 +126,77 @@ describe('setRadioTaskRecordSettled', () => {
       });
     });
   });
+
+  given('[case3] a record set aside with what upstream said', () => {
+    const scene = useBeforeAll(async () => {
+      const cwd = genTempDir({
+        slug: 'radio-record-settled-headline',
+        git: true,
+      });
+      const dir = `${cwd}/.behavior/.radio`;
+      const { record } = setRadioTaskRecordFromPush(
+        { push: asPush({ description: 'remind each surfer a day ahead' }) },
+        { dir, cwd },
+      );
+      const setAside = setRadioTaskRecordSettled({
+        dir,
+        record,
+        change: {
+          reason: 'upstream:access',
+          reasonHeadline:
+            'GraphQL: Resource not accessible by integration (updateIssue)',
+        },
+      });
+      return { dir, setAside };
+    });
+
+    when(
+      '[t0] a later drain settles a new reason that names no headline',
+      () => {
+        const result = useThen('the fate is written', async () =>
+          setRadioTaskRecordSettled({
+            dir: scene.dir,
+            record: scene.setAside,
+            change: { reason: 'upstream:rate-limit' },
+          }),
+        );
+
+        then(
+          'the old headline is cleared, never left beside a reason it did not say',
+          () => {
+            expect(scene.setAside.reasonHeadline).toEqual(
+              'GraphQL: Resource not accessible by integration (updateIssue)',
+            );
+            expect(result.reason).toEqual('upstream:rate-limit');
+            expect(result.reasonHeadline).toEqual(null);
+          },
+        );
+      },
+    );
+
+    when('[t1] a drain settles a change that leaves the reason as is', () => {
+      const result = useThen('the fate is written', async () => {
+        const reAside = setRadioTaskRecordSettled({
+          dir: scene.dir,
+          record: scene.setAside,
+          change: {
+            reason: 'upstream:access',
+            reasonHeadline:
+              'GraphQL: Resource not accessible by integration (updateIssue)',
+          },
+        });
+        return setRadioTaskRecordSettled({
+          dir: scene.dir,
+          record: reAside,
+          change: { deliveredExid: null },
+        });
+      });
+
+      then('the headline stays with its reason', () => {
+        expect(result.reasonHeadline).toEqual(
+          'GraphQL: Resource not accessible by integration (updateIssue)',
+        );
+      });
+    });
+  });
 });

@@ -2,8 +2,9 @@ import { ConstraintError } from 'helpful-errors';
 import { relative } from 'path';
 
 import { daoRadioTaskRecord } from '@src/access/daos/daoRadioTaskRecord';
-import { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
+import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 
+import { asRadioTaskRecordSettled } from './asRadioTaskRecordSettled';
 import { getOneRadioTaskRecordHeldByKey } from './getOneRadioTaskRecordHeldByKey';
 import { isRadioRecordAuthReplayable } from './isRadioRecordAuthReplayable';
 import { withRadioDrainLock } from './withRadioDrainLock';
@@ -60,11 +61,13 @@ const _setRadioTaskRecordAmended = async (
   // amend cures no auth fault, so the fault and its fix stay on record
   const after = daoRadioTaskRecord.set.upsert({
     dir,
-    record: new RadioTaskRecord({
-      ...record,
-      auth: input.auth ?? record.auth,
-      description: input.description ?? record.description,
-      reason: input.auth === null ? record.reason : null,
+    record: asRadioTaskRecordSettled({
+      record,
+      change: {
+        auth: input.auth ?? record.auth,
+        description: input.description ?? record.description,
+        ...(input.auth === null ? {} : { reason: null }),
+      },
     }),
   });
 

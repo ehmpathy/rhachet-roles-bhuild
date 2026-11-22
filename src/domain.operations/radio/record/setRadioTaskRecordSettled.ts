@@ -1,6 +1,7 @@
 import { daoRadioTaskRecord } from '@src/access/daos/daoRadioTaskRecord';
-import { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
+import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 
+import { asRadioTaskRecordSettled } from './asRadioTaskRecordSettled';
 import { isRadioTaskRecordRepushedSince } from './isRadioTaskRecordRepushedSince';
 
 /**
@@ -32,6 +33,9 @@ export const setRadioTaskRecordSettled = (input: {
   // settle the record the drain read
   return daoRadioTaskRecord.set.upsert({
     dir: input.dir,
-    record: new RadioTaskRecord({ ...input.record, ...input.change }),
+    record: asRadioTaskRecordSettled({
+      record: input.record,
+      change: input.change,
+    }),
   });
 };

@@ -1,6 +1,6 @@
 import { execSync, spawnSync } from 'child_process';
 import * as fs from 'fs';
-import { MalfunctionError } from 'helpful-errors';
+import { ConstraintError, MalfunctionError } from 'helpful-errors';
 import * as os from 'os';
 import * as path from 'path';
 import { genTempDir, given, then, useBeforeAll, useThen, when } from 'test-fns';
@@ -14,6 +14,7 @@ import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
 import { getBranchBehaviorBind } from '@src/domain.operations/behavior/bind/getBranchBehaviorBind';
 import { shx } from '@src/infra/shell/shx';
 
+import { asRadioHeldOutput } from './asRadioHeldOutput';
 import { getAllRadioTaskRecordDirs } from './getAllRadioTaskRecordDirs';
 import { getAllRadioTaskRecordsHeld } from './getAllRadioTaskRecordsHeld';
 import { getOneRadioTaskRecordHome } from './getOneRadioTaskRecordHome';
@@ -774,6 +775,20 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
               expect(reasonsStored).toEqual([['task gh', 'upstream:401']]);
             },
           );
+
+          then(
+            'the set-aside record never keeps our own error as if github said it',
+            () => {
+              // a live github answer, not a stub: github rejects the token, and the token check
+              // reports it in our own words (`✋ ConstraintError: … rejected by github (401)`).
+              // those are not github's words, so the record keeps none, and `get` shows no
+              // `fault:` line under the class
+              const headlines = result.heldStored.map(
+                ({ record }) => record.reasonHeadline,
+              );
+              expect(headlines).toEqual([null]);
+            },
+          );
         },
       );
 
@@ -1365,9 +1380,11 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
               status: null,
               recordStatus: RadioTaskRecordStatus.QUEUED,
               reason: 'radio.uses blocked',
+              reasonHeadline: null,
               heldSeq: 1,
               deliveredExid: null,
             }),
+            reasonHeadline: undefined, // note: a prior version wrote no headline; stringify drops the key
             heldAt: '2026-01-01T00:00:00Z', // note: a pinned stamp never drifts, and the gate exempts .ts files
             settledAt: null,
           });
@@ -1466,6 +1483,121 @@ describe('setRadioTaskRecordsDrainedByPush', () => {
           },
         );
       });
+    },
+  );
+
+  given(
+    '[case13] a real github refusal, under a token github accepts (case=3, e10)',
+    () => {
+      // .note = a create on a repo that does not exist: github accepts the token, then refuses
+      //         the target in its own words. naught can land, since there is no repo to write
+      const repoAbsent = new RadioTaskRepo({
+        owner: 'ehmpathy',
+        name: 'rhachet-roles-bhuild-radio-probe-absent',
+      });
+      const scene = useBeforeAll(async () => {
+        const paths = genScene({ slug: 'recorder-real-refusal' });
+        setLocalGate({ cwd: paths.cwd, state: 'allowed' });
+        return paths;
+      });
+
+      // .what = a token github accepts
+      // .why  = ci hydrates the beaver token via the keyrack firewall; a dev host has a gh login.
+      //         either is a real credential, and the target repo is absent, so no write can land
+      const tokenReal = useBeforeAll(async () => {
+        const tokenFromEnv = process.env.EHMPATH_BEAVER_GITHUB_TOKEN;
+        if (tokenFromEnv) return { value: tokenFromEnv };
+        const login = spawnSync('gh', ['auth', 'token'], { encoding: 'utf-8' });
+        const tokenFromLogin = login.stdout?.trim();
+        if (login.status === 0 && tokenFromLogin)
+          return { value: tokenFromLogin };
+        throw new ConstraintError(
+          'a token github accepts is required for the real refusal test',
+          {
+            hint: 'run: rhx keyrack unlock --owner ehmpath --env test, or gh auth login',
+            env: 'EHMPATH_BEAVER_GITHUB_TOKEN',
+          },
+        );
+      });
+
+      when(
+        '[t0] a gh push to the absent repo and a file push drain together',
+        () => {
+          const result = useThen('both pushes run', async () => {
+            const env = { RADIO_RECORDER_TEST_TOKEN_REAL: tokenReal.value };
+            await pushViaRecorder({
+              ...scene,
+              repo: repoAbsent,
+              via: RadioChannel.GH_ISSUES,
+              auth: 'as-robot:env(RADIO_RECORDER_TEST_TOKEN_REAL)',
+              title: 'task refused',
+              env,
+            });
+            const pushed = await pushViaRecorder({
+              ...scene,
+              repo: repoFault,
+              title: 'task behind the refusal',
+              env,
+            });
+            const heldStored = getAllRadioTaskRecordsHeld({}, scene);
+            return {
+              ...pushed,
+              heldStored,
+              getOutput: asRadioHeldOutput({
+                held: heldStored.map(({ record }) => ({ record, lift: null })),
+                mode: 'list',
+              }),
+            };
+          });
+
+          then(
+            'the refused record is set aside as upstream:not-found, and the drain does not halt',
+            () => {
+              expect(result.others[0]).toMatchObject({
+                fate: 'held',
+                halt: false,
+                record: expect.objectContaining({
+                  title: 'task refused',
+                  reason: 'upstream:not-found',
+                }),
+              });
+            },
+          );
+
+          then('the push behind it delivers', () => {
+            expect(result.pushed.fate).toEqual('delivered');
+          });
+
+          then('the record keeps the one line github said', () => {
+            const headlines = result.heldStored.map(
+              ({ record }) => record.reasonHeadline,
+            );
+            expect(headlines).toHaveLength(1);
+            const headline = headlines[0] ?? '';
+            expect(headline.startsWith('GraphQL: Could not ')).toEqual(true);
+            expect(headline).toContain(
+              "to a Repository with the name 'ehmpathy/rhachet-roles-bhuild-radio-probe-absent'",
+            );
+            expect(headline.endsWith('. (repository)')).toEqual(true);
+            expect(headline).not.toContain('\n');
+          });
+
+          then('the record bytes hold no token', () => {
+            const recordBytes = JSON.stringify(
+              result.heldStored.map(({ record }) => record),
+            );
+            expect(recordBytes).not.toContain(tokenReal.value);
+          });
+
+          then('a later `get` shows those words under the state', () => {
+            const headline = result.heldStored[0]?.record.reasonHeadline;
+            expect(result.getOutput).toContain(
+              'state: set aside (upstream:not-found)',
+            );
+            expect(result.getOutput).toContain(`fault: ${headline}`);
+          });
+        },
+      );
     },
   );
 });

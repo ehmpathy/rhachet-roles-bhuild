@@ -59,8 +59,8 @@ export const asRadioQueueFixLines = (input: {
       `amend it: rhx radio.task.queue set --uuid ${key} --auth as-human (needs a gh login on this host)`,
       drop,
     ];
-  // an unknown fault: its text is never kept on disk (F10), so a read with no detail names
-  // the drain that prints it again
+  // an unknown fault whose words are not at hand (none kept on the record, or dropped for a
+  // clock or a token): name the drain that prints them again
   if (reason === 'upstream:fault' && input.detail === null)
     return [
       'retry it and print its fault: rhx radio.task.queue drain (this sends every held record whose gate is open)',

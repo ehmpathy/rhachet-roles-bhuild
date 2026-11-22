@@ -4,7 +4,7 @@
  *         this worktree, so no held record ever needs a hand move of its file (#604)
  *
  * usage:
- *   radio.task.queue get                                  what waits: uuid · task · reason · fix
+ *   radio.task.queue get                                  what waits: uuid · task · reason · upstream's words · fix
  *   radio.task.queue get --when hook.onStop               one-line stop reminder (naught when none)
  *   radio.task.queue set   --uuid <uuid> --auth as-human  amend one held record (or --description)
  *   radio.task.queue del   --uuid <uuid> --why "<why>"    drop one, its body and why kept
@@ -82,7 +82,7 @@ const HELP_TEXT = `
 
 🎙️ radio.task.queue --help
    ├─ usage
-   │  ├─ rhx radio.task.queue get                                   what waits: uuid · task · reason · fix
+   │  ├─ rhx radio.task.queue get                                   what waits: uuid · task · reason · upstream's words · fix
    │  ├─ rhx radio.task.queue get --when hook.onStop                one-line stop reminder (naught when none)
    │  ├─ rhx radio.task.queue set   --uuid <uuid> --auth as-human   amend one held record (or --description)
    │  ├─ rhx radio.task.queue del   --uuid <uuid> --why "<why>"     drop one, its body and why kept

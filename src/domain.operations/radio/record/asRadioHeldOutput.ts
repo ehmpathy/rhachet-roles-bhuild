@@ -1,6 +1,7 @@
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 
 import { asRadioAuthShown } from './asRadioAuthShown';
+import { asRadioFaultDetailLine } from './asRadioFaultDetailLine';
 import { asRadioQueueFixLines } from './asRadioQueueFixLines';
 import { asRadioReasonBehindOnIssue } from './asRadioReasonBehindOnIssue';
 import { asRadioReplayWarnLines } from './asRadioReplayWarnLines';
@@ -195,16 +196,25 @@ export const asRadioHeldOutput = (input: {
     ...asRadioTreeLines({
       branches: [
         ...held.map((entry, index) => {
+          // the state of this row; asHeldStates maps held one to one, so the index always holds
+          const state = states[index]!;
+
           // every row reads state, then auth, then its moves, so one column scans down the list
           const [lineState, ...linesMove] = asHeldStateLines({
             entry,
-            state: states[index]!,
+            state,
             stateAhead: asStateAhead({ held, states, entry }),
           });
+
+          // what upstream said, in its own words; the record is the one owner of whether any
+          // stand, since a wall keeps none and every change of reason clears them
+          const headlineShown = entry.record.reasonHeadline;
+          const lineFault = asRadioFaultDetailLine({ detail: headlineShown });
           return {
             line: `${entry.record.key} ${asRadioTaskRecordLabel(entry)} → ${asRadioTaskRepoSlug({ repo: entry.record.repo })}`,
             children: [
               lineState!,
+              ...(lineFault ? [lineFault] : []),
               `auth: ${asRadioAuthShown({ auth: entry.record.auth })}`,
               ...linesMove,
               ...(entry.lift ? [`lift it (human): ${entry.lift}`] : []),
@@ -212,7 +222,7 @@ export const asRadioHeldOutput = (input: {
               ...asRadioQueueFixLines({
                 record: entry.record,
                 authOverride: null,
-                detail: null,
+                detail: headlineShown,
               }),
             ],
           };

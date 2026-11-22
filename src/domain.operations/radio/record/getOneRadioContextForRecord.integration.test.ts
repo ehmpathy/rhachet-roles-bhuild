@@ -45,6 +45,7 @@ const genRecord = (input: { auth: string | null }) =>
     status: null,
     recordStatus: RadioTaskRecordStatus.QUEUED,
     reason: null,
+    reasonHeadline: null,
     heldSeq: 1,
     deliveredExid: null,
   });
