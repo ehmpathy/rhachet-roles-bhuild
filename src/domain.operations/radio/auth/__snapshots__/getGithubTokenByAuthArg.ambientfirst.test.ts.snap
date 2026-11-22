@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`getGithubTokenByAuthArg.ambientfirst given: [case3] an ehmpath email with no gh login when: [t1] keyrack holds none either then: the miss names the default and both spots, and the fixes 1`] = `
+"✋ ConstraintError: the default auth (no --auth) found no ehmpath token
+
+checked
+├─ ambient: ehmpath email, but gh holds no login
+└─ keyrack: not granted (status: absent)
+
+fix
+├─ log gh in as the ehmpath account: gh auth login
+├─ set the robot token: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
+└─ or send as yourself, on purpose: --auth as-human
+
+{
+  "auth": null
+}"
+`;

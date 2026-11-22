@@ -447,6 +447,8 @@ direct text between a director and its crews, both ways, with no pane keystroke.
 #   --title     fetch specific task by title
 #   --status    filter by status: QUEUED, CLAIMED, DELIVERED
 #   --limit     max number of tasks to return
+#   --auth      as-ehmpath | as-ehmpath-via-keyrack | as-ehmpath-via-ambient | as-human
+#               | as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd)
 #   --help, -h  show usage and exit
 #
 # guarantee:
@@ -487,7 +489,8 @@ direct text between a director and its crews, both ways, with no pane keystroke.
 #   --exid      external id for updates
 #   --status    task status: QUEUED, CLAIMED, DELIVERED
 #   --idem      idempotency mode: findsert or upsert
-#   --auth      as-human | as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd)
+#   --auth      as-ehmpath | as-ehmpath-via-keyrack | as-ehmpath-via-ambient | as-human
+#               | as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd)
 #   --help, -h  show usage and exit
 #
 # guarantee:

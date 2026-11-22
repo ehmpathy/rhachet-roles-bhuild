@@ -4,8 +4,12 @@ import { ConstraintError } from 'helpful-errors';
 import type { IsoDateStamp } from 'iso-time';
 import * as os from 'os';
 import * as path from 'path';
-import { getError, given, then, when } from 'test-fns';
+import { getError, given, then, useThen, when } from 'test-fns';
 
+import {
+  STUB_GH_TOKEN,
+  withAmbientStub,
+} from '@src/.test/utils/withAmbientStub';
 import { daoRadioTaskViaOsFileops } from '@src/access/daos/daoRadioTask';
 import type { ContextGitRepo } from '@src/domain.objects/RadioContext';
 import { RadioTask } from '@src/domain.objects/RadioTask';
@@ -221,6 +225,10 @@ describe('radio.task.push.integration — CLI contract', () => {
         expect(stdout).toContain('radio.task.push --help');
         expect(stdout).toContain('--via');
         expect(stdout).toContain('--into');
+        expect(stdout).toContain('as-ehmpath              keyrack, then');
+        expect(stdout).toContain('as-ehmpath-via-keyrack  keyrack only');
+        expect(stdout).toContain('as-ehmpath-via-ambient  the gh login only');
+        expect(stdout).toContain('as-human                the gh login');
         expect(stdout).toMatchSnapshot();
       });
     });
@@ -441,6 +449,247 @@ describe('radio.task.push.integration — CLI contract', () => {
           expect(result.stdout).toMatchSnapshot();
         },
       );
+    });
+  });
+
+  given(
+    '[case10a] --auth as-ehmpath-via-ambient on a box whose git email is a human one',
+    () => {
+      when('[t0] the push skill runs against a stub gh with a login', () => {
+        then(
+          'holds the push as upstream:auth, names the ambient row, never sends as the human',
+          async () => {
+            const result = await withAmbientStub(
+              {
+                slug: 'push-case10a',
+                gh: { login: 'token' },
+                git: { email: 'bert@example.com' },
+              },
+              async () => runPushAuthHeld({ auth: 'as-ehmpath-via-ambient' }),
+            );
+            expect(result.exitCode).toEqual(2);
+            expect(result.stdout).toContain('upstream:auth');
+            expect(result.stdout).toContain('found no ehmpath token');
+            expect(result.stdout).toContain(
+              'ambient: git config user.email = bert@example.com, not an ehmpath email',
+            );
+            expect(result.stdout).not.toContain('keyrack:');
+            expect(result.stdout).not.toContain(STUB_GH_TOKEN);
+            expect(result.stdout).toMatchSnapshot();
+          },
+        );
+      });
+    },
+  );
+
+  given(
+    '[case10b] --auth as-ehmpath-via-ambient on an ehmpath box whose gh holds no login',
+    () => {
+      when('[t0] the push skill runs against a stub gh with no login', () => {
+        then(
+          'holds the push as upstream:auth, and names gh auth login as the fix',
+          async () => {
+            const result = await withAmbientStub(
+              {
+                slug: 'push-case10b',
+                gh: { login: 'none' },
+                git: { email: 'seaturtle@ehmpath.com' },
+              },
+              async () => runPushAuthHeld({ auth: 'as-ehmpath-via-ambient' }),
+            );
+            expect(result.exitCode).toEqual(2);
+            expect(result.stdout).toContain(
+              'ambient: ehmpath email, but gh holds no login',
+            );
+            expect(result.stdout).toContain('gh auth login');
+            expect(result.stdout).toMatchSnapshot();
+          },
+        );
+      });
+    },
+  );
+
+  given(
+    '[case10c] --auth as-ehmpath on a fresh ehmpath box: keyrack holds no token, gh is logged in',
+    () => {
+      when('[t0] the push skill runs against a stub gh with a login', () => {
+        const result = useThen('the push runs', async () =>
+          withAmbientStub(
+            {
+              slug: 'push-case10c',
+              gh: { login: 'token' },
+              git: { email: 'seaturtle@ehmpath.com' },
+            },
+            async (scene) => {
+              // keyrack must miss: a temp HOME holds no vault, and no env passthrough
+              // may answer for it (.note = deliberate mutation, restored below)
+              const tokenEnvBefore = process.env.EHMPATH_BEAVER_GITHUB_TOKEN;
+              delete process.env.EHMPATH_BEAVER_GITHUB_TOKEN;
+              const home = mkdtempSync(
+                path.join(os.tmpdir(), 'radio-push-cli-ehmpath-'),
+              );
+              try {
+                const pushed = await runPushHeld({
+                  home,
+                  grant: true,
+                  argvTail: [
+                    '--via',
+                    'gh.issues',
+                    '--into',
+                    'test-owner/example',
+                    '--title',
+                    'tide chart refresh',
+                    '--description',
+                    'the ambient ehmpath login pays',
+                    '--auth',
+                    'as-ehmpath',
+                  ],
+                });
+                return { ...pushed, ghTokensSeen: scene.getGhTokensSeen() };
+              } finally {
+                if (tokenEnvBefore !== undefined)
+                  process.env.EHMPATH_BEAVER_GITHUB_TOKEN = tokenEnvBefore;
+                await fs.rm(home, { recursive: true, force: true });
+              }
+            },
+          ),
+        );
+        then('the push is delivered, not held', () => {
+          expect(result.exitCode).toBeUndefined();
+          expect(result.stdout).toContain('🦫 onto the pile!');
+          expect(result.stdout).not.toContain('upstream:auth');
+        });
+        then('the stub gh login token is the one that reached gh', () => {
+          expect(result.ghTokensSeen.length).toBeGreaterThan(0);
+          expect(new Set(result.ghTokensSeen)).toEqual(
+            new Set([STUB_GH_TOKEN]),
+          );
+        });
+        then('the output names the spot that paid: ambient', () => {
+          expect(result.stdout).toContain('auth: as-ehmpath (via ambient)');
+          expect(result.stdout).not.toContain(STUB_GH_TOKEN);
+        });
+        then('the output matches the snapshot', () => {
+          expect(asStdoutStable(result)).toMatchSnapshot();
+        });
+      });
+    },
+  );
+
+  /**
+   * .what = the push stdout with the values a live send fills in masked
+   * .why  = pushedBy names whoever the box resolves, and pushedAt names the day the test runs;
+   *         either one would make a snapshot fail on another box or another day
+   */
+  const asStdoutStable = (input: { stdout: string }): string =>
+    input.stdout
+      .replace(/pushedBy: .*/g, 'pushedBy: <masked>')
+      .replace(/pushedAt: \d{4}-\d{2}-\d{2}/g, 'pushedAt: <date>');
+
+  /**
+   * .what = run a gh.issues push with NO --auth, under a stub ambient world
+   * .why  = the default is ambient-first; these cases prove what each box sends with
+   */
+  const runPushDefaultAuthOnBox = async (input: {
+    slug: string;
+    email: string;
+  }) =>
+    withAmbientStub(
+      {
+        slug: input.slug,
+        gh: { login: 'token' },
+        git: { email: input.email },
+      },
+      async (scene) => {
+        // keyrack must miss: a temp HOME holds no vault, and no env passthrough may answer
+        // for it (.note = deliberate mutation, restored below)
+        const tokenEnvBefore = process.env.EHMPATH_BEAVER_GITHUB_TOKEN;
+        delete process.env.EHMPATH_BEAVER_GITHUB_TOKEN;
+        const home = mkdtempSync(
+          path.join(os.tmpdir(), `radio-push-cli-${input.slug}-`),
+        );
+        try {
+          const pushed = await runPushHeld({
+            home,
+            grant: true,
+            argvTail: [
+              '--via',
+              'gh.issues',
+              '--into',
+              'test-owner/example',
+              '--title',
+              'tide chart refresh',
+              '--description',
+              'the default auth reads the box',
+            ],
+          });
+          return { ...pushed, ghTokensSeen: scene.getGhTokensSeen() };
+        } finally {
+          if (tokenEnvBefore !== undefined)
+            process.env.EHMPATH_BEAVER_GITHUB_TOKEN = tokenEnvBefore;
+          await fs.rm(home, { recursive: true, force: true });
+        }
+      },
+    );
+
+  given(
+    '[case10d] no --auth on an ehmpath box with a gh login (ambient-first)',
+    () => {
+      when('[t0] the push skill runs against a stub gh', () => {
+        const result = useThen('the push runs', async () =>
+          runPushDefaultAuthOnBox({
+            slug: 'push-case10d',
+            email: 'seaturtle@ehmpath.com',
+          }),
+        );
+        then('the push is delivered with no question asked', () => {
+          expect(result.exitCode).toBeUndefined();
+          expect(result.stdout).toContain('🦫 onto the pile!');
+          expect(result.stdout).not.toContain('upstream:auth');
+        });
+        then(
+          'the robot token from the gh login is the one that reached gh',
+          () => {
+            expect(result.ghTokensSeen.length).toBeGreaterThan(0);
+            expect(new Set(result.ghTokensSeen)).toEqual(
+              new Set([STUB_GH_TOKEN]),
+            );
+          },
+        );
+        then('the output names the spot that paid: ambient', () => {
+          expect(result.stdout).toContain('auth: as-ehmpath (via ambient)');
+          expect(result.stdout).not.toContain(STUB_GH_TOKEN);
+        });
+        then('the output matches the snapshot', () => {
+          expect(asStdoutStable(result)).toMatchSnapshot();
+        });
+      });
+    },
+  );
+
+  given('[case10e] no --auth on a human box (ambient-first)', () => {
+    when('[t0] the push skill runs against a stub gh', () => {
+      const result = useThen('the push runs', async () =>
+        runPushDefaultAuthOnBox({
+          slug: 'push-case10e',
+          email: 'bert@example.com',
+        }),
+      );
+      then('the push is delivered as-human', () => {
+        expect(result.exitCode).toBeUndefined();
+        expect(result.stdout).toContain('🦫 onto the pile!');
+        expect(result.stdout).not.toContain('upstream:auth');
+      });
+      then('no robot token reached gh: gh used its own login', () => {
+        expect(result.ghTokensSeen.length).toBeGreaterThan(0);
+        expect(new Set(result.ghTokensSeen)).toEqual(new Set(['(none)']));
+      });
+      then('the output names no robot spot', () => {
+        expect(result.stdout).not.toContain('as-ehmpath (via');
+      });
+      then('the output matches the snapshot', () => {
+        expect(asStdoutStable(result)).toMatchSnapshot();
+      });
     });
   });
 

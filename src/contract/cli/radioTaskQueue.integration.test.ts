@@ -67,6 +67,14 @@ describe('radio.task.queue.integration — CLI contract', () => {
         expect(result.error).toBeNull();
         expect(result.stdout).toContain('radio.task.queue get');
         expect(result.stdout).toContain('radio.task.queue drain');
+        expect(result.stdout).toContain(
+          'as-ehmpath              keyrack, then',
+        );
+        expect(result.stdout).toContain('as-ehmpath-via-keyrack  keyrack only');
+        expect(result.stdout).toContain(
+          'as-ehmpath-via-ambient  the gh login only',
+        );
+        expect(result.stdout).toContain('as-human                the gh login');
         expect(result.stdout).toMatchSnapshot();
       });
     });
@@ -157,7 +165,7 @@ describe('radio.task.queue.integration — CLI contract', () => {
 
   given('[case8] an --auth value that is not an auth mode', () => {
     when('[t0] set runs with it', () => {
-      then('fails with a constraint that lists the four modes', async () => {
+      then('fails with a constraint that lists every mode', async () => {
         const result = await runQueue({
           argvTail: [
             'set',
@@ -168,6 +176,9 @@ describe('radio.task.queue.integration — CLI contract', () => {
           ],
         });
         expect(result.error).toBeInstanceOf(ConstraintError);
+        expect(result.error?.message).toContain('as-ehmpath,');
+        expect(result.error?.message).toContain('as-ehmpath-via-keyrack');
+        expect(result.error?.message).toContain('as-ehmpath-via-ambient');
         expect(result.error?.message).toContain('as-human');
         expect(result.error?.message).toContain('as-robot:via-keyrack(owner)');
         expect(result.error?.message).toContain('as-robot:env(VAR)');
@@ -1418,4 +1429,54 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
       }),
     );
   });
+
+  // the wish names `queue set|drain` among the skills that take the as-ehmpath values. set is the
+  // verb that STORES one on a held record, for every later drain to replay, so each value must
+  // pass the auth gate and land on the record as typed; a refusal here would strand the clone
+  const EHMPATH_AUTH_CASES = [
+    'as-ehmpath',
+    'as-ehmpath-via-keyrack',
+    'as-ehmpath-via-ambient',
+  ];
+  EHMPATH_AUTH_CASES.map((auth) =>
+    given(`[case23] set --auth ${auth} on a held record`, () => {
+      const scene = useBeforeAll(async () => {
+        setStubMode({ repo: repoRentals, mode: 'ok' });
+        const one = genScene({ slug: `radio-queue-journey-c23-${auth}` });
+        const create = holdPush({
+          scene: one,
+          repo: repoRentals,
+          title: 'wetsuit size chart',
+        });
+        return { ...one, create };
+      });
+
+      when('[t0] set runs on its key', () => {
+        const result = useThen('it runs', async () => {
+          const callsBefore = getStubCalls().length;
+          const run = await runQueueInScene({
+            scene,
+            argvTail: ['set', '--uuid', scene.create.key, '--auth', auth],
+            envOmit: ['NODE_ENV', 'JEST_WORKER_ID'],
+          });
+          return { ...run, calls: getStubCalls().slice(callsBefore) };
+        });
+
+        then('the auth gate accepts it: no error, exit 0', () => {
+          expect(result.error).toBeNull();
+          expect(result.exitCode).toEqual(0);
+        });
+
+        then(
+          'the record stores it as typed, still held, and naught is sent',
+          () => {
+            const onDisk = getSceneRecords({ scene })[0];
+            expect(onDisk?.auth).toEqual(auth);
+            expect(onDisk?.recordStatus).toEqual(RadioTaskRecordStatus.QUEUED);
+            expect(result.calls).toEqual([]);
+          },
+        );
+      });
+    }),
+  );
 });

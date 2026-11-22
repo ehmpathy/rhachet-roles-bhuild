@@ -15,6 +15,23 @@ exports[`asRadioDrainSections given: [case1] a created and a found delivery when
 }
 `;
 
+exports[`asRadioDrainSections given: [case1b] as-ehmpath deliveries, one per spot that paid when: [t0] the sections render then: each drained row nests the spot that paid beneath it 1`] = `
+{
+  "closedOrHeld": [],
+  "drained": [
+    {
+      "children": [
+        "#601 lesson reminders
+└─ auth = as-ehmpath (via keyrack)",
+        "#602 board rentals
+└─ auth = as-ehmpath (via ambient)",
+      ],
+      "line": "drained",
+    },
+  ],
+}
+`;
+
 exports[`asRadioDrainSections given: [case2] a refused record when: [t0] the sections render then: it is closed, with its detail, and says get will not recall it 1`] = `
 {
   "closedOrHeld": [

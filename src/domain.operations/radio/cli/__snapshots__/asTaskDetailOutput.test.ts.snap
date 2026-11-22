@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asTaskDetailOutput a pull from a value with one source shows no auth row 1`] = `
+"🎙️ task - book-a-lesson reminder
+   ├─ exid: 7
+   ├─ status: QUEUED
+   ├─ repo: sandpine/svc-lessons
+   ├─ pushedBy: seaturtle
+   ├─ pushedAt: 2026-11-14
+   └─ via: gh.issues
+
+description:
+remind each surfer the day before"
+`;
+
+exports[`asTaskDetailOutput an as-ehmpath pull names the spot that paid 1`] = `
+"🎙️ task - book-a-lesson reminder
+   ├─ exid: 7
+   ├─ status: QUEUED
+   ├─ repo: sandpine/svc-lessons
+   ├─ pushedBy: seaturtle
+   ├─ pushedAt: 2026-11-14
+   ├─ auth: as-ehmpath (via ambient)
+   └─ via: gh.issues
+
+description:
+remind each surfer the day before"
+`;
+
+exports[`asTaskDetailOutput an as-ehmpath push names the spot that paid 1`] = `
+"🎙️ pushed: book-a-lesson reminder
+   ├─ exid: 7
+   ├─ status: QUEUED
+   ├─ repo: sandpine/svc-lessons
+   ├─ pushedBy: seaturtle
+   ├─ pushedAt: 2026-11-14
+   ├─ auth: as-ehmpath (via keyrack)
+   └─ via: gh.issues"
+`;

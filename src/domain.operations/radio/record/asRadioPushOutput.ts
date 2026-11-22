@@ -1,9 +1,11 @@
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
+import { asEhmpathSpotShown } from '@src/domain.operations/radio/auth/asEhmpathSpotShown';
 import { asTaskDetailOutput } from '@src/domain.operations/radio/cli/asTaskDetailOutput';
 
 import { asRadioAuthShown } from './asRadioAuthShown';
 import { asRadioDeliveredExid } from './asRadioDeliveredExid';
 import { asRadioDeliveredLine } from './asRadioDeliveredLine';
+import { asRadioDeliveredRow } from './asRadioDeliveredRow';
 import { asRadioDrainSections } from './asRadioDrainSections';
 import { asRadioErrorHeadline } from './asRadioErrorHeadline';
 import { asRadioErrorHintLines } from './asRadioErrorHintLines';
@@ -249,6 +251,7 @@ export const asRadioPushOutput = (input: {
         outcome: pushed.outcome,
         cached: null,
         recorded: `${home.dir}/`,
+        auth: asEhmpathSpotShown({ ehmpathSpot: pushed.ehmpathSpot }),
       }),
     ].join('\n');
 
@@ -260,7 +263,12 @@ export const asRadioPushOutput = (input: {
         ...othersSections.drained,
         {
           line: 'pushed',
-          children: [`${asRadioDeliveredLine(pushed)} (${pushed.outcome})`],
+          children: [
+            asRadioDeliveredRow({
+              line: `${asRadioDeliveredLine(pushed)} (${pushed.outcome})`,
+              ehmpathSpot: pushed.ehmpathSpot,
+            }),
+          ],
         },
         ...othersSections.closedOrHeld,
         asBacklogBranch({ backlog }),

@@ -1,4 +1,5 @@
 import { asRadioDeliveredLine } from './asRadioDeliveredLine';
+import { asRadioDeliveredRow } from './asRadioDeliveredRow';
 import { asRadioDrainHeldRow } from './asRadioDrainHeldRow';
 import { asRadioRefusalText } from './asRadioRefusalText';
 import { asRadioTaskRecordLabel } from './asRadioTaskRecordLabel';
@@ -22,9 +23,13 @@ export const asRadioDrainSections = (input: {
   const drained = input.fates.flatMap((fate) =>
     fate.fate === 'delivered'
       ? [
-          fate.outcome === 'found'
-            ? `${asRadioDeliveredLine(fate)} (already upstream — marked delivered)`
-            : asRadioDeliveredLine(fate),
+          asRadioDeliveredRow({
+            line:
+              fate.outcome === 'found'
+                ? `${asRadioDeliveredLine(fate)} (already upstream — marked delivered)`
+                : asRadioDeliveredLine(fate),
+            ehmpathSpot: fate.ehmpathSpot,
+          }),
         ]
       : [],
   );

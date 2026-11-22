@@ -34,6 +34,7 @@ describe('genAuthFromKeyrack', () => {
         const result = await genAuthFromKeyrack(
           {
             owner: 'ehmpath',
+            org: null,
             env: 'prep',
             key: 'EHMPATH_BEAVER_GITHUB_TOKEN',
           },
@@ -82,6 +83,7 @@ describe('genAuthFromKeyrack', () => {
           const result = await genAuthFromKeyrack(
             {
               owner: 'ehmpath',
+              org: null,
               env: 'prep',
               key: 'EHMPATH_BEAVER_GITHUB_TOKEN',
             },
@@ -121,6 +123,7 @@ describe('genAuthFromKeyrack', () => {
           genAuthFromKeyrack(
             {
               owner: 'ehmpath',
+              org: null,
               env: 'prep',
               key: 'EHMPATH_BEAVER_GITHUB_TOKEN',
             },
@@ -165,6 +168,7 @@ describe('genAuthFromKeyrack', () => {
           genAuthFromKeyrack(
             {
               owner: 'ehmpath',
+              org: null,
               env: 'prep',
               key: 'EHMPATH_BEAVER_GITHUB_TOKEN',
             },
@@ -205,6 +209,7 @@ describe('genAuthFromKeyrack', () => {
           genAuthFromKeyrack(
             {
               owner: 'ehmpath',
+              org: null,
               env: 'prep',
               key: 'EHMPATH_BEAVER_GITHUB_TOKEN',
             },
@@ -263,6 +268,7 @@ describe('genAuthFromKeyrack', () => {
             genAuthFromKeyrack(
               {
                 owner: 'ehmpath',
+                org: null,
                 env: 'prep',
                 key: 'EHMPATH_BEAVER_GITHUB_TOKEN',
               },

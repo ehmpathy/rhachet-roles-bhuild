@@ -75,6 +75,7 @@ describe('asRadioDrainSections', () => {
             }),
             task: genTask({ exid: '601', title: 'lesson reminders' }),
             outcome: 'created',
+            ehmpathSpot: null,
           },
           {
             fate: 'delivered',
@@ -86,6 +87,7 @@ describe('asRadioDrainSections', () => {
             }),
             task: genTask({ exid: '602', title: 'board rentals' }),
             outcome: 'found',
+            ehmpathSpot: null,
           },
         ],
       });
@@ -101,6 +103,50 @@ describe('asRadioDrainSections', () => {
           },
         ]);
         expect(sections.closedOrHeld).toEqual([]);
+        expect(sections).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case1b] as-ehmpath deliveries, one per spot that paid', () => {
+    when('[t0] the sections render', () => {
+      const sections = asRadioDrainSections({
+        authOverride: null,
+        fates: [
+          {
+            fate: 'delivered',
+            record: genRecord({
+              recordStatus: RadioTaskRecordStatus.DELIVERED,
+              deliveredExid: '601',
+            }),
+            task: genTask({ exid: '601', title: 'lesson reminders' }),
+            outcome: 'created',
+            ehmpathSpot: 'keyrack',
+          },
+          {
+            fate: 'delivered',
+            record: genRecord({
+              key: 'b1b2c3d4e5f60718',
+              title: 'board rentals',
+              recordStatus: RadioTaskRecordStatus.DELIVERED,
+              deliveredExid: '602',
+            }),
+            task: genTask({ exid: '602', title: 'board rentals' }),
+            outcome: 'created',
+            ehmpathSpot: 'ambient',
+          },
+        ],
+      });
+
+      then('each drained row nests the spot that paid beneath it', () => {
+        const [drained] = sections.drained;
+        expect(drained?.children).toHaveLength(2);
+        expect(drained?.children[0]).toContain(
+          'auth = as-ehmpath (via keyrack)',
+        );
+        expect(drained?.children[1]).toContain(
+          'auth = as-ehmpath (via ambient)',
+        );
         expect(sections).toMatchSnapshot();
       });
     });

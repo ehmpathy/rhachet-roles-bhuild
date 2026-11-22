@@ -102,7 +102,12 @@ const HELP_TEXT = `
    │
    └─ options
       ├─ --uuid         the record uuid \`get\` prints (set, del)
-      ├─ --auth         as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd) | as-human
+      ├─ --auth         where the token comes from
+      │  ├─ as-ehmpath              keyrack, then the gh login (ehmpath email only)
+      │  ├─ as-ehmpath-via-keyrack  keyrack only
+      │  ├─ as-ehmpath-via-ambient  the gh login only (ehmpath email only)
+      │  ├─ as-human                the gh login, any identity
+      │  ├─ as-robot:via-keyrack(owner) · as-robot:env(VAR) · as-robot:shx(cmd)
       │  ├─ set:   amends the one record --uuid names
       │  └─ drain: sends every held record under this auth, this drain only
       ├─ --description  the new body (set; supports @stdin)
@@ -119,7 +124,7 @@ const asAuthFromArg = (input: { raw: string | undefined }): string | null => {
   if (input.raw === undefined) return null;
   if (asGithubAuthMode({ auth: input.raw }).kind === 'unknown')
     throw new ConstraintError(
-      `--auth "${input.raw}" is not an auth mode; use as-human, as-robot:via-keyrack(owner), as-robot:env(VAR), or as-robot:shx(cmd)`,
+      `--auth "${input.raw}" is not an auth mode; use as-ehmpath, as-ehmpath-via-keyrack, as-ehmpath-via-ambient, as-human, as-robot:via-keyrack(owner), as-robot:env(VAR), or as-robot:shx(cmd)`,
     );
   return input.raw;
 };

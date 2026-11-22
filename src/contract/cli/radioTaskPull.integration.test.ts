@@ -200,6 +200,10 @@ describe('radio.task.pull.integration — CLI contract', () => {
         expect(stdout).toContain('radio.task.pull --help');
         expect(stdout).toContain('--via');
         expect(stdout).toContain('--auth');
+        expect(stdout).toContain('as-ehmpath              keyrack, then');
+        expect(stdout).toContain('as-ehmpath-via-keyrack  keyrack only');
+        expect(stdout).toContain('as-ehmpath-via-ambient  the gh login only');
+        expect(stdout).toContain('as-human                the gh login');
         expect(stdout).toMatchSnapshot();
       });
     });

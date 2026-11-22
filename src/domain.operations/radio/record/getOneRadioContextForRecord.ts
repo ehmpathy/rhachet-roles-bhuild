@@ -3,6 +3,7 @@ import { BadRequestError, ConstraintError } from 'helpful-errors';
 import { RadioChannel } from '@src/domain.objects/RadioChannel';
 import type { ContextDispatchRadio } from '@src/domain.objects/RadioContext';
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
+import type { EhmpathSpot } from '@src/domain.operations/radio/auth/EhmpathSpot';
 import { getGithubTokenByAuthArg } from '@src/domain.operations/radio/auth/getGithubTokenByAuthArg';
 
 import { asRadioAuthShown } from './asRadioAuthShown';
@@ -37,13 +38,16 @@ export const getOneRadioContextForRecord = async (
   },
   context: { env: NodeJS.ProcessEnv; shx: ShellExecutor },
 ): Promise<
-  | { radioContext: ContextDispatchRadio<RadioChannel> }
+  | {
+      radioContext: ContextDispatchRadio<RadioChannel>;
+      ehmpathSpot: EhmpathSpot | null;
+    }
   | { fault: BadRequestError }
 > => {
   // a channel with no auth needs only its repo
   const git = { repo: input.record.repo };
   if (input.record.via !== RadioChannel.GH_ISSUES)
-    return { radioContext: { git } };
+    return { radioContext: { git }, ehmpathSpot: null };
 
   // a stored auth that would run a shell holds the record; only a live one may
   const isAuthStored =
@@ -58,11 +62,11 @@ export const getOneRadioContextForRecord = async (
 
   // derive the github auth; an auth fault holds the record
   try {
-    const auth = await getGithubTokenByAuthArg(
+    const { ehmpathSpot, ...auth } = await getGithubTokenByAuthArg(
       { auth: input.authOverride ?? input.record.auth },
       context,
     );
-    return { radioContext: { github: { auth }, git } };
+    return { radioContext: { github: { auth }, git }, ehmpathSpot };
   } catch (error) {
     if (!(error instanceof BadRequestError)) throw error;
     return { fault: error };

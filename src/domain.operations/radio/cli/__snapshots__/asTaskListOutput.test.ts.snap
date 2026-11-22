@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asTaskListOutput a list from a value with one source shows the plain header 1`] = `
+"🎙️ tasks on gh.issues:
+   └─ [QUEUED] 7: book-a-lesson reminder"
+`;
+
+exports[`asTaskListOutput an as-ehmpath list names the spot that paid in its header 1`] = `
+"🎙️ tasks on gh.issues (auth: as-ehmpath (via keyrack)):
+   └─ [QUEUED] 7: book-a-lesson reminder"
+`;
+
+exports[`asTaskListOutput an empty as-ehmpath list still names the spot 1`] = `
+"🎙️ tasks on gh.issues (auth: as-ehmpath (via ambient)):
+   └─ (no tasks found)"
+`;

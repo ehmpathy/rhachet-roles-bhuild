@@ -23,6 +23,8 @@
 #   --title     fetch specific task by title
 #   --status    filter by status: QUEUED, CLAIMED, DELIVERED
 #   --limit     max number of tasks to return
+#   --auth      as-ehmpath | as-ehmpath-via-keyrack | as-ehmpath-via-ambient | as-human
+#               | as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd)
 #   --help, -h  show usage and exit
 #
 # guarantee:

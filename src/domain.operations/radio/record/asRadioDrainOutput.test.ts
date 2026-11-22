@@ -91,6 +91,7 @@ describe('asRadioDrainOutput', () => {
             }),
             task: taskDelivered,
             outcome: 'created',
+            ehmpathSpot: null,
           },
         ],
         backlog: 1,
@@ -199,6 +200,7 @@ describe('asRadioDrainOutput', () => {
             }),
             task: taskDelivered,
             outcome: 'created',
+            ehmpathSpot: null,
           },
         ],
         backlog: 0,
@@ -261,6 +263,7 @@ describe('asRadioDrainOutput', () => {
             }),
             task: taskDelivered,
             outcome: 'created',
+            ehmpathSpot: null,
           },
           asRadioFateUnreachedByBudget({
             record: genRecord({

@@ -10,8 +10,16 @@ export const asGithubAuthMode = (input: {
   | { kind: 'shx'; command: string }
   | { kind: 'env'; envVar: string }
   | { kind: 'as-human' }
+  | { kind: 'as-ehmpath'; via: 'keyrack' | 'ambient' | 'either' }
   | { kind: 'unknown'; raw: string } => {
   const { auth } = input;
+
+  // as-ehmpath — the robot token: keyrack, then an ehmpath ambient login
+  if (auth === 'as-ehmpath') return { kind: 'as-ehmpath', via: 'either' };
+  if (auth === 'as-ehmpath-via-keyrack')
+    return { kind: 'as-ehmpath', via: 'keyrack' };
+  if (auth === 'as-ehmpath-via-ambient')
+    return { kind: 'as-ehmpath', via: 'ambient' };
 
   // as-robot:via-keyrack(owner) — token from keyrack
   const keyrackMatch = auth.match(/^as-robot:via-keyrack\((.+)\)$/);

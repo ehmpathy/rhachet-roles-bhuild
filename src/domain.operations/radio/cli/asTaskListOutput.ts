@@ -9,9 +9,12 @@ import { asTaskListLine } from './asTaskListLine';
 export const asTaskListOutput = (input: {
   tasks: RadioTask[];
   via: string;
+  auth: string | null;
 }): string => {
-  const { tasks, via } = input;
-  const header = `🎙️ tasks on ${via}:`;
+  const { tasks, via, auth } = input;
+  const header = auth
+    ? `🎙️ tasks on ${via} (auth: ${auth}):`
+    : `🎙️ tasks on ${via}:`;
 
   if (tasks.length === 0) {
     return `${header}\n   └─ (no tasks found)`;

@@ -25,7 +25,12 @@ exports[`radio.task.queue.integration — CLI contract given: [case1] --help whe
    │
    └─ options
       ├─ --uuid         the record uuid \`get\` prints (set, del)
-      ├─ --auth         as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd) | as-human
+      ├─ --auth         where the token comes from
+      │  ├─ as-ehmpath              keyrack, then the gh login (ehmpath email only)
+      │  ├─ as-ehmpath-via-keyrack  keyrack only
+      │  ├─ as-ehmpath-via-ambient  the gh login only (ehmpath email only)
+      │  ├─ as-human                the gh login, any identity
+      │  ├─ as-robot:via-keyrack(owner) · as-robot:env(VAR) · as-robot:shx(cmd)
       │  ├─ set:   amends the one record --uuid names
       │  └─ drain: sends every held record under this auth, this drain only
       ├─ --description  the new body (set; supports @stdin)
@@ -44,9 +49,9 @@ exports[`radio.task.queue.integration — CLI contract given: [case6] del with n
 
 exports[`radio.task.queue.integration — CLI contract given: [case7] del with no --why when: [t0] the queue skill runs then: fails with a constraint that shows a --why to pass 1`] = `"✋ ConstraintError: --why is required; say why this record is dropped, e.g. --why "superseded by #604""`;
 
-exports[`radio.task.queue.integration — CLI contract given: [case8] an --auth value that is not an auth mode when: [t0] set runs with it then: fails with a constraint that lists the four modes 1`] = `"✋ ConstraintError: --auth "as-surfer" is not an auth mode; use as-human, as-robot:via-keyrack(owner), as-robot:env(VAR), or as-robot:shx(cmd)"`;
+exports[`radio.task.queue.integration — CLI contract given: [case8] an --auth value that is not an auth mode when: [t0] set runs with it then: fails with a constraint that lists every mode 1`] = `"✋ ConstraintError: --auth "as-surfer" is not an auth mode; use as-ehmpath, as-ehmpath-via-keyrack, as-ehmpath-via-ambient, as-human, as-robot:via-keyrack(owner), as-robot:env(VAR), or as-robot:shx(cmd)"`;
 
-exports[`radio.task.queue.integration — CLI contract given: [case8] an --auth value that is not an auth mode when: [t1] drain runs with it then: fails the same way, before any send 1`] = `"✋ ConstraintError: --auth "as-surfer" is not an auth mode; use as-human, as-robot:via-keyrack(owner), as-robot:env(VAR), or as-robot:shx(cmd)"`;
+exports[`radio.task.queue.integration — CLI contract given: [case8] an --auth value that is not an auth mode when: [t1] drain runs with it then: fails the same way, before any send 1`] = `"✋ ConstraintError: --auth "as-surfer" is not an auth mode; use as-ehmpath, as-ehmpath-via-keyrack, as-ehmpath-via-ambient, as-human, as-robot:via-keyrack(owner), as-robot:env(VAR), or as-robot:shx(cmd)"`;
 
 exports[`radio.task.queue.integration — CLI contract given: [case9] set with a --title when: [t0] the queue skill runs then: fails with a constraint that names the del + re-push path 1`] = `"✋ ConstraintError: --title cannot be amended: the title is what the push creates; to retitle, run \`rhx radio.task.queue del --uuid <uuid>\` and push again"`;
 

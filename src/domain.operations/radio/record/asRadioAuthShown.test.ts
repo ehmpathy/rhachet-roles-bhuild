@@ -7,7 +7,7 @@ const TEST_CASES = [
     description:
       'no stored auth shows as default, with the auth it resolves to',
     given: { auth: null },
-    expect: { output: 'default (as-robot:via-keyrack(ehmpath))' },
+    expect: { output: 'default (ambient-first)' },
   },
   {
     description: 'as-human replays, so it shows as stored',

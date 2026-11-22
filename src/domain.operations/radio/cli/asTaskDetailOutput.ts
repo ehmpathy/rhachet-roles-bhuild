@@ -10,8 +10,9 @@ export const asTaskDetailOutput = (input: {
   outcome: string | null;
   cached: boolean | null;
   recorded: string | null;
+  auth: string | null;
 }): string => {
-  const { task, via, outcome, cached, recorded } = input;
+  const { task, via, outcome, cached, recorded, auth } = input;
 
   const header = outcome
     ? `🎙️ ${outcome}: ${task.title}`
@@ -30,6 +31,7 @@ export const asTaskDetailOutput = (input: {
       ? `   ├─ claimedAt: ${task.claimedAt ?? '(not set)'}`
       : null,
     task.branch != null ? `   ├─ branch: ${task.branch}` : null,
+    auth ? `   ├─ auth: ${auth}` : null,
     cached ? `   └─ 📥 cached to local .radio/` : null,
     !cached && !recorded ? `   └─ via: ${via}` : null,
     !cached && recorded ? `   ├─ via: ${via}` : null,

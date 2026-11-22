@@ -11,6 +11,7 @@ describe('genAuthFromKeyrack.integration', () => {
         const result = await genAuthFromKeyrack(
           {
             owner: 'ehmpath',
+            org: null,
             env: 'test',
             key: 'EHMPATH_BEAVER_GITHUB_TOKEN',
           },
@@ -30,6 +31,7 @@ describe('genAuthFromKeyrack.integration', () => {
           genAuthFromKeyrack(
             {
               owner: 'ehmpath',
+              org: null,
               env: 'test',
               key: 'EHMPATH_BOGUS_KEY_THAT_DOES_NOT_EXIST',
             },

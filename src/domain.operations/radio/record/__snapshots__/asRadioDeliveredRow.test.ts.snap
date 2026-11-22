@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asRadioDeliveredRow a row with no spot reads as it always has 1`] = `"🟢 book-a-lesson reminder"`;
+
+exports[`asRadioDeliveredRow an as-ehmpath row nests the ambient spot beneath it 1`] = `
+"🟢 book-a-lesson reminder
+└─ auth = as-ehmpath (via ambient)"
+`;
+
+exports[`asRadioDeliveredRow an as-ehmpath row nests the keyrack spot beneath it 1`] = `
+"🟢 book-a-lesson reminder
+└─ auth = as-ehmpath (via keyrack)"
+`;

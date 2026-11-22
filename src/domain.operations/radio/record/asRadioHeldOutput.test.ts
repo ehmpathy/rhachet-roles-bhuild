@@ -386,9 +386,7 @@ describe('asRadioHeldOutput', () => {
 
         then('each row names the auth it holds, default when none', () => {
           expect(output).toContain('auth: as-human');
-          expect(output).toContain(
-            'auth: default (as-robot:via-keyrack(ehmpath))',
-          );
+          expect(output).toContain('auth: default (ambient-first)');
         });
 
         then(

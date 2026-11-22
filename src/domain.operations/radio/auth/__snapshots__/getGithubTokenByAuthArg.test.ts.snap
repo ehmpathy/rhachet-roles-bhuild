@@ -38,15 +38,14 @@ exports[`getGithubTokenByAuthArg given: [case5] --auth as-human when: [t2] as-hu
 exports[`getGithubTokenByAuthArg given: [case6] unrecognized auth mode when: [t0] --auth with invalid mode then: error message lists supported modes 1`] = `
 "✋ ConstraintError: unrecognized --auth mode: some-unknown-mode
 
-supported modes:
-├─ as-robot:via-keyrack(owner)
-│     use token from keyrack (default owner: ehmpath)
-├─ as-robot:shx(command)
-│     execute shell command to retrieve token
-├─ as-robot:env(VAR)
-│     use token from environment variable
-└─ as-human
-      use gh cli logged-in session (interactive)
+supported modes
+├─ as-ehmpath                    keyrack, then the gh login (ehmpath email only)
+├─ as-ehmpath-via-keyrack        keyrack only
+├─ as-ehmpath-via-ambient        the gh login only (ehmpath email only)
+├─ as-robot:via-keyrack(owner)   token from keyrack (default owner: ehmpath)
+├─ as-robot:shx(command)         token from the stdout of a shell command
+├─ as-robot:env(VAR)             token from an environment variable
+└─ as-human                      the gh login, any identity (interactive)
 
 {
   "auth": "some-unknown-mode"

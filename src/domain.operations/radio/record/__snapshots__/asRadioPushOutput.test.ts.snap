@@ -138,6 +138,17 @@ exports[`asRadioPushOutput given: [case4] an open push that drains a backlog (C4
    └─ backlog = 1 awaits the radio"
 `;
 
+exports[`asRadioPushOutput given: [case4b] an as-ehmpath push that drains a backlog when: [t0] the push and one backlog record both deliver then: the pushed row and the drained row each name their spot 1`] = `
+"🦫 back in the river! the backlog is delivered
+   ├─ drained
+   │  └─ #412 fix flaky keyrack test
+   │     └─ auth = as-ehmpath (via keyrack)
+   ├─ pushed
+   │  └─ #415 retry race in route.bounce (created)
+   │     └─ auth = as-ehmpath (via ambient)
+   └─ backlog = 0"
+`;
+
 exports[`asRadioPushOutput given: [case5] a delivered push re-pushed while the gate is shut (C9) when: [t0] the record already landed then: it says already delivered, with the exid 1`] = `
 "🦫 already delivered
    ├─ task    = fix flaky keyrack test

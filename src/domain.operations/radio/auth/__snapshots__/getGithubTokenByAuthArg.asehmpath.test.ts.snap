@@ -1,0 +1,135 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`getGithubTokenByAuthArg.asehmpath given: [case3] as-ehmpath, keyrack locked, ambient email is a human one when: [t0] the derive runs then: refuses, names both spots and the fixes, never reads gh 1`] = `
+"✋ ConstraintError: --auth as-ehmpath found no ehmpath token
+
+checked
+├─ keyrack: not granted (status: locked)
+└─ ambient: git config user.email = bert@example.com, not an ehmpath email
+
+fix
+├─ unlock the robot token: rhx keyrack unlock --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
+└─ or send as yourself, on purpose: --auth as-human
+
+{
+  "auth": "as-ehmpath"
+}"
+`;
+
+exports[`getGithubTokenByAuthArg.asehmpath given: [case3] as-ehmpath, keyrack locked, ambient email is a human one when: [t1] the keyrack auto-unlock command itself exits non-zero then: the miss keeps the raw unlock cause, as the extant keyrack nudge does 1`] = `
+"✋ ConstraintError: --auth as-ehmpath found no ehmpath token
+
+checked
+├─ keyrack: not granted (status: locked)
+└─ ambient: git config user.email = bert@example.com, not an ehmpath email
+
+fix
+├─ unlock the robot token: rhx keyrack unlock --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
+└─ or send as yourself, on purpose: --auth as-human
+
+{
+  "auth": "as-ehmpath",
+  "unlockFailure": "Command failed: rhx keyrack unlock --owner ehmpath --env prep --key EHMPATH_BEAVER_GITHUB_TOKEN"
+}"
+`;
+
+exports[`getGithubTokenByAuthArg.asehmpath given: [case4] as-ehmpath, keyrack absent, git config user.email unset when: [t0] the derive runs then: refuses, and names the unset email and the keyrack-set fix 1`] = `
+"✋ ConstraintError: --auth as-ehmpath found no ehmpath token
+
+checked
+├─ keyrack: not granted (status: absent)
+└─ ambient: git config user.email unset
+
+fix
+├─ set the robot token: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
+└─ or send as yourself, on purpose: --auth as-human
+
+{
+  "auth": "as-ehmpath"
+}"
+`;
+
+exports[`getGithubTokenByAuthArg.asehmpath given: [case5] as-ehmpath, keyrack locked, ambient email ehmpath, gh holds no login when: [t0] the derive runs then: refuses, and names gh auth login as a fix 1`] = `
+"✋ ConstraintError: --auth as-ehmpath found no ehmpath token
+
+checked
+├─ keyrack: not granted (status: locked)
+└─ ambient: ehmpath email, but gh holds no login
+
+fix
+├─ unlock the robot token: rhx keyrack unlock --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
+├─ log gh in as the ehmpath account: gh auth login
+└─ or send as yourself, on purpose: --auth as-human
+
+{
+  "auth": "as-ehmpath"
+}"
+`;
+
+exports[`getGithubTokenByAuthArg.asehmpath given: [case6] as-ehmpath-via-keyrack, keyrack locked, ambient would pay when: [t0] the derive runs then: refuses with the keyrack row alone; ambient is never read 1`] = `
+"✋ ConstraintError: --auth as-ehmpath-via-keyrack found no ehmpath token
+
+checked
+└─ keyrack: not granted (status: locked)
+
+fix
+├─ unlock the robot token: rhx keyrack unlock --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
+└─ or send as yourself, on purpose: --auth as-human
+
+{
+  "auth": "as-ehmpath-via-keyrack"
+}"
+`;
+
+exports[`getGithubTokenByAuthArg.asehmpath given: [case7] as-ehmpath-via-ambient when: [t1] the ambient email is a human one then: refuses with the ambient row alone; gh is never read 1`] = `
+"✋ ConstraintError: --auth as-ehmpath-via-ambient found no ehmpath token
+
+checked
+└─ ambient: git config user.email = bert@example.com, not an ehmpath email
+
+fix
+└─ send as yourself, on purpose: --auth as-human
+
+{
+  "auth": "as-ehmpath-via-ambient"
+}"
+`;
+
+exports[`getGithubTokenByAuthArg.asehmpath given: [case8] a test env that declared no stub gh when: [t0] the ambient path is reached then: refuses before any shell runs 1`] = `
+"✋ ConstraintError: the ambient gh login is forbidden in a test env without a stub gh. put a stub gh on the subprocess PATH and set RADIO_GH_STUB=1
+
+{
+  "radioGhStub": null,
+  "hint": "wrap the test in withAmbientStub (src/.test/utils/withAmbientStub.ts)"
+}"
+`;
+
+exports[`getGithubTokenByAuthArg.asehmpath given: [case9] the git config read is killed, with no exit code when: [t0] the ambient path is reached then: a malfunction carries the kill; it is never read as "unset" 1`] = `
+"💥 MalfunctionError: the ambient read \`git config user.email\` failed
+
+{
+  "command": "git config user.email",
+  "exitCode": null,
+  "execError": "killed"
+}"
+`;
+
+exports[`getGithubTokenByAuthArg.asehmpath given: [case10] an ambient read exits with a code other than "none" when: [t0] git config exits 3, an invalid config file then: a malfunction names the command; it is never read as "unset" or "no login" 1`] = `
+"💥 MalfunctionError: the ambient read \`git config user.email\` failed
+
+{
+  "command": "git config user.email",
+  "exitCode": 3,
+  "execError": "Command failed: git config user.email"
+}"
+`;
+
+exports[`getGithubTokenByAuthArg.asehmpath given: [case10] an ambient read exits with a code other than "none" when: [t1] gh exits 127, gh not installed then: a malfunction names the command; it is never read as "unset" or "no login" 1`] = `
+"💥 MalfunctionError: the ambient read \`gh auth token\` failed
+
+{
+  "command": "gh auth token",
+  "exitCode": 127,
+  "execError": "Command failed: gh auth token"
+}"
+`;

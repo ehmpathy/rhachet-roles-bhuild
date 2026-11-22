@@ -27,11 +27,11 @@ exports[`radio.task.push — the radio.recorder given: [case1] a clone on a bran
 🦫 held for the radio
    ├─ <uuid> fix flaky test → recorder-acpt/repo-<run>
    │  ├─ state: held at gate (radio.uses:blocked — default)
-   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  ├─ auth: default (ambient-first)
    │  └─ lift it (human): rhx radio.uses allow
    ├─ <uuid> guard absent sponsor → recorder-acpt/repo-<run>
    │  ├─ state: held at gate (radio.uses:blocked — default)
-   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  ├─ auth: default (ambient-first)
    │  └─ lift it (human): rhx radio.uses allow
    └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;
@@ -135,7 +135,12 @@ exports[`radio.task.push — the radio.recorder given: [case2] a record file on 
    │
    └─ options
       ├─ --uuid         the record uuid \`get\` prints (set, del)
-      ├─ --auth         as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd) | as-human
+      ├─ --auth         where the token comes from
+      │  ├─ as-ehmpath              keyrack, then the gh login (ehmpath email only)
+      │  ├─ as-ehmpath-via-keyrack  keyrack only
+      │  ├─ as-ehmpath-via-ambient  the gh login only (ehmpath email only)
+      │  ├─ as-human                the gh login, any identity
+      │  ├─ as-robot:via-keyrack(owner) · as-robot:env(VAR) · as-robot:shx(cmd)
       │  ├─ set:   amends the one record --uuid names
       │  └─ drain: sends every held record under this auth, this drain only
       ├─ --description  the new body (set; supports @stdin)
@@ -289,11 +294,11 @@ exports[`radio.task.push — the radio.recorder given: [case6] a clone reads, dr
 🦫 held for the radio
    ├─ <uuid> wetsuit inventory → recorder-acpt-queue/repo-<run>
    │  ├─ state: held at gate (radio.uses:blocked — default)
-   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  ├─ auth: default (ambient-first)
    │  └─ lift it (human): rhx radio.uses allow
    ├─ <uuid> old lesson reminder → recorder-acpt-queue/repo-<run>
    │  ├─ state: held at gate (radio.uses:blocked — default)
-   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  ├─ auth: default (ambient-first)
    │  └─ lift it (human): rhx radio.uses allow
    └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;

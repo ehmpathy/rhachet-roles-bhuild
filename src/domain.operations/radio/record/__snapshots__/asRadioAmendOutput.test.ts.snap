@@ -5,7 +5,7 @@ exports[`asRadioAmendOutput given: [case1] an amend of the auth when: [t0] the a
    ├─ uuid    = a1b2c3d4e5f60718
    ├─ task    = lesson reminders → sandpine/svc-lessons
    ├─ changed
-   │  └─ auth: default (as-robot:via-keyrack(ehmpath)) → as-human
+   │  └─ auth: default (ambient-first) → as-human
    ├─ kept at = .behavior/.radio/record.a1b2c3d4e5f60718.json
    └─ naught sent; its place in line is kept, and the next push, or \`rhx radio.task.queue drain\`, sends it"
 `;
@@ -15,7 +15,7 @@ exports[`asRadioAmendOutput given: [case2] an amend of the body and the auth whe
    ├─ uuid    = a1b2c3d4e5f60718
    ├─ task    = lesson reminders → sandpine/svc-lessons
    ├─ changed
-   │  ├─ auth: default (as-robot:via-keyrack(ehmpath)) → as-human
+   │  ├─ auth: default (ambient-first) → as-human
    │  └─ description: amended
    ├─ kept at = .behavior/.radio/record.a1b2c3d4e5f60718.json
    └─ naught sent; its place in line is kept, and the next push, or \`rhx radio.task.queue drain\`, sends it"

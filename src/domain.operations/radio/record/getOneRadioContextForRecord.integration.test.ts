@@ -3,6 +3,10 @@ import { ConstraintError } from 'helpful-errors';
 import * as path from 'path';
 import { genTempDir, given, then, useBeforeAll, useThen, when } from 'test-fns';
 
+import {
+  STUB_GH_TOKEN,
+  withAmbientStub,
+} from '@src/.test/utils/withAmbientStub';
 import { RadioChannel } from '@src/domain.objects/RadioChannel';
 import { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 import { RadioTaskRecordStatus } from '@src/domain.objects/RadioTaskRecordStatus';
@@ -379,4 +383,78 @@ describe('getOneRadioContextForRecord — a stored auth never runs a shell', () 
       });
     });
   });
+});
+
+describe('getOneRadioContextForRecord — a held as-ehmpath record replays', () => {
+  const context = { env: process.env, shx };
+
+  given(
+    '[case1] a held record whose stored auth is as-ehmpath-via-ambient, drained on an ehmpath box',
+    () => {
+      when('[t0] a drain replays it, with no live auth', () => {
+        const result = useThen('it derives the token', async () =>
+          withAmbientStub(
+            {
+              slug: 'record-replay-ehmpath',
+              gh: { login: 'token' },
+              git: { email: 'seaturtle@ehmpath.com' },
+            },
+            async () => {
+              const derived = await getOneRadioContextForRecord(
+                {
+                  record: genRecord({ auth: 'as-ehmpath-via-ambient' }),
+                  authOverride: null,
+                  authLive: null,
+                },
+                context,
+              );
+              return {
+                token:
+                  'radioContext' in derived && 'github' in derived.radioContext
+                    ? derived.radioContext.github.auth.token
+                    : null,
+              };
+            },
+          ),
+        );
+
+        then('the stored mode replays, and the box login pays', () => {
+          expect(result.token).toEqual(STUB_GH_TOKEN);
+        });
+      });
+    },
+  );
+
+  given(
+    '[case2] the same held record, drained on a box whose git email is a human one',
+    () => {
+      when('[t0] a drain replays it, with no live auth', () => {
+        const result = useThen('it is held', async () =>
+          withAmbientStub(
+            {
+              slug: 'record-replay-human',
+              gh: { login: 'token' },
+              git: { email: 'bert@example.com' },
+            },
+            async () =>
+              getOneRadioContextForRecord(
+                {
+                  record: genRecord({ auth: 'as-ehmpath-via-ambient' }),
+                  authOverride: null,
+                  authLive: null,
+                },
+                context,
+              ),
+          ),
+        );
+
+        then('it is held as a constraint, never sent as the human', () => {
+          expect('fault' in result).toEqual(true);
+          if (!('fault' in result)) return;
+          expect(result.fault).toBeInstanceOf(ConstraintError);
+          expect(result.fault.message).toContain('not an ehmpath email');
+        });
+      });
+    },
+  );
 });
