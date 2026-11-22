@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asReviewerOutputLines given: no concerns: the summary alone, both counts at zero when: [t0] the concerns are cast to output lines then: matches the snapshot, under the head its caller supplies 1`] = `
+"🦫 root purpose
+   ├─ section: present
+   └─ summary
+      ├─ 0 blockers
+      └─ 0 nitpicks"
+`;
+
+exports[`asReviewerOutputLines given: two blockers and one nitpick: each under its own kind when: [t0] the concerns are cast to output lines then: matches the snapshot, under the head its caller supplies 1`] = `
+"🦫 root purpose
+   ├─ section: present
+   ├─ blockers
+   │  ├─ [blocker][better] concern a
+   │  │  └─ fix: fix a
+   │  └─ [blocker][urgent] concern b
+   │     └─ fix: fix b
+   ├─ nitpicks
+   │  └─ [nitpick][better] concern a
+   │     └─ fix: fix a
+   └─ summary
+      ├─ 2 blockers
+      └─ 1 nitpick"
+`;

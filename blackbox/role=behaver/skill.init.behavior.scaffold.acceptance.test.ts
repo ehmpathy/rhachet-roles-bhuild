@@ -43,6 +43,16 @@ describe('init.behavior.scaffold', () => {
         expect(fs.existsSync(path.join(behaviorDir, '1.vision.stone'))).toBe(
           true,
         );
+
+        // the vision stone the cli scaffolds asks for the root purpose, 3 layers deep
+        const visionStone = fs.readFileSync(
+          path.join(behaviorDir, '1.vision.stone'),
+          'utf-8',
+        );
+        expect(visionStone).toContain('## .the root purpose');
+        expect(visionStone).toContain(
+          'a peer reviewer refuses a vision whose root purpose is absent, under 3 layers, or names a mechanism as its root.',
+        );
         expect(
           fs.existsSync(path.join(behaviorDir, '2.1.criteria.blackbox.stone')),
         ).toBe(true);

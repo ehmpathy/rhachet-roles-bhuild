@@ -109,6 +109,9 @@ const loadReflect = (): typeof import('./reflect.on.reviews.self') =>
   require('./reflect.on.reviews.self');
 const loadReview = (): typeof import('./review.behavior') =>
   require('./review.behavior');
+const loadReviewVisionRootPurpose =
+  (): typeof import('./review.vision.root-purpose') =>
+    require('./review.vision.root-purpose');
 
 export const cli = {
   bindBehavior: asLazyCli(() => loadBind().bindBehavior),
@@ -135,4 +138,7 @@ export const cli = {
   radioTaskQueue: asLazyCli(() => loadRadioQueue().cliRadioTaskQueue),
   reflectOnReviewsSelf: asLazyCli(() => loadReflect().reflectOnReviewsSelf),
   reviewBehavior: asLazyCli(() => loadReview().reviewBehavior),
+  reviewVisionRootPurpose: asLazyCli(
+    () => loadReviewVisionRootPurpose().reviewVisionRootPurpose,
+  ),
 };

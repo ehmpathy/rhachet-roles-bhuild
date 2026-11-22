@@ -5,21 +5,32 @@ import { genTempDir, given, then, useThen, when } from 'test-fns';
 
 /**
  * .what = stage one file in a fresh git repo, then run this repo's real timestamp gate on it
- * .why = the gate is what a human meets at commit; its exit code and its words are the contract
+ * .why = the gate is what a human meets at commit; its exit code and its words are the contract.
+ *        `edit` lets one case run a copy it has broken on purpose (a bad regex)
  */
 const runGateOnStaged = (input: {
   slug: string;
   file: string;
   content: string;
   before?: (args: { cwd: string }) => void;
+  edit?: (args: { gate: string }) => string;
 }): { status: number | null; stdout: string; stderr: string } => {
   const cwd = genTempDir({ slug: input.slug, git: true });
   fs.writeFileSync(path.join(cwd, input.file), input.content);
   execSync(`git add ${input.file}`, { cwd });
   input.before?.({ cwd });
-  const run = spawnSync('bash', [path.join(__dirname, 'check.timestamps.sh')], {
-    cwd,
-  });
+
+  // the gate under test: this repo's own, or a copy one case has broken on purpose
+  const pathGateOwn = path.join(__dirname, 'check.timestamps.sh');
+  const pathGate = input.edit
+    ? path.join(cwd, '.gate.check.timestamps.sh')
+    : pathGateOwn;
+  if (input.edit)
+    fs.writeFileSync(
+      pathGate,
+      input.edit({ gate: fs.readFileSync(pathGateOwn, 'utf-8') }),
+    );
+  const run = spawnSync('bash', [pathGate], { cwd });
   return {
     status: run.status,
     stdout: run.stdout.toString('utf-8'),
@@ -43,7 +54,14 @@ const runCommitOnStaged = (input: {
   const dirHooks = path.join(cwd, '.husky');
   fs.mkdirSync(path.join(dirHooks, '_'), { recursive: true });
   fs.writeFileSync(path.join(dirHooks, '_', 'husky.sh'), '');
-  ['pre-commit', 'check.yalc.sh', 'check.timestamps.sh'].forEach((name) => {
+  // every check pre-commit may source, so a new check never leaves the copy short
+  const namesOfHook = [
+    'pre-commit',
+    ...fs
+      .readdirSync(__dirname)
+      .filter((name) => /^check\..+\.sh$/.test(name)),
+  ];
+  namesOfHook.forEach((name) => {
     fs.copyFileSync(path.join(__dirname, name), path.join(dirHooks, name));
     fs.chmodSync(path.join(dirHooks, name), 0o755);
   });
@@ -92,6 +110,21 @@ const asMaskedGitLines = (input: { text: string }): string =>
       line.startsWith('💥') || line === '' ? line : '<a line from git>',
     )
     .join('\n');
+
+/**
+ * .what = mask each line a foreign tool (grep, sed, git) printed, keep the gate's own header and branches
+ * .why = a tool's words and line count vary by platform and version; the gate's halt tree is the contract
+ */
+const asMaskedToolLines = (input: { text: string; tool: string }): string =>
+  `${input.text
+    .replace(/\n$/, '')
+    .split('\n')
+    .map((line) =>
+      /^(💥| {3}[├└│])/.test(line) ? line : `<a line from ${input.tool}>`,
+    )
+    // a run of foreign lines, blanks included, folds to one, so its length never pins
+    .filter((line, index, lines) => index === 0 || line !== lines[index - 1])
+    .join('\n')}\n`;
 
 describe('check.timestamps', () => {
   given('[case1] a staged markdown file that holds a timestamp', () => {
@@ -274,6 +307,141 @@ describe('check.timestamps', () => {
       then('the commit succeeds, and naught is left staged', () => {
         expect(result.status).toEqual(0);
         expect(result.staged).toEqual('');
+      });
+    });
+  });
+
+  given('[case7] a pattern the scan tools cannot parse', () => {
+    when('[t0] the timestamp pattern is broken, so grep fails', () => {
+      const result = useThen('it fails loud', async () =>
+        runGateOnStaged({
+          slug: 'check-timestamps-broken-grep',
+          file: 'lessons.md',
+          content:
+            '# sandpine lessons\n\nbook-a-lesson reminder sent 2026-09-29T09:30:00Z\n',
+          edit: ({ gate }) =>
+            gate.replace(/^TIMESTAMP_PATTERN=.*$/m, "TIMESTAMP_PATTERN='(unclosed'"),
+        }),
+      );
+
+      then('it exits 1, a malfunction, never a clean pass', () => {
+        expect(result.status).toEqual(1);
+      });
+
+      then('it names the class, the grep exit, and the fix', () => {
+        expect(result.stderr).toContain(
+          '💥 MalfunctionError: check.timestamps could not scan for a timestamp',
+        );
+        expect(result.stderr).toContain('grep exit: 2');
+        expect(result.stderr).toContain('fix: repair TIMESTAMP_PATTERN');
+      });
+
+      then('the halt reads as snapped, on stderr alone', () => {
+        expect(result.stdout).toEqual('');
+        expect(
+          asMaskedToolLines({ text: result.stderr, tool: 'grep' }),
+        ).toMatchSnapshot();
+      });
+    });
+
+    when('[t1] the duration pattern is broken, so sed fails', () => {
+      const result = useThen('it fails loud', async () =>
+        runGateOnStaged({
+          slug: 'check-timestamps-broken-sed',
+          file: 'lessons.md',
+          content: '# sandpine lessons\n',
+          edit: ({ gate }) =>
+            gate.replace(/^DURATION_PATTERN=.*$/m, "DURATION_PATTERN='(unclosed'"),
+        }),
+      );
+
+      then('it exits 1, a malfunction, never a clean pass', () => {
+        expect(result.status).toEqual(1);
+      });
+
+      then('it names the class and the fix', () => {
+        expect(result.stderr).toContain(
+          '💥 MalfunctionError: check.timestamps could not strip durations',
+        );
+        expect(result.stderr).toContain('fix: repair DURATION_PATTERN');
+      });
+
+      then('the halt reads as snapped, on stderr alone', () => {
+        expect(result.stdout).toEqual('');
+        expect(
+          asMaskedToolLines({ text: result.stderr, tool: 'sed' }),
+        ).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case8] a dir that is no git repo', () => {
+    when('[t0] the gate runs', () => {
+      const result = useThen('it fails loud', async () => {
+        const cwd = genTempDir({ slug: 'check-timestamps-no-repo' });
+        const run = spawnSync(
+          'bash',
+          [path.join(__dirname, 'check.timestamps.sh')],
+          {
+            cwd,
+            env: { ...process.env, GIT_CEILING_DIRECTORIES: path.dirname(cwd) },
+          },
+        );
+        return {
+          status: run.status,
+          stdout: run.stdout.toString('utf-8'),
+          stderr: run.stderr.toString('utf-8'),
+        };
+      });
+
+      then('it exits 1, a malfunction that names the fix, never a raw git abort', () => {
+        expect(result.status).toEqual(1);
+        expect(result.stderr).toContain(
+          '💥 MalfunctionError: check.timestamps could not list the staged files',
+        );
+        expect(result.stderr).toContain('fix: run the commit inside a git repo');
+      });
+
+      then('the halt reads as snapped, on stderr alone', () => {
+        expect(result.stdout).toEqual('');
+        expect(
+          asMaskedToolLines({ text: result.stderr, tool: 'git' }),
+        ).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case9] a staged markdown file that holds an iso duration', () => {
+    when('[t0] the duration is the only clock-shaped value', () => {
+      const result = useThen('it passes', async () =>
+        runGateOnStaged({
+          slug: 'check-timestamps-duration',
+          file: 'lessons.md',
+          content: '# sandpine lessons\n\nlesson length: PT12:30:00\n',
+        }),
+      );
+
+      then('it exits 0 and says naught, since a span is no instant', () => {
+        expect(result).toEqual({ status: 0, stdout: '', stderr: '' });
+      });
+    });
+
+    when('[t1] the duration sits beside a real timestamp', () => {
+      const result = useThen('it halts', async () =>
+        runGateOnStaged({
+          slug: 'check-timestamps-duration-and-stamp',
+          file: 'lessons.md',
+          content:
+            '# sandpine lessons\n\nlesson length: PT12:30:00, sent 2026-09-29T09:30:00Z\n',
+        }),
+      );
+
+      then('it exits 2, since the strip of the span leaves the stamp', () => {
+        expect(result.status).toEqual(2);
+        expect(result.stderr).toContain(
+          '✋ ConstraintError: timestamps are forbidden in tracked files',
+        );
+        expect(result.stderr).toContain('lessons.md:3:');
       });
     });
   });
