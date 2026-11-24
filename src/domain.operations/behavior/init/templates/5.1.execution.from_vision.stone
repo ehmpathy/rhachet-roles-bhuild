@@ -1,7 +1,10 @@
 bootup your mechanic's role via `./node_modules/.bin/rhachet roles boot --repo ehmpathy --role mechanic`
 
 then, execute the vision directly
-- $BEHAVIOR_DIR_REL/1.vision.md
+- $BEHAVIOR_DIR_REL/1.vision.yield.md
+
+a how its `## .the wisher's how` table dropped stays dropped; a comment cites the domain why,
+never a prior tool (rule.forbid.trust-of-wisher-how).
 
 ref:
 - $BEHAVIOR_DIR_REL/0.wish.md

@@ -101,6 +101,29 @@ reviews:
 
         a wish with no human- or clone-read surface declares "no stdout — internal only".
 
+    - slug: has-restated-the-wisher-how
+      say: |
+        a junior recently modified files in this repo. we need to carefully
+        review the vision due to this.
+
+        did the junior trust the wish's how, or only its why and rough contract?
+        read `rule.forbid.trust-of-wisher-how` before you grade.
+
+        list every how the wish carries: a poc or prior command, a parity target,
+        a named mechanism, field, flag, or storage layout, a done-when phrased by a prior tool.
+
+        for each one:
+        - is it restated in the domain's own terms, with a keep, drop, or open verdict, in the yield's
+          `## .the wisher's how` table?
+        - strike the prior tool or poc from the repo. does each requirement still read right?
+        - does a how the wisher tied to a domain why survive, stated with that why?
+
+        then check the inverse: are the verbs the wisher asked for still all there?
+
+        a requirement that leans on a prior tool is a blocker. fix it now, before you continue.
+
+        a wish with no how declares "the wish carries no how".
+
     - slug: has-questioned-requirements
       say: |
         a junior recently modified files in this repo. we need to carefully
@@ -171,5 +194,12 @@ reviews:
     # are the critipaths (happy + sharp) each demonstrated, and do sharp ones fail safe?
     - slug: experience-coverage
       run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/rule.require.experience-coverage.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.axis=feel.path=happy-vs-sharp.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.axis=care.path=criti-vs-alter.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.metric=boundary-density.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/howto.experience.enumerate.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.demo.surf-school.md' --refs '$route/0.wish.md' --diffs since-main --paths-with '$route/1.vision.*.md' --paths-with '$route/1.vision.experience.*.md' --join intersect --conversation $conversation --output "$output"
+      budget: 3
+      level: 1
+
+    # wisher how — light-enrolled, scoped to one concern:
+    # does the vision trust the wish's how as spec, or restate it in domain terms?
+    - slug: wisher-how
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.wish/rule.forbid.trust-of-wisher-how.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.wish/rule.forbid.trust-of-wisher-how.reason.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.wish/rule.forbid.trust-of-wisher-how.example=rhachet-760.md' --refs '$route/0.wish.md' --diffs since-main --paths-with '$route/1.vision.*.md' --paths-with '$route/1.vision.experience.*.md' --join intersect --conversation $conversation --output "$output"
       budget: 3
       level: 1

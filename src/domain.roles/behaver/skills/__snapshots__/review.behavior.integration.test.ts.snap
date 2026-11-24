@@ -1,0 +1,171 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`review.behavior.sh (behaver) given: [case1] a behavior with a wish, and a stub brain on PATH when: [t0] the wish review runs then: the render shows the review, a clean summary, and the log 1`] = `
+"
+🔭 review.behavior
+├── behavior: .behavior/v2026_11_23.surf-lesson
+├── against: wish
+└── log: .log/bhuild/review.behavior/{RUN}
+
+├── review wish...
+│   ├── artifact: .behavior/v2026_11_23.surf-lesson/0.wish.md
+│   ├── rules: {ROLE}/briefs/practices/behavior.wish/rule.*.md
+│   └── output: .behavior/v2026_11_23.surf-lesson/0.wish.[feedback].[given].by_robot.v{STAMP}.md
+│   ⏳ 
+│   ✓ complete ({N}s)   
+
+────────────────────────────────────────
+🌲 summary
+├── reviewed: 1
+├── skipped: 0
+├── failed: 0
+├── blockers: 0
+└── nitpicks: 0
+
+✨ review.behavior complete
+└── log: .log/bhuild/review.behavior/{RUN}
+"
+`;
+
+exports[`review.behavior.sh (behaver) given: [case2] a wish rules dir that holds only a rule companion when: [t0] the wish review runs then: the halt names the rules dir and the fix 1`] = `
+"✋ ConstraintError: no rules to review 'wish' against
+   ├─ rules dir: .role/briefs/practices/behavior.wish
+   └─ fix: add a rule.*.md (not .reason.md or .example=*.md) to that dir
+"
+`;
+
+exports[`review.behavior.sh (behaver) given: [case3] a behavior with a wish, and a stub brain that fails when: [t0] the wish review runs then: the error names the brain exit, its words, and the log 1`] = `
+"
+💥 MalfunctionError: review of 'wish' failed (claude exit code: 1)
+
+  claude said:
+    # review: wish
+
+  full log: .log/bhuild/review.behavior/{RUN}/output.wish.md
+💥 MalfunctionError: 1 of 1 review(s) failed to run
+└── log: .log/bhuild/review.behavior/{RUN}
+"
+`;
+
+exports[`review.behavior.sh (behaver) given: [case3] a behavior with a wish, and a stub brain that fails when: [t0] the wish review runs then: the summary counts the failed review 1`] = `
+"
+🔭 review.behavior
+├── behavior: .behavior/v2026_11_23.surf-lesson
+├── against: wish
+└── log: .log/bhuild/review.behavior/{RUN}
+
+├── review wish...
+│   ├── artifact: .behavior/v2026_11_23.surf-lesson/0.wish.md
+│   ├── rules: {ROLE}/briefs/practices/behavior.wish/rule.*.md
+│   └── output: .behavior/v2026_11_23.surf-lesson/0.wish.[feedback].[given].by_robot.v{STAMP}.md
+│   ⏳ 
+│   ⛈️ failed ({N}s)          
+
+────────────────────────────────────────
+🌲 summary
+├── reviewed: 1
+├── skipped: 0
+├── failed: 1
+├── blockers: 0
+└── nitpicks: 0
+
+"
+`;
+
+exports[`review.behavior.sh (behaver) given: [case4] a behavior with a wish, and a stub brain that reports a blocker and a nitpick when: [t0] the wish review runs then: the summary counts and lists each blocker and nitpick 1`] = `
+"
+🔭 review.behavior
+├── behavior: .behavior/v2026_11_23.surf-lesson
+├── against: wish
+└── log: .log/bhuild/review.behavior/{RUN}
+
+├── review wish...
+│   ├── artifact: .behavior/v2026_11_23.surf-lesson/0.wish.md
+│   ├── rules: {ROLE}/briefs/practices/behavior.wish/rule.*.md
+│   └── output: .behavior/v2026_11_23.surf-lesson/0.wish.[feedback].[given].by_robot.v{STAMP}.md
+│   ⏳ 
+│   ✓ complete ({N}s)   
+
+────────────────────────────────────────
+🌲 summary
+├── reviewed: 1
+├── skipped: 0
+├── failed: 0
+├── blockers: 1
+└── nitpicks: 1
+
+⛈️ blockers:
+  - [wish] # blocker.1: the wish names a prior tool as the parity target
+
+🌊 nitpicks:
+  - [wish] # nitpick.1: the lesson verb could read clearer
+
+✨ review.behavior complete
+└── log: .log/bhuild/review.behavior/{RUN}
+"
+`;
+
+exports[`review.behavior.sh (behaver) given: [case5] the other renders a caller can meet when: [t.help] the skill runs then: its exit code, stdout, and stderr hold their render 1`] = `
+{
+  "status": 0,
+  "stderr": "",
+  "stdout": "usage: review.behavior.sh --of <behavior-name> [--against <targets>] [--interactive]
+
+options:
+  --of <name>       behavior name to review (required)
+  --against <list>  comma-separated targets: wish,criteria,blueprint,roadmap (default: all)
+  --interactive     run in interactive mode
+  --dir <path>      target directory (default: current directory)
+",
+}
+`;
+
+exports[`review.behavior.sh (behaver) given: [case5] the other renders a caller can meet when: [t.of-absent] the skill runs then: its exit code, stdout, and stderr hold their render 1`] = `
+{
+  "status": 1,
+  "stderr": "",
+  "stdout": "error: --of is required
+",
+}
+`;
+
+exports[`review.behavior.sh (behaver) given: [case5] the other renders a caller can meet when: [t.unknown-target] the skill runs then: its exit code, stdout, and stderr hold their render 1`] = `
+{
+  "status": 0,
+  "stderr": "",
+  "stdout": "
+🔭 review.behavior
+├── behavior: .behavior/v2026_11_23.surf-lesson
+├── against: bogus
+└── log: .log/bhuild/review.behavior/{RUN}
+
+⚠️  unknown target 'bogus', skipping
+
+────────────────────────────────────────
+🌲 summary
+├── reviewed: 0
+├── skipped: 1
+├── failed: 0
+├── blockers: 0
+└── nitpicks: 0
+
+✨ review.behavior complete
+└── log: .log/bhuild/review.behavior/{RUN}
+",
+}
+`;
+
+exports[`review.behavior.sh (behaver) given: [case5] the other renders a caller can meet when: [t.wish-absent] the skill runs then: its exit code, stdout, and stderr hold their render 1`] = `
+{
+  "status": 1,
+  "stderr": "",
+  "stdout": "
+🔭 review.behavior
+├── behavior: .behavior/v2026_11_23.surf-lesson
+├── against: wish
+└── log: .log/bhuild/review.behavior/{RUN}
+
+error: artifact not found for 'wish' in {REPO}/.behavior/v2026_11_23.surf-lesson
+",
+}
+`;

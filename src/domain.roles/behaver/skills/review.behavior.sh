@@ -274,7 +274,19 @@ for target in "${TARGETS[@]}"; do
   echo "│   └── output: $output_file_rel"
 
   # collect rule files and their content
-  RULE_FILES=$(find "$rules_dir" -name "rule.*.md" -type f | sort)
+  # note: a rule's argument (.reason.md) and worked cases (.example=*.md) share its name, but are
+  #       not rules; they stay out, so the review grades each cue once and never a case as a rule
+  # note: the filter is local to this skill; any other `rule.*.md` glob also matches these files
+  RULE_FILES=$(find "$rules_dir" -name "rule.*.md" ! -name "*.reason.md" ! -name "*.example=*.md" -type f | sort)
+
+  # halt when no rule is left to grade: a review with no rules would read as clean
+  if [[ -z "$RULE_FILES" ]]; then
+    echo "✋ ConstraintError: no rules to review '$target' against" >&2
+    echo "   ├─ rules dir: $rules_dir_rel" >&2
+    echo "   └─ fix: add a rule.*.md (not .reason.md or .example=*.md) to that dir" >&2
+    exit 2
+  fi
+
   RULES_CONTENT=""
   while IFS= read -r rule_file; do
     rule_name=$(basename "$rule_file")

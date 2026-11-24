@@ -1,6 +1,9 @@
 declare the blackbox criteria required to fulfill
 - this wish $BEHAVIOR_DIR_REL/0.wish.md
-- this vision $BEHAVIOR_DIR_REL/1.vision.md (if declared)
+- this vision $BEHAVIOR_DIR_REL/1.vision.yield.md (if declared)
+
+strike any prior tool or poc the wish names: each criterion must still read right without it. a
+criterion that leans on a prior tool copied a how (rule.forbid.trust-of-wisher-how).
 
 via bdd declarations, per your briefs
 

@@ -5,6 +5,7 @@ import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
   asCallOutput,
+  FILE_STUB_REVIEW_BLOCKS,
   genGuardedBehaviorScene,
   getStonesPassed,
   promiseAllReviewSelfs,
@@ -26,7 +27,10 @@ import { asSnapshotStable } from './.test/skill.init.behavior.utils';
 describe('skill.init.behavior.guards.journey.vision', () => {
   given('[case1] a heavy-guard behavior at its vision stone', () => {
     const scene = useBeforeAll(async () => {
-      const behavior = genGuardedBehaviorScene({ prefix: 'journey-vision' });
+      const behavior = genGuardedBehaviorScene({
+        guard: 'heavy',
+        prefix: 'journey-vision',
+      });
 
       // enter the vision: bhrain applies its `brain:` (case=1, case=6)
       const visionDrive = setRouteDriven(behavior);
@@ -84,7 +88,7 @@ describe('skill.init.behavior.guards.journey.vision', () => {
 
     when('[t0] vision pass attempted without promises', () => {
       then('blocked by unpromised self-review', () => {
-        expect(scene.visionPassWithoutPromises.code).not.toEqual(0);
+        expect(scene.visionPassWithoutPromises.code).toEqual(2);
         const output = asCallOutput({ call: scene.visionPassWithoutPromises });
         expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('review.self required');
@@ -102,7 +106,7 @@ describe('skill.init.behavior.guards.journey.vision', () => {
 
     when('[t2] criteria pass attempted without promise', () => {
       then('blocked by unpromised self-review', () => {
-        expect(scene.criteriaPassWithoutPromises.code).not.toEqual(0);
+        expect(scene.criteriaPassWithoutPromises.code).toEqual(2);
         const output = asCallOutput({
           call: scene.criteriaPassWithoutPromises,
         });
@@ -144,4 +148,85 @@ describe('skill.init.behavior.guards.journey.vision', () => {
       });
     });
   });
+
+  /**
+   * .mock = the wisher-how lane's brain read, via the stub reviewer's blocks marker
+   * .why  = the suite grades the state a driver meets when the lane finds a copied how:
+   *         the real guard, the real judge, the real hold. a live brain would make the
+   *         hold a coin flip on a model's words, at a paid call per run (fulcrum F11)
+   * .real = the brain's read runs live on every route this guard binds; the review call
+   *         itself is proven by rhachet-roles-bhrain's own review suite
+   *
+   * .note = both variants run: the light and heavy vision guards each carry the lane
+   */
+  (['light', 'heavy'] as const).forEach((guard) =>
+    given(
+      `[case2.${guard}] a ${guard}-guard vision whose wisher-how lane is stubbed to find a blocker`,
+      () => {
+        const scene = useBeforeAll(async () => {
+          const behavior = genGuardedBehaviorScene({
+            guard,
+            prefix: `journey-vision-how-${guard}`,
+          });
+          fs.writeFileSync(
+            path.join(behavior.repoDir, FILE_STUB_REVIEW_BLOCKS),
+            'trust-of-wisher-how\n',
+          );
+
+          // vision: write the yield and a whole experience contract, so the copied how is the one
+          // defect a real guard would find; then promise every self-review, approve, and pass
+          fs.writeFileSync(
+            path.join(behavior.behaviorDir, '1.vision.yield.md'),
+            '# Vision\n\nget shows what the prior tool shows.',
+          );
+          fs.writeFileSync(
+            path.join(
+              behavior.behaviorDir,
+              '1.vision.experience.dimensions.md',
+            ),
+            '# dimensions\n\n| # | axis | values |\n|---|---|---|\n| D1 | actor | `surfer` |\n| D2 | lesson | `booked` · `absent` |\n',
+          );
+          fs.writeFileSync(
+            path.join(behavior.behaviorDir, '1.vision.experience.case=_.md'),
+            '# inventory\n\n| row | experience | feel | care | verdict | case |\n|---|---|---|---|---|---|\n| booked | a surfer gets the lesson they booked | happy | critipath | demoed | case=1 |\n| absent | a surfer gets a lesson they never booked | sharp | alterpath | itemized | — |\n',
+          );
+          fs.writeFileSync(
+            path.join(
+              behavior.behaviorDir,
+              '1.vision.experience.case=1.surfer-gets-the-lesson.md',
+            ),
+            '# case=1: a surfer gets the lesson they booked\n\nkai books a lesson at trestles, then runs get and sees it.\n\n- [t0] given a booked lesson, when kai runs get, then the lesson shows\n',
+          );
+          setStoneAs({ ...behavior, stone: '1.vision', as: 'passed' });
+          promiseAllReviewSelfs({ ...behavior, stone: '1.vision' });
+          setStoneAs({ ...behavior, stone: '1.vision', as: 'approved' });
+          const visionPassWithBlocker = setStoneAs({
+            ...behavior,
+            stone: '1.vision',
+            as: 'passed',
+          });
+
+          return { ...behavior, visionPassWithBlocker };
+        });
+
+        afterAll(() => scene.cleanup());
+
+        when('[t0] vision pass attempted after promises and approval', () => {
+          then('held by the wisher-how blocker', () => {
+            // exit 2 = the constraint hold; a malfunction (1) must turn this red
+            expect(scene.visionPassWithBlocker.code).toEqual(2);
+            const output = asCallOutput({ call: scene.visionPassWithBlocker });
+            expect(asSnapshotStable(output)).toMatchSnapshot();
+            expect(output).toMatch(/r\d+: wisher-how/);
+            expect(output).toContain('blockers exceed threshold (1 > 0)');
+            expect(output).not.toContain('passage = allowed');
+          });
+
+          then('the vision holds no passage marker', () => {
+            expect(getStonesPassed(scene)).not.toContain('1.vision');
+          });
+        });
+      },
+    ),
+  );
 });

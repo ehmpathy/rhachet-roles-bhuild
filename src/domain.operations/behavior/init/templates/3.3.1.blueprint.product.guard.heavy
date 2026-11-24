@@ -576,6 +576,17 @@ reviews:
       budget: 3
       level: 1
 
+    # --- behaver reviews (level 1) ---
+
+    # wisher how — light-enrolled, scoped to one concern:
+    # do the criteria or blueprint carry a how from the wish as spec?
+    # it grades the criteria yield too, since a light route runs no criteria guard.
+    # it reads the vision yield, where the wisher's how table records each keep, drop, or open verdict.
+    - slug: wisher-how
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.wish/rule.forbid.trust-of-wisher-how.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.wish/rule.forbid.trust-of-wisher-how.reason.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.wish/rule.forbid.trust-of-wisher-how.example=rhachet-760.md' --refs '$route/0.wish.md' --refs '$route/1.vision.yield.md' --diffs since-main --paths-with '$route/2.*.yield.md' --paths-with '$route/3.3.1.blueprint.*.md' --join intersect --conversation $conversation --output "$output"
+      budget: 3
+      level: 1
+
     # --- level 3: expensive reviewers (run after level 1 is terminal) ---
 
     - slug: enroll-blueprint-arch-defects

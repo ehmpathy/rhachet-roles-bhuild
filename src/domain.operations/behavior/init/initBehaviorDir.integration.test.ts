@@ -1,9 +1,65 @@
 import fs from 'fs';
+import { MalfunctionError } from 'helpful-errors';
 import os from 'os';
 import path from 'path';
-import { given, then, when } from 'test-fns';
+import { given, then, useBeforeAll, when } from 'test-fns';
 
 import { initBehaviorDir } from './initBehaviorDir';
+
+/**
+ * .what = the text of one yaml list item in a guard template, from its slug line to the next
+ *         line at the item's own indent or less (the next item, or the next key of the guard)
+ * .why = a clamp reads one lane or self-review; an absent slug fails with the template named
+ */
+const getBlockOfSlug = (input: {
+  template: string;
+  name: string;
+  slug: string;
+}): string => {
+  const lines = input.template.split('\n');
+  const at = lines.findIndex((line) => line.trim() === `- slug: ${input.slug}`);
+  if (at === -1)
+    throw new MalfunctionError(
+      'guard template lacks the slug this clamp reads',
+      {
+        template: input.name,
+        slug: input.slug,
+        hint: 'restore the slug in the template, or update this clamp',
+      },
+    );
+  const getIndent = (line: string): number =>
+    line.length - line.trimStart().length;
+  const indentItem = getIndent(lines[at]!);
+  const end = lines.findIndex(
+    (line, index) =>
+      index > at && line.trim() !== '' && getIndent(line) <= indentItem,
+  );
+  return lines
+    .slice(at, end === -1 ? undefined : end)
+    .join('\n')
+    .trim();
+};
+
+/**
+ * .what = the `run:` line of one peer lane in a guard template
+ * .why = the lane clamp reads its --rules and --refs; an absent line fails with the lane named
+ */
+const getRunOfLane = (input: {
+  template: string;
+  name: string;
+  slug: string;
+}): string => {
+  const run = getBlockOfSlug(input)
+    .split('\n')
+    .find((line) => line.trim().startsWith('run: '));
+  if (!run)
+    throw new MalfunctionError('guard lane lacks a run line', {
+      template: input.name,
+      slug: input.slug,
+      hint: 'restore the lane run line, or update this clamp',
+    });
+  return run;
+};
 
 describe('initBehaviorDir.integration', () => {
   let tempDir: string;
@@ -22,39 +78,49 @@ describe('initBehaviorDir.integration', () => {
 
   given('[case1] guard level is light (default)', () => {
     when('[t0] initBehaviorDir is called without guard arg', () => {
-      then('creates light guard files for vision and blueprint', () => {
+      // init once into a dir of its own; every then below reads that one result
+      const scene = useBeforeAll(async () => {
+        const tempDirScene = fs.mkdtempSync(
+          path.join(os.tmpdir(), 'initBehaviorDir-light-default-'),
+        );
+        const behaviorDirScene = path.join(
+          tempDirScene,
+          '.behavior',
+          'v2025_01_01.test-feature',
+        );
         const result = initBehaviorDir({
-          behaviorDir,
+          behaviorDir: behaviorDirScene,
           behaviorDirRel: '.behavior/v2025_01_01.test-feature',
         });
+        return { tempDir: tempDirScene, behaviorDir: behaviorDirScene, result };
+      });
+      afterAll(() =>
+        fs.rmSync(scene.tempDir, { recursive: true, force: true }),
+      );
 
+      then('creates light guard files for vision and blueprint', () => {
         // verify guard files created (without .light suffix)
-        expect(result.created).toContain('1.vision.guard');
-        expect(result.created).toContain('3.3.1.blueprint.product.guard');
+        expect(scene.result.created).toContain('1.vision.guard');
+        expect(scene.result.created).toContain('3.3.1.blueprint.product.guard');
 
         // verify files exist on disk
-        expect(fs.existsSync(path.join(behaviorDir, '1.vision.guard'))).toBe(
-          true,
-        );
+        expect(
+          fs.existsSync(path.join(scene.behaviorDir, '1.vision.guard')),
+        ).toBe(true);
         expect(
           fs.existsSync(
-            path.join(behaviorDir, '3.3.1.blueprint.product.guard'),
+            path.join(scene.behaviorDir, '3.3.1.blueprint.product.guard'),
           ),
         ).toBe(true);
 
         // verify no .light or .heavy suffix files created
-        expect(result.created).not.toContain('1.vision.guard.light');
-        expect(result.created).not.toContain('1.vision.guard.heavy');
+        expect(scene.result.created).not.toContain('1.vision.guard.light');
+        expect(scene.result.created).not.toContain('1.vision.guard.heavy');
       });
 
       then('blueprint guard has light self-reviews (6 reviews)', () => {
-        initBehaviorDir({
-          behaviorDir,
-          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
-        });
-
         const blueprintGuard = fs.readFileSync(
-          path.join(behaviorDir, '3.3.1.blueprint.product.guard'),
+          path.join(scene.behaviorDir, '3.3.1.blueprint.product.guard'),
           'utf-8',
         );
 
@@ -71,36 +137,228 @@ describe('initBehaviorDir.integration', () => {
         expect(blueprintGuard).not.toContain('has-questioned-premortem');
         expect(blueprintGuard).not.toContain('has-questioned-inverse');
         expect(blueprintGuard).not.toContain('has-questioned-devils-advocate');
+
+        // the wisher-how peer lane grades the criteria yield, since light has no criteria guard
+        expect(blueprintGuard).toContain('slug: wisher-how');
+        expect(blueprintGuard).toContain("--paths-with '$route/2.*.yield.md'");
+      });
+
+      then(
+        'vision, criteria, and blueprint stones point the writer at the wisher-how rule',
+        () => {
+          const getStoneText = (stone: string): string =>
+            fs.readFileSync(path.join(scene.behaviorDir, stone), 'utf-8');
+          const visionStone = getStoneText('1.vision.stone');
+          const criteriaStone = getStoneText('2.1.criteria.blackbox.stone');
+          const criteriaBlueprintStone = getStoneText(
+            '2.3.criteria.blueprint.stone',
+          );
+          const blueprintStone = getStoneText('3.3.1.blueprint.product.stone');
+
+          // the execution stones, read from their templates: each route size writes one of them
+          const executionStones = [
+            '5.1.execution.from_vision.stone',
+            '5.1.execution.phase0_to_phaseN.stone',
+          ].map((stone) =>
+            fs.readFileSync(path.join(__dirname, 'templates', stone), 'utf-8'),
+          );
+
+          // each stone names the rule at the moment the writer reads the wish
+          [
+            visionStone,
+            criteriaStone,
+            criteriaBlueprintStone,
+            blueprintStone,
+            ...executionStones,
+          ].forEach((stone) =>
+            expect(stone).toContain('(rule.forbid.trust-of-wisher-how)'),
+          );
+          expect(criteriaStone).toContain('strike any prior tool or poc');
+
+          // the vision stone names the table that each later stone defers to
+          [
+            visionStone,
+            criteriaBlueprintStone,
+            blueprintStone,
+            ...executionStones,
+          ].forEach((stone) =>
+            expect(stone).toContain("`## .the wisher's how`"),
+          );
+
+          // the vision stone outlines the table, with its three verdicts and the open-question link
+          expect(visionStone).toContain("## .the wisher's how\n");
+          expect(visionStone).toContain('keep, drop, or open');
+          expect(visionStone).toContain('open questions below as `[wisher]`');
+          expect(criteriaBlueprintStone).toContain('keep, drop, or open');
+
+          // the stone heads the writer reads, whole, for review
+          expect({
+            vision: visionStone.split('\n---\n')[0],
+            criteria: criteriaStone.split('\n---\n')[0],
+            criteriaBlueprint: criteriaBlueprintStone.split('\n---\n')[0],
+            blueprint: blueprintStone.split('\n---\n')[0],
+            executionFromVision: executionStones[0]!.split('\n---\n')[0],
+            executionPhase0ToPhaseN: executionStones[1]!.split('\n---\n')[0],
+          }).toMatchSnapshot();
+
+          // with no vision, the 2.3 and blueprint stones record the verdicts themselves
+          [criteriaBlueprintStone, blueprintStone].forEach((stone) =>
+            expect(stone).toContain('with no vision'),
+          );
+
+          // the later stones cite the vision yield, never the retired path
+          [
+            criteriaStone,
+            criteriaBlueprintStone,
+            blueprintStone,
+            ...executionStones,
+          ].forEach((stone) => {
+            expect(stone).toContain('1.vision.yield.md');
+            expect(stone).not.toContain('1.vision.md');
+          });
+        },
+      );
+
+      then('no template cites the retired vision path', () => {
+        // the vision stone emits 1.vision.yield.md; a cite of 1.vision.md points a writer at no file
+        const stale = fs
+          .readdirSync(path.join(__dirname, 'templates'), {
+            recursive: true,
+            withFileTypes: true,
+          })
+          .filter((entry) => entry.isFile())
+          .map((entry) => path.join(entry.parentPath, entry.name))
+          .filter((file) =>
+            fs.readFileSync(file, 'utf-8').includes('1.vision.md'),
+          );
+        expect(stale).toEqual([]);
+      });
+
+      then(
+        'every wisher-how lane loads the rule, its argument, and its worked case',
+        () => {
+          // .what = the brief paths a lane names, mapped from the linked role to its source
+          const asSourcePath = (input: { linked: string }): string =>
+            input.linked.replace(
+              '.agent/repo=bhuild/role=behaver/briefs/',
+              path.join(__dirname, '../../../domain.roles/behaver/briefs/'),
+            );
+          const lanes = (['light', 'heavy'] as const).flatMap((guard) =>
+            ['1.vision.guard', '3.3.1.blueprint.product.guard'].map((name) => {
+              const template = fs.readFileSync(
+                path.join(__dirname, 'templates', `${name}.${guard}`),
+                'utf-8',
+              );
+              const run = getRunOfLane({
+                template,
+                name: `${name}.${guard}`,
+                slug: 'wisher-how',
+              });
+              return {
+                rules: [...run.matchAll(/--rules '([^']+)'/g)].map(
+                  (m) => m[1]!,
+                ),
+                refs: [...run.matchAll(/--refs '(\.agent[^']+)'/g)].map(
+                  (m) => m[1]!,
+                ),
+              };
+            }),
+          );
+          expect(lanes).toHaveLength(4);
+          lanes.forEach((lane) => {
+            expect(lane.rules.map((p) => path.basename(p))).toEqual([
+              'rule.forbid.trust-of-wisher-how.md',
+            ]);
+            expect(lane.refs.map((p) => path.basename(p))).toEqual([
+              'rule.forbid.trust-of-wisher-how.reason.md',
+              'rule.forbid.trust-of-wisher-how.example=rhachet-760.md',
+            ]);
+            [...lane.rules, ...lane.refs].forEach((linked) =>
+              expect(fs.existsSync(asSourcePath({ linked }))).toBe(true),
+            );
+          });
+        },
+      );
+
+      then('the wisher-how blocks match across light and heavy', () => {
+        const readTemplate = (input: { name: string }): string =>
+          fs.readFileSync(
+            path.join(__dirname, 'templates', input.name),
+            'utf-8',
+          );
+
+        // the peer lanes and the vision self-review are one text per variant pair
+        [
+          { stem: '1.vision.guard', slug: 'wisher-how' },
+          { stem: '1.vision.guard', slug: 'has-restated-the-wisher-how' },
+          { stem: '3.3.1.blueprint.product.guard', slug: 'wisher-how' },
+        ].forEach(({ stem, slug }) => {
+          const light = getBlockOfSlug({
+            template: readTemplate({ name: `${stem}.light` }),
+            name: `${stem}.light`,
+            slug,
+          });
+          const heavy = getBlockOfSlug({
+            template: readTemplate({ name: `${stem}.heavy` }),
+            name: `${stem}.heavy`,
+            slug,
+          });
+          expect(light).toContain(slug);
+          expect(heavy).toEqual(light);
+
+          // the text the lane or reviewer reads, whole, for review: its run, flags, budget
+          expect({ stem, slug, block: light }).toMatchSnapshot();
+        });
+
+        // each self-review carries the strike test, the constraint check, and the inverse check
+        [
+          '1.vision.guard.light',
+          '1.vision.guard.heavy',
+          '2.1.criteria.blackbox.guard.heavy',
+        ].forEach((name) => {
+          const block = getBlockOfSlug({
+            template: readTemplate({ name }),
+            name,
+            slug: 'has-restated-the-wisher-how',
+          });
+          expect(block).toContain('strike the prior tool or poc from the repo');
+          expect(block).toContain(
+            'does a how the wisher tied to a domain why survive, stated with that why?',
+          );
+          expect(block).toContain('then check the inverse');
+          expect(block).toContain("`## .the wisher's how`");
+          expect(block).toContain('keep, drop, or open');
+
+          // the text the writer reads, whole, for review
+          expect({ name, block }).toMatchSnapshot();
+        });
       });
 
       then('criteria has no guard in light mode', () => {
-        const result = initBehaviorDir({
-          behaviorDir,
-          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
-        });
-
         // criteria guard not created in light mode
-        expect(result.created).not.toContain('2.1.criteria.blackbox.guard');
+        expect(scene.result.created).not.toContain(
+          '2.1.criteria.blackbox.guard',
+        );
         expect(
-          fs.existsSync(path.join(behaviorDir, '2.1.criteria.blackbox.guard')),
+          fs.existsSync(
+            path.join(scene.behaviorDir, '2.1.criteria.blackbox.guard'),
+          ),
         ).toBe(false);
       });
 
-      then('vision guard has light self-reviews (5 reviews)', () => {
-        initBehaviorDir({
-          behaviorDir,
-          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
-        });
-
+      then('vision guard has light self-reviews (7 reviews)', () => {
         const visionGuard = fs.readFileSync(
-          path.join(behaviorDir, '1.vision.guard'),
+          path.join(scene.behaviorDir, '1.vision.guard'),
           'utf-8',
         );
 
-        // light has 5 self-reviews: grounded-in-reality, experience-coverage,
-        // requirements, assumptions, questions
+        // light has 7 self-reviews: grounded-in-reality, experience-coverage, rendered-stdout,
+        // restated-the-wisher-how, requirements, assumptions, questions
+        expect(visionGuard).toContain('has-rendered-stdout');
         expect(visionGuard).toContain('has-grounded-in-reality');
         expect(visionGuard).toContain('has-experience-coverage');
+        expect(visionGuard).toContain('has-restated-the-wisher-how');
+        expect(visionGuard).toContain('slug: wisher-how');
         expect(visionGuard).toContain('has-questioned-requirements');
         expect(visionGuard).toContain('has-questioned-assumptions');
         expect(visionGuard).toContain('has-questioned-questions');
@@ -165,7 +423,7 @@ describe('initBehaviorDir.integration', () => {
         expect(result.created).not.toContain('1.vision.guard.heavy');
       });
 
-      then('vision guard has heavy self-reviews (10 reviews)', () => {
+      then('vision guard has heavy self-reviews (12 reviews)', () => {
         initBehaviorDir({
           behaviorDir,
           behaviorDirRel: '.behavior/v2025_01_01.test-feature',
@@ -177,7 +435,8 @@ describe('initBehaviorDir.integration', () => {
           'utf-8',
         );
 
-        // heavy has all 10 self-reviews, research-based ones too
+        // heavy has all 12 self-reviews, research-based ones too
+        expect(visionGuard).toContain('has-rendered-stdout');
         expect(visionGuard).toContain('has-grounded-in-reality');
         expect(visionGuard).toContain('has-experience-coverage');
         expect(visionGuard).toContain('has-questioned-fundamentals');
@@ -188,6 +447,8 @@ describe('initBehaviorDir.integration', () => {
         expect(visionGuard).toContain('has-questioned-premortem');
         expect(visionGuard).toContain('has-questioned-5whys');
         expect(visionGuard).toContain('has-questioned-questions');
+        expect(visionGuard).toContain('has-restated-the-wisher-how');
+        expect(visionGuard).toContain('slug: wisher-how');
 
         // heavy also carries the experience-coverage peer review + a reviewed? judge,
         // wired against the same widened glob as light (guard-variant-consistency)
@@ -199,7 +460,7 @@ describe('initBehaviorDir.integration', () => {
         expect(visionGuard).toContain('reviewed?');
       });
 
-      then('criteria guard has heavy self-reviews (4 reviews)', () => {
+      then('criteria guard has heavy self-reviews (5 reviews)', () => {
         initBehaviorDir({
           behaviorDir,
           behaviorDirRel: '.behavior/v2025_01_01.test-feature',
@@ -218,6 +479,7 @@ describe('initBehaviorDir.integration', () => {
         expect(criteriaGuard).toContain('has-questioned-devils-advocate');
         expect(criteriaGuard).toContain('has-questioned-counterexamples');
         expect(criteriaGuard).toContain('has-questioned-5whys');
+        expect(criteriaGuard).toContain('has-restated-the-wisher-how');
       });
 
       then('blueprint guard has heavy self-reviews (11 reviews)', () => {
@@ -245,6 +507,10 @@ describe('initBehaviorDir.integration', () => {
         expect(blueprintGuard).toContain('has-behavior-declaration-adherance');
         expect(blueprintGuard).toContain('has-role-standards-adherance');
         expect(blueprintGuard).toContain('has-role-standards-coverage');
+
+        // plus the wisher-how peer lane, which also grades the criteria yield
+        expect(blueprintGuard).toContain('slug: wisher-how');
+        expect(blueprintGuard).toContain("--paths-with '$route/2.*.yield.md'");
       });
     });
   });

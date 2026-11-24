@@ -18,7 +18,7 @@ reviews:
         double-check: does the verification checklist show every behavior from wish/vision has a test?
 
         - is every behavior in 0.wish.md covered?
-        - is every behavior in 1.vision.md covered?
+        - is every behavior in 1.vision.yield.md covered?
         - can you point to each test file in the checklist?
 
         **if any behavior lacks a test, write the test NOW.** do not pass this gate with gaps.

@@ -1,6 +1,6 @@
 distill factory upgrades needed for
 - $BEHAVIOR_DIR_REL/0.wish.md
-- $BEHAVIOR_DIR_REL/1.vision.md (if declared)
+- $BEHAVIOR_DIR_REL/1.vision.yield.md (if declared)
 
 based on factory research
 - $BEHAVIOR_DIR_REL/3.1.2.research.external.factory.testloops.*.yield.md (if declared)

@@ -3,7 +3,11 @@ declare the blueprint criteria (mechanism bounds) that satisfies the blackbox cr
 ref:
 - blackbox criteria $BEHAVIOR_DIR_REL/2.1.criteria.blackbox.md
 - wish $BEHAVIOR_DIR_REL/0.wish.md
-- vision $BEHAVIOR_DIR_REL/1.vision.md (if declared)
+- vision $BEHAVIOR_DIR_REL/1.vision.yield.md (if declared)
+
+a mechanism the wish carries is a how, not a bound: demand it only where the vision's
+`## .the wisher's how` table kept it, with its domain why (rule.forbid.trust-of-wisher-how).
+with no vision, state each how's keep, drop, or open verdict and domain why here.
 
 emit into $BEHAVIOR_DIR_REL/2.3.criteria.blueprint.yield.md
 

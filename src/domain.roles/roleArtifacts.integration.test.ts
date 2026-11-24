@@ -415,6 +415,14 @@ const asManifestsOfFitBoots = (input: {
 const CUE_CLAIMS_BEHAVER = [
   'you must evolve the contract to hold it before that stage passes',
   'grow the contract; never bolt an experience on outside it.',
+  'never trust their **how**.',
+  'strike the prior tool or poc from the repo. does each requirement still read, and still look right?',
+  'a how the wisher ties to a domain why is a constraint: keep it, stated with its why.',
+  'the verbs stand; only the inputs, defaults, and scope behind them are open.',
+  "`## .the wisher's how` table: the how · its domain restatement · keep, drop, or open · the domain why.",
+  'an open how is also a `[wisher]` open question.',
+  'are the evidence and its record: never a violation.',
+  'a verb the wisher asked for, dropped as a how.',
 ];
 
 /**
@@ -892,7 +900,13 @@ describe('roleArtifacts', () => {
       // 🔴 THE teeth. the failure names the seat and the path, so the fix is one
       //    read (rule.require.errors-name-the-fix)
       then('🔴 every boot entry lands on a brief that exists', () => {
-        expect(scenePaths.unlanded).toEqual([]);
+        expect(
+          scenePaths.unlanded.map(({ role, cites }) => ({
+            role,
+            cites,
+            fix: "point the entry at the brief's current path, or drop it from boot.yml",
+          })),
+        ).toEqual([]);
       });
 
       // a glob stands for whatever is there, so its lookup is its base dir and the
@@ -1148,6 +1162,12 @@ describe('roleArtifacts', () => {
           expect(booted.manifests.behaver).toMatch(
             /^behavior\.vision\/rule\.require\.experience-catalog-evolution\.reason\.md$/m,
           );
+          expect(booted.manifests.behaver).toMatch(
+            /^behavior\.wish\/rule\.forbid\.trust-of-wisher-how\.reason\.md$/m,
+          );
+          expect(booted.manifests.behaver).toMatch(
+            /^behavior\.wish\/rule\.forbid\.trust-of-wisher-how\.example=rhachet-760\.md$/m,
+          );
         },
       );
 
@@ -1181,6 +1201,9 @@ describe('roleArtifacts', () => {
         expect({ fit: 'behaver' in booted.payloads }).toEqual({ fit: true });
         expect(booted.payloads.behaver).toContain(
           'rule.require.experience-catalog-evolution',
+        );
+        expect(booted.payloads.behaver).toContain(
+          'rule.forbid.trust-of-wisher-how',
         );
       });
       ROLES_WITH_BUDGET.forEach((role) =>

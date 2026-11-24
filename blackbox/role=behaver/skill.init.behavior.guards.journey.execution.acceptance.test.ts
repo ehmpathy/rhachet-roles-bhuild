@@ -26,7 +26,10 @@ import { asSnapshotStable } from './.test/skill.init.behavior.utils';
 describe('skill.init.behavior.guards.journey.execution', () => {
   given('[case1] a heavy-guard behavior at its execution stone', () => {
     const scene = useBeforeAll(async () => {
-      const behavior = genGuardedBehaviorScene({ prefix: 'journey-execution' });
+      const behavior = genGuardedBehaviorScene({
+        guard: 'heavy',
+        prefix: 'journey-execution',
+      });
       const stone = '5.1.execution.phase0_to_phaseN';
 
       // drop the stones this suite never walks, so the drive's frontier is the execution
@@ -95,7 +98,7 @@ describe('skill.init.behavior.guards.journey.execution', () => {
 
     when('[t0] execution pass attempted without promises', () => {
       then('blocked by unpromised self-review', () => {
-        expect(scene.passWithoutPromises.code).not.toEqual(0);
+        expect(scene.passWithoutPromises.code).toEqual(2);
         const output = asCallOutput({ call: scene.passWithoutPromises });
         expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('review.self required');

@@ -8,7 +8,7 @@ how could this fail?
 
 reference
 - $BEHAVIOR_DIR_REL/0.wish.md
-- $BEHAVIOR_DIR_REL/1.vision.md (if declared)
+- $BEHAVIOR_DIR_REL/1.vision.yield.md (if declared)
 - $BEHAVIOR_DIR_REL/3.1.5.research.reflection.product.audience._.yield.md (if declared)
 - $BEHAVIOR_DIR_REL/3.1.5.research.reflection.product.rootcause._.yield.md (if declared)
 - $BEHAVIOR_DIR_REL/3.3.1.blueprint.product.yield.md (if declared)

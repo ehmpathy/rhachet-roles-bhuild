@@ -53,7 +53,7 @@ when you find a gap — while you write the playtest OR while you run it yoursel
 
 reference the below for full context
 - $BEHAVIOR_DIR_REL/0.wish.md
-- $BEHAVIOR_DIR_REL/1.vision.md
+- $BEHAVIOR_DIR_REL/1.vision.yield.md
 - $BEHAVIOR_DIR_REL/2.1.criteria.blackbox.md (if declared)
 
 ---

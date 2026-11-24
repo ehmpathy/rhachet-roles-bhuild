@@ -114,6 +114,13 @@ exports[`skill.init.behavior.guards.journey.vision given: [case1] a heavy-guard 
    │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r002._.given.by_peer.experience-coverage.md
    │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r002._.taken.by_self.experience-coverage.md
    │
+   ├─ r3: wisher-how (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r003._.given.by_peer.wisher-how.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r003._.taken.by_self.wisher-how.md
+   │
    ├─ ✓ judge.1 - allowed [time]
    │
    └─ ✓ judge.2 - allowed [time]
@@ -130,12 +137,18 @@ exports[`skill.init.behavior.guards.journey.vision given: [case1] a heavy-guard 
    │  │   │   ├─ 0 nitpicks ✓
    │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r001._.given.by_peer.dimensional-decomposition.md
    │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r001._.taken.by_self.dimensional-decomposition.md
-   │  │   └─ r2: experience-coverage (l1, 1/3)
+   │  │   ├─ r2: experience-coverage (l1, 1/3)
+   │  │   │   ├─ approved [time]
+   │  │   │   ├─ 0 blockers ✓
+   │  │   │   ├─ 0 nitpicks ✓
+   │  │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r002._.given.by_peer.experience-coverage.md
+   │  │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r002._.taken.by_self.experience-coverage.md
+   │  │   └─ r3: wisher-how (l1, 1/3)
    │  │       ├─ approved [time]
    │  │       ├─ 0 blockers ✓
    │  │       ├─ 0 nitpicks ✓
-   │  │       ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r002._.given.by_peer.experience-coverage.md
-   │  │       └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r002._.taken.by_self.experience-coverage.md
+   │  │       ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r003._.given.by_peer.wisher-how.md
+   │  │       └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r003._.taken.by_self.wisher-how.md
    │  └─ judges
    │      ├─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 7
    │      │   └─ finished [time] ✓
@@ -277,4 +290,190 @@ exports[`skill.init.behavior.guards.journey.vision given: [case1] a heavy-guard 
       │
       └─ or: remove \`brain:\` from the stone's guard, and inherit the brain deliberately
          └─ .behavior/v{DATE}.full-journey/1.vision.guard"
+`;
+
+exports[`skill.init.behavior.guards.journey.vision given: [case2.heavy] a heavy-guard vision whose wisher-how lane is stubbed to find a blocker when: [t0] vision pass attempted after promises and approval then: held by the wisher-how blocker 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+
+🦉 the way speaks for itself
+   │
+   ├─ r1: dimensional-decomposition (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r001._.given.by_peer.dimensional-decomposition.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r001._.taken.by_self.dimensional-decomposition.md
+   │
+   ├─ r2: experience-coverage (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r002._.given.by_peer.experience-coverage.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r002._.taken.by_self.experience-coverage.md
+   │
+   ├─ r3: wisher-how (l1, 1/3)
+   │   ├─ rejected [time]
+   │   ├─ 1 blocker 🔴
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r003._.given.by_peer.wisher-how.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r003._.taken.by_self.wisher-how.md
+   │
+   ├─ ✗ judge.1 - blocked [time]
+   │
+   └─ ✓ judge.2 - allowed [time]
+
+🗿 route.stone.set
+   ├─ stone = 1.vision
+   ├─ passage = blocked
+   ├─ reason = blockers exceed threshold (1 > 0)
+   └─ guard
+      ├─ artifacts
+      ├─ reviews
+      │   ├─ r1: dimensional-decomposition (l1, 1/3)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r001._.given.by_peer.dimensional-decomposition.md
+      │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r001._.taken.by_self.dimensional-decomposition.md
+      │   ├─ r2: experience-coverage (l1, 1/3)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r002._.given.by_peer.experience-coverage.md
+      │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r002._.taken.by_self.experience-coverage.md
+      │   └─ r3: wisher-how (l1, 1/3)
+      │       ├─ rejected [time]
+      │       ├─ 1 blocker 🔴
+      │       ├─ 0 nitpicks ✓
+      │       ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r003._.given.by_peer.wisher-how.md
+      │       └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r003._.taken.by_self.wisher-how.md
+      └─ judges
+          ├─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 7
+          │   ├─ finished [time] ✗
+          │   └─ reason: blockers exceed threshold (1 > 0)
+          └─ j2: $rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
+              └─ finished [time] ✓
+🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+   └─ ✋ blocked by constraints
+
+🦉 l1 pours 3 lanes
+   ├─ r1:dimensional-decomposition
+   ├─ r2:experience-coverage
+   └─ r3:wisher-how
+
+🪶 judge 1
+   ├─ stdout
+   │  ├─
+   │  │
+   │  │  🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.judge
+   │  │  
+   │  │  passed: false
+   │  │  reason: blockers exceed threshold (1 > 0)
+   │  │
+   │  └─
+   ├─ stderr
+   │  ├─
+   │  │
+   │  │  
+   │  │  🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.judge
+   │  │     └─ ✋ blocked by constraints
+   │  │  
+   │  │
+   │  └─
+   └─ passage blocked
+      ├─ blocked by constraints
+      └─ exit code: 2 ✋"
+`;
+
+exports[`skill.init.behavior.guards.journey.vision given: [case2.light] a light-guard vision whose wisher-how lane is stubbed to find a blocker when: [t0] vision pass attempted after promises and approval then: held by the wisher-how blocker 1`] = `
+"🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+
+🦉 the way speaks for itself
+   │
+   ├─ r1: dimensional-decomposition (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r001._.given.by_peer.dimensional-decomposition.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r001._.taken.by_self.dimensional-decomposition.md
+   │
+   ├─ r2: experience-coverage (l1, 1/3)
+   │   ├─ approved [time]
+   │   ├─ 0 blockers ✓
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r002._.given.by_peer.experience-coverage.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r002._.taken.by_self.experience-coverage.md
+   │
+   ├─ r3: wisher-how (l1, 1/3)
+   │   ├─ rejected [time]
+   │   ├─ 1 blocker 🔴
+   │   ├─ 0 nitpicks ✓
+   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r003._.given.by_peer.wisher-how.md
+   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r003._.taken.by_self.wisher-how.md
+   │
+   ├─ ✗ judge.1 - blocked [time]
+   │
+   └─ ✓ judge.2 - allowed [time]
+
+🗿 route.stone.set
+   ├─ stone = 1.vision
+   ├─ passage = blocked
+   ├─ reason = blockers exceed threshold (1 > 0)
+   └─ guard
+      ├─ artifacts
+      ├─ reviews
+      │   ├─ r1: dimensional-decomposition (l1, 1/3)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r001._.given.by_peer.dimensional-decomposition.md
+      │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r001._.taken.by_self.dimensional-decomposition.md
+      │   ├─ r2: experience-coverage (l1, 1/3)
+      │   │   ├─ approved [time]
+      │   │   ├─ 0 blockers ✓
+      │   │   ├─ 0 nitpicks ✓
+      │   │   ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r002._.given.by_peer.experience-coverage.md
+      │   │   └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r002._.taken.by_self.experience-coverage.md
+      │   └─ r3: wisher-how (l1, 1/3)
+      │       ├─ rejected [time]
+      │       ├─ 1 blocker 🔴
+      │       ├─ 0 nitpicks ✓
+      │       ├─ given: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r003._.given.by_peer.wisher-how.md
+      │       └─ taken: .behavior/v{DATE}.full-journey/.reviews/peer/1.vision._.review.i001.{HASH}.r003._.taken.by_self.wisher-how.md
+      └─ judges
+          ├─ j1: $rhachet run --repo bhrain --skill route.stone.judge --mechanism reviewed? --stone $stone --route $route --allow-blockers 0 --allow-nitpicks 7
+          │   ├─ finished [time] ✗
+          │   └─ reason: blockers exceed threshold (1 > 0)
+          └─ j2: $rhachet run --repo bhrain --skill route.stone.judge --mechanism approved? --stone $stone --route $route
+              └─ finished [time] ✓
+🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.set
+   └─ ✋ blocked by constraints
+
+🦉 l1 pours 3 lanes
+   ├─ r1:dimensional-decomposition
+   ├─ r2:experience-coverage
+   └─ r3:wisher-how
+
+🪶 judge 1
+   ├─ stdout
+   │  ├─
+   │  │
+   │  │  🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.judge
+   │  │  
+   │  │  passed: false
+   │  │  reason: blockers exceed threshold (1 > 0)
+   │  │
+   │  └─
+   ├─ stderr
+   │  ├─
+   │  │
+   │  │  
+   │  │  🪨 run solid skill repo=bhrain/role=driver/skill=route.stone.judge
+   │  │     └─ ✋ blocked by constraints
+   │  │  
+   │  │
+   │  └─
+   └─ passage blocked
+      ├─ blocked by constraints
+      └─ exit code: 2 ✋"
 `;
