@@ -685,6 +685,19 @@ export const delStaleTestServers = (input?: { socket?: string }): number => {
       if (!isErrProcAbsent(error)) throw error;
     }
   }
+
+  // .why we wait for each pid to LEAVE the process table:
+  //      process.kill returns once the signal is queued, not once the process
+  //      is gone. a caller that reads /proc at once can still find the killed
+  //      server there — ci caught a sweep that reaped a pid and an assert, 4ms
+  //      later, that still listed it. so converge, as delTmuxServer does.
+  for (let attempt = 0; attempt < 40; attempt += 1) {
+    const pidsLeft = getTestServerPids(input).filter((pid) =>
+      pids.includes(pid),
+    );
+    if (pidsLeft.length === 0) break;
+    execFileSync('sleep', ['0.05'], { stdio: 'ignore', timeout: 5_000 });
+  }
   return reaped;
 };
 
