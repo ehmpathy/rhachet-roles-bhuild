@@ -59,7 +59,8 @@ the bar is "every critipath is demonstrated", not "every conceivable case is enu
 - a case that gives only a narrative or only a `[tn]` (not both) is a **blocker** — the two
   forms catch different gaps.
 - a case written from the system's point of view instead of an actor's is a **nitpick** (it
-  restates a behavior, not an experience).
+  restates a behavior, not an experience). the declared `who` + `came for` header is a separate
+  field, graded by `rule.require.declared-experience-audience`.
 
 ## .enforcement
 

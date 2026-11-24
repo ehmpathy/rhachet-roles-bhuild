@@ -53,13 +53,16 @@ bonus, nitpick)?
 
 ## `1.vision.yield.appendix.experience.case=001.book-my-spot.md` — happy critipath
 
+> **who** — kai, a surfer who knows the break and tide he wants
+> **came for** — his exact spot, at his exact time, held
+
 **narrative**
 
 kai wants *his* session: mavericks, dawn, the tide he can make. he runs
 `booklesson --surfer kai --spot mavericks --time 6am`. the school holds his exact pick and
-confirms. kai glides straight to success. this is the route the school lives on: surf is
-time-and-place specific, so if specific-book broke, an auto-assign to a random cove on the wrong
-tide is no workable fallback — kai cannot get the session he came for.
+confirms. kai glides straight to success. this is the route the school lives on. surf is
+time-and-place specific. if specific-book broke, an auto-assign to a random cove on the wrong tide
+is no workable fallback. kai could not get the session he came for.
 
 **bdd `[tn]` timeline**
 
@@ -74,6 +77,9 @@ given a surfer "kai" and an open spot "mavericks" at 6am
 ---
 
 ## `1.vision.yield.appendix.experience.case=002.book-a-closed-spot.md` — sharp critipath (fails safe)
+
+> **who** — kai, a surfer who knows the break and tide he wants
+> **came for** — a session at pipeline, which is closed for the season
 
 **narrative**
 
@@ -113,6 +119,9 @@ given a surfer "kai" and a closed spot "pipeline"
 
 ## `1.vision.yield.appendix.experience.case=003.take-the-nearest-slot.md` — happy alterpath
 
+> **who** — jo, a surfer who does not mind where she paddles out
+> **came for** — any open slot on saturday, with no spot to pick
+
 **narrative**
 
 jo is easy — she just wants in the water saturday, does not care where. she skips the spot
@@ -138,6 +147,9 @@ given a surfer "jo" and open spots, the nearest is "trestles" at 7am
 ---
 
 ## `1.vision.yield.appendix.experience.case=004.mistype-a-spot-name.md` — sharp alterpath
+
+> **who** — jo, a surfer who does not mind where she paddles out
+> **came for** — a slot at mavericks, typed in a hurry
 
 **narrative**
 

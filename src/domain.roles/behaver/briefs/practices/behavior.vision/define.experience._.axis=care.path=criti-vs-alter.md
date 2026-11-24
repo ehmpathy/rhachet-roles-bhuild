@@ -3,7 +3,7 @@
 ## .what
 
 **critipath vs alterpath** is the **care** axis of an experience — how much we care that a
-path is demonstrated. one number sets care — the path's **severity** if it broke:
+demo shows the path. one number sets care — the path's **severity** if it broke:
 
 ```
 ⭐ critipath — failure INTOLERABLE      🌙 alterpath — failure DEFERRABLE
@@ -46,7 +46,7 @@ wrong question. the right one is **is the fallback workable?** = is `freq × cos
 ### 🟡 severity is an AGGREGATE, never per-incident
 
 when `grove open` breaks (beaver table below), support **does** hand-load the trees — each beaver
-gets their grove. the failure is tolerated incident by incident. it is intolerable only in **sum**.
+gets their grove. support tolerates the failure incident by incident. it is intolerable only in **sum**.
 
 | you ask | you get |
 |---|---|
@@ -93,8 +93,8 @@ the test approximates `freq × cost`, and the two **diverge** at the boundary ab
 case has no workable route around a break, so **the test says critipath**. `0 × ∞ = 0`, so **the
 definition says not critical**.
 
-⇒ when they disagree, the product rules. reach for the test to move fast; reach for `freq × cost`
-at `freq = 0` or `cost = ∞`.
+⇒ when they disagree, the product rules. reach for the test to move fast. at `freq = 0`
+or `cost = ∞`, reach for `freq × cost`.
 
 🟡 so `critipath` is **not** "no workable way around a break". that promotes the heuristic to the
 definition and inherits its blind spot.
@@ -108,9 +108,6 @@ the **repair** is what defers:
 |---|---|---|
 | ⭐ **critipath** | none reaches the goal | **forced** — the actor is stopped until it lands |
 | 🌙 **alterpath** | immediate — take the fallback | **deferrable** |
-
-⇒ the same word governs the **demo**: a critipath demo cannot be deferred (**blocker**); an
-alterpath demo can (**nitpick**).
 
 ## .an alterpath is not "a lesser feature"
 

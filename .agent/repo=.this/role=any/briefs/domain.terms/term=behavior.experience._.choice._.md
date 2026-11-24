@@ -33,7 +33,7 @@ gap census. the boundary is right; its own cluster is owed.
 | `positive` / `negative` / `seam` (as a taxonomy) | `sharp` | machine-side vocab; survive only as a hunt-aid |
 | `filled` (as a verdict) | `demoed` / `itemized` | conflated existence with coverage |
 | `gap` (as a verdict) | `itemized` | a cell on record with no demo |
-| `hazard` (as the feel discriminator) | `edge` | 🔴 **disputed and closed 2026-09-05** — see `.reason` |
+| `hazard` (as the feel discriminator) | `edge` | 🔴 a dispute settled this — see `.reason` |
 
 ## .the one-name principle
 

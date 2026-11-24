@@ -9,6 +9,7 @@ describe('computeOutputTree', () => {
         created: ['0.wish.md', '1.vision.md'],
         kept: [],
         updated: [],
+        drifted: [],
       });
 
       then('header is "🦫 oh, behave!"', () => {
@@ -28,6 +29,7 @@ describe('computeOutputTree', () => {
         created: [],
         kept: ['0.wish.md', '1.vision.md'],
         updated: [],
+        drifted: [],
       });
 
       then('all lines show "✓" prefix', () => {
@@ -43,6 +45,7 @@ describe('computeOutputTree', () => {
         created: [],
         kept: [],
         updated: ['0.wish.md', '1.vision.md'],
+        drifted: [],
       });
 
       then('all lines show "↻" prefix', () => {
@@ -58,6 +61,7 @@ describe('computeOutputTree', () => {
         created: ['1.vision.md'],
         kept: ['0.wish.md'],
         updated: [],
+        drifted: [],
       });
 
       then('correct symbol per file', () => {
@@ -74,12 +78,34 @@ describe('computeOutputTree', () => {
     });
   });
 
+  given('a kept file drifted from its template', () => {
+    when('computeOutputTree is called', () => {
+      const result = computeOutputTree({
+        created: [],
+        kept: ['0.wish.md', '1.vision.guard'],
+        updated: [],
+        drifted: ['1.vision.guard'],
+      });
+
+      then('the drifted row carries the mark after its name', () => {
+        expect(result).toContain(
+          '└─ ✓ 1.vision.guard  ← drifted from its template, see below',
+        );
+      });
+
+      then('a current kept row carries no mark', () => {
+        expect(result).toContain('├─ ✓ 0.wish.md\n');
+      });
+    });
+  });
+
   given('multiple files', () => {
     when('computeOutputTree is called', () => {
       const result = computeOutputTree({
         created: ['a.md', 'b.md', 'c.md'],
         kept: [],
         updated: [],
+        drifted: [],
       });
 
       then('uses ├─ for non-last items', () => {
@@ -99,6 +125,7 @@ describe('computeOutputTree', () => {
         created: [],
         kept: [],
         updated: [],
+        drifted: [],
       });
 
       then('returns header only', () => {
@@ -113,6 +140,7 @@ describe('computeOutputTree', () => {
         created: ['0.wish.md'],
         kept: [],
         updated: [],
+        drifted: [],
       });
 
       then('uses └─ for the only item', () => {

@@ -11,7 +11,7 @@
 #         one ssh hop away. that gap has cost this fleet whole days: five
 #         crews sat at one stone with the same absent-key malfunction.
 #
-# ⚠️ .why this is NOT `git.grove.auth`
+# 🟡 .why this is NOT `git.grove.auth`
 #
 #   auth answers "who is this machine logged in as?" — a browser, a url, a
 #   code, a brain. this answers "what secrets can a clone on this machine
@@ -38,7 +38,7 @@
 #   --vault    storage vault                                 [default: os.secure]
 #   --grant    keyrack's grant mechanism         [default: PERMANENT_VIA_REPLICA]
 #
-# ⚠️ .the READ half is the CALLER's, and that is not an oversight
+# 🟡 .the READ half is the CALLER's, and that is not an oversight
 #
 #   `keyrack --org` accepts only `@this` — the org of the repo you are stood
 #   in — so BOTH halves are cwd-bound. you read from a LOCAL repo of that
@@ -73,7 +73,7 @@ value=""
 # defaults match what the extant keys on this fleet already carry, so the
 # bare invocation does the common-case work.
 #
-# ⚠️ `--grant` names keyrack's GRANT MECHANISM. it is spelled `--grant` here
+# 🟡 `--grant` names keyrack's GRANT MECHANISM. it is spelled `--grant` here
 #    rather than `--mech` because keyrack's own help calls it a "grant
 #    mechanism", and `--mech` is this fleet's word for WHICH mechanism a
 #    skill performs. one word, one sense.
@@ -93,18 +93,18 @@ while [[ $# -gt 0 ]]; do
     --skill|--repo|--role) shift 2 ;;
     --help|-h|help) awk 'NR<=2 { next } /^####/ { exit } { sub(/^# ?/, ""); print }' "${BASH_SOURCE[0]}"; exit 0 ;;
 
-    # ⚠️ FAIL LOUD — never shift an unknown flag away (rule.forbid.failhide).
+    # 🟡 FAIL LOUD — never shift an unknown flag away (rule.forbid.failhide).
     #    duct.send ate `--anyway`, then `--await`, and the second left a tree
     #    sprouted with no behavior. a dropped flag here would set a key under
     #    terms the caller never asked for, and report success.
     -*)
-      echo "✋ git.grove.keyrack: unknown arg '$1'" >&2
+      echo "✋ ConstraintError: git.grove.keyrack: unknown arg '$1'" >&2
       echo "   known: --org --key --env --value --owner --vault --grant" >&2
       exit 2 ;;
     *)
       if [[ -z "$verb" ]]; then verb="$1"; shift; continue; fi
       if [[ -n "$grove" ]]; then
-        echo "✋ git.grove.keyrack: more than one grove given ('$grove', '$1')" >&2
+        echo "✋ ConstraintError: git.grove.keyrack: more than one grove given ('$grove', '$1')" >&2
         exit 2
       fi
       grove="$1"; shift ;;
@@ -112,33 +112,33 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "$verb" ]]; then
-  echo "✋ git.grove.keyrack: a verb is required" >&2
+  echo "✋ ConstraintError: git.grove.keyrack: a verb is required" >&2
   echo "   known: set" >&2
   echo "   e.g. rhx keyrack get --owner ehmpath --key K --env prep --value \\" >&2
   echo "          | rhx git.grove.keyrack set grove-1 --org ehmpathy --key K --env prep --value @stdin" >&2
   exit 2
 fi
 if [[ "$verb" != "set" ]]; then
-  echo "✋ git.grove.keyrack: unknown verb '$verb'" >&2
+  echo "✋ ConstraintError: git.grove.keyrack: unknown verb '$verb'" >&2
   echo "   known: set" >&2
   echo "   why: a READ back off a grove would print a secret onto this box's" >&2
   echo "        terminal, so there is deliberately no 'get' here." >&2
   exit 2
 fi
 if [[ -z "$grove" ]]; then
-  echo "✋ git.grove.keyrack: a grove is required" >&2
+  echo "✋ ConstraintError: git.grove.keyrack: a grove is required" >&2
   echo "   e.g. rhx git.grove.keyrack set grove-1 --org ehmpathy ..." >&2
   exit 2
 fi
 if [[ -z "$org" || -z "$key" || -z "$env" ]]; then
-  echo "✋ git.grove.keyrack: --org, --key, and --env are all required" >&2
+  echo "✋ ConstraintError: git.grove.keyrack: --org, --key, and --env are all required" >&2
   echo "   e.g. rhx keyrack get --owner ehmpath --key OPENROUTER_API_KEY --env prep --value \\" >&2
   echo "          | rhx git.grove.keyrack set $grove \\" >&2
   echo "              --org ehmpathy --key OPENROUTER_API_KEY --env prep --value @stdin" >&2
   exit 2
 fi
 
-# ⚠️ REFUSE a literal value. @stdin is the only accepted form.
+# 🟡 REFUSE a literal value. @stdin is the only accepted form.
 #
 # .why = an argv is not private. it is world-readable on the box for the life
 #        of the process (`ps aux`), it lands in the caller's shell history,
@@ -150,13 +150,13 @@ fi
 #        (git.commit.set -m @stdin, sedreplace --old @stdin), so this is a
 #        reuse rather than a coinage.
 if [[ -z "$value" ]]; then
-  echo "✋ git.grove.keyrack: --value is required" >&2
+  echo "✋ ConstraintError: git.grove.keyrack: --value is required" >&2
   echo "   and it must be @stdin — pipe the value in:" >&2
   echo "     rhx keyrack get --owner ehmpath --key $key --env $env --value | rhx git.grove.keyrack set ..." >&2
   exit 2
 fi
 if [[ "$value" != "@stdin" ]]; then
-  echo "✋ git.grove.keyrack: --value must be @stdin, never a literal" >&2
+  echo "✋ ConstraintError: git.grove.keyrack: --value must be @stdin, never a literal" >&2
   echo "   why: an argv is world-readable on this box (ps), lands in shell" >&2
   echo "        history, and rides into any log that echoes the command." >&2
   echo "        a secret that reaches argv is a secret you must rotate." >&2
@@ -166,10 +166,10 @@ if [[ "$value" != "@stdin" ]]; then
   exit 2
 fi
 
-# ⚠️ a tty on stdin means NOBODY piped a value, so the read below would hang
+# 🟡 a tty on stdin means NOBODY piped a value, so the read below would hang
 #    forever, on a human who was never asked. fail-fast instead.
 if [[ -t 0 ]]; then
-  echo "✋ git.grove.keyrack: --value @stdin, but stdin is a terminal" >&2
+  echo "✋ ConstraintError: git.grove.keyrack: --value @stdin, but stdin is a terminal" >&2
   echo "   naught was piped in, so there is no value to push." >&2
   exit 2
 fi
@@ -225,10 +225,10 @@ __grove_login_sh() {
 secret="$(cat)"
 secret="${secret%$'\n'}"
 if [[ -z "$secret" ]]; then
-  echo "✋ git.grove.keyrack: the piped value is empty" >&2
+  echo "✋ ConstraintError: git.grove.keyrack: the piped value is empty" >&2
   echo "   the read that fed this pipe produced no bytes — check it first:" >&2
   echo "     rhx keyrack get --owner ehmpath --key $key --env $env --value | wc -c" >&2
-  echo "   ⚠️ a LOCKED key prints its tip and pipes as ZERO bytes, so 'locked'" >&2
+  echo "   🟡 a LOCKED key prints its tip and pipes as ZERO bytes, so 'locked'" >&2
   echo "      and 'absent' look identical downstream. unlock it first:" >&2
   echo "     rhx keyrack unlock --owner ehmpath --env $env --key $key" >&2
   exit 2
@@ -238,11 +238,13 @@ echo "🦫 chew on it"
 echo ""
 echo "🔑 git.grove.keyrack set $grove"
 echo "   ├─ 🌳 grove: ${host:-this box}"
-echo "   ├─ 🏛️  org: $org"
+echo "   ├─ 🏢 org: $org"
 echo "   ├─ 🔑 key: $key"
 echo "   ├─ 🌍 env: $env"
 echo "   ├─ 👤 owner: $keyrack_owner"
-echo "   └─ 📏 value: ${#secret} bytes (never printed)"
+secret_unit="bytes"
+if [[ ${#secret} -eq 1 ]]; then secret_unit="byte"; fi
+echo "   └─ 📏 value: ${#secret} $secret_unit (never printed)"
 echo ""
 
 # ── find a repo of this org, on the grove ──────────────────────────
@@ -251,7 +253,7 @@ echo ""
 #        .agent/keyrack.yml. so the set has nowhere to happen but inside a
 #        repo of the target org.
 #
-# ⚠️ .the FIRST repo is not the same as a USABLE one — do not `head -1`
+# 🟡 .the FIRST repo is not the same as a USABLE one — do not `head -1`
 #
 #   a repo's `.agent/keyrack.yml` carries an `extends:` list, and those
 #   dep manifests are NOT in the repo. they arrive from `node_modules`,
@@ -268,9 +270,32 @@ echo ""
 #   so: enumerate EVERY candidate, probe each for a resolved chain, and
 #   take the first that answers. a skipped repo is reported by name, so
 #   an org whose repos are all uninstalled says exactly that.
+# ── reach the grove ────────────────────────────────────────────────
+#
+# 🟡 .why = every read below ends `|| true`, so an ssh that never connects
+#           returns an empty probe — and the discovery would then report
+#           "no repo of org on <grove>". true of what it read, false of the
+#           grove: `term=false-report`. so prove the hop first, and fail
+#           loud on it. `BatchMode=yes` refuses a password prompt that would
+#           otherwise hang on a human who was never asked.
+if [[ -n "$host" ]]; then
+  echo "🔌 reach the grove"
+  if ! ssh_err="$(ssh -n -o ConnectTimeout=10 -o BatchMode=yes "$host" true 2>&1)"; then
+    echo "   └─ 💥 unreachable: $host" >&2
+    echo "" >&2
+    echo "💥 MalfunctionError: git.grove.keyrack: cannot reach grove '$host' over ssh" >&2
+    echo "   ssh said: ${ssh_err%%$'\n'*}" >&2
+    echo "   fix: check the grove is up and its alias resolves —" >&2
+    echo "     ssh -o BatchMode=yes $host true" >&2
+    exit 1
+  fi
+  echo "   └─ 🟢 reached $host"
+  echo ""
+fi
+
 echo "🔎 a repo of '$org' on the grove"
 #
-# ⚠️ .the WORKTREES are one level deeper, and they are the INSTALLED ones
+# 🟡 .the WORKTREES are one level deeper, and they are the INSTALLED ones
 #
 #   `~/git/<org>/<repo>` is the base clone. it is fetched for reference and
 #   is routinely never installed. the work happens in a WORKTREE, at
@@ -305,7 +330,7 @@ if [[ -z "$repo_path" ]]; then
   if (( repo_skipped > 0 )); then
     echo "   └─ ✋ $repo_skipped repo(s) of '$org', not one of them installed" >&2
     echo "" >&2
-    echo "✋ git.grove.keyrack: no INSTALLED repo of org '$org' on ${host:-this box}" >&2
+    echo "✋ ConstraintError: git.grove.keyrack: no INSTALLED repo of org '$org' on ${host:-this box}" >&2
     echo "   why: a repo's .agent/keyrack.yml extends dep manifests that live in" >&2
     echo "        node_modules and are materialized by \`rhachet init\`. an" >&2
     echo "        uninstalled clone has a chain that dangles, so \`keyrack set\`" >&2
@@ -316,7 +341,7 @@ if [[ -z "$repo_path" ]]; then
   fi
   echo "   └─ ✋ none found under ~/git/$org/" >&2
   echo "" >&2
-  echo "✋ git.grove.keyrack: no repo of org '$org' on ${host:-this box}" >&2
+  echo "✋ ConstraintError: git.grove.keyrack: no repo of org '$org' on ${host:-this box}" >&2
   echo "   why: keyrack's --org accepts only @this, so the set must run INSIDE" >&2
   echo "        a repo of that org. there is none to run it in." >&2
   echo "   fix: clone one there first, e.g." >&2
@@ -325,7 +350,7 @@ if [[ -z "$repo_path" ]]; then
 fi
 echo "   ├─ found: $repo_path"
 
-# ⚠️ VERIFY the org rather than trust the path.
+# 🟡 VERIFY the org rather than trust the path.
 #
 # .why = ~/git/<org>/<repo> is a convention, not a guarantee. a repo parked
 #        under ehmpathy/ is not obliged to DECLARE org: ehmpathy, and if it
@@ -337,14 +362,14 @@ org_declared="$(echo "$org_declared" | tr -d '[:space:]')"
 if [[ -z "$org_declared" ]]; then
   echo "   └─ ✋ it declares no org" >&2
   echo "" >&2
-  echo "✋ git.grove.keyrack: '$repo_path' has no org in .agent/keyrack.yml" >&2
+  echo "✋ ConstraintError: git.grove.keyrack: '$repo_path' has no org in .agent/keyrack.yml" >&2
   echo "   --org @this would derive nought there, so the set is not attempted." >&2
   exit 2
 fi
 if [[ "$org_declared" != "$org" ]]; then
   echo "   └─ ✋ it declares org '$org_declared', not '$org'" >&2
   echo "" >&2
-  echo "✋ git.grove.keyrack: the repo's org does not match --org" >&2
+  echo "✋ ConstraintError: git.grove.keyrack: the repo's org does not match --org" >&2
   echo "   asked for: $org" >&2
   echo "   repo says: $org_declared   ($repo_path)" >&2
   echo "   why: --org @this reads THIS field, so the set would have landed on" >&2
@@ -356,7 +381,7 @@ echo ""
 
 # ── the set ────────────────────────────────────────────────────────
 #
-# ⚠️ --mech is REQUIRED on the remote side, and not by our choice. `keyrack
+# 🟡 --mech is REQUIRED on the remote side, and not by our choice. `keyrack
 #    set` asks for the grant mechanism interactively, and refuses to when
 #    stdin is not a terminal — which it never is here, because stdin carries
 #    the value. measured 2026-09-03:
@@ -369,11 +394,12 @@ set_out="$(printf '%s' "$secret" | __grove_login_sh "cd '$repo_path' && rhx keyr
 if [[ $set_rc -ne 0 ]]; then
   echo "   └─ 💥 the set failed" >&2
   echo "" >&2
-  echo "💥 git.grove.keyrack: keyrack set failed on ${host:-this box}" >&2
+  echo "💥 MalfunctionError: git.grove.keyrack: keyrack set failed on ${host:-this box}" >&2
   echo "$set_out" | sed 's/^/   /' >&2
   exit 1
 fi
-echo "$set_out" | sed 's/^/   │  /'
+# the first line of keyrack's own tree hangs off a branch; the rest nest under it
+echo "$set_out" | awk 'NR == 1 { print "   ├─ " $0; next } { print "   │  " $0 }'
 
 # ── VERIFY the set, by read-back ───────────────────────────────────
 #
@@ -391,7 +417,9 @@ echo "   ├─ 🔍 read it back to prove the VALUE landed, not merely the conf
 want_hash="$(printf '%s' "$secret" | sha256sum | cut -d' ' -f1)"
 got_hash=""
 got_rc=0
-got_hash="$(__grove_login_sh "cd '$repo_path' && rhx keyrack unlock --owner '$keyrack_owner' --env '$env' --key '$key' >/dev/null 2>&1; rhx keyrack get --owner '$keyrack_owner' --key '$key' --env '$env' --value 2>/dev/null | sha256sum | cut -d' ' -f1")" || got_rc=$?
+# pipefail: without it the pipe's status is cut's, so a refused get reads as zero bytes and is
+# reported as "stored nought" — a definite claim, where the truth is "unknown"
+got_hash="$(__grove_login_sh "set -o pipefail; cd '$repo_path' && rhx keyrack unlock --owner '$keyrack_owner' --env '$env' --key '$key' >/dev/null 2>&1; rhx keyrack get --owner '$keyrack_owner' --key '$key' --env '$env' --value 2>/dev/null | sha256sum | cut -d' ' -f1")" || got_rc=$?
 got_hash="$(echo "$got_hash" | tr -d '[:space:]')"
 
 # the hash of an EMPTY read — a locked or absent key prints a tip rather than
@@ -402,8 +430,8 @@ empty_hash="$(printf '' | sha256sum | cut -d' ' -f1)"
 if [[ $got_rc -ne 0 || -z "$got_hash" ]]; then
   echo "   └─ 💥 could not read the key back" >&2
   echo "" >&2
-  echo "💥 git.grove.keyrack: the set reported success, and the read-back failed" >&2
-  echo "   ⚠️ the key's state on ${host:-this box} is UNKNOWN — do not assume it took." >&2
+  echo "💥 MalfunctionError: git.grove.keyrack: the set reported success, and the read-back failed" >&2
+  echo "   🟡 the key's state on ${host:-this box} is UNKNOWN — do not assume it took." >&2
   echo "   check by hand:" >&2
   echo "     cd $repo_path && rhx keyrack get --owner $keyrack_owner --key $key --env $env --value | wc -c" >&2
   exit 1
@@ -411,7 +439,7 @@ fi
 if [[ "$got_hash" == "$empty_hash" ]]; then
   echo "   └─ 💥 the key reads back EMPTY" >&2
   echo "" >&2
-  echo "💥 git.grove.keyrack: the set reported success and stored nought" >&2
+  echo "💥 MalfunctionError: git.grove.keyrack: the set reported success and stored nought" >&2
   echo "   the key is configured on the grove, and its value is zero bytes." >&2
   echo "   so a clone there will fail on an absent key, with a rack that LOOKS set." >&2
   exit 1
@@ -419,7 +447,7 @@ fi
 if [[ "$got_hash" != "$want_hash" ]]; then
   echo "   └─ 💥 the value that landed is NOT the value sent" >&2
   echo "" >&2
-  echo "💥 git.grove.keyrack: the read-back does not match" >&2
+  echo "💥 MalfunctionError: git.grove.keyrack: the read-back does not match" >&2
   echo "   sent:   ${want_hash:0:16}…  (${#secret} bytes)" >&2
   echo "   landed: ${got_hash:0:16}…" >&2
   echo "   likely: the value was mangled in transit — a final newline, or a" >&2

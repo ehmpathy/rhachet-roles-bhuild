@@ -15,9 +15,8 @@ ehmpathy/rhachet-roles-bhrain
 provenance of the coinage on this route, and the evidence bhuild measured. it is a `.reason`
 attached to another repo's word, never a second declaration of it.
 
-🟡 **found 2026-09-08, on the `v0.34.0` release read.** bhuild wrote this cluster 2026-09-06, at
-the identical path and boundary, before bhrain distilled its own. the two agree on the concept and
-part on two particulars — bhrain's canon governs both:
+🟡 **two clusters sit at the identical path and boundary**, one per repo. they agree on the concept
+and part on two particulars — bhrain's canon governs both (the collision record: `.reason`):
 
 | | bhuild wrote | bhrain declares | canon |
 |---|---|---|---|

@@ -6,7 +6,7 @@ prove the deliverable works via test verification — fix all gaps
 
 this is the verification gate — the **buttonup phase**.
 
-you cannot pass execution without proof that all tests pass. more importantly: **test coverage enforces prod coverage**. if tests are absent, prod is incomplete. if prod is incomplete, fix it.
+you cannot pass execution without proof that every test your change touches passes. more importantly: **test coverage enforces prod coverage**. if tests are absent, prod is incomplete. if prod is incomplete, fix it.
 
 ## .the buttonup mandate: zero omissions
 
@@ -29,7 +29,7 @@ when you find a gap, you do not note it and move on. you **fix it**.
 
 | constraint | definition |
 |------------|------------|
-| zero deferrals | you cannot defer any test to later. all tests pass now or you fail. |
+| zero deferrals | you cannot defer any test to later. every test you run passes now or you fail. |
 | zero fake tests | tests must verify real behavior. assertions that always pass are fraud. |
 | zero unproven claims | every claim of "test passes" must cite the exact command run and output. |
 | zero credential excuses | "i don't have creds" is not an excuse. get them, mock them, or fail. |
@@ -144,16 +144,18 @@ checklist:
 
 **every test run must be proven with exact command and output.**
 
+one row per suite your change touches — a scoped run is proof. the full, unscoped sweep is cicd's.
+
 | test suite | command run | result | proof (exit code + summary) |
 |------------|-------------|--------|----------------------------|
-| types | `npm run test:types` | ✓ / ✗ | exit 0, no errors |
-| lint | `npm run test:lint` | ✓ / ✗ | exit 0, no errors |
-| format | `npm run test:format` | ✓ / ✗ | exit 0, no errors |
-| unit | `npm run test:unit` | ✓ / ✗ | exit 0, N tests passed |
-| integration | `npm run test:integration` | ✓ / ✗ | exit 0, N tests passed |
-| acceptance | `npm run test:acceptance` | ✓ / ✗ | exit 0, N tests passed |
+| types | `rhx git.repo.test --what types` | ✓ / ✗ | exit 0, no errors |
+| lint | `rhx git.repo.test --what lint` | ✓ / ✗ | exit 0, no errors |
+| format | `rhx git.repo.test --what format` | ✓ / ✗ | exit 0, no errors |
+| {impacted suite} | `rhx git.repo.test --what {unit,integration,acceptance} --mode apply` | ✓ / ✗ | exit 0, N tests passed in {files matched} |
+| cicd | the pr's checks | ✓ / ✗ | all green, link to the run |
 
 checklist:
+- [ ] every suite the change touches was run, scoped to the matched files
 - [ ] every test command was run (not "i think it passed")
 - [ ] every test command output was observed (not assumed)
 - [ ] the exact exit code was verified (0 = pass, non-zero = fail)
@@ -218,24 +220,32 @@ scan for forbidden patterns:
 2. MAKE the test pass (fix the code or fix the test)
 3. update your checklist
 
-do not note skips and move on. fix them. all tests must run.
+do not note skips and move on. fix them. no test may be skipped.
 
 ---
 
-### step 4: run all tests AND FIX all failures
+### step 4: run the impacted tests AND FIX all failures
 
-run each test suite and **cite the exact command and output**.
+run the tests your change touches and **cite the exact command and output**.
 
 ```bash
-npm run test:types      # cite exit code
-npm run test:lint       # cite exit code
-npm run test:format     # cite exit code
-npm run test:unit       # cite exit code + test count
-npm run test:integration # cite exit code + test count
-npm run test:acceptance  # cite exit code + test count
+rhx git.repo.test --what types                        # cite exit code
+rhx git.repo.test --what lint                         # cite exit code
+rhx git.repo.test --what format                       # cite exit code
+rhx git.repo.test --what unit                         # plan: prints the matched files
+rhx git.repo.test --what unit --mode apply            # cite exit code + test count
+rhx git.repo.test --what integration --mode apply     # cite exit code + test count
+rhx git.repo.test --what acceptance --against local --env test --mode apply   # cite exit code + test count
 ```
 
-all must pass — no exceptions. no deferrals. no "i'll fix it later."
+`rhx git.repo.test` selects the impacted files itself — that is its default. do NOT reach for
+`--thorough`: it discards that selection and runs the whole tier.
+
+**the full, unscoped sweep is cicd's job, not yours.** cicd runs every tier on a clean checkout on
+every push. a green scoped run plus a green cicd run is the complete proof.
+
+this narrows *which* tests you run locally — never *whether* a claim needs proof. every run you
+cite must pass — no exceptions. no deferrals. no "i'll fix it later."
 
 **this is buttonup.** if tests fail, fix them. that is the job.
 
@@ -272,7 +282,7 @@ if a test was broken before you started — fix it. if a test is flaky — fix i
 
 you move to handoff only when you can answer "yes" to all of the above and still cannot proceed.
 
-update your checklist when all tests pass.
+update your checklist when every impacted test passes.
 
 ---
 

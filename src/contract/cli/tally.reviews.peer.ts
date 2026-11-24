@@ -5,21 +5,28 @@
  * see src/domain.roles/behaver/skills/tally.reviews.peer.sh for full docs
  */
 
+import { ConstraintError } from 'helpful-errors';
 import { z } from 'zod';
 
+import { asLaneSlugList } from '@src/domain.operations/tally.reviews.peer/asLaneSlugList';
 import { genPeerReviewTallyStdout } from '@src/domain.operations/tally.reviews.peer/genPeerReviewTallyStdout';
 import { getPeerReviewTally } from '@src/domain.operations/tally.reviews.peer/getPeerReviewTally';
 import { getCliArgs } from '@src/infra/cli';
+
+import { genTallyReviewsPeerHelp } from './genTallyReviewsPeerHelp';
+import { getFlagCount } from './getFlagCount';
 
 const schemaOfArgs = z.object({
   named: z.object({
     route: z.string().optional(),
     by: z.enum(['lane', 'rule']).default('lane'),
-    lane: z.string().optional(),
-    // 🔴 comma-separated, NOT repeatable. getCliArgs.ts:41 last-wins on a repeated flag —
-    //    the same silent-drop shape as bhrain's --paths-with. one flag, explicit split
+    // `-with` / `-wout`, the symmetric pair bhrain's `--paths-with` / `--paths-wout` set
+    'lane-with': z.string().optional(),
+    // comma-separated, since a repeated flag is last-wins in getCliArgs
     'lane-wout': z.string().optional(),
     help: z.boolean().optional(),
+    // `-h`, the alias the guide advertises; getCliArgs maps it to `h`
+    h: z.boolean().optional(),
     // rhachet passthrough args (optional, ignored)
     repo: z.string().optional(),
     role: z.string().optional(),
@@ -30,92 +37,56 @@ const schemaOfArgs = z.object({
 });
 
 /**
- * .what = the CLI entry point
+ * .what = the cli entry point
+ * .why  = parse the flags, refuse a malformed call loud, then read + render the tally
  */
 export const tallyReviewsPeer = (options?: {
   argv?: string[];
   stdout?: (line: string) => void;
 }): void => {
+  // the parse owns its own default (it slices node + the entry path off process.argv);
+  // the repeat count reads the same input, and a flag never sits in that sliced head
   const { named, ordered } = getCliArgs({
     schema: schemaOfArgs,
     argv: options?.argv,
   });
+  const argv = options?.argv ?? process.argv;
   const emit = options?.stdout ?? ((line: string) => console.log(line));
 
-  if (named.help === true) {
+  // --help or -h prints the guide and exits 0
+  if (named.help === true || named.h === true) {
     emit(genTallyReviewsPeerHelp());
     return;
   }
 
-  // the route may ride as --route or as the first positional
-  const route = named.route ?? ordered[0];
-  if (!route) {
-    emit(genTallyReviewsPeerHelp());
-    return;
-  }
+  // a repeated --lane-wout is refused: getCliArgs keeps the last, which would drop the rest
+  if (getFlagCount({ argv, flag: 'lane-wout' }) > 1)
+    ConstraintError.throw('--lane-wout was given more than once', {
+      hint: 'join the filters with commas: --lane-wout mech-,prose-of',
+    });
+
+  // a stray positional is refused, never read as a route
+  if (ordered.length > 0)
+    ConstraintError.throw('unexpected positional argument', {
+      positional: ordered,
+      hint: 'name the route with --route <dir>; run --help for the options',
+    });
+
+  // the route is required: an absent one exits 2, distinct from a clean tally
+  const route =
+    named.route ??
+    ConstraintError.throw('--route is required', {
+      hint: 'rhx tally.reviews.peer --route .behavior/<route>',
+    });
 
   emit(
     genPeerReviewTallyStdout({
       tally: getPeerReviewTally({
         route,
         by: named.by,
-        lane: named.lane ?? null,
-        laneWout: (named['lane-wout'] ?? '')
-          .split(',')
-          .map((part) => part.trim())
-          .filter((part) => part.length > 0),
+        lane: named['lane-with'] ?? null,
+        laneWout: asLaneSlugList({ raw: named['lane-wout'] ?? null }),
       }),
     }),
   );
-};
-
-/**
- * .what = the usage guide printed on --help
- * .why = discovery of options and defaults without a trip to the docs
- */
-const genTallyReviewsPeerHelp = (): string => {
-  const optionRows: Array<[string, string, string]> = [
-    ['--route', 'the route dir to tally', 'required'],
-    [
-      '--by',
-      'lane (which lanes earn their place) | rule (where attention goes)',
-      'lane',
-    ],
-    [
-      '--lane',
-      'narrow the corpus to reports whose filename holds this string',
-      'all lanes',
-    ],
-    [
-      '--lane-wout',
-      'drop reports whose filename holds any of these (comma-separated)',
-      'none',
-    ],
-    ['--help', 'show this guide', ''],
-  ];
-
-  const flagWidth = Math.max(...optionRows.map(([flag]) => flag.length));
-  const descWidth = Math.max(...optionRows.map(([, desc]) => desc.length));
-  const optionLines = optionRows.map(([flag, desc, def]) =>
-    `  ${flag.padEnd(flagWidth)}  ${desc.padEnd(descWidth)}  ${
-      def ? `[default: ${def}]` : ''
-    }`.trimEnd(),
-  );
-
-  return [
-    '🌲 tally.reviews.peer — what did this route’s peer lanes actually find?',
-    '',
-    'usage:',
-    '  rhx tally.reviews.peer --route <dir> [--by lane|rule] [--lane <filter>]',
-    '                         [--lane-wout <a,b,c>]',
-    '',
-    'options:',
-    ...optionLines,
-    '',
-    'a lane with many reports and zero blockers costs a budget round and moves no stone.',
-    'a rule bound and never cited is a rule the gate does not enforce.',
-    '',
-    '🔴 it fails loud: an empty corpus throws, and a report whose points do not pair with',
-    '   their **rule**: lines throws. a silent zero reads as a clean gate.',
-  ].join('\n');
 };

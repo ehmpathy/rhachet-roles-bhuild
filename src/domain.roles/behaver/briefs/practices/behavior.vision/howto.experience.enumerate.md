@@ -10,10 +10,9 @@ critipath; it is just marked a bonus. the output is a list of experiences, each 
 `actor + feel + observable outcome`, with a feel and care set, that the `case=NNN` demos then render
 (narrative + `[tn]`) and the `case=_` catalog then indexes.
 
-this is the method behind `rule.require.experience-coverage`: the rule blocks on absent
-critipaths and flags absent alterpaths; this howto is how you find them **all** in the first
-place, so the care — not a gap in the list — is what decides what blocks. for a worked
-result, see `define.experience._.demo.surf-school`.
+this howto implements `rule.require.experience-coverage`. that rule blocks on an absent
+critipath and flags an absent alterpath. this method finds them **all** first, so care decides
+what blocks, never a gap in the list. worked result: `define.experience._.demo.surf-school`.
 
 ## .why
 
@@ -53,9 +52,9 @@ of a guess whether the sample was representative.
    these names let the coverage review block on the critipaths and merely flag the alterpaths.
 
 6. **score each by boundary-density, and center the densest.** for each path, count the
-   boundaries it exercises (rejections, limits, seams). a path that crosses many is both your
-   highest-value demo (covers much at once) and your highest-risk one (most likely to break) —
-   so hunt these out and give them the richest demo + deepest scrutiny. density is independent
+   boundaries it exercises (rejections, limits, seams). a path that crosses many is your
+   highest-value demo, since it covers much at once. it is also your highest-risk one. hunt these
+   out. give them the richest demo + deepest scrutiny. density is independent
    of care: a dense *alterpath* can be your most valuable demo. do not prune the sparse ones —
    density ranks priority, it does not filter. see `define.experience._.metric=boundary-density`.
 

@@ -32,9 +32,16 @@ do these in order:
      `define.experience._.axis=care.path=criti-vs-alter` (care = freq × cost) ·
      `define.experience._.metric=boundary-density` (how to rank)
 3. **demonstrate** — write one demo per **critipath** plus each **chosen alterpath**: a
-   **narrative** (actor's pov) + a **bdd `[tn]` timeline**. for a **sharp** critipath, show it
-   fails safe — fast, loud, teaches the fix. do not demo every cell — verdict all, demo the
-   critipaths + the worthwhile few.
+   **narrative** (actor's pov) + a **bdd `[tn]` timeline**. each demo opens with its actor and goal,
+   right under its `## case=` header:
+
+   ```md
+   > **who** — kai, a surfer who knows the break and tide he wants
+   > **came for** — his exact spot, at his exact time, held
+   ```
+
+   for a **sharp** critipath, show it fails safe — fast, loud, teaches the fix. verdict every cell.
+   demo only the critipaths + the worthwhile few.
    → `define.experience._.demo.surf-school` (a worked catalog + cases) ·
      `rule.require.experience-coverage` (what blocks) · mechanic
      `code.test/frames.behavior/rule.require.given-when-then` (the `[tn]` form)
@@ -64,9 +71,8 @@ a `driver`, or a `lane` are actors of a *route*, and most wishes have none of th
 🔴 **a `⭐` bullet with no `case=…md` suffix is an absent critipath.** that grep is the coverage
 check, and it must return zero hits.
 
-🔴 **never point one cell at another cell's demo.** the pointer is only ever reached for when a
-critipath has no demo — and such a cell either owes one, or was never a critipath. "neither" is not
-an available answer.
+🔴 **never point one cell at another cell's demo.** a driver reaches for the pointer only when a
+critipath has no demo — and such a cell either owes one, or was never a critipath.
 
 ## .the three artifacts
 

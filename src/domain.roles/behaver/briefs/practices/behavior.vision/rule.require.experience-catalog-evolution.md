@@ -15,7 +15,7 @@ playtest), you must evolve the contract to hold it **before that stage passes**:
 3. **demo it** with a `case=NNN` file (narrative + bdd `[tn]`) **if it is a critipath** — an
    alterpath may stay itemized; a critipath owes a demonstration.
 
-the contract is discovered, not frozen. a new experience found downstream is evidence the vision's
+the walk discovers the contract; it never freezes it. a new experience found downstream is evidence the vision's
 decomposition was incomplete — the fix is to grow the contract, never to bolt the experience on
 outside it.
 

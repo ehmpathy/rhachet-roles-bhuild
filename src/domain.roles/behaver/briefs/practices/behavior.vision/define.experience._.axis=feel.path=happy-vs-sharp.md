@@ -13,7 +13,7 @@ the path.
 - 🌵 a **sharp path** — an edge that can cut. a rejection, a limit, a handoff gone wrong — a place
   the actor can get hurt if the behavior does not handle it well.
 
-🟡 **a sharp path is not a defect** — it is handled, or it is not. why the glyph pair is 🌴/🌵, and
+🟡 **a sharp path is not a defect; an unhandled one is.** why the glyph pair is 🌴/🌵, and
 the six candidates rejected: `term=behavior.experience._.choice.reason.md` §*the glyphs*.
 
 this is one of the two axes an experience sits on (see `define.experience`). the other is
@@ -23,10 +23,9 @@ a happy path can be criti or alter; a sharp path can be criti or alter.
 ## .why the feel axis matters
 
 a vision that walks only happy paths hides its sharp edges — and sharp edges are where defects
-live. the actor who hits an unhandled sharp edge does not get a graceful "no"; they get a stack
-trace, a silent no-op, a double-charge, a stranded slot. **feel** forces the author to name the
-edges *before* execution, at the vision, where a sharp edge costs a paragraph to handle instead
-of a rebuild.
+live. an actor who hits an unhandled sharp edge gets no graceful "no". they get a stack trace, a
+silent no-op, a double-charge, a stranded slot. **feel** forces the author to name the edges at
+the vision. there a sharp edge costs a paragraph, not a rebuild.
 
 ## .the discriminator is the EDGE, never the OUTCOME
 

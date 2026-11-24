@@ -122,80 +122,9 @@ reviews:
         **this is the final proof.** you ran it, it worked, all gaps are fixed.
         you are ready to hand off to foreman approval.
 
-    # ⇒ the WRITE-TIME half of the prose gate. it changes what gets written, so the peer lanes
-    #   confirm rather than trim. no halt risk: the driver answers it rather than argues with it.
-    - slug: has-ejected-the-archaeology
-      say: |
-        the yield states the OUTPUT; its road is archaeology — MOVED to an appendix and cited
-        by path, never cut and never left inline. a playtest yield is a WALK, so its tell is a
-        log of steps in the order you did them; state what the human met, not the sequence.
-
-        walk $route/5.5.playtest.yield.md. per passage: who needs this, and WHEN?
-        - every reader, here                      → keep
-        - no reader, ever                         → cut
-        - a reader who disputes the claim, later  → archaeology; move it, ref it by path
-
-        the tells, each archaeology by definition:
-        - "we first tried X, then Y"              — an attempt trail
-        - a measurement's full method             — keep the number, ref the method
-        - a tool built to reach a claim           — the claim is the yield's; the tool is a note
-        - a review round narrated inline          — a round is archaeology by construction
-        - a calendar date on a measurement        — state what holds, not when you measured it
-        - "for the curious"                       — it just named itself a note
-
-        🔴 the SECOND mood, and NO lint catches it: an IMPERATIVE. a yield declares what IS; it
-        gives no orders. an order is unverifiable by a gate, it rots the moment it is obeyed, and
-        no downstream artifact takes it — a roadmap declares its steps too.
-        - "the driver should narrow the glob"     → "the glob is narrowed to <x>", if it is
-        - "phase 2 will fold the flag"            → "phase 2 = the flag is folded"
-        - any future tense: will, is to be        → a yield has no future tense
-
-        an uncited move is a deletion; an unresolvable ref is a phantom path — both blockers.
-        do NOT cut evidence to hit a length; that cut is lossy.
-
-        articulate: what you moved and where, what you kept and why every reader needs it here.
-        if you moved none, state which sections you walked and why each earned its place.
-
   peer:
-    # ⇒ the $0/1ms deterministic FLOOR under `density-of-yields`. it NAMES the archaeology line, so
-    #   the repair is an edit rather than an argument. `level: 0` runs it before the l1 LLM lane;
-    #   lowest level runs first (`getStoneGuardLevelClearance.ts`). it grades PLACE not prose and
-    #   reads $route/5.5.playtest.yield.md alone — the appendix is where archaeology BELONGS.
-    #   `budget: 99` — it costs neither money nor attention, so a bound on rounds saves naught.
-    - slug: archaeology-of-yields
-      run: $rhx review.for.yield-archaeology --route $route --stone 5.5.playtest
-      budget: 99
-      level: 0
-
-    # ── the PROSE gate, bound to THIS stage's yield.
-    #
-    # 🟡 ONE rubric, where the vision, blueprint, execution, and verification guards bind three.
-    #    that is proportionate rather than a shortfall: this stage carried NO peer lane at all, and
-    #    `terse` is exactly what the mandate names — brevity, plus `forbid.chronological-accretion`.
-    #    the `dense` and `overzoom` rubrics ride the stages that already carry a peer block, where
-    #    their marginal cost sits beside lanes a driver already pays for.
-    #
-    # 🔴 a playtest yield is a byhand WALK, so its natural shape is a sequence — which is the exact
-    #    shape `forbid.chronological-accretion` fires on. the rubric must read the walk as a
-    #    RESULT: what the human met, and what it cost them. a log of what the driver did, in the
-    #    order they did it, is the defect.
-    #
-    # 🔴 the subject is THIS stage's yield, never `$route/*.yield.md`. a route-wide glob would
-    #    re-grade every prior stage's yield — each already approved, each already answered.
-    # 🔴 BRACED — the nest must expand 15/15 — the 10 prose rules plus the 5 behaver yield rules, which grade a property only a yield has. a rename drops a member SILENTLY while the
-    #    survivors still match (`length > 0`, no throw). verify with `rhx globsafe`.
-    # 🟡 the rubric holds ONE verdict class: every rule in it repairs by REMOVAL — cut the
-    #    passage, or move it to a zoom. that is what lets one lane replace three.
-    # 🟡 `role={any,telepath,mechanic,behaver}` pins the fork: architect and mechanic BOTH carry
-    #    `lang.prose/`, so an unpinned role glob loads two copies of three rules.
-    - slug: density-of-yields
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=*/role={any,telepath,mechanic,behaver}/briefs/**/rule.{require.{reflexive-condensation,dense-prose,archaeology-in-notes,brevity,every-passage-earns-its-slot,yield.{declarative,hermeticity}},forbid.{purposeless-passages,defensive-prose,subversive-prose,rambles,chronological-accretion,ejectable-overzoom,downstream-detail-in-a-yield,yield.baggage}}.md' --refs '.agent/repo=bhrain/role=telepath/briefs/define.{reflexive-condensation,subversive-prose,purpose-first}.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.prose/define.wick-dense.md' --refs '.agent/repo=bhrain/role=telepath/briefs/howto.razor-a-thought.md' --diffs since-main --paths-with '$route/5.5.playtest.yield.md' --join intersect --goal exhaustive --conversation $conversation --output "$output"
-      budget: 3
-      level: 1
-
     # ── the FULCRUM council. `rule.always.defer-fulcrums-to-last` reviews fulcrums ONCE,
-    #    at the very end — so this lane rides the terminal stone ALONE, never spread like
-    #    the archaeology floor. it reads $route/.fulcrums/* and, per row, asks the two
+    #    at the very end — so this lane rides the terminal stone ALONE. it reads $route/.fulcrums/* and, per row, asks the two
     #    questions the driver rules already encode:
     #    - still owed?   a fulcrum the wish or a reviewer answered "was never a fulcrum"
     #                    (`defer-fulcrums-to-last`); an unrecorded verdict is the tell

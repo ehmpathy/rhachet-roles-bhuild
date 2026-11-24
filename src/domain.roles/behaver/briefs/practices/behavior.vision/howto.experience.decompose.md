@@ -11,17 +11,23 @@ this is the behaver's application of the architect's `howto.dimensional-decompos
 Zwicky's morphological box) to the **experience** space specifically. the technique is old; the
 discipline is to actually walk the product.
 
-the behaver refines the architect's three verdicts into four, so a cell's verdict names its
-**coverage** or *why* it can't occur: architect `filled` → **demoed** / **itemized** (a real
-experience, demonstrated vs merely on record); architect `forbidden` splits into **forbidden**
-(attemptable, and the behavior rejects it) and **impossible** (no attempt is possible at all). the
-split matters because a forbidden path yields a *sharp rejection experience* to demo, while an
-impossible one yields no experience at all.
+the behaver refines the architect's three verdicts into four. a cell's verdict names its
+**coverage**, or *why* it cannot occur:
+
+| architect | behaver | the cell |
+|---|---|---|
+| `filled` | **demoed** | a real experience, demonstrated |
+| `filled` | **itemized** | a real experience, on record only |
+| `forbidden` | **forbidden** | attemptable, and the behavior rejects it |
+| `forbidden` | **impossible** | no attempt is possible at all |
+
+the split matters. a forbidden path yields a *sharp rejection experience* to demo. an impossible
+one yields no experience at all.
 
 🔴 **`impossible` keys on the absence of an ATTEMPT, never on the absence of a CHOICE.** nature bars
-some attempts; **the shipped design bars most of them** — no law prevents a lane we simply did not
-build, and with no lane there is no attempt to reject. a `by nature` gloss mis-sorts every cell of
-the second kind, which is the common one.
+some attempts; **the shipped design bars most of them**. no law prevents a lane we did not build.
+with no lane, there is no attempt to reject. a `by nature` gloss mis-sorts every such cell, and
+they are the common kind.
 
 ## .why this is the discovery engine — not a nicety
 
@@ -63,7 +69,7 @@ move is to find *all* the dimensions the wish varies over.
    ⇒ a guard beats a redirect beats a forbid — reach for the highest rung the domain permits.
 
    🟡 **merge first.** two axis values that behave identically across every other axis are one
-   value, and that is a defect in the **model** — fix it before you change the **design**.
+   value. that is a defect in the **model**, and a model fix precedes a **design** change.
 
    ⇒ every prune is recorded in the inventory with its **subset · count · lever · cost**. the
    mandate, the bound, and the failure modes are `rule.always.prune-the-experience-space`.
@@ -80,8 +86,8 @@ move is to find *all* the dimensions the wish varies over.
 
 5. **read the rest.** the demoed cells are the critipaths you commit to; the rest carry the
    decisions. an **itemized** cell is a path on record you chose not to demo; a **forbidden** cell
-   is a rejection the behavior must enforce (an invariant); an **impossible** cell is void by
-   nature — noted, then set aside.
+   is a rejection the behavior must enforce (an invariant); an **impossible** cell is barred by
+   nature, or by a design we did not ship — noted with what bars it, then set aside.
 
 ## .the payoff — this is what "considered the critipaths" means
 
@@ -152,15 +158,19 @@ the walk is step 2. **step 3 asks what the design could delete**, and here two s
 | subset | cells | lever | the design now owes | the cost |
 |---|---|---|---|---|
 | `admin × *` — every admin cell was itemized, none demoed | **6 → 0** | **redirect** | `--as admin` on the beaver path | an admin gets no distinct surface; their errors read in beaver vocabulary |
-| `system-cron × restore × *` — the latent `has-human?` axis says a cron cannot confirm a clobber | **3 → impossible** | **guard** | the cron entrypoint rejects `restore` at parse | no unattended restore. a corrupt grove waits for a human |
+| `system-cron × open × *` — a cron that opens a grove no beaver works in | **3 → impossible** | **guard** | the cron entrypoint rejects `open` at parse | no pre-warmed groves at dawn. the first beaver open pays the load |
 
-⇒ **9 cells left, and the critipath the walk discovered was removed rather than demoed.** the
-unattended cron restore was real, sharp, and expensive — and the guard means it cannot happen, which
-is strictly better than a demo of it.
+⇒ **9 cells left, and the critipath the walk discovered survives them.** the unattended cron restore
+is real, sharp, and expensive — so it is demoed: with no human to confirm a clobber, it refuses
+without `--force` and names the grove it left untouched.
 
-🟡 both rows carry a **cost**, and the second is a genuine loss. that is what makes it a prune rather
-than a free win — and it is why `rule.always.prune-the-experience-space` blocks a prune that states
-no cost.
+🟡 both rows carry a **cost**. that is what makes each a prune rather than a free win — and it is why
+`rule.always.prune-the-experience-space` blocks a prune that states no cost.
+
+🔴 **the third row a reader would reach for is the one the rule forbids.** to guard away
+`system-cron × restore × *` would shrink the space by three more cells — and remove the critipath
+the walk just found. that is a scope cut, not a prune: an actor loses what it came for, so only a
+wisher verdict may grant it.
 
 ## .see also
 

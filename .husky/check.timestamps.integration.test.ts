@@ -1,5 +1,6 @@
 import { execSync, spawnSync } from 'child_process';
 import fs from 'fs';
+import { MalfunctionError } from 'helpful-errors';
 import path from 'path';
 import { genTempDir, given, then, useThen, when } from 'test-fns';
 
@@ -11,12 +12,17 @@ const runGateOnStaged = (input: {
   slug: string;
   file: string;
   content: string;
-  before?: (args: { cwd: string }) => void;
+  before: ((args: { cwd: string }) => void) | null;
 }): { status: number | null; stdout: string; stderr: string } => {
+  // stage the one file under test in a fresh repo
   const cwd = genTempDir({ slug: input.slug, git: true });
   fs.writeFileSync(path.join(cwd, input.file), input.content);
   execSync(`git add ${input.file}`, { cwd });
-  input.before?.({ cwd });
+
+  // run the case's own pre-step, if it declared one
+  if (input.before) input.before({ cwd });
+
+  // run the real gate, and read what a human would see
   const run = spawnSync('bash', [path.join(__dirname, 'check.timestamps.sh')], {
     cwd,
   });
@@ -102,6 +108,7 @@ describe('check.timestamps', () => {
           file: 'lessons.md',
           content:
             '# sandpine lessons\n\nbook-a-lesson reminder sent 2026-09-29T09:30:00Z\n',
+          before: null,
         }),
       );
 
@@ -126,11 +133,16 @@ describe('check.timestamps', () => {
       });
 
       then('the brief its why: line names is on disk in this repo', () => {
-        const why = result.stderr.match(/why: (\S+\.md)/)?.[1];
+        const why = result.stderr.match(/why: (\S+\.md)/)?.[1] ?? null;
+        if (why === null)
+          throw new MalfunctionError('the gate printed no why: line', {
+            stderr: result.stderr,
+            hint: 'the gate should print a `why: <brief>.md` line; check its halt branch in .husky/check.timestamps.sh',
+          });
         expect(why).toEqual(
           '.agent/repo=.this/role=any/briefs/rule.forbid.timestamps-in-tracked-files.md',
         );
-        expect(fs.existsSync(path.join(__dirname, '..', why!))).toBe(true);
+        expect(fs.existsSync(path.join(__dirname, '..', why))).toBe(true);
       });
     });
   });
@@ -142,6 +154,7 @@ describe('check.timestamps', () => {
           slug: 'check-timestamps-date',
           file: 'lessons.md',
           content: '# sandpine lessons\n\npushed_at: 2026-09-29\n',
+          before: null,
         }),
       );
 
@@ -158,6 +171,7 @@ describe('check.timestamps', () => {
           slug: 'check-timestamps-ts',
           file: 'lesson.ts',
           content: "export const bookedAt = '2026-09-29T09:30:00Z';\n",
+          before: null,
         }),
       );
 
@@ -215,6 +229,7 @@ describe('check.timestamps', () => {
           slug: 'check-timestamps-nonascii-date',
           file: 'lecciones-ñ.md',
           content: '# sandpine lecciones\n\npushed_at: 2026-09-29\n',
+          before: null,
         }),
       );
 
@@ -229,6 +244,7 @@ describe('check.timestamps', () => {
           slug: 'check-timestamps-nonascii-stamp',
           file: 'lecciones-ñ.md',
           content: '# sandpine lecciones\n\nsent 2026-09-29T09:30:00Z\n',
+          before: null,
         }),
       );
 

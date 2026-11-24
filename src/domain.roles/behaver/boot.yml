@@ -8,6 +8,9 @@ always:
       - briefs/practices/behavior.vision/rule.require.experience-catalog-evolution.md
 
     ref:
+      # dispatch home — the 5.1 lane enforces it, so a ref suffices
+      - briefs/practices/behavior.execution/rule.require.dispatch-lives-with-its-route.md
+
       # definitions
       - briefs/practices/behavior.criteria/define.behavior-thoughtroute-hierarchy.md
       - briefs/practices/behavior.criteria/define.criteria-blackbox.md
@@ -35,6 +38,10 @@ always:
       # roadmap rules
       - briefs/practices/behavior.roadmap/rule.prefer.clear-deliverables.md
       - briefs/practices/behavior.roadmap/rule.prefer.dependency-order.md
+
+      # vision rules
+      - briefs/practices/behavior.vision/rule.require.declared-experience-audience.md
+      - briefs/practices/behavior.vision/rule.require.yagni-and-simplicity.md
 
       # verification rules
       - briefs/practices/behavior.verification/rule.require.external-contract-integration-tests.md

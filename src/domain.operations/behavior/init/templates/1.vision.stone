@@ -8,6 +8,15 @@ testdrive the contract we propose via realworld examples
 
 specifically,
 
+## the map
+
+draw at least one ascii map of how the concepts relate — the one property prose renders worst.
+the kind follows the subject: a chain for a pipeline, a grid for a product of axes, a tree for a
+root with surfaces, a pole pair for two opposite failures of one act.
+
+🔴 **bind the map as an index.** each region names the section that owns its fact; the map never
+restates the fact. where the two disagree, the map is wrong and the section holds.
+
 ## the outcome world
 
 - what does a day-in-the-life look like with this in place?
@@ -21,6 +30,15 @@ specifically,
 - **decompose** — factor the experience space into orthogonal dimensions, walk the product
 - **itemize** — verdict every cell into the inventory; name each real experience's feel × care
 - **demonstrate** — a narrative + bdd `[tn]` sketch per critipath (+ chosen alterpaths)
+
+each `case=NNN` demo opens with its declared audience — a person or role, never a cell coordinate:
+
+```
+> **who** — kai, a consumer who upgraded the package
+> **came for** — a green suite, with no thought spared for temp dirs
+```
+
+→ `rule.require.declared-experience-audience`
 
 → `howto.experience.demonstrate` — the method, the bullet format, the artifacts, the coverage grep
 
@@ -86,9 +104,8 @@ one grep or one file read is not rigor — it is an unasked question dressed as 
 
 ## the emit contract — where each of the above lands
 
-the yield holds the answer; the archaeology lives in the appendices beside it. the yield states
-decisions, and the work that produced them lives in appendices the yield **cites by path** rather
-than restates:
+the yield states decisions; the work that produced them lives in appendices the yield **cites by
+path** rather than restates:
 
 | file | holds |
 |------|-------|

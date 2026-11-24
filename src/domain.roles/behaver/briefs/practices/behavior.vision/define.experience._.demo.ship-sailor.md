@@ -24,6 +24,9 @@ shoals make every boundary real.
 
 ## `case=001.chart-a-passage.md` — ⭐ happy critipath
 
+> **who** — captain miki, who charts and sails *the steady paw*
+> **came for** — a course to a named port, sailed on schedule
+
 **narrative**
 
 *"chartin course…"* miki lays a passage from havana to nassau. deep water the whole way, no shoal
@@ -43,10 +46,13 @@ given a port "havana", a port "nassau", and open water between
 
 ## `case=002.sail-the-last-tide-minute.md` — 🌵 sharp critipath 🔴 **and she gets across**
 
+> **who** — captain miki, who charts and sails *the steady paw*
+> **came for** — across the cat cay shoal inside its tide window, to make nassau on schedule
+
 **narrative**
 
 the shoal at cat cay clears only on a high tide. miki times her transit for **the last minute of
-the window** — 14:52, one minute before the water drops under her keel.
+the window** — one minute before the water drops under her keel.
 
 🔴 **she gets across. the ship reaches nassau on schedule.** miki got exactly what she came for.
 and the path is **sharp**: a tide table that reads the boundary minute wrong — rounds it away, or
@@ -57,10 +63,10 @@ it fails safe because **the limit holds**: the last safe minute still counts, ex
 plot records the tide value it used, so a second pair of eyes can check it.
 
 ```
-given a shoal at "cat cay" whose tide window closes at 14:53
-  when [t0] miki charts a transit that clears at 14:52 — the last safe minute
+given a shoal at "cat cay" whose tide window closes at minute T
+  when [t0] miki charts a transit that clears at minute T-1 — the last safe minute
     then the transit is plotted and sailed — the boundary minute counts, exactly once
-    and  the plot records "tide=+1.4m at 14:52, keel clearance 0.3m" so it can be re-checked
+    and  the plot records "tide=+1.4m at T-1, keel clearance 0.3m" so it can be re-checked
   when [t1] the same passage is re-plotted from the same tide table
     then the identical window and clearance are produced — deterministic at the boundary
 ```
@@ -77,6 +83,9 @@ given a shoal at "cat cay" whose tide window closes at 14:53
 
 ## `case=003.take-the-nearest-anchorage.md` — 🌴 happy alterpath
 
+> **who** — captain miki, at dusk on open water
+> **came for** — any sheltered anchorage, with no name to pick
+
 **narrative**
 
 dusk, and miki wants to stop anywhere sheltered. she names no anchorage; the chart picks the
@@ -92,6 +101,9 @@ given open water at dusk and three anchorages within reach
 ---
 
 ## `case=004.unreadable-projection.md` — 🌵 sharp alterpath
+
+> **who** — captain miki, handed a harbormaster's chart
+> **came for** — a course plotted off a chart her plotter cannot read as-is
 
 **narrative**
 
@@ -145,8 +157,8 @@ and then, and when it does the break is silent. **rarity relaxes severity only a
   the "workable route" test and `freq × cost` disagree, and the product rules.
 - a sharp path succeeds — `case=002` clears the shoal and lands miki in nassau on schedule.
   outcome does not discriminate the feel axis; the edge does.
-- silent breaks push cost to ∞ — a wrong tide boundary reads exactly like a right one, so it
-  cannot be detected, so it cannot be recovered.
+- silent breaks push cost to ∞ — a wrong tide boundary reads exactly like a right one, so no
+  sailor detects it, so no sailor recovers from it.
 - rare ≠ alter — `case=002` is rare and critipath; the silted strait is rare *at zero* and is no
   experience at all.
 

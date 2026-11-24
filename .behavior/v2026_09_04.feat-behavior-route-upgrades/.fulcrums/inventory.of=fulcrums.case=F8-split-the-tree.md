@@ -1,6 +1,14 @@
 # F8 — split the terseness cluster into its own tree
 
-**rework** = **dirty** · **status** = **closed** — wisher verdict · **confidence** = 81% at the time
+rework = dirty · status = superseded by F22 · confidence = 81% at the time · risk = rework only, no harm
+
+## status — superseded by F22
+
+- 2026-09-04: closed by wisher verdict — one tree (see §the verdict below)
+- 2026-10-20: superseded by F22. the wisher dropped the prose cluster, so no terseness cluster
+  remains to split. the fork is moot and needs no further verdict
+- risk of a wrong guess: rework only (a second route and a re-bind). no security, safety, money,
+  reputation, or behavior harm
 
 ## the fork
 

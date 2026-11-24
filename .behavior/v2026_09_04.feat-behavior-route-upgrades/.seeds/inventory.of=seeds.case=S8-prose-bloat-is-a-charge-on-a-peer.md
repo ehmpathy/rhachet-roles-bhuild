@@ -44,9 +44,9 @@ taken the same day, over this route's 36 prose + dense reports (128 points):
 
 | what the gate spends on | points | share |
 |---|---|---|
-| the three countable — a character edit apiece | 43 | **33.6%** |
+| `forbid.emphasis-noise` · `forbid.absolutes` · `forbid.width-ambiguous-glyphs` — a character edit apiece | 43 | **33.6%** |
 | `forbid.subversive-prose` — did the sentence assert a claim? | 2 | **1.6%** |
-| the five rules that grade the THOUGHT | 0 | — |
+| `require.domain-discovery` · `require.distillation` · `require.elucidation` · `require.reflexive-condensation` · `require.dense-prose` — they grade the THOUGHT | 0 | — |
 
 ⇒ **the ask is not a preference. the gate measurably converges on what a counter can see, and the
 reader's time is what it does not measure.**

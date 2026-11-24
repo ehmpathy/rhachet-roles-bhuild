@@ -192,8 +192,9 @@ reviews:
       level: 1
 
     - slug: mech-failhides
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.{prod,test}/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with '**/*.{ts,sh,md,snap}' --join intersect --conversation $conversation --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.{prod,test}/pitofsuccess.errors/rule.*.md' --diffs since-main --paths-with '**/*.{ts,sh,md,snap}' --paths-wout '.agent/**' --paths-wout '.behavior/**' --join intersect --conversation $conversation --output "$output"
       budget: 3
+      timeout: PT45M
       level: 1
 
     - slug: mech-decode-friction
@@ -204,8 +205,9 @@ reviews:
     # --- architect reviews (level 1) ---
 
     - slug: arch-opport-decomposition
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.prefer.decomposable-architecture.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.architecture/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.domain.operations/*.md.min' --diffs since-main --paths-with '**/*.{ts,sh,md,snap}' --join intersect --conversation $conversation --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.prefer.decomposable-architecture.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.architecture/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.domain.operations/*.md.min' --diffs since-main --paths-with '**/*.{ts,sh,md,snap}' --paths-wout '.agent/**' --paths-wout '.behavior/**' --join intersect --conversation $conversation --output "$output"
       budget: 3
+      timeout: PT45M
       level: 1
 
     - slug: arch-smell-scopeleaks
@@ -219,18 +221,20 @@ reviews:
       level: 1
 
     - slug: arch-hazards-behavior
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.behavior-hazards.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --diffs since-main --paths-with '**/*.{ts,sh,md,snap}' --join intersect --conversation $conversation --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.behavior-hazards.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/pitofsuccess.procedures/*.md.min' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.prod/evolvable.procedures/*.md.min' --diffs since-main --paths-with '**/*.{ts,sh,md,snap}' --paths-wout '.agent/**' --paths-wout '.behavior/**' --join intersect --conversation $conversation --output "$output"
       budget: 3
       level: 1
 
     - slug: behavior-intent-coverage
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.require.behavior-intent-coverage.md' --refs '$route/0.wish.md' --refs '$route/1.vision.yield.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.criteria/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --diffs since-main --paths-with '**/*.{ts,sh,md,snap}' --join intersect --conversation $conversation --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.require.behavior-intent-coverage.md' --refs '$route/0.wish.md' --refs '$route/1.vision.yield.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.criteria/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/code.test/scope.coverage/*.md' --diffs since-main --paths-with '**/*.{ts,sh,md,snap}' --paths-wout '.agent/**' --join intersect --conversation $conversation --output "$output"
       budget: 3
+      timeout: PT45M
       level: 1
 
     - slug: ergo-friction-hazards
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.friction-hazards.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.tones/*.md.min' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --diffs since-main --paths-with '**/*.{ts,sh,md,snap}' --join intersect --conversation $conversation --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.execution/architect/rule.forbid.friction-hazards.md' --refs '.agent/repo=ehmpathy/role=ergonomist/briefs/*.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.tones/*.md.min' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/*.md' --diffs since-main --paths-with '**/*.{ts,sh,md,snap}' --paths-wout '.agent/**' --paths-wout '.behavior/**' --join intersect --conversation $conversation --output "$output"
       budget: 3
+      timeout: PT45M
       level: 1
 
     # --- level 3: expensive reviewers (run after level 1 is terminal) ---

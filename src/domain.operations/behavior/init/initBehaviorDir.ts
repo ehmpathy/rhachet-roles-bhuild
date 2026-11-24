@@ -11,6 +11,7 @@ import {
   type BehaviorSizeLevel,
   isTemplateInSize,
 } from './getAllTemplatesBySize';
+import { getGuardSlugsAbsent } from './getGuardSlugsAbsent';
 
 const TEMPLATES_DIR = join(__dirname, 'templates');
 
@@ -40,6 +41,8 @@ const getAllFilesRecursive = (dir: string, prefix = ''): string[] => {
  * guarantee:
  *   - creates behavior directory if not found
  *   - findserts all template files (creates if not found, skips if extant)
+ *   - names each kept guard that lacks a review its template holds (guardsStale)
+ *   - names each kept stone whose text differs from its template (stonesStale)
  *   - replaces $BEHAVIOR_DIR_REL in template content
  *   - selects templates based on size level (nano → giga)
  *   - selects guard templates based on guard level (light or heavy)
@@ -50,9 +53,16 @@ export const initBehaviorDir = (input: {
   behaviorDirRel: string;
   size?: BehaviorSizeLevel;
   guard?: 'light' | 'heavy';
-}): { created: string[]; kept: string[] } => {
+}): {
+  created: string[];
+  kept: string[];
+  guardsStale: Array<{ guard: string; slugsAbsent: string[] }>;
+  stonesStale: string[];
+} => {
   const created: string[] = [];
   const kept: string[] = [];
+  const guardsStale: Array<{ guard: string; slugsAbsent: string[] }> = [];
+  const stonesStale: string[] = [];
   const sizeLevel = input.size ?? 'medi';
   const guardLevel = input.guard ?? 'light';
 
@@ -79,22 +89,32 @@ export const initBehaviorDir = (input: {
       mkdirSync(targetDir, { recursive: true });
     }
 
-    // findsert: skip if extant
+    // read template and replace variable
+    const content = readFileSync(templatePath, 'utf-8').replace(
+      /\$BEHAVIOR_DIR_REL/g,
+      input.behaviorDirRel,
+    );
+
+    // findsert: skip if extant, and name what a kept guard or stone lacks of its template
     if (existsSync(targetPath)) {
       kept.push(targetName);
+      const extant = readFileSync(targetPath, 'utf-8');
+      const slugsAbsent = targetName.endsWith('.guard')
+        ? getGuardSlugsAbsent({ template: content, extant })
+        : [];
+      if (slugsAbsent.length > 0)
+        guardsStale.push({ guard: targetName, slugsAbsent });
+      if (targetName.endsWith('.stone') && extant !== content)
+        stonesStale.push(targetName);
       continue;
     }
-
-    // read template and replace variable
-    let content = readFileSync(templatePath, 'utf-8');
-    content = content.replace(/\$BEHAVIOR_DIR_REL/g, input.behaviorDirRel);
 
     // write template file
     writeFileSync(targetPath, content);
     created.push(targetName);
   }
 
-  return { created, kept };
+  return { created, kept, guardsStale, stonesStale };
 };
 
 /**

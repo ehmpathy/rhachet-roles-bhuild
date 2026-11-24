@@ -6,18 +6,37 @@
 #         `glossary.md`. they are REFERENCE — fetched when a verdict needs the record —
 #         and at several hundred K chars they would dwarf every other brief if said.
 #
+#         the same holds for research, howtos, and worked examples: each is ref'd, or listed
+#         under `not` where a parent rule already cites it by name.
+#
 # .mode = SUBJECT (the `always:` key): the say glob and the ref globs apply together.
+#
+# .budget = 11_000, set to fit what is said: 14 rules + defines, each a blocker, measured
+#           at 10,049 tokens on 2026-11-21. 5_000 held only while the say set was smaller.
+#           to go lower, author an x.md.min beside a rule, or move a rule to ref (fulcrum F39)
 
 budget:
-  tokens: 5_000
+  tokens: 11_000
 always:
   briefs:
     say:
-      # the repo's own top-level lessons and rules — unchanged from before this file
-      - briefs/*.md
+      # the repo's own rules and invariants — what a brain must hold to act at all
+      - briefs/rule.*.md
+      - briefs/define.*.md
     ref:
-      - briefs/domain.terms/**
+      # research, howtos, patterns, and worked examples — fetched when the work needs them
+      - briefs/ref.*.md
+      - briefs/howto.*.md
+      - briefs/portable-skills-pattern.md
+      # the glossary readme catalogs its ~190 term clusters, so one path stands for the set
+      - briefs/domain.terms/.readme.md
       - briefs/evidence/**
+    not:
+      # a worked incident stays on disk; its parent rule cites it by name
+      - briefs/*.example=*.md
+      # each cluster stays on disk, found through the readme above
+      - briefs/domain.terms/term=*.md
+      - briefs/domain.terms/role=*/**
   skills:
     say:
       - skills/**

@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`computeGuardsStaleOutput given: [case2] two kept guards lack template reviews when: [t0] the output is computed then: the tree matches the snapshot 1`] = `
+"🟡 2 kept guards lack reviews their templates hold
+   ├─ 1.vision.guard
+   │  ├─ lacks: has-questioned-fulcrum-research, yagni-and-simplicity
+   │  └─ adopt: rhx route.guard.upgrade --stone 1.vision --route .behavior/v2026_10_21.book-a-lesson
+   └─ 5.1.execution.from_vision.guard
+      ├─ lacks: dispatch-lives-with-its-route
+      └─ adopt: rhx route.guard.upgrade --stone 5.1.execution.from_vision --route .behavior/v2026_10_21.book-a-lesson"
+`;

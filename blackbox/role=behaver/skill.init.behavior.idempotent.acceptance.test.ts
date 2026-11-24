@@ -102,6 +102,97 @@ describe('init.behavior.idempotent', () => {
     });
   });
 
+  // 🔴 the critipath `case=010`, through the cli a driver runs. a re-init keeps a guard and a
+  //    stone stamped from a prior template, and must name both, never read as a clean `kept`
+  given('[case10] direct: re-init over a guard and a stone from a prior template', () => {
+    when('[t0] the guard lacks a review and the stone lacks the map ask', () => {
+      const scene = useBeforeAll(async () => {
+        const consumer = genConsumerRepo({
+          branchName: 'feature/reinit-stale-test',
+        });
+
+        // first run stamps the current templates
+        const first = runInitBehaviorSkillDirect({
+          args: '--name reinit-stale',
+          repoDir: consumer.repoDir,
+        });
+
+        // stamp a prior guard and a prior stone over them
+        const behaviorRoot = path.join(consumer.repoDir, '.behavior');
+        const behaviorDir = path.join(
+          behaviorRoot,
+          fs.readdirSync(behaviorRoot)[0]!,
+        );
+        const guardPath = path.join(behaviorDir, '1.vision.guard');
+        const guardPrior = fs
+          .readFileSync(guardPath, 'utf-8')
+          .replace(/^\s*- slug: yagni-and-simplicity\s*$\n/m, '');
+        fs.writeFileSync(guardPath, guardPrior);
+        const stonePath = path.join(behaviorDir, '1.vision.stone');
+        const stoneFirst = fs.readFileSync(stonePath, 'utf-8');
+        const stonePrior = stoneFirst.replace(
+          'draw at least one ascii map',
+          'draw a picture',
+        );
+        fs.writeFileSync(stonePath, stonePrior);
+
+        // the re-init a driver runs
+        const second = runInitBehaviorSkillDirect({
+          args: '--name reinit-stale',
+          repoDir: consumer.repoDir,
+        });
+
+        return {
+          ...consumer,
+          first,
+          second,
+          guardPath,
+          guardPrior,
+          stonePath,
+          stoneFirst,
+          stonePrior,
+        };
+      });
+
+      then('the first run renders the map ask into the vision stone', () => {
+        expect(scene.first.exitCode).toBe(0);
+        expect(scene.stoneFirst).toContain('draw at least one ascii map');
+        expect(scene.stoneFirst).toContain('bind the map as an index');
+      });
+
+      then('the re-init succeeds and keeps both files untouched', () => {
+        expect(scene.second.exitCode).toBe(0);
+        expect(fs.readFileSync(scene.guardPath, 'utf-8')).toEqual(
+          scene.guardPrior,
+        );
+        expect(fs.readFileSync(scene.stonePath, 'utf-8')).toEqual(
+          scene.stonePrior,
+        );
+      });
+
+      then('the guard is named with the review it lacks and how to adopt it', () => {
+        expect(scene.second.stdout).toContain(
+          '1 kept guard lacks reviews its template holds',
+        );
+        expect(scene.second.stdout).toContain('lacks: yagni-and-simplicity');
+        expect(scene.second.stdout).toContain(
+          'rhx route.guard.upgrade --stone 1.vision',
+        );
+      });
+
+      then('the stone is named as drifted from its template', () => {
+        expect(scene.second.stdout).toContain(
+          '1 kept stone drifted from its template, in its whole text',
+        );
+        expect(scene.second.stdout).toContain('├─ 1.vision.stone');
+      });
+
+      then('the re-init output matches the snapshot', () => {
+        expect(asSnapshotStable(scene.second.stdout)).toMatchSnapshot();
+      });
+    });
+  });
+
   given('[case9] direct: idempotent reruns preserve both binds', () => {
     when('[t0] init.behavior executed three times on same behavior', () => {
       const scene = useBeforeAll(async () => {

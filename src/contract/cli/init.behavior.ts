@@ -23,6 +23,8 @@ import {
 import { asBehaviorTargetDir } from '@src/domain.operations/behavior/init/asBehaviorTargetDir';
 import { asCleanRelativePath } from '@src/domain.operations/behavior/init/asCleanRelativePath';
 import { asDatedBehaviorDir } from '@src/domain.operations/behavior/init/asDatedBehaviorDir';
+import { computeGuardsStaleOutput } from '@src/domain.operations/behavior/init/computeGuardsStaleOutput';
+import { computeStonesStaleOutput } from '@src/domain.operations/behavior/init/computeStonesStaleOutput';
 import { findsertWishFromInput } from '@src/domain.operations/behavior/init/findsertWishFromInput';
 import { getWishContent } from '@src/domain.operations/behavior/init/getWishContent';
 import { expandBehaviorName } from '@src/domain.operations/behavior/name/expandBehaviorName';
@@ -178,13 +180,31 @@ export const initBehavior = async (): Promise<void> => {
     findsertWishFromInput({ wishInput, wishPath });
   }
 
-  // render tree-style output
+  // render tree-style output; a kept file that drifted is marked on its own row
   const treeOutput = computeOutputTree({
     created: result.created,
     kept: result.kept,
     updated: [],
+    drifted: [
+      ...result.guardsStale.map(({ guard }) => guard),
+      ...result.stonesStale,
+    ],
   });
   console.log(treeOutput);
+
+  // name each kept guard that lacks a review its template holds, so the skip is loud
+  const guardsStaleOutput = computeGuardsStaleOutput({
+    guardsStale: result.guardsStale,
+    behaviorDirRel,
+  });
+  if (guardsStaleOutput) console.log(`\n${guardsStaleOutput}`);
+
+  // name each kept stone whose text differs from its template, for the same reason
+  const stonesStaleOutput = computeStonesStaleOutput({
+    stonesStale: result.stonesStale,
+    behaviorDirRel,
+  });
+  if (stonesStaleOutput) console.log(`\n${stonesStaleOutput}`);
 
   // compute relative path to wish file
   const wishPathRel = `${behaviorDirRel}/0.wish.md`;

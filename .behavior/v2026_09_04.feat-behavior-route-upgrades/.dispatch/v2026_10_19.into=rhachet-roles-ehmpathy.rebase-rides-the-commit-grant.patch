@@ -1,0 +1,72 @@
+diff --git a/dist/domain.roles/mechanic/skills/git.stage/git.stage.add.sh b/dist/domain.roles/mechanic/skills/git.stage/git.stage.add.sh
+index bb5d0803c687b0f01292804553a019fa093dfcae..6f10b38020c4c11be0a55af057b233e64bb7207c 100755
+--- a/dist/domain.roles/mechanic/skills/git.stage/git.stage.add.sh
++++ b/dist/domain.roles/mechanic/skills/git.stage/git.stage.add.sh
+@@ -114,7 +114,31 @@ if [[ -f "$GLOBAL_METER_FILE" ]]; then
+   fi
+ fi
+ 
++# a rebase that only moves commits rides on the commit grant alone.
++# while a rebase is in progress, the commit grant (uses > 0) permits the
++# stage of paths git holds as unmerged: the mark that a conflict is resolved.
++# a path outside the unmerged set still needs the stage grant.
++GIT_DIR_ABS=$(git rev-parse --absolute-git-dir)
++REBASE_RIDES_COMMIT_GRANT="false"
++if [[ -d "$GIT_DIR_ABS/rebase-merge" || -d "$GIT_DIR_ABS/rebase-apply" ]] && [[ -f "$STATE_FILE" ]]; then
++  USES_VAL=$(jq -r '.uses // 0' "$STATE_FILE")
++  if [[ "$USES_VAL" != "0" && "$USES_VAL" != "null" && "$USES_VAL" != "block" ]]; then
++    UNMERGED=$(cd "$REPO_ROOT" && git diff --name-only --diff-filter=U)
++    ALL_UNMERGED="true"
++    for file in "${FILES[@]}"; do
++      rel_path="${file#"$REPO_ROOT"/}"
++      if ! grep -qxF -- "$rel_path" <<< "$UNMERGED"; then
++        ALL_UNMERGED="false"
++      fi
++    done
++    if [[ "$ALL_UNMERGED" == "true" ]]; then
++      REBASE_RIDES_COMMIT_GRANT="true"
++    fi
++  fi
++fi
++
+ # guard: stage permission check
++if [[ "$REBASE_RIDES_COMMIT_GRANT" != "true" ]]; then
+ if [[ ! -f "$STATE_FILE" ]]; then
+   print_turtle_header "hold up dude..."
+   print_tree_start "git.stage.add"
+@@ -135,6 +159,7 @@ if [[ "$STAGE_ALLOWED" != "allow" ]]; then
+   echo "  \$ git.commit.uses set --quant N --push allow|block --stage allow"
+   exit 2
+ fi
++fi
+ 
+ ######################################################################
+ # validate paths
+@@ -148,7 +173,14 @@ for file in "${FILES[@]}"; do
+   fi
+ 
+   # expand path (via realpath-like expansion)
+-  abs_path=$(cd "$(dirname "$abs_path")" 2>/dev/null && pwd)/$(basename "$abs_path") || abs_path="$file"
++  # a deleted path may sit in a dir that is gone too; keep the raw path then,
++  # and refuse any `..` segment so the repo check below cannot be walked past
++  abs_dir=$(cd "$(dirname "$abs_path")" 2>/dev/null && pwd) || abs_dir=""
++  if [[ -n "$abs_dir" ]]; then
++    abs_path="$abs_dir/$(basename "$abs_path")"
++  elif [[ "$abs_path" == *"/../"* || "$abs_path" == *"/.." ]]; then
++    abs_path="$file"
++  fi
+ 
+   # guard: path must be within repo
+   if [[ "$abs_path" != "$REPO_ROOT"* ]]; then
+@@ -160,8 +192,9 @@ for file in "${FILES[@]}"; do
+     exit 2
+   fi
+ 
+-  # guard: file must exist
+-  if [[ ! -e "$abs_path" ]]; then
++  # guard: file must exist, or be a tracked path whose deletion is staged
++  # (a rebase that resolves a conflict by deletion stages a path that is gone)
++  if [[ ! -e "$abs_path" ]] && ! (cd "$REPO_ROOT" && git ls-files --error-unmatch -- "${file#"$REPO_ROOT"/}" > /dev/null 2>&1); then
+     print_turtle_header "hold up dude..."
+     print_tree_start "git.stage.add"
+     print_tree_error "file not found: $file"

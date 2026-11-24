@@ -8,9 +8,9 @@ dirty-rework fork the human must rule reaches the terminal council.
 ## .kind
 
 **nurture.** nature permits a driver to carry every open fulcrum to the end and settle them in one
-terminal pass. we forbid it, because a driver who reads a vision fulcrum at the terminal stone reads
-it with the vision context gone — so the driver misses the cheap close and asks the human what it
-could have answered itself.
+terminal pass. we forbid it. at the terminal stone, the vision context that would close a vision
+fulcrum is gone. so the driver misses the cheap close, and asks the human what it could have
+answered itself.
 
 ## .invariant
 
@@ -44,24 +44,18 @@ them is spent — so the terminal council fills with rows the driver owed itself
 
 ## .the litigation
 
-- raised.by = wisher, 2026-09-14, on route `.behavior/v2026_09_04.feat-behavior-route-upgrades`
-- verbatim:
-  > "fulcrums needs to be reviewed at vision and execution; the driver opens fulcrums along the way
-  > regularly"
-  > "we need to peer-review that they closed any fulcrums that they could have"
-  > "fulcrums-self-sufficient maybe; whatever can be self sufficiently closed, should have been"
-- the incident: this route placed the fulcrum council terminal-only (`5.5.playtest`), on a misread
-  of `defer-fulcrums-to-last` as "review fulcrums ONCE at the end." the escalation IS terminal; the
-  close check is not. a `fulcrums-self-sufficient` peer lane at vision + execution corrects it.
-- resolution: the terminal `fulcrums-driver-owned` council stays (escalation); the per-stage
-  `fulcrums-self-sufficient` lane grades what the driver owed itself.
+- the claim argued: one terminal fulcrum council suffices, since `defer-fulcrums-to-last` places
+  fulcrum review at the end
+- what settled it: that rule times the ESCALATION, not the CLOSE. a driver opens fulcrums at every
+  stage, and the cheap close of each is owed at the stage that opened it
+- resolution: the terminal `fulcrums-driver-owned` council stays for escalation; a per-stage
+  `fulcrums-self-sufficient` peer lane, at vision + execution, grades what the driver owed itself
 
 ## .the counter-argument
 
 *a per-stage close-check re-reads fulcrums the terminal council reads anyway — redundant.* it is
-not: the two read at different times, and a fulcrum closed while its context is fresh costs a glance
-where the same fulcrum closed at the terminal stone costs a re-entry of a stage long left. two cues
-at two times, both cheap (`rule.require.a-cue-is-not-a-claim`).
+not. the two read at different times. a close while the context is fresh costs a glance. the same
+close at the terminal stone costs a re-entry of a stage long left. two cues at two times, both cheap (`rule.require.a-cue-is-not-a-claim`).
 
 ## .what would overturn it
 

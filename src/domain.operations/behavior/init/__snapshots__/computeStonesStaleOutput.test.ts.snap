@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`computeStonesStaleOutput given: [case2] two kept stones differ from their template when: [t0] the output is computed then: the tree matches the snapshot 1`] = `
+"🟡 2 kept stones drifted from their templates, in their whole text
+   ├─ 1.vision.stone
+   ├─ 5.3.verification.stone
+   └─ adopt, by a human: the route seals its stones against a driver edit
+      ├─ rhx route.mutate grant allow --route .behavior/v2026_01_01.demo
+      ├─ rhx rmsafe --path .behavior/v2026_01_01.demo/1.vision.stone
+      ├─ rhx rmsafe --path .behavior/v2026_01_01.demo/5.3.verification.stone
+      └─ then re-run this same init.behavior; it writes each removed stone from its template"
+`;

@@ -1,13 +1,13 @@
 # rule.always.prune-the-experience-space
 
 > **before you verdict a cell, ask whether the design could delete it. a combination you forbid,
-> redirect, or guard away is a combination nobody ever has to handle, test, demo, or debug.**
+> redirect, or guard away cannot occur, so it owes no code path, test, demo, or support case.**
 
 the walk produces a product of axes.
 
 - the extant four verdicts — `demoed` · `itemized` · `forbidden` · `impossible` — each *describe* a
   cell you have found
-- ⇒ this rule adds the act that runs first: shrink the space, so the verdicts are spent on fewer cells
+- ⇒ this rule adds the act that runs first: shrink the space, so the driver spends the verdicts on fewer cells
 
 ## .why — the extant discipline grades COVERAGE, and coverage rewards a larger space
 
@@ -46,8 +46,8 @@ case; remove it.**
 | **guard** | the attempt cannot be made | N cells → **impossible** | one constraint at the boundary |
 
 ⇒ they are a **ladder, cheapest last** — a guard removes the attempt, a redirect removes the
-outcome, a forbid removes every outcome but one. reach for the highest rung the domain permits, and
-say which rung you took.
+outcome, a forbid removes every outcome but one. reach for the highest rung the domain permits.
+then record which rung you took.
 
 ## 🔴 .the precondition — merge before you prune, or you hide a defect in the MODEL
 

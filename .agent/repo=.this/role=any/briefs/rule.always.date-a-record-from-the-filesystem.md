@@ -1,11 +1,11 @@
 # rule.always.date-a-record-from-the-filesystem
 
-> **the "today" in your context was captured when the session opened. it does not advance.**
+> **the session stamps the "today" in your context once, when it opens. that date does not advance.**
 
 before you stamp any dated record — a `.disputes` entry, a progress file, a dream, a route dir —
 read the date off the **filesystem**, not off your context.
 
-**write a probe, then read its mtime.** the write is what makes the read a clock:
+**write a probe. read its mtime.** the write is what makes the read a clock:
 
 ```sh
 printf 'probe\n' | rhx teesafe --into '<dir>/.clockprobe' --idem upsert
@@ -14,18 +14,13 @@ rhx rmsafe --path '<dir>/.clockprobe'
 ```
 
 🔴 **an extant file's mtime is NOT a clock — it is a record of a past write.** it answers *"when did
-i last touch this?"*, never *"what time is it?"*, and the gap between those two is exactly the
-interval in which a midnight can pass.
-
-🟡 **measured 2026-09-06:** i read two files written hours earlier, saw `2026-09-05 16:24`, and had
-to probe to learn the true date was **09-06**. the stale read was **one day wrong in the same
-direction as the defect this rule exists to catch** — so it would have confirmed the error rather
-than caught it.
+i last touch this?"*, never *"what time is it?"*. a midnight can pass in the gap between the two. a stale mtime errs in the same direction as a stale
+context, so it confirms the error rather than catches it.
 
 ## .why — a long session crosses midnight, and no signal fires
 
-the session injects the date once, at start, and never refreshes it. a session that opens at 02:53 and
-runs past midnight carries a **stale "today"** for every hour after — and it reads exactly like a
+the session injects the date once, at start, and has no refresh path. a session that opens in the
+small hours and runs past midnight carries a **stale "today"** for every hour after — and it reads exactly like a
 current one, because it is well-formed, plausible, and stated with authority.
 
 ⇒ **that is the whole hazard: there is no tell in the value itself.** a wrong date is not malformed,
@@ -58,10 +53,9 @@ repair, and it converts a right record into a wrong one under the appearance of 
 
 ## .what it costs when it slips
 
-measured here, 2026-09-05: two dated glossary entries wrong (one of them **corrected from right to
-wrong**), a dream filename and its symlink a day off, and two rounds of a progress file appended into
-the prior day — against that file's own *"ONE FILE PER DAY, never across days"*. the hook fired
-three times and was blamed twice before the clock was read.
+every dated record written after midnight lands a day off, and a correct hook reads as broken. the
+worked case — five records off, two misdiagnoses:
+`rule.always.date-a-record-from-the-filesystem.example=the-session-that-crossed-midnight.md`.
 
 ## .enforcement
 
@@ -75,4 +69,4 @@ three times and was blamed twice before the clock was read.
 
 - `rule.require.trust-but-verify` (mechanic) — the general form; this is its clock instance
 - `rule.always.diagnose-reviewer-malfunctions` (bhrain/driver) — diagnose the cause before you escalate the symptom
-- `.agent/.cache/repo=bhrain/role=learner/skill=learn.domain.terms/progress.2026-09-05.md` — round 5, the worked incident
+- `rule.always.date-a-record-from-the-filesystem.example=the-session-that-crossed-midnight.md` — the worked incident

@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`genPeerReviewTallyStdout given: [case1] a tally by lane with a --lane-wout filter when: [t0] it is rendered then: it matches its snapshot 1`] = `
+"🦫 oh, behave!
+
+🌲 tally.reviews.peer
+   ├─ route: .behavior/r
+   ├─ lane-with: (all lanes)
+   ├─ lane-wout: mech-
+   ├─ corpus: 3 reports
+   ├─ totals: 3 points · 2 blockers · 1 nitpick
+   └─ by lane
+      ├─    3 points  100.0%  prose    2 reports · b=2 n=1
+      └─    0 points    0.0%  arch     1 report  · b=0 n=0"
+`;
+
+exports[`genPeerReviewTallyStdout given: [case2] a tally by rule with zero points when: [t0] it is rendered then: it matches its snapshot 1`] = `
+"🦫 oh, behave!
+
+🌲 tally.reviews.peer
+   ├─ route: .behavior/r
+   ├─ lane-with: arch
+   ├─ corpus: 1 report
+   ├─ totals: 0 points · 0 blockers · 0 nitpicks
+   └─ by rule
+      └─ (none — the corpus cites no rule)"
+`;

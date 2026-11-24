@@ -1,0 +1,289 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`tally.reviews.peer (acceptance) given: [case1] a route with reports from three lanes when: [t0] it is tallied by lane then: the stdout matches its snapshot 1`] = `
+"🦫 oh, behave!
+
+🌲 tally.reviews.peer
+   ├─ route: .behavior/v2026_01_01.tally-fixture
+   ├─ lane-with: (all lanes)
+   ├─ corpus: 3 reports
+   ├─ totals: 3 points · 2 blockers · 1 nitpick
+   └─ by lane
+      ├─    2 points   66.7%  prose-of-briefs          1 report  · b=1 n=1
+      ├─    1 point    33.3%  mech-failhides           1 report  · b=1 n=0
+      └─    0 points    0.0%  arch-smell-scopeleaks    1 report  · b=0 n=0"
+`;
+
+exports[`tally.reviews.peer (acceptance) given: [case1] a route with reports from three lanes when: [t1] it is tallied by rule, one lane dropped then: the stdout matches its snapshot 1`] = `
+"🦫 oh, behave!
+
+🌲 tally.reviews.peer
+   ├─ route: .behavior/v2026_01_01.tally-fixture
+   ├─ lane-with: (all lanes)
+   ├─ lane-wout: mech-
+   ├─ corpus: 2 reports
+   ├─ totals: 2 points · 1 blocker · 1 nitpick
+   └─ by rule
+      ├─    1 point    50.0%  rule.forbid.absolutes  b=1 n=0
+      └─    1 point    50.0%  rule.forbid.riddles    b=0 n=1"
+`;
+
+exports[`tally.reviews.peer (acceptance) given: [case1] a route with reports from three lanes when: [t2] --help is asked then: the guide matches its snapshot 1`] = `
+"🦫 oh, behave!
+
+🌲 tally.reviews.peer --help
+   ├─ usage
+   │  ├─ tally.reviews.peer --route <dir>                       tally what each peer lane found on a route
+   │  ├─ tally.reviews.peer --route <dir> --by rule             tally points per cited rule
+   │  └─ tally.reviews.peer --route <dir> --lane-with <filter>  narrow to one lane
+   │
+   ├─ options
+   │  ├─ --route <dir>         the route dir to tally                           (required)
+   │  ├─ --by <axis>           lane (counts per lane) | rule (points per rule)  (default: lane)
+   │  ├─ --lane-with <filter>  keep reports whose filename holds this string    (default: all lanes)
+   │  ├─ --lane-wout <a,b>     drop reports whose filename holds any of these   (default: none)
+   │  └─ --help, -h            show this help
+   │
+   └─ reads
+      ├─ b=N n=N: the blockers and nitpicks a lane raised, summed over its reports
+      ├─ by lane: many reports and 0 blockers = budget rounds spent, no defect found
+      ├─ by rule: a rule absent from the rows was cited 0 times in the corpus
+      ├─ --lane-wout: give the flag once; join its values with commas
+      ├─ exit 2: the call is wrong — its route, its filters, or an empty corpus
+      └─ exit 1: a report on disk is malformed — its name, summary, or \`rule\` lines"
+`;
+
+exports[`tally.reviews.peer (acceptance) given: [case1] a route with reports from three lanes when: [t3] --route is absent then: it exits 2 as a constraint, never 0 with a guide 1`] = `
+"✋ ConstraintError: --route is required
+
+{
+  "hint": "rhx tally.reviews.peer --route .behavior/<route>"
+}"
+`;
+
+exports[`tally.reviews.peer (acceptance) given: [case1] a route with reports from three lanes when: [t4] the route rides as a positional then: it exits 2: a positional is refused, never read as a route 1`] = `
+"✋ ConstraintError: unexpected positional argument
+
+{
+  "positional": [
+    ".behavior/v2026_01_01.tally-fixture"
+  ],
+  "hint": "name the route with --route <dir>; run --help for the options"
+}"
+`;
+
+exports[`tally.reviews.peer (acceptance) given: [case1] a route with reports from three lanes when: [t5] --lane-with matches no report then: it exits 2: an empty corpus is refused, not tallied as clean 1`] = `
+"✋ ConstraintError: no peer-review reports matched
+
+{
+  "dir": ".behavior/v2026_01_01.tally-fixture/.reviews/peer",
+  "laneWith": "absent-lane",
+  "hint": "no report filename contains \\"absent-lane\\" — check the lane slug against the filenames in that dir"
+}"
+`;
+
+exports[`tally.reviews.peer (acceptance) given: [case1] a route with reports from three lanes when: [t6] --by names an axis it does not know then: it fails loud: an unknown axis is refused, never tallied by lane 1`] = `
+"⛈️  error: input invalid
+   └─ --by invalid option: expected one of "lane"|"rule""
+`;
+
+exports[`tally.reviews.peer (acceptance) given: [case1] a route with reports from three lanes when: [t7] -h is asked, the alias the guide advertises then: the guide matches its snapshot 1`] = `
+"🦫 oh, behave!
+
+🌲 tally.reviews.peer --help
+   ├─ usage
+   │  ├─ tally.reviews.peer --route <dir>                       tally what each peer lane found on a route
+   │  ├─ tally.reviews.peer --route <dir> --by rule             tally points per cited rule
+   │  └─ tally.reviews.peer --route <dir> --lane-with <filter>  narrow to one lane
+   │
+   ├─ options
+   │  ├─ --route <dir>         the route dir to tally                           (required)
+   │  ├─ --by <axis>           lane (counts per lane) | rule (points per rule)  (default: lane)
+   │  ├─ --lane-with <filter>  keep reports whose filename holds this string    (default: all lanes)
+   │  ├─ --lane-wout <a,b>     drop reports whose filename holds any of these   (default: none)
+   │  └─ --help, -h            show this help
+   │
+   └─ reads
+      ├─ b=N n=N: the blockers and nitpicks a lane raised, summed over its reports
+      ├─ by lane: many reports and 0 blockers = budget rounds spent, no defect found
+      ├─ by rule: a rule absent from the rows was cited 0 times in the corpus
+      ├─ --lane-wout: give the flag once; join its values with commas
+      ├─ exit 2: the call is wrong — its route, its filters, or an empty corpus
+      └─ exit 1: a report on disk is malformed — its name, summary, or \`rule\` lines"
+`;
+
+exports[`tally.reviews.peer (acceptance) given: [case1] a route with reports from three lanes when: [t8] it is tallied by rule, every lane kept then: the stdout matches its snapshot 1`] = `
+"🦫 oh, behave!
+
+🌲 tally.reviews.peer
+   ├─ route: .behavior/v2026_01_01.tally-fixture
+   ├─ lane-with: (all lanes)
+   ├─ corpus: 3 reports
+   ├─ totals: 3 points · 2 blockers · 1 nitpick
+   └─ by rule
+      ├─    2 points   66.7%  rule.forbid.absolutes  b=2 n=0
+      └─    1 point    33.3%  rule.forbid.riddles    b=0 n=1"
+`;
+
+exports[`tally.reviews.peer (acceptance) given: [case1b] the same route, narrowed or misfiltered when: [t0] --lane-with names one lane then: the stdout matches its snapshot 1`] = `
+"🦫 oh, behave!
+
+🌲 tally.reviews.peer
+   ├─ route: .behavior/v2026_01_01.tally-fixture
+   ├─ lane-with: prose-of
+   ├─ corpus: 1 report
+   ├─ totals: 2 points · 1 blocker · 1 nitpick
+   └─ by lane
+      └─    2 points  100.0%  prose-of-briefs    1 report  · b=1 n=1"
+`;
+
+exports[`tally.reviews.peer (acceptance) given: [case1b] the same route, narrowed or misfiltered when: [t1] --lane-wout is repeated then: it exits 2: a repeat is refused, never read last-wins 1`] = `
+"✋ ConstraintError: --lane-wout was given more than once
+
+{
+  "hint": "join the filters with commas: --lane-wout mech-,prose-of"
+}"
+`;
+
+exports[`tally.reviews.peer (acceptance) given: [case1b] the same route, narrowed or misfiltered when: [t2] --lane-wout drops every report then: it exits 2: an empty corpus is refused, and the hint names the filter 1`] = `
+"✋ ConstraintError: no peer-review reports matched
+
+{
+  "dir": ".behavior/v2026_01_01.tally-fixture/.reviews/peer",
+  "laneWout": [
+    "mech-",
+    "prose-of",
+    "arch-"
+  ],
+  "hint": "--lane-wout mech-,prose-of,arch- dropped all 3 reports — narrow the list, or omit it"
+}"
+`;
+
+exports[`tally.reviews.peer (acceptance) given: [case1b] the same route, narrowed or misfiltered when: [t3] --lane-with and --lane-wout compose, tallied by rule then: the stdout matches its snapshot 1`] = `
+"🦫 oh, behave!
+
+🌲 tally.reviews.peer
+   ├─ route: .behavior/v2026_01_01.tally-fixture
+   ├─ lane-with: by_peer
+   ├─ lane-wout: mech-
+   ├─ corpus: 2 reports
+   ├─ totals: 2 points · 1 blocker · 1 nitpick
+   └─ by rule
+      ├─    1 point    50.0%  rule.forbid.absolutes  b=1 n=0
+      └─    1 point    50.0%  rule.forbid.riddles    b=0 n=1"
+`;
+
+exports[`tally.reviews.peer (acceptance) given: [case1c] a route whose lanes raised no point when: [t0] it is tallied by lane then: the stdout matches its snapshot 1`] = `
+"🦫 oh, behave!
+
+🌲 tally.reviews.peer
+   ├─ route: .behavior/v2026_01_01.tally-fixture
+   ├─ lane-with: (all lanes)
+   ├─ corpus: 2 reports
+   ├─ totals: 0 points · 0 blockers · 0 nitpicks
+   └─ by lane
+      ├─    0 points     —   mech-failhides    1 report  · b=0 n=0
+      └─    0 points     —   repo-rules        1 report  · b=0 n=0"
+`;
+
+exports[`tally.reviews.peer (acceptance) given: [case1d] the same clean route, tallied by rule when: [t0] it is tallied by rule then: the stdout matches its snapshot 1`] = `
+"🦫 oh, behave!
+
+🌲 tally.reviews.peer
+   ├─ route: .behavior/v2026_01_01.tally-fixture
+   ├─ lane-with: (all lanes)
+   ├─ corpus: 1 report
+   ├─ totals: 0 points · 0 blockers · 0 nitpicks
+   └─ by rule
+      └─ (none — the corpus cites no rule)"
+`;
+
+exports[`tally.reviews.peer (acceptance) given: [case1e] a route where one lane ran two rounds when: [t0] it is tallied by lane then: the stdout matches its snapshot 1`] = `
+"🦫 oh, behave!
+
+🌲 tally.reviews.peer
+   ├─ route: .behavior/v2026_01_01.tally-fixture
+   ├─ lane-with: (all lanes)
+   ├─ corpus: 3 reports
+   ├─ totals: 2 points · 1 blocker · 1 nitpick
+   └─ by lane
+      ├─    2 points  100.0%  prose-of-briefs    2 reports · b=1 n=1
+      └─    0 points    0.0%  mech-failhides     1 report  · b=0 n=0"
+`;
+
+exports[`tally.reviews.peer (acceptance) given: [case2] a route whose guard ran no peer lane when: [t0] it is tallied then: it exits 2 and names the absent dir 1`] = `
+"✋ ConstraintError: no peer-review dir on that route
+
+{
+  "route": ".behavior/v2026_01_01.tally-fixture",
+  "expected": ".behavior/v2026_01_01.tally-fixture/.reviews/peer",
+  "hint": "confirm the route path, and that its guard has run at least one peer lane"
+}"
+`;
+
+exports[`tally.reviews.peer (acceptance) given: [case2b] a route whose peer dir holds wrappers but no report when: [t0] it is tallied then: it exits 2, and the hint names the absent *.report.md 1`] = `
+"✋ ConstraintError: no peer-review reports matched
+
+{
+  "dir": ".behavior/v2026_01_01.tally-fixture/.reviews/peer",
+  "hint": "the dir holds no *.report.md, since no stone's guard has run a peer lane yet. run one, then tally again — rhx route.stone.set --stone <stone> --as arrived"
+}"
+`;
+
+exports[`tally.reviews.peer (acceptance) given: [case3] a report whose summary disagrees with its points when: [t0] it is tallied then: it exits 1 as a malfunction, never a silent zero 1`] = `
+"💥 MalfunctionError: summary counts disagree with the points parsed
+
+{
+  "path": ".behavior/v2026_01_01.tally-fixture/.reviews/peer/5.1.execution.from_vision._.review.i001.abc.r001._.given.by_peer.repo-rules.report.md",
+  "summary": {
+    "blockers": 0,
+    "nitpicks": 0
+  },
+  "points": {
+    "blockers": 1,
+    "nitpicks": 0
+  },
+  "hint": "the tally refuses a report whose summary and body disagree; either count would be a guess. re-arrive the stone so its guard re-writes that lane's report, or tally without it via --lane-wout <lane>"
+}"
+`;
+
+exports[`tally.reviews.peer (acceptance) given: [case4] a point block with two rule lines when: [t0] it is tallied then: the refusal matches its snapshot 1`] = `
+"💥 MalfunctionError: a point block owes exactly one rule line
+
+{
+  "path": ".behavior/v2026_01_01.tally-fixture/.reviews/peer/5.1.execution.from_vision._.review.i001.abc.r001._.given.by_peer.repo-rules.report.md",
+  "head": "# blocker.1: a point",
+  "ruleLines": 2,
+  "hint": "re-arrive the stone so its guard re-writes that lane's report, or tally without it via --lane-wout <lane>"
+}"
+`;
+
+exports[`tally.reviews.peer (acceptance) given: [case4] a report whose filename declares no lane when: [t0] it is tallied then: the refusal matches its snapshot 1`] = `
+"💥 MalfunctionError: report filename declares no lane slug
+
+{
+  "path": ".behavior/v2026_01_01.tally-fixture/.reviews/peer/notes.report.md",
+  "expected": "…_.given.by_peer.<lane>.report.md",
+  "hint": "re-arrive the stone so its guard re-writes that lane's report, or tally without it via --lane-wout <lane>"
+}"
+`;
+
+exports[`tally.reviews.peer (acceptance) given: [case4] a rule line with no rule slug when: [t0] it is tallied then: the refusal matches its snapshot 1`] = `
+"💥 MalfunctionError: rule line carries no rule.* slug
+
+{
+  "path": ".behavior/v2026_01_01.tally-fixture/.reviews/peer/5.1.execution.from_vision._.review.i001.abc.r001._.given.by_peer.repo-rules.report.md",
+  "line": "**rule**: see the brief on absolutes",
+  "hint": "re-arrive the stone so its guard re-writes that lane's report, or tally without it via --lane-wout <lane>"
+}"
+`;
+
+exports[`tally.reviews.peer (acceptance) given: [case4] a summary with no blocker count when: [t0] it is tallied then: the refusal matches its snapshot 1`] = `
+"💥 MalfunctionError: no blocker count in the summary
+
+{
+  "path": ".behavior/v2026_01_01.tally-fixture/.reviews/peer/5.1.execution.from_vision._.review.i001.abc.r001._.given.by_peer.repo-rules.report.md",
+  "expected": "a summary tree line such as \`├─ 0 blockers\`",
+  "hint": "re-arrive the stone so its guard re-writes that lane's report, or tally without it via --lane-wout <lane>"
+}"
+`;

@@ -44,6 +44,9 @@ goal.
 
 ## `case=001.open-a-grove.md` — ⭐ happy critipath
 
+> **who** — bo, a beaver who works trees in a camp each day
+> **came for** — a live grove to work in, at the start of the day
+
 **narrative**
 
 bo starts the day: `grove open --camp local:laptop --grove river-bend`. the camp loads the trees
@@ -62,6 +65,9 @@ given a camp "local:laptop" with capacity free and a grove "river-bend"
 ---
 
 ## `case=002.open-at-capacity.md` — 🌵 sharp critipath (fails safe)
+
+> **who** — bo, a beaver who works trees in a camp each day
+> **came for** — one more grove, on a camp that already holds all it can
 
 **narrative**
 
@@ -94,6 +100,9 @@ given a camp "local:laptop" at capacity 3/3
 
 ## `case=003.list-the-groves.md` — 🌴 happy alterpath
 
+> **who** — bo, a beaver who works trees in a camp each day
+> **came for** — a reminder of which groves the camp can load
+
 **narrative**
 
 bo forgets what is loadable and runs `grove list`. it prints the groves and their tree counts. a
@@ -109,6 +118,9 @@ given a camp "local:laptop" with groves "river-bend", "old-slough"
 ---
 
 ## `case=004.restore-a-grove.md` — 🌵 sharp alterpath
+
+> **who** — bo, a beaver whose grove went corrupt
+> **came for** — the grove back as it stood at the last snapshot, never half-applied
 
 **narrative**
 

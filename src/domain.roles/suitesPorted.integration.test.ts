@@ -79,10 +79,13 @@ const SUITES_PORTED = [
  *         count would let one silently replace the other
  * .note = `git.tree.behavior.gates` is not a port — it is the verification-stage
  *         clamp on vision case=1 `[t6]`–`[t9]`, the four sprout gates at the
- *         entrypoint. it sits beside the verb it grades, so it lands here
+ *         entrypoint. it sits beside the verb it grades, so it lands here.
+ *         `git.grove.keyrack` is not a port either — it is the clamp on the
+ *         keyrack read's pipefail repair, beside the skill it grades
  */
 const SUITES_OUTSIDE_WORK = [
   'prioritizer/skills/eco.seed.integration.test.ts',
+  'supervisor/skills/git.grove.keyrack.integration.test.ts',
   'supervisor/skills/git.grove.saturation.census.integration.test.ts',
   'supervisor/skills/git.grove.saturation.forks.integration.test.ts',
   'supervisor/skills/git.grove.saturation.spend.integration.test.ts',

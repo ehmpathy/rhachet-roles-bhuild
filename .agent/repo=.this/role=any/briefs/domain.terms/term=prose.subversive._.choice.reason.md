@@ -64,6 +64,11 @@ them per `howto.domain-term-disputes`. they had authored one concept; i had mis-
 
 ## .evidence
 
+### the collision — 2026-09-08
+
+found on the bhrain `v0.34.0` release read. bhuild wrote this cluster 2026-09-06; bhrain shipped its
+own at the identical path and boundary 2026-09-07. bhuild's say file became a cite.
+
 ### the enumeration that proves one question is not enough
 
 one claim, written three ways — *the guard checks reviews at the wrong moment*:

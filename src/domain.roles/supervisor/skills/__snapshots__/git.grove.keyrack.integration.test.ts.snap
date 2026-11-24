@@ -1,0 +1,445 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`git.grove.keyrack given: [case] a literal --value when: [t0] the skill is invoked then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: git.grove.keyrack: --value must be @stdin, never a literal
+   why: an argv is world-readable on this box (ps), lands in shell
+        history, and rides into any log that echoes the command.
+        a secret that reaches argv is a secret you must rotate.
+   fix: pipe it —
+     rhx keyrack get --owner ehmpath --key K --env prep --value \\
+       | rhx git.grove.keyrack set grove-1 --org sandpine --key K --env prep --value @stdin
+"
+`;
+
+exports[`git.grove.keyrack given: [case] a remote grove reached over a real ssh hop when: [t0] a value is piped in, to the os.direct vault then: the success tree matches its snapshot 1`] = `
+"🦫 chew on it
+
+🔑 git.grove.keyrack set cloud://grove-loop
+   ├─ 🌳 grove: grove-loop
+   ├─ 🏢 org: sandpine
+   ├─ 🔑 key: LESSON_API_KEY
+   ├─ 🌍 env: prep
+   ├─ 👤 owner: bert
+   └─ 📏 value: 17 bytes (never printed)
+
+🔌 reach the grove
+   └─ 🟢 reached grove-loop
+
+🔎 a repo of 'sandpine' on the grove
+   ├─ found: $HOME/git/sandpine/svc-lessons
+   └─ 🟢 it declares org: sandpine
+
+📤 set sandpine.prep.LESSON_API_KEY on the grove
+   ├─ 🔐 keyrack set (org: sandpine, env: prep)
+   │     └─ sandpine.prep.LESSON_API_KEY
+   │        ├─ mech: PERMANENT_VIA_REPLICA
+   │        └─ vault: os.direct
+   │
+   ├─ 🔍 read it back to prove the VALUE landed, not merely the config
+   └─ 🟢 sha256 matches — the same bytes landed
+
+🌊 sandpine.prep.LESSON_API_KEY is set on grove-loop
+   └─ a clone there reads it after: rhx keyrack unlock --owner bert --env prep
+"
+`;
+
+exports[`git.grove.keyrack given: [case] a remote grove that ssh cannot reach when: [t0] the skill is invoked on the grove then: the malfunction matches its snapshot 1`] = `
+{
+  "stderr": "   └─ 💥 unreachable: grove-absent.invalid
+
+💥 MalfunctionError: git.grove.keyrack: cannot reach grove 'grove-absent.invalid' over ssh
+   ssh said: <masked>
+   fix: check the grove is up and its alias resolves —
+     ssh -o BatchMode=yes grove-absent.invalid true
+",
+  "stdout": "🦫 chew on it
+
+🔑 git.grove.keyrack set cloud://grove-absent.invalid
+   ├─ 🌳 grove: grove-absent.invalid
+   ├─ 🏢 org: sandpine
+   ├─ 🔑 key: LESSON_API_KEY
+   ├─ 🌍 env: prep
+   ├─ 👤 owner: bert
+   └─ 📏 value: 16 bytes (never printed)
+
+🔌 reach the grove
+",
+}
+`;
+
+exports[`git.grove.keyrack given: [case] a vault that mangles the value when: [t0] a value is piped in then: the malfunction matches its snapshot 1`] = `
+"   └─ 💥 the value that landed is NOT the value sent
+
+💥 MalfunctionError: git.grove.keyrack: the read-back does not match
+   sent:   b915470f6afcc7e5…  (16 bytes)
+   landed: c33861969d1cb4ce…
+   likely: the value was mangled in transit — a final newline, or a
+           shell expansion on the far side.
+"
+`;
+
+exports[`git.grove.keyrack given: [case] a vault that refuses the read-back when: [t0] a value is piped in then: the malfunction matches its snapshot 1`] = `
+"   └─ 💥 could not read the key back
+
+💥 MalfunctionError: git.grove.keyrack: the set reported success, and the read-back failed
+   🟡 the key's state on this box is UNKNOWN — do not assume it took.
+   check by hand:
+     cd $HOME/git/sandpine/svc-lessons && rhx keyrack get --owner bert --key LESSON_API_KEY --env prep --value | wc -c
+"
+`;
+
+exports[`git.grove.keyrack given: [case] a vault that stores nought when: [t0] a value is piped in then: the malfunction matches its snapshot 1`] = `
+"   └─ 💥 the key reads back EMPTY
+
+💥 MalfunctionError: git.grove.keyrack: the set reported success and stored nought
+   the key is configured on the grove, and its value is zero bytes.
+   so a clone there will fail on an absent key, with a rack that LOOKS set.
+"
+`;
+
+exports[`git.grove.keyrack given: [case] an empty pipe when: [t0] the skill is invoked then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: git.grove.keyrack: the piped value is empty
+   the read that fed this pipe produced no bytes — check it first:
+     rhx keyrack get --owner ehmpath --key K --env prep --value | wc -c
+   🟡 a LOCKED key prints its tip and pipes as ZERO bytes, so 'locked'
+      and 'absent' look identical downstream. unlock it first:
+     rhx keyrack unlock --owner ehmpath --env prep --key K
+"
+`;
+
+exports[`git.grove.keyrack given: [case] an installed repo of the org, and a real keyrack when: [t0] a value is piped in, to the os.direct vault then: the success tree matches its snapshot 1`] = `
+"🦫 chew on it
+
+🔑 git.grove.keyrack set local
+   ├─ 🌳 grove: this box
+   ├─ 🏢 org: sandpine
+   ├─ 🔑 key: LESSON_API_KEY
+   ├─ 🌍 env: prep
+   ├─ 👤 owner: bert
+   └─ 📏 value: 16 bytes (never printed)
+
+🔎 a repo of 'sandpine' on the grove
+   ├─ found: $HOME/git/sandpine/svc-lessons
+   └─ 🟢 it declares org: sandpine
+
+📤 set sandpine.prep.LESSON_API_KEY on the grove
+   ├─ 🔐 keyrack set (org: sandpine, env: prep)
+   │     └─ sandpine.prep.LESSON_API_KEY
+   │        ├─ mech: PERMANENT_VIA_REPLICA
+   │        └─ vault: os.direct
+   │
+   ├─ 🔍 read it back to prove the VALUE landed, not merely the config
+   └─ 🟢 sha256 matches — the same bytes landed
+
+🌊 sandpine.prep.LESSON_API_KEY is set on this box
+   └─ a clone there reads it after: rhx keyrack unlock --owner bert --env prep
+"
+`;
+
+exports[`git.grove.keyrack given: [case] an installed repo of the org, and a real keyrack when: [t1] the vault is one keyrack does not know then: the malfunction matches its snapshot 1`] = `
+{
+  "stderr": "   └─ 💥 the set failed
+
+💥 MalfunctionError: git.grove.keyrack: keyrack set failed on this box
+   
+   🔐 keyrack set
+      └─ ✋ ConstraintError: invalid --vault: must be one of os.direct, os.secure, os.daemon, os.envvar, 1password, aws.config, aws.params, github.secrets
+         ├─ vaultGiven: os.nowhere
+         └─ ran: keyrack set --owner bert --key LESSON_API_KEY --env prep --vault os.nowhere --mech PERMANENT_VIA_REPLICA
+",
+  "stdout": "🦫 chew on it
+
+🔑 git.grove.keyrack set local
+   ├─ 🌳 grove: this box
+   ├─ 🏢 org: sandpine
+   ├─ 🔑 key: LESSON_API_KEY
+   ├─ 🌍 env: prep
+   ├─ 👤 owner: bert
+   └─ 📏 value: 16 bytes (never printed)
+
+🔎 a repo of 'sandpine' on the grove
+   ├─ found: $HOME/git/sandpine/svc-lessons
+   └─ 🟢 it declares org: sandpine
+
+📤 set sandpine.prep.LESSON_API_KEY on the grove
+",
+}
+`;
+
+exports[`git.grove.keyrack given: [case] an installed repo of the org, and a real keyrack when: [t2] a value is piped in, with no --vault, so the default vault is used then: the success tree matches its snapshot 1`] = `
+"🦫 chew on it
+
+🔑 git.grove.keyrack set local
+   ├─ 🌳 grove: this box
+   ├─ 🏢 org: sandpine
+   ├─ 🔑 key: LESSON_API_KEY
+   ├─ 🌍 env: prep
+   ├─ 👤 owner: bert
+   └─ 📏 value: 18 bytes (never printed)
+
+🔎 a repo of 'sandpine' on the grove
+   ├─ found: $HOME/git/sandpine/svc-lessons
+   └─ 🟢 it declares org: sandpine
+
+📤 set sandpine.prep.LESSON_API_KEY on the grove
+   ├─ 🔐 keyrack set (org: sandpine, env: prep)
+   │     └─ sandpine.prep.LESSON_API_KEY
+   │        ├─ mech: PERMANENT_VIA_REPLICA
+   │        └─ vault: os.secure
+   │
+   ├─ 🔍 read it back to prove the VALUE landed, not merely the config
+   └─ 🟢 sha256 matches — the same bytes landed
+
+🌊 sandpine.prep.LESSON_API_KEY is set on this box
+   └─ a clone there reads it after: rhx keyrack unlock --owner bert --env prep
+"
+`;
+
+exports[`git.grove.keyrack given: [case] an installed repo of the org, and a real keyrack when: [t3] the grant is one keyrack does not know then: the malfunction matches its snapshot 1`] = `
+{
+  "stderr": "   └─ 💥 the set failed
+
+💥 MalfunctionError: git.grove.keyrack: keyrack set failed on this box
+   
+   🔐 keyrack set
+      └─ ✋ ConstraintError: invalid --mech: must be one of PERMANENT_VIA_REPLICA, PERMANENT_VIA_REFERENCE, EPHEMERAL_VIA_SESSION, EPHEMERAL_VIA_GITHUB_APP, EPHEMERAL_VIA_AWS_SSO, EPHEMERAL_VIA_GITHUB_OIDC
+         ├─ mechGiven: NOT_A_MECH
+         └─ ran: keyrack set --owner bert --key LESSON_API_KEY --env prep --vault os.direct --mech NOT_A_MECH
+",
+  "stdout": "🦫 chew on it
+
+🔑 git.grove.keyrack set local
+   ├─ 🌳 grove: this box
+   ├─ 🏢 org: sandpine
+   ├─ 🔑 key: LESSON_API_KEY
+   ├─ 🌍 env: prep
+   ├─ 👤 owner: bert
+   └─ 📏 value: 16 bytes (never printed)
+
+🔎 a repo of 'sandpine' on the grove
+   ├─ found: $HOME/git/sandpine/svc-lessons
+   └─ 🟢 it declares org: sandpine
+
+📤 set sandpine.prep.LESSON_API_KEY on the grove
+",
+}
+`;
+
+exports[`git.grove.keyrack given: [case] an unknown flag when: [t0] the skill is invoked then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: git.grove.keyrack: unknown arg '--anyway'
+   known: --org --key --env --value --owner --vault --grant
+"
+`;
+
+exports[`git.grove.keyrack given: [case] an unknown verb when: [t0] the skill is invoked then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: git.grove.keyrack: unknown verb 'get'
+   known: set
+   why: a READ back off a grove would print a secret onto this box's
+        terminal, so there is deliberately no 'get' here.
+"
+`;
+
+exports[`git.grove.keyrack given: [case] no --org, --key, or --env when: [t0] the skill is invoked then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: git.grove.keyrack: --org, --key, and --env are all required
+   e.g. rhx keyrack get --owner ehmpath --key OPENROUTER_API_KEY --env prep --value \\
+          | rhx git.grove.keyrack set grove-1 \\
+              --org ehmpathy --key OPENROUTER_API_KEY --env prep --value @stdin
+"
+`;
+
+exports[`git.grove.keyrack given: [case] no --value when: [t0] the skill is invoked then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: git.grove.keyrack: --value is required
+   and it must be @stdin — pipe the value in:
+     rhx keyrack get --owner ehmpath --key K --env prep --value | rhx git.grove.keyrack set ...
+"
+`;
+
+exports[`git.grove.keyrack given: [case] no grove when: [t0] the skill is invoked then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: git.grove.keyrack: a grove is required
+   e.g. rhx git.grove.keyrack set grove-1 --org ehmpathy ...
+"
+`;
+
+exports[`git.grove.keyrack given: [case] no verb when: [t0] the skill is invoked then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: git.grove.keyrack: a verb is required
+   known: set
+   e.g. rhx keyrack get --owner ehmpath --key K --env prep --value \\
+          | rhx git.grove.keyrack set grove-1 --org ehmpathy --key K --env prep --value @stdin
+"
+`;
+
+exports[`git.grove.keyrack given: [case] stdin is a terminal when: [t0] the skill is invoked under a pty, with naught piped then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: git.grove.keyrack: --value @stdin, but stdin is a terminal
+   naught was piped in, so there is no value to push.
+"
+`;
+
+exports[`git.grove.keyrack given: [case] the caller asks for help when: [t0] the skill is invoked with --help then: the guide matches its snapshot 1`] = `
+"git.grove.keyrack — hand a grove a credential from THIS host's rack
+
+.what = read a credential value on this box and set it into a grove's
+        keyrack, so a clone there can unlock it like any other key.
+
+.why  = a grove is a FRESH machine, and a keyrack key is per-MACHINE. so a
+        clone booted on a grove reads an EMPTY rack and dies on an absent
+        key — while the value sits, unlocked, on the supervisor's laptop
+        one ssh hop away. that gap has cost this fleet whole days: five
+        crews sat at one stone with the same absent-key malfunction.
+
+🟡 .why this is NOT \`git.grove.auth\`
+
+  auth answers "who is this machine logged in as?" — a browser, a url, a
+  code, a brain. this answers "what secrets can a clone on this machine
+  read?" they share a grove and naught else: of auth's five flags, four do
+  not apply here and \`--brain\` must be actively REFUSED, because a keyrack
+  key is per-machine and a per-brain scope would be a fiction.
+
+  four inapplicable flags and one refused is the tell that a subject is
+  different, not that a mech is absent.
+
+usage:
+  rhx keyrack get --owner ehmpath --key OPENROUTER_API_KEY --env prep --value \\
+    | rhx git.grove.keyrack set <grove> \\
+        --org ehmpathy --key OPENROUTER_API_KEY --env prep --value @stdin
+
+args:
+  set        the only verb today                          [required]
+  <grove>    grove exid, \`cloud://<exid>\`, or \`local\`      [required]
+  --org      the org to set the key under                  [required]
+  --key      the key name, e.g. OPENROUTER_API_KEY         [required]
+  --env      test | prep | prod | camp                     [required]
+  --value    must be \`@stdin\` — a literal is REFUSED       [required]
+  --owner    keyrack owner on the grove                    [default: ehmpath]
+  --vault    storage vault                                 [default: os.secure]
+  --grant    keyrack's grant mechanism         [default: PERMANENT_VIA_REPLICA]
+
+🟡 .the READ half is the CALLER's, and that is not an oversight
+
+  \`keyrack --org\` accepts only \`@this\` — the org of the repo you are stood
+  in — so BOTH halves are cwd-bound. you read from a LOCAL repo of that
+  org; this skill finds a repo of that org ON THE GROVE and sets there.
+
+  a skill that tried to do both halves would have to guess which local repo
+  to read from, and a wrong guess SUCCEEDS — against the org you did not
+  mean. so the read stays where the caller can see which org it hit.
+
+  the removal of the constraint itself is caught as
+  \`.dream/2026_09_03.keyrack-set-outside-an-org-repo\`.
+
+guarantee:
+  - the value NEVER appears in argv. \`--value @stdin\` is the only accepted
+    form; a literal is refused BY NAME rather than tolerated
+  - the org repo on the grove is DISCOVERED, then its DECLARED org is
+    verified against --org before one byte is written
+  - the set is VERIFIED by a read-back, compared as a sha256 — so neither
+    side ever prints the secret, and a silent truncation cannot pass
+  - exit 0 = set and verified, exit 1 = malfunction, exit 2 = constraint
+"
+`;
+
+exports[`git.grove.keyrack given: [case] the grove holds no repo of the org when: [t0] the skill is invoked on local then: the output matches its snapshot 1`] = `
+{
+  "stderr": "   └─ ✋ none found under ~/git/sandpine/
+
+✋ ConstraintError: git.grove.keyrack: no repo of org 'sandpine' on this box
+   why: keyrack's --org accepts only @this, so the set must run INSIDE
+        a repo of that org. there is none to run it in.
+   fix: clone one there first, e.g.
+     rhx git.grove.send --to local --what 'gh repo clone sandpine/<repo> ~/git/sandpine/<repo>'
+",
+  "stdout": "🦫 chew on it
+
+🔑 git.grove.keyrack set local
+   ├─ 🌳 grove: this box
+   ├─ 🏢 org: sandpine
+   ├─ 🔑 key: LESSON_API_KEY
+   ├─ 🌍 env: prep
+   ├─ 👤 owner: bert
+   └─ 📏 value: 1 byte (never printed)
+
+🔎 a repo of 'sandpine' on the grove
+",
+}
+`;
+
+exports[`git.grove.keyrack given: [case] the only repo of the org was never installed when: [t0] the skill is invoked on local then: the output matches its snapshot 1`] = `
+{
+  "stderr": "   └─ ✋ 1 repo(s) of 'sandpine', not one of them installed
+
+✋ ConstraintError: git.grove.keyrack: no INSTALLED repo of org 'sandpine' on this box
+   why: a repo's .agent/keyrack.yml extends dep manifests that live in
+        node_modules and are materialized by \`rhachet init\`. an
+        uninstalled clone has a chain that dangles, so \`keyrack set\`
+        there dies with 'extended keyrack not found'.
+   fix: install one of them, e.g.
+     rhx git.grove.send --to local --what 'cd $HOME/git/sandpine/svc-lessons && npm ci && npx rhachet init'
+",
+  "stdout": "🦫 chew on it
+
+🔑 git.grove.keyrack set local
+   ├─ 🌳 grove: this box
+   ├─ 🏢 org: sandpine
+   ├─ 🔑 key: LESSON_API_KEY
+   ├─ 🌍 env: prep
+   ├─ 👤 owner: bert
+   └─ 📏 value: 1 byte (never printed)
+
+🔎 a repo of 'sandpine' on the grove
+   ├─ ⏭️  skipped (never installed): $HOME/git/sandpine/svc-lessons
+",
+}
+`;
+
+exports[`git.grove.keyrack given: [case] the repo declares another org when: [t0] the skill is invoked on local then: the output matches its snapshot 1`] = `
+{
+  "stderr": "   └─ ✋ it declares org 'reefline', not 'sandpine'
+
+✋ ConstraintError: git.grove.keyrack: the repo's org does not match --org
+   asked for: sandpine
+   repo says: reefline   ($HOME/git/sandpine/svc-lessons)
+   why: --org @this reads THIS field, so the set would have landed on
+        'reefline'. it would have succeeded, against the wrong org.
+",
+  "stdout": "🦫 chew on it
+
+🔑 git.grove.keyrack set local
+   ├─ 🌳 grove: this box
+   ├─ 🏢 org: sandpine
+   ├─ 🔑 key: LESSON_API_KEY
+   ├─ 🌍 env: prep
+   ├─ 👤 owner: bert
+   └─ 📏 value: 1 byte (never printed)
+
+🔎 a repo of 'sandpine' on the grove
+   ├─ found: $HOME/git/sandpine/svc-lessons
+",
+}
+`;
+
+exports[`git.grove.keyrack given: [case] the repo declares no org when: [t0] the skill is invoked on local then: the output matches its snapshot 1`] = `
+{
+  "stderr": "   └─ ✋ it declares no org
+
+✋ ConstraintError: git.grove.keyrack: '$HOME/git/sandpine/svc-lessons' has no org in .agent/keyrack.yml
+   --org @this would derive nought there, so the set is not attempted.
+",
+  "stdout": "🦫 chew on it
+
+🔑 git.grove.keyrack set local
+   ├─ 🌳 grove: this box
+   ├─ 🏢 org: sandpine
+   ├─ 🔑 key: LESSON_API_KEY
+   ├─ 🌍 env: prep
+   ├─ 👤 owner: bert
+   └─ 📏 value: 1 byte (never printed)
+
+🔎 a repo of 'sandpine' on the grove
+   ├─ found: $HOME/git/sandpine/svc-lessons
+",
+}
+`;
+
+exports[`git.grove.keyrack given: [case] two groves when: [t0] the skill is invoked then: the refusal matches its snapshot 1`] = `
+"✋ ConstraintError: git.grove.keyrack: more than one grove given ('grove-1', 'grove-2')
+"
+`;

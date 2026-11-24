@@ -126,43 +126,6 @@ reviews:
 
         ensure they're enumerated within the vision under "open questions & assumptions"
 
-    - slug: has-ejected-the-archaeology
-      say: |
-        the yield states the OUTPUT. the road to it is archaeology, and archaeology is MOVED to an
-        appendix and cited by path — never cut, and never left in the yield.
-
-        walk $route/1.vision.yield.md section by section. for each passage ask:
-
-          who needs this, and WHEN?
-          - every reader, here                     → keep it in the yield
-          - no reader, ever                        → cut it
-          - a reader who disputes the claim, later → ARCHAEOLOGY. move it, and ref it
-
-        the third answer is the one that gets mis-sorted, and it is the whole point of this review.
-        a passage that is true, tight, cited, and load-bearing will pass every density check you
-        run — because those ask "is this worth keeping?" and the answer is yes. they never ask
-        "keep it WHERE?".
-
-        the tells, each of which is archaeology by definition:
-        - "we first tried X, then Y"        — an attempt trail
-        - a measurement's full method       — keep the number, ref the method
-        - a tool you built to reach a claim — the claim is the yield's; the tool is a note
-        - a review round narrated inline    — a round is archaeology by construction
-        - a read, its command, and its output — the verdict is the yield's; the trail is not
-        - "for the curious"                 — it just named itself a note
-
-        for each passage you move:
-        - it lands in $route/1.vision.yield.appendix.$what.md, at full depth. do NOT compress it.
-        - the yield keeps the DECISION it produced, in one line, plus a ref by path.
-        - an uncited note is a deletion. an unresolvable ref is a phantom path. both are blockers.
-
-        ⚠️ do not cut evidence to hit a length. that cut is lossy, and this review forbids it —
-        the move is what makes the yield terse without loss.
-
-        articulate: which passages you moved and where, which you kept and why every reader needs
-        them here, and which you cut. if you moved none, state which sections you walked and why
-        each earned its place in the decision file.
-
     # ⇒ the local half of `rule.forbid.superficial-repairs`, dispatched to bhrain at
     #   $route/.dispatch/v2026_09_08.into=bhrain.forbid-superficial-repairs.md. it fires HERE
     #   because the rule cannot enroll into a peer lane until bhrain ships it, and the defect
@@ -216,124 +179,24 @@ reviews:
         instead, and — where you made only the count repair — why the class had no deeper fix.
 
   peer:
-    # ── two grade the EXPERIENCE contract; the rest grade PROSE at three rubrics × several grains.
+    # ── both lanes grade the EXPERIENCE contract:
     #
     #      dimensional-decomposition   is the space orthogonal, exhaustive, walked — and PRUNED?
     #      experience-coverage         is each critipath demoed, and does it fail safe?
     #
-    #      dense-of-briefs             does each sentence carry its weight? — `**/*.md` MINUS the yield
-    #      dense-of-yields             the same rubric, the yield alone
-    #      terse-of-briefs             is the prose SHORT? — `**/*.md` MINUS the yield
-    #      terse-of-yields             the same rubric, the yield alone
-    #      overzoom-of-yields          could it have been EJECTED to a zoom? — the yield alone
-    #
-    #      condense-of-yields          the PASSAGE grain — rank the weakest passages
-    #      section-of-yields           the SECTION grain — does this section belong at this stage?
-    #      hermetic-of-yields          the STRANGER grain — deprived of refs + conversation
-    #
-    #    each rubric's two lanes partition the corpus, so no file is graded twice by one rubric.
-    #
-    # 🔴 the three prose rubrics grade three DIFFERENT properties, and none implies another:
-    #      dense     a RATIO   — signal per word          (bhrain/telepath, the condensation acts)
-    #      terse     a COUNT   — how many words           (ehmpathy/lang.prose, the ste overlay)
-    #      overzoom  a PLACE   — could this be elsewhere? (repo=.this, dispatch unresolved)
-    #    a passage can be dense, terse, and still hold a page of detail that belonged in a zoom.
-    #
-    # ⚠️ the flag hazards, the measurements, and the rejected designs are ejected to
-    #    `.agent/.notes/note.1.vision.guard.peer-lane-design.md`. READ IT BEFORE YOU EDIT A BIND —
-    #    five of the flags below are set against a silent-failure mode.
+    # 🔴 each binds the experience appendices with a second `--paths-with`. bhrain drops a route
+    #    file from a review's targets unless it is a yield, a seed, or a fulcrum summary, so the
+    #    first glob alone reaches the yield and never the catalog (bhuild#496).
 
     # 🔴 BRACED — the nest must expand 2/2. a rename drops one SILENTLY while the other matches.
     #    the prune rule rides here because it grades the same artifact the walk produces: a walked
     #    space with no prune pass is the defect, and only this lane reads the dimensions.
     - slug: dimensional-decomposition
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/rule.{require.dimensional-decomposition,always.prune-the-experience-space}.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/domain.operations/rule.require.fewer-paths-via-idempotency.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/howto.experience.decompose.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.axis=care.path=criti-vs-alter.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/domain.discovery/howto.dimensional-decomposition.md' --refs '$route/0.wish.md' --diffs since-main --paths-with '$route/1.vision.*.md' --join intersect --conversation $conversation --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/rule.{require.dimensional-decomposition,always.prune-the-experience-space}.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/domain.operations/rule.require.fewer-paths-via-idempotency.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/howto.experience.decompose.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.axis=care.path=criti-vs-alter.md' --refs '.agent/repo=ehmpathy/role=architect/briefs/practices/domain.discovery/howto.dimensional-decomposition.md' --refs '$route/0.wish.md' --diffs since-main --paths-with '$route/1.vision.*.md' --paths-with '$route/1.vision.yield.appendix.experience.*.md' --join intersect --conversation $conversation --output "$output"
       budget: 23
       level: 1
 
-    # 🔴 the rules are BRACED, not globbed — a rename falls out of the gate SILENTLY while the
-    #    survivors still match. verify with globsafe after any edit: the nest must expand 14/14.
-    - slug: dense-of-briefs
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhrain/role=telepath/briefs/rule.{require.{domain-discovery,distillation,elucidation,reflexive-condensation,dense-prose,archaeology-in-notes},forbid.{subversive-prose,decode-friction,riddles,purposeless-passages,surface-speak,obfuscation,absolutes,defensive-prose}}.md' --refs '.agent/repo=bhrain/role=telepath/briefs/define.{bulletize,diffusion,distillation,elucidation,purpose-first,reflexive-condensation,subversive-prose}.md' --refs '.agent/repo=bhrain/role=telepath/briefs/howto.razor-a-thought.md' --diffs since-main --paths-with '**/*.md' --paths-wout '$route/1.vision.yield.md' --join intersect --goal exhaustive --conversation $conversation --output "$output"
-      budget: 12
-      level: 1
-
-    # 🔴 BRACED — same verify as its peer above.
-    - slug: dense-of-yields
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhrain/role=telepath/briefs/rule.{require.{domain-discovery,distillation,elucidation,reflexive-condensation,dense-prose,archaeology-in-notes},forbid.{subversive-prose,decode-friction,riddles,purposeless-passages,surface-speak,obfuscation,absolutes,defensive-prose}}.md' --refs '.agent/repo=bhrain/role=telepath/briefs/define.{bulletize,diffusion,distillation,elucidation,purpose-first,reflexive-condensation,subversive-prose}.md' --refs '.agent/repo=bhrain/role=telepath/briefs/howto.razor-a-thought.md' --diffs since-main --paths-with '$route/*.yield.md' --join intersect --goal exhaustive --conversation $conversation --output "$output"
-      budget: 12
-      level: 1
-
-    # 🔴 ITS OWN LANE, and the reason is measured rather than tidy.
-    #    two constraints force it, and either alone would be enough:
-    #
-    #    1. the rule lives under `repo=.this`, not `repo=bhrain/role=telepath`, so it cannot join
-    #       the dense brace. and a SECOND `--rules` flag would not work: bhrain's `review.ts:129`
-    #       names `--refs` as the one repeatable flag, and casts `options.rules as string` at :154.
-    #       ⇒ a repeated `--rules` last-wins SILENTLY — the #366 defect, in a new slot.
-    #    2. even if it could join, it should not. measured on the 20-rule lane this guard replaced:
-    #       24 of 40 points — 60% — cited the three CHEAPEST mechanical rules, and the five that
-    #       grade the thought cited 0. a 15th rule on `dense` is a rule that gets crowded out.
-    #
-    # 🟡 only the YIELD grain is bound today. the briefs grain (`**/*.md`) is owed and deferred:
-    #    the measured bloat is in the yields (26,185 words against a 787-word wish), and a
-    #    corpus-wide bind risks the context gate this route's scope cut exists to repair.
-    #
-    # 🟡 NOT braced — one literal path, so there is no silent-drop hazard to verify here.
-    - slug: overzoom-of-yields
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=.this/role=any/briefs/rule.forbid.ejectable-overzoom.md' --refs '$route/.dispatch/v2026_09_11.into=bhrain.forbid-ejectable-overzoom.md' --refs '.agent/repo=bhrain/role=telepath/briefs/rule.require.archaeology-in-notes.md' --refs '.agent/repo=bhrain/role=telepath/briefs/rule.require.reflexive-condensation.md' --diffs since-main --paths-with '$route/*.yield.md' --join intersect --goal exhaustive --conversation $conversation --output "$output"
-      budget: 12
-      level: 1
-
-    # 🔴 the THIRD rubric row — `terse`, and it is NOT a duplicate of `dense`.
-    #      dense  = does each sentence carry its weight?      (bhrain/telepath — the condensation acts)
-    #      terse  = is the prose SHORT?                       (ehmpathy/lang.prose — the ste overlay)
-    #    a passage can pass every telepath rule and still run three times the length it needed,
-    #    because `require.dense-prose` grades a RATIO and `require.brevity` grades a COUNT.
-    #
-    # 🔴 it is a SEPARATE lane, deliberately, and NOT six more rules on `dense`.
-    #    measured on the lane this replaces: 24 of its 40 points — 60% — cited the three cheapest
-    #    mechanical rules, and the five that grade the THOUGHT cited 0. a 20-rule rubric dilutes;
-    #    two 6–14-rule rubrics do not, and each verdict stays attributable to its rubric.
-    #
-    # 🔴 BRACED — the nest must expand 6/6. verify with globsafe after any edit.
-    # 🟡 `avoid.articles-copulas` and `prefer.active-simple-tense` are EXCLUDED on purpose: the
-    #    telegraphic register is a VOICE call the consumer repo owns, and it would fire on
-    #    every line of every yield (`rule.require.generic-governs-structure-never-voice`).
-    - slug: terse-of-briefs
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.prose/rule.{require.brevity,forbid.{rambles,chronological-accretion},prefer.{short-sentences,one-instruction-per-sentence},avoid.passive-voice}.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.prose/define.{wick-dense,simplified-technical-english}.md' --diffs since-main --paths-with '**/*.md' --paths-wout '$route/1.vision.yield.md' --join intersect --goal exhaustive --conversation $conversation --output "$output"
-      budget: 12
-      level: 1
-
-    # 🔴 BRACED — same verify as its peer above. this lane is what delivers #350's
-    #    chronological-accretion requirement; before it, that rule was bound in NO guard at all.
-    - slug: terse-of-yields
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.prose/rule.{require.brevity,forbid.{rambles,chronological-accretion},prefer.{short-sentences,one-instruction-per-sentence},avoid.passive-voice}.md' --refs '.agent/repo=ehmpathy/role=mechanic/briefs/practices/lang.prose/define.{wick-dense,simplified-technical-english}.md' --diffs since-main --paths-with '$route/*.yield.md' --join intersect --goal exhaustive --conversation $conversation --output "$output"
-      budget: 12
-      level: 1
-
-    # 🟡 --refs MUST carry the appendix: a rank proposes MOVE, and a reviewer that cannot see the
-    #    destination can only propose ADD. NITPICK by design — this lane buys PROPOSALS.
-    - slug: condense-of-yields
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/rule.require.every-passage-earns-its-slot.md' --refs '$route/1.vision.yield.appendix.*.md' --refs '.agent/repo=bhrain/role=telepath/briefs/define.reflexive-condensation.md' --refs '.agent/repo=bhrain/role=telepath/briefs/rule.require.archaeology-in-notes.md' --diffs since-main --paths-with '$route/*.yield.md' --join intersect --goal exhaustive --conversation $conversation --output "$output"
-      budget: 12
-      level: 1
-
-    # 🟡 --refs MUST carry the appendix, same reason as its passage peer: a stub must dereference.
-    #    NITPICK — its two blocker shapes, a dropped decision and a dead pointer, are the driver's.
-    - slug: section-of-yields
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/rule.forbid.downstream-detail-in-a-yield.md' --refs '$route/1.vision.yield.appendix.*.md' --refs '.agent/repo=bhrain/role=telepath/briefs/rule.require.archaeology-in-notes.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/rule.require.every-passage-earns-its-slot.md' --diffs since-main --paths-with '$route/*.yield.md' --join intersect --goal exhaustive --conversation $conversation --output "$output"
-      budget: 12
-      level: 1
-
-    # 🔴 do NOT add --refs or --conversation here. that absence IS the lane — a stranger-legibility
-    #    detector must be POORER than the author, or a lookup costs it naught. NITPICK.
-    - slug: hermetic-of-yields
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/rule.{require.yield.hermeticity,forbid.yield.baggage}.md' --diffs since-main --paths-with '$route/*.yield.md' --join intersect --goal exhaustive --output "$output"
-      budget: 12
-      level: 1
-
     - slug: experience-coverage
-      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/rule.require.experience-coverage.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.axis=feel.path=happy-vs-sharp.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.axis=care.path=criti-vs-alter.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.metric=boundary-density.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/howto.experience.enumerate.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.demo.surf-school.md' --refs '$route/0.wish.md' --diffs since-main --paths-with '$route/1.vision.*.md' --join intersect --conversation $conversation --output "$output"
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/rule.require.experience-coverage.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.axis=feel.path=happy-vs-sharp.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.axis=care.path=criti-vs-alter.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.metric=boundary-density.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/howto.experience.enumerate.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/define.experience._.demo.surf-school.md' --refs '$route/0.wish.md' --diffs since-main --paths-with '$route/1.vision.*.md' --paths-with '$route/1.vision.yield.appendix.experience.*.md' --join intersect --conversation $conversation --output "$output"
       budget: 23
       level: 1

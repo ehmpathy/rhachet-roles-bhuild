@@ -26,9 +26,11 @@ reads thin is a cell never measured.
 ## .the cell verdicts — a refinement of the architect's three
 
 the architect's `howto.dimensional-decomposition` offers three verdicts (`filled` / `gap` /
-`forbidden`). the behaver refines them into **four**, because the behaver cares about two things the
-architect's verdicts blur: **coverage** (is a real experience demonstrated, or just on record?) and
-**why a non-experience can't occur** (which decides whether a guard is owed).
+`forbidden`). the behaver refines them into **four**. the architect's verdicts blur two things the
+behaver needs:
+
+- **coverage** — is a real experience demonstrated, or just on record?
+- **why a non-experience can't occur** — that decides whether a guard is owed
 
 | architect | behaver | sense |
 |-----------|---------|-------|

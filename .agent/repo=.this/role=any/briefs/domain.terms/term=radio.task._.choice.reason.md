@@ -29,8 +29,8 @@ each.
 bhrain's `artifact.seed` cluster names `RadioTask` as an **imported** term, from bhuild, by name. so
 the record already said *bhuild owns this word* — in another repo, where no bhuild census would look.
 
-⇒ **the settled lesson: a census asks what THIS repo owes. it never asks what another repo has
-already claimed we own.** an import is a citation of an export, and an export that was never written
+⇒ **the settled lesson: a census reads this repo's own contracts, so what another repo has already
+claimed we own sits outside its scope.** an import is a citation of an export, and an export that was never written
 is a phantom path pointed the wrong way.
 
 ## 🔴 .the strongest evidence — an import with no export

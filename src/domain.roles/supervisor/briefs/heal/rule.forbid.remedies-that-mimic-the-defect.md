@@ -17,7 +17,7 @@ the human's attention is the scarcest resource, and this defect spends it twice 
 4. the human reasonably concludes the remedy failed
 5. a second escalation opens, for a cause already paid for
 
-⚠️ step 4 is not carelessness — the conclusion is correct on the evidence available, which does
+🟡 step 4 is not carelessness — the conclusion is correct on the evidence available, which does
 not part the two states. the repair belongs at step 1.
 
 ## .the two measured instances

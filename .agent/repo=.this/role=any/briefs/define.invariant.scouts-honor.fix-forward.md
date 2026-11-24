@@ -43,15 +43,12 @@ is it CLEAN (lands in the diff already open, no ripple). *"i wasn't asked to"* i
 
 ## .the litigation
 
-- raised.by = wisher, 2026-09-14, on route `.behavior/v2026_09_04.feat-behavior-route-upgrades`
-- verbatim:
-  > "and that they did not defer any work that is scouts honor close enough unless it requires a big
-  > dirty refactor, if its a fix thats adjacent to the work, it should be fixed now"
-- the incident: this route's `dreams/` dir held small in-scope fixes — e.g. cut emphasis-noise in a
-  readme — that were adjacent to the work and should have been fixed, not dreamed. no peer lane
-  graded the defer-vs-do-now call at the stage the fix was spotted.
+- the claim argued: a dream is a safe default for any fix spotted mid-drive, since it loses no work
+- what settled it: a dream loses the context, which is the expensive half. only a big, dirty
+  refactor earns the defer; an adjacent fix is owed now. and no lane graded the defer-vs-do-now call
+  at the stage the fix was spotted
 - resolution: a `scouts-honor-fix-forward` peer lane at vision + execution grades
-  `$route/dreams/*` — a dream that reads as a small clean adjacent fix is a blocker.
+  `$route/dreams/*` — a dream that reads as a small clean adjacent fix is a blocker
 
 ## .the counter-argument
 

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { given, then, when } from 'test-fns';
+import { given, then, useThen, when } from 'test-fns';
 
 import { initBehaviorDir } from './initBehaviorDir';
 
@@ -19,6 +19,44 @@ describe('initBehaviorDir.integration', () => {
   afterEach(() => {
     fs.rmSync(tempDir, { recursive: true, force: true });
   });
+
+  /**
+   * .what = init the behavior once, then read every stamped stone + guard into memory
+   * .why = the thens of one when share one init via useThen; the read happens inside
+   *        that same test, before afterEach removes the temp dir
+   */
+  const genStampedFiles = (input: {
+    guard: 'light' | 'heavy' | null;
+  }): Record<string, string> => {
+    initBehaviorDir({
+      behaviorDir,
+      behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+      ...(input.guard ? { guard: input.guard } : {}),
+    });
+    return Object.fromEntries(
+      fs
+        .readdirSync(behaviorDir)
+        .filter((file) => file.endsWith('.guard') || file.endsWith('.stone'))
+        .map((file) => [
+          file,
+          fs.readFileSync(path.join(behaviorDir, file), 'utf-8'),
+        ]),
+    );
+  };
+
+  /**
+   * .what = the stamped guards whose content holds a given lane slug, sorted
+   * .why = a bearer set reads as one assertion, where a loop over files would not
+   */
+  const getGuardsThatCarry = (input: {
+    stamped: Record<string, string>;
+    slug: string;
+  }): string[] =>
+    Object.entries(input.stamped)
+      .filter(([file]) => file.endsWith('.guard'))
+      .filter(([, content]) => content.includes(`- slug: ${input.slug}\n`))
+      .map(([file]) => file)
+      .sort();
 
   given('[case1] guard level is light (default)', () => {
     when('[t0] initBehaviorDir is called without guard arg', () => {
@@ -66,6 +104,9 @@ describe('initBehaviorDir.integration', () => {
         expect(blueprintGuard).toContain('has-role-standards-adherance');
         expect(blueprintGuard).toContain('has-role-standards-coverage');
 
+        // the yagni lane (#354) reads the blueprint as it reads the vision
+        expect(blueprintGuard).toContain('slug: yagni-and-simplicity');
+
         // light does NOT have: 5whys, premortem, inverse, devils-advocate
         expect(blueprintGuard).not.toContain('has-questioned-5whys');
         expect(blueprintGuard).not.toContain('has-questioned-premortem');
@@ -86,7 +127,7 @@ describe('initBehaviorDir.integration', () => {
         ).toBe(false);
       });
 
-      then('vision guard has light self-reviews (5 reviews)', () => {
+      then('vision guard has light self-reviews (7 reviews)', () => {
         initBehaviorDir({
           behaviorDir,
           behaviorDirRel: '.behavior/v2025_01_01.test-feature',
@@ -97,19 +138,33 @@ describe('initBehaviorDir.integration', () => {
           'utf-8',
         );
 
-        // light has 5 self-reviews: grounded-in-reality, experience-coverage,
-        // requirements, assumptions, questions
+        // light has 7 self-reviews: grounded-in-reality, experience-coverage,
+        // requirements, assumptions, questions, and the fulcrum pair (#352 #353)
         expect(visionGuard).toContain('has-grounded-in-reality');
         expect(visionGuard).toContain('has-experience-coverage');
         expect(visionGuard).toContain('has-questioned-requirements');
         expect(visionGuard).toContain('has-questioned-assumptions');
         expect(visionGuard).toContain('has-questioned-questions');
+        expect(visionGuard).toContain('slug: has-questioned-fulcrum-research');
+        expect(visionGuard).toContain('slug: has-questioned-fulcrum-deletion');
 
         // light also carries the experience-coverage peer review + a reviewed? judge,
         // wired against the widened glob that self-anchors on the vision yield — a
         // zero-case-file vision must still match at least that one file, never zero
         expect(visionGuard).toContain('slug: experience-coverage');
+        // the yagni lane (#354) grades the vision against its own rubric
+        expect(visionGuard).toContain('slug: yagni-and-simplicity');
+        expect(visionGuard).toContain(
+          'behavior.vision/rule.require.yagni-and-simplicity.md',
+        );
+        // the lane loads the audience rule (#346) beside its coverage rule
+        expect(visionGuard).toContain(
+          'rule.require.{experience-coverage,declared-experience-audience}.md',
+        );
         expect(visionGuard).toContain("--paths-with '$route/1.vision.*.md'");
+        expect(visionGuard).not.toContain(
+          "--paths-with '$route/1.vision.experience.case=*.md'",
+        );
         expect(visionGuard).not.toContain(
           "--paths-with '$route/1.vision.yield.appendix.experience.case=*.md'",
         );
@@ -165,7 +220,7 @@ describe('initBehaviorDir.integration', () => {
         expect(result.created).not.toContain('1.vision.guard.heavy');
       });
 
-      then('vision guard has heavy self-reviews (10 reviews)', () => {
+      then('vision guard has heavy self-reviews (13 reviews)', () => {
         initBehaviorDir({
           behaviorDir,
           behaviorDirRel: '.behavior/v2025_01_01.test-feature',
@@ -177,7 +232,11 @@ describe('initBehaviorDir.integration', () => {
           'utf-8',
         );
 
-        // heavy has all 10 self-reviews, research-based ones too
+        // heavy holds 13 self-reviews: the research-based ones, the fulcrum pair
+        // (#352 #353), and has-repaired-structurally
+        expect(visionGuard).toContain('slug: has-questioned-fulcrum-research');
+        expect(visionGuard).toContain('slug: has-questioned-fulcrum-deletion');
+        expect(visionGuard).toContain('slug: has-repaired-structurally');
         expect(visionGuard).toContain('has-grounded-in-reality');
         expect(visionGuard).toContain('has-experience-coverage');
         expect(visionGuard).toContain('has-questioned-fundamentals');
@@ -192,7 +251,19 @@ describe('initBehaviorDir.integration', () => {
         // heavy also carries the experience-coverage peer review + a reviewed? judge,
         // wired against the same widened glob as light (guard-variant-consistency)
         expect(visionGuard).toContain('slug: experience-coverage');
+        // the yagni lane (#354) grades the vision against its own rubric
+        expect(visionGuard).toContain('slug: yagni-and-simplicity');
+        expect(visionGuard).toContain(
+          'behavior.vision/rule.require.yagni-and-simplicity.md',
+        );
+        // the lane loads the audience rule (#346) beside its coverage rule
+        expect(visionGuard).toContain(
+          'rule.require.{experience-coverage,declared-experience-audience}.md',
+        );
         expect(visionGuard).toContain("--paths-with '$route/1.vision.*.md'");
+        expect(visionGuard).not.toContain(
+          "--paths-with '$route/1.vision.experience.case=*.md'",
+        );
         expect(visionGuard).not.toContain(
           "--paths-with '$route/1.vision.yield.appendix.experience.case=*.md'",
         );
@@ -454,31 +525,19 @@ describe('initBehaviorDir.integration', () => {
 
   given('[case6] verification stone and guard enhancements', () => {
     when('[t0] initBehaviorDir is called', () => {
-      then('verification stone references repros artifact', () => {
-        initBehaviorDir({
-          behaviorDir,
-          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
-        });
+      const stamped = useThen('it stamps the route', async () =>
+        genStampedFiles({ guard: null }),
+      );
 
-        const stoneContent = fs.readFileSync(
-          path.join(behaviorDir, '5.3.verification.stone'),
-          'utf-8',
-        );
+      then('verification stone references repros artifact', () => {
+        const stoneContent = stamped['5.3.verification.stone']!;
 
         expect(stoneContent).toContain('3.2.distill.repros.experience');
         expect(stoneContent).toContain('repros artifact');
       });
 
       then('verification stone has enhanced behavior coverage table', () => {
-        initBehaviorDir({
-          behaviorDir,
-          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
-        });
-
-        const stoneContent = fs.readFileSync(
-          path.join(behaviorDir, '5.3.verification.stone'),
-          'utf-8',
-        );
+        const stoneContent = stamped['5.3.verification.stone']!;
 
         expect(stoneContent).toContain('snapshots?');
         expect(stoneContent).toContain('critical path?');
@@ -486,15 +545,7 @@ describe('initBehaviorDir.integration', () => {
       });
 
       then('verification guard has 8 total self-reviews', () => {
-        initBehaviorDir({
-          behaviorDir,
-          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
-        });
-
-        const guardContent = fs.readFileSync(
-          path.join(behaviorDir, '5.3.verification.guard'),
-          'utf-8',
-        );
+        const guardContent = stamped['5.3.verification.guard']!;
 
         // the 8 self-reviews retained after the low-yield cut (corpus-graded):
         // has-journey-tests-from-repros, has-contract-output-variants-snapped, and
@@ -515,6 +566,22 @@ describe('initBehaviorDir.integration', () => {
         );
         expect(guardContent).not.toContain('has-play-test-convention');
       });
+
+      // 🔴 #355: the stone asks for the impacted suites, never a whole-tier sweep.
+      //    the teeth: restore an unscoped `npm run test:unit` row, or drop the cicd line
+      then(
+        'verification stone asks for impacted runs and leaves the sweep to cicd',
+        () => {
+          const stoneContent = stamped['5.3.verification.stone']!;
+
+          expect(stoneContent).toContain('rhx git.repo.test --what unit');
+          expect(stoneContent).toContain("the full, unscoped sweep is cicd's");
+          expect(stoneContent).toContain('do NOT reach for\n`--thorough`');
+          expect(stoneContent).not.toContain('npm run test:unit');
+          expect(stoneContent).not.toContain('npm run test:integration');
+          expect(stoneContent).not.toContain('npm run test:acceptance');
+        },
+      );
     });
   });
 
@@ -699,141 +766,84 @@ describe('initBehaviorDir.integration', () => {
     });
   });
 
-  given('[case8] the vision guard carries the archaeology lint', () => {
+  // 🔴 the clamp on the experience bind. bhrain drops a route file from a review's
+  //    targets unless it is a yield, a seed, or a fulcrum summary — so a bare
+  //    `$route/1.vision.*.md` reaches the yield alone, and the two lanes that grade
+  //    the experience catalog would grade a catalog they never read (bhuild#496).
+  given(
+    '[case8] the vision experience lanes read the experience appendices',
+    () => {
+      for (const guard of ['light', 'heavy'] as const) {
+        when(`[t0] inited with guard=${guard}`, () => {
+          then('both experience lanes bind the appendix glob', () => {
+            initBehaviorDir({
+              behaviorDir,
+              behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+              guard,
+            });
+            const visionGuard = fs.readFileSync(
+              path.join(behaviorDir, '1.vision.guard'),
+              'utf-8',
+            );
+            for (const slug of [
+              'dimensional-decomposition',
+              'experience-coverage',
+            ]) {
+              // a slug absent from the guard fails here, readable, not as a TypeError
+              const [, afterSlug] = visionGuard.split(`- slug: ${slug}\n`);
+              expect(afterSlug).toBeDefined();
+              const lane = (afterSlug ?? '').split('- slug:')[0] ?? '';
+              expect(lane).toContain(
+                "--paths-with '$route/1.vision.yield.appendix.experience.*.md'",
+              );
+            }
+          });
+        });
+      }
+    },
+  );
+
+  // 🔴 the clamp on the retirement. the prose-density and archaeology lanes were
+  //    withdrawn; the test below reads each stamped guard, per variant, so a later
+  //    sweep that restores one goes red here.
+  //    the slug list and the skill name are the teeth — the rubric rules they
+  //    bound were deleted with them, so a restored lane would bind naught.
+  given('[case9] no guard carries a retired prose lane', () => {
     for (const guard of ['light', 'heavy'] as const) {
       when(`[t0] inited with guard=${guard}`, () => {
-        // .note = read inline rather than via useThen: useThen returns a deferred
-        //         PROXY, and a proxy cannot stand in for a primitive string
-        const stampVisionGuard = (): string => {
+        then('no stamped guard names a retired slug or skill', () => {
           initBehaviorDir({
             behaviorDir,
             behaviorDirRel: '.behavior/v2025_01_01.test-feature',
             guard,
           });
-          return fs.readFileSync(
-            path.join(behaviorDir, '1.vision.guard'),
-            'utf-8',
-          );
-        };
+          const guardFiles = fs
+            .readdirSync(behaviorDir)
+            .filter((file) => file.endsWith('.guard'));
+          expect(guardFiles.length).toBeGreaterThan(0);
 
-        then('the archaeology lane is bound, with its stone', () => {
-          const visionGuard = stampVisionGuard();
-          expect(visionGuard).toContain('slug: archaeology-of-yields');
-          expect(visionGuard).toContain(
-            '$rhx review.for.yield-archaeology --route $route --stone 1.vision',
-          );
-        });
-
-        // 🔴 the clamp. a lint bounds ROUNDS nowhere — it costs $0 and 1ms — so a
-        //    budget low enough to exhaust would unlock the level on a yield that
-        //    still states its own road. this pins the intent so a later sweep
-        //    cannot flatten it to the 3 every brain lane carries.
-        then(
-          'the archaeology lane carries a budget that cannot exhaust',
-          () => {
-            const lintLane = stampVisionGuard()
-              .split('- slug: archaeology-of-yields')[1]!
-              .split('- slug:')[0]!;
-            expect(lintLane).toContain('budget: 99');
-          },
-        );
-
-        // 🔴 the clamp on the scope narrowing. a route-wide `$route/*.yield.md`
-        //    reads clean at the vision stage — no later yield exists yet — and on a
-        //    RE-DRIVE it pulls every approved downstream yield into this gate.
-        then(
-          'every prose lane binds THIS stage, never a route-wide glob',
-          () => {
-            const visionGuard = stampVisionGuard();
-            expect(visionGuard).not.toContain(
-              "--paths-with '$route/*.yield.md'",
+          const retiredMarks = [
+            'slug: density-of-',
+            'slug: dense-of-',
+            'slug: terse-of-',
+            'slug: overzoom-of-',
+            'slug: archaeology-of-yields',
+            'slug: has-ejected-the-archaeology',
+            'review.for.yield-archaeology',
+          ];
+          const hits = guardFiles.flatMap((file) => {
+            const content = fs.readFileSync(
+              path.join(behaviorDir, file),
+              'utf-8',
             );
-            expect(visionGuard).toContain(
-              "--paths-with '$route/1.vision.yield.md'",
-            );
-          },
-        );
-
-        // 🔴 the clamp on the variant seam. `define.guard-variants-heavy-light`
-        //    puts SELF-review depth on the variant axis and peer lanes nowhere on
-        //    it, so a peer lane carried by heavy alone is a detection hole keyed
-        //    to a flag. both variants bind both terse subjects, or this goes red.
-        then('both guard variants bind the SAME terse subjects', () => {
-          const visionGuard = stampVisionGuard();
-          expect(visionGuard).toContain('slug: density-of-yields');
-          expect(visionGuard).toContain('slug: density-of-briefs');
-        });
-
-        // 🔴 the clamp on the collapse. the three rubrics merged because each
-        //    repairs by REMOVAL, so a verdict from any of them ends in one
-        //    instruction. a re-split would restore three context loads and three
-        //    budgets to buy that one answer.
-        // 🟡 `density-of-` is the SURVIVOR's name, so it is absent from this list
-        //    by construction. the teeth are unchanged: a re-split reintroduces
-        //    `dense-of-` and `overzoom-of-` BESIDE it, and either one goes red.
-        // 🟡 `cut-of-` and `terse-of-` are the two interim names the survivor
-        //    carried. `terse-of-` was retired because it asserts a property the
-        //    rubric REFUSES to demand — "terse is not thin; a settleable claim
-        //    stays, however long it runs" — where `density` grades signal per
-        //    word, which is what all 10 rules actually move.
-        // 🔴 `dense-of-` and `density-of-` are one character-class apart, and
-        //    only one is legal. the full `slug: ` prefix is what parts them, so
-        //    a match on the bare stem would go red on the survivor.
-        then('the three rubrics stay merged into one lane per subject', () => {
-          const visionGuard = stampVisionGuard();
-          for (const retired of [
-            'dense-of-',
-            'cut-of-',
-            'terse-of-',
-            'overzoom-of-',
-          ])
-            expect(visionGuard).not.toContain(`slug: ${retired}`);
+            return retiredMarks
+              .filter((mark) => content.includes(mark))
+              .map((mark) => `${file} :: ${mark}`);
+          });
+          expect(hits).toEqual([]);
         });
       });
     }
-  });
-
-  // 🔴 the clamp on the SPREAD. every stone that emits a yield carries a prose
-  //    `density-of-yields` gate; the archaeology concern is the deterministic
-  //    FLOOR under that gate. so the invariant is a triple: wherever
-  //    `density-of-yields` lands, `has-ejected-the-archaeology` (write-time self)
-  //    and `archaeology-of-yields` (level-0 lint) MUST land with it. a later
-  //    sweep that drops the floor from any one layer goes red here, never in
-  //    the wild.
-  given('[case9] every terse concern carries an archaeology floor', () => {
-    when('[t0] inited with guard=heavy (stamps the most guards)', () => {
-      then('every guard with a density-of-yields gate carries both floors', () => {
-        initBehaviorDir({
-          behaviorDir,
-          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
-          guard: 'heavy',
-        });
-
-        const guardFiles = fs
-          .readdirSync(behaviorDir)
-          .filter((file) => file.endsWith('.guard'));
-
-        // a heavy init must stamp at least one guard that carries the terse
-        // gate, else the walk below is vacuously true and clamps naught
-        const terseBearers = guardFiles.filter((file) =>
-          fs
-            .readFileSync(path.join(behaviorDir, file), 'utf-8')
-            .includes('slug: density-of-yields'),
-        );
-        expect(terseBearers.length).toBeGreaterThan(0);
-
-        for (const file of terseBearers) {
-          const guard = fs.readFileSync(path.join(behaviorDir, file), 'utf-8');
-          // pin the WHOLE slug line — a bare `slug: x` substring also matches
-          // `slug: x-renamed`, so the trailing newline is what gives teeth
-          expect(guard).toContain('- slug: has-ejected-the-archaeology\n');
-          expect(guard).toContain('- slug: archaeology-of-yields\n');
-          expect(guard).toContain(
-            '$rhx review.for.yield-archaeology --route $route --stone',
-          );
-        }
-      });
-    });
   });
 
   // 🔴 the clamp on the ESCALATION council. `defer-fulcrums-to-last` governs WHEN to
@@ -843,41 +853,30 @@ describe('initBehaviorDir.integration', () => {
   //    onto a second stone would escalate one council twice.
   // 🟡 the DRIVER-OWNED close check is a SEPARATE lane (`fulcrums-self-sufficient`),
   //    clamped by [case11] — it DOES run per-stage (vision + execution). the two are
-  //    not the same lane: escalation is terminal, the close check is where work is born.
+  //    not the same lane: `fulcrums-driver-owned` binds on 5.5.playtest alone, and
+  //    `fulcrums-self-sufficient` binds on the vision + execution guards.
   given('[case10] the fulcrum council rides the terminal stone alone', () => {
     when('[t0] inited with guard=heavy (stamps the most guards)', () => {
-      then('5.5.playtest carries the fulcrum lane, bound to the inventory', () => {
-        initBehaviorDir({
-          behaviorDir,
-          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
-          guard: 'heavy',
-        });
+      const stamped = useThen('it stamps the route', async () =>
+        genStampedFiles({ guard: 'heavy' }),
+      );
 
-        const playtestGuard = fs.readFileSync(
-          path.join(behaviorDir, '5.5.playtest.guard'),
-          'utf-8',
-        );
-        expect(playtestGuard).toContain('- slug: fulcrums-driver-owned\n');
-        expect(playtestGuard).toContain(
-          "--paths-with '$route/.fulcrums/inventory.of=fulcrums.*'",
-        );
-      });
+      then(
+        '5.5.playtest carries the fulcrum lane, bound to the inventory',
+        () => {
+          const playtestGuard = stamped['5.5.playtest.guard']!;
+          expect(playtestGuard).toContain('- slug: fulcrums-driver-owned\n');
+          expect(playtestGuard).toContain(
+            "--paths-with '$route/.fulcrums/inventory.of=fulcrums.*'",
+          );
+        },
+      );
 
       then('no OTHER guard carries the fulcrum lane', () => {
-        initBehaviorDir({
-          behaviorDir,
-          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
-          guard: 'heavy',
+        const bearers = getGuardsThatCarry({
+          stamped,
+          slug: 'fulcrums-driver-owned',
         });
-
-        const bearers = fs
-          .readdirSync(behaviorDir)
-          .filter((file) => file.endsWith('.guard'))
-          .filter((file) =>
-            fs
-              .readFileSync(path.join(behaviorDir, file), 'utf-8')
-              .includes('- slug: fulcrums-driver-owned\n'),
-          );
         expect(bearers).toEqual(['5.5.playtest.guard']);
       });
     });
@@ -885,34 +884,25 @@ describe('initBehaviorDir.integration', () => {
 
   // 🔴 the clamp on the per-stage DRIVER-OWNED close checks. the driver opens fulcrums
   //    and spots adjacent fixes AT vision + execution, so both lanes run THERE — where
-  //    the context that closes them is fresh — never only at the terminal council.
+  //    the context that closes them is fresh, in addition to the terminal council.
   //    `fulcrums-self-sufficient`  = whatever closes without the human should be closed
   //    `scouts-honor-fix-forward`  = a safe+clean+adjacent fix is done now, not dreamed
   //    the two are PAIRED, so they land on the same guards; the bearer sets must match.
   given('[case11] the driver-owned close checks run per stage', () => {
     when('[t0] inited with guard=heavy (stamps the most guards)', () => {
+      const stamped = useThen('it stamps the route', async () =>
+        genStampedFiles({ guard: 'heavy' }),
+      );
+
       then('vision + execution guards carry both close lanes', () => {
-        initBehaviorDir({
-          behaviorDir,
-          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
-          guard: 'heavy',
+        const fulcrumBearers = getGuardsThatCarry({
+          stamped,
+          slug: 'fulcrums-self-sufficient',
         });
-
-        const guardFiles = fs
-          .readdirSync(behaviorDir)
-          .filter((file) => file.endsWith('.guard'));
-
-        const carries = (slug: string): string[] =>
-          guardFiles
-            .filter((file) =>
-              fs
-                .readFileSync(path.join(behaviorDir, file), 'utf-8')
-                .includes(`- slug: ${slug}\n`),
-            )
-            .sort();
-
-        const fulcrumBearers = carries('fulcrums-self-sufficient');
-        const scoutsBearers = carries('scouts-honor-fix-forward');
+        const scoutsBearers = getGuardsThatCarry({
+          stamped,
+          slug: 'scouts-honor-fix-forward',
+        });
 
         // the two lanes are paired — same stages, so identical bearer sets
         expect(fulcrumBearers).toEqual(scoutsBearers);
@@ -926,16 +916,7 @@ describe('initBehaviorDir.integration', () => {
       });
 
       then('each close lane binds its own subject + rules', () => {
-        initBehaviorDir({
-          behaviorDir,
-          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
-          guard: 'heavy',
-        });
-
-        const visionGuard = fs.readFileSync(
-          path.join(behaviorDir, '1.vision.guard'),
-          'utf-8',
-        );
+        const visionGuard = stamped['1.vision.guard']!;
 
         // the fulcrum lane grades the inventory via the driver fulcrum rules
         expect(visionGuard).toContain(
@@ -980,45 +961,29 @@ describe('initBehaviorDir.integration', () => {
   //    that SURVIVE a stage; this self gate grades them while the context that made each
   //    fix cheap is still held. it rides execution AND verification, because verification
   //    is the last stone with the code open — a dream that clears it leaves the behavior.
-  // 🟡 the teeth: a self gate cannot be overruled (`rule.always.bear-every-self-review`),
+  // 🟡 the teeth: bhrain ships no overrule op for a self gate (`rule.always.bear-every-self-review`),
   //    where a peer lane can exhaust. so the self bearer set is the stronger guarantee,
   //    and a drop of verification from it is the silent regression this catches.
   given('[case12] a deferred adjacent fix is caught at write time', () => {
     when('[t0] inited with guard=heavy', () => {
+      const stamped = useThen('it stamps the route', async () =>
+        genStampedFiles({ guard: 'heavy' }),
+      );
+
       then('execution + verification carry the self gate', () => {
-        initBehaviorDir({
-          behaviorDir,
-          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
-          guard: 'heavy',
+        const bearers = getGuardsThatCarry({
+          stamped,
+          slug: 'has-fixed-forward-adjacent-fixes',
         });
 
-        const bearers = fs
-          .readdirSync(behaviorDir)
-          .filter((file) => file.endsWith('.guard'))
-          .filter((file) =>
-            fs
-              .readFileSync(path.join(behaviorDir, file), 'utf-8')
-              .includes('- slug: has-fixed-forward-adjacent-fixes\n'),
-          )
-          .sort();
-
-        expect(
-          bearers.some((file) => file.startsWith('5.1.execution')),
-        ).toBe(true);
+        expect(bearers.some((file) => file.startsWith('5.1.execution'))).toBe(
+          true,
+        );
         expect(bearers).toContain('5.3.verification.guard');
       });
 
       then('the gate grades the dreams, by both SAFE and CLEAN', () => {
-        initBehaviorDir({
-          behaviorDir,
-          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
-          guard: 'heavy',
-        });
-
-        const verifyGuard = fs.readFileSync(
-          path.join(behaviorDir, '5.3.verification.guard'),
-          'utf-8',
-        );
+        const verifyGuard = stamped['5.3.verification.guard']!;
 
         // the subject is the route-local dreams
         expect(verifyGuard).toContain('$route/dreams/*.md');
@@ -1037,64 +1002,265 @@ describe('initBehaviorDir.integration', () => {
   //    ROUND'S OWN RECORD — the fulcrums, seeds, dreams, dispatches, and yield appendices
   //    the driver wrote to answer a prior round. that is archaeology by contract, so a
   //    prose gate over it is the `case=003` over-fire, delivered by our own hand.
-  // 🟡 the blocklist is FLAT and brace-free on purpose: `--paths-wout` runs through bhrain's
-  //    hand-rolled `isPathMatchedByGlob`, which expands no braces and lets `*` cross `/`.
-  //    a braced exclusion there is INERT and reads exactly like a live one (bhuild#391).
-  //    the teeth: drop either flag and a sweep lane re-inherits the route tree.
-  given('[case13] a sweep lane never reads the round own record', () => {
+  // 🟡 the blocklist is FLAT, brace-free, and double-star: `--paths-wout` runs through bhrain's
+  //    `isPathMatchedByGlob`, where `*` stops at `/` and `**` crosses it. `.behavior/*` reaches
+  //    no file under `.behavior/<route>/`, so it is INERT and reads exactly like a live one.
+  //    the teeth: drop either flag, or narrow it to one star, and a sweep lane re-inherits
+  //    the route tree.
+  given('[case13] a sweep lane excludes the round own record', () => {
     when('[t0] inited with guard=heavy', () => {
-      then('every repo-wide sweep excludes the route + dream trees', () => {
-        initBehaviorDir({
-          behaviorDir,
-          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
-          guard: 'heavy',
-        });
+      const stamped = useThen('it stamps the route', async () =>
+        genStampedFiles({ guard: 'heavy' }),
+      );
 
-        const sweeps = fs
-          .readdirSync(behaviorDir)
-          .filter((file) => file.endsWith('.guard'))
-          .flatMap((file) =>
-            fs
-              .readFileSync(path.join(behaviorDir, file), 'utf-8')
-              .split('\n')
-              .filter((line) => line.includes('rhx review'))
-              .filter(
-                (line) =>
-                  line.includes("--paths-with '**/*.{ts,sh,md,snap}'") ||
-                  line.includes("--paths-with '**/*.md'"),
-              )
-              .map((line) => ({ file, line })),
-          );
+      then(
+        'each repo-wide sweep found excludes the route + dream trees',
+        () => {
+          const sweeps = Object.entries(stamped)
+            .filter(([file]) => file.endsWith('.guard'))
+            .flatMap(([file, content]) =>
+              content
+                .split('\n')
+                .filter((line) => line.includes('rhx review'))
+                .filter(
+                  (line) =>
+                    line.includes("--paths-with '**/*.{ts,sh,md,snap}'") ||
+                    line.includes("--paths-with '**/*.md'"),
+                )
+                .map((line) => ({ file, line })),
+            );
 
-        // the sweeps exist — an empty set would pass every assertion below
-        expect(sweeps.length).toBeGreaterThan(0);
+          // the sweeps exist — an empty set would pass the loop below vacuously
+          expect(sweeps.length).toBeGreaterThan(0);
 
-        for (const { file, line } of sweeps) {
-          expect(`${file} :: ${line}`).toContain("--paths-wout '.behavior/*'");
-          expect(`${file} :: ${line}`).toContain("--paths-wout '.dream/*'");
-        }
-      });
+          for (const { file, line } of sweeps) {
+            expect(`${file} :: ${line}`).toContain(
+              "--paths-wout '.behavior/**'",
+            );
+            expect(`${file} :: ${line}`).toContain("--paths-wout '.dream/**'");
+          }
+        },
+      );
 
       then('the exclusion carries no brace, which would be inert', () => {
-        initBehaviorDir({
-          behaviorDir,
-          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
-          guard: 'heavy',
-        });
-
-        const wouts = fs
-          .readdirSync(behaviorDir)
-          .filter((file) => file.endsWith('.guard'))
-          .flatMap((file) =>
-            [
-              ...fs
-                .readFileSync(path.join(behaviorDir, file), 'utf-8')
-                .matchAll(/--paths-wout '([^']+)'/g),
-            ].map((match) => match[1]),
+        const wouts = Object.entries(stamped)
+          .filter(([file]) => file.endsWith('.guard'))
+          .flatMap(([, content]) =>
+            [...content.matchAll(/--paths-wout '([^']+)'/g)].map(
+              (match) => match[1],
+            ),
           );
 
         expect(wouts.length).toBeGreaterThan(0);
         for (const glob of wouts) expect(glob).not.toContain('{');
+      });
+    });
+  });
+
+  // 🔴 the clamp on the dispatch lane's scope. bhrain refuses a review whose combined scope
+  //    is zero files (only `rules` may be `--optional`), and most branches add no dispatch —
+  //    so a lane bound to the briefs globs alone malfunctions at each 5.1 arrival that
+  //    adds no dispatch. the stone's own yield anchors the scope: the stone asks the
+  //    driver to write it before arrival. the teeth: drop the anchor and both variants go red.
+  given('[case14] the dispatch lane scope holds the stone yield', () => {
+    for (const variant of ['from_vision', 'phase0_to_phaseN'] as const) {
+      when(`[t0] the 5.1.execution.${variant} guard is read`, () => {
+        then('the dispatch lane binds the stone yield as its anchor', () => {
+          const lines = fs
+            .readFileSync(
+              path.join(
+                __dirname,
+                'templates',
+                `5.1.execution.${variant}.guard`,
+              ),
+              'utf-8',
+            )
+            .split('\n');
+          const slugAt = lines.findIndex((line) =>
+            line.includes('slug: dispatch-lives-with-its-route'),
+          );
+          expect(slugAt).toBeGreaterThan(-1);
+
+          const run = lines[slugAt + 1] ?? '';
+          expect(run).toContain(
+            "--paths-with '$route/5.1.execution.*.yield.md'",
+          );
+        });
+
+        then('the anchor glob matches the yield the stone asks for', () => {
+          const stone = fs.readFileSync(
+            path.join(__dirname, 'templates', `5.1.execution.${variant}.stone`),
+            'utf-8',
+          );
+          expect(stone).toContain(`5.1.execution.${variant}.yield.md`);
+        });
+      });
+    }
+  });
+
+  // 🔴 the clamp on #366. the 5.3 lanes once bound two `--paths-with` flags, and a bhrain
+  //    that keeps the last of a repeated flag dropped the first glob in silence. each lane
+  //    now folds its globs into one braced bind. the teeth: split any bind back into two
+  //    flags and this goes red.
+  given('[case15] each 5.3 lane binds one --paths-with', () => {
+    when('[t0] the 5.3.verification guard is read', () => {
+      then('every review lane carries exactly one --paths-with', () => {
+        const runs = fs
+          .readFileSync(
+            path.join(__dirname, 'templates', '5.3.verification.guard'),
+            'utf-8',
+          )
+          .split('\n')
+          .filter((line) => line.includes('rhx review'));
+
+        // the lanes exist — an empty set would pass the loop below vacuously
+        expect(runs.length).toBeGreaterThan(0);
+
+        for (const run of runs)
+          expect({ run, binds: run.split('--paths-with ').length - 1 }).toEqual(
+            { run, binds: 1 },
+          );
+      });
+    });
+  });
+
+  // 🔴 the clamp on #362. the vision stone asks for one ascii map of how the concepts relate,
+  //    bound as an index over the sections. the teeth: drop the ask, or the index bind, and
+  //    this goes red.
+  given('[case16] the vision stone asks for a map bound as an index', () => {
+    when('[t0] a behavior is inited', () => {
+      then(
+        'the inited 1.vision.stone asks for the map and its index bind',
+        () => {
+          initBehaviorDir({
+            behaviorDir,
+            behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+            guard: 'light',
+          });
+
+          const stone = fs.readFileSync(
+            path.join(behaviorDir, '1.vision.stone'),
+            'utf-8',
+          );
+          expect(stone).toContain('draw at least one ascii map');
+          expect(stone).toContain('bind the map as an index');
+        },
+      );
+    });
+  });
+
+  // 🔴 the clamp on `case=010`. a re-init is a findsert, so a guard stamped from a prior
+  //    template keeps its old reviews. the skip must be named, never silent. the teeth: drop
+  //    the slug diff and a stale guard reads as plain `kept`, and this goes red.
+  given('[case17] a re-init over a guard stamped from a prior template', () => {
+    when('[t0] the guard lacks a review the template holds', () => {
+      then('the guard is kept, untouched, and named with what it lacks', () => {
+        initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+          guard: 'light',
+        });
+
+        // stamp a prior guard: the same template, less the yagni lane's slug line
+        const guardPath = path.join(behaviorDir, '1.vision.guard');
+        const guardPrior = fs
+          .readFileSync(guardPath, 'utf-8')
+          .replace(/^\s*- slug: yagni-and-simplicity\s*$\n/m, '');
+        fs.writeFileSync(guardPath, guardPrior);
+
+        const result = initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+          guard: 'light',
+        });
+
+        expect(result.kept).toContain('1.vision.guard');
+        expect(fs.readFileSync(guardPath, 'utf-8')).toEqual(guardPrior);
+        expect(result.guardsStale).toEqual([
+          { guard: '1.vision.guard', slugsAbsent: ['yagni-and-simplicity'] },
+        ]);
+      });
+    });
+
+    when('[t1] every guard is current', () => {
+      then('no guard is named stale', () => {
+        initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+          guard: 'light',
+        });
+        const result = initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+          guard: 'light',
+        });
+        expect(result.guardsStale).toEqual([]);
+        expect(result.stonesStale).toEqual([]);
+      });
+    });
+
+    // the same hazard one extension over: a stone holds no slugs, so its drift is named whole.
+    // the teeth: drop the stone compare and an altered stone reads as plain `kept`
+    when('[t2] a stone differs from its template', () => {
+      then('the stone is kept, untouched, and named stale', () => {
+        initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+          guard: 'light',
+        });
+
+        // stamp a prior stone: the same template, less its map ask
+        const stonePath = path.join(behaviorDir, '1.vision.stone');
+        const stonePrior = fs
+          .readFileSync(stonePath, 'utf-8')
+          .replace('draw at least one ascii map', 'draw a picture');
+        fs.writeFileSync(stonePath, stonePrior);
+
+        const result = initBehaviorDir({
+          behaviorDir,
+          behaviorDirRel: '.behavior/v2025_01_01.test-feature',
+          guard: 'light',
+        });
+
+        expect(result.kept).toContain('1.vision.stone');
+        expect(fs.readFileSync(stonePath, 'utf-8')).toEqual(stonePrior);
+        expect(result.stonesStale).toEqual(['1.vision.stone']);
+      });
+    });
+  });
+
+  // 🔴 the clamp on the close lanes' scope. bhrain refuses a review whose scope is zero files,
+  //    and a route may own no fulcrum and no dream yet — so each close lane binds the stone's
+  //    yield as an anchor, as the dispatch lane does (`[case14]`). the teeth: drop the anchor
+  //    from any close lane and this goes red.
+  given('[case18] each close lane binds a yield anchor', () => {
+    when('[t0] the vision and execution guard templates are read', () => {
+      then('every fulcrum or dream lane also binds the stone yield', () => {
+        const closes = [
+          '1.vision.guard.light',
+          '1.vision.guard.heavy',
+          '5.1.execution.from_vision.guard',
+          '5.1.execution.phase0_to_phaseN.guard',
+        ].flatMap((file) =>
+          fs
+            .readFileSync(path.join(__dirname, 'templates', file), 'utf-8')
+            .split('\n')
+            .filter((line) => line.includes('rhx review'))
+            .filter(
+              (line) =>
+                line.includes('$route/.fulcrums/') ||
+                line.includes('$route/dreams/'),
+            )
+            .map((line) => ({ file, line })),
+        );
+
+        // two close lanes per guard — an empty set would pass the loop below vacuously
+        expect(closes.length).toEqual(8);
+
+        for (const { file, line } of closes)
+          expect(`${file} :: ${line}`).toMatch(
+            /--paths-with '\$route\/(1\.vision|5\.1\.execution\.\*)\.yield\.md'/,
+          );
       });
     });
   });

@@ -38,9 +38,8 @@ for the vision to pass:
    cell is noted **with what bars it**, then set aside — no attempt means no guard is owed.
 
    🔴 **an impossible cell is usually barred by the SHIPPED DESIGN rather than by nature.** no law
-   prevents a lane you did not build; with no lane there is no attempt to reject. so *"can't occur
-   by nature"* is the narrow case, and a walk that treats it as the definition mis-sorts the common
-   one.
+   prevents a lane you did not build. with no lane, there is no attempt to reject. so *"can't occur
+   by nature"* is the narrow case. a walk that takes it as the definition mis-sorts the common one.
 4. **the hidden-dimension check** — a whole row or column that cannot occur means two axes were not
    orthogonal; the latent dimension must be surfaced, not left implicit.
 
@@ -77,11 +76,13 @@ graded at the `1.vision` guard by a peer reviewer scoped **only** to the decompo
 
 - **peer-review** `dimensional-decomposition` (light-enrolled) — an independent reviewer confirms
   the dimensions are orthogonal + exhaustive and the product is fully walked, before the human
-  approves. its rubric is this rule alone — it does not grade the demos, only the discovery.
+  approves. its rubric is this rule and `rule.always.prune-the-experience-space` — it grades
+  the discovery and its prune pass, never the demos.
 
 ## .see also
 
 - `howto.experience.decompose` — the method this rule mandates
+- `rule.always.prune-the-experience-space` — the prune pass the same lane grades
 - architect `howto.dimensional-decomposition`, `rule.require.dimensional-decomposition` — the
   general morphological-box method + its architect-scale mandate
 - `rule.require.experience-coverage` — the companion rule (grades the demos; this grades the space)
