@@ -7,16 +7,20 @@ import { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
 
 import { asRadioHeldOutput } from './asRadioHeldOutput';
 
+// the #599 shape: a held record whose robot auth github refused, so its cure is an as-human amend
+const AUTH_ROBOT = 'as-robot:via-keyrack(ehmpath)';
+
 const genRecord = (input: {
   title: string;
   reason?: string;
+  auth?: string;
 }): RadioTaskRecord =>
   new RadioTaskRecord({
     key: input.title,
     kind: 'create',
     repo: new RadioTaskRepo({ owner: 'ehmpathy', name: 'rhachet' }),
     via: RadioChannel.GH_ISSUES,
-    auth: null,
+    auth: input.auth ?? null,
     idem: null,
     title: `task ${input.title}`, // apart from the key, so a row never reads `a a`
     description: 'details',
@@ -102,11 +106,19 @@ describe('asRadioHeldOutput', () => {
     () => {
       const held = [
         {
-          record: genRecord({ title: 'a', reason: 'upstream:auth' }),
+          record: genRecord({
+            title: 'a',
+            reason: 'upstream:auth',
+            auth: AUTH_ROBOT,
+          }),
           lift: null,
         },
         {
-          record: genRecord({ title: 'b', reason: 'upstream:auth' }),
+          record: genRecord({
+            title: 'b',
+            reason: 'upstream:auth',
+            auth: AUTH_ROBOT,
+          }),
           lift: null,
         },
         {
@@ -192,9 +204,13 @@ describe('asRadioHeldOutput', () => {
   });
 
   given('[case2.3] two updates to one issue, the first set aside', () => {
-    const genUpdate = (input: { key: string; reason: string }) =>
+    const genUpdate = (input: { key: string; reason: string; auth?: string }) =>
       new RadioTaskRecord({
-        ...genRecord({ title: input.key, reason: input.reason }),
+        ...genRecord({
+          title: input.key,
+          reason: input.reason,
+          auth: input.auth,
+        }),
         kind: 'update',
         title: null,
         exid: '599',
@@ -202,6 +218,7 @@ describe('asRadioHeldOutput', () => {
     const ahead = genUpdate({
       key: 'a1a1a1a1a1a1a1a1',
       reason: 'upstream:access',
+      auth: AUTH_ROBOT,
     });
     const behind = genUpdate({
       key: 'b2b2b2b2b2b2b2b2',
@@ -376,7 +393,10 @@ describe('asRadioHeldOutput', () => {
           lift: 'rhx radio.uses --global allow',
         },
         {
-          record: genRecord({ title: 'plain' }),
+          record: new RadioTaskRecord({
+            ...genRecord({ title: 'plain' }),
+            auth: null,
+          }),
           lift: 'rhx radio.uses --global allow',
         },
       ];
@@ -386,9 +406,7 @@ describe('asRadioHeldOutput', () => {
 
         then('each row names the auth it holds, default when none', () => {
           expect(output).toContain('auth: as-human');
-          expect(output).toContain(
-            'auth: default (as-robot:via-keyrack(ehmpath))',
-          );
+          expect(output).toContain('auth: default (ambient-first)');
         });
 
         then(

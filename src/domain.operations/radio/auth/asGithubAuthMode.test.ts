@@ -26,6 +26,26 @@ const TEST_CASES: {
     expect: { kind: 'as-human' },
   },
   {
+    description: 'parses as-ehmpath as keyrack-then-ambient',
+    auth: 'as-ehmpath',
+    expect: { kind: 'as-ehmpath', spots: ['keyrack', 'ambient'] },
+  },
+  {
+    description: 'parses as-ehmpath-via-keyrack',
+    auth: 'as-ehmpath-via-keyrack',
+    expect: { kind: 'as-ehmpath', spots: ['keyrack'] },
+  },
+  {
+    description: 'parses as-ehmpath-via-ambient',
+    auth: 'as-ehmpath-via-ambient',
+    expect: { kind: 'as-ehmpath', spots: ['ambient'] },
+  },
+  {
+    description: 'refuses an as-ehmpath variant it does not know',
+    auth: 'as-ehmpath-via-vault',
+    expect: { kind: 'unknown', raw: 'as-ehmpath-via-vault' },
+  },
+  {
     description: 'falls back to unknown for an unrecognized mode',
     auth: 'bogus-mode',
     expect: { kind: 'unknown', raw: 'bogus-mode' },

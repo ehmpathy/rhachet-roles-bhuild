@@ -846,6 +846,13 @@ describe('radio.task.push — the radio.recorder', () => {
         expect(result.stdout).toContain('get --when hook.onStop');
         expect(sanitizeOutput(result.stdout)).toMatchSnapshot();
       });
+
+      then('it names all four --auth values, each with where it looks', () => {
+        expect(result.stdout).toContain('as-ehmpath              keyrack, then');
+        expect(result.stdout).toContain('as-ehmpath-via-keyrack  keyrack only');
+        expect(result.stdout).toContain('as-ehmpath-via-ambient  the gh login');
+        expect(result.stdout).toContain('as-human                the gh login');
+      });
     });
 
     when('[t2] the clone pushes a first task, the bad record still on disk', () => {

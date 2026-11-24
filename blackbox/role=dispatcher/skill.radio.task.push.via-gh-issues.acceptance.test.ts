@@ -551,7 +551,7 @@ describe('radio.task.push via gh.issues', () => {
           via: 'gh.issues',
           auth: 'as-robot:env(RADIO_ACCEPT_BOGUS_TOKEN)',
           env: {
-            RADIO_ACCEPT_BOGUS_TOKEN: 'ghp_bogusInvalidToken0000000000000000000000',
+            RADIO_ACCEPT_BOGUS_TOKEN: 'ghp_bogusInvalidToken',
           },
           into: GITHUB_DEMO_REPO,
           title: `auth-fail 401 test ${Date.now()}`,
@@ -581,6 +581,11 @@ describe('radio.task.push via gh.issues', () => {
         // snap the skill's own stream: rhachet frames stdout and stderr each with a banner
         expect(result.stdout).toContain('🦫 held for the radio');
         expect(asStable401Output({ output: result.stdout })).toMatchSnapshot();
+      });
+
+      then('the stderr stream matches snapshot', () => {
+        // snapped apart from stdout, so a leak onto stderr surfaces as a snap diff
+        expect(asStable401Output({ output: result.stderr })).toMatchSnapshot();
       });
     });
   });
@@ -618,6 +623,13 @@ describe('radio.task.push via gh.issues — usage contract', () => {
       then('names the required --via and --into options', () => {
         expect(result.output).toContain('--via');
         expect(result.output).toContain('--into');
+      });
+
+      then('names all four --auth values, each with where it looks', () => {
+        expect(result.output).toContain('as-ehmpath              keyrack, then');
+        expect(result.output).toContain('as-ehmpath-via-keyrack  keyrack only');
+        expect(result.output).toContain('as-ehmpath-via-ambient  the gh login');
+        expect(result.output).toContain('as-human                the gh login');
       });
 
       then('the human-readable usage output matches snapshot', () => {

@@ -1,3 +1,4 @@
+import { execSync } from 'child_process';
 import * as fs from 'fs';
 import { mkdtempSync } from 'fs';
 import { ConstraintError } from 'helpful-errors';
@@ -67,6 +68,14 @@ describe('radio.task.queue.integration — CLI contract', () => {
         expect(result.error).toBeNull();
         expect(result.stdout).toContain('radio.task.queue get');
         expect(result.stdout).toContain('radio.task.queue drain');
+        expect(result.stdout).toContain(
+          'as-ehmpath              keyrack, then',
+        );
+        expect(result.stdout).toContain('as-ehmpath-via-keyrack  keyrack only');
+        expect(result.stdout).toContain(
+          'as-ehmpath-via-ambient  the gh login only',
+        );
+        expect(result.stdout).toContain('as-human                the gh login');
         expect(result.stdout).toMatchSnapshot();
       });
     });
@@ -157,7 +166,7 @@ describe('radio.task.queue.integration — CLI contract', () => {
 
   given('[case8] an --auth value that is not an auth mode', () => {
     when('[t0] set runs with it', () => {
-      then('fails with a constraint that lists the four modes', async () => {
+      then('fails with a constraint that lists every mode', async () => {
         const result = await runQueue({
           argvTail: [
             'set',
@@ -168,6 +177,9 @@ describe('radio.task.queue.integration — CLI contract', () => {
           ],
         });
         expect(result.error).toBeInstanceOf(ConstraintError);
+        expect(result.error?.message).toContain('as-ehmpath,');
+        expect(result.error?.message).toContain('as-ehmpath-via-keyrack');
+        expect(result.error?.message).toContain('as-ehmpath-via-ambient');
         expect(result.error?.message).toContain('as-human');
         expect(result.error?.message).toContain('as-robot:via-keyrack(owner)');
         expect(result.error?.message).toContain('as-robot:env(VAR)');
@@ -319,6 +331,7 @@ mode="ok"
 if [ -n "$repo" ] && [ -f "$STUB_GH_DIR/mode.$repo" ]; then mode="$(cat "$STUB_GH_DIR/mode.$repo")"; fi
 case "$1 $2" in
   "api user") echo "stubbot"; exit 0 ;;
+  "auth token") echo "gho_queue_stub_login_000000"; exit 0 ;;
 esac
 if [ "$mode" = "rate-limit" ]; then echo "API rate limit exceeded for installation ID 1" >&2; exit 1; fi
 if [ "$mode" = "access-update" ] && [ "$1 $2" = "issue edit" ]; then echo "GraphQL: Resource not accessible by integration (updateIssue)" >&2; exit 1; fi
@@ -464,13 +477,14 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
     exid?: string | null;
     status?: RadioTaskStatus | null;
     description?: string | null;
+    auth?: string | null;
   }) =>
     setRadioTaskRecordFromPush(
       {
         push: {
           repo: input.repo,
           via: RadioChannel.GH_ISSUES,
-          auth: authEnv,
+          auth: input.auth === undefined ? authEnv : input.auth,
           idem: null,
           title: input.title,
           description:
@@ -494,6 +508,7 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
     scene: { cwd: string; homeDir: string };
     argvTail: string[];
     envOmit?: string[];
+    envAdd?: Record<string, string>;
     cli?: () => Promise<void>;
   }): Promise<{ stdout: string; exitCode: number; error: Error | null }> => {
     const argvBefore = process.argv;
@@ -509,6 +524,7 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
     const envNext: NodeJS.ProcessEnv = {
       ...envBefore,
       HOME: input.scene.homeDir,
+      ...(input.envAdd ?? {}),
     };
     (input.envOmit ?? []).forEach((name) => delete envNext[name]);
     process.argv = ['node', ...input.argvTail];
@@ -1418,4 +1434,520 @@ describe('radio.task.queue.integration — a journey across faults, via a stub g
       }),
     );
   });
+
+  // the wish names `queue set|drain` among the skills that take the as-ehmpath values. set is the
+  // verb that STORES one on a held record, for every later drain to replay, so each value must
+  // pass the auth gate and land on the record as typed; a refusal here would strand the clone
+  const EHMPATH_AUTH_CASES = [
+    'as-ehmpath',
+    'as-ehmpath-via-keyrack',
+    'as-ehmpath-via-ambient',
+  ];
+  EHMPATH_AUTH_CASES.map((auth) =>
+    given(`[case23] set --auth ${auth} on a held record`, () => {
+      const scene = useBeforeAll(async () => {
+        setStubMode({ repo: repoRentals, mode: 'ok' });
+        const one = genScene({ slug: `radio-queue-journey-c23-${auth}` });
+        const create = holdPush({
+          scene: one,
+          repo: repoRentals,
+          title: 'wetsuit size chart',
+        });
+        return { ...one, create };
+      });
+
+      when('[t0] set runs on its key', () => {
+        const result = useThen('it runs', async () => {
+          const callsBefore = getStubCalls().length;
+          const run = await runQueueInScene({
+            scene,
+            argvTail: ['set', '--uuid', scene.create.key, '--auth', auth],
+            envOmit: ['NODE_ENV', 'JEST_WORKER_ID'],
+          });
+          return { ...run, calls: getStubCalls().slice(callsBefore) };
+        });
+
+        then('the auth gate accepts it: no error, exit 0', () => {
+          expect(result.error).toBeNull();
+          expect(result.exitCode).toEqual(0);
+        });
+
+        then(
+          'the record stores it as typed, still held, and naught is sent',
+          () => {
+            const onDisk = getSceneRecords({ scene })[0];
+            expect(onDisk?.auth).toEqual(auth);
+            expect(onDisk?.recordStatus).toEqual(RadioTaskRecordStatus.QUEUED);
+            expect(result.calls).toEqual([]);
+          },
+        );
+
+        then(
+          'the amend tree names the auth change, and matches snapshot',
+          () => {
+            expect(result.stdout).toContain(`→ ${auth}`);
+            expect(asMaskedStdout(result)).toMatchSnapshot();
+          },
+        );
+      });
+    }),
+  );
+
+  // a record held with no --auth replays the default on the box that drains it (F19): the
+  // drainer's own identity decides, and the delivered row names which identity paid
+  const DEFAULT_DRAIN_CASES = [
+    {
+      label: 'an ehmpath box',
+      slug: 'ehmpath',
+      email: 'seaturtle@ehmpath.com',
+      tokenSeen: 'gho_queue_stub_login_000000',
+      authRow: 'auth = as-ehmpath (via ambient)',
+    },
+    {
+      label: 'a human box',
+      slug: 'human',
+      email: 'bert@example.com',
+      tokenSeen: '<gh-session>',
+      authRow: 'auth = as-human (via ambient email bert@example.com)',
+    },
+  ];
+  DEFAULT_DRAIN_CASES.map((thisCase) =>
+    given(
+      `[case24] a record held with no --auth, drained on ${thisCase.label}`,
+      () => {
+        const scene = useBeforeAll(async () => {
+          setStubMode({ repo: repoForecast, mode: 'ok' });
+          const one = genScene({
+            slug: `radio-queue-journey-c24-${thisCase.slug}`,
+          });
+          execSync(`git config user.email ${thisCase.email}`, {
+            cwd: one.cwd,
+          });
+          const create = holdPush({
+            scene: one,
+            repo: repoForecast,
+            title: 'swell forecast refresh',
+            auth: null,
+          });
+          return { ...one, create };
+        });
+
+        when('[t0] drain runs with no live --auth', () => {
+          const result = useThen('it drains', async () => {
+            const callsBefore = getStubCalls().length;
+            const run = await runQueueInScene({
+              scene,
+              argvTail: ['drain'],
+              envAdd: { RADIO_GH_STUB: '1' },
+            });
+            return { ...run, calls: getStubCalls().slice(callsBefore) };
+          });
+
+          then('the record delivers, exit 0', () => {
+            expect(result.error).toBeNull();
+            expect(result.exitCode).toEqual(0);
+            expect(getSceneRecords({ scene })[0]?.recordStatus).toEqual(
+              RadioTaskRecordStatus.DELIVERED,
+            );
+          });
+
+          then("the issue calls carried the drainer's own identity", () => {
+            const issueCalls = result.calls.filter((call) =>
+              call.includes(' issue '),
+            );
+            expect(issueCalls.length).toBeGreaterThan(0);
+            issueCalls.forEach((call) =>
+              expect(call.startsWith(`${thisCase.tokenSeen} `)).toBe(true),
+            );
+          });
+
+          then('the delivered row names the identity that paid', () => {
+            expect(result.stdout).toContain(thisCase.authRow);
+            expect(result.stdout).not.toContain('gho_queue_stub_login_000000');
+            // the issue number comes from a seq the whole suite shares, so it is masked
+            expect(
+              asMaskedStdout(result).replace(/#\d+ /g, '#<n> '),
+            ).toMatchSnapshot();
+          });
+        });
+      },
+    ),
+  );
+
+  // the wish names `drain` too: a record stored as an as-ehmpath value replays it when drained.
+  // via-ambient is the value under test, since its one spot is the stub gh on every box; plain
+  // as-ehmpath would let a keyrack token (set in cicd) pay first
+  const STORED_VIA_AMBIENT_DRAIN_CASES = [
+    {
+      label: 'an ehmpath box: the gh login pays',
+      slug: 'ehmpath',
+      email: 'seaturtle@ehmpath.com',
+      delivers: true,
+    },
+    {
+      label: 'a human box: the record stays held, and no issue call is made',
+      slug: 'human',
+      email: 'bert@example.com',
+      delivers: false,
+    },
+  ];
+  STORED_VIA_AMBIENT_DRAIN_CASES.map((thisCase) =>
+    given(
+      `[case25] a record stored as --auth as-ehmpath-via-ambient, drained on ${thisCase.label}`,
+      () => {
+        const scene = useBeforeAll(async () => {
+          setStubMode({ repo: repoForecast, mode: 'ok' });
+          const one = genScene({
+            slug: `radio-queue-journey-c25-${thisCase.slug}`,
+          });
+          execSync(`git config user.email ${thisCase.email}`, {
+            cwd: one.cwd,
+          });
+          const create = holdPush({
+            scene: one,
+            repo: repoForecast,
+            title: 'tide table refresh',
+            auth: 'as-ehmpath-via-ambient',
+          });
+          return { ...one, create };
+        });
+
+        when('[t0] drain runs with no live --auth', () => {
+          const result = useThen('it drains', async () => {
+            const callsBefore = getStubCalls().length;
+            const run = await runQueueInScene({
+              scene,
+              argvTail: ['drain'],
+              envAdd: { RADIO_GH_STUB: '1' },
+            });
+            return { ...run, calls: getStubCalls().slice(callsBefore) };
+          });
+
+          then('the record replays the value it stores', () => {
+            const onDisk = getSceneRecords({ scene })[0];
+            expect(onDisk?.auth).toEqual('as-ehmpath-via-ambient');
+            expect(onDisk?.recordStatus).toEqual(
+              thisCase.delivers
+                ? RadioTaskRecordStatus.DELIVERED
+                : RadioTaskRecordStatus.QUEUED,
+            );
+          });
+
+          then('only the ehmpath gh login ever reaches an issue call', () => {
+            const issueCalls = result.calls.filter((call) =>
+              call.includes(' issue '),
+            );
+            if (!thisCase.delivers) return expect(issueCalls).toEqual([]);
+            expect(issueCalls.length).toBeGreaterThan(0);
+            issueCalls.forEach((call) =>
+              expect(call.startsWith('gho_queue_stub_login_000000 ')).toBe(
+                true,
+              ),
+            );
+          });
+
+          then(
+            'the output names the spot, or the miss, and never a token',
+            () => {
+              expect(result.stdout).not.toContain(
+                'gho_queue_stub_login_000000',
+              );
+              if (thisCase.delivers)
+                expect(result.stdout).toContain('(via ambient)');
+              // the miss names its headline, and beneath it the spot it checked and what it held
+              if (!thisCase.delivers)
+                expect(result.stdout).toContain(
+                  'fault: ✋ ConstraintError: --auth as-ehmpath-via-ambient found no ehmpath token',
+                );
+              if (!thisCase.delivers)
+                expect(result.stdout).toContain(
+                  'ambient: git config user.email = bert@example.com, not an ehmpath email',
+                );
+              if (!thisCase.delivers)
+                expect(result.stdout).toContain('--auth as-human');
+              if (!thisCase.delivers)
+                expect(
+                  result.stdout.replace(/[0-9a-f]{16}/g, '<uuid>'),
+                ).toMatchSnapshot();
+            },
+          );
+        });
+      },
+    ),
+  );
+
+  // a record stored as plain as-ehmpath: `get` shows it as typed, and a drain replays its walk,
+  // keyrack then ambient. keyrack must miss on every box (the scene HOME holds no vault, and the
+  // env passthrough is omitted), so the ambient spot decides, as it does on a fresh clone box
+  const STORED_PLAIN_DRAIN_CASES = [
+    {
+      label: 'an ehmpath box: keyrack misses, then the gh login pays',
+      slug: 'ehmpath',
+      email: 'seaturtle@ehmpath.com',
+      delivers: true,
+    },
+    {
+      label:
+        'a human box: both spots miss, the record stays held, no issue call',
+      slug: 'human',
+      email: 'bert@example.com',
+      delivers: false,
+    },
+  ];
+  STORED_PLAIN_DRAIN_CASES.map((thisCase) =>
+    given(
+      `[case26] a record stored as --auth as-ehmpath, read and drained on ${thisCase.label}`,
+      () => {
+        const scene = useBeforeAll(async () => {
+          setStubMode({ repo: repoForecast, mode: 'ok' });
+          const one = genScene({
+            slug: `radio-queue-journey-c26-${thisCase.slug}`,
+          });
+          execSync(`git config user.email ${thisCase.email}`, {
+            cwd: one.cwd,
+          });
+          const create = holdPush({
+            scene: one,
+            repo: repoForecast,
+            title: 'board rental returns',
+            auth: 'as-ehmpath',
+          });
+          return { ...one, create };
+        });
+
+        when('[t0] get runs', () => {
+          const result = useThen('it reads', async () => {
+            const callsBefore = getStubCalls().length;
+            const run = await runQueueInScene({
+              scene,
+              argvTail: ['get'],
+              envOmit: ['EHMPATH_BEAVER_GITHUB_TOKEN'],
+            });
+            return { ...run, calls: getStubCalls().slice(callsBefore) };
+          });
+
+          then('the stored auth shows as typed, and naught is sent', () => {
+            expect(result.error).toBeNull();
+            expect(result.stdout).toContain('auth: as-ehmpath');
+            expect(result.stdout).not.toContain('auth: default');
+            expect(result.calls).toEqual([]);
+          });
+
+          then('the held list matches snapshot', () => {
+            expect(asMaskedStdout(result)).toMatchSnapshot();
+          });
+        });
+
+        when('[t1] drain runs with no live --auth', () => {
+          const result = useThen('it drains', async () => {
+            const callsBefore = getStubCalls().length;
+            const run = await runQueueInScene({
+              scene,
+              argvTail: ['drain'],
+              envAdd: { RADIO_GH_STUB: '1' },
+              envOmit: ['EHMPATH_BEAVER_GITHUB_TOKEN'],
+            });
+            return { ...run, calls: getStubCalls().slice(callsBefore) };
+          });
+
+          then('the record replays the value it stores', () => {
+            const onDisk = getSceneRecords({ scene })[0];
+            expect(onDisk?.auth).toEqual('as-ehmpath');
+            expect(onDisk?.recordStatus).toEqual(
+              thisCase.delivers
+                ? RadioTaskRecordStatus.DELIVERED
+                : RadioTaskRecordStatus.QUEUED,
+            );
+          });
+
+          then('only the ehmpath gh login ever reaches an issue call', () => {
+            const issueCalls = result.calls.filter((call) =>
+              call.includes(' issue '),
+            );
+            if (!thisCase.delivers) return expect(issueCalls).toEqual([]);
+            expect(issueCalls.length).toBeGreaterThan(0);
+            issueCalls.forEach((call) =>
+              expect(call.startsWith('gho_queue_stub_login_000000 ')).toBe(
+                true,
+              ),
+            );
+          });
+
+          then(
+            'the output names the spot, or both spots of the miss, and never a token',
+            () => {
+              expect(result.stdout).not.toContain(
+                'gho_queue_stub_login_000000',
+              );
+              if (thisCase.delivers)
+                expect(result.stdout).toContain('as-ehmpath (via ambient)');
+              if (!thisCase.delivers)
+                expect(result.stdout).toContain(
+                  'fault: ✋ ConstraintError: --auth as-ehmpath found no ehmpath token',
+                );
+              if (!thisCase.delivers)
+                expect(result.stdout).toContain('keyrack: not granted');
+              if (!thisCase.delivers)
+                expect(result.stdout).toContain(
+                  'ambient: git config user.email = bert@example.com, not an ehmpath email',
+                );
+              // the issue number comes from a seq the whole suite shares, so it is masked
+              expect(
+                asMaskedStdout(result).replace(/#\d+ /g, '#<n> '),
+              ).toMatchSnapshot();
+            },
+          );
+        });
+      },
+    ),
+  );
+
+  // a fake keyrack token: never a real one, and distinct from the stub gh login token.
+  // shaped as an app install token (ghs_), the one github shape the keyrack env firewall
+  // admits; a ghp_ value is refused there as a long-lived pat (status: blocked)
+  const TOKEN_KEYRACK_FAKE = 'ghs_queue_fake_from_keyrack_passthrough';
+
+  // the explicit via-keyrack value reaches a drain two ways: stored on the record, or passed
+  // live to the drain, which sends every held record under it for this drain only
+  const VIA_KEYRACK_DRAIN_CASES = [
+    {
+      label: 'stored on the record, drained with no live --auth',
+      slug: 'stored',
+      authStored: 'as-ehmpath-via-keyrack',
+      authLive: [] as string[],
+    },
+    {
+      label: 'passed live to the drain, over a record stored with no auth',
+      slug: 'live',
+      authStored: null,
+      authLive: ['--auth', 'as-ehmpath-via-keyrack'],
+    },
+  ];
+  VIA_KEYRACK_DRAIN_CASES.map((thisCase) =>
+    given(
+      `[case28] --auth as-ehmpath-via-keyrack ${thisCase.label}, on a human box where keyrack grants`,
+      () => {
+        const scene = useBeforeAll(async () => {
+          setStubMode({ repo: repoForecast, mode: 'ok' });
+          const one = genScene({
+            slug: `radio-queue-journey-c28-${thisCase.slug}`,
+          });
+          execSync('git config user.email bert@example.com', {
+            cwd: one.cwd,
+          });
+          const create = holdPush({
+            scene: one,
+            repo: repoForecast,
+            title: 'lesson reminder sms',
+            auth: thisCase.authStored,
+          });
+          return { ...one, create };
+        });
+
+        when('[t0] drain runs', () => {
+          const result = useThen('it drains', async () => {
+            const callsBefore = getStubCalls().length;
+            const run = await runQueueInScene({
+              scene,
+              argvTail: ['drain', ...thisCase.authLive],
+              envAdd: {
+                RADIO_GH_STUB: '1',
+                EHMPATH_BEAVER_GITHUB_TOKEN: TOKEN_KEYRACK_FAKE,
+              },
+            });
+            return { ...run, calls: getStubCalls().slice(callsBefore) };
+          });
+
+          then('the record is delivered', () => {
+            const onDisk = getSceneRecords({ scene })[0];
+            expect(onDisk?.recordStatus).toEqual(
+              RadioTaskRecordStatus.DELIVERED,
+            );
+          });
+
+          then('only the keyrack token reaches an issue call', () => {
+            const issueCalls = result.calls.filter((call) =>
+              call.includes(' issue '),
+            );
+            expect(issueCalls.length).toBeGreaterThan(0);
+            issueCalls.forEach((call) =>
+              expect(call.startsWith(`${TOKEN_KEYRACK_FAKE} `)).toBe(true),
+            );
+          });
+
+          then(
+            'the output never prints the token, and matches snapshot',
+            () => {
+              expect(result.stdout).not.toContain(TOKEN_KEYRACK_FAKE);
+              // the issue number comes from a seq the whole suite shares, so it is masked
+              expect(
+                asMaskedStdout(result).replace(/#\d+ /g, '#<n> '),
+              ).toMatchSnapshot();
+            },
+          );
+        });
+      },
+    ),
+  );
+
+  given(
+    '[case27] a record stored as --auth as-ehmpath, drained on a human box where keyrack grants',
+    () => {
+      const scene = useBeforeAll(async () => {
+        setStubMode({ repo: repoForecast, mode: 'ok' });
+        const one = genScene({ slug: 'radio-queue-journey-c27' });
+        execSync('git config user.email bert@example.com', { cwd: one.cwd });
+        const create = holdPush({
+          scene: one,
+          repo: repoForecast,
+          title: 'wetsuit inventory recount',
+          auth: 'as-ehmpath',
+        });
+        return { ...one, create };
+      });
+
+      when('[t0] drain runs with no live --auth', () => {
+        const result = useThen('it drains', async () => {
+          const callsBefore = getStubCalls().length;
+          const run = await runQueueInScene({
+            scene,
+            argvTail: ['drain'],
+            envAdd: {
+              RADIO_GH_STUB: '1',
+              EHMPATH_BEAVER_GITHUB_TOKEN: TOKEN_KEYRACK_FAKE,
+            },
+          });
+          return { ...run, calls: getStubCalls().slice(callsBefore) };
+        });
+
+        then('the record replays its stored value and is delivered', () => {
+          const onDisk = getSceneRecords({ scene })[0];
+          expect(onDisk?.auth).toEqual('as-ehmpath');
+          expect(onDisk?.recordStatus).toEqual(RadioTaskRecordStatus.DELIVERED);
+        });
+
+        then('only the keyrack token reaches an issue call', () => {
+          const issueCalls = result.calls.filter((call) =>
+            call.includes(' issue '),
+          );
+          expect(issueCalls.length).toBeGreaterThan(0);
+          issueCalls.forEach((call) =>
+            expect(call.startsWith(`${TOKEN_KEYRACK_FAKE} `)).toBe(true),
+          );
+        });
+
+        then(
+          'the output names keyrack as the spot that paid, never a token',
+          () => {
+            expect(result.stdout).toContain('as-ehmpath (via keyrack)');
+            expect(result.stdout).not.toContain(TOKEN_KEYRACK_FAKE);
+            // the issue number comes from a seq the whole suite shares, so it is masked
+            expect(
+              asMaskedStdout(result).replace(/#\d+ /g, '#<n> '),
+            ).toMatchSnapshot();
+          },
+        );
+      });
+    },
+  );
 });

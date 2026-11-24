@@ -22,7 +22,7 @@ const genRecord = (input: Partial<RadioTaskRecord>): RadioTaskRecord =>
     kind: 'create',
     repo,
     via: RadioChannel.GH_ISSUES,
-    auth: null,
+    auth: 'as-robot:via-keyrack(ehmpath)', // the #599 shape: github refused the robot's token
     idem: null,
     title: 'fix flaky keyrack test',
     description: 'the test flakes',
@@ -67,6 +67,7 @@ describe('asRadioPushOutput', () => {
           }),
           task: genTask({ exid: '414', title: 'fix flaky keyrack test' }),
           outcome: 'created',
+          authSource: null,
         },
         others: [],
         home: homeRoute,
@@ -375,6 +376,7 @@ describe('asRadioPushOutput', () => {
             }),
             task: genTask({ exid: '415', title: 'retry race in route.bounce' }),
             outcome: 'created',
+            authSource: null,
           },
           others: [
             {
@@ -386,6 +388,7 @@ describe('asRadioPushOutput', () => {
               }),
               task: genTask({ exid: '412', title: 'fix flaky keyrack test' }),
               outcome: 'created',
+              authSource: null,
             },
             {
               fate: 'refused',
@@ -442,6 +445,48 @@ describe('asRadioPushOutput', () => {
         );
       },
     );
+  });
+
+  given('[case4b] an as-ehmpath push that drains a backlog', () => {
+    when('[t0] the push and one backlog record both deliver', () => {
+      const output = asRadioPushOutput({
+        pushed: {
+          fate: 'delivered',
+          record: genRecord({
+            key: 'new',
+            title: 'retry race in route.bounce',
+            recordStatus: RadioTaskRecordStatus.DELIVERED,
+            deliveredExid: '415',
+          }),
+          task: genTask({ exid: '415', title: 'retry race in route.bounce' }),
+          outcome: 'created',
+          authSource: { auth: 'as-ehmpath', spot: 'ambient' },
+        },
+        others: [
+          {
+            fate: 'delivered',
+            record: genRecord({
+              key: 'a',
+              recordStatus: RadioTaskRecordStatus.DELIVERED,
+              deliveredExid: '412',
+            }),
+            task: genTask({ exid: '412', title: 'fix flaky keyrack test' }),
+            outcome: 'created',
+            authSource: { auth: 'as-ehmpath', spot: 'keyrack' },
+          },
+        ],
+        home: homeRoute,
+        backlog: 0,
+      });
+
+      then('the pushed row and the drained row each name their spot', () => {
+        expect(output).toContain('#415 retry race in route.bounce (created)');
+        expect(output).toContain('auth = as-ehmpath (via ambient)');
+        expect(output).toContain('#412 fix flaky keyrack test');
+        expect(output).toContain('auth = as-ehmpath (via keyrack)');
+        expect(output).toMatchSnapshot();
+      });
+    });
   });
 
   given(
@@ -523,6 +568,7 @@ describe('asRadioPushOutput', () => {
               }),
               task: genTask({ exid: '413', title: 'guard absent sponsor' }),
               outcome: 'found',
+              authSource: null,
             },
           ],
           home: homeRoute,
@@ -571,6 +617,7 @@ describe('asRadioPushOutput', () => {
               }),
               task: genTask({ exid: '412', title: 'fix flaky keyrack test' }),
               outcome: 'created',
+              authSource: null,
             },
             {
               fate: 'held',

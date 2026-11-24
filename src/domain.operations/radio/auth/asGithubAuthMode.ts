@@ -1,3 +1,5 @@
+import type { EhmpathSpot } from './EhmpathSpot';
+
 /**
  * .what = cast a raw --auth string to a typed github auth mode
  * .why = one place owns the auth-arg grammar; keeps getGithubTokenByAuthArg a
@@ -10,8 +12,17 @@ export const asGithubAuthMode = (input: {
   | { kind: 'shx'; command: string }
   | { kind: 'env'; envVar: string }
   | { kind: 'as-human' }
+  | { kind: 'as-ehmpath'; spots: EhmpathSpot[] }
   | { kind: 'unknown'; raw: string } => {
   const { auth } = input;
+
+  // as-ehmpath — the robot token from its spots, in read order: keyrack, then ambient
+  if (auth === 'as-ehmpath')
+    return { kind: 'as-ehmpath', spots: ['keyrack', 'ambient'] };
+  if (auth === 'as-ehmpath-via-keyrack')
+    return { kind: 'as-ehmpath', spots: ['keyrack'] };
+  if (auth === 'as-ehmpath-via-ambient')
+    return { kind: 'as-ehmpath', spots: ['ambient'] };
 
   // as-robot:via-keyrack(owner) — token from keyrack
   const keyrackMatch = auth.match(/^as-robot:via-keyrack\((.+)\)$/);

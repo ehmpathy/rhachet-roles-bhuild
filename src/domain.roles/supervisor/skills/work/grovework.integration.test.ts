@@ -94,6 +94,14 @@ const SSHCFG_HETZNER_HOSTNAME_ONLY = [
   '  HostName grove-sandpine-hetzner-v20261022-1',
   '',
 ].join('\n');
+/**
+ * .what = the local login ssh falls back to, declared as a machine whose login is not camper
+ * .why  = ssh -G takes its default user from the passwd entry of whoever runs the suite; on a
+ *         grove whose login is camper the defaults already match (converged, by design), so a
+ *         case about "ssh dials as the local user, never camper" must name that local user
+ * .note = last in the file: ssh keeps the first value it reads, so an alias's own User wins
+ */
+const SSHCFG_LOCAL_LOGIN_NOT_CAMPER = ['Host *', '  User bert', ''].join('\n');
 const ROW_EC2_TAILNET = {
   name: 'grove-sandpine-v20261101',
   host: '100.113.22.92',
@@ -358,6 +366,7 @@ describe('grovework', () => {
           runGrovework({
             forest: scene.forest,
             body: '__grove_unreached_cure grove-sandpine-hetzner-v20261023',
+            sshcfg: SSHCFG_LOCAL_LOGIN_NOT_CAMPER,
           }),
         );
 
@@ -379,7 +388,7 @@ describe('grovework', () => {
           runGrovework({
             forest: scene.forest,
             body: '__grove_unreached_cure grove-sandpine-hetzner-v20261022',
-            sshcfg: SSHCFG_HETZNER_HOSTNAME_ONLY,
+            sshcfg: `${SSHCFG_HETZNER_HOSTNAME_ONLY}${SSHCFG_LOCAL_LOGIN_NOT_CAMPER}`,
           }),
         );
 
@@ -389,6 +398,27 @@ describe('grovework', () => {
             expect(run.stdout.trim()).toContain(
               'write its ssh alias first — rhx git.grove.wake grove-sandpine-hetzner-v20261022',
             );
+          },
+        );
+      },
+    );
+
+    when(
+      '[t7] its row is name-only, no alias on disk, and the local login is camper',
+      () => {
+        const run = useBeforeAll(async () =>
+          runGrovework({
+            forest: scene.forest,
+            body: '__grove_unreached_cure grove-sandpine-hetzner-v20261023',
+            sshcfg: ['Host *', '  User camper', ''].join('\n'),
+          }),
+        );
+
+        then(
+          "ssh's defaults already match the row, so the alias reads converged and the cure names the tailnet",
+          () => {
+            expect(run.stdout).toContain('tailscale status');
+            expect(run.stdout).not.toContain('write its ssh alias first');
           },
         );
       },

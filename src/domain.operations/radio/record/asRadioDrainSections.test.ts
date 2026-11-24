@@ -21,7 +21,7 @@ const genRecord = (input: Partial<RadioTaskRecord>): RadioTaskRecord =>
     kind: 'create',
     repo,
     via: RadioChannel.GH_ISSUES,
-    auth: null,
+    auth: 'as-robot:via-keyrack(ehmpath)', // the #599 shape: a robot auth
     idem: null,
     title: 'lesson reminders',
     description: 'remind each surfer a day ahead',
@@ -75,6 +75,7 @@ describe('asRadioDrainSections', () => {
             }),
             task: genTask({ exid: '601', title: 'lesson reminders' }),
             outcome: 'created',
+            authSource: null,
           },
           {
             fate: 'delivered',
@@ -86,6 +87,7 @@ describe('asRadioDrainSections', () => {
             }),
             task: genTask({ exid: '602', title: 'board rentals' }),
             outcome: 'found',
+            authSource: null,
           },
         ],
       });
@@ -101,6 +103,50 @@ describe('asRadioDrainSections', () => {
           },
         ]);
         expect(sections.closedOrHeld).toEqual([]);
+        expect(sections).toMatchSnapshot();
+      });
+    });
+  });
+
+  given('[case1b] as-ehmpath deliveries, one per spot that paid', () => {
+    when('[t0] the sections render', () => {
+      const sections = asRadioDrainSections({
+        authOverride: null,
+        fates: [
+          {
+            fate: 'delivered',
+            record: genRecord({
+              recordStatus: RadioTaskRecordStatus.DELIVERED,
+              deliveredExid: '601',
+            }),
+            task: genTask({ exid: '601', title: 'lesson reminders' }),
+            outcome: 'created',
+            authSource: { auth: 'as-ehmpath', spot: 'keyrack' },
+          },
+          {
+            fate: 'delivered',
+            record: genRecord({
+              key: 'b1b2c3d4e5f60718',
+              title: 'board rentals',
+              recordStatus: RadioTaskRecordStatus.DELIVERED,
+              deliveredExid: '602',
+            }),
+            task: genTask({ exid: '602', title: 'board rentals' }),
+            outcome: 'created',
+            authSource: { auth: 'as-ehmpath', spot: 'ambient' },
+          },
+        ],
+      });
+
+      then('each drained row nests the spot that paid beneath it', () => {
+        const [drained] = sections.drained;
+        expect(drained?.children).toHaveLength(2);
+        expect(drained?.children[0]).toContain(
+          'auth = as-ehmpath (via keyrack)',
+        );
+        expect(drained?.children[1]).toContain(
+          'auth = as-ehmpath (via ambient)',
+        );
         expect(sections).toMatchSnapshot();
       });
     });

@@ -36,9 +36,7 @@ describe('asRadioAmendOutput', () => {
       });
 
       then('it names the auth change, before → after', () => {
-        expect(output).toContain(
-          'auth: default (as-robot:via-keyrack(ehmpath)) → as-human',
-        );
+        expect(output).toContain('auth: default (ambient-first) → as-human');
         expect(output).not.toContain('description: amended');
         expect(output).toContain('naught sent; its place in line is kept');
         expect(output).toMatchSnapshot();
@@ -59,9 +57,7 @@ describe('asRadioAmendOutput', () => {
       });
 
       then('it names both changes, and where the amended body is kept', () => {
-        expect(output).toContain(
-          'auth: default (as-robot:via-keyrack(ehmpath)) → as-human',
-        );
+        expect(output).toContain('auth: default (ambient-first) → as-human');
         expect(output).toContain('description: amended');
         expect(output).toContain(`kept at = ${PATH_KEPT}`);
         expect(output).toMatchSnapshot();

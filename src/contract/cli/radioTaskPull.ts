@@ -10,7 +10,7 @@
  *   --title   fetch specific task by title
  *   --status  filter by status: QUEUED, CLAIMED, DELIVERED
  *   --limit   max number of tasks to return
- *   --auth    auth mode: "as-human" or "as-robot:ENV_VAR_NAME"
+ *   --auth    where the token comes from; every value is listed in HELP_TEXT
  *   --help    show usage and exit
  *
  * usage:
@@ -26,6 +26,7 @@ import { z } from 'zod';
 import { RadioChannel } from '@src/domain.objects/RadioChannel';
 import type { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
 import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
+import { asAuthSourceShown } from '@src/domain.operations/radio/auth/asAuthSourceShown';
 import { asPullModeFromArgs } from '@src/domain.operations/radio/cli/asPullModeFromArgs';
 import { asTaskDetailOutput } from '@src/domain.operations/radio/cli/asTaskDetailOutput';
 import { asTaskListOutput } from '@src/domain.operations/radio/cli/asTaskListOutput';
@@ -78,8 +79,8 @@ const schemaOfArgs = z.object({
     // required: channel
     via: z.nativeEnum(RadioChannel).optional(),
 
-    // optional: auth mode (required for gh.issues if GITHUB_TOKEN not set)
-    // supports: "as-human" or "as-robot:ENV_VAR_NAME"
+    // optional: where the gh.issues token comes from (default: ambient-first);
+    // every value is listed in HELP_TEXT and parsed by asGithubAuthMode
     auth: z.string().optional(),
 
     // required: source repo (@this or owner/name)
@@ -125,7 +126,16 @@ const HELP_TEXT = `
       ├─ --title       fetch specific task by title
       ├─ --status      filter by status: QUEUED, CLAIMED, DELIVERED
       ├─ --limit       max number of tasks to return
-      ├─ --auth        mode: as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd) | as-human
+      ├─ --auth        where the token comes from (default: ambient-first)
+      │  ├─ (none)                  by this box's git config user.email
+      │  │  ├─ an ehmpath email     its gh login, else keyrack
+      │  │  ├─ another email        as-human
+      │  │  └─ no email set         keyrack
+      │  ├─ as-ehmpath              keyrack, then the gh login (ehmpath email only)
+      │  ├─ as-ehmpath-via-keyrack  keyrack only
+      │  ├─ as-ehmpath-via-ambient  the gh login only (ehmpath email only)
+      │  ├─ as-human                the gh login, any identity
+      │  └─ as-robot:via-keyrack(owner) · as-robot:env(VAR) · as-robot:shx(cmd)
       └─ --help, -h    show this help
 `.trim();
 
@@ -164,14 +174,15 @@ export const cliRadioTaskPull = async (): Promise<void> => {
   });
 
   // assemble context for channel (may involve auth)
-  const context = await getOneRadioContextFromCliArgs(
-    {
-      via: named.via,
-      repo,
-      auth: named.auth ?? null,
-    },
-    { env: process.env, shx },
-  );
+  const { radioContext: context, authSource } =
+    await getOneRadioContextFromCliArgs(
+      {
+        via: named.via,
+        repo,
+        auth: named.auth ?? null,
+      },
+      { env: process.env, shx },
+    );
 
   // handle list mode
   if (mode.kind === 'list') {
@@ -187,7 +198,11 @@ export const cliRadioTaskPull = async (): Promise<void> => {
 
     console.log("🦫 what's on the water?\n");
     outputRadioResult({
-      message: asTaskListOutput({ tasks: result.tasks, via: named.via }),
+      message: asTaskListOutput({
+        tasks: result.tasks,
+        via: named.via,
+        auth: asAuthSourceShown({ authSource }),
+      }),
     });
     return;
   }
@@ -210,6 +225,7 @@ export const cliRadioTaskPull = async (): Promise<void> => {
       outcome: null,
       cached: result.cached,
       recorded: null,
+      auth: asAuthSourceShown({ authSource }),
     }),
   });
 };

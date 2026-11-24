@@ -1,0 +1,44 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`getEhmpathTokenFromAmbient.integration given: [case2] a stub gh with a login, and a repo whose email is a human one when: [t0] as-ehmpath-via-ambient derives a token then: refuses, and names the human email; gh pays naught 1`] = `
+"✋ ConstraintError: --auth as-ehmpath-via-ambient found no ehmpath token
+
+checked
+└─ ambient: git config user.email = bert@example.com, not an ehmpath email
+
+fix
+└─ send as yourself, on purpose: --auth as-human
+
+{
+  "auth": "as-ehmpath-via-ambient"
+}"
+`;
+
+exports[`getEhmpathTokenFromAmbient.integration given: [case3] a stub gh with a login, and a repo with no email at all when: [t0] as-ehmpath-via-ambient derives a token then: refuses, and reads the email as unset (git exit 1 is an answer) 1`] = `
+"✋ ConstraintError: --auth as-ehmpath-via-ambient found no ehmpath token
+
+checked
+└─ ambient: git config user.email unset
+
+fix
+└─ send as yourself, on purpose: --auth as-human
+
+{
+  "auth": "as-ehmpath-via-ambient"
+}"
+`;
+
+exports[`getEhmpathTokenFromAmbient.integration given: [case4] a stub gh with no login, and a repo whose email is ehmpath when: [t0] as-ehmpath-via-ambient derives a token then: refuses, and names gh auth login (gh exit 1 is an answer) 1`] = `
+"✋ ConstraintError: --auth as-ehmpath-via-ambient found no ehmpath token
+
+checked
+└─ ambient: ehmpath email, but gh holds no login
+
+fix
+├─ log gh in as the ehmpath account: gh auth login
+└─ or send as yourself, on purpose: --auth as-human
+
+{
+  "auth": "as-ehmpath-via-ambient"
+}"
+`;

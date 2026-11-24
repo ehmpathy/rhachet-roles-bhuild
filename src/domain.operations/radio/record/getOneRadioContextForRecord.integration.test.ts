@@ -3,6 +3,10 @@ import { ConstraintError } from 'helpful-errors';
 import * as path from 'path';
 import { genTempDir, given, then, useBeforeAll, useThen, when } from 'test-fns';
 
+import {
+  STUB_GH_TOKEN,
+  withAmbientStub,
+} from '@src/.test/utils/withAmbientStub';
 import { RadioChannel } from '@src/domain.objects/RadioChannel';
 import { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
 import { RadioTaskRecordStatus } from '@src/domain.objects/RadioTaskRecordStatus';
@@ -379,4 +383,179 @@ describe('getOneRadioContextForRecord — a stored auth never runs a shell', () 
       });
     });
   });
+});
+
+describe('getOneRadioContextForRecord — a held as-ehmpath record replays', () => {
+  const context = { env: process.env, shx };
+
+  given(
+    '[case1] a held record whose stored auth is as-ehmpath-via-ambient, drained on an ehmpath box',
+    () => {
+      when('[t0] a drain replays it, with no live auth', () => {
+        const result = useThen('it derives the token', async () =>
+          withAmbientStub(
+            {
+              slug: 'record-replay-ehmpath',
+              gh: { login: 'token' },
+              git: { email: 'seaturtle@ehmpath.com' },
+            },
+            async () => {
+              const derived = await getOneRadioContextForRecord(
+                {
+                  record: genRecord({ auth: 'as-ehmpath-via-ambient' }),
+                  authOverride: null,
+                  authLive: null,
+                },
+                context,
+              );
+              return {
+                token:
+                  'radioContext' in derived && 'github' in derived.radioContext
+                    ? derived.radioContext.github.auth.token
+                    : null,
+              };
+            },
+          ),
+        );
+
+        then('the stored mode replays, and the box login pays', () => {
+          expect(result.token).toEqual(STUB_GH_TOKEN);
+        });
+      });
+    },
+  );
+
+  given(
+    '[case2] the same held record, drained on a box whose git email is a human one',
+    () => {
+      when('[t0] a drain replays it, with no live auth', () => {
+        const result = useThen('it is held', async () =>
+          withAmbientStub(
+            {
+              slug: 'record-replay-human',
+              gh: { login: 'token' },
+              git: { email: 'bert@example.com' },
+            },
+            async () =>
+              getOneRadioContextForRecord(
+                {
+                  record: genRecord({ auth: 'as-ehmpath-via-ambient' }),
+                  authOverride: null,
+                  authLive: null,
+                },
+                context,
+              ),
+          ),
+        );
+
+        then('it is held as a constraint, never sent as the human', () => {
+          expect('fault' in result).toEqual(true);
+          if (!('fault' in result)) return;
+          expect(result.fault).toBeInstanceOf(ConstraintError);
+          expect(result.fault.message).toContain('not an ehmpath email');
+        });
+      });
+    },
+  );
+
+  given(
+    '[case3] the same held record, drained on an ehmpath box whose gh read faults',
+    () => {
+      when('[t0] a drain replays it, with no live auth', () => {
+        const result = useThen('it returns, never throws', async () =>
+          withAmbientStub(
+            {
+              slug: 'record-replay-gh-fault',
+              gh: { login: 'fault' },
+              git: { email: 'seaturtle@ehmpath.com' },
+            },
+            async () =>
+              getOneRadioContextForRecord(
+                {
+                  record: genRecord({ auth: 'as-ehmpath-via-ambient' }),
+                  authOverride: null,
+                  authLive: null,
+                },
+                context,
+              ),
+          ),
+        );
+
+        then(
+          'the record is held on a constraint that names the read, so the drain goes on',
+          () => {
+            expect('fault' in result).toEqual(true);
+            if (!('fault' in result)) return;
+            expect(result.fault).toBeInstanceOf(ConstraintError);
+            expect(result.fault.message).toContain(
+              'gh auth token` failed (exit 3)',
+            );
+          },
+        );
+      });
+    },
+  );
+});
+
+describe('getOneRadioContextForRecord — a record with no --auth replays box-relative', () => {
+  const context = { env: process.env, shx };
+
+  // replay one default record on a box of the given identity; return the source it paid with
+  const replayDefaultOnBox = (input: { slug: string; email: string }) =>
+    withAmbientStub(
+      { slug: input.slug, gh: { login: 'token' }, git: { email: input.email } },
+      async () => {
+        const derived = await getOneRadioContextForRecord(
+          {
+            record: genRecord({ auth: null }),
+            authOverride: null,
+            authLive: null,
+          },
+          context,
+        );
+        if ('fault' in derived) throw derived.fault;
+        return { authSource: derived.authSource };
+      },
+    );
+
+  given(
+    '[case1] one record queued with no --auth, drained first on an ehmpath box',
+    () => {
+      when('[t0] the ehmpath box drains it', () => {
+        const result = useThen('it derives', async () =>
+          replayDefaultOnBox({
+            slug: 'record-default-ehmpath',
+            email: 'seaturtle@ehmpath.com',
+          }),
+        );
+
+        then('the drainer pays as-ehmpath, and the source is named', () => {
+          expect(result.authSource).toEqual({
+            auth: 'as-ehmpath',
+            spot: 'ambient',
+          });
+        });
+      });
+
+      when('[t1] a human box drains the same record instead', () => {
+        const result = useThen('it derives', async () =>
+          replayDefaultOnBox({
+            slug: 'record-default-human',
+            email: 'bert@example.com',
+          }),
+        );
+
+        then(
+          'the drainer pays as-human, and the source is named, so the identity never shifts unseen',
+          () => {
+            expect(result.authSource).toEqual({
+              auth: 'as-human',
+              spot: 'ambient',
+              email: 'bert@example.com',
+            });
+          },
+        );
+      });
+    },
+  );
 });

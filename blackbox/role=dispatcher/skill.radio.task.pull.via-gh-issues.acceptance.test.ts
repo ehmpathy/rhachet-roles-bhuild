@@ -13,6 +13,17 @@ import {
 } from '../.test/infra';
 
 /**
+ * .what = mask the bytes of a pull 401 output that vary per gh version
+ * .why = metadata.detail carries gh's own 401 stderr, whose words are gh's and change with its
+ *        version; every other byte is the contract a human reads, so it stays in the snap.
+ *        the case asserts the detail's sense (HTTP 401) apart from the snap
+ */
+const asStablePull401Output = (input: { output: string }): string =>
+  sanitizeOutput(input.output)
+    .replace(/"detail": ".*"/g, '"detail": "<gh 401 stderr>"')
+    .trim();
+
+/**
  * .what = invoke radio.uses skill to set up permissions
  * .why = radio.task.push/pull requires radio.uses permission
  */
@@ -358,7 +369,7 @@ describe('radio.task.pull via gh.issues — github auth failure nudge', () => {
           via: 'gh.issues',
           auth: 'as-robot:env(RADIO_ACCEPT_BOGUS_TOKEN)',
           env: {
-            RADIO_ACCEPT_BOGUS_TOKEN: 'ghp_bogusInvalidToken0000000000000000000000',
+            RADIO_ACCEPT_BOGUS_TOKEN: 'ghp_bogusInvalidToken',
           },
           from: GITHUB_DEMO_REPO,
           list: true,
@@ -378,13 +389,16 @@ describe('radio.task.pull via gh.issues — github auth failure nudge', () => {
         expect(result.output).not.toContain('Command failed');
       });
 
-      // .note = deliberately NOT snapshotted (same rationale as push [case8]):
-      //   the rendered ConstraintError metadata embeds the live gh command plus
-      //   gh's own version-volatile 401 stderr in metadata.detail — all
-      //   non-deterministic. the stable contract the human sees (exit 2, the
-      //   --auth as-human nudge, no `Command failed` leak) is asserted
-      //   explicitly above; the deterministic message SHAPE is snapshot-locked
-      //   at the unit tier in getGithubAuthFailureMessage.test.
+      then('the stdout stream matches snapshot', () => {
+        // snap each stream apart: rhachet frames each with its own banner, so a merged capture reads it twice
+        expect(asStablePull401Output({ output: result.stdout })).toMatchSnapshot();
+      });
+
+      then('the stderr stream matches snapshot, volatile bytes masked', () => {
+        expect(result.stderr).toContain('ConstraintError');
+        expect(result.stderr).toContain('HTTP 401');
+        expect(asStablePull401Output({ output: result.stderr })).toMatchSnapshot();
+      });
     });
   });
 });
@@ -421,6 +435,13 @@ describe('radio.task.pull via gh.issues — usage contract', () => {
       then('names the required --via and --from options', () => {
         expect(result.output).toContain('--via');
         expect(result.output).toContain('--from');
+      });
+
+      then('names all four --auth values, each with where it looks', () => {
+        expect(result.output).toContain('as-ehmpath              keyrack, then');
+        expect(result.output).toContain('as-ehmpath-via-keyrack  keyrack only');
+        expect(result.output).toContain('as-ehmpath-via-ambient  the gh login');
+        expect(result.output).toContain('as-human                the gh login');
       });
 
       then('the human-readable usage output matches snapshot', () => {

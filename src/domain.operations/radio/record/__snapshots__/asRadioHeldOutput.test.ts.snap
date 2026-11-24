@@ -6,15 +6,15 @@ exports[`asRadioHeldOutput given: [case1] three tasks held, the gate shut (S2) w
 "🦫 held for the radio
    ├─ a task a → ehmpathy/rhachet
    │  ├─ state: held at gate (radio.uses:blocked — global)
-   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  ├─ auth: default (ambient-first)
    │  └─ lift it (human): rhx radio.uses --global allow
    ├─ b task b → ehmpathy/rhachet
    │  ├─ state: held at gate (radio.uses:blocked — global)
-   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  ├─ auth: default (ambient-first)
    │  └─ lift it (human): rhx radio.uses --global allow
    ├─ c task c → ehmpathy/rhachet
    │  ├─ state: held at gate (radio.uses:blocked — global)
-   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  ├─ auth: default (ambient-first)
    │  └─ lift it (human): rhx radio.uses --global allow
    └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;
@@ -25,17 +25,17 @@ exports[`asRadioHeldOutput given: [case2.1] two tasks set aside on an upstream f
 "🦫 held for the radio
    ├─ a task a → ehmpathy/rhachet
    │  ├─ state: set aside (upstream:auth)
-   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  ├─ auth: as-robot:via-keyrack(ehmpath)
    │  ├─ amend it: rhx radio.task.queue set --uuid a --auth as-human (needs a gh login on this host)
    │  └─ or drop it: rhx radio.task.queue del --uuid a --why "<why>"
    ├─ b task b → ehmpathy/rhachet
    │  ├─ state: set aside (upstream:auth)
-   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  ├─ auth: as-robot:via-keyrack(ehmpath)
    │  ├─ amend it: rhx radio.task.queue set --uuid b --auth as-human (needs a gh login on this host)
    │  └─ or drop it: rhx radio.task.queue del --uuid b --why "<why>"
    ├─ c task c → ehmpathy/rhachet
    │  ├─ state: held at gate (radio.uses:blocked — global)
-   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  ├─ auth: default (ambient-first)
    │  └─ lift it (human): rhx radio.uses --global allow
    └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;
@@ -46,7 +46,7 @@ exports[`asRadioHeldOutput given: [case2.2] a task halted on a rate limit, the g
 "🦫 held for the radio
    ├─ a task a → ehmpathy/rhachet
    │  ├─ state: halted (upstream:rate-limit)
-   │  └─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  └─ auth: default (ambient-first)
    └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;
 
@@ -54,12 +54,12 @@ exports[`asRadioHeldOutput given: [case2.3] two updates to one issue, the first 
 "🦫 held for the radio
    ├─ a1a1a1a1a1a1a1a1 update #599 → ehmpathy/rhachet
    │  ├─ state: set aside (upstream:access)
-   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  ├─ auth: as-robot:via-keyrack(ehmpath)
    │  ├─ amend it: rhx radio.task.queue set --uuid a1a1a1a1a1a1a1a1 --auth as-human (needs a gh login on this host)
    │  └─ or drop it: rhx radio.task.queue del --uuid a1a1a1a1a1a1a1a1 --why "<why>"
    ├─ b2b2b2b2b2b2b2b2 update #599 → ehmpathy/rhachet
    │  ├─ state: waits behind a1a1a1a1a1a1a1a1 (same issue #599)
-   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  ├─ auth: default (ambient-first)
    │  └─ fix a1a1a1a1a1a1a1a1 above (amend, lift, or drop it); this one sends on the next drain after
    └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;
@@ -70,7 +70,7 @@ exports[`asRadioHeldOutput given: [case2.3] two updates to one issue, the first 
 "🦫 held for the radio
    ├─ b2b2b2b2b2b2b2b2 update #599 → ehmpathy/rhachet
    │  ├─ state: not reached (was behind a1a1a1a1a1a1a1a1, no longer held; re-checked on next drain)
-   │  └─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  └─ auth: default (ambient-first)
    └─ the radio is open, so the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;
 
@@ -81,7 +81,7 @@ exports[`asRadioHeldOutput given: [case2.3] two updates to one issue, the first 
    │  └─ auth: as-human
    ├─ b2b2b2b2b2b2b2b2 update #599 → ehmpathy/rhachet
    │  ├─ state: waits behind a1a1a1a1a1a1a1a1 (same issue #599)
-   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  ├─ auth: default (ambient-first)
    │  └─ sends right after a1a1a1a1a1a1a1a1 on the next drain
    └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;
@@ -90,10 +90,10 @@ exports[`asRadioHeldOutput given: [case2.4] a halter and a record held unsent be
 "🦫 held for the radio
    ├─ a task a → ehmpathy/rhachet
    │  ├─ state: halted (upstream:rate-limit)
-   │  └─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  └─ auth: default (ambient-first)
    ├─ b task b → ehmpathy/rhachet
    │  ├─ state: behind the halt (upstream:rate-limit): unsent, still in line; the next drain sends it once the halt clears
-   │  └─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  └─ auth: default (ambient-first)
    └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;
 
@@ -105,7 +105,7 @@ exports[`asRadioHeldOutput given: [case2] one task held, the gate open (S3) when
 "🦫 held for the radio
    ├─ a task a → ehmpathy/rhachet
    │  ├─ state: not reached (last held: radio.uses:blocked — global; since opened)
-   │  └─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  └─ auth: default (ambient-first)
    └─ the radio is open, so the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;
 
@@ -124,7 +124,7 @@ exports[`asRadioHeldOutput given: [case9] held records with a stored auth, one o
    │  └─ amend its auth (human): rhx radio.task.queue set --uuid shelled --auth <auth>
    ├─ plain task plain → ehmpathy/rhachet
    │  ├─ state: held at gate (radio.uses:blocked — global)
-   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  ├─ auth: default (ambient-first)
    │  └─ lift it (human): rhx radio.uses --global allow
    └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
 `;
@@ -148,7 +148,7 @@ exports[`asRadioHeldOutput given: [case11] two set-aside records whose fix is no
    │  └─ or drop it: rhx radio.task.queue del --uuid human --why "<why>"
    ├─ odd task odd → ehmpathy/rhachet
    │  ├─ state: set aside (upstream:fault)
-   │  ├─ auth: default (as-robot:via-keyrack(ehmpath))
+   │  ├─ auth: default (ambient-first)
    │  ├─ retry it and print its fault: rhx radio.task.queue drain (this sends every held record whose gate is open)
    │  └─ or drop it: rhx radio.task.queue del --uuid odd --why "<why>"
    └─ then the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"

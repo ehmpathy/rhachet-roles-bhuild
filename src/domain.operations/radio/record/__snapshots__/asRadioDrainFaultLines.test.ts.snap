@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asRadioDrainFaultLines an auth miss nests its checked spots under the fault line 1`] = `
+"fault: ✋ ConstraintError: --auth as-ehmpath found no ehmpath token
+└─ checked
+   ├─ keyrack: not granted (status: absent)
+   └─ ambient: git config user.email = bert@example.com, not an ehmpath email"
+`;
+
+exports[`asRadioDrainFaultLines an upstream fault keeps its one line 1`] = `"fault: GraphQL: Resource not accessible by integration (updateIssue)"`;
+
+exports[`asRadioDrainFaultLines no detail yields no fault line 1`] = `""`;

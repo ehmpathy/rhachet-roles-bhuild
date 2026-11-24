@@ -1,0 +1,58 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`radio.task.pull via the ambient default, through the real skill given: [case1] no --auth on an ehmpath box with a gh login when: [t0] the real skill pulls the list then: the output a human reads matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.pull
+
+🦫 what's on the water?
+
+🎙️ tasks on gh.issues · auth: as-ehmpath (via ambient)
+   └─ (no tasks found)"
+`;
+
+exports[`radio.task.pull via the ambient default, through the real skill given: [case2] no --auth on a human box with a gh login when: [t0] the real skill pulls the list then: the output a human reads matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.pull
+
+🦫 what's on the water?
+
+🎙️ tasks on gh.issues · auth: as-human (via ambient email bert@example.com)
+   └─ (no tasks found)"
+`;
+
+exports[`radio.task.pull via the ambient default, through the real skill given: [case3] --auth as-ehmpath on bert's laptop: keyrack holds none, the email is human when: [t0] the real skill pulls the list then: the stderr stream matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.pull
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: --auth as-ehmpath found no ehmpath token
+
+checked
+├─ keyrack: not granted (status: absent)
+└─ ambient: git config user.email = bert@example.com, not an ehmpath email
+
+fix
+├─ set the robot token: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
+└─ or send as yourself, on purpose: --auth as-human
+
+{
+  "auth": "as-ehmpath"
+}"
+`;
+
+exports[`radio.task.pull via the ambient default, through the real skill given: [case3] --auth as-ehmpath on bert's laptop: keyrack holds none, the email is human when: [t0] the real skill pulls the list then: the stdout stream matches snapshot 1`] = `"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.pull"`;
+
+exports[`radio.task.pull via the ambient default, through the real skill given: [case4] --auth as-ehmpath on a fresh clone box: keyrack holds none, gh is logged in when: [t0] the real skill pulls the list then: the output a human reads matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.pull
+
+🦫 what's on the water?
+
+🎙️ tasks on gh.issues · auth: as-ehmpath (via ambient)
+   └─ (no tasks found)"
+`;
+
+exports[`radio.task.pull via the ambient default, through the real skill given: [case5] --auth as-ehmpath on a robot box: keyrack grants, the email is human when: [t0] the real skill pulls the list then: the output a human reads matches snapshot 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.pull
+
+🦫 what's on the water?
+
+🎙️ tasks on gh.issues · auth: as-ehmpath (via keyrack)
+   └─ (no tasks found)"
+`;

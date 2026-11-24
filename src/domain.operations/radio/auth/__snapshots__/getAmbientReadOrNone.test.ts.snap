@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`getAmbientReadOrNone given: [case3] a read that exits 127, gh not installed when: [t0] the read runs then: a ConstraintError names the command, the exit, and the fix; the drain can hold it 1`] = `
+"✋ AmbientReadFaultError: the ambient read \`env -u GH_TOKEN -u GITHUB_TOKEN gh auth token\` failed (exit 127); this box cannot say who it is
+
+{
+  "command": "env -u GH_TOKEN -u GITHUB_TOKEN gh auth token",
+  "exitCode": 127,
+  "execError": "Command failed: env -u GH_TOKEN -u GITHUB_TOKEN gh auth token",
+  "hint": "check that \`env -u GH_TOKEN -u GITHUB_TOKEN gh auth token\` runs on this box, or name the auth: --auth as-ehmpath-via-keyrack | --auth as-human"
+}"
+`;

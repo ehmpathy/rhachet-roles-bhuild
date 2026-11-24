@@ -1,6 +1,6 @@
-import { asRadioFaultDetailLine } from './asRadioFaultDetailLine';
+import { asRadioNestedLines } from '../asRadioNestedLines';
+import { asRadioDrainFaultLines } from './asRadioDrainFaultLines';
 import { asRadioHaltLines } from './asRadioHaltLines';
-import { asRadioNestedLines } from './asRadioNestedLines';
 import { asRadioQueueFixLines } from './asRadioQueueFixLines';
 import { asRadioReasonBehindOnIssue } from './asRadioReasonBehindOnIssue';
 import { asRadioTaskRecordLabel } from './asRadioTaskRecordLabel';
@@ -53,9 +53,7 @@ export const asRadioDrainHeldRow = (input: {
     lines: [
       ...(isRadioFateBehindHalt({ fate })
         ? []
-        : [asRadioFaultDetailLine({ detail: fate.detail })].filter(
-            (line): line is string => line !== null,
-          )),
+        : asRadioDrainFaultLines({ detail: fate.detail })),
       ...asRadioHaltLines({ fate }),
       ...asRadioQueueFixLines({
         record: fate.record,

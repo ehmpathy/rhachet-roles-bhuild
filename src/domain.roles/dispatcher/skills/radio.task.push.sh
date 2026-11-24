@@ -25,7 +25,8 @@
 #   --exid      external id for updates
 #   --status    task status: QUEUED, CLAIMED, DELIVERED
 #   --idem      idempotency mode: findsert or upsert
-#   --auth      as-human | as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd)
+#   --auth      as-ehmpath | as-ehmpath-via-keyrack | as-ehmpath-via-ambient | as-human
+#               | as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd)
 #   --help, -h  show usage and exit
 #
 # guarantee:

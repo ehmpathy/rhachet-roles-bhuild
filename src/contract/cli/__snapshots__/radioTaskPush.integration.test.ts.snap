@@ -25,7 +25,16 @@ exports[`radio.task.push.integration — CLI contract given: [case1] --help (the
       ├─ --exid        external id for updates
       ├─ --status      status: QUEUED, CLAIMED, DELIVERED
       ├─ --idem        idempotency: findsert or upsert
-      ├─ --auth        mode: as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd) | as-human
+      ├─ --auth        where the token comes from (default: ambient-first)
+      │  ├─ (none)                  by this box's git config user.email
+      │  │  ├─ an ehmpath email     its gh login, else keyrack
+      │  │  ├─ another email        as-human
+      │  │  └─ no email set         keyrack
+      │  ├─ as-ehmpath              keyrack, then the gh login (ehmpath email only)
+      │  ├─ as-ehmpath-via-keyrack  keyrack only
+      │  ├─ as-ehmpath-via-ambient  the gh login only (ehmpath email only)
+      │  ├─ as-human                the gh login, any identity
+      │  └─ as-robot:via-keyrack(owner) · as-robot:env(VAR) · as-robot:shx(cmd)
       └─ --help, -h    show this help"
 `;
 
@@ -80,7 +89,16 @@ exports[`radio.task.push.integration — CLI contract given: [case5] -h (the sho
       ├─ --exid        external id for updates
       ├─ --status      status: QUEUED, CLAIMED, DELIVERED
       ├─ --idem        idempotency: findsert or upsert
-      ├─ --auth        mode: as-robot:via-keyrack(owner) | as-robot:env(VAR) | as-robot:shx(cmd) | as-human
+      ├─ --auth        where the token comes from (default: ambient-first)
+      │  ├─ (none)                  by this box's git config user.email
+      │  │  ├─ an ehmpath email     its gh login, else keyrack
+      │  │  ├─ another email        as-human
+      │  │  └─ no email set         keyrack
+      │  ├─ as-ehmpath              keyrack, then the gh login (ehmpath email only)
+      │  ├─ as-ehmpath-via-keyrack  keyrack only
+      │  ├─ as-ehmpath-via-ambient  the gh login only (ehmpath email only)
+      │  ├─ as-human                the gh login, any identity
+      │  └─ as-robot:via-keyrack(owner) · as-robot:env(VAR) · as-robot:shx(cmd)
       └─ --help, -h    show this help"
 `;
 
@@ -106,6 +124,7 @@ exports[`radio.task.push.integration — CLI contract given: [case7] --auth as-h
    ├─ held at = .behavior/.radio/ (no route bound to this branch)
    ├─ backlog = 1 awaits the radio
    └─ fix it: ✋ ConstraintError: --auth as-human is forbidden in test environment. use --auth as-robot:env(TOKEN_VAR) or --auth as-robot:shx(command) instead.
+      ├─ hint: or declare a stub gh: wrap the test in withAmbientStub (src/.test/utils/withAmbientStub.ts), which sets RADIO_GH_STUB=1
       ├─ the test-env guard refuses as-human; amend it to a robot auth: rhx radio.task.queue set --uuid dd897bb8344f779a --auth 'as-robot:env(GH_TOKEN)'
       ├─ or drop it: rhx radio.task.queue del --uuid dd897bb8344f779a --why "<why>"
       └─ then the next push delivers the backlog first"
@@ -146,18 +165,230 @@ exports[`radio.task.push.integration — CLI contract given: [case10] --auth wit
    ├─ held at = .behavior/.radio/ (no route bound to this branch)
    ├─ backlog = 1 awaits the radio
    └─ fix it: ✋ ConstraintError: unrecognized --auth mode: some-unknown-mode
-      ├─ supported modes:
-      │  ├─ as-robot:via-keyrack(owner)
-      │  │     use token from keyrack (default owner: ehmpath)
-      │  ├─ as-robot:shx(command)
-      │  │     execute shell command to retrieve token
-      │  ├─ as-robot:env(VAR)
-      │  │     use token from environment variable
-      │  └─ as-human
-      │        use gh cli logged-in session (interactive)
+      ├─ supported modes
+      │  ├─ as-ehmpath                    keyrack, then the gh login (ehmpath email only)
+      │  ├─ as-ehmpath-via-keyrack        keyrack only
+      │  ├─ as-ehmpath-via-ambient        the gh login only (ehmpath email only)
+      │  ├─ as-robot:via-keyrack(owner)   token from keyrack (default owner: ehmpath)
+      │  ├─ as-robot:shx(command)         token from the stdout of a shell command
+      │  ├─ as-robot:env(VAR)             token from an environment variable
+      │  └─ as-human                      the gh login, any identity (interactive)
       ├─ amend it: rhx radio.task.queue set --uuid dd897bb8344f779a --auth as-human (needs a gh login on this host)
       ├─ or drop it: rhx radio.task.queue del --uuid dd897bb8344f779a --why "<why>"
       └─ then the next push delivers the backlog first"
+`;
+
+exports[`radio.task.push.integration — CLI contract given: [case10a] --auth as-ehmpath-via-ambient on a box whose git email is a human one when: [t0] the push skill runs against a stub gh with a login then: holds the push as upstream:auth, names the ambient row, never sends as the human 1`] = `
+"🦫 held for the radio
+   ├─ task    = auth failure contract
+   ├─ into    = test-owner/example
+   ├─ status  = QUEUED (upstream:auth)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ backlog = 1 awaits the radio
+   └─ fix it: ✋ ConstraintError: --auth as-ehmpath-via-ambient found no ehmpath token
+      ├─ checked
+      │  └─ ambient: git config user.email = bert@example.com, not an ehmpath email
+      ├─ fix
+      │  └─ send as yourself, on purpose: --auth as-human
+      ├─ amend it: rhx radio.task.queue set --uuid dd897bb8344f779a --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --uuid dd897bb8344f779a --why "<why>"
+      └─ then the next push delivers the backlog first"
+`;
+
+exports[`radio.task.push.integration — CLI contract given: [case10b] --auth as-ehmpath-via-ambient on an ehmpath box whose gh holds no login when: [t0] the push skill runs against a stub gh with no login then: holds the push as upstream:auth, and names gh auth login as the fix 1`] = `
+"🦫 held for the radio
+   ├─ task    = auth failure contract
+   ├─ into    = test-owner/example
+   ├─ status  = QUEUED (upstream:auth)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ backlog = 1 awaits the radio
+   └─ fix it: ✋ ConstraintError: --auth as-ehmpath-via-ambient found no ehmpath token
+      ├─ checked
+      │  └─ ambient: ehmpath email, but gh holds no login
+      ├─ fix
+      │  ├─ log gh in as the ehmpath account: gh auth login
+      │  └─ or send as yourself, on purpose: --auth as-human
+      ├─ amend it: rhx radio.task.queue set --uuid dd897bb8344f779a --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --uuid dd897bb8344f779a --why "<why>"
+      └─ then the next push delivers the backlog first"
+`;
+
+exports[`radio.task.push.integration — CLI contract given: [case10c] --auth as-ehmpath on a fresh ehmpath box: keyrack holds no token, gh is logged in when: [t0] the push skill runs against a stub gh with a login then: the output matches the snapshot 1`] = `
+"🦫 onto the pile!
+
+🎙️ created: tide chart refresh
+   ├─ exid: 7
+   ├─ status: QUEUED
+   ├─ repo: test-owner/example
+   ├─ pushedBy: <masked>
+   ├─ pushedAt: <date>
+   ├─ auth: as-ehmpath (via ambient)
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.push.integration — CLI contract given: [case10d] no --auth on an ehmpath box with a gh login (ambient-first) when: [t0] the push skill runs against a stub gh then: the output matches the snapshot 1`] = `
+"🦫 onto the pile!
+
+🎙️ created: tide chart refresh
+   ├─ exid: 7
+   ├─ status: QUEUED
+   ├─ repo: test-owner/example
+   ├─ pushedBy: <masked>
+   ├─ pushedAt: <date>
+   ├─ auth: as-ehmpath (via ambient)
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.push.integration — CLI contract given: [case10e] no --auth on a human box (ambient-first) when: [t0] the push skill runs against a stub gh then: the output matches the snapshot 1`] = `
+"🦫 onto the pile!
+
+🎙️ created: tide chart refresh
+   ├─ exid: 7
+   ├─ status: QUEUED
+   ├─ repo: test-owner/example
+   ├─ pushedBy: <masked>
+   ├─ pushedAt: <date>
+   ├─ auth: as-human (via ambient email bert@example.com)
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.push.integration — CLI contract given: [case10f] --auth as-ehmpath on bert's laptop: keyrack holds none, and the git email is a human one when: [t0] the push skill runs against a stub gh with a login then: the output matches the snapshot 1`] = `
+"🦫 held for the radio
+   ├─ task    = tide chart refresh
+   ├─ into    = test-owner/example
+   ├─ status  = QUEUED (upstream:auth)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ backlog = 1 awaits the radio
+   └─ fix it: ✋ ConstraintError: --auth as-ehmpath found no ehmpath token
+      ├─ checked
+      │  ├─ keyrack: not granted (status: absent)
+      │  └─ ambient: git config user.email = bert@example.com, not an ehmpath email
+      ├─ fix
+      │  ├─ set the robot token: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
+      │  └─ or send as yourself, on purpose: --auth as-human
+      ├─ amend it: rhx radio.task.queue set --uuid f1c097b35fed35e4 --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --uuid f1c097b35fed35e4 --why "<why>"
+      └─ then the next push delivers the backlog first"
+`;
+
+exports[`radio.task.push.integration — CLI contract given: [case10g] no --auth on bert's laptop, and gh holds no stored login when: [t0] the push skill runs against a stub gh with no login then: the output matches the snapshot 1`] = `
+"🦫 held for the radio
+   ├─ task    = tide chart refresh
+   ├─ into    = test-owner/example
+   ├─ status  = QUEUED (upstream:auth)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ backlog = 1 awaits the radio
+   └─ fix it: ✋ ConstraintError: the default auth (no --auth) reads a human email (bert@example.com), so it sends as-human; but gh holds no login
+      ├─ hint: log the human in with \`gh auth login\`, or name the auth: --auth as-ehmpath-via-keyrack
+      ├─ amend it to the robot: rhx radio.task.queue set --uuid f1c097b35fed35e4 --auth as-ehmpath-via-keyrack
+      ├─ or, to send as yourself, check the gh login on this host: gh auth status (else: gh auth login), then: rhx radio.task.queue drain
+      ├─ or drop it: rhx radio.task.queue del --uuid f1c097b35fed35e4 --why "<why>"
+      └─ then the next push delivers the backlog first"
+`;
+
+exports[`radio.task.push.integration — CLI contract given: [case10h] --auth as-ehmpath on a robot box: keyrack grants, gh holds no login when: [t0] the push skill runs against a stub gh then: the output matches the snapshot 1`] = `
+"🦫 onto the pile!
+
+🎙️ created: tide chart refresh
+   ├─ exid: 7
+   ├─ status: QUEUED
+   ├─ repo: test-owner/example
+   ├─ pushedBy: <masked>
+   ├─ pushedAt: <date>
+   ├─ auth: as-ehmpath (via keyrack)
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.push.integration — CLI contract given: [case10i] --auth as-ehmpath-via-keyrack on an ehmpath box with a gh login: keyrack holds none when: [t0] the push skill runs against a stub gh then: the output matches the snapshot 1`] = `
+"🦫 held for the radio
+   ├─ task    = tide chart refresh
+   ├─ into    = test-owner/example
+   ├─ status  = QUEUED (upstream:auth)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ backlog = 1 awaits the radio
+   └─ fix it: ✋ ConstraintError: --auth as-ehmpath-via-keyrack found no ehmpath token
+      ├─ checked
+      │  └─ keyrack: not granted (status: absent)
+      ├─ fix
+      │  ├─ set the robot token: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
+      │  └─ or send as yourself, on purpose: --auth as-human
+      ├─ amend it: rhx radio.task.queue set --uuid f1c097b35fed35e4 --auth as-human (needs a gh login on this host)
+      ├─ or drop it: rhx radio.task.queue del --uuid f1c097b35fed35e4 --why "<why>"
+      └─ then the next push delivers the backlog first"
+`;
+
+exports[`radio.task.push.integration — CLI contract given: [case10j] no --auth on an ehmpath box whose gh holds no login: keyrack grants when: [t0] the push skill runs against a stub gh with no login then: the output matches the snapshot 1`] = `
+"🦫 onto the pile!
+
+🎙️ created: tide chart refresh
+   ├─ exid: 7
+   ├─ status: QUEUED
+   ├─ repo: test-owner/example
+   ├─ pushedBy: <masked>
+   ├─ pushedAt: <date>
+   ├─ auth: as-ehmpath (via keyrack)
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.push.integration — CLI contract given: [case10k] no --auth on a box with no git email: keyrack grants when: [t0] the push skill runs against a stub gh with a login then: the output matches the snapshot 1`] = `
+"🦫 onto the pile!
+
+🎙️ created: tide chart refresh
+   ├─ exid: 7
+   ├─ status: QUEUED
+   ├─ repo: test-owner/example
+   ├─ pushedBy: <masked>
+   ├─ pushedAt: <date>
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.push.integration — CLI contract given: [case10l] no --auth on a human box that holds an env GH_TOKEN and no stored gh login when: [t0] the push skill runs against a stub gh with no login then: the output matches the snapshot 1`] = `
+"🦫 held for the radio
+   ├─ task    = tide chart refresh
+   ├─ into    = test-owner/example
+   ├─ status  = QUEUED (upstream:auth)
+   ├─ held at = .behavior/.radio/ (no route bound to this branch)
+   ├─ backlog = 1 awaits the radio
+   └─ fix it: ✋ ConstraintError: the default auth (no --auth) reads a human email (bert@example.com), so it sends as-human; but gh holds no stored login, and an as-human send never uses the env GH_TOKEN
+      ├─ hint: send with that token, on purpose: --auth 'as-robot:env(GH_TOKEN)'; or as the robot: --auth as-ehmpath-via-keyrack; or log the human in: gh auth login
+      ├─ amend it to the robot: rhx radio.task.queue set --uuid f1c097b35fed35e4 --auth as-ehmpath-via-keyrack
+      ├─ or, to send as yourself, check the gh login on this host: gh auth status (else: gh auth login), then: rhx radio.task.queue drain
+      ├─ or drop it: rhx radio.task.queue del --uuid f1c097b35fed35e4 --why "<why>"
+      └─ then the next push delivers the backlog first"
+`;
+
+exports[`radio.task.push.integration — CLI contract given: [case10m] --auth as-ehmpath-via-keyrack on an ehmpath box with a gh login: keyrack grants when: [t0] the push skill runs against a stub gh then: the output matches the snapshot 1`] = `
+"🦫 onto the pile!
+
+🎙️ created: tide chart refresh
+   ├─ exid: 7
+   ├─ status: QUEUED
+   ├─ repo: test-owner/example
+   ├─ pushedBy: <masked>
+   ├─ pushedAt: <date>
+   ├─ auth: as-ehmpath (via keyrack)
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
+`;
+
+exports[`radio.task.push.integration — CLI contract given: [case10n] --auth as-ehmpath-via-ambient on an ehmpath box with a gh login when: [t0] the push skill runs against a stub gh then: the output matches the snapshot 1`] = `
+"🦫 onto the pile!
+
+🎙️ created: tide chart refresh
+   ├─ exid: 7
+   ├─ status: QUEUED
+   ├─ repo: test-owner/example
+   ├─ pushedBy: <masked>
+   ├─ pushedAt: <date>
+   ├─ auth: as-ehmpath (via ambient)
+   ├─ via: gh.issues
+   └─ recorded: .behavior/.radio/"
 `;
 
 exports[`radio.task.push.integration — CLI contract given: [case11] no --into arg when: [t0] the push skill runs then: fails before any record, and names how to set --into 1`] = `"✋ ConstraintError: --into is required; use --into @this (current git repo) or --into owner/name"`;

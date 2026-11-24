@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`getEhmpathAuthMissMessage given: [case1] both spots missed, each with a fix when: [t0] the message renders then: it matches the snapshot 1`] = `
+"--auth as-ehmpath found no ehmpath token
+
+checked
+├─ keyrack: not granted (status: locked)
+└─ ambient: ehmpath email, but gh holds no login
+
+fix
+├─ unlock the robot token: rhx keyrack unlock --owner ehmpath --key K --env prep
+├─ log gh in as the ehmpath account: gh auth login
+└─ or send as yourself, on purpose: --auth as-human"
+`;
+
+exports[`getEhmpathAuthMissMessage given: [case2] the one spot checked has no fix of its own when: [t0] the message renders then: it matches the snapshot 1`] = `
+"--auth as-ehmpath-via-ambient found no ehmpath token
+
+checked
+└─ ambient: git config user.email = bert@example.com, not an ehmpath email
+
+fix
+└─ send as yourself, on purpose: --auth as-human"
+`;

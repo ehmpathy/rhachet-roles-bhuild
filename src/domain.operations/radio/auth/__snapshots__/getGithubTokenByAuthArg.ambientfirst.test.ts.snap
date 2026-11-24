@@ -1,0 +1,68 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`getGithubTokenByAuthArg.ambientfirst given: [case2] a human email when: [t1] a send names no --auth, and gh holds no login then: it misses loud with the fix, before any send; keyrack is never read 1`] = `
+"✋ ConstraintError: the default auth (no --auth) reads a human email (bert@example.com), so it sends as-human; but gh holds no login
+
+{
+  "auth": null,
+  "email": "bert@example.com",
+  "envTokenName": null,
+  "hint": "log the human in with \`gh auth login\`, or name the auth: --auth as-ehmpath-via-keyrack"
+}"
+`;
+
+exports[`getGithubTokenByAuthArg.ambientfirst given: [case2b] a human email whose gh auth is an env token alone when: [t0] a send names no --auth; GH_TOKEN is set, no stored login then: the miss names the env token it cannot use, and the value that sends it 1`] = `
+"✋ ConstraintError: the default auth (no --auth) reads a human email (bert@example.com), so it sends as-human; but gh holds no stored login, and an as-human send never uses the env GH_TOKEN
+
+{
+  "auth": null,
+  "email": "bert@example.com",
+  "envTokenName": "GH_TOKEN",
+  "hint": "send with that token, on purpose: --auth 'as-robot:env(GH_TOKEN)'; or as the robot: --auth as-ehmpath-via-keyrack; or log the human in: gh auth login"
+}"
+`;
+
+exports[`getGithubTokenByAuthArg.ambientfirst given: [case2c] a human email, and the gh read faults when: [t0] gh exits 127, and keyrack holds the robot token then: the send holds loud with the read, its exit, and its fix; it never falls to the robot 1`] = `
+"✋ AmbientReadFaultError: the ambient read \`env -u GH_TOKEN -u GITHUB_TOKEN gh auth token\` failed (exit 127); this box cannot say who it is
+
+{
+  "command": "env -u GH_TOKEN -u GITHUB_TOKEN gh auth token",
+  "exitCode": 127,
+  "execError": "Command failed: env -u GH_TOKEN -u GITHUB_TOKEN gh auth token",
+  "hint": "check that \`env -u GH_TOKEN -u GITHUB_TOKEN gh auth token\` runs on this box, or name the auth: --auth as-ehmpath-via-keyrack | --auth as-human"
+}"
+`;
+
+exports[`getGithubTokenByAuthArg.ambientfirst given: [case3] an ehmpath email with no gh login when: [t1] keyrack holds none either then: the miss names the default and both spots, and the fixes 1`] = `
+"✋ ConstraintError: the default auth (no --auth) found no ehmpath token
+
+checked
+├─ ambient: ehmpath email, but gh holds no login
+└─ keyrack: not granted (status: absent)
+
+fix
+├─ log gh in as the ehmpath account: gh auth login
+├─ set the robot token: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
+└─ or send as yourself, on purpose: --auth as-human
+
+{
+  "auth": null
+}"
+`;
+
+exports[`getGithubTokenByAuthArg.ambientfirst given: [case6] an ehmpath email, and the gh read faults when: [t1] gh exits 127, and keyrack holds none then: the miss names the gh fault with its exit, beside the keyrack row 1`] = `
+"✋ ConstraintError: the default auth (no --auth) found no ehmpath token
+
+checked
+├─ ambient: the ambient read \`env -u GH_TOKEN -u GITHUB_TOKEN gh auth token\` failed (exit 127) — Command failed: env -u GH_TOKEN -u GITHUB_TOKEN gh auth token
+└─ keyrack: not granted (status: absent)
+
+fix
+├─ check that \`env -u GH_TOKEN -u GITHUB_TOKEN gh auth token\` runs on this box, or skip the ambient spot: --auth as-ehmpath-via-keyrack
+├─ set the robot token: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
+└─ or send as yourself, on purpose: --auth as-human
+
+{
+  "auth": null
+}"
+`;

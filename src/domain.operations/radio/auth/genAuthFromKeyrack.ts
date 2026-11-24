@@ -58,6 +58,7 @@ export const genAuthFromKeyrack = async (
     owner: string;
     env: string;
     key: string;
+    org: string | null;
   },
   context: { shx: ShellExecutor; keyrackGet?: KeyrackGet },
 ): Promise<{ token: string }> => {
@@ -65,11 +66,15 @@ export const genAuthFromKeyrack = async (
   // bound to keyrack so the sdk keeps its own `this` when called through the seam.
   const keyrackGet = context.keyrackGet ?? keyrack.get.bind(keyrack);
 
+  // the org the key slugs under; null lets keyrack read it from the cwd repo's keyrack.yml
+  const org = input.org ?? undefined;
+
   // first attempt to grant the key from unlocked sources
   const first = await keyrackGet({
     for: { key: input.key },
     env: input.env,
     owner: input.owner,
+    org,
   });
 
   // happy path — key already granted
@@ -130,6 +135,7 @@ export const genAuthFromKeyrack = async (
       for: { key: input.key },
       env: input.env,
       owner: input.owner,
+      org,
     });
     if (second.attempt.status === 'granted')
       return { token: second.attempt.grant.key.secret };

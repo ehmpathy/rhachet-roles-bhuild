@@ -161,6 +161,7 @@ describe('getGithubTokenByAuthArg', () => {
             owner: 'myorg',
             env: 'prep',
             key: 'EHMPATH_BEAVER_GITHUB_TOKEN',
+            org: null,
           },
           { shx: expect.any(Function) },
         );
@@ -199,6 +200,7 @@ describe('getGithubTokenByAuthArg', () => {
             owner: 'ehmpath',
             env: 'prep',
             key: 'EHMPATH_BEAVER_GITHUB_TOKEN',
+            org: null,
           },
           { shx: expect.any(Function) },
         );
