@@ -1,7 +1,7 @@
 distill the declastruct domain.objects and domain.operations that would
 - enable fulfillment of
   - this wish $BEHAVIOR_DIR_REL/0.wish.md
-  - this vision $BEHAVIOR_DIR_REL/1.vision.md (if declared)
+  - this vision $BEHAVIOR_DIR_REL/1.vision.yield.md (if declared)
   - this criteria $BEHAVIOR_DIR_REL/2.1.criteria.blackbox.md (if declared)
 - given the research declared here
   - $BEHAVIOR_DIR_REL/3.1.1.research.external.product.access.*.yield.md (if declared)

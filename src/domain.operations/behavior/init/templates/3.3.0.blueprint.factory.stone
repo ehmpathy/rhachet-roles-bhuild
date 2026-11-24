@@ -72,7 +72,7 @@ we want to see:
 
 reference
 - $BEHAVIOR_DIR_REL/0.wish.md
-- $BEHAVIOR_DIR_REL/1.vision.md (if declared)
+- $BEHAVIOR_DIR_REL/1.vision.yield.md (if declared)
 - $BEHAVIOR_DIR_REL/3.1.2.research.external.factory.testloops.*.yield.md (if declared)
 - $BEHAVIOR_DIR_REL/3.1.2.research.external.factory.oss.levers.*.yield.md (if declared)
 - $BEHAVIOR_DIR_REL/3.1.2.research.external.factory.templates.*.yield.md (if declared)

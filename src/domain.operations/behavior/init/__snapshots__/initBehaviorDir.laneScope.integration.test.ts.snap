@@ -1,0 +1,89 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`initBehaviorDir.laneScope given: [case1] a vision route, guard=light when: [t0] each vision peer lane scope is walked by bhrain then: the scopes match the snapshot 1`] = `
+[
+  {
+    "files": [
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.case=1.book-a-lesson.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.case=_.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.dimensions.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.yield.md",
+    ],
+    "slug": "dimensional-decomposition",
+  },
+  {
+    "files": [
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.case=1.book-a-lesson.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.case=_.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.dimensions.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.yield.md",
+    ],
+    "slug": "experience-coverage",
+  },
+  {
+    "files": [
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.case=1.book-a-lesson.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.case=_.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.dimensions.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.yield.md",
+    ],
+    "slug": "wisher-how",
+  },
+]
+`;
+
+exports[`initBehaviorDir.laneScope given: [case1] a vision route, guard=light when: [t1] the blueprint wisher-how lane scope is walked by bhrain then: the lane holds the criteria yield and the blueprint yield 1`] = `
+{
+  "files": [
+    ".behavior/v2026_10_19.vision-scope/2.1.criteria.blackbox.yield.md",
+    ".behavior/v2026_10_19.vision-scope/2.2.criteria.blackbox.matrix.yield.md",
+    ".behavior/v2026_10_19.vision-scope/2.3.criteria.blueprint.yield.md",
+    ".behavior/v2026_10_19.vision-scope/3.3.1.blueprint.product.yield.md",
+  ],
+  "slug": "wisher-how",
+}
+`;
+
+exports[`initBehaviorDir.laneScope given: [case2] a vision route, guard=heavy when: [t0] each vision peer lane scope is walked by bhrain then: the scopes match the snapshot 1`] = `
+[
+  {
+    "files": [
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.case=1.book-a-lesson.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.case=_.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.dimensions.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.yield.md",
+    ],
+    "slug": "dimensional-decomposition",
+  },
+  {
+    "files": [
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.case=1.book-a-lesson.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.case=_.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.dimensions.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.yield.md",
+    ],
+    "slug": "experience-coverage",
+  },
+  {
+    "files": [
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.case=1.book-a-lesson.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.case=_.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.experience.dimensions.md",
+      ".behavior/v2026_10_19.vision-scope/1.vision.yield.md",
+    ],
+    "slug": "wisher-how",
+  },
+]
+`;
+
+exports[`initBehaviorDir.laneScope given: [case2] a vision route, guard=heavy when: [t1] the blueprint wisher-how lane scope is walked by bhrain then: the lane holds the criteria yield and the blueprint yield 1`] = `
+{
+  "files": [
+    ".behavior/v2026_10_19.vision-scope/2.1.criteria.blackbox.yield.md",
+    ".behavior/v2026_10_19.vision-scope/2.2.criteria.blackbox.matrix.yield.md",
+    ".behavior/v2026_10_19.vision-scope/2.3.criteria.blueprint.yield.md",
+    ".behavior/v2026_10_19.vision-scope/3.3.1.blueprint.product.yield.md",
+  ],
+  "slug": "wisher-how",
+}
+`;

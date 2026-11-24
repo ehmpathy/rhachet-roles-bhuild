@@ -5,6 +5,7 @@ import { given, then, useBeforeAll, when } from 'test-fns';
 
 import {
   asCallOutput,
+  FILE_STUB_REVIEW_BLOCKS,
   genGuardedBehaviorScene,
   getStonesPassed,
   promiseAllReviewSelfs,
@@ -26,7 +27,10 @@ import { asSnapshotStable } from './.test/skill.init.behavior.utils';
 describe('skill.init.behavior.guards.journey.blueprint', () => {
   given('[case1] a heavy-guard behavior at its blueprint stone', () => {
     const scene = useBeforeAll(async () => {
-      const behavior = genGuardedBehaviorScene({ prefix: 'journey-blueprint' });
+      const behavior = genGuardedBehaviorScene({
+        guard: 'heavy',
+        prefix: 'journey-blueprint',
+      });
       const stone = '3.3.1.blueprint.product';
 
       // write the blueprint artifact
@@ -107,7 +111,7 @@ describe('skill.init.behavior.guards.journey.blueprint', () => {
 
     when('[t0] blueprint pass attempted without promises', () => {
       then('blocked by unpromised self-review', () => {
-        expect(scene.passWithoutPromises.code).not.toEqual(0);
+        expect(scene.passWithoutPromises.code).toEqual(2);
         const output = asCallOutput({ call: scene.passWithoutPromises });
         expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output).toContain('review.self required');
@@ -116,7 +120,7 @@ describe('skill.init.behavior.guards.journey.blueprint', () => {
 
     when('[t1] blueprint pass attempted with promises but no approval', () => {
       then('blocked by judge', () => {
-        expect(scene.passWithPromisesNoApproval.code).not.toEqual(0);
+        expect(scene.passWithPromisesNoApproval.code).toEqual(2);
         const output = asCallOutput({ call: scene.passWithPromisesNoApproval });
         expect(asSnapshotStable(output)).toMatchSnapshot();
         expect(output.toLowerCase()).toContain('judge');
@@ -165,4 +169,79 @@ describe('skill.init.behavior.guards.journey.blueprint', () => {
       });
     });
   });
+
+  /**
+   * .mock = the wisher-how lane's brain read, via the stub reviewer's blocks marker
+   * .why  = the suite grades the state a driver meets when the lane finds a criteria slip:
+   *         the real guard, the real judge, the real hold. a live brain would make the
+   *         hold a coin flip on a model's words, at a paid call per run (fulcrums F7, F11)
+   * .real = the brain's read runs live on every route this guard binds; the review call
+   *         itself is proven by rhachet-roles-bhrain's own review suite
+   *
+   * .note = a light route runs no criteria guard, so the blueprint lane is the first gate a
+   *         criteria slip meets; both variants run, since light has no earlier gate
+   */
+  (['light', 'heavy'] as const).forEach((guard) =>
+    given(
+      `[case2.${guard}] a ${guard}-guard blueprint stone whose wisher-how lane is stubbed to find a criteria slip`,
+      () => {
+        const scene = useBeforeAll(async () => {
+          const behavior = genGuardedBehaviorScene({
+            guard,
+            prefix: `journey-blueprint-how-${guard}`,
+          });
+          const stone = '3.3.1.blueprint.product';
+          fs.writeFileSync(
+            path.join(behavior.repoDir, FILE_STUB_REVIEW_BLOCKS),
+            'trust-of-wisher-how\n',
+          );
+
+          // the criteria slip and the blueprint built on it
+          fs.writeFileSync(
+            path.join(behavior.behaviorDir, '2.1.criteria.blackbox.yield.md'),
+            '# Criteria\n\nthen: get shows what the prior tool shows.',
+          );
+          fs.writeFileSync(
+            path.join(behavior.behaviorDir, `${stone}.yield.md`),
+            '# Blueprint\n\nTest blueprint.',
+          );
+
+          // promise every self-review, approve, then pass
+          setStoneAs({ ...behavior, stone, as: 'passed' });
+          promiseAllReviewSelfs({ ...behavior, stone });
+          setStoneAs({ ...behavior, stone, as: 'approved' });
+          const passWithBlocker = setStoneAs({
+            ...behavior,
+            stone,
+            as: 'passed',
+          });
+
+          return { ...behavior, passWithBlocker };
+        });
+
+        afterAll(() => scene.cleanup());
+
+        when(
+          '[t0] blueprint pass attempted after promises and approval',
+          () => {
+            then('held by the wisher-how blocker', () => {
+              // exit 2 = the constraint hold; a malfunction (1) must turn this red
+              expect(scene.passWithBlocker.code).toEqual(2);
+              const output = asCallOutput({ call: scene.passWithBlocker });
+              expect(asSnapshotStable(output)).toMatchSnapshot();
+              expect(output).toMatch(/r\d+: wisher-how/);
+              expect(output).toContain('blockers exceed threshold (1 > 0)');
+              expect(output).not.toContain('passage = allowed');
+            });
+
+            then('the blueprint holds no passage marker', () => {
+              expect(getStonesPassed(scene)).not.toContain(
+                '3.3.1.blueprint.product',
+              );
+            });
+          },
+        );
+      },
+    ),
+  );
 });

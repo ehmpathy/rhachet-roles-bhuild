@@ -59,4 +59,23 @@ reviews:
 
         ensure we understand the root needs these criteria serve.
 
+    - slug: has-restated-the-wisher-how
+      say: |
+        did the criteria trust the wish's how, or only its why and rough contract?
+        read `rule.forbid.trust-of-wisher-how` before you grade.
+
+        list every how the wish carries: a poc or prior command, a parity target,
+        a named mechanism, field, flag, or storage layout, a done-when phrased by a prior tool.
+
+        for each one:
+        - is it restated in the domain's own terms, and does each criterion honor the
+          keep, drop, or open verdict of the vision's `## .the wisher's how` table? an open how
+          gets no criterion until the wisher settles it.
+        - strike the prior tool or poc from the repo. does each criterion still read right?
+        - does a how the wisher tied to a domain why survive, stated with that why?
+
+        then check the inverse: does each verb the wisher asked for still have a criterion?
+
+        a criterion that leans on a prior tool is a blocker. fix it now, before you continue.
+
   peer: []

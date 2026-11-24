@@ -1,0 +1,218 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`initBehaviorDir.integration given: [case1] guard level is light (default) when: [t0] initBehaviorDir is called without guard arg then: the wisher-how blocks match across light and heavy 1`] = `
+{
+  "block": "- slug: wisher-how
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.wish/rule.forbid.trust-of-wisher-how.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.wish/rule.forbid.trust-of-wisher-how.reason.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.wish/rule.forbid.trust-of-wisher-how.example=rhachet-760.md' --refs '$route/0.wish.md' --diffs since-main --paths-with '$route/1.vision.*.md' --paths-with '$route/1.vision.experience.*.md' --join intersect --conversation $conversation --output "$output"
+      budget: 3
+      level: 1",
+  "slug": "wisher-how",
+  "stem": "1.vision.guard",
+}
+`;
+
+exports[`initBehaviorDir.integration given: [case1] guard level is light (default) when: [t0] initBehaviorDir is called without guard arg then: the wisher-how blocks match across light and heavy 2`] = `
+{
+  "block": "- slug: has-restated-the-wisher-how
+      say: |
+        a junior recently modified files in this repo. we need to carefully
+        review the vision due to this.
+
+        did the junior trust the wish's how, or only its why and rough contract?
+        read \`rule.forbid.trust-of-wisher-how\` before you grade.
+
+        list every how the wish carries: a poc or prior command, a parity target,
+        a named mechanism, field, flag, or storage layout, a done-when phrased by a prior tool.
+
+        for each one:
+        - is it restated in the domain's own terms, with a keep, drop, or open verdict, in the yield's
+          \`## .the wisher's how\` table?
+        - strike the prior tool or poc from the repo. does each requirement still read right?
+        - does a how the wisher tied to a domain why survive, stated with that why?
+
+        then check the inverse: are the verbs the wisher asked for still all there?
+
+        a requirement that leans on a prior tool is a blocker. fix it now, before you continue.
+
+        a wish with no how declares "the wish carries no how".",
+  "slug": "has-restated-the-wisher-how",
+  "stem": "1.vision.guard",
+}
+`;
+
+exports[`initBehaviorDir.integration given: [case1] guard level is light (default) when: [t0] initBehaviorDir is called without guard arg then: the wisher-how blocks match across light and heavy 3`] = `
+{
+  "block": "- slug: wisher-how
+      run: $rhx review --repo bhrain --mode hard --rules '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.wish/rule.forbid.trust-of-wisher-how.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.wish/rule.forbid.trust-of-wisher-how.reason.md' --refs '.agent/repo=bhuild/role=behaver/briefs/practices/behavior.wish/rule.forbid.trust-of-wisher-how.example=rhachet-760.md' --refs '$route/0.wish.md' --refs '$route/1.vision.yield.md' --diffs since-main --paths-with '$route/2.*.yield.md' --paths-with '$route/3.3.1.blueprint.*.md' --join intersect --conversation $conversation --output "$output"
+      budget: 3
+      level: 1",
+  "slug": "wisher-how",
+  "stem": "3.3.1.blueprint.product.guard",
+}
+`;
+
+exports[`initBehaviorDir.integration given: [case1] guard level is light (default) when: [t0] initBehaviorDir is called without guard arg then: the wisher-how blocks match across light and heavy 4`] = `
+{
+  "block": "- slug: has-restated-the-wisher-how
+      say: |
+        a junior recently modified files in this repo. we need to carefully
+        review the vision due to this.
+
+        did the junior trust the wish's how, or only its why and rough contract?
+        read \`rule.forbid.trust-of-wisher-how\` before you grade.
+
+        list every how the wish carries: a poc or prior command, a parity target,
+        a named mechanism, field, flag, or storage layout, a done-when phrased by a prior tool.
+
+        for each one:
+        - is it restated in the domain's own terms, with a keep, drop, or open verdict, in the yield's
+          \`## .the wisher's how\` table?
+        - strike the prior tool or poc from the repo. does each requirement still read right?
+        - does a how the wisher tied to a domain why survive, stated with that why?
+
+        then check the inverse: are the verbs the wisher asked for still all there?
+
+        a requirement that leans on a prior tool is a blocker. fix it now, before you continue.
+
+        a wish with no how declares "the wish carries no how".",
+  "name": "1.vision.guard.light",
+}
+`;
+
+exports[`initBehaviorDir.integration given: [case1] guard level is light (default) when: [t0] initBehaviorDir is called without guard arg then: the wisher-how blocks match across light and heavy 5`] = `
+{
+  "block": "- slug: has-restated-the-wisher-how
+      say: |
+        a junior recently modified files in this repo. we need to carefully
+        review the vision due to this.
+
+        did the junior trust the wish's how, or only its why and rough contract?
+        read \`rule.forbid.trust-of-wisher-how\` before you grade.
+
+        list every how the wish carries: a poc or prior command, a parity target,
+        a named mechanism, field, flag, or storage layout, a done-when phrased by a prior tool.
+
+        for each one:
+        - is it restated in the domain's own terms, with a keep, drop, or open verdict, in the yield's
+          \`## .the wisher's how\` table?
+        - strike the prior tool or poc from the repo. does each requirement still read right?
+        - does a how the wisher tied to a domain why survive, stated with that why?
+
+        then check the inverse: are the verbs the wisher asked for still all there?
+
+        a requirement that leans on a prior tool is a blocker. fix it now, before you continue.
+
+        a wish with no how declares "the wish carries no how".",
+  "name": "1.vision.guard.heavy",
+}
+`;
+
+exports[`initBehaviorDir.integration given: [case1] guard level is light (default) when: [t0] initBehaviorDir is called without guard arg then: the wisher-how blocks match across light and heavy 6`] = `
+{
+  "block": "- slug: has-restated-the-wisher-how
+      say: |
+        did the criteria trust the wish's how, or only its why and rough contract?
+        read \`rule.forbid.trust-of-wisher-how\` before you grade.
+
+        list every how the wish carries: a poc or prior command, a parity target,
+        a named mechanism, field, flag, or storage layout, a done-when phrased by a prior tool.
+
+        for each one:
+        - is it restated in the domain's own terms, and does each criterion honor the
+          keep, drop, or open verdict of the vision's \`## .the wisher's how\` table? an open how
+          gets no criterion until the wisher settles it.
+        - strike the prior tool or poc from the repo. does each criterion still read right?
+        - does a how the wisher tied to a domain why survive, stated with that why?
+
+        then check the inverse: does each verb the wisher asked for still have a criterion?
+
+        a criterion that leans on a prior tool is a blocker. fix it now, before you continue.",
+  "name": "2.1.criteria.blackbox.guard.heavy",
+}
+`;
+
+exports[`initBehaviorDir.integration given: [case1] guard level is light (default) when: [t0] initBehaviorDir is called without guard arg then: vision, criteria, and blueprint stones point the writer at the wisher-how rule 1`] = `
+{
+  "blueprint": "propose a blueprint for how we will implement the wish
+- in .behavior/v2025_01_01.test-feature/0.wish.md
+- with .behavior/v2025_01_01.test-feature/3.2.distill.domain.*.yield.md (if declared)
+- with .behavior/v2025_01_01.test-feature/3.2.distill.repros.experience.*.yield.md (if declared)
+
+.why = blueprint the code changes needed to deliver the product.
+- the product is the deliverable (spec + impl)
+- explicit blueprint declares what the execution will adhere to
+
+follow the patterns already present in this repo.
+
+the blueprint is where a how is chosen, so choose it here: a poc, prior tool, or mechanism the wish
+carries is adopted only where the vision's \`## .the wisher's how\` table kept it, with its domain
+why, and never cited as the reason (rule.forbid.trust-of-wisher-how). with no vision, the blueprint
+records that table itself.
+",
+  "criteria": "declare the blackbox criteria required to fulfill
+- this wish .behavior/v2025_01_01.test-feature/0.wish.md
+- this vision .behavior/v2025_01_01.test-feature/1.vision.yield.md (if declared)
+
+strike any prior tool or poc the wish names: each criterion must still read right without it. a
+criterion that leans on a prior tool copied a how (rule.forbid.trust-of-wisher-how).
+
+via bdd declarations, per your briefs
+
+emit into .behavior/v2025_01_01.test-feature/2.1.criteria.blackbox.yield.md
+",
+  "criteriaBlueprint": "declare the blueprint criteria (mechanism bounds) that satisfies the blackbox criteria
+
+ref:
+- blackbox criteria .behavior/v2025_01_01.test-feature/2.1.criteria.blackbox.md
+- wish .behavior/v2025_01_01.test-feature/0.wish.md
+- vision .behavior/v2025_01_01.test-feature/1.vision.yield.md (if declared)
+
+a mechanism the wish carries is a how, not a bound: demand it only where the vision's
+\`## .the wisher's how\` table kept it, with its domain why (rule.forbid.trust-of-wisher-how).
+with no vision, state each how's keep, drop, or open verdict and domain why here.
+
+emit into .behavior/v2025_01_01.test-feature/2.3.criteria.blueprint.yield.md
+",
+  "executionFromVision": "bootup your mechanic's role via \`./node_modules/.bin/rhachet roles boot --repo ehmpathy --role mechanic\`
+
+then, execute the vision directly
+- $BEHAVIOR_DIR_REL/1.vision.yield.md
+
+a how its \`## .the wisher's how\` table dropped stays dropped; a comment cites the domain why,
+never a prior tool (rule.forbid.trust-of-wisher-how).
+
+ref:
+- $BEHAVIOR_DIR_REL/0.wish.md
+
+",
+  "executionPhase0ToPhaseN": "bootup your mechanic's role via \`./node_modules/.bin/rhachet roles boot --repo ehmpathy --role mechanic\`
+
+then, start or continue to execute
+- phase0 to phaseN
+of roadmap
+- $BEHAVIOR_DIR_REL/4.1.roadmap.yield.md
+
+a how the vision's \`## .the wisher's how\` table dropped stays dropped; a comment cites the domain
+why, never a prior tool (rule.forbid.trust-of-wisher-how).
+
+ref:
+- $BEHAVIOR_DIR_REL/0.wish.md
+- $BEHAVIOR_DIR_REL/1.vision.yield.md (if declared)
+- $BEHAVIOR_DIR_REL/2.1.criteria.blackbox.md (if declared)
+- $BEHAVIOR_DIR_REL/2.3.criteria.blueprint.md (if declared)
+- $BEHAVIOR_DIR_REL/3.2.distill.domain.*.yield.md (if declared)
+- $BEHAVIOR_DIR_REL/3.2.distill.repros.experience.*.yield.md (if declared)
+- $BEHAVIOR_DIR_REL/3.3.0.blueprint.factory.yield.md (if declared)
+- $BEHAVIOR_DIR_REL/3.3.1.blueprint.product.yield.md
+
+",
+  "vision": "illustrate the vision implied in the wish .behavior/v2025_01_01.test-feature/0.wish.md
+
+trust the wish's why, and its contract roughly (verbs, rough shape). any how it carries is evidence,
+never spec: restate each how in domain terms with a keep, drop, or open verdict, in the
+\`## .the wisher's how\` section below (rule.forbid.trust-of-wisher-how).
+
+emit into .behavior/v2025_01_01.test-feature/1.vision.yield.md
+",
+}
+`;

@@ -300,6 +300,15 @@ const setStubRole = (input: { repoDir: string; relDir: string }): void => {
 };
 
 /**
+ * .what = a marker file whose lines each name a rule; the stub reviewer turns any lane
+ *         whose --rules hold one of them to `1 blocker`, in the scene repo that holds it
+ *         (relative to the repo root, where the guard runs)
+ * .why = the consumer is shared per build, so a scene opts in by a file of its own,
+ *        and every other scene keeps the clean verdict
+ */
+export const FILE_STUB_REVIEW_BLOCKS = '.stub.review.blocks';
+
+/**
  * .what = the stub reviewer output, per contract.reviewer-output
  * .note = bhrain parses "N blockers" + "N nitpicks" numeric tokens to derive
  *         the review verdict; prose like "no blockers found" is a malfunction.
@@ -315,13 +324,16 @@ exit 0`;
  * .why = pnpm copies this package's dist into the consumer at install time, so
  *        a consumer installed against a prior build would test stale code; the
  *        mtime of dist/index.js moves on every `npm run build`
+ * .note = the stubs this file writes are baked into the consumer too, so its own
+ *         mtime joins the stamp; a stub edit with no rebuild must not test the old stub
  */
 const getDistStamp = (): string =>
-  String(
-    Math.floor(
-      fs.statSync(path.join(process.cwd(), 'dist', 'index.js')).mtimeMs,
-    ),
-  );
+  [
+    fs.statSync(path.join(process.cwd(), 'dist', 'index.js')).mtimeMs,
+    fs.statSync(__filename).mtimeMs,
+  ]
+    .map((mtimeMs) => String(Math.floor(mtimeMs)))
+    .join('.');
 
 /**
  * .what = blocks the worker for a moment, with no busy loop
@@ -538,19 +550,30 @@ ${STUB_REVIEW_OUTPUT}
     repoDir,
     relPath: '.agent/repo=bhrain/role=driver/skills/review.sh',
     content: `#!/usr/bin/env bash
-# stub review skill for tests - outputs success with no blockers
+# stub review skill for tests - outputs success with no blockers, except a lane whose
+# --rules hold a line of ${FILE_STUB_REVIEW_BLOCKS} (in the repo root), which finds one
 OUTPUT=""
+RULES=""
 while [[ $# -gt 0 ]]; do
   case $1 in
-    --output) OUTPUT="$2"; shift 2 ;;
+    --output|--rules)
+      if [[ $# -lt 2 ]]; then echo "✋ ConstraintError: $1 needs a value" >&2; exit 2; fi
+      if [[ $1 == --output ]]; then OUTPUT="$2"; else RULES="$RULES $2"; fi
+      shift 2 ;;
     *) shift ;;
   esac
 done
+BLOCKERS=0
+if [[ -f "${FILE_STUB_REVIEW_BLOCKS}" ]]; then
+  while IFS= read -r needle; do
+    if [[ -n "$needle" && "$RULES" == *"$needle"* ]]; then BLOCKERS=1; fi
+  done < "${FILE_STUB_REVIEW_BLOCKS}"
+fi
 if [[ -n "$OUTPUT" ]]; then
   mkdir -p "$(dirname "$OUTPUT")"
-  printf '# peer review (stub)\\n\\n0 blockers\\n0 nitpicks\\n' > "$OUTPUT"
+  printf '# peer review (stub)\\n\\n%s blockers\\n0 nitpicks\\n' "$BLOCKERS" > "$OUTPUT"
 fi
-echo "0 blockers"
+echo "$BLOCKERS blockers"
 echo "0 nitpicks"
 exit 0
 `,
@@ -614,12 +637,13 @@ export const asGuardWithSelfReviewsStubbed = (input: {
 };
 
 /**
- * .what = a consumer repo with a heavy-guard behavior initialized, ready to drive
+ * .what = a consumer repo with a guarded behavior initialized, ready to drive
  * .why = each stone's journey suite starts from this one scene, so the stones
  *        run as parallel suites rather than one serial chain
  */
 export const genGuardedBehaviorScene = (input: {
   prefix: string;
+  guard: 'light' | 'heavy';
 }): {
   repoDir: string;
   behaviorDir: string;
@@ -645,11 +669,11 @@ export const genGuardedBehaviorScene = (input: {
     stdio: 'pipe',
   });
 
-  // initialize behavior with heavy guards (tests the full guard journey)
+  // initialize behavior with the guard variant under test
   const initialized = runSkill({
     repo: 'bhuild',
     skill: 'init.behavior',
-    args: '--name full-journey --guard heavy',
+    args: `--name full-journey --guard ${input.guard}`,
     cwd: repoDir,
   });
   if (initialized.code !== 0)

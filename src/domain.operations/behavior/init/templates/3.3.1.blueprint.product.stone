@@ -9,6 +9,11 @@ propose a blueprint for how we will implement the wish
 
 follow the patterns already present in this repo.
 
+the blueprint is where a how is chosen, so choose it here: a poc, prior tool, or mechanism the wish
+carries is adopted only where the vision's `## .the wisher's how` table kept it, with its domain
+why, and never cited as the reason (rule.forbid.trust-of-wisher-how). with no vision, the blueprint
+records that table itself.
+
 ---
 
 ## summary
@@ -117,7 +122,7 @@ we want to see:
 
 reference
 - $BEHAVIOR_DIR_REL/0.wish.md
-- $BEHAVIOR_DIR_REL/1.vision.md (if declared)
+- $BEHAVIOR_DIR_REL/1.vision.yield.md (if declared)
 - $BEHAVIOR_DIR_REL/2.1.criteria.blackbox.md (if declared)
 - $BEHAVIOR_DIR_REL/2.3.criteria.blueprint.md (if declared)
 - $BEHAVIOR_DIR_REL/3.1.1.research.external.product.access.*.yield.md (if declared)

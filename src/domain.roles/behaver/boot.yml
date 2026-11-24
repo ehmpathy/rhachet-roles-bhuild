@@ -3,7 +3,7 @@
 #   next 100. the boot-budget clamp turns red the moment the boot outgrows it.
 #   measure: `npx rhachet roles cost --what src/domain.roles/behaver/boot.yml`
 budget:
-  tokens: 2_200
+  tokens: 2_800
 
 always:
   briefs:
@@ -14,9 +14,16 @@ always:
       # cross-stage: keep the experience coverage contract current at every stage
       - briefs/practices/behavior.vision/rule.require.experience-catalog-evolution.md
 
+      # vision through execution: trust a wish's why and rough contract, never its how
+      - briefs/practices/behavior.wish/rule.forbid.trust-of-wisher-how.md
+
     ref:
       # the argument behind the said catalog-evolution cue — fetched to dispute or teach it
       - briefs/practices/behavior.vision/rule.require.experience-catalog-evolution.reason.md
+
+      # the argument + worked case behind the said trust-of-wisher-how cue
+      - briefs/practices/behavior.wish/rule.forbid.trust-of-wisher-how.reason.md
+      - briefs/practices/behavior.wish/rule.forbid.trust-of-wisher-how.example=rhachet-760.md
 
       # definitions
       - briefs/practices/behavior.criteria/define.behavior-thoughtroute-hierarchy.md

@@ -28,7 +28,7 @@ reviews:
         double-check: does the playtest cover all behaviors?
 
         - is every behavior in 0.wish.md verified?
-        - is every behavior in 1.vision.md verified?
+        - is every behavior in 1.vision.yield.md verified?
         - are any requirements left untested?
 
         **if any behavior lacks playtest coverage, add it NOW.** absent coverage = incomplete.

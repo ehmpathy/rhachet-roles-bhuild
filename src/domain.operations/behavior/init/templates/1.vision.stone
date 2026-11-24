@@ -1,5 +1,9 @@
 illustrate the vision implied in the wish $BEHAVIOR_DIR_REL/0.wish.md
 
+trust the wish's why, and its contract roughly (verbs, rough shape). any how it carries is evidence,
+never spec: restate each how in domain terms with a keep, drop, or open verdict, in the
+`## .the wisher's how` section below (rule.forbid.trust-of-wisher-how).
+
 emit into $BEHAVIOR_DIR_REL/1.vision.yield.md
 
 ---
@@ -25,6 +29,15 @@ specifically,
 - **demonstrate** — a narrative + bdd `[tn]` sketch per critipath (+ chosen alterpaths)
 
 → see `howto.experience.demonstrate` (the method, the artifacts to emit, why `[tn]` is a sketch)
+
+## .the wisher's how
+
+one table row per how the wish carries: the how · its domain restatement · keep, drop, or open · the domain why
+
+- keep: it holds in the domain's terms; state it with its why
+- drop: it was a tool's or poc's shape, not the domain's need
+- open: only the wisher can settle it; it also goes to the open questions below as `[wisher]`
+- a wish with no how says so here
 
 ## mental model
 

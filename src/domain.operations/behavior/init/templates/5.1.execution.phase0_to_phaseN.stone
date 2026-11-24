@@ -5,9 +5,12 @@ then, start or continue to execute
 of roadmap
 - $BEHAVIOR_DIR_REL/4.1.roadmap.yield.md
 
+a how the vision's `## .the wisher's how` table dropped stays dropped; a comment cites the domain
+why, never a prior tool (rule.forbid.trust-of-wisher-how).
+
 ref:
 - $BEHAVIOR_DIR_REL/0.wish.md
-- $BEHAVIOR_DIR_REL/1.vision.md (if declared)
+- $BEHAVIOR_DIR_REL/1.vision.yield.md (if declared)
 - $BEHAVIOR_DIR_REL/2.1.criteria.blackbox.md (if declared)
 - $BEHAVIOR_DIR_REL/2.3.criteria.blueprint.md (if declared)
 - $BEHAVIOR_DIR_REL/3.2.distill.domain.*.yield.md (if declared)
