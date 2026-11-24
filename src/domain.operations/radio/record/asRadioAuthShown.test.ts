@@ -15,6 +15,21 @@ const TEST_CASES = [
     expect: { output: 'as-human' },
   },
   {
+    description: 'as-ehmpath replays, so it shows as stored',
+    given: { auth: 'as-ehmpath' },
+    expect: { output: 'as-ehmpath' },
+  },
+  {
+    description: 'as-ehmpath-via-keyrack replays, so it shows as stored',
+    given: { auth: 'as-ehmpath-via-keyrack' },
+    expect: { output: 'as-ehmpath-via-keyrack' },
+  },
+  {
+    description: 'as-ehmpath-via-ambient replays, so it shows as stored',
+    given: { auth: 'as-ehmpath-via-ambient' },
+    expect: { output: 'as-ehmpath-via-ambient' },
+  },
+  {
     description:
       'an env var with a TOKEN segment replays, so it shows as stored',
     given: { auth: 'as-robot:env(GH_TOKEN)' },

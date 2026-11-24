@@ -3,8 +3,12 @@ import { ConstraintError } from 'helpful-errors';
 import type { IsoDateStamp } from 'iso-time';
 import * as os from 'os';
 import * as path from 'path';
-import { getError, given, then, useBeforeAll, when } from 'test-fns';
+import { getError, given, then, useBeforeAll, useThen, when } from 'test-fns';
 
+import {
+  STUB_GH_TOKEN,
+  withAmbientStub,
+} from '@src/.test/utils/withAmbientStub';
 import { daoRadioTaskViaOsFileops } from '@src/access/daos/daoRadioTask';
 import type { ContextGitRepo } from '@src/domain.objects/RadioContext';
 import { RadioTask } from '@src/domain.objects/RadioTask';
@@ -34,6 +38,16 @@ import { cliRadioTaskPull } from './radioTaskPull';
  *         os.fileops pull (case7): a seeded local task read back off the real
  *         filesystem and rendered through the same output path a human sees.
  *         (--help, case6, is the deterministic positive *usage* contract.)
+ *
+ * .mock = the gh cli, via withAmbientStub (a stub gh first on the subprocess PATH), in
+ *         case8-case16 alone. case14, case15 also set a fake keyrack token (ghs_ shape)
+ *         through the keyrack env passthrough; case16 sets a fake env GH_TOKEN
+ * .why  = the ambient path reads `gh auth token`; a real gh on a dev box answers with the
+ *         human's own login, and no test may read a real gh login (a prior draft leaked a real
+ *         token into a log). the stub is the only way to put an ehmpath login on the box
+ * .real = getGhAuthTokenFromRealGh.integration.test.ts runs the real gh with no login, to
+ *         prove the real exit the code reads as none; daoRadioTaskViaGhIssues.integration and
+ *         skill.radio.task.push.via-gh-issues.acceptance [case1]-[case6] reach real github
  */
 describe('radio.task.pull.integration — CLI contract', () => {
   // invoke the CLI contract with injected argv + env, capture any thrown error
@@ -257,6 +271,399 @@ describe('radio.task.pull.integration — CLI contract', () => {
           expect(stdout).toContain('pull-cli-001');
           expect(stdout).toContain('first cli pull task');
           expect(stdout).toMatchSnapshot();
+        });
+      });
+    },
+  );
+
+  /**
+   * .what = run a gh.issues pull --list under a stub ambient world, capture stdout + the
+   *         token each gh call received
+   * .why  = the auth line a pull prints names the spot that paid; only a real pull through
+   *         the stub gh proves it reaches the CLI output
+   */
+  const runListViaGhOnBox = async (input: {
+    slug: string;
+    email: string;
+    authArgs: string[];
+    ghLogin?: 'token' | 'none';
+    keyrackEnv?: string;
+  }) =>
+    withAmbientStub(
+      {
+        slug: input.slug,
+        gh: { login: input.ghLogin ?? 'token' },
+        git: { email: input.email },
+      },
+      async (scene) => {
+        // .note = deliberate mutation of the keyrack env passthrough, restored below
+        const tokenEnvBefore = process.env.EHMPATH_BEAVER_GITHUB_TOKEN;
+        if (input.keyrackEnv !== undefined)
+          process.env.EHMPATH_BEAVER_GITHUB_TOKEN = input.keyrackEnv;
+        const argvBefore = process.argv;
+        const lines: string[] = [];
+        const logSpy = jest
+          .spyOn(console, 'log')
+          .mockImplementation((...args: unknown[]) => {
+            lines.push(args.map((a) => String(a)).join(' '));
+          });
+        process.argv = [
+          'node',
+          '--via',
+          'gh.issues',
+          '--from',
+          'test-owner/example',
+          '--list',
+          ...input.authArgs,
+        ];
+        try {
+          await cliRadioTaskPull();
+          return {
+            stdout: lines.join('\n'),
+            ghTokensSeen: scene.getGhTokensSeen(),
+          };
+        } finally {
+          process.argv = argvBefore;
+          logSpy.mockRestore();
+          if (tokenEnvBefore === undefined)
+            delete process.env.EHMPATH_BEAVER_GITHUB_TOKEN;
+          if (tokenEnvBefore !== undefined)
+            process.env.EHMPATH_BEAVER_GITHUB_TOKEN = tokenEnvBefore;
+        }
+      },
+    );
+
+  given(
+    '[case8] --auth as-ehmpath-via-ambient on an ehmpath box with a gh login',
+    () => {
+      when('[t0] the pull skill lists against a stub gh', () => {
+        const result = useThen('the pull runs', async () =>
+          runListViaGhOnBox({
+            slug: 'pull-case8',
+            email: 'seaturtle@ehmpath.com',
+            authArgs: ['--auth', 'as-ehmpath-via-ambient'],
+          }),
+        );
+        then('the stub gh login token is the one that reached gh', () => {
+          expect(result.ghTokensSeen.length).toBeGreaterThan(0);
+          expect(new Set(result.ghTokensSeen)).toEqual(
+            new Set([STUB_GH_TOKEN]),
+          );
+        });
+        then('the output names the spot that paid, never the token', () => {
+          expect(result.stdout).toContain('as-ehmpath (via ambient)');
+          expect(result.stdout).not.toContain(STUB_GH_TOKEN);
+        });
+        then('the output matches the snapshot', () => {
+          expect(result.stdout).toMatchSnapshot();
+        });
+      });
+    },
+  );
+
+  given('[case9] no --auth on a human box (ambient-first)', () => {
+    when('[t0] the pull skill lists against a stub gh', () => {
+      const result = useThen('the pull runs', async () =>
+        runListViaGhOnBox({
+          slug: 'pull-case9',
+          email: 'bert@example.com',
+          authArgs: [],
+        }),
+      );
+      then('no robot token reached gh: gh used its own login', () => {
+        expect(result.ghTokensSeen.length).toBeGreaterThan(0);
+        expect(new Set(result.ghTokensSeen)).toEqual(new Set(['(none)']));
+      });
+      then('the output names the human source and its email', () => {
+        expect(result.stdout).toContain(
+          'as-human (via ambient email bert@example.com)',
+        );
+      });
+      then('the output matches the snapshot', () => {
+        expect(result.stdout).toMatchSnapshot();
+      });
+    });
+  });
+
+  /**
+   * .what = run a gh.issues pull --list that must miss, under a stub ambient world where keyrack
+   *         holds no token; capture the thrown error + the token each gh call received
+   * .why  = a pull on a miss throws its ConstraintError to the caller (a pull holds no record),
+   *         so the message is the whole output a human reads
+   *
+   * .note = keyrack must miss: a temp HOME holds no vault, and the env passthrough is unset
+   *         (.note = deliberate mutation, restored in the finally)
+   */
+  const runPullMissOnBox = async (input: {
+    slug: string;
+    email: string;
+    auth: string | null;
+    ghLogin?: 'token' | 'none';
+    ghTokenEnv?: string;
+  }) =>
+    withAmbientStub(
+      {
+        slug: input.slug,
+        gh: { login: input.ghLogin ?? 'token' },
+        git: { email: input.email },
+      },
+      async (scene) => {
+        const argvBefore = process.argv;
+        const homeBefore = process.env.HOME;
+        const tokenEnvBefore = process.env.EHMPATH_BEAVER_GITHUB_TOKEN;
+        const ghTokenEnvBefore = process.env.GH_TOKEN;
+        const home = await fs.mkdtemp(
+          path.join(os.tmpdir(), `radio-pull-cli-${input.slug}-`),
+        );
+        process.env.HOME = home;
+        delete process.env.EHMPATH_BEAVER_GITHUB_TOKEN;
+        if (input.ghTokenEnv !== undefined)
+          process.env.GH_TOKEN = input.ghTokenEnv;
+        process.argv = [
+          'node',
+          '--via',
+          'gh.issues',
+          '--from',
+          'test-owner/example',
+          '--list',
+          ...(input.auth === null ? [] : ['--auth', input.auth]),
+        ];
+        try {
+          const error = await getError(cliRadioTaskPull());
+          return { error, ghTokensSeen: scene.getGhTokensSeen() };
+        } finally {
+          process.argv = argvBefore;
+          process.env.HOME = homeBefore;
+          if (ghTokenEnvBefore === undefined) delete process.env.GH_TOKEN;
+          if (ghTokenEnvBefore !== undefined)
+            process.env.GH_TOKEN = ghTokenEnvBefore;
+          if (tokenEnvBefore !== undefined)
+            process.env.EHMPATH_BEAVER_GITHUB_TOKEN = tokenEnvBefore;
+          await fs.rm(home, { recursive: true, force: true });
+        }
+      },
+    );
+
+  given(
+    "[case10] --auth as-ehmpath on bert's laptop: keyrack holds none, the email is human",
+    () => {
+      when('[t0] the pull skill lists against a stub gh with a login', () => {
+        const result = useThen('the pull runs', async () =>
+          runPullMissOnBox({
+            slug: 'case10',
+            email: 'bert@example.com',
+            auth: 'as-ehmpath',
+          }),
+        );
+        then('the pull fails loud; no issue call reached gh', () => {
+          expect(result.error).toBeInstanceOf(ConstraintError);
+          expect(result.ghTokensSeen).toEqual([]);
+          expect(result.error.message).not.toContain(STUB_GH_TOKEN);
+        });
+        then('the miss names both spots, in walk order, and the fix', () => {
+          expect(result.error.message).toContain('found no ehmpath token');
+          expect(result.error.message).toContain('keyrack: not granted');
+          expect(result.error.message).toContain(
+            'ambient: git config user.email = bert@example.com, not an ehmpath email',
+          );
+          expect(
+            result.error.message.indexOf('keyrack: not granted'),
+          ).toBeLessThan(result.error.message.indexOf('ambient: git config'));
+          expect(result.error.message).toContain('--auth as-human');
+        });
+        then('the message matches the snapshot', () => {
+          expect(result.error.message).toMatchSnapshot();
+        });
+      });
+    },
+  );
+
+  given(
+    '[case11] --auth as-ehmpath-via-keyrack on an ehmpath box: keyrack holds none, gh is logged in',
+    () => {
+      when('[t0] the pull skill lists against a stub gh with a login', () => {
+        const result = useThen('the pull runs', async () =>
+          runPullMissOnBox({
+            slug: 'case11',
+            email: 'seaturtle@ehmpath.com',
+            auth: 'as-ehmpath-via-keyrack',
+          }),
+        );
+        then('the pull fails loud; the gh login never pays', () => {
+          expect(result.error).toBeInstanceOf(ConstraintError);
+          expect(result.ghTokensSeen).toEqual([]);
+          expect(result.error.message).not.toContain(STUB_GH_TOKEN);
+        });
+        then('the miss names keyrack alone, never the ambient spot', () => {
+          expect(result.error.message).toContain('keyrack');
+          expect(result.error.message).not.toContain('ambient: git config');
+        });
+        then('the message matches the snapshot', () => {
+          expect(result.error.message).toMatchSnapshot();
+        });
+      });
+    },
+  );
+
+  given(
+    '[case12] --auth as-ehmpath-via-ambient on a human box with a gh login',
+    () => {
+      when('[t0] the pull skill lists against a stub gh with a login', () => {
+        const result = useThen('the pull runs', async () =>
+          runPullMissOnBox({
+            slug: 'case12',
+            email: 'bert@example.com',
+            auth: 'as-ehmpath-via-ambient',
+          }),
+        );
+        then(
+          'the pull fails loud; the human login never pays as the robot',
+          () => {
+            expect(result.error).toBeInstanceOf(ConstraintError);
+            expect(result.ghTokensSeen).toEqual([]);
+            expect(result.error.message).not.toContain(STUB_GH_TOKEN);
+          },
+        );
+        then('the miss names the human email, and never keyrack', () => {
+          expect(result.error.message).toContain(
+            'ambient: git config user.email = bert@example.com, not an ehmpath email',
+          );
+          expect(result.error.message).not.toContain('keyrack:');
+        });
+        then('the message matches the snapshot', () => {
+          expect(result.error.message).toMatchSnapshot();
+        });
+      });
+    },
+  );
+
+  given(
+    '[case13] --auth as-ehmpath-via-ambient on an ehmpath box whose gh holds no login',
+    () => {
+      when('[t0] the pull skill lists against a stub gh with no login', () => {
+        const result = useThen('the pull runs', async () =>
+          runPullMissOnBox({
+            slug: 'case13',
+            email: 'seaturtle@ehmpath.com',
+            auth: 'as-ehmpath-via-ambient',
+            ghLogin: 'none',
+          }),
+        );
+        then('the pull fails loud; no issue call reached gh', () => {
+          expect(result.error).toBeInstanceOf(ConstraintError);
+          expect(result.ghTokensSeen).toEqual([]);
+        });
+        then(
+          'the miss names the ambient row and gh auth login, never keyrack',
+          () => {
+            expect(result.error.message).toContain(
+              'ambient: ehmpath email, but gh holds no login',
+            );
+            expect(result.error.message).toContain('gh auth login');
+            expect(result.error.message).not.toContain('keyrack:');
+          },
+        );
+        then('the message matches the snapshot', () => {
+          expect(result.error.message).toMatchSnapshot();
+        });
+      });
+    },
+  );
+
+  // a fake keyrack token: never a real one, and distinct from the stub gh login token.
+  // shaped as an app install token (ghs_), the one github shape the keyrack env firewall
+  // admits; a ghp_ value is refused there as a long-lived pat (status: blocked)
+  const TOKEN_KEYRACK_FAKE = 'ghs_fake_pull_from_keyrack_passthrough';
+
+  given(
+    '[case14] --auth as-ehmpath on a robot box: keyrack grants, gh holds no login',
+    () => {
+      when('[t0] the pull skill lists against a stub gh', () => {
+        const result = useThen('the pull runs', async () =>
+          runListViaGhOnBox({
+            slug: 'pull-case14',
+            email: 'bert@example.com',
+            authArgs: ['--auth', 'as-ehmpath'],
+            ghLogin: 'none',
+            keyrackEnv: TOKEN_KEYRACK_FAKE,
+          }),
+        );
+        then('the keyrack token is the one that reached gh', () => {
+          expect(result.ghTokensSeen.length).toBeGreaterThan(0);
+          expect(new Set(result.ghTokensSeen)).toEqual(
+            new Set([TOKEN_KEYRACK_FAKE]),
+          );
+        });
+        then('the output names the spot that paid, never the token', () => {
+          expect(result.stdout).toContain('as-ehmpath (via keyrack)');
+          expect(result.stdout).not.toContain(TOKEN_KEYRACK_FAKE);
+        });
+        then('the output matches the snapshot', () => {
+          expect(result.stdout).toMatchSnapshot();
+        });
+      });
+    },
+  );
+
+  given(
+    '[case15] --auth as-ehmpath-via-keyrack: keyrack grants, gh holds a login it never uses',
+    () => {
+      when('[t0] the pull skill lists against a stub gh', () => {
+        const result = useThen('the pull runs', async () =>
+          runListViaGhOnBox({
+            slug: 'pull-case15',
+            email: 'seaturtle@ehmpath.com',
+            authArgs: ['--auth', 'as-ehmpath-via-keyrack'],
+            keyrackEnv: TOKEN_KEYRACK_FAKE,
+          }),
+        );
+        then('the keyrack token reached gh; the gh login never paid', () => {
+          expect(result.ghTokensSeen.length).toBeGreaterThan(0);
+          expect(new Set(result.ghTokensSeen)).toEqual(
+            new Set([TOKEN_KEYRACK_FAKE]),
+          );
+        });
+        then('the output never prints the token', () => {
+          expect(result.stdout).not.toContain(TOKEN_KEYRACK_FAKE);
+        });
+        then('the output matches the snapshot', () => {
+          expect(result.stdout).toMatchSnapshot();
+        });
+      });
+    },
+  );
+
+  given(
+    '[case16] no --auth on a human box whose gh auth is an env GH_TOKEN alone',
+    () => {
+      when('[t0] the pull skill lists against a stub gh with no login', () => {
+        const result = useThen('the pull runs', async () =>
+          runPullMissOnBox({
+            slug: 'case16',
+            email: 'bert@example.com',
+            auth: null,
+            ghLogin: 'none',
+            ghTokenEnv: 'gho_fake_pull_env_token',
+          }),
+        );
+        then('the pull fails loud; no issue call reached gh', () => {
+          expect(result.error).toBeInstanceOf(ConstraintError);
+          expect(result.ghTokensSeen).toEqual([]);
+        });
+        then(
+          'the miss names the env token it cannot use, and the value that sends it',
+          () => {
+            expect(result.error.message).toContain(
+              'an as-human send never uses the env GH_TOKEN',
+            );
+            expect(result.error.message).toContain('as-robot:env(GH_TOKEN)');
+            expect(result.error.message).not.toContain(
+              'gho_fake_pull_env_token',
+            );
+          },
+        );
+        then('the message matches the snapshot', () => {
+          expect(result.error.message).toMatchSnapshot();
         });
       });
     },

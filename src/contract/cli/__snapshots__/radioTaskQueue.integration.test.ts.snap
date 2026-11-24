@@ -25,14 +25,18 @@ exports[`radio.task.queue.integration — CLI contract given: [case1] --help whe
    │
    └─ options
       ├─ --uuid         the record uuid \`get\` prints (set, del)
-      ├─ --auth         where the token comes from
-      │  ├─ as-ehmpath              keyrack, then the gh login (ehmpath email only)
-      │  ├─ as-ehmpath-via-keyrack  keyrack only
-      │  ├─ as-ehmpath-via-ambient  the gh login only (ehmpath email only)
-      │  ├─ as-human                the gh login, any identity
-      │  ├─ as-robot:via-keyrack(owner) · as-robot:env(VAR) · as-robot:shx(cmd)
-      │  ├─ set:   amends the one record --uuid names
-      │  └─ drain: sends every held record under this auth, this drain only
+      ├─ --auth         where the token comes from (default: each record's own)
+      │  ├─ values
+      │  │  ├─ (none)                  replays the auth each record stored
+      │  │  │  └─ saved with no --auth   the ambient-first default of the box that drains
+      │  │  ├─ as-ehmpath              keyrack, then the gh login (ehmpath email only)
+      │  │  ├─ as-ehmpath-via-keyrack  keyrack only
+      │  │  ├─ as-ehmpath-via-ambient  the gh login only (ehmpath email only)
+      │  │  ├─ as-human                the gh login, any identity
+      │  │  └─ as-robot:via-keyrack(owner) · as-robot:env(VAR) · as-robot:shx(cmd)
+      │  └─ scope
+      │     ├─ set:   amends the one record --uuid names
+      │     └─ drain: sends every held record under this auth, this drain only
       ├─ --description  the new body (set; supports @stdin)
       ├─ --why          why the record is dropped (del, required)
       ├─ --when         hook.onStop (get)
@@ -203,3 +207,123 @@ exports[`radio.task.queue.integration — a journey across faults, via a stub gh
 exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case22] del or set on a REFUSED record when: [t0] del runs on its key then: it refuses, names the state, and leaves the record as is 1`] = `"✋ ConstraintError: radio record <uuid> is REFUSED, not held; \`queue del\` acts only on a held record"`;
 
 exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case22] del or set on a REFUSED record when: [t1] set runs on its key then: it refuses, names the state, and leaves the record as is 1`] = `"✋ ConstraintError: radio record <uuid> is REFUSED, not held; \`queue set\` acts only on a held record"`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case23] set --auth as-ehmpath on a held record when: [t0] set runs on its key then: the amend tree names the auth change, and matches snapshot 1`] = `
+"🦫 amended the held record
+   ├─ uuid    = <uuid>
+   ├─ task    = wetsuit size chart → sandpine/svc-rentals
+   ├─ changed
+   │  └─ auth: as-robot:env(RADIO_QUEUE_JOURNEY_TOKEN) → as-ehmpath
+   ├─ kept at = .behavior/.radio/record.<uuid>.json
+   └─ naught sent; its place in line is kept, and the next push, or \`rhx radio.task.queue drain\`, sends it"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case23] set --auth as-ehmpath-via-ambient on a held record when: [t0] set runs on its key then: the amend tree names the auth change, and matches snapshot 1`] = `
+"🦫 amended the held record
+   ├─ uuid    = <uuid>
+   ├─ task    = wetsuit size chart → sandpine/svc-rentals
+   ├─ changed
+   │  └─ auth: as-robot:env(RADIO_QUEUE_JOURNEY_TOKEN) → as-ehmpath-via-ambient
+   ├─ kept at = .behavior/.radio/record.<uuid>.json
+   └─ naught sent; its place in line is kept, and the next push, or \`rhx radio.task.queue drain\`, sends it"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case23] set --auth as-ehmpath-via-keyrack on a held record when: [t0] set runs on its key then: the amend tree names the auth change, and matches snapshot 1`] = `
+"🦫 amended the held record
+   ├─ uuid    = <uuid>
+   ├─ task    = wetsuit size chart → sandpine/svc-rentals
+   ├─ changed
+   │  └─ auth: as-robot:env(RADIO_QUEUE_JOURNEY_TOKEN) → as-ehmpath-via-keyrack
+   ├─ kept at = .behavior/.radio/record.<uuid>.json
+   └─ naught sent; its place in line is kept, and the next push, or \`rhx radio.task.queue drain\`, sends it"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case24] a record held with no --auth, drained on a human box when: [t0] drain runs with no live --auth then: the delivered row names the identity that paid 1`] = `
+"🦫 back in the river! the backlog is delivered
+   ├─ drained
+   │  └─ #<n> swell forecast refresh
+   │     └─ auth = as-human (via ambient email bert@example.com)
+   └─ backlog = 0"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case24] a record held with no --auth, drained on an ehmpath box when: [t0] drain runs with no live --auth then: the delivered row names the identity that paid 1`] = `
+"🦫 back in the river! the backlog is delivered
+   ├─ drained
+   │  └─ #<n> swell forecast refresh
+   │     └─ auth = as-ehmpath (via ambient)
+   └─ backlog = 0"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case25] a record stored as --auth as-ehmpath-via-ambient, drained on a human box: the record stays held, and no issue call is made when: [t0] drain runs with no live --auth then: the output names the spot, or the miss, and never a token 1`] = `
+"🦫 naught delivered; the backlog still waits
+   ├─ still held
+   │  └─ <uuid> tide table refresh → sandpine/spot-forecast (upstream:auth)
+   │     ├─ fault: ✋ ConstraintError: --auth as-ehmpath-via-ambient found no ehmpath token
+   │     │  └─ checked
+   │     │     └─ ambient: git config user.email = bert@example.com, not an ehmpath email
+   │     ├─ amend it: rhx radio.task.queue set --uuid <uuid> --auth as-human (needs a gh login on this host)
+   │     └─ or drop it: rhx radio.task.queue del --uuid <uuid> --why "<why>"
+   └─ backlog = 1 awaits the radio"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case26] a record stored as --auth as-ehmpath, read and drained on a human box: both spots miss, the record stays held, no issue call when: [t0] get runs then: the held list matches snapshot 1`] = `
+"🦫 held for the radio
+   ├─ <uuid> board rental returns → sandpine/spot-forecast
+   │  ├─ state: not reached (no fault on record; the next drain sends it)
+   │  └─ auth: as-ehmpath
+   └─ the radio is open, so the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case26] a record stored as --auth as-ehmpath, read and drained on a human box: both spots miss, the record stays held, no issue call when: [t1] drain runs with no live --auth then: the output names the spot, or both spots of the miss, and never a token 1`] = `
+"🦫 naught delivered; the backlog still waits
+   ├─ still held
+   │  └─ <uuid> board rental returns → sandpine/spot-forecast (upstream:auth)
+   │     ├─ fault: ✋ ConstraintError: --auth as-ehmpath found no ehmpath token
+   │     │  └─ checked
+   │     │     ├─ keyrack: not granted (status: absent)
+   │     │     └─ ambient: git config user.email = bert@example.com, not an ehmpath email
+   │     ├─ amend it: rhx radio.task.queue set --uuid <uuid> --auth as-human (needs a gh login on this host)
+   │     └─ or drop it: rhx radio.task.queue del --uuid <uuid> --why "<why>"
+   └─ backlog = 1 awaits the radio"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case26] a record stored as --auth as-ehmpath, read and drained on an ehmpath box: keyrack misses, then the gh login pays when: [t0] get runs then: the held list matches snapshot 1`] = `
+"🦫 held for the radio
+   ├─ <uuid> board rental returns → sandpine/spot-forecast
+   │  ├─ state: not reached (no fault on record; the next drain sends it)
+   │  └─ auth: as-ehmpath
+   └─ the radio is open, so the next push, or \`rhx radio.task.queue drain\`, delivers the backlog"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case26] a record stored as --auth as-ehmpath, read and drained on an ehmpath box: keyrack misses, then the gh login pays when: [t1] drain runs with no live --auth then: the output names the spot, or both spots of the miss, and never a token 1`] = `
+"🦫 back in the river! the backlog is delivered
+   ├─ drained
+   │  └─ #<n> board rental returns
+   │     └─ auth = as-ehmpath (via ambient)
+   └─ backlog = 0"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case27] a record stored as --auth as-ehmpath, drained on a human box where keyrack grants when: [t0] drain runs with no live --auth then: the output names keyrack as the spot that paid, never a token 1`] = `
+"🦫 back in the river! the backlog is delivered
+   ├─ drained
+   │  └─ #<n> wetsuit inventory recount
+   │     └─ auth = as-ehmpath (via keyrack)
+   └─ backlog = 0"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case28] --auth as-ehmpath-via-keyrack passed live to the drain, over a record stored with no auth, on a human box where keyrack grants when: [t0] drain runs then: the output never prints the token, and matches snapshot 1`] = `
+"🦫 this drain sent under --auth as-ehmpath-via-keyrack
+🦫 back in the river! the backlog is delivered
+   ├─ drained
+   │  └─ #<n> lesson reminder sms
+   │     └─ auth = as-ehmpath (via keyrack)
+   └─ backlog = 0"
+`;
+
+exports[`radio.task.queue.integration — a journey across faults, via a stub gh given: [case28] --auth as-ehmpath-via-keyrack stored on the record, drained with no live --auth, on a human box where keyrack grants when: [t0] drain runs then: the output never prints the token, and matches snapshot 1`] = `
+"🦫 back in the river! the backlog is delivered
+   ├─ drained
+   │  └─ #<n> lesson reminder sms
+   │     └─ auth = as-ehmpath (via keyrack)
+   └─ backlog = 0"
+`;

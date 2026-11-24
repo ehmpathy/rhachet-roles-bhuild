@@ -104,32 +104,47 @@ exports[`getGithubTokenByAuthArg.asehmpath given: [case8] a test env that declar
 }"
 `;
 
-exports[`getGithubTokenByAuthArg.asehmpath given: [case9] the git config read is killed, with no exit code when: [t0] the ambient path is reached then: a malfunction carries the kill; it is never read as "unset" 1`] = `
-"💥 MalfunctionError: the ambient read \`git config user.email\` failed
+exports[`getGithubTokenByAuthArg.asehmpath given: [case9] the git config read is killed, with no exit code when: [t0] the ambient path is reached then: a constraint carries the kill and names the fix; it is never read as "unset" 1`] = `
+"✋ ConstraintError: --auth as-ehmpath-via-ambient found no ehmpath token
+
+checked
+└─ ambient: the ambient read \`git config user.email\` failed (exit none, cut off) — killed
+
+fix
+├─ check that \`git config user.email\` runs on this box, or skip the ambient spot: --auth as-ehmpath-via-keyrack
+└─ or send as yourself, on purpose: --auth as-human
 
 {
-  "command": "git config user.email",
-  "exitCode": null,
-  "execError": "killed"
+  "auth": "as-ehmpath-via-ambient"
 }"
 `;
 
-exports[`getGithubTokenByAuthArg.asehmpath given: [case10] an ambient read exits with a code other than "none" when: [t0] git config exits 3, an invalid config file then: a malfunction names the command; it is never read as "unset" or "no login" 1`] = `
-"💥 MalfunctionError: the ambient read \`git config user.email\` failed
+exports[`getGithubTokenByAuthArg.asehmpath given: [case10] an ambient read exits with a code other than "none" when: [t0] git config exits 3, an invalid config file then: a constraint names the command and the fix; it is never read as "unset" or "no login" 1`] = `
+"✋ ConstraintError: --auth as-ehmpath-via-ambient found no ehmpath token
+
+checked
+└─ ambient: the ambient read \`git config user.email\` failed (exit 3) — Command failed: git config user.email
+
+fix
+├─ check that \`git config user.email\` runs on this box, or skip the ambient spot: --auth as-ehmpath-via-keyrack
+└─ or send as yourself, on purpose: --auth as-human
 
 {
-  "command": "git config user.email",
-  "exitCode": 3,
-  "execError": "Command failed: git config user.email"
+  "auth": "as-ehmpath-via-ambient"
 }"
 `;
 
-exports[`getGithubTokenByAuthArg.asehmpath given: [case10] an ambient read exits with a code other than "none" when: [t1] gh exits 127, gh not installed then: a malfunction names the command; it is never read as "unset" or "no login" 1`] = `
-"💥 MalfunctionError: the ambient read \`gh auth token\` failed
+exports[`getGithubTokenByAuthArg.asehmpath given: [case10] an ambient read exits with a code other than "none" when: [t1] gh exits 127, gh not installed then: a constraint names the command and the fix; it is never read as "unset" or "no login" 1`] = `
+"✋ ConstraintError: --auth as-ehmpath-via-ambient found no ehmpath token
+
+checked
+└─ ambient: the ambient read \`env -u GH_TOKEN -u GITHUB_TOKEN gh auth token\` failed (exit 127) — Command failed: env -u GH_TOKEN -u GITHUB_TOKEN gh auth token
+
+fix
+├─ check that \`env -u GH_TOKEN -u GITHUB_TOKEN gh auth token\` runs on this box, or skip the ambient spot: --auth as-ehmpath-via-keyrack
+└─ or send as yourself, on purpose: --auth as-human
 
 {
-  "command": "gh auth token",
-  "exitCode": 127,
-  "execError": "Command failed: gh auth token"
+  "auth": "as-ehmpath-via-ambient"
 }"
 `;

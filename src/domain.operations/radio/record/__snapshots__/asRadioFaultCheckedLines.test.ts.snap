@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asRadioFaultCheckedLines a one-spot miss yields its one spot 1`] = `"ambient: git config user.email = bert@example.com, not an ehmpath email"`;
+
+exports[`asRadioFaultCheckedLines a two-spot miss yields both, in walk order 1`] = `
+"keyrack: not granted (status: absent)
+ambient: ehmpath email, but gh holds no login"
+`;
+
+exports[`asRadioFaultCheckedLines an upstream fault holds no checked section and yields none 1`] = `""`;
+
+exports[`asRadioFaultCheckedLines no detail yields none 1`] = `""`;

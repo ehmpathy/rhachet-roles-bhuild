@@ -457,4 +457,105 @@ describe('getOneRadioContextForRecord — a held as-ehmpath record replays', () 
       });
     },
   );
+
+  given(
+    '[case3] the same held record, drained on an ehmpath box whose gh read faults',
+    () => {
+      when('[t0] a drain replays it, with no live auth', () => {
+        const result = useThen('it returns, never throws', async () =>
+          withAmbientStub(
+            {
+              slug: 'record-replay-gh-fault',
+              gh: { login: 'fault' },
+              git: { email: 'seaturtle@ehmpath.com' },
+            },
+            async () =>
+              getOneRadioContextForRecord(
+                {
+                  record: genRecord({ auth: 'as-ehmpath-via-ambient' }),
+                  authOverride: null,
+                  authLive: null,
+                },
+                context,
+              ),
+          ),
+        );
+
+        then(
+          'the record is held on a constraint that names the read, so the drain goes on',
+          () => {
+            expect('fault' in result).toEqual(true);
+            if (!('fault' in result)) return;
+            expect(result.fault).toBeInstanceOf(ConstraintError);
+            expect(result.fault.message).toContain(
+              'gh auth token` failed (exit 3)',
+            );
+          },
+        );
+      });
+    },
+  );
+});
+
+describe('getOneRadioContextForRecord — a record with no --auth replays box-relative', () => {
+  const context = { env: process.env, shx };
+
+  // replay one default record on a box of the given identity; return the source it paid with
+  const replayDefaultOnBox = (input: { slug: string; email: string }) =>
+    withAmbientStub(
+      { slug: input.slug, gh: { login: 'token' }, git: { email: input.email } },
+      async () => {
+        const derived = await getOneRadioContextForRecord(
+          {
+            record: genRecord({ auth: null }),
+            authOverride: null,
+            authLive: null,
+          },
+          context,
+        );
+        if ('fault' in derived) throw derived.fault;
+        return { authSource: derived.authSource };
+      },
+    );
+
+  given(
+    '[case1] one record queued with no --auth, drained first on an ehmpath box',
+    () => {
+      when('[t0] the ehmpath box drains it', () => {
+        const result = useThen('it derives', async () =>
+          replayDefaultOnBox({
+            slug: 'record-default-ehmpath',
+            email: 'seaturtle@ehmpath.com',
+          }),
+        );
+
+        then('the drainer pays as-ehmpath, and the source is named', () => {
+          expect(result.authSource).toEqual({
+            auth: 'as-ehmpath',
+            spot: 'ambient',
+          });
+        });
+      });
+
+      when('[t1] a human box drains the same record instead', () => {
+        const result = useThen('it derives', async () =>
+          replayDefaultOnBox({
+            slug: 'record-default-human',
+            email: 'bert@example.com',
+          }),
+        );
+
+        then(
+          'the drainer pays as-human, and the source is named, so the identity never shifts unseen',
+          () => {
+            expect(result.authSource).toEqual({
+              auth: 'as-human',
+              spot: 'ambient',
+              email: 'bert@example.com',
+            });
+          },
+        );
+      });
+    },
+  );
 });

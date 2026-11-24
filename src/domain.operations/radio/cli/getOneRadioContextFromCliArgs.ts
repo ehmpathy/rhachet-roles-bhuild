@@ -1,7 +1,7 @@
 import { RadioChannel } from '@src/domain.objects/RadioChannel';
 import type { ContextDispatchRadio } from '@src/domain.objects/RadioContext';
 import type { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
-import type { EhmpathSpot } from '@src/domain.operations/radio/auth/EhmpathSpot';
+import type { AuthSource } from '@src/domain.operations/radio/auth/AuthSource';
 import { getGithubTokenByAuthArg } from '@src/domain.operations/radio/auth/getGithubTokenByAuthArg';
 
 /**
@@ -16,8 +16,8 @@ type ShellExecutor = (
  * .what = assemble dispatch context for radio channel from CLI args
  * .why = github channel requires auth token; os.fileops does not
  * .note = async operation that may trigger auth flow for gh.issues
- * .note = ehmpathSpot rides beside the context, never inside it, so the caller can show
- *         which spot an as-ehmpath derive paid from
+ * .note = authSource rides beside the context, never inside it, so the caller can show
+ *         where the send's identity came from (asAuthSourceShown decides what reads)
  */
 export const getOneRadioContextFromCliArgs = async (
   input: {
@@ -31,17 +31,17 @@ export const getOneRadioContextFromCliArgs = async (
   },
 ): Promise<{
   radioContext: ContextDispatchRadio<typeof input.via>;
-  ehmpathSpot: EhmpathSpot | null;
+  authSource: AuthSource | null;
 }> => {
   if (input.via === RadioChannel.GH_ISSUES) {
-    const { ehmpathSpot, ...auth } = await getGithubTokenByAuthArg(
+    const { authSource, ...auth } = await getGithubTokenByAuthArg(
       { auth: input.auth },
       { env: context.env, shx: context.shx },
     );
     return {
       radioContext: { github: { auth }, git: { repo: input.repo } },
-      ehmpathSpot,
+      authSource,
     };
   }
-  return { radioContext: { git: { repo: input.repo } }, ehmpathSpot: null };
+  return { radioContext: { git: { repo: input.repo } }, authSource: null };
 };

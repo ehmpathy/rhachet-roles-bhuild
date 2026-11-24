@@ -20,6 +20,13 @@ import { getGithubTokenByAuthArg } from './getGithubTokenByAuthArg';
  *
  * .note = case1 is the clamp for shx's explicit `env: process.env`: without it, under jest,
  *         the shell runs under the host PATH and `command -v gh` names the real gh
+ *
+ * .mock = the gh cli, via withAmbientStub (a stub gh first on the subprocess PATH); git and
+ *         the shell are real
+ * .why  = a real gh on a dev box answers with the human's own login, and no test may read a
+ *         real gh login (a prior draft leaked a real token into a log)
+ * .real = getGhAuthTokenFromRealGh.integration.test.ts runs the real gh with no login, to
+ *         prove the real exit this path reads as none
  */
 describe('getEhmpathTokenFromAmbient.integration', () => {
   // the derive, as every caller runs it: process.env and the real shx
@@ -51,7 +58,7 @@ describe('getEhmpathTokenFromAmbient.integration', () => {
           expect(result.auth).toEqual({
             token: STUB_GH_TOKEN,
             role: 'as-robot',
-            ehmpathSpot: null,
+            authSource: { auth: 'as-ehmpath', spot: 'ambient' },
           });
         });
       });
@@ -129,6 +136,41 @@ describe('getEhmpathTokenFromAmbient.integration', () => {
             );
             expect(error.message).toContain('gh auth login');
             expect(error.message).toMatchSnapshot();
+          },
+        );
+      });
+    },
+  );
+
+  given(
+    '[case6] an env GH_TOKEN, a stub gh with no stored login, and an ehmpath email',
+    () => {
+      when('[t0] as-ehmpath-via-ambient derives a token', () => {
+        then(
+          'the env token never answers for the box: the read strips it, and gh holds no login',
+          async () => {
+            // the stub answers `gh auth token` with $GH_TOKEN when set, as the real gh does; an
+            // env token is not the box's login, and the send would never carry it, so it must
+            // never reach the probe
+            const error = await withAmbientStub(
+              {
+                slug: 'case6',
+                gh: {
+                  login: 'none',
+                  envToken: 'gho_fake_env_token_not_the_box',
+                },
+                git: { email: 'seaturtle@ehmpath.com' },
+              },
+              async () =>
+                getError(runDerive({ auth: 'as-ehmpath-via-ambient' })),
+            );
+            expect(error).toBeInstanceOf(ConstraintError);
+            expect(error.message).toContain(
+              'ambient: ehmpath email, but gh holds no login',
+            );
+            expect(error.message).not.toContain(
+              'gho_fake_env_token_not_the_box',
+            );
           },
         );
       });

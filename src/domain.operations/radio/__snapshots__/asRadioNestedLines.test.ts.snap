@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`asRadioNestedLines a multi-line item that is last indents its later lines bare 1`] = `
+"a
+├─ b
+└─ c
+   ├─ c1
+   └─ c2"
+`;
+
+exports[`asRadioNestedLines a multi-line item that is not last keeps its later lines on its rail 1`] = `
+"a
+├─ b
+│  └─ b1
+└─ c"
+`;
+
+exports[`asRadioNestedLines a nested item nests again, rails intact at each depth 1`] = `
+"a
+├─ b
+│  ├─ b1
+│  └─ b2
+└─ c"
+`;
+
+exports[`asRadioNestedLines no items leaves the head alone 1`] = `"a"`;
+
+exports[`asRadioNestedLines single-line items each take a branch, the last a corner 1`] = `
+"a
+├─ b
+└─ c"
+`;

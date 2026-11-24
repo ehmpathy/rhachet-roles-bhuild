@@ -50,6 +50,13 @@ exports[`radio.task.push via gh.issues given: [case8] rejected robot token surfa
       └─ then the next push delivers the backlog first"
 `;
 
+exports[`radio.task.push via gh.issues given: [case8] rejected robot token surfaces the as-human nudge (gh 401) when: [t0] push with an env token that github rejects (401) then: the stderr stream matches snapshot 1`] = `
+"
+🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
+   └─ ✋ blocked by constraints
+"
+`;
+
 exports[`radio.task.push via gh.issues — usage contract given: [case9] --help renders the usage contract (deterministic) when: [t0] push is invoked with --help then: the human-readable usage output matches snapshot 1`] = `
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.push
 
@@ -78,7 +85,10 @@ exports[`radio.task.push via gh.issues — usage contract given: [case9] --help 
       ├─ --status      status: QUEUED, CLAIMED, DELIVERED
       ├─ --idem        idempotency: findsert or upsert
       ├─ --auth        where the token comes from (default: ambient-first)
-      │  ├─ (none)                  ehmpath email: its gh login, else keyrack · other email: as-human
+      │  ├─ (none)                  by this box's git config user.email
+      │  │  ├─ an ehmpath email     its gh login, else keyrack
+      │  │  ├─ another email        as-human
+      │  │  └─ no email set         keyrack
       │  ├─ as-ehmpath              keyrack, then the gh login (ehmpath email only)
       │  ├─ as-ehmpath-via-keyrack  keyrack only
       │  ├─ as-ehmpath-via-ambient  the gh login only (ehmpath email only)

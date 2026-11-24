@@ -1,6 +1,6 @@
 import type { RadioTask } from '@src/domain.objects/RadioTask';
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
-import type { EhmpathSpot } from '@src/domain.operations/radio/auth/EhmpathSpot';
+import type { AuthSource } from '@src/domain.operations/radio/auth/AuthSource';
 
 /**
  * .what = the fate of one record after an attempt to send it
@@ -14,9 +14,9 @@ export type RadioTaskRecordFate =
       outcome: 'created' | 'found' | 'updated' | 'unchanged';
 
       /**
-       * .what = the spot an as-ehmpath send paid from; null for every value with one source
+       * .what = where the send's identity came from; null for every value with one source
        */
-      ehmpathSpot: EhmpathSpot | null;
+      authSource: AuthSource | null;
     }
   | { fate: 'refused'; record: RadioTaskRecord; detail: string }
   | {

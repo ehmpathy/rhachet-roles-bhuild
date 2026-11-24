@@ -23,7 +23,7 @@ export const STUB_GH_TOKEN = 'gho_stub_never_real_0000';
 export const withAmbientStub = async <T>(
   input: {
     slug: string;
-    gh: { login: 'token' | 'none' };
+    gh: { login: 'token' | 'none' | 'fault'; envToken?: string };
     git: { email: string | null };
   },
   run: (scene: {
@@ -45,18 +45,23 @@ export const withAmbientStub = async <T>(
     'utf-8',
   );
 
-  // the stub answers `gh auth token` as the documented gh does: the token, or exit 1;
+  // the stub answers `gh auth token` as the documented gh does: the token, or exit 1; a
+  // `fault` login exits 3, a box fault that is never "none" (a broken config, a cut read);
   // it answers the two calls a task create makes (list, then create), and logs the
   // GH_TOKEN each issue call received, so a test can prove which token reached gh
   const tokensLogPath = path.join(root, 'gh.tokens.log');
-  const answer =
-    input.gh.login === 'token'
-      ? `echo "${STUB_GH_TOKEN}"; exit 0`
-      : `echo "no oauth token found for github.com" >&2; exit 1`;
+  const answerByLogin = {
+    token: `echo "${STUB_GH_TOKEN}"; exit 0`,
+    none: `echo "no oauth token found for github.com" >&2; exit 1`,
+    fault: `echo "stub gh: config unreadable" >&2; exit 3`,
+  };
+  const answer = answerByLogin[input.gh.login];
   fs.writeFileSync(
     stubPath,
     [
       '#!/bin/sh',
+      // as the real gh does, an env token answers `gh auth token` before the stored login
+      'if [ "$1" = "auth" ] && [ "$2" = "token" ] && [ -n "$GH_TOKEN" ]; then echo "$GH_TOKEN"; exit 0; fi',
       `if [ "$1" = "auth" ] && [ "$2" = "token" ]; then ${answer}; fi`,
       `if [ "$1" = "issue" ]; then echo "\${GH_TOKEN:-(none)}" >> "${tokensLogPath}"; fi`,
       'if [ "$1" = "issue" ] && [ "$2" = "list" ]; then echo "[]"; exit 0; fi',
@@ -74,6 +79,7 @@ export const withAmbientStub = async <T>(
     GIT_CONFIG_GLOBAL: globalConfig,
     GIT_CONFIG_NOSYSTEM: '1',
     RADIO_GH_STUB: '1',
+    ...(input.gh.envToken ? { GH_TOKEN: input.gh.envToken } : {}),
   };
 
   // a bare repo, so git reads only the isolated global config for its identity

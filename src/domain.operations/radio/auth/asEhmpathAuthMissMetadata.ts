@@ -6,9 +6,9 @@ import type { EhmpathSpotFound } from './EhmpathSpotFound';
  *        every other miss carries only the --auth value
  */
 export const asEhmpathAuthMissMetadata = (input: {
-  auth: string;
+  auth: string | null;
   keyrackFound: EhmpathSpotFound;
-}): { auth: string; unlockFailure?: string } => {
+}): { auth: string | null; unlockFailure?: string } => {
   const unlockFailure =
     input.keyrackFound && 'miss' in input.keyrackFound
       ? input.keyrackFound.miss.cause

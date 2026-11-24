@@ -26,7 +26,7 @@ import { z } from 'zod';
 import { RadioChannel } from '@src/domain.objects/RadioChannel';
 import type { RadioTaskRepo } from '@src/domain.objects/RadioTaskRepo';
 import { RadioTaskStatus } from '@src/domain.objects/RadioTaskStatus';
-import { asEhmpathSpotShown } from '@src/domain.operations/radio/auth/asEhmpathSpotShown';
+import { asAuthSourceShown } from '@src/domain.operations/radio/auth/asAuthSourceShown';
 import { asPullModeFromArgs } from '@src/domain.operations/radio/cli/asPullModeFromArgs';
 import { asTaskDetailOutput } from '@src/domain.operations/radio/cli/asTaskDetailOutput';
 import { asTaskListOutput } from '@src/domain.operations/radio/cli/asTaskListOutput';
@@ -127,7 +127,10 @@ const HELP_TEXT = `
       ├─ --status      filter by status: QUEUED, CLAIMED, DELIVERED
       ├─ --limit       max number of tasks to return
       ├─ --auth        where the token comes from (default: ambient-first)
-      │  ├─ (none)                  ehmpath email: its gh login, else keyrack · other email: as-human
+      │  ├─ (none)                  by this box's git config user.email
+      │  │  ├─ an ehmpath email     its gh login, else keyrack
+      │  │  ├─ another email        as-human
+      │  │  └─ no email set         keyrack
       │  ├─ as-ehmpath              keyrack, then the gh login (ehmpath email only)
       │  ├─ as-ehmpath-via-keyrack  keyrack only
       │  ├─ as-ehmpath-via-ambient  the gh login only (ehmpath email only)
@@ -171,7 +174,7 @@ export const cliRadioTaskPull = async (): Promise<void> => {
   });
 
   // assemble context for channel (may involve auth)
-  const { radioContext: context, ehmpathSpot } =
+  const { radioContext: context, authSource } =
     await getOneRadioContextFromCliArgs(
       {
         via: named.via,
@@ -198,7 +201,7 @@ export const cliRadioTaskPull = async (): Promise<void> => {
       message: asTaskListOutput({
         tasks: result.tasks,
         via: named.via,
-        auth: asEhmpathSpotShown({ ehmpathSpot }),
+        auth: asAuthSourceShown({ authSource }),
       }),
     });
     return;
@@ -222,7 +225,7 @@ export const cliRadioTaskPull = async (): Promise<void> => {
       outcome: null,
       cached: result.cached,
       recorded: null,
-      auth: asEhmpathSpotShown({ ehmpathSpot }),
+      auth: asAuthSourceShown({ authSource }),
     }),
   });
 };

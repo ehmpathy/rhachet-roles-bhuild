@@ -1,6 +1,7 @@
-import { ConstraintError, MalfunctionError } from 'helpful-errors';
+import { ConstraintError } from 'helpful-errors';
 import { getError, given, then, when } from 'test-fns';
 
+import { AMBIENT_READ_GH_LOGIN } from './AMBIENT_READ_GH_LOGIN';
 import { getGithubTokenByAuthArg } from './getGithubTokenByAuthArg';
 
 /**
@@ -22,6 +23,9 @@ describe('getGithubTokenByAuthArg.asehmpath', () => {
   /**
    * .what = a fake shx that answers each command from a table, and records each call
    * .why  = a value of { exit: N } stands in for a command that ran and exited N
+   * .note = each key matches the start of a command; the 'gh auth token' key stands for the
+   *         exact read the code must run (env tokens stripped), so a read that skips the strip
+   *         meets no answer
    */
   const genFakeShx = (input: {
     answers: Record<string, string | { exit: number }>;
@@ -29,8 +33,10 @@ describe('getGithubTokenByAuthArg.asehmpath', () => {
     const calls: string[] = [];
     const shx = async (command: string) => {
       calls.push(command);
-      const answer = Object.entries(input.answers).find(([prefix]) =>
-        command.startsWith(prefix),
+      const answer = Object.entries(input.answers).find(([key]) =>
+        command.startsWith(
+          key === 'gh auth token' ? AMBIENT_READ_GH_LOGIN : key,
+        ),
       )?.[1];
       if (answer === undefined) return { stdout: '', stderr: '' };
       if (typeof answer === 'string') return { stdout: answer, stderr: '' };
@@ -110,7 +116,7 @@ describe('getGithubTokenByAuthArg.asehmpath', () => {
           expect(result).toEqual({
             token: TOKEN_KEYRACK,
             role: 'as-robot',
-            ehmpathSpot: 'keyrack',
+            authSource: { auth: 'as-ehmpath', spot: 'keyrack' },
           });
           expect(fake.calls).toEqual([]);
           expect(logs).toEqual([]);
@@ -145,7 +151,7 @@ describe('getGithubTokenByAuthArg.asehmpath', () => {
             expect(result).toEqual({
               token: TOKEN_AMBIENT,
               role: 'as-robot',
-              ehmpathSpot: 'ambient',
+              authSource: { auth: 'as-ehmpath', spot: 'ambient' },
             });
             // the extant keyrack nudge may print its unlock note; no auth line does
             expect(logs.filter((line) => line.includes('as-ehmpath'))).toEqual(
@@ -189,7 +195,7 @@ describe('getGithubTokenByAuthArg.asehmpath', () => {
             );
             expect(error.message).toContain('rhx keyrack unlock');
             expect(error.message).toContain('--auth as-human');
-            expect(fake.calls).not.toContain('gh auth token');
+            expect(fake.calls).not.toContain(AMBIENT_READ_GH_LOGIN);
             expect(error.message).toMatchSnapshot();
           },
         );
@@ -324,13 +330,13 @@ describe('getGithubTokenByAuthArg.asehmpath', () => {
             );
             expect(error.message).not.toContain('ambient:');
             expect(fake.calls).not.toContain('git config user.email');
-            expect(fake.calls).not.toContain('gh auth token');
+            expect(fake.calls).not.toContain(AMBIENT_READ_GH_LOGIN);
             expect(error.message).toMatchSnapshot();
           },
         );
       });
       when('[t1] keyrack is granted', () => {
-        then('keyrack pays, and no spot is returned to show', async () => {
+        then('keyrack pays, and the keyrack spot is returned', async () => {
           const fake = genFakeShx({ answers: {} });
           const { result, logs } = await runWithLogs(() =>
             getGithubTokenByAuthArg(
@@ -345,7 +351,7 @@ describe('getGithubTokenByAuthArg.asehmpath', () => {
           expect(result).toEqual({
             token: TOKEN_KEYRACK,
             role: 'as-robot',
-            ehmpathSpot: null,
+            authSource: { auth: 'as-ehmpath', spot: 'keyrack' },
           });
           expect(logs).toEqual([]);
         });
@@ -356,7 +362,7 @@ describe('getGithubTokenByAuthArg.asehmpath', () => {
   given('[case7] as-ehmpath-via-ambient', () => {
     when('[t0] the ambient email is ehmpath and gh is logged in', () => {
       then(
-        'the gh login pays; keyrack is never read; no spot to show',
+        'the gh login pays; keyrack is never read; the ambient spot is returned',
         async () => {
           const fake = genFakeShx({
             answers: {
@@ -374,7 +380,7 @@ describe('getGithubTokenByAuthArg.asehmpath', () => {
           expect(result).toEqual({
             token: TOKEN_AMBIENT,
             role: 'as-robot',
-            ehmpathSpot: null,
+            authSource: { auth: 'as-ehmpath', spot: 'ambient' },
           });
           expect(keyrackGet).not.toHaveBeenCalled();
           expect(logs).toEqual([]);
@@ -402,7 +408,7 @@ describe('getGithubTokenByAuthArg.asehmpath', () => {
         expect(error).toBeInstanceOf(ConstraintError);
         expect(error.message).not.toContain('keyrack:');
         expect(error.message).toContain('not an ehmpath email');
-        expect(fake.calls).not.toContain('gh auth token');
+        expect(fake.calls).not.toContain(AMBIENT_READ_GH_LOGIN);
         expect(error.message).toMatchSnapshot();
       });
     });
@@ -431,7 +437,7 @@ describe('getGithubTokenByAuthArg.asehmpath', () => {
   given('[case9] the git config read is killed, with no exit code', () => {
     when('[t0] the ambient path is reached', () => {
       then(
-        'a malfunction carries the kill; it is never read as "unset"',
+        'a constraint carries the kill and names the fix; it is never read as "unset"',
         async () => {
           const shx = async () => {
             throw Object.assign(new Error('killed'), {
@@ -445,10 +451,14 @@ describe('getGithubTokenByAuthArg.asehmpath', () => {
               { env: envStubbed, shx },
             ),
           );
-          expect(error).toBeInstanceOf(MalfunctionError);
+
+          // a box fault is the ambient spot's miss, named with the kill and its fix; a ConstraintError the drain holds
+          expect(error).toBeInstanceOf(ConstraintError);
           expect(error.message).toContain('git config user.email');
           expect(error.message).toContain('killed');
-          expect(error).not.toBeInstanceOf(ConstraintError);
+          expect(error.message).toContain('--auth as-ehmpath-via-keyrack');
+          expect(error.message).not.toContain('not an ehmpath email');
+          expect(error.message).not.toContain('user.email unset');
           expect(error.message).toMatchSnapshot();
         },
       );
@@ -475,7 +485,7 @@ describe('getGithubTokenByAuthArg.asehmpath', () => {
     EXIT_CASES.map((thisCase) =>
       when(thisCase.label, () => {
         then(
-          'a malfunction names the command; it is never read as "unset" or "no login"',
+          'a constraint names the command and the fix; it is never read as "unset" or "no login"',
           async () => {
             const fake = genFakeShx({ answers: thisCase.answers });
             const error = await getError(
@@ -484,10 +494,12 @@ describe('getGithubTokenByAuthArg.asehmpath', () => {
                 { env: envStubbed, shx: fake.shx },
               ),
             );
-            expect(error).toBeInstanceOf(MalfunctionError);
+            expect(error).toBeInstanceOf(ConstraintError);
             expect(error.message).toContain('the ambient read');
             expect(error.message).toContain('Command failed');
-            expect(error).not.toBeInstanceOf(ConstraintError);
+            expect(error.message).not.toContain('gh holds no login');
+            expect(error.message).not.toContain('not an ehmpath email');
+            expect(error.message).not.toContain('user.email unset');
             expect(error.message).toMatchSnapshot();
           },
         );

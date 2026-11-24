@@ -1,5 +1,5 @@
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
-import { asEhmpathSpotShown } from '@src/domain.operations/radio/auth/asEhmpathSpotShown';
+import { asAuthSourceShown } from '@src/domain.operations/radio/auth/asAuthSourceShown';
 import { asTaskDetailOutput } from '@src/domain.operations/radio/cli/asTaskDetailOutput';
 
 import { asRadioAuthShown } from './asRadioAuthShown';
@@ -251,7 +251,7 @@ export const asRadioPushOutput = (input: {
         outcome: pushed.outcome,
         cached: null,
         recorded: `${home.dir}/`,
-        auth: asEhmpathSpotShown({ ehmpathSpot: pushed.ehmpathSpot }),
+        auth: asAuthSourceShown({ authSource: pushed.authSource }),
       }),
     ].join('\n');
 
@@ -266,7 +266,7 @@ export const asRadioPushOutput = (input: {
           children: [
             asRadioDeliveredRow({
               line: `${asRadioDeliveredLine(pushed)} (${pushed.outcome})`,
-              ehmpathSpot: pushed.ehmpathSpot,
+              authSource: pushed.authSource,
             }),
           ],
         },

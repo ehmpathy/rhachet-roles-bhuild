@@ -21,7 +21,7 @@ const genRecord = (input: Partial<RadioTaskRecord>): RadioTaskRecord =>
     kind: 'create',
     repo,
     via: RadioChannel.GH_ISSUES,
-    auth: null,
+    auth: 'as-robot:via-keyrack(ehmpath)', // the #599 shape: a robot auth
     idem: null,
     title: 'lesson reminders',
     description: 'remind each surfer a day ahead',
@@ -75,7 +75,7 @@ describe('asRadioDrainSections', () => {
             }),
             task: genTask({ exid: '601', title: 'lesson reminders' }),
             outcome: 'created',
-            ehmpathSpot: null,
+            authSource: null,
           },
           {
             fate: 'delivered',
@@ -87,7 +87,7 @@ describe('asRadioDrainSections', () => {
             }),
             task: genTask({ exid: '602', title: 'board rentals' }),
             outcome: 'found',
-            ehmpathSpot: null,
+            authSource: null,
           },
         ],
       });
@@ -121,7 +121,7 @@ describe('asRadioDrainSections', () => {
             }),
             task: genTask({ exid: '601', title: 'lesson reminders' }),
             outcome: 'created',
-            ehmpathSpot: 'keyrack',
+            authSource: { auth: 'as-ehmpath', spot: 'keyrack' },
           },
           {
             fate: 'delivered',
@@ -133,7 +133,7 @@ describe('asRadioDrainSections', () => {
             }),
             task: genTask({ exid: '602', title: 'board rentals' }),
             outcome: 'created',
-            ehmpathSpot: 'ambient',
+            authSource: { auth: 'as-ehmpath', spot: 'ambient' },
           },
         ],
       });

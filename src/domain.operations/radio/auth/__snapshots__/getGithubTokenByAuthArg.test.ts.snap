@@ -31,7 +31,8 @@ exports[`getGithubTokenByAuthArg given: [case5] --auth as-human when: [t2] as-hu
 "✋ ConstraintError: --auth as-human is forbidden in test environment. use --auth as-robot:env(TOKEN_VAR) or --auth as-robot:shx(command) instead.
 
 {
-  "auth": "as-human"
+  "auth": "as-human",
+  "hint": "or declare a stub gh: wrap the test in withAmbientStub (src/.test/utils/withAmbientStub.ts), which sets RADIO_GH_STUB=1"
 }"
 `;
 

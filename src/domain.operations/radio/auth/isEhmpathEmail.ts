@@ -4,9 +4,10 @@
  *
  * .note = copied from rhachet-roles-ehmpathy `skills/git.commit/keyrack.operations.sh`
  *         (SEATURTLE_APP_BOT_EMAIL, SEATURTLE_CLONE_EMAIL); that roster is a bash leaf with
- *         no ts export, so the two copies must be kept in step by hand
+ *         no ts export, so isEhmpathEmail.roster.integration.test.ts reads the installed bash
+ *         file and turns red when the two drift, either way
  */
-const EHMPATH_NOREPLY_EMAILS = [
+export const EHMPATH_NOREPLY_EMAILS = [
   '295111357+ehm-a-seaturtle[bot]@users.noreply.github.com',
   '259600029+ehm-seaturtle@users.noreply.github.com',
 ];

@@ -5,6 +5,8 @@ import { asTaskListLine } from './asTaskListLine';
 /**
  * .what = format task list as tree-struct output
  * .why = consistent output for list operations
+ * .note = the auth rides after a `·`, never in parens: its own value may carry a
+ *         `(via …)` source, and parens in parens read as noise
  */
 export const asTaskListOutput = (input: {
   tasks: RadioTask[];
@@ -13,7 +15,7 @@ export const asTaskListOutput = (input: {
 }): string => {
   const { tasks, via, auth } = input;
   const header = auth
-    ? `🎙️ tasks on ${via} (auth: ${auth}):`
+    ? `🎙️ tasks on ${via} · auth: ${auth}`
     : `🎙️ tasks on ${via}:`;
 
   if (tasks.length === 0) {

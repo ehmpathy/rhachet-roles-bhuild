@@ -22,7 +22,7 @@ const genRecord = (input: Partial<RadioTaskRecord>): RadioTaskRecord =>
     kind: 'create',
     repo,
     via: RadioChannel.GH_ISSUES,
-    auth: null,
+    auth: 'as-robot:via-keyrack(ehmpath)', // the #599 shape: github refused the robot's token
     idem: null,
     title: 'fix flaky keyrack test',
     description: 'the test flakes',
@@ -67,7 +67,7 @@ describe('asRadioPushOutput', () => {
           }),
           task: genTask({ exid: '414', title: 'fix flaky keyrack test' }),
           outcome: 'created',
-          ehmpathSpot: null,
+          authSource: null,
         },
         others: [],
         home: homeRoute,
@@ -376,7 +376,7 @@ describe('asRadioPushOutput', () => {
             }),
             task: genTask({ exid: '415', title: 'retry race in route.bounce' }),
             outcome: 'created',
-            ehmpathSpot: null,
+            authSource: null,
           },
           others: [
             {
@@ -388,7 +388,7 @@ describe('asRadioPushOutput', () => {
               }),
               task: genTask({ exid: '412', title: 'fix flaky keyrack test' }),
               outcome: 'created',
-              ehmpathSpot: null,
+              authSource: null,
             },
             {
               fate: 'refused',
@@ -460,7 +460,7 @@ describe('asRadioPushOutput', () => {
           }),
           task: genTask({ exid: '415', title: 'retry race in route.bounce' }),
           outcome: 'created',
-          ehmpathSpot: 'ambient',
+          authSource: { auth: 'as-ehmpath', spot: 'ambient' },
         },
         others: [
           {
@@ -472,7 +472,7 @@ describe('asRadioPushOutput', () => {
             }),
             task: genTask({ exid: '412', title: 'fix flaky keyrack test' }),
             outcome: 'created',
-            ehmpathSpot: 'keyrack',
+            authSource: { auth: 'as-ehmpath', spot: 'keyrack' },
           },
         ],
         home: homeRoute,
@@ -568,7 +568,7 @@ describe('asRadioPushOutput', () => {
               }),
               task: genTask({ exid: '413', title: 'guard absent sponsor' }),
               outcome: 'found',
-              ehmpathSpot: null,
+              authSource: null,
             },
           ],
           home: homeRoute,
@@ -617,7 +617,7 @@ describe('asRadioPushOutput', () => {
               }),
               task: genTask({ exid: '412', title: 'fix flaky keyrack test' }),
               outcome: 'created',
-              ehmpathSpot: null,
+              authSource: null,
             },
             {
               fate: 'held',

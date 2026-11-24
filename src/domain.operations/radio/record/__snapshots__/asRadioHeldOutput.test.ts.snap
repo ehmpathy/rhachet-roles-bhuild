@@ -25,12 +25,12 @@ exports[`asRadioHeldOutput given: [case2.1] two tasks set aside on an upstream f
 "🦫 held for the radio
    ├─ a task a → ehmpathy/rhachet
    │  ├─ state: set aside (upstream:auth)
-   │  ├─ auth: default (ambient-first)
+   │  ├─ auth: as-robot:via-keyrack(ehmpath)
    │  ├─ amend it: rhx radio.task.queue set --uuid a --auth as-human (needs a gh login on this host)
    │  └─ or drop it: rhx radio.task.queue del --uuid a --why "<why>"
    ├─ b task b → ehmpathy/rhachet
    │  ├─ state: set aside (upstream:auth)
-   │  ├─ auth: default (ambient-first)
+   │  ├─ auth: as-robot:via-keyrack(ehmpath)
    │  ├─ amend it: rhx radio.task.queue set --uuid b --auth as-human (needs a gh login on this host)
    │  └─ or drop it: rhx radio.task.queue del --uuid b --why "<why>"
    ├─ c task c → ehmpathy/rhachet
@@ -54,7 +54,7 @@ exports[`asRadioHeldOutput given: [case2.3] two updates to one issue, the first 
 "🦫 held for the radio
    ├─ a1a1a1a1a1a1a1a1 update #599 → ehmpathy/rhachet
    │  ├─ state: set aside (upstream:access)
-   │  ├─ auth: default (ambient-first)
+   │  ├─ auth: as-robot:via-keyrack(ehmpath)
    │  ├─ amend it: rhx radio.task.queue set --uuid a1a1a1a1a1a1a1a1 --auth as-human (needs a gh login on this host)
    │  └─ or drop it: rhx radio.task.queue del --uuid a1a1a1a1a1a1a1a1 --why "<why>"
    ├─ b2b2b2b2b2b2b2b2 update #599 → ehmpathy/rhachet

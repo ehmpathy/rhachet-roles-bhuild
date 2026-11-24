@@ -28,7 +28,7 @@ export const asRadioDrainSections = (input: {
               fate.outcome === 'found'
                 ? `${asRadioDeliveredLine(fate)} (already upstream — marked delivered)`
                 : asRadioDeliveredLine(fate),
-            ehmpathSpot: fate.ehmpathSpot,
+            authSource: fate.authSource,
           }),
         ]
       : [],

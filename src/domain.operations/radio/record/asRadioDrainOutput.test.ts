@@ -20,7 +20,7 @@ const genRecord = (input: Partial<RadioTaskRecord>): RadioTaskRecord =>
     kind: 'create',
     repo,
     via: RadioChannel.GH_ISSUES,
-    auth: null,
+    auth: 'as-robot:via-keyrack(ehmpath)', // the #599 shape: a robot auth
     idem: null,
     title: 'lesson reminders',
     description: 'remind each surfer a day ahead',
@@ -91,7 +91,7 @@ describe('asRadioDrainOutput', () => {
             }),
             task: taskDelivered,
             outcome: 'created',
-            ehmpathSpot: null,
+            authSource: null,
           },
         ],
         backlog: 1,
@@ -200,7 +200,7 @@ describe('asRadioDrainOutput', () => {
             }),
             task: taskDelivered,
             outcome: 'created',
-            ehmpathSpot: null,
+            authSource: null,
           },
         ],
         backlog: 0,
@@ -263,7 +263,7 @@ describe('asRadioDrainOutput', () => {
             }),
             task: taskDelivered,
             outcome: 'created',
-            ehmpathSpot: null,
+            authSource: null,
           },
           asRadioFateUnreachedByBudget({
             record: genRecord({

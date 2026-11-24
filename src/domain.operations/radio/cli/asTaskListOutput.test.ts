@@ -34,14 +34,26 @@ const TEST_CASES: {
     description: 'an as-ehmpath list names the spot that paid in its header',
     given: { tasks: [task], auth: 'as-ehmpath (via keyrack)' },
     expect: {
-      header: '🎙️ tasks on gh.issues (auth: as-ehmpath (via keyrack)):',
+      header: '🎙️ tasks on gh.issues · auth: as-ehmpath (via keyrack)',
     },
   },
   {
     description: 'an empty as-ehmpath list still names the spot',
     given: { tasks: [], auth: 'as-ehmpath (via ambient)' },
     expect: {
-      header: '🎙️ tasks on gh.issues (auth: as-ehmpath (via ambient)):',
+      header: '🎙️ tasks on gh.issues · auth: as-ehmpath (via ambient)',
+    },
+  },
+  {
+    description:
+      'a human list names the email, with one level of parens, never two',
+    given: {
+      tasks: [task],
+      auth: 'as-human (via ambient email bert@example.com)',
+    },
+    expect: {
+      header:
+        '🎙️ tasks on gh.issues · auth: as-human (via ambient email bert@example.com)',
     },
   },
 ];

@@ -3,7 +3,7 @@ import { BadRequestError, ConstraintError } from 'helpful-errors';
 import { RadioChannel } from '@src/domain.objects/RadioChannel';
 import type { ContextDispatchRadio } from '@src/domain.objects/RadioContext';
 import type { RadioTaskRecord } from '@src/domain.objects/RadioTaskRecord';
-import type { EhmpathSpot } from '@src/domain.operations/radio/auth/EhmpathSpot';
+import type { AuthSource } from '@src/domain.operations/radio/auth/AuthSource';
 import { getGithubTokenByAuthArg } from '@src/domain.operations/radio/auth/getGithubTokenByAuthArg';
 
 import { asRadioAuthShown } from './asRadioAuthShown';
@@ -29,6 +29,12 @@ const isRadioRecordAuthLive = (input: {
  *
  * .note = the catch wraps the auth derive alone, so only an auth fault is held;
  *         any other throw is a defect, and it rethrows
+ *
+ * .note = a record that holds no --auth replays box-relative: the default derives on the
+ *         box that drains, so the drainer's identity pays, never the pusher's. a record file
+ *         stores no token and no resolved identity, so it cannot carry one across boxes; the
+ *         drain names the source it paid with (authSource), and a record that must keep one
+ *         identity names it: `rhx radio.task.queue set --uuid <uuid> --auth <auth>`
  */
 export const getOneRadioContextForRecord = async (
   input: {
@@ -40,14 +46,14 @@ export const getOneRadioContextForRecord = async (
 ): Promise<
   | {
       radioContext: ContextDispatchRadio<RadioChannel>;
-      ehmpathSpot: EhmpathSpot | null;
+      authSource: AuthSource | null;
     }
   | { fault: BadRequestError }
 > => {
   // a channel with no auth needs only its repo
   const git = { repo: input.record.repo };
   if (input.record.via !== RadioChannel.GH_ISSUES)
-    return { radioContext: { git }, ehmpathSpot: null };
+    return { radioContext: { git }, authSource: null };
 
   // a stored auth that would run a shell holds the record; only a live one may
   const isAuthStored =
@@ -62,11 +68,11 @@ export const getOneRadioContextForRecord = async (
 
   // derive the github auth; an auth fault holds the record
   try {
-    const { ehmpathSpot, ...auth } = await getGithubTokenByAuthArg(
+    const { authSource, ...auth } = await getGithubTokenByAuthArg(
       { auth: input.authOverride ?? input.record.auth },
       context,
     );
-    return { radioContext: { github: { auth }, git }, ehmpathSpot };
+    return { radioContext: { github: { auth }, git }, authSource };
   } catch (error) {
     if (!(error instanceof BadRequestError)) throw error;
     return { fault: error };

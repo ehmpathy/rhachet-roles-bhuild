@@ -102,14 +102,18 @@ const HELP_TEXT = `
    │
    └─ options
       ├─ --uuid         the record uuid \`get\` prints (set, del)
-      ├─ --auth         where the token comes from
-      │  ├─ as-ehmpath              keyrack, then the gh login (ehmpath email only)
-      │  ├─ as-ehmpath-via-keyrack  keyrack only
-      │  ├─ as-ehmpath-via-ambient  the gh login only (ehmpath email only)
-      │  ├─ as-human                the gh login, any identity
-      │  ├─ as-robot:via-keyrack(owner) · as-robot:env(VAR) · as-robot:shx(cmd)
-      │  ├─ set:   amends the one record --uuid names
-      │  └─ drain: sends every held record under this auth, this drain only
+      ├─ --auth         where the token comes from (default: each record's own)
+      │  ├─ values
+      │  │  ├─ (none)                  replays the auth each record stored
+      │  │  │  └─ saved with no --auth   the ambient-first default of the box that drains
+      │  │  ├─ as-ehmpath              keyrack, then the gh login (ehmpath email only)
+      │  │  ├─ as-ehmpath-via-keyrack  keyrack only
+      │  │  ├─ as-ehmpath-via-ambient  the gh login only (ehmpath email only)
+      │  │  ├─ as-human                the gh login, any identity
+      │  │  └─ as-robot:via-keyrack(owner) · as-robot:env(VAR) · as-robot:shx(cmd)
+      │  └─ scope
+      │     ├─ set:   amends the one record --uuid names
+      │     └─ drain: sends every held record under this auth, this drain only
       ├─ --description  the new body (set; supports @stdin)
       ├─ --why          why the record is dropped (del, required)
       ├─ --when         hook.onStop (get)

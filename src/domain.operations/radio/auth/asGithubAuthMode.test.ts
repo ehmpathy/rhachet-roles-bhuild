@@ -28,17 +28,17 @@ const TEST_CASES: {
   {
     description: 'parses as-ehmpath as keyrack-then-ambient',
     auth: 'as-ehmpath',
-    expect: { kind: 'as-ehmpath', via: 'either' },
+    expect: { kind: 'as-ehmpath', spots: ['keyrack', 'ambient'] },
   },
   {
     description: 'parses as-ehmpath-via-keyrack',
     auth: 'as-ehmpath-via-keyrack',
-    expect: { kind: 'as-ehmpath', via: 'keyrack' },
+    expect: { kind: 'as-ehmpath', spots: ['keyrack'] },
   },
   {
     description: 'parses as-ehmpath-via-ambient',
     auth: 'as-ehmpath-via-ambient',
-    expect: { kind: 'as-ehmpath', via: 'ambient' },
+    expect: { kind: 'as-ehmpath', spots: ['ambient'] },
   },
   {
     description: 'refuses an as-ehmpath variant it does not know',

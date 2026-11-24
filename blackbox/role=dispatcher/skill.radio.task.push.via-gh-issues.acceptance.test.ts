@@ -582,6 +582,11 @@ describe('radio.task.push via gh.issues', () => {
         expect(result.stdout).toContain('🦫 held for the radio');
         expect(asStable401Output({ output: result.stdout })).toMatchSnapshot();
       });
+
+      then('the stderr stream matches snapshot', () => {
+        // snapped apart from stdout, so a leak onto stderr surfaces as a snap diff
+        expect(asStable401Output({ output: result.stderr })).toMatchSnapshot();
+      });
     });
   });
 });

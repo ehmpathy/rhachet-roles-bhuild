@@ -1,7 +1,9 @@
-import { ConstraintError, MalfunctionError } from 'helpful-errors';
+import { ConstraintError } from 'helpful-errors';
 
 import { asExecErrorMessage } from '../../../infra/shell/asExecErrorMessage';
 import { asExecExitCode } from '../../../infra/shell/asExecExitCode';
+import type { AMBIENT_READ_GH_LOGIN } from './AMBIENT_READ_GH_LOGIN';
+import { AmbientReadFaultError } from './AmbientReadFaultError';
 import { isAmbientReadAllowed } from './isAmbientReadAllowed';
 
 /**
@@ -31,11 +33,13 @@ const EXIT_CODE_FOR_NONE = 1;
  *         (radioTaskPush, radioTaskPull, radioTaskQueue), and the record replay forwards that
  *         same context; a unit test pairs a fake env with a fake shx that never execs
  *
- * .note = a fault throws a MalfunctionError that names the command and its exit, so the
- *         cause reads off the error
+ * .note = a fault throws an AmbientReadFaultError (a ConstraintError) that names the command,
+ *         its exit, and the fix. the box holds the cause (gh not installed, a broken git config,
+ *         a read cut off by a timeout), so the caller fixes it; the drain holds that one record
+ *         as `upstream:auth` and sends the rest, and a spot walk reads it as that spot's miss
  */
 export const getAmbientReadOrNone = async (
-  input: { command: 'git config user.email' | 'gh auth token' },
+  input: { command: 'git config user.email' | typeof AMBIENT_READ_GH_LOGIN },
   context: {
     env: NodeJS.ProcessEnv;
     shx: (command: string) => Promise<{ stdout: string; stderr: string }>;
@@ -58,7 +62,7 @@ export const getAmbientReadOrNone = async (
   } catch (error) {
     const exitCode = asExecExitCode({ error });
     if (exitCode === EXIT_CODE_FOR_NONE) return null;
-    throw new MalfunctionError(`the ambient read \`${input.command}\` failed`, {
+    throw new AmbientReadFaultError({
       command: input.command,
       exitCode,
       execError: asExecErrorMessage({ error }),

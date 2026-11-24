@@ -220,6 +220,6 @@ export const setRadioTaskRecordUpstream = async (
     record: delivered,
     task: send.sent.task,
     outcome: send.sent.outcome,
-    ehmpathSpot: auth.ehmpathSpot,
+    authSource: auth.authSource,
   };
 };

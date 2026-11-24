@@ -14,6 +14,23 @@ exports[`radio.task.pull via gh.issues — github auth failure nudge given: [cas
 }"
 `;
 
+exports[`radio.task.pull via gh.issues — github auth failure nudge given: [case6] rejected robot token surfaces the as-human nudge (gh 401) when: [t0] pull with an env token that github rejects (401) then: the stderr stream matches snapshot, volatile bytes masked 1`] = `
+"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.pull
+   └─ ✋ blocked by constraints
+
+✋ ConstraintError: github auth failed: the robot token was rejected by github (401)
+  • unblock now — re-run as human: --auth as-human
+  • or fix the robot token: check its scopes and expiry at its source
+
+{
+  "command": "gh issue list --repo ehmpathy/rhachet-roles-bhuild-demo --state all --json number,title,body,state,assignees,createdAt,author --limit 100",
+  "role": "as-robot",
+  "detail": "<gh 401 stderr>"
+}"
+`;
+
+exports[`radio.task.pull via gh.issues — github auth failure nudge given: [case6] rejected robot token surfaces the as-human nudge (gh 401) when: [t0] pull with an env token that github rejects (401) then: the stdout stream matches snapshot 1`] = `"🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.pull"`;
+
 exports[`radio.task.pull via gh.issues — usage contract given: [case7] --help renders the usage contract (deterministic) when: [t0] pull is invoked with --help then: the human-readable usage output matches snapshot 1`] = `
 "🪨 run solid skill repo=bhuild/role=dispatcher/skill=radio.task.pull
 
@@ -35,7 +52,10 @@ exports[`radio.task.pull via gh.issues — usage contract given: [case7] --help 
       ├─ --status      filter by status: QUEUED, CLAIMED, DELIVERED
       ├─ --limit       max number of tasks to return
       ├─ --auth        where the token comes from (default: ambient-first)
-      │  ├─ (none)                  ehmpath email: its gh login, else keyrack · other email: as-human
+      │  ├─ (none)                  by this box's git config user.email
+      │  │  ├─ an ehmpath email     its gh login, else keyrack
+      │  │  ├─ another email        as-human
+      │  │  └─ no email set         keyrack
       │  ├─ as-ehmpath              keyrack, then the gh login (ehmpath email only)
       │  ├─ as-ehmpath-via-keyrack  keyrack only
       │  ├─ as-ehmpath-via-ambient  the gh login only (ehmpath email only)

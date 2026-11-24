@@ -137,7 +137,10 @@ const HELP_TEXT = `
       ├─ --status      status: QUEUED, CLAIMED, DELIVERED
       ├─ --idem        idempotency: findsert or upsert
       ├─ --auth        where the token comes from (default: ambient-first)
-      │  ├─ (none)                  ehmpath email: its gh login, else keyrack · other email: as-human
+      │  ├─ (none)                  by this box's git config user.email
+      │  │  ├─ an ehmpath email     its gh login, else keyrack
+      │  │  ├─ another email        as-human
+      │  │  └─ no email set         keyrack
       │  ├─ as-ehmpath              keyrack, then the gh login (ehmpath email only)
       │  ├─ as-ehmpath-via-keyrack  keyrack only
       │  ├─ as-ehmpath-via-ambient  the gh login only (ehmpath email only)

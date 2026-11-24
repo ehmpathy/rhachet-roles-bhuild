@@ -54,6 +54,14 @@ export const asRadioQueueFixLines = (input: {
       `check the gh login on this host: gh auth status (else: gh auth login), then: rhx radio.task.queue drain`,
       drop,
     ];
+  // no auth: the default ran as this box's own identity, which may be as-human already; so
+  // name the robot as the amend, and the gh login as the check, never as-human again
+  if (reason && REASONS_CURED_BY_AUTH.has(reason) && auth === null)
+    return [
+      `amend it to the robot: rhx radio.task.queue set --uuid ${key} --auth as-ehmpath-via-keyrack`,
+      `or, to send as yourself, check the gh login on this host: gh auth status (else: gh auth login), then: rhx radio.task.queue drain`,
+      drop,
+    ];
   if (reason && REASONS_CURED_BY_AUTH.has(reason))
     return [
       `amend it: rhx radio.task.queue set --uuid ${key} --auth as-human (needs a gh login on this host)`,

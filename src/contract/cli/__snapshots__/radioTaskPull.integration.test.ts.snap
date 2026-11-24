@@ -13,7 +13,8 @@ exports[`radio.task.pull.integration — CLI contract given: [case2] --auth as-h
 "✋ ConstraintError: --auth as-human is forbidden in test environment. use --auth as-robot:env(TOKEN_VAR) or --auth as-robot:shx(command) instead.
 
 {
-  "auth": "as-human"
+  "auth": "as-human",
+  "hint": "or declare a stub gh: wrap the test in withAmbientStub (src/.test/utils/withAmbientStub.ts), which sets RADIO_GH_STUB=1"
 }"
 `;
 
@@ -71,7 +72,10 @@ exports[`radio.task.pull.integration — CLI contract given: [case6] --help (the
       ├─ --status      filter by status: QUEUED, CLAIMED, DELIVERED
       ├─ --limit       max number of tasks to return
       ├─ --auth        where the token comes from (default: ambient-first)
-      │  ├─ (none)                  ehmpath email: its gh login, else keyrack · other email: as-human
+      │  ├─ (none)                  by this box's git config user.email
+      │  │  ├─ an ehmpath email     its gh login, else keyrack
+      │  │  ├─ another email        as-human
+      │  │  └─ no email set         keyrack
       │  ├─ as-ehmpath              keyrack, then the gh login (ehmpath email only)
       │  ├─ as-ehmpath-via-keyrack  keyrack only
       │  ├─ as-ehmpath-via-ambient  the gh login only (ehmpath email only)
@@ -85,4 +89,103 @@ exports[`radio.task.pull.integration — CLI contract given: [case7] --via os.fi
 
 🎙️ tasks on os.fileops:
    └─ [QUEUED] pull-cli-001: first cli pull task"
+`;
+
+exports[`radio.task.pull.integration — CLI contract given: [case8] --auth as-ehmpath-via-ambient on an ehmpath box with a gh login when: [t0] the pull skill lists against a stub gh then: the output matches the snapshot 1`] = `
+"🦫 what's on the water?
+
+🎙️ tasks on gh.issues · auth: as-ehmpath (via ambient)
+   └─ (no tasks found)"
+`;
+
+exports[`radio.task.pull.integration — CLI contract given: [case9] no --auth on a human box (ambient-first) when: [t0] the pull skill lists against a stub gh then: the output matches the snapshot 1`] = `
+"🦫 what's on the water?
+
+🎙️ tasks on gh.issues · auth: as-human (via ambient email bert@example.com)
+   └─ (no tasks found)"
+`;
+
+exports[`radio.task.pull.integration — CLI contract given: [case10] --auth as-ehmpath on bert's laptop: keyrack holds none, the email is human when: [t0] the pull skill lists against a stub gh with a login then: the message matches the snapshot 1`] = `
+"✋ ConstraintError: --auth as-ehmpath found no ehmpath token
+
+checked
+├─ keyrack: not granted (status: absent)
+└─ ambient: git config user.email = bert@example.com, not an ehmpath email
+
+fix
+├─ set the robot token: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
+└─ or send as yourself, on purpose: --auth as-human
+
+{
+  "auth": "as-ehmpath"
+}"
+`;
+
+exports[`radio.task.pull.integration — CLI contract given: [case11] --auth as-ehmpath-via-keyrack on an ehmpath box: keyrack holds none, gh is logged in when: [t0] the pull skill lists against a stub gh with a login then: the message matches the snapshot 1`] = `
+"✋ ConstraintError: --auth as-ehmpath-via-keyrack found no ehmpath token
+
+checked
+└─ keyrack: not granted (status: absent)
+
+fix
+├─ set the robot token: rhx keyrack set --owner ehmpath --key EHMPATH_BEAVER_GITHUB_TOKEN --env prep
+└─ or send as yourself, on purpose: --auth as-human
+
+{
+  "auth": "as-ehmpath-via-keyrack"
+}"
+`;
+
+exports[`radio.task.pull.integration — CLI contract given: [case12] --auth as-ehmpath-via-ambient on a human box with a gh login when: [t0] the pull skill lists against a stub gh with a login then: the message matches the snapshot 1`] = `
+"✋ ConstraintError: --auth as-ehmpath-via-ambient found no ehmpath token
+
+checked
+└─ ambient: git config user.email = bert@example.com, not an ehmpath email
+
+fix
+└─ send as yourself, on purpose: --auth as-human
+
+{
+  "auth": "as-ehmpath-via-ambient"
+}"
+`;
+
+exports[`radio.task.pull.integration — CLI contract given: [case13] --auth as-ehmpath-via-ambient on an ehmpath box whose gh holds no login when: [t0] the pull skill lists against a stub gh with no login then: the message matches the snapshot 1`] = `
+"✋ ConstraintError: --auth as-ehmpath-via-ambient found no ehmpath token
+
+checked
+└─ ambient: ehmpath email, but gh holds no login
+
+fix
+├─ log gh in as the ehmpath account: gh auth login
+└─ or send as yourself, on purpose: --auth as-human
+
+{
+  "auth": "as-ehmpath-via-ambient"
+}"
+`;
+
+exports[`radio.task.pull.integration — CLI contract given: [case14] --auth as-ehmpath on a robot box: keyrack grants, gh holds no login when: [t0] the pull skill lists against a stub gh then: the output matches the snapshot 1`] = `
+"🦫 what's on the water?
+
+🎙️ tasks on gh.issues · auth: as-ehmpath (via keyrack)
+   └─ (no tasks found)"
+`;
+
+exports[`radio.task.pull.integration — CLI contract given: [case15] --auth as-ehmpath-via-keyrack: keyrack grants, gh holds a login it never uses when: [t0] the pull skill lists against a stub gh then: the output matches the snapshot 1`] = `
+"🦫 what's on the water?
+
+🎙️ tasks on gh.issues · auth: as-ehmpath (via keyrack)
+   └─ (no tasks found)"
+`;
+
+exports[`radio.task.pull.integration — CLI contract given: [case16] no --auth on a human box whose gh auth is an env GH_TOKEN alone when: [t0] the pull skill lists against a stub gh with no login then: the message matches the snapshot 1`] = `
+"✋ ConstraintError: the default auth (no --auth) reads a human email (bert@example.com), so it sends as-human; but gh holds no stored login, and an as-human send never uses the env GH_TOKEN
+
+{
+  "auth": null,
+  "email": "bert@example.com",
+  "envTokenName": "GH_TOKEN",
+  "hint": "send with that token, on purpose: --auth 'as-robot:env(GH_TOKEN)'; or as the robot: --auth as-ehmpath-via-keyrack; or log the human in: gh auth login"
+}"
 `;
