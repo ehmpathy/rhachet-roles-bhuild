@@ -3,7 +3,7 @@
 #   next 100. the boot-budget clamp turns red the moment the boot outgrows it.
 #   measure: `npx rhachet roles cost --what src/domain.roles/behaver/boot.yml`
 budget:
-  tokens: 2_200
+  tokens: 2_300
 
 always:
   briefs:
@@ -28,6 +28,9 @@ always:
       - briefs/practices/behavior.wish/rule.prefer.clear-desires.md
       - briefs/practices/behavior.wish/rule.prefer.bounded-scope.md
 
+      # vision rules
+      - briefs/practices/behavior.vision/rule.require.requirements-trace-to-a-stated-source.md
+
       # criteria rules
       - briefs/practices/behavior.criteria/rule.require.bdd-format.md
       - briefs/practices/behavior.criteria/rule.require.blackbox-no-implementation.md
@@ -41,6 +44,12 @@ always:
       - briefs/practices/behavior.blueprint/rule.require.test-coverage-specified.md
       - briefs/practices/behavior.blueprint/rule.require.test-patterns-specified.md
       - briefs/practices/behavior.blueprint/rule.require.determinism-declared.md
+      - briefs/practices/behavior.blueprint/rule.require.deal-sentence-before-mechanism.md
+      - briefs/practices/behavior.blueprint/rule.require.deal-sentence-before-mechanism.demo=six-questions-one-sentence.md
+      - briefs/practices/behavior.blueprint/rule.require.customer-statement-before-money-flow.md
+      - briefs/practices/behavior.blueprint/rule.require.contract-surface-proof-in-blueprints.md
+      - briefs/practices/behavior.blueprint/rule.require.facts-table-in-blueprints.md
+      - briefs/practices/behavior.blueprint/rule.require.domain-truth-review.md
 
       # roadmap rules
       - briefs/practices/behavior.roadmap/rule.prefer.clear-deliverables.md

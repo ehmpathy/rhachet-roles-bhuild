@@ -104,8 +104,14 @@ bound: a discovery outside the wish's scope is flagged to the wisher, not force-
 </brief.say>
 
 <briefs.ref base="src/domain.roles/behaver/briefs/practices/">
+behavior.blueprint/rule.require.contract-surface-proof-in-blueprints.md
 behavior.blueprint/rule.require.criteria-satisfied.md
+behavior.blueprint/rule.require.customer-statement-before-money-flow.md
+behavior.blueprint/rule.require.deal-sentence-before-mechanism.demo=six-questions-one-sentence.md
+behavior.blueprint/rule.require.deal-sentence-before-mechanism.md
 behavior.blueprint/rule.require.determinism-declared.md
+behavior.blueprint/rule.require.domain-truth-review.md
+behavior.blueprint/rule.require.facts-table-in-blueprints.md
 behavior.blueprint/rule.require.test-coverage-specified.md
 behavior.blueprint/rule.require.test-patterns-specified.md
 behavior.criteria/define.behavior-thoughtroute-hierarchy.md
@@ -123,6 +129,7 @@ behavior.roadmap/rule.prefer.dependency-order.md
 behavior.verification/rule.require.contract-snapshot-exhaustiveness.md
 behavior.verification/rule.require.external-contract-integration-tests.md
 behavior.vision/rule.require.experience-catalog-evolution.reason.md
+behavior.vision/rule.require.requirements-trace-to-a-stated-source.md
 behavior.wish/rule.prefer.bounded-scope.md
 behavior.wish/rule.prefer.clear-desires.md
 </briefs.ref>
@@ -178,8 +185,14 @@ exports[`roleArtifacts given: [case5] each declared boot, against the budget it 
 <brief.say path="src/domain.roles/behaver/briefs/practices/behavior.vision/rule.require.experience-catalog-evolution.md">
 </brief.say>
 <briefs.ref base="src/domain.roles/behaver/briefs/practices/">
+behavior.blueprint/rule.require.contract-surface-proof-in-blueprints.md
 behavior.blueprint/rule.require.criteria-satisfied.md
+behavior.blueprint/rule.require.customer-statement-before-money-flow.md
+behavior.blueprint/rule.require.deal-sentence-before-mechanism.demo=six-questions-one-sentence.md
+behavior.blueprint/rule.require.deal-sentence-before-mechanism.md
 behavior.blueprint/rule.require.determinism-declared.md
+behavior.blueprint/rule.require.domain-truth-review.md
+behavior.blueprint/rule.require.facts-table-in-blueprints.md
 behavior.blueprint/rule.require.test-coverage-specified.md
 behavior.blueprint/rule.require.test-patterns-specified.md
 behavior.criteria/define.behavior-thoughtroute-hierarchy.md
@@ -197,6 +210,7 @@ behavior.roadmap/rule.prefer.dependency-order.md
 behavior.verification/rule.require.contract-snapshot-exhaustiveness.md
 behavior.verification/rule.require.external-contract-integration-tests.md
 behavior.vision/rule.require.experience-catalog-evolution.reason.md
+behavior.vision/rule.require.requirements-trace-to-a-stated-source.md
 behavior.wish/rule.prefer.bounded-scope.md
 behavior.wish/rule.prefer.clear-desires.md
 </briefs.ref>
@@ -1513,6 +1527,85 @@ exports[`roleArtifacts given: [case5] each declared boot, against the budget it 
 </brief.say>
 <brief.say path="src/domain.roles/supervisor/briefs/tools/surgoal.polish-the-supervisor-and-prioritizer-tools.md.min">
 </brief.say>"
+`;
+
+exports[`roleArtifacts given: [case5] each declared boot, against the budget it declares when: [t2] each declared boot is booted at the linked layout then: the behaver linked manifest reads as reviewed 1`] = `
+"<readme path=".agent/repo=bhuild/role=behaver/readme.md">
+</readme>
+<brief.say path=".agent/repo=bhuild/role=behaver/briefs/practices/behavior.verification/philosophy.verification-strictness.md.min">
+</brief.say>
+<brief.say path=".agent/repo=bhuild/role=behaver/briefs/practices/behavior.vision/rule.require.experience-catalog-evolution.md">
+</brief.say>
+<briefs.ref base=".agent/repo=bhuild/role=behaver/briefs/practices/">
+behavior.blueprint/rule.require.contract-surface-proof-in-blueprints.md
+behavior.blueprint/rule.require.criteria-satisfied.md
+behavior.blueprint/rule.require.customer-statement-before-money-flow.md
+behavior.blueprint/rule.require.deal-sentence-before-mechanism.demo=six-questions-one-sentence.md
+behavior.blueprint/rule.require.deal-sentence-before-mechanism.md
+behavior.blueprint/rule.require.determinism-declared.md
+behavior.blueprint/rule.require.domain-truth-review.md
+behavior.blueprint/rule.require.facts-table-in-blueprints.md
+behavior.blueprint/rule.require.test-coverage-specified.md
+behavior.blueprint/rule.require.test-patterns-specified.md
+behavior.criteria/define.behavior-thoughtroute-hierarchy.md
+behavior.criteria/define.criteria-blackbox-vs-blueprint.md
+behavior.criteria/define.criteria-blackbox.md
+behavior.criteria/define.criteria-blueprint.md
+behavior.criteria/rule.prefer.dependency-order.md
+behavior.criteria/rule.prefer.depth-groups.md
+behavior.criteria/rule.prefer.usecase-groups.md
+behavior.criteria/rule.require.bdd-format.md
+behavior.criteria/rule.require.blackbox-no-implementation.md
+behavior.criteria/rule.require.blueprint-contract-layer-only.md
+behavior.roadmap/rule.prefer.clear-deliverables.md
+behavior.roadmap/rule.prefer.dependency-order.md
+behavior.verification/rule.require.contract-snapshot-exhaustiveness.md
+behavior.verification/rule.require.external-contract-integration-tests.md
+behavior.vision/rule.require.experience-catalog-evolution.reason.md
+behavior.vision/rule.require.requirements-trace-to-a-stated-source.md
+behavior.wish/rule.prefer.bounded-scope.md
+behavior.wish/rule.prefer.clear-desires.md
+</briefs.ref>
+<also>
+  <briefs.ref base=".agent/repo=bhuild/role=behaver/briefs/">
+  define.behaver-ergonomist-relationship.md
+  practices/behavior.execution/architect/rule.forbid.ambiguous-terms.md
+  practices/behavior.execution/architect/rule.forbid.behavior-hazards.md
+  practices/behavior.execution/architect/rule.forbid.friction-hazards.md
+  practices/behavior.execution/architect/rule.forbid.maintenance-hazards.md
+  practices/behavior.execution/architect/rule.forbid.scope-leaks.md
+  practices/behavior.execution/architect/rule.prefer.decomposable-architecture.md
+  practices/behavior.execution/architect/rule.require.behavior-intent-coverage.md
+  practices/behavior.execution/ergonomist/rule.forbid.snapshot-visual-blemishes.md
+  practices/behavior.execution/ergonomist/rule.require.acceptance-journey-coverage.md
+  practices/behavior.verification/rule.forbid.test-intent-violations.md
+  practices/behavior.vision/define.experience._.axis=care.path=criti-vs-alter._.demo.boundary=shoetie-on-carbumper-at-75mph.md
+  practices/behavior.vision/define.experience._.axis=care.path=criti-vs-alter._.demo.catalog=freq-x-cost.md
+  practices/behavior.vision/define.experience._.axis=care.path=criti-vs-alter.md
+  practices/behavior.vision/define.experience._.axis=feel.path=happy-vs-sharp.md
+  practices/behavior.vision/define.experience._.demo.surf-school.md
+  practices/behavior.vision/define.experience._.metric=boundary-density.md
+  practices/behavior.vision/define.experience.md
+  practices/behavior.vision/howto.experience.decompose.md
+  practices/behavior.vision/howto.experience.demonstrate.md
+  practices/behavior.vision/howto.experience.enumerate.md
+  practices/behavior.vision/rule.forbid.vision-without-rendered-stdout.md
+  practices/behavior.vision/rule.require.dimensional-decomposition.md
+  practices/behavior.vision/rule.require.experience-coverage.md
+  practices/behavior.vision/rule.require.vision-renders-stdout.md
+  </briefs.ref>
+  <skills.ref base=".agent/repo=bhuild/role=behaver/skills/">
+  bind.behavior.sh
+  feedback.give.sh
+  feedback.take.get.sh
+  feedback.take.set.sh
+  give.feedback.sh
+  init.behavior.sh
+  reflect.on.reviews.self.sh
+  review.behavior.sh
+  review.deliverable.sh
+  </skills.ref>
+</also>"
 `;
 
 exports[`roleArtifacts given: [case5] each declared boot, against the budget it declares when: [t3] a linked copy is forced over its budget then: the halt reads as a human meets it 1`] = `
