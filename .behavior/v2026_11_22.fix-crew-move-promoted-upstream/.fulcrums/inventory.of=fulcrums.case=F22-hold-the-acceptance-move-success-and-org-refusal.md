@@ -30,4 +30,4 @@ clean: one fixture crew tree plus a registered loopback grove in the acceptance 
 
 ## .verdict
 
-open, for the director.
+settled by the driver, under the director's delegation: hold both. the rework adds a fixture crew tree and a loopback grove to the acceptance scene: additive, no teardown, and no credential or prod write, so it does not go up. the gap is named in the yield, and the integration suite proves both critipaths (move case1 and case6 paths; case9 for the org refusal).

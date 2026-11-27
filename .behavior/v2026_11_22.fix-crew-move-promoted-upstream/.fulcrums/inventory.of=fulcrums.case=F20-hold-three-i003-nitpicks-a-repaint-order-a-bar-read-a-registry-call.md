@@ -30,4 +30,8 @@ clean: each is local. the tail line is one edit; a summary-first refresh is a re
 
 ## .verdict
 
-open, for the director.
+settled by the driver, under the director's delegation: hold all three. each rework is a local edit plus a resnap, with no credential and no prod write, so none goes up.
+
+- the tail line: held; a crew bar-read verb is a new contract, caught as `.dream/v2026_11_26.feat.crew-move-verify-reads-the-bar.md`
+- a real registry call: held; it would test npm, not the move, and would go red on a registry outage
+- the repaint order: held; summary-first changes every duct render, a contract older than this route. caught as `.dream/v2026_11_27.refactor.duct-refresh-summary-first.md`

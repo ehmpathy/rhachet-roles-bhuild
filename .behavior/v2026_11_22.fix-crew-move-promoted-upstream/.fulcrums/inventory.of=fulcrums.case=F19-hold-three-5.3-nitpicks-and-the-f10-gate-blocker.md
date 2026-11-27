@@ -32,4 +32,9 @@ clean: each is a local edit — restore one case arm, rename one tail line, add 
 
 ## .verdict
 
-open, for the director.
+settled by the driver, under the director's delegation: hold all four. the rework is clean, and none touches a credential or prod, so none goes up.
+
+- `.eco/*` exemption: held out of this route; the shipped gate is HEAD's, so the exemption ships intact. the hazard travels with the F10 upgrade and is named in the pr body for whoever lands it
+- `duct.bar.probe` in the tail: held; the only paved read of a bar. the dream `crew-move-verify-reads-the-bar` retires the line
+- registry install and roles link: held; the real link runs at acceptance, and a live registry cannot yield the scripted install errors the ladder is tested on
+- `crew.refresh` render: held; it prints only `duct.refresh`'s lines, which `ductwork.status` case2 snaps

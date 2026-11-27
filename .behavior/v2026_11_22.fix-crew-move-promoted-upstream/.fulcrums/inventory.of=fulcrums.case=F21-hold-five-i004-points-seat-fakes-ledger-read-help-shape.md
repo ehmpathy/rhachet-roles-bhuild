@@ -36,4 +36,11 @@ clean: each is local. a tree render of the read, a nearest-flag hint, or a short
 
 ## .verdict
 
-open, for the director.
+settled by the driver, under the director's delegation: hold all six. each rework is local (one verb's render, one hint, one help split, or one new harness); none is a teardown, and none touches a credential or prod, so none goes up.
+
+- the faked seat: held, named in the yield as a shipped gap; owed by `.dream/v2026_11_27.test.real-seat-boundaries-for-crew-move.md`
+- the probe and ledger alterpaths: held; clamped at the integration grain over a real tmux server and a real ledger file
+- the flat ledger read: held; a line-wise contract that `while read` callers rely on
+- the nearest-flag hint: held; a new feature across 50+ refusals
+- the long `--help`: held; the whole contract, usage first. its caps and leaks were fixed in round i005–i006
+- the doubled `🪨` header: held; rhachet's runner emits it, so the fix is upstream
