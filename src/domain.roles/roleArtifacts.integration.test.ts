@@ -1205,16 +1205,32 @@ describe('roleArtifacts', () => {
 
         // copy each role in as real files at the linked path, then boot them all at once
         const results = await Promise.all(
-          sceneBudget.declared.map((role) =>
-            getOneBootResult({
+          sceneBudget.declared.map(async (role) => ({
+            role,
+            ...(await getOneBootResult({
               role,
               render: 'linked',
               what: genRoleSeatCopy({ role, repoDir, layout: 'linked' }).what,
               cwd: repoDir,
-            }),
-          ),
+            })),
+          })),
         );
-        return { verdicts: results.map(({ verdict }) => verdict) };
+        const verdicts = results.map(({ verdict }) => verdict);
+        return {
+          verdicts,
+          // a halted boot prints no manifest; only the exit check grades it
+          manifests: asManifestsOfFitBoots({
+            verdicts,
+            manifests: Object.fromEntries(
+              results
+                .filter(({ role }) => role === 'behaver')
+                .map(({ role, stdout }) => [
+                  role,
+                  asBootManifest({ stdout, repoDir }),
+                ]),
+            ),
+          }),
+        };
       });
 
       then('🔴 every linked boot fits its budget (exit 0)', () => {
@@ -1228,6 +1244,17 @@ describe('roleArtifacts', () => {
             why: null,
           })),
         );
+      });
+
+      // the seat a consumer boots: every ref path under its `.agent/repo=bhuild/...` base,
+      // so a ref that renders at src but not where consumers boot shows in review
+      then('the behaver linked manifest reads as reviewed', () => {
+        // a halted boot has no manifest: fix the budget red above first
+        expect({ fit: 'behaver' in booted.manifests }).toEqual({ fit: true });
+        expect(booted.manifests.behaver).toContain(
+          'base=".agent/repo=bhuild/role=behaver/briefs/practices/"',
+        );
+        expect(booted.manifests.behaver).toMatchSnapshot();
       });
     });
 
