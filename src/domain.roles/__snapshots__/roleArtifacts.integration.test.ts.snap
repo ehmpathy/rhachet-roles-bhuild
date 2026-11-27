@@ -104,8 +104,14 @@ bound: a discovery outside the wish's scope is flagged to the wisher, not force-
 </brief.say>
 
 <briefs.ref base="src/domain.roles/behaver/briefs/practices/">
+behavior.blueprint/rule.require.contract-surface-proof-in-blueprints.md
 behavior.blueprint/rule.require.criteria-satisfied.md
+behavior.blueprint/rule.require.customer-statement-before-money-flow.md
+behavior.blueprint/rule.require.deal-sentence-before-mechanism.demo=six-questions-one-sentence.md
+behavior.blueprint/rule.require.deal-sentence-before-mechanism.md
 behavior.blueprint/rule.require.determinism-declared.md
+behavior.blueprint/rule.require.domain-truth-review.md
+behavior.blueprint/rule.require.facts-table-in-blueprints.md
 behavior.blueprint/rule.require.test-coverage-specified.md
 behavior.blueprint/rule.require.test-patterns-specified.md
 behavior.criteria/define.behavior-thoughtroute-hierarchy.md
@@ -123,6 +129,7 @@ behavior.roadmap/rule.prefer.dependency-order.md
 behavior.verification/rule.require.contract-snapshot-exhaustiveness.md
 behavior.verification/rule.require.external-contract-integration-tests.md
 behavior.vision/rule.require.experience-catalog-evolution.reason.md
+behavior.vision/rule.require.requirements-trace-to-a-stated-source.md
 behavior.wish/rule.prefer.bounded-scope.md
 behavior.wish/rule.prefer.clear-desires.md
 </briefs.ref>
@@ -178,8 +185,14 @@ exports[`roleArtifacts given: [case5] each declared boot, against the budget it 
 <brief.say path="src/domain.roles/behaver/briefs/practices/behavior.vision/rule.require.experience-catalog-evolution.md">
 </brief.say>
 <briefs.ref base="src/domain.roles/behaver/briefs/practices/">
+behavior.blueprint/rule.require.contract-surface-proof-in-blueprints.md
 behavior.blueprint/rule.require.criteria-satisfied.md
+behavior.blueprint/rule.require.customer-statement-before-money-flow.md
+behavior.blueprint/rule.require.deal-sentence-before-mechanism.demo=six-questions-one-sentence.md
+behavior.blueprint/rule.require.deal-sentence-before-mechanism.md
 behavior.blueprint/rule.require.determinism-declared.md
+behavior.blueprint/rule.require.domain-truth-review.md
+behavior.blueprint/rule.require.facts-table-in-blueprints.md
 behavior.blueprint/rule.require.test-coverage-specified.md
 behavior.blueprint/rule.require.test-patterns-specified.md
 behavior.criteria/define.behavior-thoughtroute-hierarchy.md
@@ -197,6 +210,7 @@ behavior.roadmap/rule.prefer.dependency-order.md
 behavior.verification/rule.require.contract-snapshot-exhaustiveness.md
 behavior.verification/rule.require.external-contract-integration-tests.md
 behavior.vision/rule.require.experience-catalog-evolution.reason.md
+behavior.vision/rule.require.requirements-trace-to-a-stated-source.md
 behavior.wish/rule.prefer.bounded-scope.md
 behavior.wish/rule.prefer.clear-desires.md
 </briefs.ref>
