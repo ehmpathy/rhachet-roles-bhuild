@@ -74,6 +74,28 @@ __duct_parse_uri() {
     return 2
   fi
 
+  # a duct name rides into remote tmux commands as text. every grove sink
+  # splices it inside single quotes ('$DUCT_SESSION'), where the one char that
+  # escapes is a single quote; a control char (a newline) would end the line.
+  # so exactly those are refused, once, here. a `#`, `~`, `%`, or `(`, each
+  # legal in a git branch, stays a reachable duct name. the clamp
+  # work.surface.layout forbids a grove sink that splices any other way.
+  # the host is an ssh argument, not text, and a lead `-` would read as an
+  # option, so it keeps a strict set. a glob, not a regex: bash 5 matches glob
+  # ranges in ascii (globasciiranges), so the set never rides the locale
+  if [[ "$DUCT_SESSION" == *"'"* || "$DUCT_SESSION" == *[[:cntrl:]]* ]]; then
+    # the refused value echoes with each control char shown as `?`: a raw tab or newline would split the refusal it causes
+    echo "✋ ConstraintError: duct: '${uri//[[:cntrl:]]/?}' holds a single quote or a control char (shown as ?), which a duct name may not" >&2
+    echo "   └─ fix: name the duct by its tree and role — duct://<grove>/<tree>/<role>" >&2
+    return 2
+  fi
+  if [[ "$DUCT_HOST" == -* || "$DUCT_HOST" == *[!A-Za-z0-9._@:-]* ]]; then
+    echo "✋ ConstraintError: duct: '$uri' names a host a duct may not" >&2
+    echo "   ├─ allowed: letters, digits, and . _ @ : - (no lead -)" >&2
+    echo "   └─ fix: name the grove as rhx git.grove.list prints it — duct://<grove>/<tree>/<role>" >&2
+    return 2
+  fi
+
   # ── the two name forms, and why a duct needs both ──────────────────
   #
   # DUCT_NAME    = the duct's own name, as the URI spells it (dots kept).
@@ -264,7 +286,7 @@ __duct_probe_remote_session() {
   #         would report every unreachable grove as reachable. the code must
   #         be captured in the same clause that suppresses the exit.
   local code=0
-  DUCT_PROBE_STDERR=$(ssh -n -o ConnectTimeout=8 "$DUCT_HOST" "$(__duct_tmux_cmd)has-session -t '$DUCT_SESSION'" 2>&1 1>/dev/null) || code=$?
+  DUCT_PROBE_STDERR=$(ssh -n "${DUCT_SSH_BOUND[@]}" "$DUCT_HOST" "$(__duct_tmux_cmd)has-session -t '$DUCT_SESSION'" 2>&1 1>/dev/null) || code=$?
   [[ $code -eq 255 ]] && return 255
   [[ $code -ne 0 ]] && return 1
   return 0

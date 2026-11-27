@@ -89,10 +89,20 @@ const SSHCFG_HETZNER_CONVERGED = [
 ].join('\n');
 /** .what = the vision's case=1 shape: name only, so the alias equals its host */
 const ROW_HETZNER_SAMENAME = { name: 'grove-sandpine-hetzner-v20261023' };
+/**
+ * .what = the user ssh falls back to where no alias sets one, pinned in the config
+ * .why  = with no `User`, ssh dials as the login of the box that runs the suite. on a
+ *         box whose login is camper that matches the row, and the alias reads as
+ *         converged; so each case names the fallback it means, never inherits it
+ */
+const sshcfgOfLocalUser = (input: { user: string }) =>
+  ['Host *', `  User ${input.user}`, ''].join('\n');
+const SSHCFG_LOCAL_USER_NOT_CAMPER = sshcfgOfLocalUser({ user: 'bert' });
 const SSHCFG_HETZNER_HOSTNAME_ONLY = [
   'Host grove-sandpine-hetzner-v20261022',
   '  HostName grove-sandpine-hetzner-v20261022-1',
   '',
+  SSHCFG_LOCAL_USER_NOT_CAMPER,
 ].join('\n');
 const ROW_EC2_TAILNET = {
   name: 'grove-sandpine-v20261101',
@@ -337,6 +347,7 @@ describe('grovework', () => {
           runGrovework({
             forest: scene.forest,
             body: '__grove_unreached_cure grove-sandpine-hetzner-v20261022',
+            sshcfg: SSHCFG_LOCAL_USER_NOT_CAMPER,
           }),
         );
 
@@ -358,6 +369,14 @@ describe('grovework', () => {
           runGrovework({
             forest: scene.forest,
             body: '__grove_unreached_cure grove-sandpine-hetzner-v20261023',
+            sshcfg: SSHCFG_LOCAL_USER_NOT_CAMPER,
+          }),
+        );
+        const runAsCamper = useBeforeAll(async () =>
+          runGrovework({
+            forest: scene.forest,
+            body: '__grove_unreached_cure grove-sandpine-hetzner-v20261023',
+            sshcfg: sshcfgOfLocalUser({ user: 'camper' }),
           }),
         );
 
@@ -366,6 +385,15 @@ describe('grovework', () => {
           () => {
             expect(run.stdout.trim()).toEqual(
               'write its ssh alias first — rhx git.grove.wake grove-sandpine-hetzner-v20261023 (power none: it touches no aws), then retry',
+            );
+          },
+        );
+
+        then(
+          'on a box whose own login is camper, ssh defaults already match, so the cure is the tailnet',
+          () => {
+            expect(runAsCamper.stdout.trim()).toEqual(
+              'check the tailnet — tailscale status (is this machine a peer?), then tailscale ping grove-sandpine-hetzner-v20261023',
             );
           },
         );

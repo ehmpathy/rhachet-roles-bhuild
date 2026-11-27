@@ -24,8 +24,9 @@
  */
 import { spawnSync } from 'child_process';
 import { copyFileSync, readdirSync, readFileSync } from 'fs';
+import { MalfunctionError } from 'helpful-errors';
 import { basename, dirname, join } from 'path';
-import { given, then, useBeforeAll, when } from 'test-fns';
+import { getError, given, then, useBeforeAll, when } from 'test-fns';
 
 import { getAllFilesRecursive } from './.test/getAllFilesRecursive';
 import { getShellLibParts } from './.test/getShellLibWhole';
@@ -36,10 +37,61 @@ const DIR_ROLES = __dirname;
 /** .what = the measured count of libs cut into parts, as a RATCHET floor */
 const QUANT_LIBS_WITH_PARTS = 3;
 
+/**
+ * .what = the lines of a shell text that the shell would PARSE, heredoc bodies
+ *         dropped
+ * .why  = a heredoc body is text the file emits, never code it defines. a
+ *         procedure shipped to a remote host (ductwork.status's bar probe)
+ *         carries its own `want() {`, and a line read would claim the part
+ *         defines it
+ */
+const getShellLinesParsed = (input: { text: string }): string[] => {
+  const parsed = input.text
+    .split('\n')
+    .reduce<{ lines: string[]; tag: string | null }>(
+      (acc, line) => {
+        if (acc.tag !== null)
+          return line.trim() === acc.tag ? { ...acc, tag: null } : acc;
+        return {
+          lines: [...acc.lines, line],
+          tag: getShellHeredocTag({ line }),
+        };
+      },
+      { lines: [], tag: null },
+    );
+
+  // an opener whose tag never closes drops every later line, so the set clamps would pass vacuously
+  if (parsed.tag !== null)
+    throw new MalfunctionError(
+      'a heredoc opener never closed, so the shell reader cannot tell code from text',
+      {
+        tag: parsed.tag,
+        linesKept: parsed.lines.length,
+        hint: 'a `<<` the reader took for an opener is not one; teach getShellHeredocTag to skip it',
+      },
+    );
+  return parsed.lines;
+};
+
+/**
+ * .what = the tag a line's heredoc opener names, or null
+ * .why  = a `<<<` redirect and an arithmetic shift (`$((1 << n))`) carry `<<`
+ *         too; read as openers, they drop every line after them until a match
+ *         that never comes, and the parts' functions vanish from the set
+ */
+const getShellHeredocTag = (input: { line: string }): string | null => {
+  const opener =
+    /(^|[\s|;&(])<<(?!<)-?\s*['"]?([A-Za-z_][A-Za-z0-9_]*)['"]?/.exec(
+      input.line,
+    );
+  if (!opener) return null;
+  const isArithmetic = input.line.slice(0, opener.index).includes('((');
+  return isArithmetic ? null : (opener[2] ?? null);
+};
+
 /** .what = every function a shell text DEFINES, by name, in file order */
 const getAllShellFnNames = (input: { text: string }): string[] =>
-  input.text
-    .split('\n')
+  getShellLinesParsed({ text: input.text })
     .map((line) => /^([A-Za-z_][A-Za-z0-9_.:-]*)\(\) *\{/.exec(line)?.[1])
     .filter((name): name is string => !!name);
 
@@ -216,4 +268,49 @@ describe('shellLibParts', () => {
       });
     });
   });
+
+  given(
+    '[case3] a shell text with heredocs, `<<<` redirects, and shifts',
+    () => {
+      // the tooth for the parse reader every claim above leans on
+      const text = [
+        `alpha() { cat <<-'EOF'`,
+        `  want() { :; }`,
+        `EOF`,
+        `}`,
+        `beta() { read -r x <<< word; }`,
+        `gamma() { echo $((1 << SHIFT)); }`,
+        `delta() { :; }`,
+      ].join('\n');
+
+      when('[t0] its functions are read', () => {
+        then(
+          'a heredoc body is skipped, and a `<<<` redirect or shift is not an opener',
+          () => {
+            expect(getAllShellFnNames({ text })).toEqual([
+              'alpha',
+              'beta',
+              'gamma',
+              'delta',
+            ]);
+          },
+        );
+      });
+
+      when('[t1] a text whose heredoc opener never closes is read', () => {
+        then(
+          'the reader fails loud, never a set clamp passed over naught',
+          async () => {
+            const error = await getError(async () =>
+              getAllShellFnNames({
+                text: `alpha() { cat <<EOF\n}\nbeta() { :; }`,
+              }),
+            );
+            expect(error).toBeInstanceOf(MalfunctionError);
+            expect(error.message).toContain('a heredoc opener never closed');
+          },
+        );
+      });
+    },
+  );
 });

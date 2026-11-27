@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`git.crew.move box unpacks given: [case1] a transcript carried to a tree that accepts it when: [t0] the unpack runs then: the render matches the snapshot 1`] = `
+"placed=1
+RC=0
+<root>/home/git/sandpine/_worktrees/svc-lessons.beav.feat-x/.agent/.actors/actor.x/brain/.claude/projects/<root-as-project-dir>-home-git-sandpine--worktrees-svc-lessons-beav-feat-x/c1.jsonl
+"
+`;
+
+exports[`git.crew.move box unpacks given: [case2] a transcript carried to a tree whose actor dir refuses writes when: [t0] the unpack runs then: the render matches the snapshot 1`] = `
+"RC=1
+💥 MalfunctionError: the transcript .agent/.actors/actor.x/brain/.claude/projects/-src-tree/c1.jsonl could not be placed at <root>/home/git/sandpine/_worktrees/svc-lessons.beav.feat-x/.agent/.actors/actor.x/brain/.claude/projects/<root-as-project-dir>-home-git-sandpine--worktrees-svc-lessons-beav-feat-x/c1.jsonl: mkdir: cannot create directory ‘<root>/home/git/sandpine/_worktrees/svc-lessons.beav.feat-x/.agent/.actors/actor.x’: Permission denied
+"
+`;
+
+exports[`git.crew.move box unpacks given: [case3] legacy transcripts carried to a legacy dir that refuses writes when: [t0] the unpack runs then: the render matches the snapshot 1`] = `
+"RC=1
+mkdir: cannot create directory ‘<root>/legacy-claude/projects/<root-as-project-dir>-home-git-sandpine--worktrees-svc-lessons-beav-feat-x’: Permission denied
+💥 MalfunctionError: the legacy transcripts could not be placed at <root>/legacy-claude/projects/<root-as-project-dir>-home-git-sandpine--worktrees-svc-lessons-beav-feat-x: cp: cannot create directory '<root>/legacy-claude/projects/<root-as-project-dir>-home-git-sandpine--worktrees-svc-lessons-beav-feat-x/': Permission denied
+"
+`;
+
+exports[`git.crew.move box unpacks given: [case4] a staged add carried to a tree when: [t0] the index accepts the restage then: the render matches the snapshot 1`] = `
+"RC=0
+CACHED=x.ts
+"
+`;
+
+exports[`git.crew.move box unpacks given: [case4] a staged add carried to a tree when: [t1] the index refuses the restage then: the render matches the snapshot 1`] = `
+"RC=1
+💥 MalfunctionError: the staged state of x.ts could not be restored (git rc 128): fatal: Unable to create '<root>/home/git/sandpine/_worktrees/svc-lessons.beav.feat-x/.git/index.lock': File exists.
+
+Another git process seems to be running in this repository, e.g.
+an editor opened by 'git commit'. Please make sure all processes
+are terminated then try again. If it still fails, a git process
+may have crashed in this repository earlier:
+remove the file manually to continue.
+"
+`;
+
+exports[`git.crew.move box unpacks given: [case5] the twin and adoption reads, over a git that cannot answer when: [t1] git cannot read the tree or the repo then: the render matches the snapshot 1`] = `
+"UNREAD_CLEAN_RC=1
+WINDOW_RC=1
+DEST_RC=1
+💥 MalfunctionError: git cannot read the head history of svc-lessons.beav.feat-x at <root>/home/git/sandpine/_worktrees/svc-lessons.beav.feat-x
+💥 MalfunctionError: git cannot check which head commits the destination holds, in <root>/home/git/sandpine/no-such-repo
+"
+`;
+
+exports[`git.crew.move box unpacks given: [case6] a settle whose patch-twin re-judge cannot run when: [t0] the settle runs with a set-aside reason then: the render matches the snapshot 1`] = `
+"RC=1
+ASIDE=
+💥 MalfunctionError: git cherry could not compare branch beav/feat-x at the destination (<sha>) with 1111111111111111111111111111111111111111
+"
+`;

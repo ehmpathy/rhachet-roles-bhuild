@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`movework.deps given: [case3] the box hints when: [t0] each end is hinted then: the hints match the snapshot 1`] = `
+"LOCAL=cd ~/git/*/_worktrees/svc-lessons.beav.feat-x && git status --short --branch
+CLOUD=rhx git.grove.send grove-b --what 'cd ~/git/*/_worktrees/svc-lessons.beav.feat-x && git status --short --branch'
+"
+`;

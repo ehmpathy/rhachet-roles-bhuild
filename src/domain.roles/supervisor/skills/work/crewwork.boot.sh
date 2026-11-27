@@ -12,6 +12,18 @@
 ######################################################################
 
 ######################################################################
+# .what = nest one duct.open render under the boot's `🔧 ducts` branch
+# .why  = duct.open prints a header line, then children that open with three
+#         spaces (`   ├─ was: …`, `   └─ fix: …`). a flat prefix gave each child
+#         a second branch glyph (`│  ├─    ├─ was:`). a child line steps one
+#         level deeper instead, so the block reads as one tree
+# stdin: duct.open's lines · stdout: the same lines, nested
+######################################################################
+__crew_nest_duct_lines() {
+  sed -e 's/^   /   │  │  /' -e 't' -e 's/^/   │  ├─ /'
+}
+
+######################################################################
 # crew.boot  — turn the WORK on
 ######################################################################
 
@@ -152,7 +164,7 @@ crew.boot() {
   for role in "${role_list[@]}"; do
     uri=$(__crew_duct_uri "$host" "$tree" "$role")
     cwd=$(__crew_role_cwd "$tree_dir" "$tree" "$role")
-    duct.open --on "$uri" --cwd "$cwd" | sed 's/^/   │  ├─ /'
+    duct.open --on "$uri" --cwd "$cwd" | __crew_nest_duct_lines
     rc=${PIPESTATUS[0]}
     if [[ $rc -ne 0 ]]; then
       echo "   │  └─ 💥 duct '$role' failed (rc=$rc)" >&2

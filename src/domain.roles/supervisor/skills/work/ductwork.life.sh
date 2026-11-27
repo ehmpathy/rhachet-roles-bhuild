@@ -27,24 +27,15 @@ duct.open() {
     return 2
   fi
 
-  # --cwd names the directory the session's first shell starts in.
+  # --cwd names the directory the session's first shell starts in (its .why
+  # sits beside the -d test below).
   #
-  # .why it must exist: the duct.open skill has documented --cwd as REQUIRED
-  #      since it was written, while this function rejected it as an unknown arg
-  #      and `tmux new-session` carried no -c at all. so every session started in
-  #      whatever directory the CALLER happened to sit in. after the 2026-08-09
-  #      reboot that put reclaimed mechanic shells in sandpine-notebook rather than in
-  #      their own worktrees, and a `claude --continue` run from there resumes
-  #      sandpine-notebook's session — the wrong conversation, in the wrong repo.
-  #
-  #      a documented arg that the code drops is worse than an absent one: the
-  #      caller reads the doc, passes the value, and is told naught.
   # `|| return` propagates a bad URI. without it the parser's error printed and
   # the verb carried on with an empty host+session — a failhide that would ssh
   # nowhere and blame the session (rule.forbid.failhide)
   __duct_parse_uri "$uri" || return 2
 
-  # ⚠️ the -d test is LOCAL, so it may only judge a LOCAL duct's cwd — and that
+  # 🟡 the -d test is LOCAL, so it may only judge a LOCAL duct's cwd — and that
   #    is WHY it sits BELOW the parse rather than above it.
   #
   # .why = a `duct://<grove>/…` uri names a session on the GROVE, and its --cwd
@@ -71,7 +62,7 @@ duct.open() {
   #      a documented arg that the code drops is worse than an absent one: the
   #      caller reads the doc, passes the value, and is told naught.
   #
-  # ⚠️ a REMOTE cwd is unchecked here on purpose, and the cost is bounded: tmux
+  # 🟡 a REMOTE cwd is unchecked here on purpose, and the cost is bounded: tmux
   #    on the grove refuses its own `-c` for an absent path, so the duct fails
   #    loud at the one boundary that CAN stat it. an unverifiable check is worse
   #    than an absent one — it refuses the true case and cannot catch the false.
@@ -97,7 +88,8 @@ duct.open() {
       return 1
     fi
     if [[ $probe -ne 0 ]]; then
-      if ! ssh -n "$DUCT_HOST" "$(__duct_tmux_cmd)new-session -d -s '$DUCT_SESSION'${cwd:+ -c '$cwd'}"; then
+      # the cwd is a path, so it rides `%q`-quoted: a `'` in it must stay a value on the grove
+      if ! ssh -n "${DUCT_SSH_BOUND[@]}" "$DUCT_HOST" "$(__duct_tmux_cmd)new-session -d -s '$DUCT_SESSION'${cwd:+ -c $(printf '%q' "$cwd")}"; then
         echo "💥 duct.open: reached '$DUCT_HOST', but could not create session '$uri'" >&2
         return 1
       fi
@@ -105,6 +97,11 @@ duct.open() {
     else
       echo "🔧 $uri found (cloud)"
     fi
+
+    # the bar: anchor the duct's home, then pin its bar to it — on found as
+    # well as created, since a resume onto an extant session takes `found`
+    __duct_home_anchor_birth "$cwd"
+    __duct_stamp_status_box ''
 
     # register host + duct
     __duct_register_host "$DUCT_HOST"
@@ -125,6 +122,10 @@ duct.open() {
     else
       echo "🔧 $uri found (local)"
     fi
+
+    # the bar: anchor the duct's home, then pin its bar to it (see the cloud arm)
+    __duct_home_anchor_birth "$cwd"
+    __duct_stamp_status_box ''
 
     # register duct with the EMPTY host — the canonical "this machine" form,
     # matching the uri's empty authority. this once wrote "localhost", which
@@ -187,7 +188,7 @@ duct.stop() {
       echo "• duct.stop: session '$uri' was already absent; row cleared"
       return 0
     fi
-    if ! ssh -n "$DUCT_HOST" "$(__duct_tmux_cmd)kill-session -t '$DUCT_SESSION'"; then
+    if ! ssh -n "${DUCT_SSH_BOUND[@]}" "$DUCT_HOST" "$(__duct_tmux_cmd)kill-session -t '$DUCT_SESSION'"; then
       echo "💥 duct.stop: failed to stop '$uri'" >&2
       return 1
     fi
@@ -290,12 +291,13 @@ duct.reboot() {
     # `|| true` + ConnectTimeout: bare, this dies under `set -e` like the probe
     # did. the value is optional here — the probe above already proved the box
     # reachable, so an empty answer is an honest "tmux told us nought"
-    pane_cwd=$(ssh -n -o ConnectTimeout=8 "$DUCT_HOST" "$(__duct_tmux_cmd)display-message -p -t '$DUCT_SESSION' '#{pane_current_path}'" 2>/dev/null) || true
+    pane_cwd=$(ssh -n "${DUCT_SSH_BOUND[@]}" "$DUCT_HOST" "$(__duct_tmux_cmd)display-message -p -t '$DUCT_SESSION' '#{pane_current_path}'" 2>/dev/null) || true
     if [[ -n "$pane_cwd" ]]; then
-      ssh -n "$DUCT_HOST" "$(__duct_tmux_cmd)respawn-pane -k -c '$pane_cwd' -t '$DUCT_SESSION'" || {
+      # the pane's path is a value the grove reported, so it rides `%q`-quoted back
+      ssh -n "${DUCT_SSH_BOUND[@]}" "$DUCT_HOST" "$(__duct_tmux_cmd)respawn-pane -k -c $(printf '%q' "$pane_cwd") -t '$DUCT_SESSION'" || {
         echo "💥 duct.reboot: respawn failed on '$uri'" >&2; return 1; }
     else
-      ssh -n "$DUCT_HOST" "$(__duct_tmux_cmd)respawn-pane -k -t '$DUCT_SESSION'" || {
+      ssh -n "${DUCT_SSH_BOUND[@]}" "$DUCT_HOST" "$(__duct_tmux_cmd)respawn-pane -k -t '$DUCT_SESSION'" || {
         echo "💥 duct.reboot: respawn failed on '$uri'" >&2; return 1; }
     fi
   else
@@ -315,6 +317,10 @@ duct.reboot() {
   fi
 
   echo "🔧 $uri rebooted"
+
+  # the pin survives respawn-pane (same pane, same options); the repaint is
+  # idempotent and covers a duct opened before the pin existed
+  __duct_stamp_status_box
   [[ -n "$pane_cwd" ]] && echo "   └─ fresh shell, cwd kept: $pane_cwd"
   return 0
 }
@@ -363,14 +369,22 @@ duct.reboot() {
 #   duct.refresh --on duct:///main/mechanic
 ######################################################################
 duct.refresh() {
-  local uri="" all=""
+  local uri="" all="" home=""
   while [[ $# -gt 0 ]]; do
     case "$1" in
       --on) uri="$2"; shift 2 ;;
       --all) all=1; shift ;;
+      --home) home="$2"; shift 2 ;;
       *) echo "✋ duct.refresh: unknown arg '$1'" >&2; return 2 ;;
     esac
   done
+
+  # a relative --home resolves against whichever dir later reads it, so it is refused
+  if [[ -n "$home" && "$home" != /* ]]; then
+    echo "✋ ConstraintError: duct.refresh --home '$home' is not an absolute path" >&2
+    echo "   └─ fix: name the tree dir in full, e.g. --home \"\$(pwd)/$home\"" >&2
+    return 2
+  fi
 
   ####################################################################
   # --all — the FLEET form
@@ -395,6 +409,11 @@ duct.refresh() {
     if [[ -n "$uri" ]]; then
       echo "✋ duct.refresh: --all and --on are exclusive" >&2
       echo "   └─ --all sweeps every registered duct; --on names one" >&2
+      return 2
+    fi
+    if [[ -n "$home" ]]; then
+      echo "✋ ConstraintError: duct.refresh --all and --home are exclusive" >&2
+      echo "   └─ --home names one duct's tree; pass it with --on" >&2
       return 2
     fi
     __duct_ensure_dirs
@@ -443,7 +462,7 @@ duct.refresh() {
     fi
     # `|| true` + ConnectTimeout — see the pane_cwd read above; same shape,
     # same optional value, same `set -e` hazard when left bare
-    ttys=$(ssh -n -o ConnectTimeout=8 "$DUCT_HOST" "$(__duct_tmux_cmd)list-clients -t '$DUCT_SESSION' -F '#{client_tty}'" 2>/dev/null) || true
+    ttys=$(ssh -n "${DUCT_SSH_BOUND[@]}" "$DUCT_HOST" "$(__duct_tmux_cmd)list-clients -t '$DUCT_SESSION' -F '#{client_tty}'" 2>/dev/null) || true
   else
     if ! __duct_tmux has-session -t "$DUCT_SESSION" 2>/dev/null; then
       echo "✋ duct.refresh: '$uri' is absent — there is no client to repaint" >&2
@@ -483,7 +502,7 @@ duct.refresh() {
   #        state converges to `latest` either way.
   local wsize="" wsize_rc=0
   if __duct_is_remote; then
-    wsize=$(ssh -n -o ConnectTimeout=8 "$DUCT_HOST" "$(__duct_tmux_cmd)show-options -t '$DUCT_SESSION' -v -w window-size" 2>&1) || wsize_rc=$?
+    wsize=$(ssh -n "${DUCT_SSH_BOUND[@]}" "$DUCT_HOST" "$(__duct_tmux_cmd)show-options -t '$DUCT_SESSION' -v -w window-size" 2>&1) || wsize_rc=$?
   else
     wsize=$(__duct_tmux show-options -t "$DUCT_SESSION" -v -w window-size 2>&1) || wsize_rc=$?
   fi
@@ -501,7 +520,7 @@ duct.refresh() {
   if [[ "$wsize" == "manual" ]]; then
     local geo_err="" geo_rc=0
     if __duct_is_remote; then
-      geo_err=$(ssh -n -o ConnectTimeout=8 "$DUCT_HOST" "$(__duct_tmux_cmd)set-option -t '$DUCT_SESSION' -w window-size latest" 2>&1) || geo_rc=$?
+      geo_err=$(ssh -n "${DUCT_SSH_BOUND[@]}" "$DUCT_HOST" "$(__duct_tmux_cmd)set-option -t '$DUCT_SESSION' -w window-size latest" 2>&1) || geo_rc=$?
     else
       geo_err=$(__duct_tmux set-option -t "$DUCT_SESSION" -w window-size latest 2>&1) || geo_rc=$?
     fi
@@ -517,6 +536,18 @@ duct.refresh() {
     echo "   │  └─ the window tracks its terminal again"
   fi
 
+  # 🏠 upsert the home anchor ABOVE the stamp, so the stamp reads it. only under
+  #    --home: with no derived home there is no authority to overrule the
+  #    anchor the duct was born with (see __duct_home_anchor_upsert)
+  if [[ -n "$home" ]]; then
+    __duct_home_anchor_upsert "$home" "$uri" || return 1
+  fi
+
+  # the status box is a fact about the PANE, client or not, so it is stamped
+  # above the headless return — a refresh is the cure for a duct opened before
+  # the pin existed (see ductwork.status.sh)
+  __duct_stamp_status_box
+
   # 🔴 the width is read ABOVE the headless return, and the WARN below it is
   #    gated on a client. the two are split on purpose:
   #
@@ -527,7 +558,7 @@ duct.refresh() {
   #        replace, so a warn there is a false alarm about a width nobody has
   local pane_w=""
   if __duct_is_remote; then
-    pane_w=$(ssh -n -o ConnectTimeout=8 "$DUCT_HOST" "$(__duct_tmux_cmd)list-panes -t '$DUCT_SESSION' -F '#{pane_width}'" 2>/dev/null | head -1) || true
+    pane_w=$(ssh -n "${DUCT_SSH_BOUND[@]}" "$DUCT_HOST" "$(__duct_tmux_cmd)list-panes -t '$DUCT_SESSION' -F '#{pane_width}'" 2>/dev/null | head -1) || true
   else
     pane_w=$(__duct_tmux list-panes -t "$DUCT_SESSION" -F '#{pane_width}' 2>/dev/null | head -1) || true
   fi
@@ -543,8 +574,10 @@ duct.refresh() {
   #      of dialect split). a read loop is the portable form
   while IFS= read -r tty; do
     [[ -n "$tty" ]] || continue
+    # a tty is a path the grove's own tmux printed; one that is not a plain path is never spliced back
+    [[ "$tty" == /dev/* && "$tty" != *[!A-Za-z0-9/_.-]* ]] || continue
     if __duct_is_remote; then
-      ssh -n "$DUCT_HOST" "$(__duct_tmux_cmd)refresh-client -t '$tty'" 2>/dev/null
+      ssh -n "${DUCT_SSH_BOUND[@]}" "$DUCT_HOST" "$(__duct_tmux_cmd)refresh-client -t '$tty'" 2>/dev/null
     else
       __duct_tmux refresh-client -t "$tty" 2>/dev/null
     fi

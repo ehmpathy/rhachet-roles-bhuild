@@ -558,7 +558,7 @@ describe('work.surface', () => {
           const held = readDuctwork();
           expect(held.includes('--raw) raw=1; shift ;;')).toEqual(true);
           expect(
-            /ssh -n "\$DUCT_HOST".*capture-pane -t '\$DUCT_SESSION' -p -e/.test(
+            /ssh -n "\$\{DUCT_SSH_BOUND\[@\]\}" "\$DUCT_HOST".*capture-pane -t '\$DUCT_SESSION' -p -e/.test(
               held,
             ),
           ).toEqual(true);

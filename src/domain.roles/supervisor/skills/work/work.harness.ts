@@ -30,7 +30,9 @@
  */
 import { execFileSync, spawnSync } from 'child_process';
 import {
+  chmodSync,
   existsSync,
+  lstatSync,
   mkdirSync,
   mkdtempSync,
   readdirSync,
@@ -90,6 +92,38 @@ const MS_DRIVER_TIMEOUT = 60_000;
 const isErrPathAbsent = (error: unknown): boolean =>
   (error as { code?: string } | null)?.code === 'ENOENT';
 
+/** .what = the error an unlink inside a read-only dir throws — and only that one */
+const isErrDirReadOnly = (error: unknown): boolean => {
+  const code = (error as { code?: string } | null)?.code;
+  return code === 'EACCES' || code === 'EPERM';
+};
+
+/** .what = give each dir under a path (the path too) its owner's write bit; never follows a link */
+const setDirsOwnerWritable = (input: { path: string }): void => {
+  if (!lstatSync(input.path).isDirectory()) return;
+  chmodSync(input.path, 0o700);
+  for (const entry of readdirSync(input.path))
+    setDirsOwnerWritable({ path: join(input.path, entry) });
+};
+
+/**
+ * .what = remove a test dir whole, a read-only dir inside it included
+ * .why  = a fixture that models a read-only install (a pnpm store, a `chmod 555`
+ *         dist) leaves dirs whose entries even their owner cannot unlink. one
+ *         such corpse in the shared tmp dir failed every suite that swept it.
+ *         the owner may lift its own write bit, so the cure is a chmod, then the
+ *         same rm; a second refusal still throws, so a true leak still surfaces
+ */
+const delDirWhole = (input: { path: string }): void => {
+  try {
+    rmSync(input.path, { recursive: true, force: true });
+  } catch (error) {
+    if (!isErrDirReadOnly(error)) throw error;
+    setDirsOwnerWritable({ path: input.path });
+    rmSync(input.path, { recursive: true, force: true });
+  }
+};
+
 /**
  * .what = the error a process that is gone, or never ours, throws
  * .why  = ESRCH says it exited. EPERM says it is alive under another uid, which
@@ -132,6 +166,37 @@ export interface RunResult {
   /** one entry per faked call, in the order they happened */
   calls: string[];
 }
+
+/**
+ * .what = the env names an operator's shell may export that steer a verb under test
+ * .note = a prefix list: a new knob in any of these families is cleared by construction
+ */
+const PREFIXES_OPERATOR_ENV = [
+  // git's own (GIT_DIR, GIT_AUTHOR_*, GIT_CONFIG_*) and the crew verbs' knobs (GIT_CREW_MOVE_ORGS)
+  'GIT_',
+  'CREWWORK_',
+  'DUCTWORK_',
+  'TERMWORK_',
+  'TMUX', // TMUX, TMUX_PANE, TMUX_TMPDIR: a run inside a seat would reach the live server
+];
+
+/**
+ * .what = process.env with every operator knob cleared
+ *
+ * .why  = a hermetic run reads only the env its test sets. a move suite run from
+ *         a seat inherits that seat's CREWWORK_DIR, its TMUX, and any
+ *         GIT_CREW_MOVE_ORGS the operator exports — each would steer the verb
+ *         under test, so a green run would prove the operator's box, not the code
+ *         (rule.require.hermetic-tests)
+ */
+export const getEnvClearOfOperator = (): Record<string, string> =>
+  Object.fromEntries(
+    Object.entries(process.env).filter(
+      (entry): entry is [string, string] =>
+        entry[1] !== undefined &&
+        !PREFIXES_OPERATOR_ENV.some((prefix) => entry[0].startsWith(prefix)),
+    ),
+  );
 
 /**
  * .what = write a bash driver to a dir, run it, and hand back its streams
@@ -1037,7 +1102,7 @@ export const delStaleTestDirs = (input?: {
 
     try {
       if (statSync(path).mtimeMs > cutoff) continue; // too fresh to be a corpse
-      rmSync(path, { recursive: true, force: true });
+      delDirWhole({ path });
       dropped.push(path);
     } catch (error) {
       // 🔴 the `statSync` is a real race: readdirSync listed the entry, and a

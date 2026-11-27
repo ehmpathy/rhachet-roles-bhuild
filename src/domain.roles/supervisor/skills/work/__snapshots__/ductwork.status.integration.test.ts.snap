@@ -1,0 +1,292 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`ductwork.status given: [case1] a duct opened in a crew worktree when: [t0] duct.open creates it then: the render matches the snapshot 1`] = `
+"🔧 duct:///testtree/mechanic created (local) in $TMP/svc-lessons.feat.book-a-lesson
+🏷️  status box — svc-lessons · feat/book-a-lesson (pinned to the duct)
+SHOWN= svc-lessons | feat/book-a-lesson 
+PIN= #{@duct_repo} 
+SHOWN= svc-lessons | feat/book-a-lesson 
+"
+`;
+
+exports[`ductwork.status given: [case1] a duct opened in a crew worktree when: [t1] a shell hook rewrites @repo and @branch then: the bars drawn match the snapshot 1`] = `
+[
+  " svc-lessons | feat/book-a-lesson ",
+  " svc-lessons | feat/book-a-lesson ",
+]
+`;
+
+exports[`ductwork.status given: [case2] a duct whose home anchor is corrected when: [t0] duct.refresh --home names a different tree then: the render matches the snapshot 1`] = `
+"refresh home
+   ├─ 🏠 home anchor CORRECTED — it named a dir that is not this seat's tree
+   │  ├─ was: $TMP/svc-lessons.feat.wrong
+   │  └─ now: $TMP/svc-lessons.feat.right
+   ├─ 🏷️  status box — svc-lessons · feat/right (pinned to the duct)
+🔧 duct:///testtree/mechanic — no client attached, so no repaint is owed (headless is normal, pane 80 cols)
+RC1=0
+SHOWN= svc-lessons | feat/right 
+"
+`;
+
+exports[`ductwork.status given: [case2] a duct whose home anchor is corrected when: [t2] a bare duct.refresh, then a found duct.open then: the bars drawn match the snapshot 1`] = `
+[
+  " svc-lessons | feat/right ",
+  " svc-lessons | feat/right ",
+  " svc-lessons | feat/right ",
+]
+`;
+
+exports[`ductwork.status given: [case3] a duct opened outside any repo when: [t0] duct.open creates it then: the render matches the snapshot 1`] = `
+"🔧 duct:///testtree/mechanic created (local) in $TMP
+🏷️  status box — (no repo) · (no branch) (pinned to the duct)
+"
+`;
+
+exports[`ductwork.status given: [case4] duct.refresh asked for --all and --home at once when: [t0] it runs then: the refusal render matches the snapshot 1`] = `
+"RC=2
+✋ ConstraintError: duct.refresh --all and --home are exclusive
+   └─ --home names one duct's tree; pass it with --on
+"
+`;
+
+exports[`ductwork.status given: [case5] a duct opened before the pin, then rebooted when: [t0] duct.reboot respawns it then: the render matches the snapshot 1`] = `
+"reboot
+🔧 duct:///testtree/mechanic rebooted
+   ├─ 🏷️  status box — svc-lessons · feat/book-a-lesson (pinned to the duct)
+   └─ fresh shell, cwd kept: $TMP/svc-lessons.feat.book-a-lesson
+RC=0
+SHOWN= svc-lessons | feat/book-a-lesson 
+"
+`;
+
+exports[`ductwork.status given: [case6] a stamp or an anchor that tmux cannot read or write when: [t7] the renders, whole then: they match the snapshot 1`] = `
+[
+  "🟡 status box NOT stamped — the probe could not read this grove (rc 3)",
+  "RC=0",
+  "🟡 status box NOT stamped — the probe found no session 'testtree/mechanic' on this grove",
+  "RC=0",
+  "🟡 status box NOT stamped — tmux refused the pane option (rc 1): no reason given",
+  "RC=0",
+  "💥 MalfunctionError: could not set the home anchor on 'duct:///testtree/mechanic' (rc 1)",
+  "   ├─ it reads: $ROOT/svc-lessons.feat.book-a-lesson",
+  "   ├─ tmux said: no such pane",
+  "   └─ fix: check the duct is live (rhx duct.read --on 'duct:///testtree/mechanic'), then run this again",
+  "RC=1",
+  "💥 MalfunctionError: could not read the home anchor on 'duct:///testtree/mechanic' (rc 1)",
+  "   └─ fix: check the duct is live (rhx duct.read --on 'duct:///testtree/mechanic'), then run this again",
+  "RC=1",
+  "🟡 home anchor NOT checked — tmux could not read it (rc 1); the bar reads the session's birth dir until \`duct.refresh --home\` sets it",
+  "🏷️  status box — svc-lessons · feat/book-a-lesson (pinned to the duct)",
+  "RC=0",
+  "🟡 home anchor NOT set — tmux refused it (rc 1): no such pane; the bar reads the session's birth dir until \`duct.refresh --home\` sets it",
+  "🏷️  status box — svc-lessons · feat/book-a-lesson (pinned to the duct)",
+  "RC=0",
+]
+`;
+
+exports[`ductwork.status given: [case7] duct.bar.probe audits a pinned bar, an unpinned one, and a dead server when: [t0] the probe runs over the private socket dir then: the render matches the snapshot 1`] = `
+"
+🦫 chew on it
+
+🪵 duct.bar.probe
+   ├─ servers: 2 ($SOCKDIR/tmux-<uid>)
+   ├─ svc-lessons-feat-x/foreman (server live)
+   │  ├─ shown: [  |  ]
+   │  ├─ status-left: session=[ #{@repo} ] global=[ #{@repo} ]
+   │  ├─ window-status-format (global): []
+   │  ├─ @duct_repo (resolved)=[] pane @repo=[]
+   │  └─ pinned to duct: no
+   ├─ testtree/mechanic (server live)
+   │  ├─ shown: [ svc-lessons | feat/book-a-lesson ]
+   │  ├─ status-left: session=[ #{@duct_repo} ] global=[ #{@repo} ]
+   │  ├─ window-status-format (global): []
+   │  ├─ @duct_repo (resolved)=[svc-lessons] pane @repo=[svc-lessons]
+   │  └─ pinned to duct: yes
+   ├─ 🟡 server stale did not answer: its sessions are unread (a stale socket, or a server that died)
+   └─ done: 2 sessions, 1 server unread
+RC=0
+"
+`;
+
+exports[`ductwork.status given: [case7] duct.bar.probe audits a pinned bar, an unpinned one, and a dead server when: [t1] the caller asks how to use the probe then: the help render matches the snapshot 1`] = `
+".what = read, per duct session on this box, what its tmux bar draws and
+        what it is wired to read
+
+.why  = "the bar shows the wrong label" has two causes that look alike:
+        the bar reads a pane option a shell hook overwrites, or the bar was
+        never pinned to the duct at all. this tells them apart in one call,
+        on every tmux server here (ducts sit one server per org)
+
+usage:
+  duct.bar.probe.sh                  # every tree/role session on every server
+  duct.bar.probe.sh --session <s>    # one session
+
+guarantee:
+  - reads only: list-sessions, display-message, show-options; never sets
+  - exit 0 = probed (findings are reported, never an error)
+  - exit 2 = bad args, or no tmux on this box
+RC=0
+"
+`;
+
+exports[`ductwork.status given: [case7] duct.bar.probe audits a pinned bar, an unpinned one, and a dead server when: [t2] the caller mistypes an arg then: the refusal render matches the snapshot 1`] = `
+"RC=2
+✋ ConstraintError: unknown arg '--sesion'
+   ├─ valid args: --session <tree>/<role> · --help
+   └─ fix: rhx duct.bar.probe --session <tree>/<role>   # or bare, for every session
+"
+`;
+
+exports[`ductwork.status given: [case7] duct.bar.probe audits a pinned bar, an unpinned one, and a dead server when: [t3] the caller names one session with --session then: both renders match the snapshot 1`] = `
+"🦫 chew on it
+
+🪵 duct.bar.probe --session testtree/mechanic
+   ├─ servers: 2 ($SOCKDIR/tmux-<uid>)
+   ├─ testtree/mechanic (server live)
+   │  ├─ shown: [ svc-lessons | feat/book-a-lesson ]
+   │  ├─ status-left: session=[ #{@duct_repo} ] global=[ #{@repo} ]
+   │  ├─ window-status-format (global): []
+   │  ├─ @duct_repo (resolved)=[svc-lessons] pane @repo=[svc-lessons]
+   │  └─ pinned to duct: yes
+   ├─ 🟡 server stale did not answer: its sessions are unread (a stale socket, or a server that died)
+   └─ done: 1 session, 1 server unread
+RC=0
+"
+`;
+
+exports[`ductwork.status given: [case7] duct.bar.probe audits a pinned bar, an unpinned one, and a dead server when: [t3] the caller names one session with --session then: both renders match the snapshot 2`] = `
+"🦫 chew on it
+
+🪵 duct.bar.probe --session svc-absent/mechanic
+   ├─ servers: 2 ($SOCKDIR/tmux-<uid>)
+   ├─ 🟡 server stale did not answer: its sessions are unread (a stale socket, or a server that died)
+   └─ done: 0 sessions, 1 server unread
+RC=0
+"
+`;
+
+exports[`ductwork.status given: [case8] a duct on a grove, stamped over ssh when: [t0] duct.refresh --home runs on the grove duct then: the render matches the snapshot 1`] = `
+"
+   ├─ 🏠 home anchor CORRECTED — it named a dir that is not this seat's tree
+   │  ├─ was: $ROOT/svc-lessons.feat.wrong
+   │  └─ now: $ROOT/svc-lessons.feat.right
+   ├─ 🏷️  status box — svc-lessons · feat/right (pinned to the duct)
+🔧 duct://grove-h/testtree/mechanic — no client attached, so no repaint is owed (headless is normal, pane 80 cols)
+RC=0
+SHOWN= svc-lessons | feat/right 
+PIN= #{@duct_repo} 
+HOME=$ROOT/svc-lessons.feat.right
+"
+`;
+
+exports[`ductwork.status given: [case9] a grove duct on a branch whose name holds shell syntax when: [t0] the stamp writes the branch on the grove then: the render matches the snapshot 1`] = `
+"refresh grove
+   ├─ 🏷️  status box — svc-lessons.feat.x · feat/x';touch\${IFS}$ROOT/pwned;' (pinned to the duct)
+🔧 duct://grove-h/testtree/mechanic — no client attached, so no repaint is owed (headless is normal, pane 80 cols)
+RC=0
+BRANCH= feat/x';touch\\\${IFS}$ROOT/pwned;' 
+CONTROL=x\\\${IFS}y
+PWNED=no
+"
+`;
+
+exports[`ductwork.status given: [case9] a grove duct on a branch whose name holds shell syntax when: [t1] a duct uri itself holds shell syntax then: the refusal render matches the snapshot 1`] = `
+"✋ ConstraintError: duct: 'duct://grove-h/x';touch ??$ROOT/pwned;'/mechanic' holds a single quote or a control char (shown as ?), which a duct name may not
+   └─ fix: name the duct by its tree and role — duct://<grove>/<tree>/<role>
+✋ ConstraintError: duct.read: --lines '5';touch ??$ROOT/pwned;'' is not a count
+   └─ fix: pass a whole number, e.g. --lines 60
+✋ ConstraintError: duct.send: --keys 'Enter;touch ??$ROOT/pwned' holds a char a tmux key name may not
+   ├─ allowed: letters, digits, space, and _ + -   (e.g. Enter, C-c, Escape, 2)
+   └─ fix: send text with --what; --keys is for named keys
+"
+`;
+
+exports[`ductwork.status given: [case9] a grove duct on a branch whose name holds shell syntax when: [t2] a grove duct is born in a dir whose name holds shell syntax then: the render matches the snapshot 1`] = `
+"open cwd
+RC=0
+PWNED_CWD=no
+BORN_IN=$ROOT/svc-lessons.feat.x
+BORN_IN=$ROOT/at';touch\\\${IFS}$ROOT/pwned-cwd;'
+"
+`;
+
+exports[`ductwork.status given: [case10] a duct split by a human, whose pane wandered off when: [t0] a bare duct.refresh runs on the wandered seat then: the render matches the snapshot 1`] = `
+"
+   ├─ 🏷️  status box — svc-lessons · feat/book-a-lesson (pinned to the duct)
+🔧 duct:///testtree/mechanic — no client attached, so no repaint is owed (headless is normal, pane 80 cols)
+RC=0
+SHOWN= svc-lessons | feat/book-a-lesson 
+SHOWN= svc-lessons | feat/book-a-lesson 
+"
+`;
+
+exports[`ductwork.status given: [case10] a duct split by a human, whose pane wandered off when: [t1] a human splits the window then: the bars drawn match the snapshot 1`] = `
+[
+  " svc-lessons | feat/book-a-lesson ",
+  " svc-lessons | feat/book-a-lesson ",
+]
+`;
+
+exports[`ductwork.status given: [case11] a duct whose home dir is gone when: [t0] a bare duct.refresh stamps it then: the render matches the snapshot 1`] = `
+"refresh
+   ├─ 🟡 status box NOT stamped — the duct's home $ROOT/svc-lessons.feat.dropped is gone on this grove
+      └─ fix: repaint it from the crew's own tree: rhx git.crew.refresh --tree testtree (or: rhx duct.refresh --on 'duct:///testtree/mechanic' --home <tree dir>)
+🔧 duct:///testtree/mechanic — no client attached, so no repaint is owed (headless is normal, pane 80 cols)
+RC=0
+SHOWN= svc-lessons | feat/dropped 
+"
+`;
+
+exports[`ductwork.status given: [case11] a duct whose home dir is gone when: [t1] the found duct is opened again with its live tree then: the render matches the snapshot 1`] = `
+"reopen
+🔧 duct:///testtree/mechanic found (local)
+🏠 home anchor CORRECTED — it named a dir that is gone
+   ├─ was: $ROOT/svc-lessons.feat.dropped
+   └─ now: $ROOT/svc-lessons.feat.book-a-lesson
+🏷️  status box — svc-lessons · feat/book-a-lesson (pinned to the duct)
+RC=0
+SHOWN= svc-lessons | feat/book-a-lesson 
+"
+`;
+
+exports[`ductwork.status given: [case11] a duct whose home dir is gone when: [t2] crew.boot nests both renders under its ducts branch then: the nested render matches the snapshot 1`] = `
+"nested
+   │  │  ├─ 🟡 status box NOT stamped — the duct's home $ROOT/svc-lessons.feat.dropped is gone on this grove
+   │  │     └─ fix: repaint it from the crew's own tree: rhx git.crew.refresh --tree testtree (or: rhx duct.refresh --on 'duct:///testtree/mechanic' --home <tree dir>)
+   │  ├─ 🔧 duct:///testtree/mechanic — no client attached, so no repaint is owed (headless is normal, pane 80 cols)
+   │  ├─ 🔧 duct:///testtree/mechanic found (local)
+   │  ├─ 🏠 home anchor CORRECTED — it named a dir that is gone
+   │  │  ├─ was: $ROOT/svc-lessons.feat.dropped
+   │  │  └─ now: $ROOT/svc-lessons.feat.book-a-lesson
+   │  ├─ 🏷️  status box — svc-lessons · feat/book-a-lesson (pinned to the duct)
+"
+`;
+
+exports[`ductwork.status given: [case12] a crew worktree whose branch is switched when: [t0] the duct opens on the worktree then: the bar drawn matches the snapshot 1`] = `" svc-lessons | feat/old "`;
+
+exports[`ductwork.status given: [case12] a crew worktree whose branch is switched when: [t1] the branch is switched, then the duct refreshed then: the bar drawn matches the snapshot 1`] = `" svc-lessons | feat/new "`;
+
+exports[`ductwork.status given: [case13] the stamp output a move counts when: [t1] a heal cure reboots a seat then: the heal miss render matches the snapshot 1`] = `
+"miss
+   ├─ 🟡 the seat bar is NOT stamped (the reboot said why); repaint it: rhx git.crew.refresh --tree svc-lessons.feat.x
+HEAL_RC=0
+"
+`;
+
+exports[`ductwork.status given: [case14] a home named by a relative path when: [t0] duct.open is born with a relative --cwd then: the open render matches the snapshot 1`] = `
+"open
+🔧 duct:///testtree/mechanic created (local) in svc-lessons.feat.book-a-lesson
+🟡 home anchor NOT set — --cwd 'svc-lessons.feat.book-a-lesson' is not an absolute path; the bar reads the session's birth dir until \`duct.refresh --home <absolute dir>\` sets it
+🏷️  status box — svc-lessons · feat/book-a-lesson (pinned to the duct)
+RC=0
+ANCHOR=
+"
+`;
+
+exports[`ductwork.status given: [case14] a home named by a relative path when: [t1] duct.refresh is handed a relative --home then: the refusal render matches the snapshot 1`] = `
+"refresh
+RC=2
+✋ ConstraintError: duct.refresh --home 'svc-lessons.feat.book-a-lesson' is not an absolute path
+   └─ fix: name the tree dir in full, e.g. --home "$(pwd)/svc-lessons.feat.book-a-lesson"
+"
+`;

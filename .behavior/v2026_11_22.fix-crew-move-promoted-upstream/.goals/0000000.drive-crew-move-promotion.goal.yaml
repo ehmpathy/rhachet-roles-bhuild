@@ -1,0 +1,15 @@
+slug: 'drive-crew-move-promotion'
+source: 'peer:human'
+status:
+  choice: 'inflight'
+  reason: '5.3 verification: every suite this route touched green at exit 0; self-reviews 5/8; halt owed on two absent test keys (handoff v1) and F18 merge hazards'
+updatedAt: '2026-11-27'
+why:
+  ask: 'hi, please drive'
+  purpose: 'the wish: git.crew.move promoted into bhuild with its suite, and the hetzner tmux bar shows seat states'
+  benefit: 'one paved crew-move verb for every grove; the hetzner operator sees seat state at a glance'
+what:
+  outcome: 'git.crew.move* on bhuild main, released; hetzner bar reads each seat state; the gap''s cause is named'
+how:
+  task: 'drive the route: vision, execution, verification'
+  gate: 'route passes every stone; release lands; bar verified on hetzner'

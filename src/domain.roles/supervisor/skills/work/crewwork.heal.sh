@@ -652,6 +652,34 @@ __crew_heal_one() {
   return $?
 }
 
+# .what = run crew.reboot for a heal cure, and say a seat bar it could not stamp
+# .why  = the reboot's own lines are noise on a heal render, so they stay off
+#         it. but its stamp verdict is the one fact a healed seat's bar rests
+#         on, so a miss is said in one line, never dropped. the count is the
+#         stamp's own (__duct_stamp_misses_count), never a copy of its words
+# args: $1 tree · $2 grove · $3 who · $4 the line prefix the caller's render uses
+# rc: crew.reboot's, so a failed reboot still fails the cure
+__crew_heal_reboot() {
+  local tree="$1" grove="$2" who="$3" pre="$4" cap="" rc=0 misses=""
+  cap="$(mktemp)" || cap=""
+  crew.reboot --tree "$tree" --grove "$grove" --who "$who" >"${cap:-/dev/null}" 2>&1 || rc=$?
+  if [[ $rc -ne 0 ]]; then
+    [[ -n "$cap" ]] && rm -f "$cap"
+    return $rc
+  fi
+  if [[ -n "$cap" ]]; then
+    misses="$(__duct_stamp_misses_count "$cap")" || misses=""
+    rm -f "$cap"
+  fi
+  if [[ -z "$misses" ]]; then
+    echo "${pre}🟡 the seat bar is unread — the reboot output could not be kept or read; to be sure of it: rhx git.crew.refresh --tree $tree"
+  fi
+  if [[ -n "$misses" && "$misses" -gt 0 ]]; then
+    echo "${pre}🟡 the seat bar is NOT stamped (the reboot said why); repaint it: rhx git.crew.refresh --tree $tree"
+  fi
+  return 0
+}
+
 # .what = reboot a husk's pane, then resume claude into it — the shared CURE
 #
 # .why  = the reboot+resume was inline in __crew_heal_one's crash-banner path
@@ -708,7 +736,7 @@ __crew_heal_hatch() {
     return 0
   fi
 
-  if ! crew.reboot --tree "$tree" --grove "$grove" --who "$who" >/dev/null 2>&1; then
+  if ! __crew_heal_reboot "$tree" "$grove" "$who" "         "; then
     echo "         💥 reboot failed — hatch aborted for $tree/$who" >&2
     return 1
   fi
@@ -782,7 +810,7 @@ __crew_heal_revive() {
     return 0
   fi
 
-  if ! crew.reboot --tree "$tree" --grove "$grove" --who "$who" >/dev/null 2>&1; then
+  if ! __crew_heal_reboot "$tree" "$grove" "$who" "   ├─ "; then
     echo "   └─ 💥 reboot failed — heal aborted for $tree/$who" >&2
     return 1
   fi
@@ -1333,7 +1361,9 @@ __crew_heal_wedge_one() {
   __crew_turn_stats "$p1" >/dev/null || return 4
 
   # a second read, a repaint between — the repaint proves the VIEW is intact,
-  # so a static frame is the program's silence, not a mangled pane.
+  # so a static frame is the program's silence, not a mangled pane. its output
+  # stays off the render on purpose: this is a diagnosis, never a seat raise,
+  # and a bar miss is said by the raise that cures it (__crew_heal_reboot)
   duct.refresh --on "$uri" >/dev/null 2>&1 || true
   sleep 2
   local raw2

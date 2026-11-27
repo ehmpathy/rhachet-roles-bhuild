@@ -8,8 +8,10 @@
 #
 # .holds = the classifiers that read a pane capture for its STATE —
 #          __duct_pane_command, __duct_pane_is_idle, __duct_pane_crash_badge,
-#          __duct_pane_is_husk, __duct_pane_is_picker_parked, and the send
-#          receipt test __duct_keys_are_not_a_receipt
+#          __duct_pane_is_husk, __duct_pane_is_picker_parked, the send
+#          receipt test __duct_keys_are_not_a_receipt, the liveness verdict
+#          __duct_pane_is_live_claude / __duct_uri_holds_live_claude, and the
+#          box readers __duct_pane_box_line / __duct_pane_box_holds_typed_text
 ######################################################################
 
 ######################################################################
@@ -26,7 +28,7 @@
 ######################################################################
 __duct_pane_command() {
   if __duct_is_remote; then
-    ssh -n "$DUCT_HOST" "$(__duct_tmux_cmd)display-message -p -t '$DUCT_SESSION' '#{pane_current_command}'" 2>/dev/null
+    ssh -n "${DUCT_SSH_BOUND[@]}" "$DUCT_HOST" "$(__duct_tmux_cmd)display-message -p -t '$DUCT_SESSION' '#{pane_current_command}'" 2>/dev/null
   else
     __duct_tmux display-message -p -t "$DUCT_SESSION" '#{pane_current_command}' 2>/dev/null
   fi
@@ -489,4 +491,142 @@ __duct_picker_has_no_rows() {
 __duct_keys_are_not_a_receipt() {
   echo "   └─ ⚠️ delivered, never CONSUMED — tmux placed the key; the TUI may have dropped it"
   echo "      read the box back before you call this answered (rule.require.verify-after-send)"
+}
+
+######################################################################
+# .what = does a LIVE claude hold this pane? one liveness verdict over a flat pane
+#
+# .why  = a busy seat can draw a ❯ box and no mode footer: a permission modal
+#         replaces the footer with `Esc to cancel`, and a long turn can push it
+#         out of a short window. a gate on the footer alone reads that seat dead
+#         (define.invariant.crew.husk.discriminator-parity)
+#
+# 🟡 live = not a husk (`__duct_pane_is_husk`: banner, crash badge, returned
+#    shell under a stale caret, parked picker) AND either proof of claude: its
+#    chrome, or a ❯ box. the husk test runs FIRST, so a stale caret above a
+#    returned shell never counts as a box
+#
+# in: $1 = the flattened pane text (escapes stripped). echoes naught; rc 0 = live
+######################################################################
+__duct_pane_is_live_claude() {
+  local flat="${1:-}"
+  __duct_pane_is_husk "$flat" && return 1
+  __duct_pane_has_claude_chrome "$flat" && return 0
+  printf '%s\n' "$flat" | grep -qa '❯'
+}
+
+######################################################################
+# .what = read a duct's pane (60 raw lines, sgr stripped) and judge it live
+#
+# ⚠️ a bare caret is weaker proof than claude's chrome: a shell prompt can draw
+#    `❯` too (starship's default). so a caret-only verdict also needs a
+#    foreground command that is no shell, else a send would type into a bare
+#    shell, which RUNS every word it is sent
+#
+# 🔴 an UNREAD pane is no verdict. the ONE failed read that is a verdict is
+#    duct.read's `is absent`: the grove answered, and tmux holds no such session.
+#    every other failure (ssh 255, the wall-time bound duct.read prints as
+#    `cannot reach`, a refused capture, a temp file not made) would read as
+#    `no live claude`: a husk claim from no evidence. so it retries (a loaded
+#    grove often answers the next call), then returns rc 3 with what was said
+#    in DUCT_LIVE_UNREAD_SAID
+#
+# in: $1 = duct uri. rc 0 = a live claude holds the pane; rc 1 = no (husk, bare
+#     shell, no duct); rc 3 = unread: no authoritative answer
+# env: DUCT_LIVE_READ_TRIES (default 2) = reads to try before rc 3
+######################################################################
+__duct_uri_holds_live_claude() {
+  local uri="${1:-}" raw="" plain held errfile tries="${DUCT_LIVE_READ_TRIES:-2}" n=0
+  DUCT_LIVE_UNREAD_SAID=""
+  errfile="$(mktemp)" || { DUCT_LIVE_UNREAD_SAID="mktemp failed"; return 3; }
+  while :; do
+    n=$((n + 1))
+    raw="$(duct.read --on "$uri" --lines 60 --raw 2>"$errfile")" && break
+    if grep -qa 'is absent' "$errfile"; then rm -f "$errfile"; return 1; fi
+    if (( n >= tries )); then
+      DUCT_LIVE_UNREAD_SAID="$(cat "$errfile")"
+      rm -f "$errfile"
+      return 3
+    fi
+  done
+  rm -f "$errfile"
+  [[ -n "$raw" ]] || return 1
+  plain="$(printf '%s' "$raw" | sed 's/\x1b\[[0-9;]*m//g')"
+  __duct_pane_is_live_claude "$plain" || return 1
+  __duct_pane_has_claude_chrome "$plain" && return 0
+  # the parse sets DUCT_*; local here, so a caller's own parsed duct is never overwritten.
+  # duct.read already parsed this uri, so a parse that fails now is no verdict: unread
+  local DUCT_HOST="" DUCT_SESSION="" DUCT_NAME=""
+  __duct_parse_uri "$uri" 2>/dev/null || { DUCT_LIVE_UNREAD_SAID="the uri '$uri' did not parse"; return 3; }
+  held="$(__duct_pane_command)"
+  ! __duct_pane_is_idle "$held"
+}
+
+######################################################################
+# .what = echo the RAW line of the input BOX: the last ❯ line that carries no
+#         background highlight. echoes naught when the window holds no box
+#
+# .why  = claude draws a message it already took (and a queued one) as a `❯` row
+#         under a `48;5;…` background. the box's own ❯ never carries one, so a
+#         reader that takes the LAST ❯ line would read a history row as the box
+#         whenever the box ❯ is absent from the window, and call a consumed
+#         message "typed"
+#
+# in: $1 = the RAW pane (sgr intact)
+######################################################################
+__duct_pane_box_line() {
+  printf '%s\n' "${1:-}" | grep -a '❯' \
+    | grep -av $'^[^❯]*\x1b\\[[0-9;]*48;[0-9;]*m[^❯]*❯' | tail -n 1
+}
+
+######################################################################
+# .what = rc 0 when the LAST ❯ box holds text a human TYPED (not a ghost, not
+#         the bare cursor): the first sgr after ❯ of 2 (dim) is a ghost, 7
+#         (reverse) the cursor
+#
+# .why  = a send into a typed box APPENDS to the human's words and submits both,
+#         and a move that carries a seat away from typed text strands them
+#
+# 🔴 a picker's selection caret is not a box. a frame that closes with `Enter to
+#    confirm` BELOW the last ❯ is a picker (`❯ 1. Stop and wait for limit to
+#    reset`), and its option text is claude's, never a human's
+#
+# in: $1 = the RAW pane (sgr intact). echoes naught; rc only
+######################################################################
+__duct_pane_box_holds_typed_text() {
+  local raw="${1:-}" line seg sgr plain
+  line="$(__duct_pane_box_line "$raw")"
+  [[ -n "$line" ]] || return 1
+  if printf '%s\n' "$raw" | sed 's/\x1b\[[0-9;]*m//g' \
+      | awk '/❯/ { below = "" ; next } { below = below "\n" $0 } END { print below }' \
+      | grep -aq 'Enter to confirm'; then
+    return 1
+  fi
+  seg="${line#*❯}"
+  sgr="$(printf '%s' "$seg" | sed -n 's/^[^\x1b]*\x1b\[\([0-9;]*\)m.*/\1/p' | head -n 1)"
+  plain="$(printf '%s' "$seg" | sed 's/\x1b\[[0-9;]*m//g; s/\xc2\xa0/ /g; s/^[[:space:]]*//; s/[[:space:]]*$//')"
+  [[ -n "$plain" ]] || return 1
+  [[ "$sgr" == "2" || "$sgr" == 2\;* || "$sgr" == "7" ]] && return 1
+  # the clone daemon's own stall notice is drawn into the box; a status line, never a human's words
+  __duct_pane_box_is_daemon_notice "$raw" && return 1
+  return 0
+}
+
+######################################################################
+# .what = rc 0 when the LAST ❯ box holds ONLY the clone daemon's stall notice
+#         (`clone daemon event loop stalled <N>ms`), and no other word
+#
+# .why  = the clone daemon draws that status line into claude's input box. a C-u
+#         does not clear it, so it is no human's text: the box is idle
+#
+# 🔴 anchored on both ends: words typed after the notice are a human's, and read typed
+#
+# in: $1 = the RAW pane (sgr intact). echoes naught; rc only
+######################################################################
+__duct_pane_box_is_daemon_notice() {
+  local line plain notice='^clone daemon event loop stalled [0-9]+ ?ms$'
+  line="$(__duct_pane_box_line "${1:-}")"
+  [[ -n "$line" ]] || return 1
+  plain="$(printf '%s' "${line#*❯}" | sed 's/\x1b\[[0-9;]*m//g; s/\xc2\xa0/ /g; s/^[[:space:]]*//; s/[[:space:]]*$//')"
+  [[ "$plain" =~ $notice ]]
 }

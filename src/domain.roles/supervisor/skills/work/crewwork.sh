@@ -264,22 +264,24 @@ __crew_tree_dir_on_grove() {
   #      remote question, the very defect this function exists to end. the
   #      remote form keeps `~` unexpanded so the GROVE's shell resolves it.
   #
-  #   2. the glob runs under `sh -c`, never the login shell. a grove's login
+  #   2. the glob runs under `bash -c`, never the login shell. a grove's login
   #      shell is zsh, and zsh ERRORS on an unmatched glob ("no matches
-  #      found") instead of leaving it literal — so a merely-absent tree
+  #      found") rather than leave it literal — so a merely-absent tree
   #      printed a shell error to stderr and looked like a transport fault.
-  #      sh leaves it literal, `ls -d` fails on it, and 2>/dev/null keeps the
+  #      bash leaves it literal, `ls -d` fails on it, and 2>/dev/null keeps the
   #      absent case quiet, which is what "absent" should sound like.
   #
-  #   3. `-n`. ssh reads stdin by default to forward it to the remote command,
-  #      so an ssh called from inside a `while read` loop EATS that loop's own
-  #      input and the loop ends one iteration in. this function is not in such
-  #      a loop today; the flag is here because whether it is safe would then
-  #      be a property of every CALLER, and a rule with N readers is a rule
-  #      that drifts. full account at __duct_list_host_sessions in ductwork.sh,
-  #      where the same defect cost a fleet report. clamped by work.surface.
+  #   3. the names are VALUES, never syntax. a git ref may hold `'` `;` `$` or a
+  #      backtick, and a name spliced raw into remote text runs as commands on
+  #      the grove. so each name is `%q`-quoted, and the procedure crosses as
+  #      base64 via __duct_bash_on_grove, which no remote shell re-parses. that
+  #      transport also carries `ssh -n`, so a caller in a `while read` loop
+  #      keeps its input (see __duct_list_host_sessions). the root alone stays
+  #      bare: its `~` and `*` are the expansion this lookup exists for, and it
+  #      is the operator's own config
   local root="${CREWWORK_GIT_ROOT_REMOTE:-~/git}"
-  found=$(ssh -n "$host" "sh -c \"ls -d $root/*/_worktrees/$dotted $root/*/_worktrees/$slug 2>/dev/null | head -1\"") || return 1
+  found=$(__duct_bash_on_grove "$host" \
+    "ls -d $root/*/_worktrees/$(printf '%q' "$dotted") $root/*/_worktrees/$(printf '%q' "$slug") 2>/dev/null | head -1") || return 1
   [[ -n "$found" ]] || return 1
   printf '%s' "$found"
 }

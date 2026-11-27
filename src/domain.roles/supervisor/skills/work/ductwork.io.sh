@@ -37,6 +37,14 @@ duct.send() {
     echo "✋ duct.send: --what and --keys are exclusive" >&2
     return 2
   fi
+  # --keys rides into the grove's tmux command line as bare words (one per key),
+  # so it may hold only the chars a tmux key name holds; aught else would run there
+  if [[ "$keys" == *[!A-Za-z0-9\ _+-]* ]]; then
+    echo "✋ ConstraintError: duct.send: --keys '${keys//[[:cntrl:]]/?}' holds a char a tmux key name may not" >&2
+    echo "   ├─ allowed: letters, digits, space, and _ + -   (e.g. Enter, C-c, Escape, 2)" >&2
+    echo "   └─ fix: send text with --what; --keys is for named keys" >&2
+    return 2
+  fi
 
   ####################################################################
   # the --keys arm.
@@ -64,7 +72,7 @@ duct.send() {
       # rc 255 is ssh's own failure: the grove was never asked. any other
       # nonzero is tmux's answer: the grove answered, and holds no such session
       local has_rc=0
-      ssh -n "$DUCT_HOST" "$(__duct_tmux_cmd)has-session -t '$DUCT_SESSION'" 2>/dev/null || has_rc=$?
+      ssh -n "${DUCT_SSH_BOUND[@]}" "$DUCT_HOST" "$(__duct_tmux_cmd)has-session -t '$DUCT_SESSION'" 2>/dev/null || has_rc=$?
       if [[ "$has_rc" -eq 255 ]]; then
         echo "✋ duct.send: cannot reach '$DUCT_HOST', so the session was never asked for" >&2
         echo "   fix: $(__grove_unreached_cure "$DUCT_HOST")" >&2
@@ -77,7 +85,7 @@ duct.send() {
         return 2
       fi
       # shellcheck disable=SC2086
-      ssh -n "$DUCT_HOST" "$(__duct_tmux_cmd)send-keys -t '$DUCT_SESSION' $keys"
+      ssh -n "${DUCT_SSH_BOUND[@]}" "$DUCT_HOST" "$(__duct_tmux_cmd)send-keys -t '$DUCT_SESSION' $keys"
       echo "🔧 $uri keys sent: $keys"
       __duct_keys_are_not_a_receipt
       return 0
@@ -271,7 +279,7 @@ duct.send() {
     #      since a single-quoted region in sh honors no other escape.
     ##################################################################
     local what_q="${what//\'/\'\\\'\'}"
-    if ! ssh -n "$DUCT_HOST" "$(__duct_tmux_cmd)send-keys -t '$DUCT_SESSION' -l '$what_q' && $(__duct_tmux_cmd)send-keys -t '$DUCT_SESSION' Enter"; then
+    if ! ssh -n "${DUCT_SSH_BOUND[@]}" "$DUCT_HOST" "$(__duct_tmux_cmd)send-keys -t '$DUCT_SESSION' -l '$what_q' && $(__duct_tmux_cmd)send-keys -t '$DUCT_SESSION' Enter"; then
       echo "💥 duct.send: failed to send to '$uri'" >&2
       return 1
     fi
@@ -334,6 +342,12 @@ duct.read() {
     echo "✋ duct.read: --on required" >&2
     return 2
   fi
+  # --lines rides into the grove's tmux command line, so it is a count and naught else
+  if [[ ! "$lines" =~ ^[0-9]+$ ]]; then
+    echo "✋ ConstraintError: duct.read: --lines '${lines//[[:cntrl:]]/?}' is not a count" >&2
+    echo "   └─ fix: pass a whole number, e.g. --lines 60" >&2
+    return 2
+  fi
 
   # .what = drop the blank rows tmux pads BELOW a pane's last content line
   #
@@ -392,7 +406,7 @@ duct.read() {
       return 2
     fi
     if [[ -n "$raw" ]]; then
-      ssh -n "$DUCT_HOST" "$(__duct_tmux_cmd)capture-pane -t '$DUCT_SESSION' -p -e -S '-$lines'" \
+      ssh -n "${DUCT_SSH_BOUND[@]}" "$DUCT_HOST" "$(__duct_tmux_cmd)capture-pane -t '$DUCT_SESSION' -p -e -S '-$lines'" \
         | __duct_strip_pane_pad | tail -n "$lines"
       return
     fi
@@ -403,7 +417,7 @@ duct.read() {
     #    escapes itself, so this read stays escape-free for a human — VERIFIED
     #    byte-equal to the old plain capture on a live 21-line claude pane,
     #    2026-09-15 (see the filter's header for what the ghost cost).
-    ssh -n "$DUCT_HOST" "$(__duct_tmux_cmd)capture-pane -t '$DUCT_SESSION' -p -e -S '-$lines'" \
+    ssh -n "${DUCT_SSH_BOUND[@]}" "$DUCT_HOST" "$(__duct_tmux_cmd)capture-pane -t '$DUCT_SESSION' -p -e -S '-$lines'" \
       | __duct_strip_pane_pad | tail -n "$lines" | __duct_mark_pane_ghosts
   else
     if ! __duct_tmux has-session -t "$DUCT_SESSION" 2>/dev/null; then

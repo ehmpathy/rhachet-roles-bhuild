@@ -1,0 +1,232 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`git.crew.ledger --tree --grove given: [case1] no row for the tree when: [t0] enrolled on a cloud grove with roles then: the render matches the snapshot 1`] = `
+"exit 0
+---
+🪵 crew.ledger enroll
+   └─ row added: svc-lessons.beav.feat-book-a-lesson is on cloud://grove-sandpine-v20260901 (roles: mechanic,foreman)
+
+---
+"
+`;
+
+exports[`git.crew.ledger --tree --grove given: [case1] no row for the tree when: [t1] enrolled on local under the default findsert then: the render matches the snapshot 1`] = `
+"exit 0
+---
+🪵 crew.ledger enroll
+   └─ row kept: svc-lessons.beav.feat-book-a-lesson is on cloud://grove-sandpine-v20260901 (findsert)
+
+---
+"
+`;
+
+exports[`git.crew.ledger --tree --grove given: [case1] no row for the tree when: [t2] enrolled on local under upsert, no roles then: the render matches the snapshot 1`] = `
+"exit 0
+---
+🪵 crew.ledger enroll
+   └─ row set: svc-lessons.beav.feat-book-a-lesson is on local, was cloud://grove-sandpine-v20260901 (roles: mechanic,foreman)
+
+---
+"
+`;
+
+exports[`git.crew.ledger --tree --grove given: [case2] bad input when: [t0] a --tree with no --grove then: the render matches the snapshot 1`] = `
+"exit 2
+---
+
+---
+✋ ConstraintError: --tree needs --grove: the ledger reads whole, or places one row
+   └─ fix: rhx git.crew.ledger --tree svc-lessons.beav.feat-book-a-lesson --grove local|cloud://<grove> [--idem upsert]
+"
+`;
+
+exports[`git.crew.ledger --tree --grove given: [case2] bad input when: [t1] a grove that is neither local nor cloud:// then: the render matches the snapshot 1`] = `
+"exit 2
+---
+
+---
+✋ ConstraintError: crew.ledger enroll: grove 'laptop' is neither local nor cloud://<grove>
+   └─ fix: --grove local, or --grove cloud://<grove> (rhx git.grove.list names them)
+"
+`;
+
+exports[`git.crew.ledger --tree --grove given: [case2] bad input when: [t2] an --idem that is neither findsert nor upsert then: the render matches the snapshot 1`] = `
+"exit 2
+---
+
+---
+✋ ConstraintError: crew.ledger enroll: --idem takes findsert | upsert (got 'create')
+   └─ fix: --idem findsert keeps an extant row; --idem upsert sets its grove
+"
+`;
+
+exports[`git.crew.ledger --tree --grove given: [case2] bad input when: [t3] a --tree with no value at all then: the render matches the snapshot 1`] = `
+"exit 2
+---
+
+---
+✋ ConstraintError: --tree takes a value, got none
+   └─ fix: run 'rhx git.crew.ledger --help' for the whole contract
+"
+`;
+
+exports[`git.crew.ledger --tree --grove given: [case2] bad input when: [t4] a --del with no value at all then: the render matches the snapshot 1`] = `
+"exit 2
+---
+
+---
+✋ ConstraintError: --del takes a value, got none
+   └─ fix: run 'rhx git.crew.ledger --help' for the whole contract
+"
+`;
+
+exports[`git.crew.ledger --tree --grove given: [case2] bad input when: [t5] a --grove whose value is the next flag then: the render matches the snapshot 1`] = `
+"exit 2
+---
+
+---
+✋ ConstraintError: --grove takes a value, got the next flag '--roles'
+   └─ fix: run 'rhx git.crew.ledger --help' for the whole contract
+"
+`;
+
+exports[`git.crew.ledger --tree --grove given: [case3] a flag the chosen verb would ignore when: [t0] --roles with no --grove then: the render matches the snapshot 1`] = `
+"exit 2
+---
+
+---
+✋ ConstraintError: --roles and --idem place a row, so they need --tree and --grove
+   └─ fix: rhx git.crew.ledger --tree <tree> --grove local|cloud://<grove> --roles mechanic --idem findsert
+"
+`;
+
+exports[`git.crew.ledger --tree --grove given: [case3] a flag the chosen verb would ignore when: [t1] --idem with no --grove then: the render matches the snapshot 1`] = `
+"exit 2
+---
+
+---
+✋ ConstraintError: --roles and --idem place a row, so they need --tree and --grove
+   └─ fix: rhx git.crew.ledger --tree <tree> --grove local|cloud://<grove> --idem upsert
+"
+`;
+
+exports[`git.crew.ledger --tree --grove given: [case3] a flag the chosen verb would ignore when: [t2] --del beside --grove then: the render matches the snapshot 1`] = `
+"exit 2
+---
+
+---
+✋ ConstraintError: --del takes no placement flag (got: --grove)
+   ├─ --del drops one row; --tree --grove places one. one act per call
+   └─ fix: rhx git.crew.ledger --del svc-lessons.beav.feat-book-a-lesson   # or place it: rhx git.crew.ledger --tree <tree> --grove <grove>
+"
+`;
+
+exports[`git.crew.ledger --tree --grove given: [case3] a flag the chosen verb would ignore when: [t3] --del beside --tree then: the render matches the snapshot 1`] = `
+"exit 2
+---
+
+---
+✋ ConstraintError: --del takes no placement flag (got: --tree)
+   ├─ --del drops one row; --tree --grove places one. one act per call
+   └─ fix: rhx git.crew.ledger --del svc-lessons.beav.feat-book-a-lesson   # or place it: rhx git.crew.ledger --tree <tree> --grove <grove>
+"
+`;
+
+exports[`git.crew.ledger --tree --grove given: [case3] a flag the chosen verb would ignore when: [t4] --backfill beside --tree and --grove then: the render matches the snapshot 1`] = `
+"exit 2
+---
+
+---
+✋ ConstraintError: --backfill takes no placement flag (got: --tree --grove)
+   └─ fix: rhx git.crew.ledger --backfill   # or place one row: rhx git.crew.ledger --tree <tree> --grove <grove>
+"
+`;
+
+exports[`git.crew.ledger --tree --grove given: [case4] the caller asks how to use it when: [t0] --help runs then: the help render matches the snapshot 1`] = `
+"exit 0
+---
+.what = the durable record of every tree a CREW was ever booted on
+
+.why  = "was a crew ever booted here?" had no answer, and three
+        sources were tried before this existed:
+
+          live tmux         answers "at work NOW" — a stopped crew
+                            vanishes, so it under-reports by design
+          duct registry     ERASED on stop. __duct_unregister_duct
+                            deletes the row AND rmdirs the parent, so
+                            the evidence is destroyed by the very act
+                            whose history we want to read
+          worktrees on disk answers "a TREE exists", never "a crew
+                            worked it" — measured 142 trees against
+                            ~14 that ever had ducts, so it invents
+                            ~128 crews that were never born
+
+        a crew's EXISTENCE and its LIVENESS have different lifetimes,
+        and only a ledger spans both. crew.boot writes it; crew.stop
+        does NOT remove it. that asymmetry is the whole point.
+
+.the boundary = this is the crew layer, and only the crew layer.
+        for every tree on the machine, crewed or not, run:
+          git tree status --repo @all
+
+usage:
+  rhx git.crew.ledger               every tree a crew was ever booted on
+  rhx git.crew.ledger --backfill    seed from live tmux + duct registry
+  rhx git.crew.ledger --del <tree>  drop one stale row, by hand — a
+                                     last-resort instrument; see crew.ledger
+                                     del in work/crewwork.sh for when it
+                                     applies (a felled grove crew's row,
+                                     which crew.fell cannot drop itself)
+  rhx git.crew.ledger --tree <tree> --grove local|cloud://<grove> [--roles a,b] [--idem findsert|upsert]
+                                   place one row: findsert (default) keeps an
+                                   extant row; upsert sets its grove. no --roles
+                                   keeps the row's roles (git.crew.move does this)
+
+.the backfill is INCOMPLETE, and that is not repairable
+        every crew booted AND stopped before this ledger existed is
+        gone — duct.stop deleted its row and no other artifact kept
+        it. the backfill recovers what is still registered and cannot
+        recover the rest, so a post-backfill ledger is complete only
+        for crews booted from here on (term=partial-audit).
+
+guarantee:
+  - list is read-only
+  - backfill is an upsert; a re-run adds no duplicate row
+  - del is idempotent — an absent row reports and exits 0, never an error
+  - --tree --grove is idempotent under either --idem; a --tree with no --grove exits 2
+  - keyed by the CANONICAL dotted tree name, so a tree registered
+    under both the dotted and tmux underscore form is ONE row
+  - exit 0 = ok, 1 = malfunction, 2 = constraint
+
+---
+"
+`;
+
+exports[`git.crew.ledger --tree --grove given: [case5] a bare read when: [t0] the ledger holds no row then: the render matches the snapshot 1`] = `
+"exit 0
+---
+
+---
+🦫 the ledger holds no row — no crew was booted here since it began
+   └─ seed it from live tmux + the duct registry: rhx git.crew.ledger --backfill
+"
+`;
+
+exports[`git.crew.ledger --tree --grove given: [case5] a bare read when: [t1] the ledger holds one row then: the populated render matches the snapshot 1`] = `
+"exit 0
+---
+svc-lessons.beav.feat-book-a-lesson  local
+
+---
+"
+`;
+
+exports[`git.crew.ledger --tree --grove given: [case5] a bare read when: [t2] the ledger holds two rows of unequal length then: the aligned render matches the snapshot 1`] = `
+"exit 0
+---
+svc-lessons.beav.feat-book-a-lesson  local
+svc-lessons.beav.fix-x               cloud://grove-sandpine-v20260901
+
+---
+"
+`;

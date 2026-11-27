@@ -533,7 +533,7 @@ describe('work.surface', () => {
       then('the site the defect was measured at carries the flag', () => {
         expect(
           readCodeWhole(join(DIR_WORK, 'ductwork.sh')).includes(
-            'ssh -n -o ConnectTimeout',
+            'out=$(ssh -n "${DUCT_SSH_BOUND[@]}" "$host" "$(__duct_tmux_cmd)list-sessions',
           ),
         ).toEqual(true);
       });
@@ -593,12 +593,30 @@ describe('work.surface', () => {
           );
         });
 
-        then('the glob runs under sh, not the login shell', () => {
+        then('the glob runs under bash, not the login shell', () => {
           // .why = a grove logs in to zsh, which ERRORS on an unmatched glob
           //        rather than leave it literal — so a merely-absent tree looked
-          //        like a transport fault. sh leaves it literal and `ls -d`
-          //        fails, so absent sounds like absent.
-          expect(readCrewwork().includes('sh -c \\"ls -d')).toEqual(true);
+          //        like a transport fault. bash leaves it literal and `ls -d`
+          //        fails, so absent sounds like absent. __duct_bash_on_grove
+          //        runs the procedure as `bash -c`, never in the login shell
+          expect(
+            readCrewwork().includes('found=$(__duct_bash_on_grove "$host"'),
+          ).toEqual(true);
+          expect(readCrewwork().includes('"ls -d $root/*/_worktrees/')).toEqual(
+            true,
+          );
+          // the helper itself must run bash on both arms, else the glob above falls back to the login shell
+          const readHost = readCodeWhole(join(DIR_WORK, 'ductwork.host.sh'));
+          expect(readHost.includes('bash -c "$proc" </dev/null')).toEqual(true);
+          expect(readHost.includes('bash -c \\"\\$p\\""')).toEqual(true);
+        });
+
+        then('each name rides as a %q-quoted value, never as syntax', () => {
+          // .why = a git ref may hold `'` `;` `$`; spliced raw, it runs on the grove (ductwork.status case9 [t4])
+          expect(
+            readCrewwork().includes(`$(printf '%q' "$dotted")`) &&
+              readCrewwork().includes(`$(printf '%q' "$slug")`),
+          ).toEqual(true);
         });
       });
 
