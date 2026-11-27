@@ -459,6 +459,11 @@ describe('ductwork.status', () => {
           body: [
             genRepoLine({ dir: repo, branch: 'feat/book-a-lesson' }),
             `duct.open --on '${URI}' --cwd '${repo}' >/dev/null`,
+            // the globals a ductwork box's tmux.conf sets, pinned here: else the render turns on the
+            // operator's own ~/.tmux.conf, or on tmux's version defaults (host, clock, window list)
+            `__duct_tmux set-option -g status-left ' #{@repo} '`,
+            `__duct_tmux set-option -g status-right ' #{@branch} '`,
+            `__duct_tmux set-option -g window-status-format ''`,
             // a session from before the pin: its bar reads the hook's option
             `__duct_tmux new-session -d -s '${UNPINNED}'`,
             `__duct_tmux set-option -t '${UNPINNED}' status-left ' #{@repo} '`,

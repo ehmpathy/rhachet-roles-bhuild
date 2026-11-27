@@ -349,7 +349,15 @@ describe('git.crew.move box unpacks', () => {
       });
 
       then('the render matches the snapshot', () => {
-        expect(scene.getMasked(scene.locked.out)).toMatchSnapshot();
+        // .why = the advice git prints after `File exists.` is the host git's, and its words change by version
+        expect(
+          scene
+            .getMasked(scene.locked.out)
+            .replace(
+              /(index\.lock': File exists\.)[\s\S]*$/,
+              '$1\n<git lock advice>\n',
+            ),
+        ).toMatchSnapshot();
       });
     });
   });

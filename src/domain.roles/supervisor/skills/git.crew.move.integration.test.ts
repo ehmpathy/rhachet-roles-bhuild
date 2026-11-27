@@ -583,11 +583,19 @@ const genScene = (input: {
       sshReal?: string;
     },
   ) => {
-    if (opts?.sshReal)
+    if (opts?.sshReal) {
       writeFileSync(
         join(dirForest, 'groves', `${opts.sshReal}.json`),
         JSON.stringify({ name: opts.sshReal }),
       );
+      // the wake's alias, written as a woken grove holds it: the row's login (camper) is pinned, so the
+      // cure does not turn on whether the local user happens to be camper (rule.require.hermetic-tests)
+      mkdirSync(join(dirHome, '.ssh'), { recursive: true });
+      writeFileSync(
+        join(dirHome, '.ssh', 'config'),
+        `Host ${opts.sshReal}\n  HostName ${opts.sshReal}\n  User camper\n  Port 22\n`,
+      );
+    }
     const pathLog = join(dirRoot, 'calls.log');
     // a fake npx: `npx rhachet roles link --repo R --role X` makes the link dir in the cwd, or fails when told to
     const dirBin = join(dirRoot, 'bin');

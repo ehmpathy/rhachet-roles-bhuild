@@ -2157,7 +2157,8 @@ __crew_move_apply_merge() {
     __crew_move_box_run "$__mv_from" __mvbox_pack "$tree" </dev/null > "$relay/dirty.tgz" || { echo "   │  └─ 💥 the pack failed" >&2; return 1; }
     rc=0; out="$(__crew_move_box_run "$__mv_to" __mvbox_merge_unpack "$tree" < "$relay/dirty.tgz")" || rc=$?
     if [[ $rc -eq 2 ]]; then
-      printf '%s\n' "$out" | awk -F'\t' '$1 == "R" && $2 == "conflict" { printf "   │  ├─ 💥 the destination holds %s with %s\n", $4, $5 }' >&2
+      # by path, in byte order: the box lists conflicts in its pack's order, which follows the filesystem
+      printf '%s\n' "$out" | awk -F'\t' '$1 == "R" && $2 == "conflict"' | LC_ALL=C sort -t$'\t' -k4,4 | awk -F'\t' '{ printf "   │  ├─ 💥 the destination holds %s with %s\n", $4, $5 }' >&2
       echo "   │  └─ 💥 the merge wrote naught: a source path would land over destination work. the ledger was NOT flipped; the destination is as it was" >&2
       return 2
     fi
