@@ -222,9 +222,10 @@ __poll_tree_facts_on_grove() {
   rscript='d=$(ls -d "$1"/*/_worktrees/"$2" "$1"/*/_worktrees/"$3" 2>/dev/null | head -1); [ -n "$d" ] || exit 9; b=$(git -C "$d" merge-base HEAD origin/main 2>/dev/null || git -C "$d" merge-base HEAD origin/master 2>/dev/null || echo ""); if [ -n "$b" ]; then c=$(git -C "$d" rev-list --count "$b"..HEAD 2>/dev/null || echo 0); else c="?"; fi; printf "%s\t%s\t%s\t%s\n" "$(git -C "$d" remote get-url origin 2>/dev/null)" "$(git -C "$d" rev-parse --abbrev-ref HEAD 2>/dev/null)" "$c" "$(git -C "$d" status --porcelain 2>/dev/null | head -40 | tr "\n" ";")"'
 
   # $root rides UNQUOTED so the grove's shell expands its `~`; the two slug
-  # forms ride quoted, since a tree name is data and a glob is not wanted there
+  # forms ride `%q`-quoted, since a tree name is data: inside the login shell's
+  # double quotes a `$(…)` in a git ref would run (ductwork.status case9 [t4])
   out=$(ssh -n -o BatchMode=yes -o ConnectTimeout=8 "$host" \
-          "sh -c '$rscript' sh $root \"$dotted\" \"$slug\"" 2>/dev/null) || return 1
+          "sh -c '$rscript' sh $root $(printf '%q' "$dotted") $(printf '%q' "$slug")" 2>/dev/null) || return 1
   [[ -n "$out" ]] || return 1
   printf '%s' "$out"
 }

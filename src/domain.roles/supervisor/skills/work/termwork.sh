@@ -1021,7 +1021,8 @@ __term_has_tmux_session() {
   local session="$1"
   local host="${2:-}"
   if [[ -n "$host" ]]; then
-    ssh -n "$host" "tmux has-session -t '$session'" 2>/dev/null
+    # the session is a value the grove's shell parses, so it rides `%q`-quoted
+    ssh -n "$host" "tmux has-session -t $(printf '%q' "$session")" 2>/dev/null
     return
   fi
   tmux has-session -t "$session" 2>/dev/null

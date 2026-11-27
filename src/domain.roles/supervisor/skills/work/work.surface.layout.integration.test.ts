@@ -534,6 +534,147 @@ describe('work.surface', () => {
    *      gone green over the other eight (term=clamp: a clamp's jurisdiction
    *      is its ASSERTION, never its prose).
    */
+  /**
+   * .what = every grove ssh sink splices only a vetted value
+   * .why  = a value spliced into the text a grove's shell parses runs there if
+   *         it can close its quote. rounds i005–i008 each found one more raw
+   *         splice by hand. this clamp enumerates the sinks — every ssh call at
+   *         command position, and every tmux-prefix line — so a new one fails
+   *         here rather than in a review. each vetted form names its own guard
+   */
+  given('[case20] every grove ssh sink splices only a vetted value', () => {
+    const VETTED: { form: RegExp; guard: string }[] = [
+      { form: /\$\(__duct_tmux_cmd\)/g, guard: 'the tmux prefix itself' },
+      {
+        form: /\$\(printf '%q' "\$[A-Za-z_][A-Za-z0-9_]*"\)/g,
+        guard: '%q-quoted at the splice',
+      },
+      { form: /\$\{cwd:\+/g, guard: 'the %q-quoted cwd it wraps' },
+      {
+        form: /'\$DUCT_SESSION'/g,
+        guard: '__duct_parse_uri refuses a quote or control char',
+      },
+      { form: /'\$what_q'/g, guard: "duct.send escapes each ' in what_q" },
+      { form: /'-\$lines'/g, guard: 'duct.read refuses a --lines not a count' },
+      {
+        form: / \$keys\b/g,
+        guard: 'duct.send refuses a --keys char no key name holds',
+      },
+      {
+        form: /'\$tty'/g,
+        guard: 'duct.refresh skips a tty that is not a plain /dev path',
+      },
+      { form: /"\$(DUCT_HOST|host)"/g, guard: 'an ssh arg, never grove text' },
+      {
+        form: /'\$b64'/g,
+        guard: 'base64 text, which holds no quote (the transport itself)',
+      },
+      {
+        form: /\$DUCT_RC_UNDECODED/g,
+        guard: 'a numeric constant (the transport itself)',
+      },
+      {
+        form: /\\\$(?:p\b|\()/g,
+        guard:
+          'the transport own escaped `$p` and `$(`: the grove expands them, no local value',
+      },
+      {
+        form: /"\$\{DUCT_SSH_BOUND\[@\]\}"/g,
+        guard: 'a constant array of ssh options, an arg never grove text',
+      },
+      {
+        form: /(?<=\s)"\$[A-Za-z_][A-Za-z0-9_]*"(?=\s|\)|$)/g,
+        guard: 'a whole local arg, outside the grove text',
+      },
+      {
+        form: /'\$rscript'/g,
+        guard: 'a constant procedure that holds no single quote',
+      },
+      {
+        form: / \$root\b/g,
+        guard: "the operator's own root, bare so the grove expands its `~`",
+      },
+      {
+        form: /_\$q"/g,
+        guard: 'built one %q-quoted arg at a time (__crew_move_box_run)',
+      },
+    ];
+    const RE_SPLICE = /\$\{?[A-Za-z_]/;
+    // an ssh at command position: line start, after `$(`, `;`, `&&`, `|`, `||`, `!`, or a keyword
+    const RE_SSH_CALL =
+      /(^|\$\(|;|&&|\|\|?|!|\b(?:if|then|do|else|elif|while|until))\s*ssh\s/;
+    const getRawSplices = (line: string): string =>
+      VETTED.reduce((rest, { form }) => rest.replace(form, ''), line);
+    // a sink is any grove ssh call, joined across `\` continuations, or any tmux-prefix line
+    const getSinks = (): { path: string; no: number; line: string }[] =>
+      getLibFiles().flatMap((path) => {
+        const lines = readCode(path).split('\n');
+        return lines.flatMap((line, i) => {
+          if (!RE_SSH_CALL.test(line) && !line.includes('$(__duct_tmux_cmd)'))
+            return [];
+          const tail: string[] = [];
+          for (let j = i; lines[j]?.trimEnd().endsWith('\\'); j += 1)
+            tail.push(lines[j + 1] ?? '');
+          return [{ path, no: i + 1, line: [line, ...tail].join(' ') }];
+        });
+      });
+
+    when('[t0] the work libs are read', () => {
+      then('there are sinks — the clamp is not vacuous', () => {
+        expect(getSinks().length).toBeGreaterThanOrEqual(15);
+      });
+
+      then('NOT ONE sink splices a value outside the vetted forms', () => {
+        const offenders = getSinks().filter(({ line }) =>
+          RE_SPLICE.test(getRawSplices(line)),
+        );
+        expect(offenders).toEqual([]);
+      });
+
+      then('the detector has teeth against a raw splice', () => {
+        // the shape each of rounds i005–i007 found by hand
+        const shipped = [
+          `ssh -n "$DUCT_HOST" "$(__duct_tmux_cmd)new-session -d -s '$DUCT_SESSION' -c '$cwd'"`,
+          `ssh -n "$DUCT_HOST" "$(__duct_tmux_cmd)set-option -t '$DUCT_SESSION' @duct_branch '$branch'"`,
+          // round i008: a sink with no tmux prefix, which the prefix-only enumeration missed
+          `found=$(ssh -n "$host" "sh -c \\"ls -d $root/*/_worktrees/$dotted $root/*/_worktrees/$slug 2>/dev/null | head -1\\"") || return 1`,
+          // round i008: names in the login shell's double quotes, where `$(…)` stays live
+          `out=$(ssh -n -o BatchMode=yes -o ConnectTimeout=8 "$host" "sh -c '$rscript' sh $root \\"$dotted\\" \\"$slug\\"" 2>/dev/null) || return 1`,
+        ];
+        for (const line of shipped) {
+          expect(
+            RE_SSH_CALL.test(line) || line.includes('$(__duct_tmux_cmd)'),
+          ).toEqual(true);
+          expect(RE_SPLICE.test(getRawSplices(line))).toEqual(true);
+        }
+      });
+
+      then('the call detector sees an ssh after then, do, and a pipe', () => {
+        // round i009: these command positions slipped the first detector
+        for (const line of [
+          'if x; then ssh -n "$h" "rm $v"; fi',
+          'while read -r v; do ssh -n "$h" "rm $v"; done',
+          'echo x | ssh "$h" "rm $v"',
+        ])
+          expect(RE_SSH_CALL.test(line)).toEqual(true);
+      });
+
+      then('every non-interactive duct ssh rides the one bound', () => {
+        // .why = round i009: a bare `ssh -n` with no BatchMode, ConnectTimeout,
+        //        or ServerAlive waits on a dark grove with no limit, so it could
+        //        hang duct.open, duct.read, or duct.send. `ssh -t` (attach) is
+        //        interactive by design, and is the one sink that may not ride it
+        const unbound = getSinks().filter(
+          ({ path, line }) =>
+            /\/ductwork\.[a-z]+\.sh$/.test(path) &&
+            /\bssh -n\b/.test(line) &&
+            !line.includes('"${DUCT_SSH_BOUND[@]}"'),
+        );
+        expect(unbound).toEqual([]);
+      });
+    });
+  });
+
   given('[case19] every captured exit code survives `set -e`', () => {
     const getWorkLibs = (): { path: string; code: string }[] =>
       getLibFiles().map((path) => ({ path, code: readCode(path) }));
@@ -628,13 +769,25 @@ describe('work.surface', () => {
           // .why term=poll, property 4: bounded per subject. git.crew.poll now
           //      asks one session-list per registered host on every babysit tick,
           //      so an unbounded ssh to a hung grove would stall the whole sweep.
-          const sshCalls = readDuctwork()
+          // a call is bounded inline, or by the one bound array, which itself
+          // must hold the connect bound
+          const held = readDuctwork();
+          const sshCalls = held
             .split('\n')
             .filter((line) => /^\s*[A-Za-z_]+=\$\(ssh /.test(line));
           expect(sshCalls.length).toBeGreaterThanOrEqual(2);
           expect(
-            sshCalls.filter((line) => !/ConnectTimeout=/.test(line)),
+            sshCalls.filter(
+              (line) =>
+                !/ConnectTimeout=/.test(line) &&
+                !line.includes('"${DUCT_SSH_BOUND[@]}"'),
+            ),
           ).toEqual([]);
+          expect(
+            /^DUCT_SSH_BOUND=\(.*-o ConnectTimeout=\d+.*-o ServerAliveInterval=\d+/m.test(
+              held,
+            ),
+          ).toEqual(true);
         },
       );
     });

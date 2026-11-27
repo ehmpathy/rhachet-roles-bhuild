@@ -38,7 +38,8 @@
  *         exclude is that defect's whole defense.
  */
 import { execSync } from 'child_process';
-import { existsSync, readdirSync } from 'fs';
+import { existsSync, mkdtempSync, readdirSync } from 'fs';
+import { tmpdir } from 'os';
 import { join } from 'path';
 
 import { given, then, useBeforeAll, when } from 'test-fns';
@@ -59,6 +60,10 @@ import { genConsumerRepo, stripAnsi } from '../.test/infra';
  */
 const asSnapshotStable = (output: string): string =>
   stripAnsi(output)
+    // each state dir is named for what it holds, so a mask never mislabels a tmux socket dir as a repo
+    .replace(/\/tmp\/supervisor-tmux-[A-Za-z0-9]+/g, '{TMUX_TMPDIR}')
+    .replace(/\/tmp\/supervisor-ledger-[A-Za-z0-9]+/g, '{CREWWORK_DIR}')
+    .replace(/\/tmp\/supervisor-forest-[A-Za-z0-9]+/g, '{GIT_FOREST_DIR}')
     // /tmp/supervisor-invoke-Ab3xK9 -> /tmp/{REPO}
     .replace(/\/tmp\/supervisor-[a-z]+-[A-Za-z0-9]+/g, '/tmp/{REPO}');
 
@@ -110,6 +115,7 @@ const getDirDelivered = (input: { dirLinked: string }): string => {
 const runAsHuman = (input: {
   command: string;
   repoDir: string;
+  env?: Record<string, string>;
 }): { output: string; exitCode: number } => {
   try {
     const stdout = execSync(`npx ${input.command}`, {
@@ -117,6 +123,7 @@ const runAsHuman = (input: {
       encoding: 'utf-8',
       timeout: 60000,
       stdio: ['pipe', 'pipe', 'pipe'],
+      env: { ...process.env, ...input.env },
     });
     return { output: stdout.trim(), exitCode: 0 };
   } catch (error: unknown) {
@@ -310,6 +317,295 @@ describe('supervisor.surface acceptance (as consumer)', () => {
         expect(result.output).not.toMatch(
           /No such file or directory|Cannot find module/,
         );
+      });
+    });
+  });
+
+  /**
+   * .what = the journeys this repo adds — git.crew.move, git.crew.ledger, duct.bar.probe, duct.refresh --home — run by NAME
+   *         from a consumer, each through its help and through a refusal a human meets
+   *
+   * .why  = the integration suites prove each verb from source. only this grain proves a consumer who
+   *         holds no source reaches the same contract through `rhx`
+   *
+   * .note = no bare run of these three: a bare ledger read or bar probe reads the box's own `~/.crewwork`
+   *         and tmux sockets, and a bare move needs a grove. a guard graded on the host's state inverts
+   *         when the host changes; each refusal below loads the verb's lib chain all the same, since it
+   *         sits past the `source` line
+   */
+  given('[case3] the journeys this repo adds, run by name from a consumer', () => {
+    const scene = useBeforeAll(async () => {
+      const consumer = genConsumerRepo({ prefix: 'supervisor-journey-' });
+      execSync('npx rhachet roles link --repo bhuild --role supervisor', {
+        cwd: consumer.repoDir,
+        stdio: 'pipe',
+      });
+      return consumer;
+    });
+
+    const JOURNEYS: {
+      slug: string;
+      command: string;
+      exitCode: number;
+      says: string[];
+    }[] = [
+      {
+        slug: 'git.crew.move --help',
+        command: 'rhx git.crew.move --help',
+        exitCode: 0,
+        says: ['git.crew.move', '--tree', '--to', '--mode'],
+      },
+      {
+        slug: 'git.crew.move with a mistyped flag',
+        command: 'rhx git.crew.move --tre x --to local',
+        exitCode: 2,
+        says: ["unknown arg '--tre'", 'fix: rhx git.crew.move --tree <tree> --to <grove>'],
+      },
+      {
+        slug: 'git.crew.ledger --help',
+        command: 'rhx git.crew.ledger --help',
+        exitCode: 0,
+        says: ['git.crew.ledger', '--backfill', '--tree <tree> --grove'],
+      },
+      {
+        slug: 'git.crew.ledger with an unknown flag',
+        command: 'rhx git.crew.ledger --bogus',
+        exitCode: 2,
+        says: ["unknown arg '--bogus'", '--del <tree> · --backfill'],
+      },
+      {
+        slug: 'duct.bar.probe --help',
+        command: 'rhx duct.bar.probe --help',
+        exitCode: 0,
+        says: ['.what', '--session'],
+      },
+      {
+        slug: 'duct.bar.probe with a mistyped flag',
+        command: 'rhx duct.bar.probe --sesion x',
+        exitCode: 2,
+        says: ["unknown arg '--sesion'", '--session <tree>/<role>'],
+      },
+      {
+        slug: 'duct.refresh with --all and --home at once',
+        command: 'rhx duct.refresh --all --home /tmp',
+        exitCode: 2,
+        says: [
+          '✋ ConstraintError: duct.refresh --home names one duct',
+          'fix: rhx duct.refresh --on <tree>/<role> --home <tree dir>',
+        ],
+      },
+      {
+        slug: 'duct.refresh with --home handed no value',
+        command: 'rhx duct.refresh --on x/mechanic --home',
+        exitCode: 2,
+        says: ['duct.refresh --home takes a value, got none'],
+      },
+      {
+        slug: 'duct.refresh --help',
+        command: 'rhx duct.refresh --help',
+        exitCode: 0,
+        says: ['--on', '--home', '--all'],
+      },
+      {
+        slug: 'duct.bar.probe with --session handed no value',
+        command: 'rhx duct.bar.probe --session',
+        exitCode: 2,
+        says: ['--session takes a value, got none'],
+      },
+    ];
+
+    JOURNEYS.map((journey, index) =>
+      when(`[t${index}] ${journey.slug}`, () => {
+        const result = useBeforeAll(async () =>
+          runAsHuman({ command: journey.command, repoDir: scene.repoDir }),
+        );
+
+        then('the verb is found, and its libs load', () => {
+          expect(result.output).not.toMatch(/no skill .*found/);
+          expect(result.output).not.toMatch(
+            /No such file or directory|Cannot find module/,
+          );
+        });
+
+        then(`it exits ${journey.exitCode} and says what a human needs`, () => {
+          expect(result.exitCode).toEqual(journey.exitCode);
+          for (const word of journey.says) expect(result.output).toContain(word);
+        });
+
+        then('the render matches the snapshot', () => {
+          expect(asSnapshotStable(result.output)).toMatchSnapshot();
+        });
+      }),
+    );
+  });
+
+  /**
+   * .what = the positive paths a consumer walks, each against a state dir of its own
+   *
+   * .why  = case3 proves the help and the refusals through `rhx`; this proves the success renders
+   *         through the same linked package. each verb reads its state from an env the caller may set
+   *         (`CREWWORK_DIR` for the ledger, `TMUX_TMPDIR` for the bar probe), so a fresh temp dir
+   *         holds the run apart from the box's own fleet, with no mock (rule.require.hermetic-tests)
+   *
+   * .note = a move's refusals at plan need no grove, so [t2] and [t3] walk them here. a move's
+   *         own success needs two reachable ends; that walk is the integration suite's,
+   *         over a real git and bash per end, and the live seat walk is owed by
+   *         `.dream/v2026_11_27.test.real-seat-boundaries-for-crew-move.md`
+   */
+  given('[case4] the positive paths, each against its own state dir', () => {
+    const scene = useBeforeAll(async () => {
+      const consumer = genConsumerRepo({ prefix: 'supervisor-happy-' });
+      execSync('npx rhachet roles link --repo bhuild --role supervisor', {
+        cwd: consumer.repoDir,
+        stdio: 'pipe',
+      });
+      return {
+        repoDir: consumer.repoDir,
+        dirCrewwork: mkdtempSync(join(tmpdir(), 'supervisor-ledger-')),
+        dirTmux: mkdtempSync(join(tmpdir(), 'supervisor-tmux-')),
+        dirForest: mkdtempSync(join(tmpdir(), 'supervisor-forest-')),
+      };
+    });
+
+    when('[t0] a ledger row is placed, then the ledger is read', () => {
+      const result = useBeforeAll(async () => {
+        const env = { CREWWORK_DIR: scene.dirCrewwork };
+        const placed = runAsHuman({
+          command:
+            'rhx git.crew.ledger --tree svc-lessons.feat.book-a-lesson --grove cloud://grove-sandpine-v20260901 --roles mechanic,foreman',
+          repoDir: scene.repoDir,
+          env,
+        });
+        const read = runAsHuman({
+          command: 'rhx git.crew.ledger',
+          repoDir: scene.repoDir,
+          env,
+        });
+        return { placed, read };
+      });
+
+      then('the row is placed, exit 0, and said', () => {
+        expect(result.placed.exitCode).toEqual(0);
+        expect(result.placed.output).toContain(
+          'row added: svc-lessons.feat.book-a-lesson is on cloud://grove-sandpine-v20260901 (roles: mechanic,foreman)',
+        );
+      });
+
+      then('the read names the row it placed', () => {
+        expect(result.read.exitCode).toEqual(0);
+        expect(result.read.output).toContain('svc-lessons.feat.book-a-lesson');
+        expect(result.read.output).toContain('grove-sandpine-v20260901');
+      });
+
+      then('both renders match the snapshot', () => {
+        expect(asSnapshotStable(result.placed.output)).toMatchSnapshot();
+        expect(asSnapshotStable(result.read.output)).toMatchSnapshot();
+      });
+    });
+
+    when('[t1] the bar probe runs bare over a box with no tmux server', () => {
+      const result = useBeforeAll(async () =>
+        runAsHuman({
+          command: 'rhx duct.bar.probe',
+          repoDir: scene.repoDir,
+          env: { TMUX_TMPDIR: scene.dirTmux },
+        }),
+      );
+
+      then('it probes, exit 0, and counts no session', () => {
+        expect(result.exitCode).toEqual(0);
+        expect(result.output).toContain('servers: 0');
+        expect(result.output).toContain('done: 0 sessions');
+      });
+
+      then('the render matches the snapshot, the uid masked', () => {
+        expect(
+          asSnapshotStable(result.output).replace(/tmux-\d+/g, 'tmux-{UID}'),
+        ).toMatchSnapshot();
+      });
+    });
+
+    when('[t2] a move is asked to land where the crew already is', () => {
+      const result = useBeforeAll(async () =>
+        runAsHuman({
+          command:
+            'rhx git.crew.move --tree svc-lessons.feat.book-a-lesson --from local --to local',
+          repoDir: scene.repoDir,
+          env: { CREWWORK_DIR: scene.dirCrewwork },
+        }),
+      );
+
+      then('it refuses, exit 2, and names the verify a finished move owes', () => {
+        expect(result.exitCode).toEqual(2);
+        expect(result.output).toContain(
+          'svc-lessons.feat.book-a-lesson is on local already (--from and --to both name local)',
+        );
+        expect(result.output).toContain('--mode verify');
+        expect(result.output).toContain('🌊 naught was moved — 1 refusal');
+      });
+
+      then('the render matches the snapshot', () => {
+        expect(asSnapshotStable(result.output)).toMatchSnapshot();
+      });
+    });
+
+    when('[t3] a move names a destination grove this box does not know', () => {
+      const result = useBeforeAll(async () =>
+        runAsHuman({
+          command:
+            'rhx git.crew.move --tree svc-lessons.feat.book-a-lesson --from local --to cloud://grove-sandpine-unregistered',
+          repoDir: scene.repoDir,
+          // an empty forest of its own, so no grove this box registers can turn the refusal
+          env: {
+            CREWWORK_DIR: scene.dirCrewwork,
+            GIT_FOREST_DIR: scene.dirForest,
+          },
+        }),
+      );
+
+      then('it refuses, exit 2, names the grove, and moves naught', () => {
+        expect(result.exitCode).toEqual(2);
+        expect(result.output).toContain(
+          "the destination grove 'grove-sandpine-unregistered' is not registered",
+        );
+        expect(result.output).toContain('fix: rhx git.grove.list');
+        expect(result.output).toContain('naught was moved');
+      });
+
+      then('the render matches the snapshot', () => {
+        expect(asSnapshotStable(result.output)).toMatchSnapshot();
+      });
+    });
+
+    when('[t4] a local-only tree is asked onto a cloud grove', () => {
+      const result = useBeforeAll(async () =>
+        runAsHuman({
+          command:
+            'rhx git.crew.move --tree notebook.sandpine --from local --to cloud://grove-sandpine-v20260901',
+          repoDir: scene.repoDir,
+          env: {
+            CREWWORK_DIR: scene.dirCrewwork,
+            GIT_CREW_MOVE_LOCAL_ONLY_TREES: 'notebook.* !notebook.direction.*',
+          },
+        }),
+      );
+
+      then('it refuses, exit 2, names the glob, and points to --to local', () => {
+        expect(result.exitCode).toEqual(2);
+        expect(result.output).toContain(
+          "'notebook.sandpine' is a local-only tree (it matches 'notebook.*')",
+        );
+        expect(result.output).toContain(
+          '└─ fix: rhx git.crew.move --tree notebook.sandpine --to local',
+        );
+        expect(result.output).toContain(
+          "bound by: GIT_CREW_MOVE_LOCAL_ONLY_TREES='notebook.* !notebook.direction.*'",
+        );
+        expect(result.output).toContain('🌊 naught was moved — 1 refusal');
+      });
+
+      then('the render matches the snapshot', () => {
+        expect(asSnapshotStable(result.output)).toMatchSnapshot();
       });
     });
   });

@@ -1,0 +1,232 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`git.crew.move --setaside-twin-why (crew-move-twin) given: [case1] crew-move-twin: a stale twin on the destination at the same head holds older bytes, untracked records, and a staged add when: [t0] plan runs with no flag then: the refusal render matches the snapshot 1`] = `
+"🦫 git.crew.move --tree infrastructure.beav.feat-vault --to local --mode plan
+   ├─ from: cloud://grove-a — from the ledger row
+   ├─ to: local
+   ├─ tree: <root>/groves/grove-a/git/sandpine/_worktrees/infrastructure.beav.feat-vault  →  <root>/home/git/sandpine/_worktrees/infrastructure.beav.feat-vault
+   ├─ guards: orgs: unbound, every org moves (set GIT_CREW_MOVE_ORGS to bind) · local-only trees: unbound, any tree may go to a cloud grove (set GIT_CREW_MOVE_LOCAL_ONLY_TREES to bind)
+   ├─ branch: beav/feat-vault @ <head12>
+   │  └─ pushed: yes — a remote ref holds it
+   ├─ destination repo: <root>/home/git/sandpine/infrastructure — present (holds the head: yes; a fetch settles it)
+   ├─ carry: 2 path(s), 85 B   (left out: gitignored paths, node_modules, .log, .agent/.actors, .claude)
+   │  ├─  M  src/a.ts
+   │  └─ ??  notes.md
+   ├─ seats: 2
+   │  ├─ mechanic: idle at the source · transcript 58 B (ses-mech.jsonl)
+   │  └─ foreman: idle at the source · transcript 57 B (ses-fore.jsonl)
+   ├─ the source tree and its ducts stay on disk, untouched; a fell is a later act
+   ├─ not carried: .meter/ (commit quota, sponsor bind) — the moved tree owes a fresh grant (a human runs: rhx git.commit.uses set --quant <n> --push allow)
+   └─ the destination dials its own claude account; no credential is carried
+
+✋ ConstraintError: the destination path <root>/home/git/sandpine/_worktrees/infrastructure.beav.feat-vault is already a worktree
+   └─ fix: a prior move left it: prove it (--mode verify); or keep its work and free the path: --setaside-twin-why '<why>' (three words or more; renames it whole under _setaside/, never a delete)
+✋ ConstraintError: branch beav/feat-vault is checked out at the destination in <root>/home/git/sandpine/_worktrees/infrastructure.beav.feat-vault
+   └─ fix: free the branch there, then move
+
+🌊 naught was moved — 2 refusals
+"
+`;
+
+exports[`git.crew.move --setaside-twin-why (crew-move-twin) given: [case1] crew-move-twin: a stale twin on the destination at the same head holds older bytes, untracked records, and a staged add when: [t1] plan runs with --drop-twin-why then: the refusal render matches the snapshot 1`] = `
+"🦫 git.crew.move --tree infrastructure.beav.feat-vault --to local --mode plan
+   ├─ from: cloud://grove-a — from the ledger row
+   ├─ to: local
+   ├─ tree: <root>/groves/grove-a/git/sandpine/_worktrees/infrastructure.beav.feat-vault  →  <root>/home/git/sandpine/_worktrees/infrastructure.beav.feat-vault
+   ├─ guards: orgs: unbound, every org moves (set GIT_CREW_MOVE_ORGS to bind) · local-only trees: unbound, any tree may go to a cloud grove (set GIT_CREW_MOVE_LOCAL_ONLY_TREES to bind)
+   ├─ branch: beav/feat-vault @ <head12>
+   │  └─ pushed: yes — a remote ref holds it
+   ├─ destination repo: <root>/home/git/sandpine/infrastructure — present (holds the head: yes; a fetch settles it)
+   ├─ carry: 2 path(s), 85 B   (left out: gitignored paths, node_modules, .log, .agent/.actors, .claude)
+   │  ├─  M  src/a.ts
+   │  └─ ??  notes.md
+   ├─ seats: 2
+   │  ├─ mechanic: idle at the source · transcript 58 B (ses-mech.jsonl)
+   │  └─ foreman: idle at the source · transcript 57 B (ses-fore.jsonl)
+   ├─ the source tree and its ducts stay on disk, untouched; a fell is a later act
+   ├─ not carried: .meter/ (commit quota, sponsor bind) — the moved tree owes a fresh grant (a human runs: rhx git.commit.uses set --quant <n> --push allow)
+   └─ the destination dials its own claude account; no credential is carried
+
+✋ ConstraintError: the destination path <root>/home/git/sandpine/_worktrees/infrastructure.beav.feat-vault is already a worktree, and it is no stale twin safe to drop: 6 dirty path(s); its head is not in origin/main
+   └─ fix: --drop-twin-why drops only a twin with 0 dirty paths, upstream 0/0, and its head in origin/main; to keep its work and free the path, pass --setaside-twin-why '<why>' instead (renames it whole under _setaside/, never a delete)
+✋ ConstraintError: branch beav/feat-vault is checked out at the destination in <root>/home/git/sandpine/_worktrees/infrastructure.beav.feat-vault
+   └─ fix: free the branch there, then move
+
+🌊 naught was moved — 2 refusals
+"
+`;
+
+exports[`git.crew.move --setaside-twin-why (crew-move-twin) given: [case1] crew-move-twin: a stale twin on the destination at the same head holds older bytes, untracked records, and a staged add when: [t2] plan runs with --setaside-twin-why then: the plan render matches the snapshot 1`] = `
+"🦫 git.crew.move --tree infrastructure.beav.feat-vault --to local --mode plan
+   ├─ from: cloud://grove-a — from the ledger row
+   ├─ to: local
+   ├─ tree: <root>/groves/grove-a/git/sandpine/_worktrees/infrastructure.beav.feat-vault  →  <root>/home/git/sandpine/_worktrees/infrastructure.beav.feat-vault
+   ├─ guards: orgs: unbound, every org moves (set GIT_CREW_MOVE_ORGS to bind) · local-only trees: unbound, any tree may go to a cloud grove (set GIT_CREW_MOVE_LOCAL_ONLY_TREES to bind)
+   ├─ branch: beav/feat-vault @ <head12>
+   │  └─ pushed: yes — a remote ref holds it
+   ├─ destination repo: <root>/home/git/sandpine/infrastructure — present (holds the head: yes; a fetch settles it)
+   ├─ settle: set aside the stale twin worktree <root>/home/git/sandpine/_worktrees/infrastructure.beav.feat-vault at <head12> (6 dirty path(s), untracked included, kept byte for byte): rename it whole to <root>/home/git/sandpine/_setaside/infrastructure.beav.feat-vault.<utc stamp>, its git admin dir beside it as <that path>.gitadmin, so its registration lifts and its branch is free; never a delete
+   ├─ settle: set-aside-twin why: stale twin of the vault tree, its work kept whole
+   ├─ carry: 2 path(s), 85 B   (left out: gitignored paths, node_modules, .log, .agent/.actors, .claude)
+   │  ├─  M  src/a.ts
+   │  └─ ??  notes.md
+   ├─ seats: 2
+   │  ├─ mechanic: idle at the source · transcript 58 B (ses-mech.jsonl)
+   │  └─ foreman: idle at the source · transcript 57 B (ses-fore.jsonl)
+   ├─ the source tree and its ducts stay on disk, untouched; a fell is a later act
+   ├─ not carried: .meter/ (commit quota, sponsor bind) — the moved tree owes a fresh grant (a human runs: rhx git.commit.uses set --quant <n> --push allow)
+   └─ the destination dials its own claude account; no credential is carried
+
+🌊 plan only: naught was moved. apply: rhx git.crew.move --tree infrastructure.beav.feat-vault --to local --mode apply --setaside-twin-why 'stale twin of the vault tree, its work kept whole'
+"
+`;
+
+exports[`git.crew.move --setaside-twin-why (crew-move-twin) given: [case1] crew-move-twin: a stale twin on the destination at the same head holds older bytes, untracked records, and a staged add when: [t3] apply runs with --setaside-twin-why then: the apply render matches the snapshot 1`] = `
+"🦫 git.crew.move --tree infrastructure.beav.feat-vault --to local --mode apply
+   ├─ from: cloud://grove-a — from the ledger row
+   ├─ to: local
+   ├─ tree: <root>/groves/grove-a/git/sandpine/_worktrees/infrastructure.beav.feat-vault  →  <root>/home/git/sandpine/_worktrees/infrastructure.beav.feat-vault
+   ├─ guards: orgs: unbound, every org moves (set GIT_CREW_MOVE_ORGS to bind) · local-only trees: unbound, any tree may go to a cloud grove (set GIT_CREW_MOVE_LOCAL_ONLY_TREES to bind)
+   ├─ branch: beav/feat-vault @ <head12>
+   │  └─ pushed: yes — a remote ref holds it
+   ├─ destination repo: <root>/home/git/sandpine/infrastructure — present (holds the head: yes; a fetch settles it)
+   ├─ settle: set aside the stale twin worktree <root>/home/git/sandpine/_worktrees/infrastructure.beav.feat-vault at <head12> (6 dirty path(s), untracked included, kept byte for byte): rename it whole to <root>/home/git/sandpine/_setaside/infrastructure.beav.feat-vault.<utc stamp>, its git admin dir beside it as <that path>.gitadmin, so its registration lifts and its branch is free; never a delete
+   ├─ settle: set-aside-twin why: stale twin of the vault tree, its work kept whole
+   ├─ carry: 2 path(s), 85 B   (left out: gitignored paths, node_modules, .log, .agent/.actors, .claude)
+   │  ├─  M  src/a.ts
+   │  └─ ??  notes.md
+   ├─ seats: 2
+   │  ├─ mechanic: idle at the source · transcript 58 B (ses-mech.jsonl)
+   │  └─ foreman: idle at the source · transcript 57 B (ses-fore.jsonl)
+   ├─ the source tree and its ducts stay on disk, untouched; a fell is a later act
+   ├─ not carried: .meter/ (commit quota, sponsor bind) — the moved tree owes a fresh grant (a human runs: rhx git.commit.uses set --quant <n> --push allow)
+   └─ the destination dials its own claude account; no credential is carried
+
+   ├─ 1. the tree at the destination
+   │  ├─ set aside the stale twin worktree <root>/home/git/sandpine/_worktrees/infrastructure.beav.feat-vault at <head12>: now at <root>/home/git/sandpine/_setaside/infrastructure.beav.feat-vault.<stamp>, its git admin dir at <root>/home/git/sandpine/_setaside/infrastructure.beav.feat-vault.<stamp>.gitadmin
+   │  ├─ read back: the repo lists no worktree at the old path, the path is free, and the set-aside tree holds the same head, branch, 6 dirty path(s), and sha256 of each
+   │  ├─ set-aside-twin why: stale twin of the vault tree, its work kept whole
+   │  └─ beav/feat-vault up at <root>/home/git/sandpine/_worktrees/infrastructure.beav.feat-vault
+   ├─ 2. the uncommitted and untracked paths (2)
+   │  └─ same head, same dirty paths, same bytes (sha256)
+   ├─ 3. the conversations
+   │  └─ 2 file(s) placed for: mechanic foreman
+   ├─ 4. install
+   │  ├─ mkdir -p node_modules && echo ok > node_modules/.ok
+   │  └─ roles linked: ehmpathy/mechanic
+   ├─ 5. the ledger
+   │  └─ row set: infrastructure.beav.feat-vault is on local, was cloud://grove-a (roles: mechanic,foreman)
+   ├─ 6. the seats
+   │  │  (fake crew.boot)
+   │  ├─ mechanic: up at local, resumed, a live claude
+   │  │  (fake crew.boot)
+   │  └─ foreman: up at local, resumed, a live claude
+   └─ ✅ moved. prove it whole: rhx git.crew.move --tree infrastructure.beav.feat-vault --to local --from cloud://grove-a --mode verify
+      the source seats may still run at cloud://grove-a and the duct registry now points at local; to stop them and to fell the source are later acts
+      the seat bars are not read from here; on local, read each one: rhx duct.bar.probe
+"
+`;
+
+exports[`git.crew.move --setaside-twin-why (crew-move-twin) given: [case2] crew-move-twin: the stale twin has a claude at work in it when: [t0] apply runs with --setaside-twin-why then: the live-claude refusal render matches the snapshot 1`] = `
+"🦫 git.crew.move --tree infrastructure.beav.feat-vault --to local --mode apply
+   ├─ from: cloud://grove-a — from the ledger row
+   ├─ to: local
+   ├─ tree: <root>/groves/grove-a/git/sandpine/_worktrees/infrastructure.beav.feat-vault  →  <root>/home/git/sandpine/_worktrees/infrastructure.beav.feat-vault
+   ├─ guards: orgs: unbound, every org moves (set GIT_CREW_MOVE_ORGS to bind) · local-only trees: unbound, any tree may go to a cloud grove (set GIT_CREW_MOVE_LOCAL_ONLY_TREES to bind)
+   ├─ branch: beav/feat-vault @ <head12>
+   │  └─ pushed: yes — a remote ref holds it
+   ├─ destination repo: <root>/home/git/sandpine/infrastructure — present (holds the head: yes; a fetch settles it)
+   ├─ carry: 2 path(s), 85 B   (left out: gitignored paths, node_modules, .log, .agent/.actors, .claude)
+   │  ├─  M  src/a.ts
+   │  └─ ??  notes.md
+   ├─ seats: 2
+   │  ├─ mechanic: idle at the source · transcript 58 B (ses-mech.jsonl)
+   │  └─ foreman: idle at the source · transcript 57 B (ses-fore.jsonl)
+   ├─ the source tree and its ducts stay on disk, untouched; a fell is a later act
+   ├─ not carried: .meter/ (commit quota, sponsor bind) — the moved tree owes a fresh grant (a human runs: rhx git.commit.uses set --quant <n> --push allow)
+   └─ the destination dials its own claude account; no credential is carried
+
+✋ ConstraintError: a live claude is at work in the stale twin <root>/home/git/sandpine/_worktrees/infrastructure.beav.feat-vault (1 process(es) with its cwd there); a twin in use is never set aside
+   └─ fix: end that claude session at the destination, then move
+✋ ConstraintError: branch beav/feat-vault is checked out at the destination in <root>/home/git/sandpine/_worktrees/infrastructure.beav.feat-vault
+   └─ fix: free the branch there, then move
+
+🌊 naught was moved — 2 refusals
+"
+`;
+
+exports[`git.crew.move --setaside-twin-why (crew-move-twin) given: [case3] crew-move-twin: the stale twin has another process at work in it when: [t0] apply runs with --setaside-twin-why then: the process refusal render matches the snapshot 1`] = `
+"🦫 git.crew.move --tree infrastructure.beav.feat-vault --to local --mode apply
+   ├─ from: cloud://grove-a — from the ledger row
+   ├─ to: local
+   ├─ tree: <root>/groves/grove-a/git/sandpine/_worktrees/infrastructure.beav.feat-vault  →  <root>/home/git/sandpine/_worktrees/infrastructure.beav.feat-vault
+   ├─ guards: orgs: unbound, every org moves (set GIT_CREW_MOVE_ORGS to bind) · local-only trees: unbound, any tree may go to a cloud grove (set GIT_CREW_MOVE_LOCAL_ONLY_TREES to bind)
+   ├─ branch: beav/feat-vault @ <head12>
+   │  └─ pushed: yes — a remote ref holds it
+   ├─ destination repo: <root>/home/git/sandpine/infrastructure — present (holds the head: yes; a fetch settles it)
+   ├─ carry: 2 path(s), 85 B   (left out: gitignored paths, node_modules, .log, .agent/.actors, .claude)
+   │  ├─  M  src/a.ts
+   │  └─ ??  notes.md
+   ├─ seats: 2
+   │  ├─ mechanic: idle at the source · transcript 58 B (ses-mech.jsonl)
+   │  └─ foreman: idle at the source · transcript 57 B (ses-fore.jsonl)
+   ├─ the source tree and its ducts stay on disk, untouched; a fell is a later act
+   ├─ not carried: .meter/ (commit quota, sponsor bind) — the moved tree owes a fresh grant (a human runs: rhx git.commit.uses set --quant <n> --push allow)
+   └─ the destination dials its own claude account; no credential is carried
+
+✋ ConstraintError: 1 process(es) at work in the stale twin <root>/home/git/sandpine/_worktrees/infrastructure.beav.feat-vault; a twin in use is never set aside
+   └─ fix: end each process whose cwd sits in it, then move
+✋ ConstraintError: branch beav/feat-vault is checked out at the destination in <root>/home/git/sandpine/_worktrees/infrastructure.beav.feat-vault
+   └─ fix: free the branch there, then move
+
+🌊 naught was moved — 2 refusals
+"
+`;
+
+exports[`git.crew.move --setaside-twin-why (crew-move-twin) given: [case4] crew-move-twin: the call is wrong when: [t0] --setaside-twin-why is under three words then: the bound refusal render matches the snapshot 1`] = `
+"✋ ConstraintError: --setaside-twin-why needs a reason of three words or more (got 'just because')
+   └─ fix: --setaside-twin-why '<why the stale worktree at the destination is set aside>'
+"
+`;
+
+exports[`git.crew.move --setaside-twin-why (crew-move-twin) given: [case4] crew-move-twin: the call is wrong when: [t1] --setaside-twin-why rides beside --drop-twin-why then: the two-acts refusal render matches the snapshot 1`] = `
+"✋ ConstraintError: --setaside-twin-why and --drop-twin-why name two acts on one twin
+   └─ fix: drop one of the two flags (--setaside-twin-why keeps every byte; --drop-twin-why removes only a provably safe twin)
+"
+`;
+
+exports[`git.crew.move --setaside-twin-why (crew-move-twin) given: [case4] crew-move-twin: the call is wrong when: [t2] --setaside-twin-why rides beside --into-extant then: the flag-pair refusal render matches the snapshot 1`] = `
+"✋ ConstraintError: --into-extant takes no --setaside-twin-why: it lands into the destination worktree as it stands
+   └─ fix: drop one of the two flags
+"
+`;
+
+exports[`git.crew.move --setaside-twin-why (crew-move-twin) given: [case5] crew-move-twin: a pointer of the set-aside twin cannot be written when: [t0] apply runs with --setaside-twin-why then: the put-back render matches the snapshot 1`] = `
+"🦫 git.crew.move --tree infrastructure.beav.feat-vault --to local --mode apply
+   ├─ from: cloud://grove-a — from the ledger row
+   ├─ to: local
+   ├─ tree: <root>/groves/grove-a/git/sandpine/_worktrees/infrastructure.beav.feat-vault  →  <root>/home/git/sandpine/_worktrees/infrastructure.beav.feat-vault
+   ├─ guards: orgs: unbound, every org moves (set GIT_CREW_MOVE_ORGS to bind) · local-only trees: unbound, any tree may go to a cloud grove (set GIT_CREW_MOVE_LOCAL_ONLY_TREES to bind)
+   ├─ branch: beav/feat-vault @ <head12>
+   │  └─ pushed: yes — a remote ref holds it
+   ├─ destination repo: <root>/home/git/sandpine/infrastructure — present (holds the head: yes; a fetch settles it)
+   ├─ settle: set aside the stale twin worktree <root>/home/git/sandpine/_worktrees/infrastructure.beav.feat-vault at <head12> (6 dirty path(s), untracked included, kept byte for byte): rename it whole to <root>/home/git/sandpine/_setaside/infrastructure.beav.feat-vault.<utc stamp>, its git admin dir beside it as <that path>.gitadmin, so its registration lifts and its branch is free; never a delete
+   ├─ settle: set-aside-twin why: stale twin of the vault tree, its work kept whole
+   ├─ carry: 2 path(s), 85 B   (left out: gitignored paths, node_modules, .log, .agent/.actors, .claude)
+   │  ├─  M  src/a.ts
+   │  └─ ??  notes.md
+   ├─ seats: 2
+   │  ├─ mechanic: idle at the source · transcript 58 B (ses-mech.jsonl)
+   │  └─ foreman: idle at the source · transcript 57 B (ses-fore.jsonl)
+   ├─ the source tree and its ducts stay on disk, untouched; a fell is a later act
+   ├─ not carried: .meter/ (commit quota, sponsor bind) — the moved tree owes a fresh grant (a human runs: rhx git.commit.uses set --quant <n> --push allow)
+   └─ the destination dials its own claude account; no credential is carried
+
+   ├─ 1. the tree at the destination
+   │  │  the write of <root>/home/git/sandpine/_setaside/infrastructure.beav.feat-vault.<stamp>/.git was refused
+   │  │  cp: cannot create regular file '<root>/home/git/sandpine/_setaside/infrastructure.beav.feat-vault.<stamp>/.git': Permission denied
+   │  │  💥 MalfunctionError: a pointer of the set-aside twin could not be written; the twin was put back at <root>/home/git/sandpine/_worktrees/infrastructure.beav.feat-vault
+   │  │     └─ fix: read the twin (git -C <root>/home/git/sandpine/_worktrees/infrastructure.beav.feat-vault status), clear the cause (disk space, permissions), then run this again
+   │  └─ 💥 the stale twin could not be set aside at the destination (exit 1); naught else was touched
+"
+`;

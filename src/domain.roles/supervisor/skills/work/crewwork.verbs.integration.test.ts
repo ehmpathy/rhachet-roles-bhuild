@@ -1503,4 +1503,58 @@ describe('crewwork', () => {
       });
     },
   );
+
+  /**
+   * .what = crew.refresh hands each duct its home, so the bar re-anchors to the tree
+   * .why  = a seat born in the wrong dir pins the wrong repo to its bar. the duct
+   *         corrects its anchor only when handed one; this is the crew's half
+   * .mock = `duct.refresh`, a recorder of its argv
+   * .why  = the subject is which `--home` the crew hands each duct; a cloud crew's ducts sit on a
+   *         grove no hermetic run reaches, and the duct's own act is graded at the duct grain
+   * .real = `duct.refresh --home` runs for real on a private socket in ductwork.status case2 [t0]
+   *         and [t1] (anchor set, bar stamped); bare in case2 [t2] and ductwork.verbs case12 [t0]
+   */
+  given('[case11] crew.refresh on a cloud crew', () => {
+    const GROVE_TREE_DIR = `/home/camper/git/somerepo/_worktrees/${TREE}`;
+    const FAKE_REFRESH =
+      'duct.refresh() { __rec "duct.refresh $*"; return 0; }';
+    const asRefreshes = (calls: string[]): string[] =>
+      calls.filter((line) => line.startsWith('duct.refresh '));
+
+    when('[t0] the grove holds the tree', () => {
+      const result = useBeforeAll(async () =>
+        runCrew({
+          command: `${FAKE_REFRESH}\ncrew.refresh --tree ${TREE} --grove cloud://grove-1`,
+          groveTreeDir: GROVE_TREE_DIR,
+        }),
+      );
+
+      then('it succeeds', () => {
+        expect(result.exit).toEqual(0);
+      });
+
+      then('each seat is refreshed with --home inside the grove tree', () => {
+        const refreshes = asRefreshes(result.calls);
+        expect(refreshes).toHaveLength(2);
+        for (const line of refreshes)
+          expect(line).toContain(`--home ${GROVE_TREE_DIR}`);
+      });
+    });
+
+    when('[t1] the grove does not report the tree', () => {
+      const result = useBeforeAll(async () =>
+        runCrew({
+          command: `${FAKE_REFRESH}\ncrew.refresh --tree ${TREE} --grove cloud://grove-1`,
+        }),
+      );
+
+      then('it still repaints, and hands no home it cannot vouch for', () => {
+        // .why = a repaint is cosmetic; the duct keeps the anchor it holds
+        expect(result.exit).toEqual(0);
+        const refreshes = asRefreshes(result.calls);
+        expect(refreshes).toHaveLength(2);
+        for (const line of refreshes) expect(line).not.toContain('--home');
+      });
+    });
+  });
 });

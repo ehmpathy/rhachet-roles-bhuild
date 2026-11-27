@@ -507,10 +507,28 @@ crew.refresh() {
   local roles
   if [[ "$who" == "all" ]]; then roles="mechanic foreman"; else roles="$who"; fi
 
-  local rc=0 role uri
+  # 🏠 the home each seat's bar must read: the crew's worktree convention, the
+  #    same seam crew.boot opens each duct in. it is the authority that corrects
+  #    a seat born in the wrong dir (see __duct_home_anchor_upsert).
+  #    an unfound tree is no refusal here: a repaint is cosmetic, so the duct
+  #    keeps the anchor it holds and the repaint still runs
+  local tree_dir=""
+  if [[ -z "$host" ]]; then
+    tree_dir=$(__crew_tree_dir "$tree" 2>/dev/null) || tree_dir=""
+  else
+    tree_dir=$(__crew_tree_dir_on_grove "$host" "$tree" 2>/dev/null) || tree_dir=""
+  fi
+
+  local rc=0 role uri home
   for role in $roles; do
     uri="$(__crew_duct_uri "$host" "$tree" "$role")"
-    duct.refresh --on "$uri" || rc=$?
+    home=""
+    [[ -n "$tree_dir" ]] && home="$(__crew_role_cwd "$tree_dir" "$tree" "$role")"
+    if [[ -n "$home" ]]; then
+      duct.refresh --on "$uri" --home "$home" || rc=$?
+    else
+      duct.refresh --on "$uri" || rc=$?
+    fi
   done
   return $rc
 }

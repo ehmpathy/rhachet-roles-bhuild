@@ -190,6 +190,11 @@ jobs:
       - name: checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
+      # .why = git.crew.move case17 runs the remote command line through a real zsh, the login
+      #        shell of a grove; the runner image ships tmux but not zsh (repo-local addition)
+      - name: install zsh
+        run: sudo apt-get update -q && sudo apt-get install -y --no-install-recommends zsh
+
       - name: set node-version
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:

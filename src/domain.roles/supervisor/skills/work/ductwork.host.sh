@@ -41,6 +41,63 @@ __duct_as_host_canonical() {
 }
 
 ######################################################################
+# .what = run one bash procedure on a grove: here via `bash -c`, else over ssh
+#
+# .why  = a remote command is text the remote login shell re-parses. a value
+#         spliced into it raw (a branch named `x';touch /tmp/p;'`) closes the
+#         quote and runs on the grove. so every procedure this part sends is
+#         built with each value quoted by `printf %q`, and crosses the wire as
+#         base64, which the remote shell (zsh, bash, aught) never re-parses.
+#
+# args: $1 = the grove's ssh name ('' = this grove), $2 = the bash procedure
+# rc: the procedure's (or ssh's, when the grove does not answer)
+######################################################################
+#
+# .note = the procedure runs as `bash -c` on both sides, never from stdin, so a
+#         command inside it that reads stdin cannot eat the rest of it. the
+#         encode is `base64 | tr -d '\n'`, which a mac supervisor runs too
+#         (`-w0` is GNU only). the ssh is bounded: BatchMode never waits on a
+#         prompt, and a silent grove is dropped after ~30s of no answer, so a
+#         cosmetic stamp can never hang the duct verb it rides in
+#
+# .note = the grove decodes into a variable and checks it before the run. a
+#         `base64 -d` that fails would hand `bash -c` an empty procedure, which
+#         exits 0 — a write that never ran, read as one that did. so an empty or
+#         failed decode exits DUCT_RC_UNDECODED (97), said on stderr
+DUCT_RC_UNDECODED=97
+
+# .what = the one bound every non-interactive duct ssh rides
+# .why  = a bare `ssh -n` waits on a dark grove with no limit, so a duct verb
+#         (open, read, send) could hang its caller. BatchMode never waits on a
+#         prompt; ConnectTimeout bounds the dial; ServerAlive drops a grove that
+#         goes silent mid-call after ~30s. an interactive attach (`ssh -t`) is
+#         the one sink that does not ride it
+DUCT_SSH_BOUND=(-o ConnectTimeout=8 -o BatchMode=yes -o ServerAliveInterval=15 -o ServerAliveCountMax=2)
+
+__duct_bash_on_grove() {
+  local host="$1" proc="$2" b64 rc=0
+  # the local arm reads no stdin, as the remote arm's `ssh -n` does not
+  if [[ -z "$host" ]] || __duct_host_is_here "$host"; then
+    bash -c "$proc" </dev/null
+    return $?
+  fi
+  b64="$(printf '%s' "$proc" | base64 | tr -d '\n')"
+  ssh -n "${DUCT_SSH_BOUND[@]}" "$host" \
+    "p=\$(printf '%s' '$b64' | base64 -d) && [ -n \"\$p\" ] || exit $DUCT_RC_UNDECODED; bash -c \"\$p\"" || rc=$?
+  if [[ $rc -eq $DUCT_RC_UNDECODED ]]; then
+    echo "💥 MalfunctionError: the procedure sent to '$host' did not decode there, so naught ran (rc $rc)" >&2
+    echo "   └─ fix: check that \`base64 -d\` works on the grove: rhx git.grove.send $host --what 'echo b2s= | base64 -d'" >&2
+  fi
+  return $rc
+}
+
+# .what = the grove this duct lives on, as __duct_bash_on_grove takes it ('' = here)
+__duct_grove_of_duct() {
+  if __duct_is_remote; then printf '%s' "$DUCT_HOST"; fi
+  return 0
+}
+
+######################################################################
 # .what = list the live tmux sessions a host holds
 #
 # .return 0 = the host ANSWERED; stdout holds its sessions, maybe zero of them
@@ -119,7 +176,7 @@ __duct_list_host_sessions() {
   #        discipline — the alternative is a `< /dev/null` at every call site,
   #        one of which will be forgotten, which is the same class of trap as
   #        the absent space in __duct_tmux_cmd.
-  out=$(ssh -n -o ConnectTimeout=8 "$host" "$(__duct_tmux_cmd)list-sessions -F '#{session_name}'" 2>/dev/null) || exitcode=$?
+  out=$(ssh -n "${DUCT_SSH_BOUND[@]}" "$host" "$(__duct_tmux_cmd)list-sessions -F '#{session_name}'" 2>/dev/null) || exitcode=$?
   [[ "$exitcode" == 255 ]] && return 3
   [[ -n "$out" ]] && printf '%s\n' "$out"
   return 0

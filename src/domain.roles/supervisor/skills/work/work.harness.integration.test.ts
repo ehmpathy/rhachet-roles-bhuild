@@ -7,13 +7,52 @@
  *         shut: a kill throws, and a real exit code still comes back as data
  */
 
+import {
+  chmodSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  utimesSync,
+  writeFileSync,
+} from 'fs';
 import { MalfunctionError } from 'helpful-errors';
-import { getError, given, then, when } from 'test-fns';
+import { tmpdir } from 'os';
+import { join } from 'path';
+import { getError, given, then, useBeforeAll, when } from 'test-fns';
 
 import { tempDirs } from '../../../.test/tempDirs';
-import { runDriver } from './work.harness';
+import { delStaleTestDirs, MS_STALE_TEST_DIR, runDriver } from './work.harness';
 
 afterAll(() => tempDirs.delAll());
+
+describe('delStaleTestDirs', () => {
+  given('[case3] a stale corpse that holds a read-only dir', () => {
+    // the shape a read-only install fixture leaves: a dir its owner cannot unlink from
+    const scene = useBeforeAll(async () => {
+      const corpse = mkdtempSync(
+        join(tmpdir(), `${tempDirs.prefix}corpse-ro-`),
+      );
+      const dirRo = join(corpse, 'node_modules', 'ro');
+      mkdirSync(dirRo, { recursive: true });
+      writeFileSync(join(dirRo, 'file.js'), '');
+      chmodSync(dirRo, 0o555);
+      const past = new Date(Date.now() - MS_STALE_TEST_DIR - 60_000);
+      utimesSync(corpse, past, past);
+      return { corpse };
+    });
+
+    when('[t0] the sweep reaps it', () => {
+      const outcome = useBeforeAll(async () => ({
+        dropped: delStaleTestDirs(),
+      }));
+
+      then('🔴 it removes the corpse whole, never throws EACCES', () => {
+        expect(outcome.dropped).toContain(scene.corpse);
+        expect(existsSync(scene.corpse)).toEqual(false);
+      });
+    });
+  });
+});
 
 describe('runDriver', () => {
   given('[case1] a driver that outlives its timeout', () => {

@@ -338,7 +338,7 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/grovework.sh" || return 1
 #
 # 🔴 a caller sources ductwork.sh, never a part. a part sourced alone is a
 #    half-defined lib that fails on its first call into the core.
-DUCTWORK_PARTS=(uri life pane signal io host)
+DUCTWORK_PARTS=(uri life pane signal io host status)
 __duct_load_parts() {
   local here part
   here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

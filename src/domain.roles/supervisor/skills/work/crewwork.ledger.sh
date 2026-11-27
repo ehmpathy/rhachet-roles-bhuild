@@ -159,6 +159,20 @@ __crew_ledger_grove_of() {
   jq -r '.grove // empty' "$file" 2>/dev/null
 }
 
+# .what = the seats ONE tree's crew was booted with, per the ledger's roles
+#         column ('' = no row, no roles, or the backfill's `unknown`)
+# .why  = a verb that raises a crew's seats again (a move) aims at the booted set,
+#         never a reparse of the json by a caller
+__crew_ledger_roles_of() {
+  local canon file roles
+  canon="$(__crew_canon_name "$1")"
+  file="$CREWWORK_DIR/crews/$canon.json"
+  [[ -f "$file" ]] || return 0
+  roles="$(jq -r '.roles // empty' "$file" 2>/dev/null)"
+  [[ "$roles" == "unknown" ]] && roles=""
+  printf '%s' "$roles"
+}
+
 # .what = is ANY clone on this grove actively at work right now? (0 = yes)
 #
 # 🔴 .why = AUTH IS GROVE-WIDE. a usage cap is a fact about an ACCOUNT, and every
@@ -249,7 +263,7 @@ __crew_grove_has_active_clone() {
 #   crew.ledger backfill       seed from live tmux + the duct registry
 #   crew.ledger del <tree>     drop one stale row, by hand (see below)
 #
-# ⚠️ .del is a LAST-RESORT manual instrument, never crew.fell's own path
+# 🟡 .del is a LAST-RESORT manual instrument, never crew.fell's own path
 #
 #      crew.fell drops a row itself, but only after `git.tree.del`
 #      confirms the tree is gone — and that skill is localhost-only, so
@@ -260,7 +274,7 @@ __crew_grove_has_active_clone() {
 #      path is done, no step was left to clear the record — until this
 #      verb. use it ONLY after the tree is already confirmed gone.
 #
-# ⚠️ .the backfill is INCOMPLETE, and that is not repairable
+# 🟡 .the backfill is INCOMPLETE, and that is not repairable
 #
 #      the ledger begins empty, and the only evidence left of past
 #      crews is what has NOT yet been erased:
@@ -318,7 +332,14 @@ crew.ledger() {
       #       exists to place". a default here would re-open that hole.
       local __lr_rows __lr_w=0 __lr_tree __lr_grove
       __lr_rows="$(__crew_ledger_rows)"
-      [[ -n "$__lr_rows" ]] || return 0
+      # an empty ledger says so on STDERR: stdout stays empty for a line-wise
+      # caller, and a human sent here ("see what is there") is never left with
+      # a silence that reads the same as a broken read (rule.require.status-feedback)
+      if [[ -z "$__lr_rows" ]]; then
+        echo "🦫 the ledger holds no row — no crew was booted here since it began" >&2
+        echo "   └─ seed it from live tmux + the duct registry: rhx git.crew.ledger --backfill" >&2
+        return 0
+      fi
       # two passes so the column is aligned to the longest name actually
       # present — a fixed width ragged-wraps the long tree slugs this fleet
       # really carries (rule.require.treestruct-output: scannable at a glance)
@@ -339,7 +360,7 @@ crew.ledger() {
       #   these two are a FOURTH and FIFTH — they read a name, so the rule about
       #   the name binds them, and neither applied it.
       #
-      #   ⚠️ and the damage here is strictly worse than the poll's, because this
+      #   🟡 and the damage here is strictly worse than the poll's, because this
       #   arm WRITES. the poll re-derives its subject set every sweep, so a
       #   phantom there dies with the process. a backfill mints a DURABLE ledger
       #   row — the one artifact built to survive a stop, a crash, and a machine
@@ -393,7 +414,7 @@ crew.ledger() {
 
       echo ""
       echo "🦫 dam fine! $added seeded, $held already held"
-      echo "   └─ ⚠️  incomplete by construction — crews stopped before the"
+      echo "   └─ 🟡 incomplete by construction — crews stopped before the"
       echo "         ledger existed left no trace to recover"
       ;;
     del)
@@ -411,14 +432,69 @@ crew.ledger() {
 
       __crew_ledger_del "$tree_del"
       echo "🦫 dam fine! ledger row dropped — $tree_del is off the books"
-      echo "   └─ ⚠️  this touches only the record — no tree, duct, or tab."
+      echo "   └─ 🟡 this touches only the record — no tree, duct, or tab."
       echo "         use it after you already confirmed the tree is gone"
       echo "         (e.g. crew.fell refused a grove crew and you completed"
       echo "         its printed manual-recovery steps)."
       ;;
+    enroll)
+      __crew_ledger_enroll "${2:-}" "${3:-}" "${4:-}" "${5:-findsert}"
+      ;;
     *)
-      echo "✋ crew.ledger: unknown verb '$verb' — want: read | backfill | del" >&2
+      echo "✋ ConstraintError: crew.ledger: unknown verb '$verb' — want: read | backfill | del | enroll" >&2
       return 2
       ;;
   esac
+}
+
+######################################################################
+# .what = place one tree's ledger row on a grove, by hand or by a verb that
+#         moved the crew (git.crew.move)
+#
+# .why  = a crew that moves between groves keeps its existence; only its grove
+#         changes. the row is the one record that outlives a session, so the
+#         move must say where the crew now lives, or every sweep reads the old box
+#
+# .idem = findsert keeps an extant row as it stands; upsert sets the grove.
+#         roles '' keeps the row's roles (a move raises the same seats)
+#
+# args: tree grove roles idem
+######################################################################
+__crew_ledger_enroll() {
+  local tree="$1" grove="$2" roles="$3" idem="$4" canon was=""
+  if [[ -z "$tree" || -z "$grove" ]]; then
+    echo "✋ ConstraintError: crew.ledger enroll needs a tree and a grove" >&2
+    echo "   └─ fix: rhx git.crew.ledger --tree <tree> --grove local|cloud://<grove> [--idem upsert]" >&2
+    return 2
+  fi
+  case "$grove" in local|cloud://?*) ;; *)
+    echo "✋ ConstraintError: crew.ledger enroll: grove '$grove' is neither local nor cloud://<grove>" >&2
+    echo "   └─ fix: --grove local, or --grove cloud://<grove> (rhx git.grove.list names them)" >&2
+    return 2 ;;
+  esac
+  case "$idem" in findsert|upsert) ;; *)
+    echo "✋ ConstraintError: crew.ledger enroll: --idem takes findsert | upsert (got '$idem')" >&2
+    echo "   └─ fix: --idem findsert keeps an extant row; --idem upsert sets its grove" >&2
+    return 2 ;;
+  esac
+  canon="$(__crew_canon_name "$tree")"
+  was="$(__crew_ledger_grove_of "$canon")"
+
+  # findsert: an extant row stands as it is
+  if [[ -n "$was" && "$idem" == findsert ]]; then
+    echo "🪵 crew.ledger enroll"
+    echo "   └─ row kept: $canon is on $was (findsert)"
+    return 0
+  fi
+
+  # a move raises the same seats: an empty roles arg keeps the row's own
+  [[ -n "$roles" ]] || roles="$(__crew_ledger_roles_of "$canon")"
+  [[ -n "$roles" ]] || roles="unknown"
+  __crew_ledger_set "$canon" "$grove" "$roles" || return 1
+  echo "🪵 crew.ledger enroll"
+  if [[ -z "$was" ]]; then
+    echo "   └─ row added: $canon is on $grove (roles: $roles)"
+    return 0
+  fi
+  echo "   └─ row set: $canon is on $grove, was $was (roles: $roles)"
 }

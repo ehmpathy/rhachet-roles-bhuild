@@ -1295,4 +1295,121 @@ describe('ductwork', () => {
       );
     },
   );
+
+  // .what = __duct_uri_holds_live_claude over a read that failed
+  // .why  = only duct.read's `is absent` is a verdict (rc 1: no duct). every other
+  //         failed read is unread (rc 3); a `no` from no evidence would let a move
+  //         call a seat a husk, or a busy seat down
+  // .mock = `duct.read` (each read outcome), `__duct_pane_command` (the pane's program),
+  //         `__duct_parse_uri` (a uri that fails to parse); the function under test runs for real
+  // .why  = a live tmux pane does not fail a read on demand, nor hold claude without a real claude;
+  //         each unread cause is reached only so
+  // .real = `duct.read` runs for real in ductwork.verbs case13, case14 [t1], case18;
+  //         `__duct_pane_command` in ductwork.verbs case5 [t0], case18, case19;
+  //         `__duct_parse_uri` in ductwork.status case6 [t0] and every runDuct verb.
+  //         this function over a live claude pane: no hermetic run here (the hetzner walk proves it;
+  //         owed: `.dream/v2026_11_27.test.real-seat-boundaries-for-crew-move.md`)
+  given('[case80] __duct_uri_holds_live_claude — a read that failed', () => {
+    const runLive = (input: { readFake: string }): { stdout: string } => {
+      const out = runDuct({
+        socket: genSocket('live'),
+        ductworkDir: tempDirs.genOne({ slug: 'registry' }),
+        body: [
+          input.readFake,
+          'rc=0; DUCT_LIVE_READ_TRIES=2 __duct_uri_holds_live_claude "duct:///svc-lessons.beav.feat-x/mechanic" || rc=$?',
+          'echo "RC=$rc"',
+          'echo "SAID=$DUCT_LIVE_UNREAD_SAID"',
+        ].join('\n'),
+      });
+      return { stdout: out.stdout };
+    };
+
+    when('[t0] duct.read says the session is absent', () => {
+      const scene = useBeforeAll(async () =>
+        runLive({
+          readFake: `duct.read() { echo "✋ duct.read: session 'x' is absent on this machine" >&2; return 2; }`,
+        }),
+      );
+      then(
+        'it answers no (rc 1): the grove answered, and no duct stands',
+        () => {
+          expect(scene.stdout).toContain('RC=1');
+        },
+      );
+    });
+
+    when('[t1] duct.read cannot reach the grove', () => {
+      const scene = useBeforeAll(async () =>
+        runLive({
+          readFake: `duct.read() { echo "✋ duct.read: cannot reach 'grove-b'" >&2; return 2; }`,
+        }),
+      );
+      then('it answers unread (rc 3), with what was said', () => {
+        expect(scene.stdout).toContain('RC=3');
+        expect(scene.stdout).toContain(
+          "SAID=✋ duct.read: cannot reach 'grove-b'",
+        );
+      });
+    });
+
+    when('[t2] duct.read fails with any other cause', () => {
+      const scene = useBeforeAll(async () =>
+        runLive({
+          readFake: `duct.read() { echo "capture-pane: server exited unexpectedly" >&2; return 1; }`,
+        }),
+      );
+      then('it answers unread (rc 3), never a no from no evidence', () => {
+        expect(scene.stdout).toContain('RC=3');
+        expect(scene.stdout).toContain(
+          'SAID=capture-pane: server exited unexpectedly',
+        );
+      });
+    });
+
+    when(
+      '[t3] a caret-only pane, read by a caller that holds its own parsed duct',
+      () => {
+        const scene = useBeforeAll(async () => {
+          const out = runDuct({
+            socket: genSocket('live'),
+            ductworkDir: tempDirs.genOne({ slug: 'registry' }),
+            body: [
+              // a caret and no chrome: the verdict falls to the pane's foreground command
+              `duct.read() { printf '❯ \\n'; }`,
+              '__duct_pane_command() { echo node; }',
+              'DUCT_HOST="grove-a"; DUCT_SESSION="caller/foreman"; DUCT_NAME="caller/foreman"',
+              'rc=0; __duct_uri_holds_live_claude "duct:///svc-lessons.beav.feat-x/mechanic" || rc=$?',
+              'echo "RC=$rc"',
+              'echo "AFTER=$DUCT_HOST|$DUCT_SESSION|$DUCT_NAME"',
+            ].join('\n'),
+          });
+          return { stdout: out.stdout };
+        });
+        then(
+          'it judges live, and the caller keeps its own DUCT_* intact',
+          () => {
+            expect(scene.stdout).toContain('RC=0');
+            expect(scene.stdout).toContain(
+              'AFTER=grove-a|caller/foreman|caller/foreman',
+            );
+          },
+        );
+      },
+    );
+
+    when('[t4] a caret-only pane whose uri does not parse', () => {
+      const scene = useBeforeAll(async () =>
+        runLive({
+          readFake: `duct.read() { printf '❯ \\n'; }; __duct_parse_uri() { return 2; }`,
+        }),
+      );
+      then(
+        'it answers unread (rc 3), never a no from a parse it could not make',
+        () => {
+          expect(scene.stdout).toContain('RC=3');
+          expect(scene.stdout).toContain('did not parse');
+        },
+      );
+    });
+  });
 });
